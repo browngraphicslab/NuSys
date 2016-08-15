@@ -246,6 +246,11 @@ namespace NuSysApp
                 CreatorText.Text = _selectedCollection.Creator;
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
+
+                SearchBox.Text = "";
+
+                PreviewPanel.Visibility = Visibility.Collapsed;
+                DetailPanel.Visibility = Visibility.Visible;
             }
         }
 
@@ -306,6 +311,9 @@ namespace NuSysApp
                         List.SelectedItem = i;
                     }
                 }
+                List.ScrollIntoView(List.SelectedItem);
+                PreviewPanel.Visibility = Visibility.Collapsed;
+                DetailPanel.Visibility = Visibility.Visible;
             }
         }
 

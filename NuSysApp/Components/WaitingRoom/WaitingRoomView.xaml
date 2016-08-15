@@ -141,28 +141,33 @@
                     </ListView.ItemContainerStyle>
                     
                 </ListView>
-                <Grid x:Name="DetailPanel" Grid.Column="1" HorizontalAlignment="Stretch" Background="White" BorderBrush="{StaticResource color1}" BorderThickness="5,0,0,0">
-                    <TextBlock x:Name="SelectedCollectionTitle" HorizontalAlignment="Center" FontSize="35" Foreground="{StaticResource color2}" Margin="0,10,0,0" Height="50" VerticalAlignment="Top">
-                        Title</TextBlock>
-                    <Grid x:Name="Details" VerticalAlignment="Center" Margin="50,20,50,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30"></RowDefinition>
-                            <RowDefinition Height="30"></RowDefinition>
-                            <RowDefinition Height="30"></RowDefinition>
-                            <RowDefinition Height="30"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{StaticResource color3}">Creator:</TextBlock>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{StaticResource color3}">Last Edited By:</TextBlock>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{StaticResource color3}">Date Created:</TextBlock>
-                        <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{StaticResource color3}">Tags:</TextBlock>
-                        <TextBlock x:Name="CreatorText" Grid.Row="0" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
-                        <TextBlock x:Name="LastEditedText"  Grid.Row="2" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
-                        <TextBlock x:Name="CreateDateText" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
-                        <TextBlock x:Name="TagsText" Grid.Row="3" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                <Grid  Grid.Column="1" HorizontalAlignment="Stretch" Background="White" BorderBrush="{StaticResource color1}" BorderThickness="5,0,0,0">
+                    <Grid x:Name="DetailPanel" Visibility="Collapsed">
+                        <TextBlock x:Name="SelectedCollectionTitle" HorizontalAlignment="Center" FontSize="35" Foreground="{StaticResource color2}" Margin="0,10,0,0" Height="50" VerticalAlignment="Top">
+                            Title</TextBlock>
+                        <Grid x:Name="Details" VerticalAlignment="Center" Margin="50,20,50,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="30"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{StaticResource color3}">Creator:</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{StaticResource color3}">Last Edited By:</TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{StaticResource color3}">Date Created:</TextBlock>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{StaticResource color3}">Tags:</TextBlock>
+                            <TextBlock x:Name="CreatorText" Grid.Row="0" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                            <TextBlock x:Name="LastEditedText"  Grid.Row="2" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                            <TextBlock x:Name="CreateDateText" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                            <TextBlock x:Name="TagsText" Grid.Row="3" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                        </Grid>
+                    </Grid>
+                    <Grid x:Name="PreviewPanel" Visibility="Visible">
+                        <TextBlock HorizontalAlignment="Center" FontSize="22" Foreground="{StaticResource color2}" VerticalAlignment="Center" Width="250">Select a collection for more information</TextBlock>
                     </Grid>
                 </Grid>
             </Grid>
@@ -177,30 +182,7 @@
                 <StackPanel x:Name="Users"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,0,0,20" Orientation="Horizontal"></StackPanel>
             </Grid>
         </Grid>
-        
-        <!--<Grid x:Name="workspace" Visibility="Collapsed">
-            <Grid.RenderTransform>
-            <CompositeTransform/>
-            </Grid.RenderTransform>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="620" Margin="0,100,0,0">
-                <TextBlock Foreground="{StaticResource darkforeground}" TextAlignment="Center" FontSize="24" Margin="0,0,0,10">MAKE A WORKSPACE:</TextBlock>
-                <TextBox Style="{StaticResource LoginBox}" Foreground="{StaticResource darkforeground}" Margin="0,0,0,10"  Name="NewWorkspaceName" FontSize="18" Height="30" Width="350" Background="{StaticResource color6}" PlaceholderText="Title"></TextBox>
-                --><!--<StackPanel x:Name="ButtonGroup" HorizontalAlignment="Center" Orientation="Horizontal" Margin="18,0,0,10">
-                    <RadioButton x:Name="PrivateButton" Style="{StaticResource NuSysRadioButton}"  Foreground="{StaticResource color3}" Content="Private"></RadioButton>
-                    <RadioButton x:Name="PublicButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Public"></RadioButton>
-                    <RadioButton x:Name="ReadOnlyButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Read Only"></RadioButton>
-                </StackPanel>--><!--
-                <Button Click="NewWorkspaceOnClick" Name="NewWorkspaceButton" IsEnabled="False" Foreground="{StaticResource color2}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="125" Background="White">
-                    CREATE
-                </Button>
-                <TextBlock Foreground="{StaticResource darkforeground}" TextAlignment="Center" FontSize="24" Margin="0,20,0,10">CHOOSE A WORKSPACE:</TextBlock>
-                <ListBox Name="List" SelectionMode="Single" IsEnabled="True" Foreground="{StaticResource color2}" FontSize="24" Height="275" Width="350" Background="{StaticResource color6}" Margin="0,0,0,10">
-                </ListBox>
-                <Button Click="Join_Workspace_Click" Margin="0,0,0,20"  Name="JoinWorkspaceButton" IsEnabled="False" Foreground="{StaticResource color2}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="125" Background="White">
-                    LOADING...
-                </Button>
-            </StackPanel>
-        </Grid>-->
+       
             
         <TextBox Visibility="Collapsed"  Name="ServerNameText" Width="350" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"></TextBox>
 
