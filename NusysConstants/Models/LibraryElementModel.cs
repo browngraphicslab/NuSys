@@ -36,8 +36,11 @@ namespace NusysIntermediate
 
         public string LastEditedTimestamp { get; set; }
 
-        public string ServerUrl { get; set; } 
+        public string ServerUrl { get; set; }
 
+        /// the access type enum for this library element.  
+        /// If it is private and the creator of the library element wasn't the current user, the user shouldn't be able to see it
+        public NusysConstants.AccessType AccessType { get; set; }
         public LibraryElementModel(string libraryElementId, NusysConstants.ElementType elementType)
         {
             LibraryElementId = libraryElementId;
@@ -94,6 +97,10 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY))
             {
                 LastEditedTimestamp = message.GetString(NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY))
+            {
+                AccessType = message.GetEnum<NusysConstants.AccessType>(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY);
             }
         }
 

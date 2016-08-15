@@ -468,5 +468,20 @@ namespace NuSysApp
         {
             AccessPopup.IsOpen = false;
         }
+
+        private void XPrivateRadioButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            _currentDetailViewable.SetAccessType(NusysConstants.AccessType.Private);
+        }
+
+        private void XPublicRadioButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            _currentDetailViewable.SetAccessType(NusysConstants.AccessType.Public);
+        }
+
+        private void XReadOnlyRadioButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            _currentDetailViewable.SetAccessType(NusysConstants.AccessType.ReadOnly);
+        }
     }
 }
