@@ -20,6 +20,11 @@ namespace NusysIntermediate
         public List<string> PageUrls { get; set; }
 
         /// <summary>
+        /// The number of pages in the document
+        /// </summary>
+        public int PageCount => PageUrls.Count;
+
+        /// <summary>
         /// This constructor will call the same-declaration constructor in the base ContentDataModel class and will set the PageUrls for this contentDataModel.
         /// </summary>
         /// <param name="contentDataModelId"></param>

@@ -29,13 +29,25 @@ namespace NuSysApp
         public delegate void PageLocationChangedEventHandler(object sender, int pageLocation);
         public event PageLocationChangedEventHandler PageLocationChanged;
         public LibraryElementController LibraryElementController { get; }
-        public WriteableBitmap ImageSource { get; set; }
+
+
+        private BitmapImage _imageSource = new BitmapImage();
+        /// <summary>
+        /// the image source for the current pdf page. 
+        /// </summary>
+        public BitmapImage ImageSource
+        {
+            get { return _imageSource; }
+            set
+            {
+                _imageSource = value;
+                RaisePropertyChanged("ImageSource");
+            }
+        }
 
         private int _pageNumber;
 
         public int CurrentPageNumber => _pageNumber;
-
-        private MuPDFWinRT.Document _document;
 
         public static int InitialPageNumber;
         
@@ -48,43 +60,25 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-            await Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(LibraryElementController.Data);
-            });
             await Goto(_pageNumber);
         }
 
         public async Task Goto(int pageNumber, Region region = null)
         {
-            if (_document == null)
+            var content = LibraryElementController.ContentDataModel as PdfContentDataModel;
+            if (content == null || pageNumber == -1)
+            {
                 return;
-            if (pageNumber == -1) return;
-            if (pageNumber >= (_document.PageCount))
+            }
+
+            if (pageNumber >= content.PageCount)
             {
                 return;
             }
             _pageNumber = pageNumber;
-            await RenderPage(_pageNumber, region);
-            PageLocationChanged?.Invoke(this, pageNumber);
-        }
-        private async Task RenderPage(int pageNumber, Region region = null)
-        {
-            if (_document == null)
-                return;
-            var pageSize = _document.GetPageSize(pageNumber);
-            var width = pageSize.X;
-            var height = pageSize.Y;
-            var image = new WriteableBitmap(width, height);
-            IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
-            buf.Length = image.PixelBuffer.Length;
-
-            _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-
-            var s = buf.AsStream();
-            await s.CopyToAsync(image.PixelBuffer.AsStream());
-            image.Invalidate();
-            ImageSource = image;
+            ImageSource.UriSource = new Uri(content.PageUrls[pageNumber]);
             RaisePropertyChanged("ImageSource");
+            PageLocationChanged?.Invoke(this, CurrentPageNumber);
         }
 
         public async Task FlipLeft()
@@ -95,49 +89,7 @@ namespace NuSysApp
         {
             await Goto(_pageNumber + 1);
         }
-        public async Task LaunchLDA()
-        {
-            Task.Run(async () =>
-            {
-                var test = new List<string>();
-
-                // parameters for our LDA algorithm
-                string filename = LibraryElementController.LibraryElementModel.Title;
-                test.Add(filename);
-                test.Add("niters 8");
-                test.Add("ntopics 5");
-                test.Add("twords 10");
-                test.Add("dir ");
-                test.Add("est true");
-                test.Add("alpha 12.5");
-                test.Add("beta .1");
-                test.Add("model model-final");
-
-                string data = "";
-                int numPages = _document.PageCount;
-                int currPage = 0;
-                while (currPage < numPages)
-                {
-                    data = data + _document.GetAllTexts(currPage);
-                    currPage++;
-                }
-
-
-                DieStopWords ds = new DieStopWords();
-                data = await ds.removeStopWords(data);
-                List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
-                await UITask.Run(() =>
-                {
-                    var topicKeywords = new HashSet<Keyword>();
-                    foreach (var topic in topics)
-                    {
-                        topicKeywords.Add(new Keyword(topic, Keyword.KeywordSource.TopicModeling));
-                    }
-                    LibraryElementController.SetKeywords((topicKeywords));
-                    RaisePropertyChanged("Tags");
-                });
-            });
-        }
+       
 
         public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {

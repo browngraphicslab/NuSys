@@ -130,7 +130,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (pageNumber >= (content.PageUrls.Count))
+            if (pageNumber >= (content.PageCount))
             {
                 return;
             }

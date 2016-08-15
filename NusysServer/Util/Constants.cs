@@ -16,7 +16,7 @@ namespace NusysServer
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
-        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
+        public static readonly string user = "luke1"; //TODO: CHANGE TO PRIVATE LATER
 
         public static string WWW_ROOT {
             get
@@ -37,7 +37,7 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "book":
                         return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/" : "D:/home/site/wwwroot/";
-                    case "luke":
+                    case "luke1":
                         return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/" : "D:/home/site/wwwroot/";
                     default:
                         return "D:/home/site/wwwroot/";
@@ -77,7 +77,7 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/files/";
                     case "book":
                         return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/" : "D:/home/site/wwwroot/files/";
-                    case "luke":
+                    case "luke1":
                         return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/" : "D:/home/site/wwwroot/files/";
                     default:
                         return "D:/home/site/wwwroot/files/";
@@ -109,7 +109,7 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2685/" : "D:/home/site/wwwroot/";
                     case "book":
                         return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
-                    case "luke":
+                    case "luke1":
                         return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     default:
                         return "http://nusysrepo.azurewebsites.net/";

@@ -1,0 +1,12 @@
+8/15/2016 5:47:03 PM   String or binary data would be truncated.
+The statement has been terminated.  .Net SqlClient Data Provider     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, String methodName, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at NusysServer.SQLInsertQuery.ExecuteCommand() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Util\SQLQuery\SQLInsertQuery.cs:line 55
+   at NusysServer.SQLConnector.AddContent(Message message) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Static_Classes\SqlConnector.cs:line 260
+   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 29
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Static_Classes\RequestRouter.cs:line 100
