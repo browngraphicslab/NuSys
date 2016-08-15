@@ -237,8 +237,15 @@ namespace NuSysApp
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key,entry);
-            ChangeMetadata(_libraryElementModel.Metadata);
-            return true;
+
+            var requestArgs = new CreateNewMetadataRequestArgs();
+            requestArgs.Entry = entry;
+            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+
+            var request = new CreateNewMetadataRequest(requestArgs);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            //ChangeMetadata(_libraryElementModel.Metadata);
+            return request.CreateLocally();
         }
 
         /// <summary>
@@ -254,8 +261,14 @@ namespace NuSysApp
             }
             MetadataEntry outobj;
             _libraryElementModel.Metadata.TryRemove(key, out outobj);
-            ChangeMetadata(LibraryElementModel.Metadata);
-            return true;
+            var requestArgs = new DeleteMetadataRequestArgs();
+            requestArgs.Key = key;
+            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+            
+            var request = new DeleteMetadataRequest(requestArgs);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            //ChangeMetadata(LibraryElementModel.Metadata);
+            return request.DeleteLocally();
         }
 
         /// <summary>
@@ -276,8 +289,18 @@ namespace NuSysApp
             // Updates the metadata entry
             var newEntry = new MetadataEntry(key, values, original.Mutability);
             _libraryElementModel.Metadata.TryUpdate(original.Key, newEntry,newEntry);
-            ChangeMetadata(FullMetadata);
-            return true;
+
+            var requestArgs = new UpdateMetadataEntryRequestArgs();
+            requestArgs.Entry = original;
+            requestArgs.NewValues = values;
+            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+
+            var request = new UpdateMetadataEntryRequest(requestArgs);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            return request.UpdateLocally();
+            
+            //ChangeMetadata(FullMetadata);
+            //return true;
         }
 
         /// <summary>
