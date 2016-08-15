@@ -112,8 +112,11 @@ namespace NuSysApp
 
             var metadataEntry = new MetadataEntry(metadataKey, values, mutability);
 
-            return libraryElementController.AddMetadata(metadataEntry);
-            
+            UITask.Run(delegate {
+                libraryElementController.AddMetadataLocally(metadataEntry);
+            });
+            return true;
+
         }
 
 

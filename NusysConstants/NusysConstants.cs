@@ -679,28 +679,28 @@ namespace NusysIntermediate
             /// <summary>
             /// 32 character ID of the library element this metadata entry belongs to
             /// </summary>
-            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "library_id";
+            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "metadata_library_id";
 
             /// <summary>
             /// the string used as the name of the 'key' column for metadata.  
             /// approximately 512 characters max
             /// PROBABLY ONLY FOR SERVER-SIDE USE
             /// </summary>
-            public static readonly string METADATA_KEY_COLUMN_KEY = "key_string";
+            public static readonly string METADATA_KEY_COLUMN_KEY = "metadata_key_string";
 
             /// <summary>
             /// the string used as the name of the 'value' column for metadata.  
             /// approximately 2048 characters max
             /// PROBABLY ONLY FOR SERVER-SIDE USE
             /// </summary>
-            public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
+            public static readonly string METADATA_VALUE_COLUMN_KEY = "metadata_value_string";
 
         /// <summary>
         /// the string used as the name of the 'mutability' column for metadata.  
         /// approximately 2048 characters max
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
-        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "mutability_string";
+        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "metadata_mutability_string";
 
         /// <summary>
         /// the list of all the column names for the metadata table.

@@ -90,6 +90,15 @@ namespace NusysServer
                     case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
                         requestHandler = new UpdateLibraryElementRequestHandler();
                         break;
+                    case NusysConstants.RequestType.CreateNewMetadataRequest:
+                        requestHandler = new CreateNewMetadataRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.DeleteMetadataRequest:
+                        requestHandler = new DeleteMetadataRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.UpdateMetadataEntryRequest:
+                        requestHandler = new UpdateMetadataRequestHandler();
+                        break;
                     default:
                         requestHandler = null;
                         return false;

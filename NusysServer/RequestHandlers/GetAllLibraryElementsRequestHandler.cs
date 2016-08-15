@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using NusysServer.Util;
 
 namespace NusysServer
 {
@@ -34,8 +35,19 @@ namespace NusysServer
             libraryElementJoinProperties.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Properties,
                 NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY).First();
             JoinedTable propertiesJoinLibraryElement = new JoinedTable(libraryElementJoinProperties);
+
+            SqlJoinOperationArgs libraryElementJoinPropertiesJoinMetadata = new SqlJoinOperationArgs();
+            libraryElementJoinPropertiesJoinMetadata.LeftTable = propertiesJoinLibraryElement;
+            libraryElementJoinPropertiesJoinMetadata.RightTable = new SingleTable(Constants.SQLTableType.Metadata);
+            libraryElementJoinPropertiesJoinMetadata.JoinOperator = Constants.JoinedType.LeftJoin;
+            libraryElementJoinPropertiesJoinMetadata.Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,
+                NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY).First();
+            libraryElementJoinPropertiesJoinMetadata.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Metadata,
+                NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY).First();
+            JoinedTable propertiesJoinLibraryElementJoinMetadata = new JoinedTable(libraryElementJoinPropertiesJoinMetadata);
+
             //creates a list of all columns from libraryelement, and properties tables
-            
+
             //var columnsToGet =
             //     new List<string>(
             //    Constants.GetAcceptedKeys(Constants.SQLTableType.LibraryElement)
@@ -48,11 +60,11 @@ namespace NusysServer
             var publicOrReadOnlyConditional = new SqlQueryOperator(publicConditional, readOnlyConditional, Constants.Operator.Or);
             var publicOrReadOnlyOrCreatorIsRequestorConditional = new SqlQueryOperator(publicOrReadOnlyConditional, creatorIsRequestorConditional, Constants.Operator.Or);
             
-            var query = new SQLSelectQuery(propertiesJoinLibraryElement, publicOrReadOnlyOrCreatorIsRequestorConditional);
+            var query = new SQLSelectQuery(propertiesJoinLibraryElementJoinMetadata, publicOrReadOnlyOrCreatorIsRequestorConditional);
 
             var libraryElementReturnedMessages = query.ExecuteCommand();
-            PropertiesParser propertiesParser = new PropertiesParser();
-            var libraryElementConcatPropertiesMessages = propertiesParser.ConcatMessageProperties(libraryElementReturnedMessages);
+            PropertiesAndMetadataParser propertiesAndMetadataParser = new PropertiesAndMetadataParser();
+            var libraryElementConcatPropertiesMessages = propertiesAndMetadataParser.ConcatPropertiesAndMetadata(new List<Message>(libraryElementReturnedMessages));
             var libraryElementModels = new List<string>();
             foreach (var m in libraryElementConcatPropertiesMessages)
             {
