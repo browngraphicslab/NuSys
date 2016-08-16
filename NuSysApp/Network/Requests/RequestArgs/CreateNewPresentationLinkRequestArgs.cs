@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,15 +8,45 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    class CreateNewPresentationLinkRequestArgs : IRequestArgumentable
+
+    public class CreateNewPresentationLinkRequestArgs : IRequestArgumentable
     {
-        public string InId { get; set; }
-        public string OutId { get; set; }
+        /// <summary>
+        /// REQUIRED. 
+        /// The library element id of the element view model this presentation link was dragged from
+        /// </summary>
+        public string LibraryElementModelInId { get; set; }
+        /// <summary>
+        /// REQUIRED. 
+        /// The library element id of the element view model this presentation link was dragged to
+        /// </summary>
+        public string LibraryElementModelOutId { get; set; }
+        /// <summary>
+        /// A unique id for the presentation link
+        /// </summary>
         public string LinkId { get; set; }
+        /// <summary>
+        /// REQUIRED. 
+        /// The unique id for the collection the presentation link was created in
+        /// </summary>
         public string ParentCollectionId { get; set; }
+        /// <summary>
+        /// Textual annotation for the presentation link
+        /// </summary>
         public string Annotation { get; set; }
+        /// <summary>
+        /// This packs all of the variables into the message that is send to the server
+        /// </summary>
+        /// <returns></returns>
         public Message PackToRequestKeys()
         {
+            Debug.Assert(LibraryElementModelInId != null, "This is a required field, it should be populated when the link is created");
+            Debug.Assert(LibraryElementModelOutId != null, "This is a required field, it should be populated when the link is created");
+            Debug.Assert(ParentCollectionId != null, "This is a required field, it should be populated when the link is created");
+
+            LinkId = LinkId ?? SessionController.Instance.GenerateId();
+
+
             Message message = new Message();
             message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY] = ParentCollectionId;
             message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY] = ParentCollectionId;

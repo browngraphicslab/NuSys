@@ -91,6 +91,7 @@ namespace NuSysApp
 
         private void PresentationLinkAdded(object sender, string id1, string id2)
         {
+
             if (SessionController.Instance.IdToControllers.ContainsKey(id1) &&
                 SessionController.Instance.IdToControllers.ContainsKey(id2))
             {

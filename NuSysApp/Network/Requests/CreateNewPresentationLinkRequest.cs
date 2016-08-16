@@ -51,6 +51,32 @@ namespace NuSysApp
             PresentationLinkModel model = JsonConvert.DeserializeObject<PresentationLinkModel>(_returnMessage.GetString(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
             //TODO: DO SOMETHING WITH THIS MODEL
 
+            if (SessionController.Instance.IdToControllers.ContainsKey(model.ParentCollectionId))
+            {
+                var controller = SessionController.Instance.IdToControllers[model.ParentCollectionId] as ElementCollectionController;
+                controller.AddChild();
+            }
+
+            UITask.Run(delegate
+            {
+                var presentationlink = new PresentationLinkModel();
+                presentationlink.InElementId = id1;
+                presentationlink.OutElementId = id2;
+                var vm = new PresentationLinkViewModel(presentationlink);
+                Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
+
+                // If there exists a presentation link between two element models, return and do not create a new one
+                if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == id1 && item.OutElementId == id2) != null ||
+                    PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == id1 && item.InElementId == id2) != null)
+                {
+                    return;
+                }
+
+                // create a new presentation link
+                PresentationLinkViewModel.Models.Add(presentationlink);
+                new PresentationLinkView(vm);
+            });
+
             return false;
         }
 

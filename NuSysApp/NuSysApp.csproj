@@ -448,7 +448,6 @@
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
-    <Compile Include="Models\PresentationLinkModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
