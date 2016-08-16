@@ -710,8 +710,8 @@ namespace NuSysApp
             //create the request args 
             var elementArgs = new NewElementRequestArgs();
             elementArgs.LibraryElementId = LibraryElementModel.LibraryElementId;
-            elementArgs.Height = 300;//TODO abstract to constant in NusysApp.Constants class
-            elementArgs.Width = 300;//TODO abstract to constant in NusysApp.Constants class
+            elementArgs.Height = Constants.DefaultNodeSize;
+            elementArgs.Width = Constants.DefaultNodeSize;
             elementArgs.ParentCollectionId = collectionId;
             elementArgs.X = x;
             elementArgs.Y = y;

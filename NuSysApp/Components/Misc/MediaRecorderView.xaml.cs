@@ -164,59 +164,58 @@ namespace NuSysApp
         {
             var vm = (RecordingNodeViewModel) DataContext;
 
-            Message m = new Message();
-            var width = SessionController.Instance.SessionView.ActualWidth;
-            var height = SessionController.Instance.SessionView.ActualHeight;
-            var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+            // instantiate the common variables for createNewLibraryElementRequestArgs
+            var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs();
+            createNewLibraryElementRequestArgs.ContentId = SessionController.Instance.GenerateId();
+            // generated because we want to add this element to the collection using this later
+            createNewLibraryElementRequestArgs.LibraryElementId = SessionController.Instance.GenerateId(); 
 
-            var contentId = SessionController.Instance.GenerateId();
-
-            m["contentId"] = contentId;
-            m["x"] = vm.X;
-            m["y"] = vm.Y;
-            m["width"] = vm.Width;
-            m["height"] = vm.Height;
-            m["title"] = "";
-            m["type"] = type.ToString();
-            m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-
-            if (type == NusysConstants.ElementType.Video)
+            // instantiate the variables for createNewLibraryElementRequestArgs that depend on the type
+            string fileExtension;
+            switch (type)
             {
-                var settings =
-                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);
-                if (settings.Count > 0)
-                {
-                    var maxX = 0;
-                    var maxY = 0;
-                    foreach (var settingInst in settings)
-                    {
-                        if ((settingInst as VideoEncodingProperties).Width > maxX)
-                        {
-                            maxX = (int) (settingInst as VideoEncodingProperties).Width;
-                        }
-                        if ((settingInst as VideoEncodingProperties).Height > maxY)
-                        {
-                            maxY = (int) (settingInst as VideoEncodingProperties).Height;
-                        }
-                    }
-                    m["resolutionX"] = maxX;
-                    m["resolutionY"] = maxY;
-                }
+                case NusysConstants.ElementType.Audio:
+                    createNewLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Audio;
+                    createNewLibraryElementRequestArgs.Title = "Audio Recording";
+                    fileExtension = Constants.RecordingNodeAudioFileType;
+                    break;
+                case NusysConstants.ElementType.Video:
+                    createNewLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Video;
+                    createNewLibraryElementRequestArgs.Title = "Video Recording";
+                    fileExtension = Constants.RecordingNodeVideoFileType;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, "Recording nodes do not support the given type yet");
             }
 
+            // create a new content request args because the recording node creates a new instance of content
+            var createNewContentRequestArgs = new CreateNewContentRequestArgs();
+            createNewContentRequestArgs.LibraryElementArgs = createNewLibraryElementRequestArgs;
+            createNewContentRequestArgs.DataBytes = Convert.ToBase64String(data);
+            createNewContentRequestArgs.FileExtension = fileExtension;
 
+            // execute the request
+            var request = new CreateNewContentRequest(createNewContentRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
 
-            // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
-           await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type));
-           await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            // try to get the library element controller from the library element id we assigned to it in the createNewLibraryElementRequestArgs
+            var libraryElementController =
+                SessionController.Instance.ContentController.GetLibraryElementController(
+                    createNewLibraryElementRequestArgs.LibraryElementId);
 
-            // var vm = (TextNodeViewModel) DataContext;
-            // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.ContentId, Convert.ToBase64String(data)));
+            // if the libraryElementController exists then add it to the workspace at the view models position
+            if (libraryElementController != null)
+            {
+                UITask.Run(() =>
+                {
+                    libraryElementController.AddElementAtPosition(vm.X, vm.Y);
+                });
+            }
+
             RecordingStopped?.Invoke(this);
         }
 
         public FreeFormViewer FreeFormViewer { get; set; }
-
     }
 }

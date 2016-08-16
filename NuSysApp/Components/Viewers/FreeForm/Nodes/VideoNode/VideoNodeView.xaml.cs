@@ -37,8 +37,7 @@ namespace NuSysApp
             this.InitializeComponent();
             if (!vm.Controller.LibraryElementController.ContentLoaded)
             {
-
-                Task.Run(async delegate
+                UITask.Run(async delegate
                 {
                     await vm.Controller.LibraryElementController.LoadContentDataModelAsync();
                     LoadVideo(this);
