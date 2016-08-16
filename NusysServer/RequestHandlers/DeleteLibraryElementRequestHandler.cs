@@ -6,6 +6,13 @@ namespace NusysServer
 {
     public class DeleteLibraryElementRequestHandler : RequestHandler
     {
+        /// <summary>
+        /// this request handler will delete a library element, all related metadata, and all aliases. 
+        /// It will forward the request on to all the other clients; 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="senderHandler"></param>
+        /// <returns></returns>
         public override Message HandleRequest(Request request, NuWebSocketHandler senderHandler)
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.DeleteLibraryElementRequest);
@@ -25,8 +32,7 @@ namespace NusysServer
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
             if (success)
             {
-                returnMessage[NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_RETURNED_DELETED_LIBRARY_IDS_KEY] =
-                    new List<string>() {message.GetString(NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY)};
+                returnMessage[NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_RETURNED_DELETED_LIBRARY_IDS_KEY] = new List<string>() {message.GetString(NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY)};
             }
             return returnMessage;
         }

@@ -73,7 +73,7 @@ namespace NusysServer
             var analysisResult = await GetAnalysisResultsAsync(ImgURL);
 
             // crazy object initializer syntax that converts an analysis result to a NuSysImageAnalysisModel. : )
-            return new NusysImageAnalysisModel(contentDataModelId)
+            var a =  new NusysImageAnalysisModel(contentDataModelId)
             {
                 // simply set the property of the nusysImageAnalysisModel using different paths in the analysisResult
                 AccentColor = analysisResult.Color?.AccentColor,
@@ -90,10 +90,11 @@ namespace NusysServer
                 // These are slightly more complex because we are setting the value for each item in an array
                 Categories = analysisResult.Categories?.Select(category => new CognitiveApiCategoryModel { Name = category?.Name, Score = category?.Score }).ToArray(),
                 Tags = analysisResult.Tags?.Select(tag => new CognitiveApiTagModel { Confidence  = tag?.Confidence, Hint = tag?.Hint, Name = tag?.Name}).ToArray(),
-                Faces = analysisResult.Faces?.Select(face => new CognitiveApiFaceModel {Age = face?.Age, Gender = face?.Gender, FaceRectangle = new CognitiveApiFaceRectangleModel {Height = face?.FaceRectangle.Height / analysisResult.Metadata.Height, Width = face?.FaceRectangle.Width / analysisResult.Metadata.Width, Left = face?.FaceRectangle.Left / analysisResult.Metadata.Width, Top = face?.FaceRectangle.Top / analysisResult.Metadata.Height}}).ToArray(),
+                Faces = analysisResult.Faces?.Select(face => new CognitiveApiFaceModel {Age = face?.Age, Gender = face?.Gender, FaceRectangle = new CognitiveApiFaceRectangleModel {Height = ((double)(face?.FaceRectangle.Height) / (double)(analysisResult.Metadata.Height)), Width = ((double)(face?.FaceRectangle.Width)) / ((double)(analysisResult.Metadata.Width)), Left = ((double)(face?.FaceRectangle.Left)) / ((double)(analysisResult.Metadata.Width)), Top = ((double)(face?.FaceRectangle.Top)) / ((double)(analysisResult.Metadata.Height))}}).ToArray(),
                 Description = new CognitiveApiDescriptionModel { Tags = analysisResult.Description?.Tags, Captions = analysisResult.Description?.Captions.Select(caption => new CognitiveApiCaptionModel { Confidence = caption.Confidence, Text = caption.Text }).ToArray() }
                 
             };
+            return a;
         }
     }
 }

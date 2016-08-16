@@ -69,7 +69,7 @@ namespace NusysServer
                         catch (Exception e)
                         {
                             ErrorLog.AddError(e);
-                            senderHandler.SendError(e);
+                            senderHandler.Send(e.Message + " with the url: "+contentUrl);
                         }
                         break;
                 }

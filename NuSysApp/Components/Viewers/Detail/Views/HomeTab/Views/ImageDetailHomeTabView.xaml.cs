@@ -31,7 +31,12 @@ namespace NuSysApp
         {
             DataContext = vm;
             InitializeComponent();
-            
+
+            //Show hide region buttons need access to rectangle/audio wrapper for methods to work.
+            xShowHideRegionButtons.Wrapper = xClippingWrapper;
+
+
+
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
             xClippingWrapper.Controller = vm.LibraryElementController;
@@ -105,5 +110,6 @@ namespace NuSysApp
 
             });
         }
+
     }
 }

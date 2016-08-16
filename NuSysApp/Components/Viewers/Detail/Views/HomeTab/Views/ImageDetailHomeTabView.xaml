@@ -39,7 +39,7 @@
         </Border>
         <Button Grid.Row="1" Tapped="Button_Tapped">I think I put this here</Button>
         <local:AddToCollectionButton Grid.Row="2"/>
-        
+        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="2"></local:ShowHideRegionButtons>
     </Grid>
 </UserControl>
 

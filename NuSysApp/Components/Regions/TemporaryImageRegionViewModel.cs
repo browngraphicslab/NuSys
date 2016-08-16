@@ -38,10 +38,30 @@ namespace NuSysApp
                 RaisePropertyChanged("Width");
             }
         }
+        /// <summary>
+        /// Without a model we need to store these temporary normalized height(between 0 and 1) so that if we create
+        /// an actual library element model we can call upon the height     
+        /// </summary>
         public double NormalizedHeight { get; set; }
+        /// <summary>
+        /// Without a model we need to store these temporary normalized width(between 0 and 1) so that if we create
+        /// an actual library element model we can call upon the width
+        /// </summary>
         public double NormalizedWidth { get; set; }
+        /// <summary>
+        /// Without a model we need to store the normalized top left point (both values are between 0 and 1) 
+        /// so that if we create a real library element we can call upon it otherwise it can just be disposed of
+        /// </summary>
         public Point NormalizedTopLeftPoint { get; set; }
+        /// <summary>
+        /// This is needed so that we can keeo track of handlers that involve the size changed and location changed handlers so 
+        /// the position and size of the region can be properly updated when the size of the wrapper changes
+        /// </summary>
         public RectangleWrapper RectangleWrapper { get; set; }
+        /// <summary>
+        /// This is also necessary so that we can get the new image region args and then shoot off a request to the server to create the 
+        /// actual library element model
+        /// </summary>
         public DetailHomeTabViewModel HomeTabViewModel { get; set; }
         public bool Editable { get; private set; }
 
@@ -59,7 +79,7 @@ namespace NuSysApp
             NormalizedTopLeftPoint = topLeftPoint;
             NormalizedWidth = width;
             NormalizedHeight = height;
-            Editable = true;
+            Editable = false;
             RectangleWrapper = rectangleWrapper;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
 
