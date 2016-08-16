@@ -42,8 +42,8 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            //ResetTables(true);
-            //SetUpTables();
+            ResetTables(true);
+            SetUpTables();
 
             TestFunc();
         }
@@ -138,14 +138,14 @@ namespace NusysServer
         {
             if (delete)
             {
-                var dropPresentationLinks = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink));
-                var dropAliases = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
-                var dropLibraryElements = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
-                var dropProperties = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
-                var dropMetadata = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
-                var dropContent = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
-                var dropAnalysisModels = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
-                var dropUsers = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
+                var dropPresentationLinks = MakeCommand("IF OBJECT_ID('dbo."+ Constants.GetTableName(Constants.SQLTableType.PresentationLink) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink));
+                var dropAliases = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Alias) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
+                var dropLibraryElements = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
+                var dropProperties = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Properties) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
+                var dropMetadata = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Metadata) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
+                var dropContent = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Content) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
+                var dropAnalysisModels = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.AnalysisModels) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
+                var dropUsers = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Users) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
 
                 dropPresentationLinks.ExecuteNonQuery();
                 dropAliases.ExecuteNonQuery();

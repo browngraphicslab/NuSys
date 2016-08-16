@@ -135,7 +135,7 @@
                             <TextBlock  Grid.Column="1" Grid.Row="0"  Text="{Binding Title}" FontSize="14" Margin="4,0,4,0" VerticalAlignment="Center"/>
                             <TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding Type}" FontSize="14" Margin="4,0,4,0" VerticalAlignment="Center"/>
                             <TextBlock x:Name="TimeStampBox" Grid.Column="3" Grid.Row="0" Text="{Binding Timestamp}" FontSize="14" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                            <Button x:Name="DeleteBox" DataContext="{Binding ContentID}" Tapped="DeleteBox_OnTapped" Grid.Column="3" Grid.Row="0" Foreground="DarkRed" 
+                            <Button x:Name="DeleteBox" DataContext="{Binding LibraryElementId}" Tapped="DeleteBox_OnTapped" Grid.Column="3" Grid.Row="0" Foreground="DarkRed" 
                                        Content="Delete" FontSize="14" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False" />
                         </Grid>
 

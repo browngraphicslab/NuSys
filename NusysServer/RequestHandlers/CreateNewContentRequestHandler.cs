@@ -64,7 +64,7 @@ namespace NusysServer
                 if (addContentToDatabaseMessage.ContainsKey(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY))
                 {
                     var elementType = message.GetEnum<NusysConstants.ElementType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY);
-                    var contentUrl = message.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY);
+                    var contentUrl = addContentToDatabaseMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY);
                     MediaProcessor.ProcessCreateContentDataModelRequestMedia(message, newContentDataModelId, contentUrl, elementType,senderHandler);
                 }
             }
