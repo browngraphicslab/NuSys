@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using NusysIntermediate;
+using NusysServer.RequestHandlers;
 
 namespace NusysServer
 {
@@ -95,6 +96,12 @@ namespace NusysServer
                         break;
                     case NusysConstants.RequestType.CreateNewPresentationLinkRequest:
                         requestHandler = new CreateNewPresentationLinkRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.DeletePresentationLinkRequest:
+                        requestHandler = new DeletePresentationLinkRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.UpdatePresentationLinkRequest:
+                        requestHandler = new UpdatePresentationLinkRequestHandler();
                         break;
                     default:
                         requestHandler = null;

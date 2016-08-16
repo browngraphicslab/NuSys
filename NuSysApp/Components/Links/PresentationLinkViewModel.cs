@@ -77,9 +77,11 @@ namespace NuSysApp
             ControlPointsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void DeletePresentationLink()
+        public async void DeletePresentationLink()
         {
-            SessionController.Instance.NuSysNetworkSession.RemovePresentationLink(_inElementController.Model.Id, _outElementController.Model.Id);
+            var request = new DeletePresentationLinkRequest(Model.LinkId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.DeletePresentationLinkFromLibrary();
         }
 
         /// <summary>
