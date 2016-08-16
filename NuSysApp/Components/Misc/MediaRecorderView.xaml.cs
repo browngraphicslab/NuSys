@@ -172,8 +172,8 @@ namespace NuSysApp
             var contentId = SessionController.Instance.GenerateId();
 
             m["contentId"] = contentId;
-            m["x"] = vm.Model.X;
-            m["y"] = vm.Model.Y;
+            m["x"] = vm.X;
+            m["y"] = vm.Y;
             m["width"] = vm.Width;
             m["height"] = vm.Height;
             m["title"] = "";

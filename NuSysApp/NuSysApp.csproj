@@ -436,7 +436,6 @@
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinksController.cs" />
-    <Compile Include="Controller\RecordingNodeController.cs" />
     <Compile Include="Controller\RectangleRegionLibraryElementController.cs" />
     <Compile Include="Controller\PdfRegionLibraryElementController.cs" />
     <Compile Include="Controller\RegionLibraryElementController.cs" />
