@@ -180,6 +180,13 @@ namespace NuSysApp
             var props = new Message();
             props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Collection.ToString();
             props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
+
+            var contentRequestArgs = new CreateNewContentRequestArgs();
+            contentRequestArgs.LibraryElementArgs.Title = name;
+            contentRequestArgs.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Collection;
+            contentRequestArgs.LibraryElementArgs.
+
+
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             Init();

@@ -60,8 +60,7 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        private int _unseenChatMessagesNum;
-        private bool _isChatVisible;
+
         public SessionView()
         {
             this.InitializeComponent();
@@ -70,14 +69,8 @@ namespace NuSysApp
             var width = bounds.Width;
             Canvas.SetLeft(xChatBox, width - 300 - 10);
             Canvas.SetTop(xChatBox, height - 375 - 10 - 50 - 10 - 7);
-            Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
-            Canvas.SetTop(ChatBoxButton, height - 10 - 50);
-            Canvas.SetLeft(ChatNotifs, width - 10 - 50 - 10);
-            Canvas.SetTop(ChatNotifs, height - 10 - 50 - 10);
 
-            
-            _isChatVisible = false;
-            _unseenChatMessagesNum = 0;
+
 
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
@@ -138,7 +131,8 @@ namespace NuSysApp
                 Users.Children.Add(b);
                 user.OnUserRemoved += delegate
                 {
-                    UITask.Run(delegate {
+                    UITask.Run(delegate
+                    {
                         Users.Children.Remove(b);
                     });
                 };
@@ -385,7 +379,7 @@ namespace NuSysApp
 
         public void ExitMode()
         {
-           
+
             _modeInstance.ExitMode();
             _modeInstance = null;
             NextNode.Visibility = Visibility.Collapsed;
@@ -436,12 +430,12 @@ namespace NuSysApp
 
             // only show next and prev buttons if next and prev nodes exist
             SetModeButtons();
-            
+
         }
-       
+
         private void SetModeButtons()
         {
-         
+
             if (_modeInstance.Next())
             {
                 NextNode.Opacity = 1;
@@ -466,15 +460,15 @@ namespace NuSysApp
             }
         }
 
-        
-           
+
+
 
         public async Task LoadWorkspaceFromServer(IEnumerable<ElementModel> elements, string collectionId)
         {
             WaitingRoomView.InitialWorkspaceId = collectionId;
 
             xLoadingGrid.Visibility = Visibility.Visible;
-            
+
 
 
             //await
@@ -513,7 +507,8 @@ namespace NuSysApp
                 dict[element.Id] = element;
             }
 
-            await Task.Run(async delegate {
+            await Task.Run(async delegate
+            {
                 await MakeCollection(new Dictionary<string, ElementModel>(dict));
             });
 
@@ -572,10 +567,10 @@ namespace NuSysApp
                    new AdornmentView(freeFormViewerViewModel.Model.ShapePoints));
             }
             */
-            
-        
 
-             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+
+
+            _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
             SessionController.Instance.OnModeChanged += _activeFreeFormViewer.ChangeMode;
 
             _activeFreeFormViewer.Width = ActualWidth;
@@ -800,20 +795,7 @@ namespace NuSysApp
                 var exp = _modeInstance as ExplorationMode;
                 exp.HideRelatedListBox();
             }
-            
-        }
 
-        /// <summary>
-        /// Notifies the client of a new message by updating the red "unseen messages" label on top of the chat box icon
-        /// </summary>
-        public void IncrementUnseenMessage()
-        {
-            if (ChatNotifs.Visibility.Equals(Visibility.Collapsed))
-            {
-                ChatNotifs.Visibility = Visibility.Visible;
-            }
-            _unseenChatMessagesNum++;
-            NotifNumber.Text = "" + _unseenChatMessagesNum;
         }
 
         /// <summary>
@@ -825,20 +807,5 @@ namespace NuSysApp
             return xChatBox;
         }
 
-        private void ChatBoxButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            _isChatVisible = !_isChatVisible;
-            if (_isChatVisible)
-            {
-                xChatBox.Visibility = Visibility.Visible;
-                _unseenChatMessagesNum = 0;
-                NotifNumber.Text = "" + _unseenChatMessagesNum;
-                ChatNotifs.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                xChatBox.Visibility = Visibility.Collapsed;
-            }
-        }
     }
 }

@@ -11,7 +11,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         #region RequestManagementKeys
 

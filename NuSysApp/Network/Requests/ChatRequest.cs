@@ -93,7 +93,8 @@ namespace NuSysApp
             // If the chatbox is closed, make sure to notify the client about receiving a message 
             if (SessionController.Instance.SessionView.GetChatBox().Visibility.Equals(Visibility.Collapsed))
             {
-                SessionController.Instance.SessionView.IncrementUnseenMessage();
+                //TODO factor this out into the chatbox
+                //SessionController.Instance.SessionView.IncrementUnseenMessage();
             }
 
             // Chatbot stuff
