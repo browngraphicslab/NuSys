@@ -458,6 +458,11 @@ namespace NuSysApp
                         userID = dict["user_id"].ToString();
                     }
                     serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
+                    if (!validCredentials && dict.ContainsKey("error_message"))
+                    {
+                        loggedInText.Text = dict["error_message"];
+                        NewUserLoginText.Text = dict["error_message"];
+                    }
                 }
                 catch (Exception boolParsException)
                 {
@@ -554,11 +559,6 @@ namespace NuSysApp
                         NewUserLoginText.Text = "Log in failed!";
                         //     throw new Exception("Your account is probably already logged in");
                     }
-                }
-                else
-                {
-                    loggedInText.Text = "Log in failed!";
-                    NewUserLoginText.Text = "Log in failed!";
                 }
 
             }

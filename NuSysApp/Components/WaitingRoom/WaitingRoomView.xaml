@@ -172,8 +172,8 @@
             </Grid>
             <Grid Grid.Row="1" Margin="60,20,60,20">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <ListView x:Name="List" Grid.Column="0" BorderThickness="0"  Background="White" Margin="0,0,0,0" SelectionChanged="ListItemSelected">
                     <ListView.Header>
@@ -230,7 +230,7 @@
                         </Grid>
                     </Grid>
                     <Grid x:Name="PreviewPanel" Visibility="Visible">
-                        <TextBlock HorizontalAlignment="Center" FontSize="22" Foreground="{StaticResource color2}" VerticalAlignment="Center" Width="100" TextWrapping="Wrap">Select a collection for more information</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontSize="22" Foreground="{StaticResource color2}" VerticalAlignment="Center" Width="250" TextAlignment="Center"  TextWrapping="Wrap">Select a collection for more information</TextBlock>
                     </Grid>
                 </Grid>
             </Grid>
