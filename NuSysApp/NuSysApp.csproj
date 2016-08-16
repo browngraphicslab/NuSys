@@ -622,6 +622,7 @@
     <Compile Include="Network\Requests\GetAllLibraryElementsRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />

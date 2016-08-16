@@ -499,13 +499,21 @@ namespace NusysIntermediate
             /// Key in message for sending chat messages in chat requests
             /// </summary>
             public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
-            #endregion
+        #endregion
 
         #endregion RequestKeys
 
+        #region NotificationManagementKeys
+        /// <summary>
+        /// the string key used to identify the notification type of a notification being sent. 
+        /// the value for this key should be an stringified NotificationType with the .ToString() method called
+        /// </summary>
+        public static readonly string NOTIFICATION_TYPE_STRING_KEY = "notification_type";
+        #endregion NotificationManagementKeys
+
         #region SQLColumnNames
 
-            #region alias
+        #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
@@ -1137,6 +1145,20 @@ namespace NusysIntermediate
             /// However, no contents will be loaded with this request
             /// </summary>
             GetAllLibraryElementsRequest
+        }
+
+        /// <summary>
+        /// A list of the notification types sent from the server to client
+        /// </summary>
+        public enum NotificationType
+        {
+            ContentAvailable,
+            AddUser,
+            RemoveUser,
+            ContentUpdate,
+            ContentDataUpdate,
+            RemovePresentationLink,
+            AddPresentationLink
         }
 
         /// <summary>

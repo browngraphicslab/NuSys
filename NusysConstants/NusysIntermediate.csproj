@@ -38,6 +38,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="INotificationArgumentable.cs" />
     <Compile Include="IRequestArgumentable.cs" />
     <Compile Include="ModelFactories\ContentDataModelFactory.cs" />
     <Compile Include="Models\CognitiveApiModels\CognitiveApiCaptionModel.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\VideoRegionModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
+    <Compile Include="Notification.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysImageAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfDocumentAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfSegmentAnalysisModel.cs" />
