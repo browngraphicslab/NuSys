@@ -29,6 +29,11 @@ namespace NuSysApp
         /// </summary>
         public string Id { get; set; }
 
+        /// <summary>
+        /// the access that this new element will have upon creation.  
+        /// Even if this access type is public, it will be hidden if the library element's access type is private
+        /// </summary>
+        public NusysConstants.AccessType? AccessType{ get;set;}
 
         #region Required
 
@@ -102,6 +107,13 @@ namespace NuSysApp
             message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY] = Width;
             message[NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY] = LibraryElementId;
 
+            if (AccessType == null) //access type can be null because it is nullable.  If it's null (i.e. not set), default to public for now
+            {
+                message[NusysConstants.NEW_ELEMENT_REQUEST_ACCESS_KEY] = NusysConstants.AccessType.Public.ToString(); //TODO remove this later
+            }
+            else {
+                message[NusysConstants.NEW_ELEMENT_REQUEST_ACCESS_KEY] = AccessType.ToString();
+            }
             return message;
         }
     }
