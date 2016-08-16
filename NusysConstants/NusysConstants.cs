@@ -1243,6 +1243,20 @@ namespace NusysIntermediate
             return libraryElementModelId + "_" + size.ToString() + "_thumbnail";
         }
 
+        /// <summary>
+        /// This method can be used to handle single and double quotes in strings. It takes in a string 
+        /// and return the clean string.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string CheckString(string input)
+        {
+            input.Replace("'", "''");
+            input.Replace("\"", "&quot;");
+            return input;
+
+        }
+
         #endregion staticMethods
     }
 }
