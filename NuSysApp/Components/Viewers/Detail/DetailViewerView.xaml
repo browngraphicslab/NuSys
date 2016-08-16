@@ -270,9 +270,9 @@
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="400" Background="White" BorderThickness="2" BorderBrush="{StaticResource color2}">
                 <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Center">
                     <TextBlock Text="change access controls" HorizontalAlignment="Center"  Foreground="{StaticResource color3}" FontSize="25" Margin="0,30,0,30" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"></TextBlock>
-                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Private</RadioButton>
-                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Public</RadioButton>
-                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Read-Only</RadioButton>
+                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xPrivateRadioButton" Checked="XPrivateRadioButton_OnChecked" >Private</RadioButton>
+                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xPublicRadioButton" Checked="XPublicRadioButton_OnChecked">Public</RadioButton>
+                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xReadOnlyRadioButton" Checked ="XReadOnlyRadioButton_OnChecked">Read-Only</RadioButton>
                     <Button Margin="0,30,0,30" Background="{StaticResource color2}" Foreground="White"  Width="80" Height="40" HorizontalAlignment="Center" FontSize="20"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Click="OnSaveAccessClick">save</Button>
                 </StackPanel>
             </Grid>

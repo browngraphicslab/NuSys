@@ -19,12 +19,12 @@ namespace NusysIntermediate
             Data
         }
         // Properties Returned By Server
-        public string ContentID { get; set; }
+        public string LibraryElementId { get; set; }
         public ResultType Result { get; set; }
         public string ExtraInfo { get; set; }
-        public SearchResult(string contentId, ResultType type)
+        public SearchResult(string libraryElementId, ResultType type)
         {
-            ContentID = contentId;
+            LibraryElementId = libraryElementId;
             Result = type;
             ExtraInfo = string.Empty;
         }
@@ -33,12 +33,10 @@ namespace NusysIntermediate
         {
         }
 
-        public SearchResult(string contentId, ResultType type, string info) : this(contentId, type)
+        public SearchResult(string libraryElementId, ResultType type, string info) : this(libraryElementId, type)
         {
             ExtraInfo = info;
         }
-
-
-        //todo add methods for displaying the result based on given info
+        
     }
 }

@@ -44,7 +44,7 @@ namespace NusysServer
                 return new Message() { {NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON, null} };
             }
 
-            return new Message() { {NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON, returnedMessages.First().GetString(NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY)}};
+            return new Message() { {NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON, returnedMessages.First().GetString(NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY)}};
         }
     }
 }

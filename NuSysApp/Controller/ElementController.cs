@@ -155,7 +155,7 @@ namespace NuSysApp
         /// <param name="newAccessType"></param>
         public void SetAccessType(NusysConstants.AccessType newAccessType)
         {
-            //TODO actually set the access type after we get that property in the model
+            Model.AccessType = newAccessType;
 
             //fire the event so all listener will know of the new access type
             AccessChanged?.Invoke(this, newAccessType);

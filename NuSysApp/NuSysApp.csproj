@@ -327,6 +327,9 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
+    <Compile Include="Components\Regions\TemporaryImageRegionView.xaml.cs">
+      <DependentUpon>TemporaryImageRegionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
       <DependentUpon>VideoRegionView.xaml</DependentUpon>
     </Compile>
@@ -392,8 +395,12 @@
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
+    <Compile Include="Components\Regions\TemporaryImageRegionViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ShowHideRegionButtons.xaml.cs">
+      <DependentUpon>ShowHideRegionButtons.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
     </Compile>
@@ -416,6 +423,7 @@
     <Compile Include="Components\Viewers\FreeForm\Wrapper\AudioWrapper.xaml.cs">
       <DependentUpon>AudioWrapper.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Wrapper\IRegionHideable.cs" />
     <Compile Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml.cs">
       <DependentUpon>RectangleWrapper.xaml</DependentUpon>
     </Compile>
@@ -949,6 +957,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Regions\TemporaryImageRegionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Regions\VideoRegionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1020,6 +1032,10 @@
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ShowHideRegionButtons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
       <SubType>Designer</SubType>

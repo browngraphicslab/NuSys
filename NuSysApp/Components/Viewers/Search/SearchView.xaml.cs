@@ -182,14 +182,14 @@ namespace NuSysApp
             HideHelperText();
             foreach (var element in _openInfo) element.Visibility = Visibility.Collapsed;
 
-            if (args.ChosenSuggestion != null)
+      if (args.ChosenSuggestion != null)
             {
                 // User selected an item from the suggestion list, take an action on it here.
             }
             else
             {
                 // Use args.QueryText to determine what to do.
-                _vm.AdvancedSearch(new Query(args.QueryText));
+                _vm.AdvancedSearch(QueryArgsBuilder.GetQueryArgs(args.QueryText));
             }
         }
 

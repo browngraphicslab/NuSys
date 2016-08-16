@@ -29,6 +29,12 @@ namespace NusysIntermediate
  
         public string LibraryId { set; get; }
 
+        /// <summary>
+        /// the access type enum for this element.  
+        /// If it is private and the creator of the element wasn't the current user, the user shouldn't be able to see it
+        /// </summary>
+        public NusysConstants.AccessType AccessType { get; set; }
+
         public string ParentCollectionId { get; set; }   
 
         // TODO: Move color to higher level type
@@ -161,7 +167,10 @@ namespace NusysIntermediate
             {
                 LibraryId = props.GetString(NusysConstants.ALIAS_LIBRARY_ID_KEY, "");
             }
-
+            if (props.ContainsKey(NusysConstants.ALIAS_ACCESS_KEY))
+            {
+                AccessType = props.GetEnum<NusysConstants.AccessType>(NusysConstants.ALIAS_ACCESS_KEY);
+            }
             //TODO wtf our server refactor should have no hardcoded strings like these
             /*
             //may not need some of this stuff below

@@ -35,7 +35,7 @@ namespace NuSysApp
     ///     xClippingWrapper.LibraryElementController = _vm.LibraryElementController;
     /// 
     /// </summary>
-    public sealed partial class RectangleWrapper : UserControl, INuSysDisposable
+    public sealed partial class RectangleWrapper : UserControl, INuSysDisposable, IRegionHideable
     {
 
         /// <summary>
@@ -393,7 +393,46 @@ namespace NuSysApp
                 _selectedRegion = null;
             }
         }
-
+        /// <summary>
+        /// This allows us to add the temporary regions to the wrapper  
+        /// </summary>
+        /// <param name="view"></param>
+        public void AddTemporaryRegion(TemporaryImageRegionView view)
+        {
+            xTemporaryClippingCanvas.Items.Add(view);
+        }
+        /// <summary>
+        /// This iterates through all of the temporary regions and destroys them
+        /// </summary>
+        public void ClearTemporaryRegions()
+        {
+            foreach (var view in xTemporaryClippingCanvas.Items)
+            {
+                (view as TemporaryImageRegionView).Dispose(this, EventArgs.Empty);
+            }
+            xTemporaryClippingCanvas.Items.Clear();
+            
+        }
+        /// <summary>
+        /// This takes in a temporaryregionviewmodel and compares it to the rest of the view models in the list so that it
+        /// can find the correct one and remove it
+        /// </summary>
+        /// <param name="vm"></param>
+        public void RemoveTemporaryRegion(TemporaryImageRegionViewModel vm)
+        {
+            foreach(FrameworkElement view in new HashSet<FrameworkElement>(xTemporaryClippingCanvas.Items.Select(e => e as FrameworkElement)))
+            {
+                var dc = view.DataContext as TemporaryImageRegionViewModel;
+                if (dc.NormalizedHeight == vm.NormalizedHeight &&
+                    dc.NormalizedWidth  == vm.NormalizedWidth &&
+                    dc.NormalizedTopLeftPoint == vm.NormalizedTopLeftPoint)
+                {
+                    (view as TemporaryImageRegionView).Dispose(this, EventArgs.Empty);
+                    xTemporaryClippingCanvas.Items.Remove(view);
+                } 
+            }
+        }
+        ///
         public void RemoveRegionView(string regionLibraryElementId)
         {
                 foreach (var item in xClippingCanvas.Items)
@@ -410,7 +449,7 @@ namespace NuSysApp
                     }
                 }
         }
-
+        
         public double GetWidth()
         {
             return this.ActualWidth;
@@ -462,7 +501,7 @@ namespace NuSysApp
                 return;
             }
             var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
-            switch (regionViewModel.Model.Type)
+            switch (regionViewModel?.Model.Type)
             {
                 case NusysConstants.ElementType.ImageRegion:
                     var imageRegionView = item as ImageRegionView;
@@ -487,7 +526,7 @@ namespace NuSysApp
                 return;
             }
             var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
-            switch (regionViewModel.Model.Type)
+            switch (regionViewModel?.Model.Type)
             {
                 case NusysConstants.ElementType.ImageRegion:
                     var imageRegionView = item as ImageRegionView;
@@ -499,6 +538,51 @@ namespace NuSysApp
                     break;
                 default:
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Makes every single region in the wrapper visible
+        /// </summary>
+        public void ShowAllRegions()
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionView = item as FrameworkElement;
+                regionView.Visibility = Visibility.Visible;
+            }
+        }
+        /// <summary>
+        /// Makes every region in this wrapper invisible
+        /// </summary>
+        public void HideAllRegions()
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionView = item as FrameworkElement;
+                regionView.Visibility = Visibility.Collapsed;
+            }
+        }
+        /// <summary>
+        /// Shows only direct descendants of the currently displayed LEM
+        /// </summary>
+        public void ShowOnlyChildrenRegions()
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                var regionModel = regionViewModel.Model as Region;
+                var region = item as FrameworkElement;
+
+                if (regionViewModel.Model.ClippingParentId == Controller.LibraryElementModel.LibraryElementId)
+                {
+                    region.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    region.Visibility = Visibility.Collapsed;
+                }
+
             }
         }
 

@@ -19,6 +19,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using NusysIntermediate;
+using Image = SharpDX.Direct2D1.Image;
 
 namespace NuSysApp
 {
@@ -70,7 +71,12 @@ namespace NuSysApp
 
         private void ImageSourceOnImageOpened(object sender, RoutedEventArgs routedEventArgs)
         {
-            SetSize(ImageSource.PixelWidth, ImageSource.PixelHeight);
+            var imageWidth = (double) ImageSource.PixelWidth;
+            var imageHeight = (double)ImageSource.PixelHeight;
+            var ratio = imageWidth > imageHeight ?
+            imageWidth/Model.Width : imageHeight/Model.Height;
+
+            SetSize(ImageSource.PixelWidth/ratio, ImageSource.PixelHeight/ratio);
         }
 
         private async void LibraryElementModelOnOnLoaded(object sender)
@@ -130,7 +136,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (pageNumber >= (content.PageUrls.Count))
+            if (pageNumber >= (content.PageCount))
             {
                 return;
             }

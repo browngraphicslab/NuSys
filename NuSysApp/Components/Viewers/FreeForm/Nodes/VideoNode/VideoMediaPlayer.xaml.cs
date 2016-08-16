@@ -45,7 +45,7 @@ namespace NuSysApp
         public TimelineMarker StartMarker { set; get; }
         public TimelineMarker EndMarker { set; get; }
         public Binding PositionBinding { get; set; }
-
+        public AudioWrapper AudioWrapper => xAudioWrapper;
         public MediaElement MediaPlayer => this.MediaElement;
         public ProgressBar ScrubBar => this.scrubBar;
         private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)

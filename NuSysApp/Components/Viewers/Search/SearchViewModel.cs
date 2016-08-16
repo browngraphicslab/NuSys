@@ -81,7 +81,7 @@ namespace NuSysApp
             SearchResultsListVisibility = Visibility.Collapsed;
         }
 
-        public async void AdvancedSearch(Query searchQuery)
+        public async void AdvancedSearch(QueryArgs searchQuery)
         {
 
             // because sorting the actual observable collection breaks binding
@@ -105,10 +105,10 @@ namespace NuSysApp
                 foreach (var result in searchResults)
                 {
 
-                    if (idResult.ContainsKey(result.ContentID))
+                    if (idResult.ContainsKey(result.LibraryElementId))
                     {
                         //Todo possibly weight importance by result type
-                        idResult[result.ContentID].IncrementImportance();
+                        idResult[result.LibraryElementId].IncrementImportance();
                     }
                     else
                     {

@@ -10,7 +10,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         #region RequestManagementKeys
 
@@ -129,7 +129,7 @@ namespace NusysIntermediate
             public static readonly string SEARCH_REQUEST_SERIALIZED_QUERY_KEY = "query_json";
 
             /// <summary>
-            /// The key that will hold the json-serialized version of the returned SearchResults class.  
+            /// The key that will hold the json-serialized version of the returned list of SearchResults class.  
             /// The search resuls can be deserialized and fetched from the search request.
             /// </summary>
             public static readonly string SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY = "search_results_json";

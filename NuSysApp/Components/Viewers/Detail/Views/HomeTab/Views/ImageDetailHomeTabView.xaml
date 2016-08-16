@@ -21,6 +21,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Border x:Name="xBorder" BorderBrush="{StaticResource color6}"   HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -36,7 +37,9 @@
 
             </Grid>
         </Border>
-        <local:AddToCollectionButton Grid.Row="1"/>
+        <Button Grid.Row="1" Tapped="Button_Tapped">I think I put this here</Button>
+        <local:AddToCollectionButton Grid.Row="2"/>
+        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="2"></local:ShowHideRegionButtons>
     </Grid>
 </UserControl>
 

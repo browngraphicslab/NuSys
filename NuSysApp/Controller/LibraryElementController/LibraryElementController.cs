@@ -229,7 +229,7 @@ namespace NuSysApp
         /// <param name="newAccessType"></param>
         public void SetAccessType(NusysConstants.AccessType newAccessType)
         {
-            //TODO set the model's access type after the merge and the access type exists in the LEM base class
+            LibraryElementModel.AccessType = newAccessType;
             AccessTypeChanged?.Invoke(this, newAccessType);
             if (!_blockServerInteraction)
             {

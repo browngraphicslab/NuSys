@@ -42,8 +42,13 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
+<<<<<<< HEAD
             ResetTables(true);
             SetUpTables();
+=======
+            //ResetTables(true);
+            //SetUpTables();
+>>>>>>> 9e973c4c3cb1099ae4c5f1b094fce36d86e732f0
 
             TestFunc();
         }
@@ -138,14 +143,14 @@ namespace NusysServer
         {
             if (delete)
             {
-                var dropPresentationLinks = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink));
-                var dropAliases = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
-                var dropLibraryElements = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
-                var dropProperties = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
-                var dropMetadata = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
-                var dropContent = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
-                var dropAnalysisModels = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
-                var dropUsers = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
+                var dropPresentationLinks = MakeCommand("IF OBJECT_ID('dbo."+ Constants.GetTableName(Constants.SQLTableType.PresentationLink) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink));
+                var dropAliases = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Alias) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
+                var dropLibraryElements = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
+                var dropProperties = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Properties) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
+                var dropMetadata = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Metadata) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
+                var dropContent = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Content) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
+                var dropAnalysisModels = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.AnalysisModels) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
+                var dropUsers = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Users) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
 
                 dropPresentationLinks.ExecuteNonQuery();
                 dropAliases.ExecuteNonQuery();
@@ -292,9 +297,15 @@ namespace NusysServer
             }
             var cmdToDeleteFromLibraryElementTable = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
 
+            //TODO, add in aliases deleting
+
             // Deletes all the related metadata from the metadata table.
-            var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
-            return cmdToDeleteFromLibraryElementTable.ExecuteCommand() && cmdToDeleteRelatedMetadata.ExecuteCommand();
+            //var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
+            //cmdToDeleteRelatedMetadata.ExecuteCommand(); 
+            // DOES NOT WORK  
+            //TODO, harsh fix this
+
+            return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }
 
         /// <summary>

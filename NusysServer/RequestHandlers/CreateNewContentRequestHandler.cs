@@ -64,7 +64,7 @@ namespace NusysServer
                 if (addContentToDatabaseMessage.ContainsKey(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY))
                 {
                     var elementType = message.GetEnum<NusysConstants.ElementType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY);
-                    var contentUrl = message.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY);
+                    var contentUrl = addContentToDatabaseMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY);
                     MediaProcessor.ProcessCreateContentDataModelRequestMedia(message, newContentDataModelId, contentUrl, elementType,senderHandler);
                 }
             }
@@ -89,7 +89,7 @@ namespace NusysServer
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY];
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_TYPE_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY];
 
-            addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = FileHelper.CreateDataFile(originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY), contentType, originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES));
+            addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = FileHelper.CreateDataFile(originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY), contentType, originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES), originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION));
             return addContentToDatabaseMessage;
         }
 

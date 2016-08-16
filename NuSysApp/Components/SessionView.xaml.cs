@@ -36,7 +36,7 @@ namespace NuSysApp
         public IModable ModeInstance => _modeInstance;
 
 
-        private ContentImporter _contentImporter = new ContentImporter();
+        //private ContentImporter _contentImporter = new ContentImporter();
 
 
         public bool IsPenMode { get; private set; }
@@ -100,10 +100,6 @@ namespace NuSysApp
 
             Loaded += OnLoaded;
 
-            _contentImporter.ContentImported += delegate (List<string> markdown)
-            {
-
-            };
             MainCanvas.SizeChanged += Resize;
             //_glass = new MGlass(MainCanvas);
         }
