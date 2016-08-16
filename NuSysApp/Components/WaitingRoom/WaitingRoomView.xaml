@@ -267,9 +267,8 @@
                         </Underline>
                     </TextBlock>
                 </HyperlinkButton>
+                <TextBlock Name="loggedInText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"></TextBlock>
             </StackPanel>
-
-            <TextBlock Name="loggedInText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,450,0,0"></TextBlock>
 
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
                 <TextBlock Visibility="Visible" x:Name="ServerNameText" Width="350" Height="20" 

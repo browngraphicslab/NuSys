@@ -474,6 +474,7 @@ namespace NuSysApp
                         SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
 
                         loggedInText.Text = "Logged In!";
+                        NewUserLoginText.Text = "Logged In!";
                         _collectionList = new List<LibraryElementModel>();
                         Init();
                         NewWorkspaceButton.IsEnabled = true;
@@ -548,11 +549,13 @@ namespace NuSysApp
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
                         loggedInText.Text = "Log in failed!";
+                        NewUserLoginText.Text = "Log in failed!";
                         //     throw new Exception("Your account is probably already logged in");
                     }
                 }
                 else
                 {
+                    loggedInText.Text = "Log in failed!";
                     NewUserLoginText.Text = "Log in failed!";
                 }
 
