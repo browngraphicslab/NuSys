@@ -38,6 +38,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClient.cs" />
     <Compile Include="IRequestArgumentable.cs" />
     <Compile Include="ModelFactories\AnalysisModelFactory.cs" />
     <Compile Include="ModelFactories\ContentDataModelFactory.cs" />

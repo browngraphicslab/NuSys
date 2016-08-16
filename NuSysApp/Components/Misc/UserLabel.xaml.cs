@@ -34,7 +34,7 @@ namespace NuSysApp
                 this.InitializeComponent();
                 _user = user;
                 UserButton.Background = new SolidColorBrush(_user.Color);
-                var content = _user.Name ?? _user.ID;
+                var content = _user.Name ?? _user.UserID;
                 if (content != "Me")
                 {
                     if (content.Length == 0)

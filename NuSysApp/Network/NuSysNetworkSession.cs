@@ -373,10 +373,10 @@ namespace NuSysApp
         }
         public void AddNetworkUser(NetworkUser user)
         {
-            var add = !NetworkMembers.ContainsKey(user.ID);
+            var add = !NetworkMembers.ContainsKey(user.UserID);
             if (add)
             {
-                NetworkMembers[user.ID] = user;
+                NetworkMembers[user.UserID] = user;
                 OnNewNetworkUser?.Invoke(user);
             }
         }

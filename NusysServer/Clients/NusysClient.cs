@@ -10,7 +10,7 @@ using NusysIntermediate;
 
 namespace NusysServer
 {
-    public class NusysClient
+    public class NusysClient : BaseClient
     {
         /// <summary>
         ///  The dictionary of Active users. 
@@ -27,11 +27,6 @@ namespace NusysServer
         public static ConcurrentDictionary<string, NusysClient> PreSessionClients = new ConcurrentDictionary<string, NusysClient>();
 
         /// <summary>
-        /// the double hashed username of this user.
-        /// </summary>
-        public string UserID { get; set; }
-
-        /// <summary>
         /// the stringified password salt applied ot the singly-hashed password
         /// </summary>
         public string Salt { get; set; }
@@ -40,16 +35,6 @@ namespace NusysServer
         /// the double hashed and singly salted password of this user
         /// </summary>
         public string Password { get; set; }
-
-        /// <summary>
-        /// the list of ten or fewer most recently visited collection Id's
-        /// </summary>
-        public List<string> LastVisitedCollections { get; set; }
-
-        /// <summary> 
-        /// the display name of the current user
-        /// </summary>
-        public string DisplayName { get; set; }
 
         /// <summary>
         /// static method used to add a session id and client to the list of waiting clients.  
@@ -69,16 +54,17 @@ namespace NusysServer
         /// </summary>
         /// <param name="userMessage"></param>
         /// <returns></returns>
-        public static NusysClient CreateFromDatabaseMessage(Message userMessage)
+        public static NusysClient CreateFromDatabaseMessage(Message databaseMessage)
         {
-            //create the new user based off of databse keys
+            var baseClient = BaseClient.CreateFromDatabaseMessage(databaseMessage);
+            //create the new user based off of database keys
             var user = new NusysClient()
             {
-                DisplayName = userMessage.GetString(NusysConstants.USERS_TABLE_USER_DISPLAY_NAME_KEY),
-                LastVisitedCollections = userMessage.GetList<string>(NusysConstants.USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY),
-                UserID = userMessage.GetString(NusysConstants.USERS_TABLE_HASHED_USER_ID_KEY),
-                Password = userMessage.GetString(NusysConstants.USERS_TABLE_HASHED_PASSWORD_KEY),
-                Salt = userMessage.GetString(NusysConstants.USERS_TABLE_SALT_KEY)
+                DisplayName = baseClient.DisplayName,
+                UserID = baseClient.UserID,
+                LastVisitedCollections = baseClient.LastVisitedCollections,
+                Password = databaseMessage.GetString(NusysConstants.USERS_TABLE_HASHED_PASSWORD_KEY),
+                Salt = databaseMessage.GetString(NusysConstants.USERS_TABLE_SALT_KEY)
             };
             return user;
         }
