@@ -32,7 +32,7 @@ namespace NusysServer.Util.SQLQuery
                 }
                 else
                 {
-                    commandString = commandString + deleteOperatorString + kvp.Key + " = '" + kvp.Value + "' ";
+                    commandString = commandString + deleteOperatorString + " " + kvp.Key + " = '" + kvp.Value + "' ";
                 }
                 i++;
             }

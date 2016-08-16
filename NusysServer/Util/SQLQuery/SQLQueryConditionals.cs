@@ -85,7 +85,7 @@ namespace NusysServer
                 throw new Exception("cannot create a Sql Query Equals conditional with null conditionals");
             }
             Property = Constants.GetFullColumnTitle(tableType,property).First();
-            QueryString = Property + " ='" + requiredValue + "' ";
+            QueryString = Property + " ='" + NusysConstants.CheckString(requiredValue) + "' ";
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace NusysServer
                 throw new Exception("cannot create a Sql Query contains conditional with null conditionals or no possible values");
             }
             Property = Constants.GetTableName(tableType) + "." + property;
-            PossibleValues = possibleValues;
+            PossibleValues = possibleValues.Select(q => NusysConstants.CheckString(q));
         }
 
         /// <summary>

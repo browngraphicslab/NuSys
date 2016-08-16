@@ -232,11 +232,14 @@ namespace NusysServer
             var cleanedMessage = new Message();
             foreach (var key in acceptedKeys)
             {
+                
                 if (message.ContainsKey(key))
                 {
-                    cleanedMessage[key] = message[key];
+                    cleanedMessage[key] = NusysConstants.CheckString(message.GetString(key));
                 }
+                
             }
+
             return cleanedMessage;
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NusysIntermediate
 {
@@ -389,29 +390,29 @@ namespace NusysIntermediate
         /// <summary>
         /// key in message for library id of the element that the metadata to be deleted belongs to
         /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
         /// <summary>
         /// key in message for signifying which entry should be deleted
         /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
+        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
         #endregion DeleteMetadataRequest
 
         #region UpdateMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata to be edited belongs to
         /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
         /// <summary>
         /// key in message for signifying which entry should be edited
         /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
 
         /// <summary>
         /// key in message for signifying the new value for the entry
         /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "metadata_value_string";
         
         #endregion UpdateMetadataRequest
 
@@ -1260,6 +1261,25 @@ namespace NusysIntermediate
         public static string GetDefaultThumbnailFileName(string libraryElementModelId, ThumbnailSize size)
         {
             return libraryElementModelId + "_" + size.ToString() + "_thumbnail";
+        }
+
+        /// <summary>
+        /// This method can be used to handle single and double quotes in strings. It takes in a string 
+        /// and return the clean string.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string CheckString(string input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+            return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
+            //input.Replace("'", "''");
+            //input.Replace("\"", "&quot;");
+            //return input;
+
         }
 
         #endregion staticMethods
