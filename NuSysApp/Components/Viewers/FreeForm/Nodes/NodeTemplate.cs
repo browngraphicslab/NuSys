@@ -347,7 +347,7 @@ namespace NuSysApp
                     var hitsStartElements = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
                     // get a list of any RegionViewModels at the current point
                     var hitStartRegions = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
-                    // create a new instance of LinkLibraryElementRequestArgs, and pass in the id of the current element view model as the LibraryElementModelInId.
+                    // create a new instance of LinkLibraryElementRequestArgs, and pass in the id of the current element view model as the ElementViewModelInId.
                     var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
                     createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
                     createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
@@ -392,8 +392,8 @@ namespace NuSysApp
 
                     // create a new instance of CreateNewPresentationLinkRequestArgs
                     var createNewPresentationLinkRequestArgs = new CreateNewPresentationLinkRequestArgs();
-                    // pass in the id of the current element view model as the LibraryElementModelInId.
-                    createNewPresentationLinkRequestArgs.LibraryElementModelInId = vm.Id;
+                    // pass in the id of the current element view model as the ElementViewModelInId.
+                    createNewPresentationLinkRequestArgs.ElementViewModelInId = vm.Id;
                     // pass in the parent collection id of the element model as the parent collection id
                     createNewPresentationLinkRequestArgs.ParentCollectionId = vm.Model.ParentCollectionId;
 
@@ -402,7 +402,7 @@ namespace NuSysApp
                     {
                         first = (FrameworkElement) hitsStartElements.First();
                         var dc1 = (ElementViewModel) first.DataContext;
-                        createNewPresentationLinkRequestArgs.LibraryElementModelOutId = dc1.Id;
+                        createNewPresentationLinkRequestArgs.ElementViewModelOutId = dc1.Id;
                     }
                     else
                     {
@@ -411,7 +411,7 @@ namespace NuSysApp
                     }
 
                     // if the link is between two different libary element models then execute the create link request
-                    if (createNewPresentationLinkRequestArgs.LibraryElementModelInId != createNewPresentationLinkRequestArgs.LibraryElementModelOutId)
+                    if (createNewPresentationLinkRequestArgs.ElementViewModelInId != createNewPresentationLinkRequestArgs.ElementViewModelOutId)
                     {
                         var request = new CreateNewPresentationLinkRequest(createNewPresentationLinkRequestArgs);
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
