@@ -53,9 +53,12 @@ namespace NuSysApp
                     return;
                 }
 
-                // if this fails uncomment the line below, if this doesn't fail remove it completely
-                Debug.Assert(xRegionEditorView?.DataContext == DataContext);
-                //xRegionEditorView.DataContext = DataContext;
+                // make sure the region editor has the correct datacontext
+                if (xRegionEditorView?.DataContext != DataContext && xRegionEditorView != null)
+                {
+                    // for some reason we need to change this datacontext when we move into a new collection
+                    xRegionEditorView.DataContext = DataContext;
+                }
 
                 var vm = dataContext;
 

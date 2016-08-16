@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClient.cs" />
+    <Compile Include="INotificationArgumentable.cs" />
     <Compile Include="IRequestArgumentable.cs" />
     <Compile Include="ModelFactories\AnalysisModelFactory.cs" />
     <Compile Include="ModelFactories\ContentDataModelFactory.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Models\VideoRegionModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\AnalysisModel.cs" />
+    <Compile Include="Notification.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysImageAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfDocumentAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfSegmentAnalysisModel.cs" />

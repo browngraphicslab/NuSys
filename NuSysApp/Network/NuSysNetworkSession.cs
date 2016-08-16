@@ -29,18 +29,18 @@ namespace NuSysApp
         #region Public Members
         public string LocalIP { get; private set; }
 
-        public Dictionary<string, NetworkUser> NetworkMembers = new Dictionary<string, NetworkUser>();
+        public ConcurrentDictionary<string, NetworkUser> NetworkMembers = new ConcurrentDictionary<string, NetworkUser>();
 
         public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
+
+        public delegate void UserDroppedEventHandler(string userId);
+        public event UserDroppedEventHandler OnNetworkUserDropped;
+
         public LockController LockController;
         #endregion Public Members
         #region Private Members
-        private HashSet<string> NetworkMemberIPs
-        {
-            get { return new HashSet<string>(); }//_networkSession.NetworkMembers; }
-        }
-        private ConcurrentDictionary<string, ManualResetEvent> _requestEventDictionary = new ConcurrentDictionary<string, ManualResetEvent>();
+
         //private NetworkSession _networkSession;
         private string _hostIP;
         private ServerClient _serverClient;
@@ -53,69 +53,10 @@ namespace NuSysApp
             _serverClient = new ServerClient();
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
-            _serverClient.OnClientDrop += ClientDrop;
-            _serverClient.OnContentAvailable += ContentAvailable;
-            _serverClient.OnClientJoined += AddNetworkUser;
-            _serverClient.OnContentUpdated += ContentUpdated;
-            _serverClient.PresentationLinkAdded += PresentationLinkAdded;
-            _serverClient.PresentationLinkRemoved += PresentationLinkRemoved;
+            _serverClient.OnNewNotification += HandleNotification;
             LockController = new LockController(_serverClient);
         }
-
-        private void PresentationLinkRemoved(object sender, string id1, string id2)
-        {
-            UITask.Run(delegate
-            {
-                var presentationLinks =
-                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                        atom => atom.DataContext is PresentationLinkViewModel);
-                List<FrameworkElement> toRemove = new List<FrameworkElement>();
-                foreach (var element in presentationLinks)
-                {
-                    var model = ((PresentationLinkViewModel)element.DataContext).Model;
-                    if (model?.InElementId == id1 && model?.OutElementId == id2)
-                    {
-                        Debug.Assert(PresentationLinkViewModel.Models != null);
-                        toRemove.Add(element);
-                    }
-                }
-                foreach (FrameworkElement element in toRemove)
-                {
-                    var model = ((PresentationLinkViewModel)element.DataContext).Model;
-                    PresentationLinkViewModel.Models.Remove(model);
-                    ((PresentationLinkViewModel)element.DataContext).FireDisposed(this, EventArgs.Empty);
-                }
-            });
-        }
-
-
-        private void PresentationLinkAdded(object sender, string id1, string id2)
-        {
-            if (SessionController.Instance.IdToControllers.ContainsKey(id1) &&
-                SessionController.Instance.IdToControllers.ContainsKey(id2))
-            {
-                UITask.Run(delegate
-                {
-                    var presentationlink = new PresentationLinkModel();
-                    presentationlink.InElementId = id1;
-                    presentationlink.OutElementId = id2;
-                    var vm = new PresentationLinkViewModel(presentationlink);
-                    Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
-
-                    // If there exists a presentation link between two element models, return and do not create a new one
-                    if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == id1 && item.OutElementId == id2) != null ||
-                        PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == id1 && item.InElementId == id2) != null)
-                    {
-                        return;
-                    }
-
-                    // create a new presentation link
-                    PresentationLinkViewModel.Models.Add(presentationlink);
-                    new PresentationLinkView(vm);
-                });
-            }
-        }
-
+        
         #region Requests
 
         public async Task ExecuteRequestLocally(Request request)
@@ -147,6 +88,7 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// DEPRECATED
         /// this will simply spin off a new thread and execute the request you sent without waiting for server processing
         /// ONLY USE THIS IN SPECIAL OCCASIONS
         /// </summary>
@@ -161,83 +103,39 @@ namespace NuSysApp
             });
         }
 
-        private async void ContentAvailable(Dictionary<string, object> dict)
+        /// <summary>
+        /// the private event handler for notifications.
+        /// Whenever the server notifies us, it will be routed here. 
+        /// We should switch on the type of notification and handle them accordingly here;
+        /// </summary>
+        /// <param name="notificationMessag"></param>
+        private void HandleNotification(Message notificationMessage)
         {
-            if (dict.ContainsKey("id"))
+            Debug.Assert(notificationMessage.ContainsKey(NusysConstants.NOTIFICATION_TYPE_STRING_KEY));
+
+            //get the notification type
+            var type = notificationMessage.GetEnum<NusysConstants.NotificationType>(NusysConstants.NOTIFICATION_TYPE_STRING_KEY);
+
+            NotificationHandler handler;
+            switch (type)
             {
-                var id = (string)dict["id"];
-                string title = null;
-                NusysConstants.ElementType type = NusysConstants.ElementType.Text;
-                var metadata = new Dictionary<string, MetadataEntry>();
-                if (dict.ContainsKey("title"))
-                {
-                    title = (string)dict["title"];
-                }
-                if (dict.ContainsKey("type"))
-                {
-                    type = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), (string)dict["type"], true);
-                }
-                if (dict.ContainsKey("metadata"))
-                {
-                    metadata = JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString());
-                }
-
-                UITask.Run(async delegate {
-                    if (SessionController.Instance.ContentController.GetLibraryElementModel(id) != null)
-                    {
-                        var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
-                        //Debug.Assert(title != null);
-                        controller.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
-                    }
-                    else
-                    {/*
-                        if (type == ElementType.Collection)
-                        {
-                            SessionController.Instance.ContentController.Add(
-                                new CollectionLibraryElementModel(id, metadata, title));
-                        }
-                        else
-                        {
-                            SessionController.Instance.ContentController.Add(
-                                new LibraryElementModel(id, type, metadata, title));
-                        }*/
-                        var request = new CreateNewLibraryElementRequest(new Message(dict));
-                        await ExecuteRequestLocally(request);
-                    }
-                    if (ServerClient.NeededLibraryDataIDs.Contains(id))
-                    {
-                        Task.Run(async () =>
-                        {
-                            await FetchContentDataModelAsync(id);
-                            ServerClient.NeededLibraryDataIDs.Remove(id);
-                        });
-
-                    }
-                    if (dict.ContainsKey("favorited"))
-                    {
-                        bool favorited = bool.Parse(dict["favorited"].ToString());
-                        var model = SessionController.Instance.ContentController.GetLibraryElementModel(id);
-                        if (model != null)
-                        {
-                            model.Favorited = favorited;
-                        }
-                    }
-                    var message = new Message(dict);
-                    SessionController.Instance.ContentController.GetLibraryElementController(id).UnPack(message);
-                });
+                case NusysConstants.NotificationType.AddUser:
+                    handler = new AddUserNotificationHandler();
+                    break;
+                case NusysConstants.NotificationType.RemoveUser:
+                    handler = new DropUserNotificationHandler();
+                    break;
+                default:
+                    throw new Exception("we don't handle that notification type yet");
             }
+            handler.HandleNotification(notificationMessage);
         }
+
         private async void OnMessageRecieved(Message m)
         {
-            try
-            {
-                await ProcessIncomingRequest(m);
-            }
-            catch (Exception)
-            {
-
-            }
+            await ProcessIncomingRequest(m);
         }
+
         private async Task ProcessIncomingRequest(Message message)
         {
             Request request;
@@ -253,11 +151,6 @@ namespace NuSysApp
             catch (Exception e)
             {
                 throw new InvalidRequestTypeException();
-            }
-            if (requestType == NusysConstants.RequestType.SystemRequest)
-            {
-                await ProcessIncomingSystemRequest(message);
-                return;
             }
             //switch statement used to switch on the element type and create a request from it.
             //NOT ALL REQUEST TYPES SHOULD BE HERE
@@ -318,84 +211,18 @@ namespace NuSysApp
             {
                 await request.ExecuteRequestFunction();//switches to UI thread
             });
-            await ResumeWaitingRequestThread(message);
         }
 
-        private async Task ResumeWaitingRequestThread(Message message)
-        {
-            if (message.ContainsKey("system_local_request_id"))
-            {
-                var local_id = message.GetString("system_local_request_id");
-                if (_requestEventDictionary.ContainsKey(local_id))
-                {
-                    var mre = _requestEventDictionary[local_id];
-                    ManualResetEvent outMre;
-                    _requestEventDictionary.TryRemove(local_id, out outMre);
-                    mre.Set();
-                }
-            }
-        }
-        private async Task ProcessIncomingSystemRequest(Message message)
-        {
-            SystemRequest request;
-            SystemRequest.SystemRequestType requestType;
-            if (!message.ContainsKey("system_request_type"))
-            {
-                throw new NoRequestTypeException("No system request type was found for the system request");
-            }
-            try
-            {
-                requestType = (SystemRequest.SystemRequestType)Enum.Parse(typeof(SystemRequest.SystemRequestType), message.GetString("system_request_type"));
-            }
-            catch (Exception e)
-            {
-                throw new InvalidRequestTypeException();
-            }
-            switch (requestType)
-            {
-                case SystemRequest.SystemRequestType.RemoveClient:
-                    request = new RemoveClientSystemRequest(message);
-                    break;
-                default:
-                    throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
-            }
-            await request.ExecuteSystemRequestFunction(this, _serverClient);
-        }
         #endregion Requests
-        private void ContentUpdated(object sender, LibraryElementController controller, Message message)
+
+        public void FireAddNetworkUser(NetworkUser user)
         {
-            controller.UnPack(message);
-        }
-        
-        public async Task<List<Message>> GetCollectionAsElementMessages(string id)
-        {
-            return await _serverClient.GetWorkspaceAsElementMessages(id);
-        }
-        public void AddNetworkUser(NetworkUser user)
-        {
-            var add = !NetworkMembers.ContainsKey(user.UserID);
-            if (add)
-            {
-                NetworkMembers[user.UserID] = user;
-                OnNewNetworkUser?.Invoke(user);
-            }
-        }
-        public async Task DropNetworkUser(string ip)
-        {
-            if (ip != null)
-            {
-                if (NetworkMembers.ContainsKey(ip))
-                {
-                    var user = NetworkMembers[ip];
-                    NetworkMembers.Remove(ip);
-                    user.Remove();
-                }
-            }
+            OnNewNetworkUser?.Invoke(user);
         }
 
-        public async void ClientDrop(string id)
+        public void FireClientDrop(string userId)
         {
-            await DropNetworkUser(id);
+            OnNetworkUserDropped?.Invoke(userId);
         }
 
         /// <summary>
@@ -419,7 +246,7 @@ namespace NuSysApp
         }
         public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
         {
-            return (await _serverClient.AdvancedSearchOverLibraryElements(QueryArgsBuilder.GetQueryArgs(searchText))).Select(q => q.LibraryElementId);
+            return (await AdvancedSearchOverLibraryElements(QueryArgsBuilder.GetQueryArgs(searchText))).Select(q => q.LibraryElementId);
         }
 
         public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(QueryArgs searchQuery)
@@ -428,12 +255,6 @@ namespace NuSysApp
             await ExecuteRequestAsync(request);
             return request.GetReturnedResults();
         }
-
-        public async Task<string> DuplicateLibraryElement(string libraryElementId)
-        {
-            return await _serverClient.DuplicateLibraryElement(libraryElementId);
-        }
-
         /// <summary>
         /// Downloads a docx for the specified library ID and returns the temporary docx file path,
         /// null if an error occurred like the document doesn't exist;
@@ -473,80 +294,6 @@ namespace NuSysApp
             return libraryElementModels;
         }
 
-        /// <summary>
-        /// Returns a mapping of regionID to LibraryElement ContentId of its parent
-        /// </summary>
-        /// <param name="collectionContentId"></param>
-        /// <returns></returns>
-        public async Task<Dictionary<string, string>> GetRegionMapping(string collectionContentId)
-        {
-            return await _serverClient.GetRegionMapping(collectionContentId);
-        }
-
-        /// <summary>
-        ///   Will add a presentation link to the server.  
-        ///   Will return true if successful, false if not
-        ///  The id1 and id2 are ElementModel ID's, not LibraryElementModelId's
-        ///  The contentId is the collection of the workspace that both of the nodes should be on
-        /// </summary>
-        /// <param name="id1"></param>
-        /// <param name="id2"></param>
-        /// <param name="contentId"></param>
-        /// <returns></returns>
-        public async Task<bool> AddPresentationLink(string id1, string id2, string contentId)
-        {
-            return await _serverClient.AddPresentationLink(contentId, id1, id2);
-        }
-        /// <summary>
-        ///  Will remove a presentation link from the server
-        ///  Will return true if successful, false if not
-        ///  The id1 and id2 are ElementModel ID's, not LibraryElementModelId's
-        /// </summary>
-        /// <param name="id1"></param>
-        /// <param name="id2"></param>
-        /// <returns></returns>
-        public async Task<bool> RemovePresentationLink(string id1, string id2)
-        {
-            return await _serverClient.RemovePresentationLink(id1, id2);
-        }
-        /// <summary>
-        /// Will fetch and return a hashset of presentation links for a given collection
-        /// the presentation links ID's will be elementModel ContentId's
-        /// </summary>
-        /// <param name="contentId"></param>
-        /// <returns></returns>
-        public async Task<HashSet<PresentationLinkModel>> GetPresentationLinks(string contentId)
-        {
-            return await _serverClient.GetPresentationLinks(contentId);
-        }
-        public async Task<bool> AddRegionToContent(string contentId, Region region)
-        {
-            if (contentId == null || region == null)
-            {
-                return false;
-            }
-            return await _serverClient.AddRegionToContent(contentId, region);
-        }
-        public async Task<bool> RemoveRegionFromContent(Region region)
-        {
-            if (region == null)
-            {
-                return false;
-            }
-            return await _serverClient.RemoveRegionFromContent(region);
-        }
-
-        public async Task UpdateRegion(Region region)
-        {
-            if (region == null || _regionUpdateDebounceList.Contains(region.LibraryElementId))
-            {
-                return;
-            }
-            _regionUpdateDebounceList.Add(region.LibraryElementId);
-            await Task.Delay(300);
-            _regionUpdateDebounceList.Remove(region.LibraryElementId);
-            await _serverClient.UpdateRegion(region);
-        }
     }
     public class NoRequestTypeException : Exception
     {

@@ -10,5 +10,6 @@ namespace NusysIntermediate
     {
         public IEnumerable<string> AliasStrings;
         public IEnumerable<string> ContentMessages;
+        public IEnumerable<string> PresentationLinks;
     }
 }

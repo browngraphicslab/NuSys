@@ -262,7 +262,7 @@ namespace NuSysApp
                 highlight.Visibility = Visibility.Visible;
                 highlight.BorderBrush = new SolidColorBrush(user.Color);
                 userName.Foreground = new SolidColorBrush(user.Color);
-                userName.Text = user?.Name ?? "";
+                userName.Text = user?.DisplayName ?? "";
             }
             
             
@@ -381,7 +381,7 @@ namespace NuSysApp
             Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId1));
             Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId2));
 
-            SessionController.Instance.NuSysNetworkSession.AddPresentationLink(elementId1, elementId2, currentCollection);
+            //SessionController.Instance.NuSysNetworkSession.AddPresentationLink(elementId1, elementId2, currentCollection);
         }
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {

@@ -40,17 +40,36 @@ namespace NusysServer
 
             var contentDataModels = cleaned.Select(m => ContentDataModelFactory.CreateFromMessage(m));
             var aliases = cleaned.Select(m => ElementModelFactory.CreateFromMessage(m));
-
             //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestReturnArgs();
 
             returnArgs.ContentMessages = contentDataModels.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.AliasStrings = aliases.Select(m => JsonConvert.SerializeObject(m));
+            returnArgs.PresentationLinks = GetAllPresentationLinks(workspaceId);
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY] = returnArgs;
             return returnMessage;
         }
+
+        private List<string> GetAllPresentationLinks(string workspaceId)
+        {
+            SQLSelectQuery selectPresentationLinksQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.PresentationLink), new SqlQueryEquals(Constants.SQLTableType.PresentationLink, NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY, workspaceId));
+            var linksRows = selectPresentationLinksQuery.ExecuteCommand();
+            List<string> serializedPresentationLinkModels = new List<string>();
+            foreach (var linkRow in linksRows)
+            {
+                PresentationLinkModel linkModel = new PresentationLinkModel();
+                linkModel.AnnotationText = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY);
+                linkModel.InElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY);
+                linkModel.OutElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY);
+                linkModel.LinkId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY);
+                linkModel.ParentCollectionId =
+                    linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY);
+                serializedPresentationLinkModels.Add(JsonConvert.SerializeObject(linkModel));
+            }
+            return serializedPresentationLinkModels;
+        } 
 
         /// <summary>
         /// Creates a select query for getting all information for the get entire workspace query for the specified workspace id.

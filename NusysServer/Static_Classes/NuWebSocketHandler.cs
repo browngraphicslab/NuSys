@@ -37,12 +37,32 @@ namespace NusysServer
             BroadcastNewUser(NusysClient.IDtoUsers[this]);
             foreach (var activeClient in NusysClient.IDtoUsers)
             {
-                var dict = GetUserAdditionDict(activeClient.Value);
+                var dict = GetUserAdditionNotification(activeClient.Value);
                 if (activeClient.Key != this)
                 {
-                    this.Send(dict);
+                    this.Notify(dict);
                 }
             }
+        }
+
+        /// <summary>
+        /// method that will get create a notification object that indicates the current user is joining the network.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        private static DropUserNotification GetUserRemovalNotification(NusysClient client)
+        {
+            return new DropUserNotification(new RemoveUserNotificationArgs() {ClientIdToDrop = client.UserID });
+        }
+
+        /// <summary>
+        /// method that will get create a notification object that indicates the current user is joining the network.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        private static NewUserNotification GetUserAdditionNotification(NusysClient client)
+        {
+            return new NewUserNotification(new NewUserNotificationArgs() { ClientToAdd = client});
         }
 
         /// <summary>
@@ -115,43 +135,16 @@ namespace NusysServer
 
         public static void BroadcastNewUser(NusysClient client)
         {
-            var dict = GetUserAdditionDict(client);
-            Broadcast(dict);
+            var notification = GetUserAdditionNotification(client);
+            NotifyAll(notification);
         }
 
         public static void BroadcastRemovingUser(NusysClient client)
         {
-            var dict = GetUserRemoveDict(client);
-            Broadcast(dict);
+            var notification = GetUserRemovalNotification(client);
+            NotifyAll(notification);
         }
 
-        /// <summary>
-        /// THIS SHOULD BE DEPRICATED
-        /// </summary>
-        /// <param name="client"></param>
-        /// <returns></returns>
-        private static Dictionary<string, object> GetUserAdditionDict(NusysClient client)
-        {
-            var dict = new Dictionary<string, object>();
-            //dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["notification_type"] = "add_user";
-            dict["user_id"] = client.UserID;
-            return dict;
-        }
-
-        /// <summary>
-        /// THIS SHOULD BE DEPRICATED
-        /// </summary>
-        /// <param name="client"></param>
-        /// <returns></returns>
-        private static Dictionary<string, object> GetUserRemoveDict(NusysClient client)
-        {
-            var dict = new Dictionary<string, object>();
-            //dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["notification_type"] = "remove_user";
-            dict["user_id"] = client.UserID;
-            return dict;
-        }
 
         /// <summary>
         /// to send an error message to the client.  
@@ -253,6 +246,16 @@ public static void BroadcastContentUpdate(string id, IEnumerable<string> keysToU
         }
 
         /// <summary>
+        /// method used to notify a user of a notification.  
+        /// </summary>
+        /// <param name="notification"></param>
+        public void Notify(Notification notification)
+        {
+            var m = notification.GetFinalMessage();
+            Send(m.GetSerialized());
+        }
+
+        /// <summary>
         /// sends a dictionary to the client instance
         /// </summary>
         /// <param name="dict"></param>
@@ -291,6 +294,19 @@ public static void BroadcastContentUpdate(string id, IEnumerable<string> keysToU
         private static void Broadcast(string message)
         {
             AllClients.Broadcast(message);
+        }
+
+        /// <summary>
+        /// method used to broadcast a notification to all clients that are currently connected.  
+        /// This method will just forward the ntofication to each of the NuWebSocketHandlers' Nofity methods
+        /// </summary>
+        /// <param name="notification"></param>
+        public static void NotifyAll(Notification notification)
+        {
+            foreach (var client in AllClients)
+            {
+                (client as NuWebSocketHandler)?.Notify(notification);
+            }
         }
     }
 }

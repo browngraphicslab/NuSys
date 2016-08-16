@@ -194,7 +194,7 @@ namespace NuSysApp
                         List<Message> messages = new List<Message>();
                         await Task.Run(async delegate
                         {
-                            messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                            //messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
                         });
                         Visibility = Visibility.Collapsed;
                         await
