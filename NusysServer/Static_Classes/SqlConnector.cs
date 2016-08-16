@@ -42,8 +42,8 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            ResetTables(true);
-            SetUpTables();
+            //ResetTables();
+            //SetUpTables();
 
             TestFunc();
         }
@@ -148,7 +148,7 @@ namespace NusysServer
                 var clearMetadata = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
                 var clearContent = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
 
-                clearPresentationLinks.ExecuteNonQuery();
+                //clearPresentationLinks.ExecuteNonQuery();
                 clearAliases.ExecuteNonQuery();
                 clearLibraryElements.ExecuteNonQuery();
                 clearProperties.ExecuteNonQuery();

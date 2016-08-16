@@ -263,11 +263,13 @@
     <Compile Include="Static_Classes\CognitiveApi\ICognitiveApiDocumentable.cs" />
     <Compile Include="Static_Classes\ContentController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\DocSave.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Document.cs" />
     <Compile Include="Static_Classes\DocumentComparison\IdToTFIDF.cs" />
     <Compile Include="Static_Classes\DocumentComparison\MegaDictionary.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Parser.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Stemmer.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\Parse\Stemmer2.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\StopWords.cs" />
     <Compile Include="Static_Classes\DocumentComparison\RetrieveSimilarDocs.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Tfidf\Tfidf.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NusysServer.Static_Classes.DocumentComparison;
 
 namespace NusysServer.DocumentComparison
 {
@@ -19,8 +20,6 @@ namespace NusysServer.DocumentComparison
                 documentList.Add(parseDocument(docs[i], ""));
                 Debug.WriteLine("Done with document: " + i);
             }
-
-            MegaDictionary.CleanseDictionary();
 
             return documentList;
         }
@@ -56,7 +55,7 @@ namespace NusysServer.DocumentComparison
 
                     if (!uniqueWords.Contains(word))
                     {
-                        MegaDictionary.AddToDictionary(word);
+                        DocSave.AddToMegaDictionary(word);
                         uniqueWords.Add(word);
                     }
                 }

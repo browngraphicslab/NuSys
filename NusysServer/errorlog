@@ -1,0 +1,38 @@
+8/15/2016 8:08:52 PM   Invalid object name 'library_elements_junsu'.  .Net SqlClient Data Provider     위치: System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   위치: System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   위치: System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   위치: System.Data.SqlClient.SqlDataReader.get_MetaData()
+   위치: System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   위치: System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   위치: System.Data.SqlClient.SqlCommand.ExecuteReader()
+   위치: NusysServer.SQLConnector.ExecuteSelectQueryAsMessages(SqlCommand command, Boolean includeNulls) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\SqlConnector.cs:줄 345
+   위치: NusysServer.SQLSelectQuery.ExecuteCommand() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Util\SQLQuery\SQLSelectQuery.cs:줄 92
+   위치: NusysServer.GetAllLibraryElementsRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\RequestHandlers\GetAllLibraryElementsRequestHandler.cs:줄 53
+   위치: NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\RequestRouter.cs:줄 97
+8/15/2016 8:08:54 PM   Invalid object name 'contents_junsu'.  .Net SqlClient Data Provider     위치: System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   위치: System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   위치: System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, String methodName, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite)
+   위치: System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   위치: NusysServer.SQLInsertQuery.ExecuteCommand() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Util\SQLQuery\SQLInsertQuery.cs:줄 55
+   위치: NusysServer.SQLConnector.AddContent(Message message) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\SqlConnector.cs:줄 239
+   위치: NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:줄 28
+   위치: NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\RequestRouter.cs:줄 97
+8/15/2016 8:08:57 PM   Invalid object name 'contents_junsu'.  .Net SqlClient Data Provider     위치: System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   위치: System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   위치: System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, String methodName, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite)
+   위치: System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   위치: NusysServer.SQLInsertQuery.ExecuteCommand() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Util\SQLQuery\SQLInsertQuery.cs:줄 55
+   위치: NusysServer.SQLConnector.AddContent(Message message) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\SqlConnector.cs:줄 239
+   위치: NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:줄 28
+   위치: NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\RequestRouter.cs:줄 97

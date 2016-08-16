@@ -59,14 +59,15 @@ namespace NusysServer
             if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) && message.GetEnum<NusysConstants.ContentType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) == NusysConstants.ContentType.PDF)
             {
                 var pdfText = message.GetString(NusysConstants.CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY);
+                var pdfId = addContentToDatabaseMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY);
                 if (!string.IsNullOrEmpty(pdfText))
                 {
                     if (Constants.user == "junsu") //TODO remove after junsu tests
                     {
-                        var tup = new Tuple<string, string>(pdfText,
-                            message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
-                        ContentController.Instance.ComparisonController.AddDocument(tup);
-                        ContentController.Instance.ComparisonController.CompareRandonDoc();
+                        var tup = new Tuple<string, string>(pdfText, pdfId);
+                        var title = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY);
+                        ContentController.Instance.ComparisonController.AddDocument(tup, title);
+                        ContentController.Instance.ComparisonController.CompareRandomDoc(pdfId);
                     }
                     else
                     {
