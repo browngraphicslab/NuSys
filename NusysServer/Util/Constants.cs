@@ -18,8 +18,6 @@ namespace NusysServer
 
         public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
 
-
-
         public static string WWW_ROOT {
             get
             {

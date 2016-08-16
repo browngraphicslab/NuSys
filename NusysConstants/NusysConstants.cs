@@ -386,34 +386,34 @@ namespace NusysIntermediate
         #endregion CreateNewMetadataRequest
 
             #region DeleteMetadataRequest
-        /// <summary>
-        /// key in message for library id of the element that the metadata to be deleted belongs to
-        /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+            /// <summary>
+            /// key in message for library id of the element that the metadata to be deleted belongs to
+            /// </summary>
+            public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
-        /// <summary>
-        /// key in message for signifying which entry should be deleted
-        /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
-        #endregion DeleteMetadataRequest
+            /// <summary>
+            /// key in message for signifying which entry should be deleted
+            /// </summary>
+            public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
+            #endregion DeleteMetadataRequest
+
 
             #region UpdateMetadataRequest
             /// <summary>
             /// key in message for library id of the element that the metadata to be edited belongs to
             /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+            public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
             /// <summary>
             /// key in message for signifying which entry should be edited
             /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+            public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
 
             /// <summary>
             /// key in message for signifying the new value for the entry
             /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
-
-        #endregion UpdateMetadataRequest
+            public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "metadata_value_string";
+            #endregion UpdateMetadataRequest
 
             #region GetAnalysisModelRequest
             /// <summary>
@@ -724,28 +724,28 @@ namespace NusysIntermediate
             /// <summary>
             /// 32 character ID of the library element this metadata entry belongs to
             /// </summary>
-            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "library_id";
+            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "metadata_library_id";
 
             /// <summary>
             /// the string used as the name of the 'key' column for metadata.  
             /// approximately 512 characters max
             /// PROBABLY ONLY FOR SERVER-SIDE USE
             /// </summary>
-            public static readonly string METADATA_KEY_COLUMN_KEY = "key_string";
+            public static readonly string METADATA_KEY_COLUMN_KEY = "metadata_key_string";
 
             /// <summary>
             /// the string used as the name of the 'value' column for metadata.  
             /// approximately 2048 characters max
             /// PROBABLY ONLY FOR SERVER-SIDE USE
             /// </summary>
-            public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
+            public static readonly string METADATA_VALUE_COLUMN_KEY = "metadata_value_string";
 
         /// <summary>
         /// the string used as the name of the 'mutability' column for metadata.  
-        /// approximately 2048 characters max
+        /// approximately 256 characters max
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
-        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "mutability_string";
+        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "metadata_mutability_string";
 
         /// <summary>
         /// the list of all the column names for the metadata table.
@@ -755,7 +755,8 @@ namespace NusysIntermediate
             {
                 METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY,
                 METADATA_KEY_COLUMN_KEY,
-                METADATA_VALUE_COLUMN_KEY
+                METADATA_VALUE_COLUMN_KEY,
+                METADATA_MUTABILITY_COLUMN_KEY
             };
             #endregion metadata
 

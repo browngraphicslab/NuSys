@@ -8,9 +8,12 @@ namespace NusysServer
 {
     public class SQLInsertQuery
     {
+        /// <summary>
+        /// The string used to create a sql command
+        /// </summary>
         public string CommandString{get; private set;}
         /// <summary>
-        /// creates an insert command for the table specified
+        /// creates an insert command for the table specified. The passed in column value messages are the key value pairs for the column name and the value you want to insert.
         /// </summary>
         /// <param name="tableType"></param>
         /// <param name="columnValueMessage"></param>
@@ -48,6 +51,7 @@ namespace NusysServer
         /// <summary>
         /// executes the insert command of this query. 
         /// Returns whether at least one row was populated
+        /// This executes the insert command and returns whether it was successful or not
         /// </summary>
         /// <returns></returns>
         public bool ExecuteCommand()

@@ -109,6 +109,7 @@ namespace NusysServer
             var metadataTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Metadata)+" ("+
                 NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY + " varchar(128)," +
                 NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
+                NusysConstants.METADATA_MUTABILITY_COLUMN_KEY + " varchar(256)," +
                 NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
 
             var propertiesTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties) + " (" +
@@ -292,15 +293,13 @@ namespace NusysServer
             }
             var cmdToDeleteFromLibraryElementTable = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
 
-            //TODO, add in aliases deleting
+            //Since column names for the Metadata table differ, we need to create a new message which contains the library id.
+            var metadataMessage = new Message();
+            metadataMessage[NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY] = message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY);
 
-            // Deletes all the related metadata from the metadata table.
-            //var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
-            //cmdToDeleteRelatedMetadata.ExecuteCommand(); 
-            // DOES NOT WORK  
-            //TODO, harsh fix this
-
-            return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
+            // The command below deletes all the related metadata from the metadata table.
+            var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, metadataMessage, Constants.Operator.And);
+            return cmdToDeleteFromLibraryElementTable.ExecuteCommand() && cmdToDeleteRelatedMetadata.ExecuteCommand();
         }
 
         /// <summary>

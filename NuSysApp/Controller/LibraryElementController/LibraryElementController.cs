@@ -259,10 +259,33 @@ namespace NuSysApp
             {
                 return false;
             }
+            
+            var requestArgs = new CreateNewMetadataRequestArgs();
+            requestArgs.Entry = entry;
+            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+            Task.Run(async delegate
+            {
+                var request = new CreateNewMetadataRequest(requestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.CreateLocally();
+            });
+            
+                
+            return true;
+        }
+
+        /// <summary>
+        /// Adds the metadata to the library element locally. 
+        /// Should only be called through the CreateMetadataRequest!
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public bool AddMetadataLocally(MetadataEntry entry)
+        {
             if (_libraryElementModel.Metadata == null)
             {
                 _libraryElementModel.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
-                return false;
+                //return false;
             }
 
             if (_libraryElementModel.Metadata.ContainsKey(entry.Key))
@@ -274,9 +297,9 @@ namespace NuSysApp
                 MetadataEntry outobj;
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
-            _libraryElementModel.Metadata.TryAdd(entry.Key,entry);
-            ChangeMetadata(_libraryElementModel.Metadata);
+            _libraryElementModel.Metadata.TryAdd(entry.Key, entry);
             return true;
+
         }
 
         /// <summary>
@@ -290,10 +313,31 @@ namespace NuSysApp
             {
                 return false;
             }
-            MetadataEntry outobj;
-            _libraryElementModel.Metadata.TryRemove(key, out outobj);
-            ChangeMetadata(LibraryElementModel.Metadata);
+            
+            var requestArgs = new DeleteMetadataRequestArgs();
+            requestArgs.Key = key;
+            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+
+            Task.Run(async delegate
+            {
+                var request = new DeleteMetadataRequest(requestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.DeleteLocally();
+            });
             return true;
+        }
+
+        /// <summary>
+        /// Removes the metadata locally. 
+        /// Should only be called by the RemoveMetadataRequest.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool RemoveMetadataLocally(string key)
+        {
+            MetadataEntry outobj;
+            return _libraryElementModel.Metadata.TryRemove(key, out outobj);
+            
         }
 
         /// <summary>
@@ -311,20 +355,29 @@ namespace NuSysApp
                 return false;
             }
 
-            // Updates the metadata entry
-            var newEntry = new MetadataEntry(key, values, original.Mutability);
-            _libraryElementModel.Metadata.TryUpdate(original.Key, newEntry,newEntry);
-            ChangeMetadata(FullMetadata);
+            var requestArgs = new UpdateMetadataEntryRequestArgs();
+            requestArgs.Entry = original;
+            requestArgs.NewValues = values;
+            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+
+            Task.Run(async delegate
+            {
+                var request = new UpdateMetadataEntryRequest(requestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.UpdateLocally();
+            });
             return true;
+
         }
 
         /// <summary>
-        /// This is an overload for Update Metadata that only taken in the original key instead of taking in the entire entry
+        /// Updates the specified metadata key of a library element with the provided values. 
+        /// Should only be called through the UpdateMetadataRequest.
         /// </summary>
         /// <param name="originalKey"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public bool UpdateMetadata(string originalKey, List<string> values)
+        public bool UpdateMetadataLocally(string originalKey, List<string> values)
         {
             // Error checking for the passed in parameters
             if (originalKey == null || string.IsNullOrEmpty(originalKey) || string.IsNullOrWhiteSpace(originalKey) || values == null || !_libraryElementModel.Metadata.ContainsKey(originalKey))
@@ -335,7 +388,6 @@ namespace NuSysApp
             // Updates the metadata entry
             var newEntry = new MetadataEntry(originalKey, values, MetadataMutability.MUTABLE);
             _libraryElementModel.Metadata.TryUpdate(originalKey, newEntry, newEntry);
-            ChangeMetadata(FullMetadata);
             return true;
         }
 
