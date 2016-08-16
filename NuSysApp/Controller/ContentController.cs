@@ -219,7 +219,7 @@ namespace NuSysApp
             }
 
             // Here we create the controller for this content data model and add it to the ContentController's dictionary
-            var contentDataController = new ContentDataController(contentDataModel);
+            var contentDataController = ContentDataControllerFactory.CreateFromContentDataModel(contentDataModel);
             SessionController.Instance.ContentController.AddContentDataController(contentDataController);
 
             _contentDataModels.TryAdd(contentDataModel.ContentId, contentDataModel);

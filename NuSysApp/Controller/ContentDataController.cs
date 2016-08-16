@@ -9,14 +9,16 @@ namespace NuSysApp
 {
     public class ContentDataController
     {
-        public string ContentId { get; private set; }
-        public string Data { get; private set; }
-        public NusysConstants.ContentType ContentType { get; set; }
+        public ContentDataModel ContentDataModel { get; }
 
-        public ContentDataController(string contentId, string data)
+        public ContentDataController(ContentDataModel contentDataModel)
         {
-            Data = data;
-            ContentId = contentId;
+            ContentDataModel = contentDataModel;
+        }
+
+        public void SetData(string data)
+        {
+            ContentDataModel.Data = data;
         }
     }
 }
