@@ -13,12 +13,21 @@ namespace NuSysApp
 {
     public class TemporaryImageRegionViewModel : BaseINPC
     {
-
+        /// <summary>
+        /// This is the private behind of the public height member that the temporaryregion view binds to
+        /// </summary>
         private double _height;
+        /// <summary>
+        /// This is the private behind of the public width member that the temporaryregion view binds to
+        /// </summary>
         private double _width;
-        private string _name;
+        /// <summary>
+        /// This is the disposed event that the children of the temp view listen to to get their handlers stripped from them
+        /// </summary>
         public event EventHandler Disposed;
-
+        /// <summary>
+        /// This is the height that the view binds to. It is denormalized based on the size of the wrapper
+        /// </summary>
         public double Height
         {
             get { return _height; }
@@ -28,7 +37,9 @@ namespace NuSysApp
                 RaisePropertyChanged("Height");
             }
         }
-
+        /// <summary>
+        /// this is the width that the view binds to, it is denormalized based on the size of the wrapper
+        /// </summary>
         public double Width
         {
             get { return _width; }
@@ -63,31 +74,33 @@ namespace NuSysApp
         /// actual library element model
         /// </summary>
         public DetailHomeTabViewModel HomeTabViewModel { get; set; }
-        public bool Editable { get; private set; }
-
-        public delegate void SizeChangedEventHandler(object sender, double width, double height);
-        public event SizeChangedEventHandler SizeChanged;
-
+        /// <summary>
+        /// when the size changes we want to tell the view that the location on the actual node has changed 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
-
-        private RectangleRegionLibraryElementController _regionLibraryElementController;
-
 
         public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel)
         {
             NormalizedTopLeftPoint = topLeftPoint;
             NormalizedWidth = width;
             NormalizedHeight = height;
-            Editable = false;
             RectangleWrapper = rectangleWrapper;
-            rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
-
-            RectangleWrapper.Disposed += Dispose;
             HomeTabViewModel = hometabViewModel;
+
+            rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
+            RectangleWrapper.Disposed += Dispose;
         }
 
-
+        /// <summary>
+        /// When the size of the rectangle wrapper, where the temporary regions are stored in, changes then we tell the vm to 
+        /// adjust it's size and location based on the new values
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RectangleWrapper_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {
             var containerHeight = RectangleWrapper.GetHeight();
@@ -95,19 +108,15 @@ namespace NuSysApp
             Height = NormalizedHeight * containerHeight;
             Width = NormalizedWidth * containerWidth;
             var denormalizedTopLeft = NormalizedTopLeftPoint;
-            // do not remove this location changed, it breaks everything if you do
-            SizeChanged?.Invoke(this, Width,Height);
+
             LocationChanged?.Invoke(this, new Point(NormalizedTopLeftPoint.X * containerWidth, NormalizedTopLeftPoint.Y * containerHeight));
         }
 
-
-        private void RegionController_SizeChanged(object sender, double width, double height)
-        {
-            Height = NormalizedHeight * RectangleWrapper.GetHeight();
-            Width = NormalizedWidth * RectangleWrapper.GetWidth();
-            SizeChanged?.Invoke(this, Width, Height);
-        }
-
+        /// <summary>
+        /// We dispose the temp region vm's handlers so that there aren't any memory leaks
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void Dispose(object sender, EventArgs e)
         {
             RectangleWrapper.Disposed -= Dispose;

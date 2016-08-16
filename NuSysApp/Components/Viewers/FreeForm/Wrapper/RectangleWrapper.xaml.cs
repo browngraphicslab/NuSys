@@ -190,6 +190,10 @@ namespace NuSysApp
                             break;
                     }
                 }
+                foreach(var item in xTemporaryClippingCanvas.Items)
+                {
+                    (item as TemporaryImageRegionView).RescaleComponents(WrapperTransform.ScaleX,WrapperTransform.ScaleY);
+                }
             }
             else
             {
@@ -400,6 +404,8 @@ namespace NuSysApp
         public void AddTemporaryRegion(TemporaryImageRegionView view)
         {
             xTemporaryClippingCanvas.Items.Add(view);
+            view.RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+            
         }
         /// <summary>
         /// This iterates through all of the temporary regions and destroys them
@@ -432,7 +438,7 @@ namespace NuSysApp
                 } 
             }
         }
-        ///
+        
         public void RemoveRegionView(string regionLibraryElementId)
         {
                 foreach (var item in xClippingCanvas.Items)
