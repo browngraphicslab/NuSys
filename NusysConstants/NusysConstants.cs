@@ -389,29 +389,29 @@ namespace NusysIntermediate
         /// <summary>
         /// key in message for library id of the element that the metadata to be deleted belongs to
         /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
         /// <summary>
         /// key in message for signifying which entry should be deleted
         /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
+        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
         #endregion DeleteMetadataRequest
 
         #region UpdateMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata to be edited belongs to
         /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
         /// <summary>
         /// key in message for signifying which entry should be edited
         /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
 
         /// <summary>
         /// key in message for signifying the new value for the entry
         /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "metadata_value_string";
         
         #endregion UpdateMetadataRequest
 
