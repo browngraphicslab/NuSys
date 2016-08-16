@@ -47,7 +47,7 @@ namespace NuSysApp
         /// <summary>
         /// Any initial metadata you want the library element To have
         /// </summary>
-        //public Dictionary<string, MetadataEntry> Metadata { get; set; } // TODO put back in
+        public Dictionary<string, MetadataEntry> Metadata { get; set; } // TODO put back in
 
         /// <summary>
         /// The base-64 string bytes of the small thumbnail for this new libraryElement

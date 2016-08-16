@@ -33,6 +33,8 @@ namespace NusysServer
             ForwardMessage(message, senderHandler);
             List<SQLUpdatePropertiesArgs> propertiesToAdd = new List<SQLUpdatePropertiesArgs>();
             List<SqlQueryEquals> libraryElementNonPropertiesUpdates = new List<SqlQueryEquals>();
+            //Set the last edited time stamp to now
+            message[NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY] = DateTime.UtcNow.ToString();
             foreach (var kvp in message)
             {
                 //Check if key that needs to be updated is in the properties table or library element table
