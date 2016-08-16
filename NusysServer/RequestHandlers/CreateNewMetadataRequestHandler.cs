@@ -71,7 +71,7 @@ namespace NusysServer
             messageToPassInQuery[NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY] = libraryid;
             messageToPassInQuery[NusysConstants.METADATA_VALUE_COLUMN_KEY] = value;
             string mutability = "";
-            if (message.ContainsKey(NusysConstants.METADATA_MUTABILITY_COLUMN_KEY))
+            if (!message.GetString(NusysConstants.METADATA_MUTABILITY_COLUMN_KEY, "").Equals(""))
             {
                 mutability = message.GetString(NusysConstants.METADATA_MUTABILITY_COLUMN_KEY);
             }

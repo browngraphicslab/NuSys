@@ -697,7 +697,7 @@ namespace NusysIntermediate
 
         /// <summary>
         /// the string used as the name of the 'mutability' column for metadata.  
-        /// approximately 2048 characters max
+        /// approximately 256 characters max
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
         public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "metadata_mutability_string";
@@ -710,7 +710,8 @@ namespace NusysIntermediate
             {
                 METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY,
                 METADATA_KEY_COLUMN_KEY,
-                METADATA_VALUE_COLUMN_KEY
+                METADATA_VALUE_COLUMN_KEY,
+                METADATA_MUTABILITY_COLUMN_KEY
             };
             #endregion metadata
 

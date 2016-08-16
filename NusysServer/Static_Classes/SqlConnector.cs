@@ -42,8 +42,8 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            ResetTables(true);
-            SetUpTables();
+            //ResetTables(true);
+            //SetUpTables();
 
             TestFunc();
         }
@@ -98,6 +98,7 @@ namespace NusysServer
             var metadataTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Metadata)+" ("+
                 NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY + " varchar(128)," +
                 NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
+                NusysConstants.METADATA_MUTABILITY_COLUMN_KEY + " varchar(256)," +
                 NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
 
             var propertiesTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties) + " (" +
