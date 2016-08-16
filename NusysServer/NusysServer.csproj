@@ -224,8 +224,10 @@
     </Compile>
     <Compile Include="Misc\SqlJoinOperationArgs.cs" />
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
-    <Compile Include="Notifications\Notification.cs" />
-    <Compile Include="Notifications\NotificationArgs\INotificationArgumentable.cs" />
+    <Compile Include="Notifications\DropUserNotification.cs" />
+    <Compile Include="Notifications\NewUserNotification.cs" />
+    <Compile Include="Notifications\NotificationArgs\NewUserNotificationArgs.cs" />
+    <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\ChatRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewContentRequestHandler.cs" />

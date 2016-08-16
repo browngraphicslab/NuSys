@@ -56,7 +56,6 @@ namespace NuSysApp
             _serverClient.OnNewNotification += HandleNotification;
             LockController = new LockController(_serverClient);
         }
-        
         #region Requests
 
         public async Task ExecuteRequestLocally(Request request)

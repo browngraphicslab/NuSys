@@ -368,6 +368,7 @@ namespace NuSysApp
 
                 cred["user"] = username;
                 cred["pass"] = password;
+                cred["display_name"] = "my name";
                 if (createNewUser)
                 {
                     cred["new_user"] = "";

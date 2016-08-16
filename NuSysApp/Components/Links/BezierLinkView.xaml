@@ -90,7 +90,7 @@
             </Grid>
         </StackPanel>
         <!--</StackPanel>-->
-        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Visibility ="Collapsed" Points="0,20 40,0, 40,40"/>
+        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Visibility ="Collapsed" Points="0,40 0,0, 40,20"/>
     </Canvas>
 </converters:AnimatableUserControl>
 

@@ -650,6 +650,8 @@
     <Compile Include="Network\Requests\GetAnalysisModelRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
@@ -683,7 +685,6 @@
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendClientInfoSystemRequest.cs" />
-    <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />
     <Compile Include="Components\Misc\SearchWindowView.xaml.cs">

@@ -42,14 +42,6 @@ namespace NusysIntermediate
         /// It makes it hard to understand where things are happening
         /// </summary>
         /// <returns></returns>
-        public virtual async Task CheckOutgoingNotification()
-        {
-
-        }
-
-        public Message GetMessage()
-        {
-            return _message;
-        }
+        public virtual async Task CheckOutgoingNotification() {}
     }
 }
