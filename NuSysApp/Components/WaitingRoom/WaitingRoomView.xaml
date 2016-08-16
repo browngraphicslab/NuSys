@@ -14,11 +14,12 @@
                 <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <Storyboard x:Name="SlideBackInLogin">
+            <Storyboard x:Name="SlideInLogin">
                 <DoubleAnimation Duration="0:0:.3" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="login" d:IsOptimized="True"/>
                 <DoubleAnimation Duration="0:0:.3" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="login" d:IsOptimized="True"/>
             </Storyboard>
-            <Storyboard x:Name="SlideBackOutWorkspace">
+            
+            <Storyboard x:Name="SlideOutWorkspace">
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="workspace">
                     <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
                     <EasingDoubleKeyFrame KeyTime="0:0:.3" Value="200"/>
@@ -40,12 +41,12 @@
                     </DiscreteObjectKeyFrame>
                 </ObjectAnimationUsingKeyFrames>
             </Storyboard>
+            
             <Storyboard x:Name="SlideOutLogin">
                 <DoubleAnimation Duration="0:0:.3" To="-200" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="login" d:IsOptimized="True"/>
-                <DoubleAnimation Duration="0:0:.3" To="-200" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="NuSysTitle" d:IsOptimized="True"/>
                 <DoubleAnimation Duration="0:0:.3" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="login" d:IsOptimized="True"/>
-                <DoubleAnimation Duration="0:0:.3" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="NuSysTitle" d:IsOptimized="True"/>
             </Storyboard>
+            
             <Storyboard x:Name="SlideInWorkspace">
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="workspace">
                     <EasingDoubleKeyFrame KeyTime="0" Value="200"/>
@@ -68,17 +69,76 @@
                     </DiscreteObjectKeyFrame>
                 </ObjectAnimationUsingKeyFrames>
             </Storyboard>
+
+            <Storyboard x:Name="SlideInNewUser">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="NewUser">
+                    <EasingDoubleKeyFrame KeyTime="0" Value="200"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:.3" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="NewUser">
+                    <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:.3" Value="1"/>
+                </DoubleAnimationUsingKeyFrames>
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NewUser">
+                    <DiscreteObjectKeyFrame KeyTime="0">
+                        <DiscreteObjectKeyFrame.Value>
+                            <Visibility>Visible</Visibility>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                    <DiscreteObjectKeyFrame KeyTime="0:0:.3">
+                        <DiscreteObjectKeyFrame.Value>
+                            <Visibility>Visible</Visibility>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+
+            <Storyboard x:Name="SlideOutNewUser">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="NewUser">
+                    <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:.3" Value="200"/>
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="NewUser">
+                    <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:.3" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NewUser">
+                    <DiscreteObjectKeyFrame KeyTime="0">
+                        <DiscreteObjectKeyFrame.Value>
+                            <Visibility>Visible</Visibility>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                    <DiscreteObjectKeyFrame KeyTime="0:0:.3">
+                        <DiscreteObjectKeyFrame.Value>
+                            <Visibility>Collapsed</Visibility>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+
+            <Storyboard x:Name="ellipse" RepeatBehavior="Forever">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse1">
+                    <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:2" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid Background="{StaticResource color1}">
-        <TextBlock x:Name="NuSysTitle" Visibility="Visible"  Margin="0,150,0,0" VerticalAlignment="Top"  Height="75" Width="300" TextAlignment="Center" FontSize="45" 
+        <StackPanel Margin="0,100,0,0" x:Name="NuSysTitle">
+            <TextBlock  VerticalAlignment="Top"  Height="75" Width="300" TextAlignment="Center" FontSize="45" 
                    Foreground="{StaticResource darkforeground}">
             <TextBlock.RenderTransform>
                 <CompositeTransform/>
             </TextBlock.RenderTransform>
-            NuSys
-        </TextBlock>
+                NuSys
+            </TextBlock>
+            <Grid Margin="0,30,0,0">
+                <Ellipse x:Name="ellipse1" Width="30" Height="30" Stroke="White" StrokeThickness="2" Opacity="0"/>
+            </Grid>
+        </StackPanel>
 
         <Grid x:Name="workspace" Visibility="Collapsed">
             <Grid.RenderTransform>
@@ -89,6 +149,9 @@
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
+            <Button Visibility="Collapsed"  Grid.Row="1"  HorizontalAlignment="Left" Margin="0,30,0,0" Height="50" Width="50" VerticalAlignment="Center"  Background="Transparent" Click="BackToLoginFromList">
+                <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
+            </Button>
             <Grid Grid.Row="0" Margin="60,0,60,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"></ColumnDefinition>
@@ -183,26 +246,68 @@
             </Grid>
         </Grid>
        
-            
-        <TextBox Visibility="Collapsed"  Name="ServerNameText" Width="350" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top"></TextBox>
-
         <Grid x:Name="login" Visibility="Visible">
             <Grid.RenderTransform>
                 <CompositeTransform/>
             </Grid.RenderTransform>
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="200" Width="500">
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Height="200" Width="500">
-                    <TextBlock HorizontalAlignment="Center" Height="35" Foreground="{StaticResource darkforeground}" FontSize="20">USERNAME:</TextBlock>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="500">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="500">
+                    <TextBlock HorizontalAlignment="Center" Height="35" Foreground="{StaticResource darkforeground}" Margin="0,20,0,0" FontSize="20">USERNAME:</TextBlock>
                     <TextBox Style="{StaticResource WhiteTextBox}"  Name="usernameInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="USERNAME"></TextBox>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Margin="0,20,0,0" Foreground="{StaticResource darkforeground}" FontSize="20">PASSWORD:</TextBlock>
                     <PasswordBox Style="{StaticResource PasswordBox}" Name="passwordInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="PASSWORD"></PasswordBox>
                 </StackPanel>
+            </Grid>
+            <StackPanel Margin="0,330,0,0" VerticalAlignment="Center">
+                <Button Style="{StaticResource WhiteButton}"  Width="150" Height="50" Background="{StaticResource color6}" Foreground="{StaticResource color2}" FontSize="18"  Click="LoginButton_OnClick" Name="LoginButton"  VerticalAlignment="Center" HorizontalAlignment="Center">LOGIN</Button>
+                <HyperlinkButton Foreground="{StaticResource color2}"  Height="50" Background="Transparent" FontSize="18" Name="NewUserButton" Click="NewUserPage"  HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible" >
+                    <TextBlock>
+                        <Underline>
+                            Create new account
+                        </Underline>
+                    </TextBlock>
+                </HyperlinkButton>
+                <TextBlock Name="loggedInText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"></TextBlock>
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
+                <TextBlock Visibility="Visible" x:Name="ServerNameText" Width="350" Height="20" 
+                       TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="18">
+                SERVERNAME
+                </TextBlock>
+                <HyperlinkButton HorizontalAlignment="Center" Foreground="{StaticResource color2}" Margin="0,5,0,0"  FontSize="18">
+                    <TextBlock>
+                        <Underline>
+                            Change server name
+                        </Underline>
+                    </TextBlock>
+                </HyperlinkButton>
+            </StackPanel>
+            
+        </Grid>
+
+        <Grid x:Name="NewUser" Visibility="Collapsed">
+            <Grid.RenderTransform>
+                <CompositeTransform/>
+            </Grid.RenderTransform>
+            <Button Visibility="Visible"  HorizontalAlignment="Center" Margin="0,30,500,0" Height="50" Width="50" Background="Transparent" Click="BackToLoginFromNew">
+                <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
+            </Button>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="500">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="500">
+                    <TextBlock  HorizontalAlignment="Center" Height="35" Foreground="{StaticResource darkforeground}" FontSize="20">USERNAME:</TextBlock>
+                    <TextBox x:Name="NewUsername" Style="{StaticResource WhiteTextBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="ex. josiahcarberry"></TextBox>
+                    <TextBlock HorizontalAlignment="Center" Height="35" Foreground="{StaticResource darkforeground}" Margin="0,20,0,0" FontSize="20">DISPLAY NAME:</TextBlock>
+                    <TextBox x:Name="NewDisplayName" Style="{StaticResource WhiteTextBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="ex. joe"></TextBox>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Margin="0,20,0,0" Foreground="{StaticResource darkforeground}" FontSize="20">PASSWORD</TextBlock>
+                    <PasswordBox x:Name="NewPassword"  Style="{StaticResource PasswordBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="PASSWORD"></PasswordBox>
+                </StackPanel>
 
             </Grid>
-            <Button Style="{StaticResource WhiteButton}"  Width="150" Height="50" Background="{StaticResource color6}" Foreground="{StaticResource color2}" FontSize="18"  Click="LoginButton_OnClick" Name="LoginButton"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,300,0,0">LOGIN</Button>
-            <Button Style="{StaticResource WhiteButton}" Width="150" Height="50" Background="{StaticResource color6}" Foreground="{StaticResource color2}" FontSize="18"  Click="NewUser_OnClick" Name="NewUserButton"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,475,0,0" Visibility="Visible">NEW USER</Button>
-
-            <TextBlock Name="loggedInText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,400,0,0"></TextBlock>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Margin="0,400,0,0">
+            <Button Style="{StaticResource WhiteButton}"  Width="150" Height="50" Background="{StaticResource color6}" Foreground="{StaticResource color2}" FontSize="18"  Click="NewUser_OnClick">CREATE</Button>
+            <TextBlock x:Name="NewUserLoginText" TextAlignment="Center" Foreground="{StaticResource color3}"></TextBlock>
+            </StackPanel>
         </Grid>
         
         <Popup x:Name="NewWorkspacePopup">
