@@ -71,11 +71,9 @@ namespace NusysServer
         /// the FULL-COLUMN TITLE property that has to have the specified value
         /// </summary>
         public string Property { get; private set; }
+        
 
-        /// <summary>
-        /// the specified value that the proeprty must have to satisfy the equals condition
-        /// </summary>
-        public string RequiredValue { get;private set; }
+        public string QueryString { get; private set; }
 
         /// <summary>
         /// Creates a select query conditional that checks if the property = the required value
@@ -87,7 +85,23 @@ namespace NusysServer
                 throw new Exception("cannot create a Sql Query Equals conditional with null conditionals");
             }
             Property = Constants.GetFullColumnTitle(tableType,property).First();
-            RequiredValue = requiredValue;
+            QueryString = Property + " ='" + requiredValue + "' ";
+        }
+
+        /// <summary>
+        /// This is used to create a select query conditional that checks if the property = the value selected from the selectQuery
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <param name="property"></param>
+        /// <param name="requiredValue"></param>
+        public SqlQueryEquals(Constants.SQLTableType tableType, string property, SQLSelectQuery selectQuery)
+        {
+            if (property == null || selectQuery == null)
+            {
+                throw new Exception("cannot create a Sql Query Equals conditional with null conditionals");
+            }
+            Property = Constants.GetFullColumnTitle(tableType, property).First();
+            QueryString = Property + " = (" + selectQuery.CommandString + ") ";
         }
 
         /// <summary>
@@ -95,7 +109,7 @@ namespace NusysServer
         /// </summary>
         public string GetQueryString()
         {
-            return Property + " ='" + RequiredValue + "' ";
+            return QueryString;
         }
 
         /// <summary>

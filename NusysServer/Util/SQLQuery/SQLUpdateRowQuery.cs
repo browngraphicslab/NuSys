@@ -11,16 +11,24 @@ namespace NusysServer.Util.SQLQuery
         public string CommandString { get; private set; }
         private ITableRepresentable _tableToUpdate;
         /// <summary>
-        /// This updates a single row in the table.
+        /// This updates a single row in the table. Conditional is not neccessary but be careful because if you dont include it you'll replace all column cells.
         /// </summary>
         /// <param name="tableToUpdate"></param>
         /// <param name="propertiesToUpdate"></param>
         /// <param name="conditional"></param>
-        public SQLUpdateRowQuery(ITableRepresentable tableToUpdate, List<SqlQueryEquals> propertiesToUpdate, SqlQueryConditional conditional)
+        public SQLUpdateRowQuery(ITableRepresentable tableToUpdate, List<SqlQueryEquals> propertiesToUpdate, SqlQueryConditional conditional = null)
         {
-            CommandString = "UPDATE " + tableToUpdate.GetSqlQueryRepresentation() + " SET " +
-                             string.Join(",", propertiesToUpdate.Select(q => q.GetQueryString())) + " WHERE "+
-                             conditional.GetQueryString();
+            if (conditional != null)
+            {
+                CommandString = "UPDATE " + tableToUpdate.GetSqlQueryRepresentation() + " SET " +
+                                string.Join(",", propertiesToUpdate.Select(q => q.GetQueryString())) + " WHERE " +
+                                conditional.GetQueryString();
+            }
+            else
+            {
+                CommandString = "UPDATE " + tableToUpdate.GetSqlQueryRepresentation() + " SET " +
+                                string.Join(",", propertiesToUpdate.Select(q => q.GetQueryString()));
+            }
         }
 
         /// <summary>
