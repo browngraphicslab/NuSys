@@ -37,8 +37,10 @@ namespace NusysServer.Util
                 {
                     var x = message.GetString(NusysConstants.METADATA_MUTABILITY_COLUMN_KEY);
                     MetadataEntry entry = new MetadataEntry(message.GetString(NusysConstants.METADATA_KEY_COLUMN_KEY), JsonConvert.DeserializeObject<List<string>>(message.GetString(NusysConstants.METADATA_VALUE_COLUMN_KEY)), (MetadataMutability)Enum.Parse(typeof(MetadataMutability), message.GetString(NusysConstants.METADATA_MUTABILITY_COLUMN_KEY)));
-
-                    idToMetadataAndProperties[libraryId].Item1.Add(entry.Key, entry);
+                    if (!idToMetadataAndProperties[libraryId].Item1.ContainsKey(entry.Key))
+                    {
+                        idToMetadataAndProperties[libraryId].Item1.Add(entry.Key, entry);
+                    }
                 }
             }
             foreach (var uniqueMessage in oldMessages)

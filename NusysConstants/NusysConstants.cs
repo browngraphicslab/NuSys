@@ -486,7 +486,25 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
         #endregion UpdatePresentationLinkRequest
+
+        #region UpdateContentRequest
+        /// <summary>
+        /// The key for sending the id of the content to update
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// The key for sending the type of the content to update
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type";
+
+        /// <summary>
+        /// The key for sending the new content
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_type";
         
+        #endregion UpdateContentRequest
+
 
         #region ChatRequest
 
@@ -1117,6 +1135,7 @@ namespace NusysIntermediate
             DeletePresentationLinkRequest,
             UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
+            UpdateContentRequest,
             
             /// <summary>
             /// this request type is used to create a search over the library elements.  

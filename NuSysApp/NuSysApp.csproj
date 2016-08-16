@@ -631,9 +631,11 @@
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewTimeSpanRegionRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\UpdateContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdatePresentationLinkRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdateMetadataEntryRequestArgs.cs" />
     <Compile Include="Network\Requests\SearchRequest.cs" />
+    <Compile Include="Network\Requests\UpdateContentRequest.cs" />
     <Compile Include="Network\Requests\UpdateMetadataEntryRequest.cs" />
     <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
