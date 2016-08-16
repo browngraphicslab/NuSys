@@ -1256,10 +1256,10 @@ namespace NusysIntermediate
             {
                 return null;
             }
-            return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
-            //input.Replace("'", "''");
-            //input.Replace("\"", "&quot;");
-            //return input;
+            //return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
+            input = input.Replace("'", "''");
+            input = input.Replace("\"", "\"");
+            return input;
 
         }
 
