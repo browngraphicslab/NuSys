@@ -266,7 +266,8 @@ namespace NuSysApp
         {
             var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
             var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
-            Login(username, password, true);
+            var displayName = NewDisplayName.Text;
+            Login(username, password, true, displayName);
         }
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
