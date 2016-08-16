@@ -42,5 +42,7 @@
             </Grid>
         </Border>
         <local:AddToCollectionButton Grid.Row="1"/>
+        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="1"></local:ShowHideRegionButtons>
+
     </Grid>
 </UserControl>

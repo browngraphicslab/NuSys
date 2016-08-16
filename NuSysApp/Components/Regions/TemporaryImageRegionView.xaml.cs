@@ -165,7 +165,11 @@ namespace NuSysApp
             vm.LocationChanged -= ChangeLocation;
             xMainRectangleBorder.Tapped -= xMainRectangleBorder_Tapped;
         }
-
+        /// <summary>
+        /// When a temporary region is tapped it should replace itself with a new permanent region
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void xMainRectangleBorder_Tapped(object sender, TappedRoutedEventArgs e)
         {
             //We create a request using the detail view's create args function

@@ -47,6 +47,8 @@
                 </Grid>
             </Border>
             <local:AddToCollectionButton Grid.Row="1"/>
+            <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="2"></local:ShowHideRegionButtons>
+
         </Grid>
         <StackPanel Visibility="Collapsed">
             <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource foreground6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>

@@ -31,6 +31,9 @@ namespace NuSysApp
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
+            //Show/hide regions buttons need reference to rectangle wrapper for methods to work.
+            xShowHideRegionButtons.Wrapper = xClippingWrapper;
+
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
             // disable page left and page right buttons for pdf regions

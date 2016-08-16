@@ -42,8 +42,8 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            ResetTables(true);
-            SetUpTables();
+            //ResetTables(true);
+            //SetUpTables();
 
             TestFunc();
         }
@@ -292,9 +292,15 @@ namespace NusysServer
             }
             var cmdToDeleteFromLibraryElementTable = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
 
+            //TODO, add in aliases deleting
+
             // Deletes all the related metadata from the metadata table.
-            var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
-            return cmdToDeleteFromLibraryElementTable.ExecuteCommand() && cmdToDeleteRelatedMetadata.ExecuteCommand();
+            //var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
+            //cmdToDeleteRelatedMetadata.ExecuteCommand(); 
+            // DOES NOT WORK  
+            //TODO, harsh fix this
+
+            return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }
 
         /// <summary>
