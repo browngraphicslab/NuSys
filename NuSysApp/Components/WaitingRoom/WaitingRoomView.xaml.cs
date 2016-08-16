@@ -224,6 +224,7 @@ namespace NuSysApp
         private void NewUserPage(object sender, RoutedEventArgs e)
         {
             NewUser.Visibility = Visibility.Visible;
+            NuSysTitle.Visibility = Visibility.Collapsed;
             SlideOutLogin.Begin();
             SlideInNewUser.Begin();
             login.Visibility = Visibility.Collapsed;
@@ -552,11 +553,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    loggedInText.Text = "Log in failed!";
-                    /*
-                    if (!createNewUser) { 
-                        Login(true);
-                    }*/
+                    NewUserLoginText.Text = "Log in failed!";
                 }
 
             }
