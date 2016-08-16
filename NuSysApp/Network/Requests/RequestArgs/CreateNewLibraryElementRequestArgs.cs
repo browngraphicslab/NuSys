@@ -24,6 +24,12 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// the initial access type for the default library element.  
+        /// Will default to private if not set;
+        /// </summary>
+        public NusysConstants.AccessType? AccessType { get; set; }
+
+        /// <summary>
         /// the Library ID of the libraryelement you are trying to create.  
         /// Will create a new one if this is not filled in.
         /// </summary>
@@ -132,7 +138,10 @@ namespace NuSysApp
 
             //set the library element's library Id
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = LibraryElementId ?? SessionController.Instance.GenerateId();
-            
+
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = AccessType ?? NusysConstants.AccessType.Private;
+
+
             return message;
         }
     }

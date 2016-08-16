@@ -184,8 +184,7 @@ namespace NuSysApp
             var contentRequestArgs = new CreateNewContentRequestArgs();
             contentRequestArgs.LibraryElementArgs.Title = name;
             contentRequestArgs.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Collection;
-            contentRequestArgs.LibraryElementArgs.
-
+            contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Public;
 
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
