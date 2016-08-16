@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NusysIntermediate
 {
@@ -1399,6 +1400,25 @@ namespace NusysIntermediate
         public static string GetDefaultThumbnailFileName(string libraryElementModelId, ThumbnailSize size)
         {
             return libraryElementModelId + "_" + size.ToString() + "_thumbnail";
+        }
+
+        /// <summary>
+        /// This method can be used to handle single and double quotes in strings. It takes in a string 
+        /// and return the clean string.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string CheckString(string input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+            return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
+            //input.Replace("'", "''");
+            //input.Replace("\"", "&quot;");
+            //return input;
+
         }
 
         #endregion staticMethods
