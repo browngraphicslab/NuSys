@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NusysIntermediate
 {
@@ -1251,9 +1252,14 @@ namespace NusysIntermediate
         /// <returns></returns>
         public static string CheckString(string input)
         {
-            input.Replace("'", "''");
-            input.Replace("\"", "&quot;");
-            return input;
+            if (input == null)
+            {
+                return null;
+            }
+            return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
+            //input.Replace("'", "''");
+            //input.Replace("\"", "&quot;");
+            //return input;
 
         }
 
