@@ -16,7 +16,7 @@ namespace NuSysApp
 
         public ChatMessageTemplate(NetworkUser user, string message)
         {
-            UserName = user.Name;
+            UserName = user.DisplayName;
             UserColor = new SolidColorBrush(user.Color);
             MessageText = message;
             TimeStamp = DateTime.Now.ToString("h:mm tt");

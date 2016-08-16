@@ -9,6 +9,10 @@ namespace NusysIntermediate
 {
     public interface IRequestArgumentable
     {
+        /// <summary>
+        /// This should return a message with all the data in it using the request keys in the nusysconstants class.
+        /// </summary>
+        /// <returns></returns>
         Message PackToRequestKeys();
     }
 }

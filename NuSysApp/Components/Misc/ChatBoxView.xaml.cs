@@ -23,19 +23,24 @@ namespace NuSysApp
 {
     public sealed partial class ChatBoxView : UserControl
     {
+        private int _unseenChatMessagesNum;
+        private bool _isChatVisible;
+
         public ChatBoxView()
         {
             this.InitializeComponent();
             chatInputBox.KeyDown += ChatInputBox_KeyDown;
 
 
+            _isChatVisible = false;
+            _unseenChatMessagesNum = 0;
 
 
             DataContextChanged += delegate (FrameworkElement sender, DataContextChangedEventArgs args)
             {
                 if (!(DataContext is ChatBoxViewModel))
                     return;
-                var vm = (ChatBoxViewModel) DataContext;
+                var vm = (ChatBoxViewModel)DataContext;
                 vm.MakeMessageList();
             };
         }
@@ -48,7 +53,7 @@ namespace NuSysApp
                 string text = senderBox.Text;
                 //there have been a few times where NetworkMembers did not contain LocalUserID
                 //something to look out for
-                if (!text.Equals("") && 
+                if (!text.Equals("") &&
                     SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(SessionController.Instance.LocalUserID))
                 {
                     senderBox.Text = "";
@@ -166,7 +171,7 @@ namespace NuSysApp
             // when virtualized, scroll back to previous position without animation
             if (isVirtualizing)
             {
-                await ChangeViewAsync(scrollViewer,previousHorizontalOffset, previousVerticalOffset, true);
+                await ChangeViewAsync(scrollViewer, previousHorizontalOffset, previousVerticalOffset, true);
             }
 
             // scroll to desired position with animation!
@@ -221,6 +226,7 @@ namespace NuSysApp
                 return;
             }
             vm.AddMessage(user, message);
+            IncrementUnseenMessage();
             ScrollToEnd();
         }
 
@@ -230,16 +236,55 @@ namespace NuSysApp
         public void ScrollToEnd()
         {
             //scroll to the most recently added item in the list
-            chatDisplayListView.ScrollIntoView(chatDisplayListView.Items[chatDisplayListView.Items.Count-1]);
+            chatDisplayListView.ScrollIntoView(chatDisplayListView.Items[chatDisplayListView.Items.Count - 1]);
             //ScrollToIndex(chatDisplayListView, chatDisplayListView.Items.Count-1);
         }
 
+        /// <summary>
+        /// Notifies the client of a new message by updating the red "unseen messages" label on top of the chat box icon
+        /// </summary>
+        public void IncrementUnseenMessage()
+        {
+            if (Visibility == Visibility.Collapsed)
+            {
+                ChatNotifs.Visibility = Visibility.Visible;
+                _unseenChatMessagesNum++;
+                NotifNumber.Text = "" + _unseenChatMessagesNum;
+            }
+            else
+            {
+                ChatNotifs.Visibility = Visibility.Collapsed;
 
 
+            }
+
+        }
+
+
+        private void ChatBoxButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _isChatVisible = !_isChatVisible;
+            if (_isChatVisible)
+            {
+                Visibility = Visibility.Visible;
+                _unseenChatMessagesNum = 0;
+                NotifNumber.Text = "" + _unseenChatMessagesNum;
+                ChatNotifs.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Visibility = Visibility.Collapsed;
+                ChatNotifs.Visibility = Visibility.Collapsed;
+            }
+        }
         public Visibility Visibility
         {
             get { return chatCanvas.Visibility; }
             set { chatCanvas.Visibility = value; }
         }
     }
+
+
+
 }
+

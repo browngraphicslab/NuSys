@@ -203,5 +203,12 @@ namespace NuSysApp
             return 0;
         }
         #endregion StaticMethods
+
+        #region RecordingNode
+
+        public static string RecordingNodeAudioFileType = ".mp3";
+        public static string RecordingNodeVideoFileType = ".mp4";
+
+        #endregion RecordingNode
     }
 }

@@ -272,14 +272,7 @@ namespace NuSysApp
             var vm = SessionController.Instance.ActiveFreeFormViewer;
             if (elementType == NusysConstants.ElementType.Recording)
             {
-                var r = new RecordingNodeView(new RecordingNodeViewModel(new RecordingNodeController(new ElementModel("")
-                {
-                    X = pos.X,
-                    Y = pos.Y,
-                    Width = 300,
-                    Height = 300
-                })));
-
+                var r = new RecordingNodeView(new RecordingNodeViewModel(pos.X, pos.Y));
                 vm.AtomViewList.Add(r);
                 
             } else if (elementType == NusysConstants.ElementType.Text || elementType == NusysConstants.ElementType.Web || elementType == NusysConstants.ElementType.Collection)

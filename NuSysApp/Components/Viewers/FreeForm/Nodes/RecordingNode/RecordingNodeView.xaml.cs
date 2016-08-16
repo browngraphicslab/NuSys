@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.Media.Capture;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
@@ -11,16 +12,17 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public sealed partial class RecordingNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class RecordingNodeView : AnimatableUserControl
     {
-        private MediaCapture _mediaCapture;
-        private bool _isRecording;
-        private bool _isopen;
+        /// <summary>
+        /// The view model of the recording node, so we don't have to check the data context every time
+        /// </summary>
+        private RecordingNodeViewModel _vm;
 
         public RecordingNodeView(RecordingNodeViewModel vm)
         {
-            DataContext = vm;
-            vm.Controller.SetSize(vm.Width, vm.Height);
+            _vm = vm;
+            DataContext = _vm;
             InitializeComponent();
             xMediaRecorder.RecordingStopped += delegate(object source)
             {
@@ -29,14 +31,16 @@ namespace NuSysApp
 
         }
 
-        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Updates the view model's X and Y coordinates when user attempts to move the recording node on the canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XRootBorder_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
-        }
-
-        public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
-        {
-            return new RenderTargetBitmap();
+            _vm.X += e.Delta.Translation.X;
+            _vm.Y += e.Delta.Translation.Y;
+            e.Handled = true;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace NusysServer
         //private IEnumerable<string> _cleanedSelectedColumns;
         private ITableRepresentable _fromTable;
         private SqlQueryConditional _conditionals;
+        public string CommandString { get; private set; }
 
         /// <summary>
         /// Creates a new select query based on parameters.
@@ -24,6 +25,16 @@ namespace NusysServer
             _fromTable = fromTable;
             _conditionals = CleanConditional(conditionals);
             //_cleanedSelectedColumns = CleanColumns(selectedColumns);
+            if (_conditionals != null)
+            {
+                CommandString = "SELECT " + string.Join(",", _fromTable.GetSQLColumnsToSelect()) + " FROM " +
+                                _fromTable.GetSqlQueryRepresentation() + " WHERE " + _conditionals.GetQueryString();
+            }
+            else
+            {
+                CommandString = "SELECT " + string.Join(", ", _fromTable.GetSQLColumnsToSelect()) + " FROM " +
+                                _fromTable.GetSqlQueryRepresentation();
+            }
         }
         
 
@@ -77,18 +88,7 @@ namespace NusysServer
         /// <returns></returns>
         public IEnumerable<Message> ExecuteCommand()
         {
-            string commandString = "";
-            if (_conditionals != null)
-            {
-                commandString = "SELECT " + string.Join(",", _fromTable.GetSQLColumnsToSelect()) + " FROM " +
-                                _fromTable.GetSqlQueryRepresentation() + " WHERE " + _conditionals.GetQueryString();
-            }
-            else
-            {
-                commandString = "SELECT " + string.Join(", ", _fromTable.GetSQLColumnsToSelect()) + " FROM " +
-                                _fromTable.GetSqlQueryRepresentation();
-            }
-            var cmd = ContentController.Instance.SqlConnector.MakeCommand(commandString);
+            var cmd = ContentController.Instance.SqlConnector.MakeCommand(CommandString);
             return ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(cmd, false);
         }
         
