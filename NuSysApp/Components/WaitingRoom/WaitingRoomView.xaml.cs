@@ -258,14 +258,14 @@ namespace NuSysApp
 
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
-            var username = NewUsername.Text;
+            var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
             var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
             Login(username, password, true);
         }
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var username = usernameInput.Text;
+            var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
             Login(username,password,false);
         }
@@ -286,7 +286,7 @@ namespace NuSysApp
                 _selectedCollection =
                     SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
                 //set properties in preview window
-                CreatorText.Text = _selectedCollection.Creator;
+                CreatorText.Text = SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.NetworkMembers[_selectedCollection.Creator].DisplayName : "...";
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
 
@@ -397,7 +397,7 @@ namespace NuSysApp
             File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
         }
 
-        private async void Login(string username, string password, bool createNewUser)
+        private async void Login(string username, string password, bool createNewUser, string displayname = null)
         {
             try
             {
@@ -409,9 +409,10 @@ namespace NuSysApp
 
                 cred["user"] = username;
                 cred["pass"] = password;
-                cred["display_name"] = "my name";
                 if (createNewUser)
                 {
+
+                    cred["display_name"] = displayname ?? "MIRANDA PUT THE DISLPAY NAME HEEERRE";
                     cred["new_user"] = "";
                 }
                 var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";

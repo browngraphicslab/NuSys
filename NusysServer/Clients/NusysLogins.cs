@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NusysIntermediate;
 
 namespace NusysServer
@@ -76,7 +77,7 @@ namespace NusysServer
             {
                 { NusysConstants.USERS_TABLE_HASHED_USER_ID_KEY, doubleHashedUsername},
                 { NusysConstants.USERS_TABLE_HASHED_PASSWORD_KEY, finalPass },
-                { NusysConstants.USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY, new List<string>() },
+                { NusysConstants.USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY, JsonConvert.SerializeObject(new List<string>()) },
                 { NusysConstants.USERS_TABLE_SALT_KEY, saltString },
                 { NusysConstants.USERS_TABLE_USER_DISPLAY_NAME_KEY, displayName }
             };
@@ -93,7 +94,7 @@ namespace NusysServer
 
         public static byte[] CreateSalt()
         {
-            var bytes = new byte[256];
+            var bytes = new byte[32];
             _saltCrypto.GetBytes(bytes);
             return bytes;
         }
@@ -110,16 +111,12 @@ namespace NusysServer
         }
         public static byte[] GetBytes(string str)
         {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
+            return Convert.FromBase64String(str);
         }
 
         public static string GetString(byte[] bytes)
         {
-            char[] chars = new char[bytes.Length / sizeof(char)];
-            System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-            return new string(chars);
+            return Convert.ToBase64String(bytes);
         }
         public static byte[] Combine(byte[] first, byte[] second)
         {

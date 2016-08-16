@@ -29,7 +29,9 @@ namespace NusysServer
             Debug.Assert(ClientToAdd != null);
 
             //weird serialization things for security reasons
-            message[NusysConstants.ADD_USER_NOTIFICATION_USER_JSON_KEY] = JsonConvert.SerializeObject(JsonConvert.DeserializeObject<BaseClient>(JsonConvert.SerializeObject(ClientToAdd)));
+            var json = JsonConvert.SerializeObject(JsonConvert.DeserializeObject<BaseClient>(JsonConvert.SerializeObject(ClientToAdd)));
+
+            message[NusysConstants.ADD_USER_NOTIFICATION_USER_JSON_KEY] = json;
 
             return message;
         }

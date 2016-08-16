@@ -224,6 +224,9 @@ namespace NusysServer
                 case SQLTableType.AnalysisModels:
                     keys = NusysConstants.ACCEPTED_ANALYSIS_MODELS_TABLE_KEYS;
                     break;
+                case SQLTableType.Users:
+                    keys = NusysConstants.ACCEPTED_USERS_TABLE_KEYS;
+                    break;
                 default:
                     return new List<string>();
             }

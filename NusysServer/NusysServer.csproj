@@ -236,6 +236,7 @@
     <Compile Include="RequestHandlers\CreateNewMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
+    <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeletePresentationLinkRequestHandler.cs" />

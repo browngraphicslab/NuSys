@@ -130,6 +130,47 @@ namespace NusysServer
         }
 
         /// <summary>
+        /// This tries to update a content data file.  As of right now, it can only update text type content.
+        /// </summary>
+        /// <returns></returns>
+        public static bool UpdateContentDataFile(string contentId, NusysConstants.ContentType contentType, string updatedContentData)
+        {
+            if (contentId == null)
+            {
+                throw new Exception("the contentId cannot be null when updating a content file");
+            }
+            if (contentType == null)
+            {
+                throw new Exception("the content type cannot be null when updating a content file");
+            }
+            if (updatedContentData == null)
+            {
+                throw new Exception("the content data cannot be null when updating a content file");
+            }
+            switch (contentType)
+            {
+                case NusysConstants.ContentType.Audio:
+                case NusysConstants.ContentType.Image:
+                case NusysConstants.ContentType.Video:
+                case NusysConstants.ContentType.PDF:
+                    throw new Exception("only text content can be updated");
+                case NusysConstants.ContentType.Text:
+                    var filePath = Constants.FILE_FOLDER + contentId + Constants.TEXT_DATA_FILE_FILE_EXTENSION;
+                    if (File.Exists(filePath))
+                    {
+                        File.WriteAllText(filePath, updatedContentData);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
         /// returns the string contents from a file.  Should only be used on text and pdf content types. 
         /// Will throw an exception if the file doesn't exist
         /// </summary>

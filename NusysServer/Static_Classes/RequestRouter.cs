@@ -89,7 +89,10 @@ namespace NusysServer
                     case NusysConstants.RequestType.UpdateMetadataEntryRequest:
                         requestHandler = new UpdateMetadataRequestHandler();
                         break;
-                    default:
+                    case NusysConstants.RequestType.UpdateContentRequest:
+                        requestHandler = new UpdateContentRequestHandler();
+                        break;
+                        default:
                         requestHandler = null;
                         return false;
                     }

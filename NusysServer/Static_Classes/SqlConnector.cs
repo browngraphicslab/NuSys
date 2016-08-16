@@ -58,11 +58,11 @@ namespace NusysServer
         private void SetUpTables()
         {
             var usersTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Users) + " (" +
-                NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY + " varchar(128), " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY + " varchar(128), " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY + " varchar(128), " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY + " varchar(4096));");
+                NusysConstants.USERS_TABLE_HASHED_USER_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.USERS_TABLE_HASHED_PASSWORD_KEY + " varchar(128), " +
+                NusysConstants.USERS_TABLE_SALT_KEY + " varchar(128), " +
+                NusysConstants.USERS_TABLE_USER_DISPLAY_NAME_KEY + " varchar(4096), " +
+                NusysConstants.USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY + " varchar(4096));");
 
             var analysisModelsTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels) + " (" +
                 NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +

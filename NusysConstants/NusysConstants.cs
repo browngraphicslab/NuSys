@@ -499,7 +499,25 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
         #endregion UpdatePresentationLinkRequest
+
+        #region UpdateContentRequest
+        /// <summary>
+        /// The key for sending the id of the content to update
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// The key for sending the type of the content to update
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type";
+
+        /// <summary>
+        /// The key for sending the new content
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_type";
         
+        #endregion UpdateContentRequest
+
 
         #region ChatRequest
 
@@ -523,7 +541,7 @@ namespace NusysIntermediate
             /// <summary>
             /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
             /// </summary>
-            public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY;
+            public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
 
             #endregion AddNetworkUserNotification
 
@@ -532,30 +550,30 @@ namespace NusysIntermediate
             /// <summary>
             /// key used in the drop user notification that represents the id of the user that dropped
             /// </summary>
-            public static readonly string DROP_USER_NOTIFICATION_USER_ID_KEY;
+            public static readonly string DROP_USER_NOTIFICATION_USER_ID_KEY = "user_id_to_drop";
 
             #endregion DropNetworkUserNotification
 
-        #endregion NotificationKeys
+            #endregion NotificationKeys
 
-        #region NotificationManagementKeys
+            #region NotificationManagementKeys
 
-        /// <summary>
-        /// the string key used to identify the notification type of a notification being sent. 
-        /// the value for this key should be an stringified NotificationType with the .ToString() method called
-        /// </summary>
-        public static readonly string NOTIFICATION_TYPE_STRING_KEY = "notification_type";
+            /// <summary>
+            /// the string key used to identify the notification type of a notification being sent. 
+            /// the value for this key should be an stringified NotificationType with the .ToString() method called
+            /// </summary>
+            public static readonly string NOTIFICATION_TYPE_STRING_KEY = "notification_type";
 
-        #endregion NotificationManagementKeys
+            #endregion NotificationManagementKeys
 
-        #region SQLColumnNames
+            #region SQLColumnNames
 
-        #region alias
+            #region alias
 
-        /// <summary>
-        /// 32 character string, aka an ID.  
-        /// </summary>
-        public static readonly string ALIAS_ID_KEY = "alias_id";
+            /// <summary>
+            /// 32 character string, aka an ID.  
+            /// </summary>
+            public static readonly string ALIAS_ID_KEY = "alias_id";
 
             /// <summary>
             /// 32 character string, aka an ID. 
@@ -847,7 +865,7 @@ namespace NusysIntermediate
                 CONTENT_TABLE_TYPE_KEY,
                 CONTENT_TABLE_CONTENT_URL_KEY
             };
-        #endregion Content
+            #endregion Content
 
             #region Users
 
@@ -862,7 +880,8 @@ namespace NusysIntermediate
             public static readonly string USERS_TABLE_HASHED_PASSWORD_KEY = "user_password";
 
             /// <summary>
-            /// key that represents the unhashed display name for the user
+            /// key that represents the unhashed display name for the user.  
+            /// ~max 2048 chars
             /// </summary>
             public static readonly string USERS_TABLE_USER_DISPLAY_NAME_KEY = "display_name";
 
@@ -872,9 +891,22 @@ namespace NusysIntermediate
             public static readonly string USERS_TABLE_SALT_KEY = "user_salt_key";
 
             /// <summary>
-            /// key that represents josn-serialized last ten workspaces visited
+            /// key that represents josn-serialized last ten workspaces visited.  ~max 2048 chars
             /// </summary>
             public static readonly string USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY = "last_visited_collections";
+
+            /// <summary>
+            /// the list of keys that will safely be entered into the users table.  
+            /// Use this to make sure that you're entering correct keys into the database
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_USERS_TABLE_KEYS = new HashSet<string>()
+                {
+                    USERS_TABLE_HASHED_USER_ID_KEY,
+                    USERS_TABLE_HASHED_PASSWORD_KEY,
+                    USERS_TABLE_USER_DISPLAY_NAME_KEY,
+                    USERS_TABLE_SALT_KEY,
+                    USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY
+                };
 
             #endregion Users
 
@@ -906,7 +938,7 @@ namespace NusysIntermediate
             public static readonly string PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY = "annotation";
 
             /// <summary>
-            /// the list of keys that will safely be entered into the contents table.  
+            /// the list of keys that will safely be entered into the presentation links table.  
             /// Use this to make sure that you're entering correct keys into the database
             /// </summary>
             public static readonly HashSet<string> ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS = new HashSet<string>()
@@ -1232,6 +1264,8 @@ namespace NusysIntermediate
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
             /// </summary>
             GetAnalysisModelRequest,
+
+            UpdateContentRequest,
             
             /// <summary>
             /// this request type is used to create a search over the library elements.  

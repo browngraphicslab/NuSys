@@ -40,6 +40,11 @@ namespace NusysServer
             return returnMessage;
         }
 
+        /// <summary>
+        /// This updates the metadata sql table using the message that was passed in. It will return whehter or not the update was successfull
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         private bool UpdateMetadataSQLTable(Message message)
         {
             if (!message.ContainsKey(NusysConstants.UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY) || !message.ContainsKey(NusysConstants.UPDATE_METADATA_REQUEST_METADATA_KEY))
