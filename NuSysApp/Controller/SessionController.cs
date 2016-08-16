@@ -162,6 +162,10 @@ namespace NuSysApp
             return NusysConstants.GenerateId();
         }
 
+        /// <summary>
+        /// Use this to change the mode of the Free form viewer
+        /// </summary>
+        /// <param name="mode"></param>
         public void SwitchMode(Options mode)
         {
             OnModeChanged?.Invoke(this, mode);

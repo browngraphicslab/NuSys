@@ -189,6 +189,7 @@ namespace NuSysApp
         {
             if (_selectedCollection != null)
             {
+                var isReadOnly = true;
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
                 var id = _selectedCollection.LibraryElementId;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");

@@ -81,6 +81,7 @@
             <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
             <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
+            <local:ReadonlyFloatingMenuView x:Name="xReadonlyFloatingMenu" Canvas.Left="120" Canvas.Top="125" Visibility="Collapsed"/>
 
             <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
             <local:SpeechToTextBox x:Name="xSpeechToTextBox"></local:SpeechToTextBox>

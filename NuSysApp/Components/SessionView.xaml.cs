@@ -101,7 +101,24 @@ namespace NuSysApp
             Loaded += OnLoaded;
 
             MainCanvas.SizeChanged += Resize;
-            //_glass = new MGlass(MainCanvas);
+ 
+            // Will make the collection readonly if the active freeform viewer is readonly
+            var isReadonly = false;
+            if (isReadonly)
+            {
+                this.MakeWorkspaceReadonly();
+            }
+        }
+
+        /// <summary>
+        /// Makes a workspace readonly by showing the readonly menu and modifying the modes
+        /// </summary>
+        private void MakeWorkspaceReadonly()
+        {
+            xFloatingMenu.Visibility = Visibility.Collapsed;
+            xReadonlyFloatingMenu.Visibility = Visibility.Visible;
+            xWorkspaceTitle.IsEnabled = false;
+            SessionController.Instance.SwitchMode(Options.Exploration);
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
