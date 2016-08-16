@@ -103,6 +103,8 @@
     <Content Include="Assets\add from file dark.png" />
     <Content Include="Assets\audio main menu.png" />
     <Content Include="Assets\audio.png" />
+    <Content Include="Assets\back icon triangle.png" />
+    <Content Include="Assets\back icon.png" />
     <Content Include="Assets\bar chart icon.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
