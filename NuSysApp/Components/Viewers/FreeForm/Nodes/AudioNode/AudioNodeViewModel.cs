@@ -26,7 +26,6 @@ namespace NuSysApp
     public class AudioNodeViewModel : ElementViewModel
     {
         private Grid _visualGrid;
-
         public delegate void VisualizationLoadedEventHandler();
 
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
@@ -52,11 +51,6 @@ namespace NuSysApp
             base.SetSize(width, height);
         }
 
-        public Uri AudioSource
-        {
-            get { return new Uri(Controller.LibraryElementController.Data); }
-        }
-
         public override async Task Init()
         {
             if (!Controller.LibraryElementController.ContentLoaded)
@@ -68,13 +62,13 @@ namespace NuSysApp
 
         private async void InitWhenReady(object sender)
         {
-            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(AudioSource);
-            HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync();
-            Stream resStream = response.GetResponseStream();
+            //HttpWebRequest request = (HttpWebRequest) WebRequest.Create(AudioSource);
+            //HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync();
+            //Stream resStream = response.GetResponseStream();
 
-            byte[] dataBytes = new byte[(int) response.ContentLength];
-            resStream.Read(dataBytes, 0, (int) response.ContentLength);
-            resStream.Dispose();
+            //byte[] dataBytes = new byte[(int) response.ContentLength];
+            //resStream.Read(dataBytes, 0, (int) response.ContentLength);
+            //resStream.Dispose();
             //Visualize(dataBytes);
         }
 

@@ -30,16 +30,31 @@ namespace NuSysApp
 {
     public sealed partial class AudioNodeView : AnimatableUserControl, IThumbnailable
     {
-        private bool _loaded;
         
         public AudioNodeView(AudioNodeViewModel vm)
         {
             this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
             InitializeComponent();
-            _loaded = false;
+            if (!vm.Controller.LibraryElementController.ContentLoaded)
+            {
+                UITask.Run(async delegate
+                {
+                    await vm.Controller.LibraryElementController.LoadContentDataModelAsync();
+                    LoadAudio();
+                });
+            }
+            else
+            {
+                LoadAudio();
+            }
 
             vm.Controller.Disposed += ControllerOnDisposed;
-            MediaPlayer.AudioSource = vm.AudioSource;
+        }
+
+        private void LoadAudio()
+        {
+            var vm = DataContext as AudioNodeViewModel;
+            MediaPlayer.AudioSource = new Uri(vm.Controller.LibraryElementController.Data);
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -63,16 +78,5 @@ namespace NuSysApp
             await r.RenderAsync(MediaPlayer, width, height);
             return r;
         }
-        /*
-        private async void LoadPlaybackElement()
-        {
-            await MediaPlayer.RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
-            if (MediaPlayer.AudioSource == null && _loaded == false)
-            {
-                MediaPlayer.AudioSource = (DataContext as AudioNodeViewModel).AudioSource;
-                _loaded = true;
-            }
-                        
-        }*/
     }
 }
