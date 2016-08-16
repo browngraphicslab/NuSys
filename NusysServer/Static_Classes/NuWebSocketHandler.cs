@@ -34,8 +34,8 @@ namespace NusysServer
 
             this.MaxIncomingMessageSize = Int32.MaxValue;//TODO broadcast this openeing somewhere
 
-            BroadcastNewUser(ActiveClient.ActiveClients[this]);
-            foreach (var activeClient in ActiveClient.ActiveClients)
+            BroadcastNewUser(NusysClient.IDtoUsers[this]);
+            foreach (var activeClient in NusysClient.IDtoUsers)
             {
                 var dict = GetUserAdditionDict(activeClient.Value);
                 if (activeClient.Key != this)
@@ -50,10 +50,11 @@ namespace NusysServer
         /// </summary>
         public override void OnClose()
         {
-            if (ActiveClient.ActiveClients.ContainsKey(this))
+            if (NusysClient.IDtoUsers.ContainsKey(this))
             {
-                BroadcastRemovingUser(ActiveClient.ActiveClients[this]);
-                ActiveClient.ActiveClients[this].Disconnect();
+                BroadcastRemovingUser(NusysClient.IDtoUsers[this]);
+                NusysClient outClient;
+                NusysClient.IDtoUsers.TryRemove(this, out outClient);
             }
         }
 
@@ -112,13 +113,13 @@ namespace NusysServer
             //BroadcastToSubset(message,new List<NuWebSocketHandler>() {this});
         }
 
-        public static void BroadcastNewUser(ActiveClient client)
+        public static void BroadcastNewUser(NusysClient client)
         {
             var dict = GetUserAdditionDict(client);
             Broadcast(dict);
         }
 
-        public static void BroadcastRemovingUser(ActiveClient client)
+        public static void BroadcastRemovingUser(NusysClient client)
         {
             var dict = GetUserRemoveDict(client);
             Broadcast(dict);
@@ -129,12 +130,12 @@ namespace NusysServer
         /// </summary>
         /// <param name="client"></param>
         /// <returns></returns>
-        private static Dictionary<string, object> GetUserAdditionDict(ActiveClient client)
+        private static Dictionary<string, object> GetUserAdditionDict(NusysClient client)
         {
-            var dict = client.Client.GetDict();
+            var dict = new Dictionary<string, object>();
             //dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
             dict["notification_type"] = "add_user";
-            dict["user_id"] = client.Client.ID;
+            dict["user_id"] = client.UserID;
             return dict;
         }
 
@@ -143,12 +144,12 @@ namespace NusysServer
         /// </summary>
         /// <param name="client"></param>
         /// <returns></returns>
-        private static Dictionary<string, object> GetUserRemoveDict(ActiveClient client)
+        private static Dictionary<string, object> GetUserRemoveDict(NusysClient client)
         {
             var dict = new Dictionary<string, object>();
             //dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
             dict["notification_type"] = "remove_user";
-            dict["user_id"] = client.Client.ID;
+            dict["user_id"] = client.UserID;
             return dict;
         }
 

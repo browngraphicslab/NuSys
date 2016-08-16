@@ -41,7 +41,7 @@ namespace NusysServer.Controllers
         {
             string id = (string)(context.Items["id"]);
             var handler = new NuWebSocketHandler();
-            if (ActiveClient.AddClient(id, handler))
+            if (NusysClient.FetchAwaitingSession(id, handler))
             {
                 var processTask = handler.ProcessWebSocketRequestAsync(context);
                 return processTask;

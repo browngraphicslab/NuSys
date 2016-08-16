@@ -45,6 +45,11 @@ namespace NusysServer
             CommandString = CommandString + columnNames + " VALUES " + values + ";";
         }
 
+        /// <summary>
+        /// executes the insert command of this query. 
+        /// Returns whether at least one row was populated
+        /// </summary>
+        /// <returns></returns>
         public bool ExecuteCommand()
         {
             if (CommandString == null || CommandString.Equals(""))

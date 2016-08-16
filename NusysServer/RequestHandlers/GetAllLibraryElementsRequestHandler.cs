@@ -19,7 +19,7 @@ namespace NusysServer
         public override Message HandleRequest(Request request, NuWebSocketHandler senderHandler)
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.GetAllLibraryElementsRequest);
-            var userId = ActiveClient.ActiveClients[senderHandler]?.Client?.ID;
+            var userId = NusysClient.IDtoUsers[senderHandler]?.UserID;
             if (userId == null)
             {
                 throw new Exception("The client has no id");

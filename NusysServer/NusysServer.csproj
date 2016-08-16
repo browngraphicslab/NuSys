@@ -215,7 +215,6 @@
   <ItemGroup>
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Clients\ActiveClient.cs" />
     <Compile Include="Clients\NusysClient.cs" />
     <Compile Include="Clients\NusysLogins.cs" />
     <Compile Include="Controllers\NusysLoginController.cs" />

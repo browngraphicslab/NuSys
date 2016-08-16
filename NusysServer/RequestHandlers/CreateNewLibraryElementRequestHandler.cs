@@ -28,7 +28,7 @@ namespace NusysServer
             //create message of database keys from request keys
             var addLibraryElementMessage = RequestToSqlKeyMappings.LibraryElementRequestKeysToDatabaseKeys(message);
 
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY] = ActiveClient.ActiveClients[senderHandler]?.Client?.ID;
+            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY] = NusysClient.IDtoUsers[senderHandler]?.UserID;
 
             //create thumbnails and add the paths to the sql database
             var smallIconPath = FileHelper.CreateThumbnailFile(libraryId,NusysConstants.ThumbnailSize.Small, message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY));

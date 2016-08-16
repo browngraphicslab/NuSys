@@ -814,7 +814,36 @@ namespace NusysIntermediate
                 CONTENT_TABLE_TYPE_KEY,
                 CONTENT_TABLE_CONTENT_URL_KEY
             };
-            #endregion Content
+        #endregion Content
+
+            #region Users
+
+            /// <summary>
+            /// key that represents  the doubly-hashed username that will be used to log in with.
+            /// </summary>
+            public static readonly string USERS_TABLE_HASHED_USER_ID_KEY = "user_id";
+
+            /// <summary>
+            /// key that represents  the doubly-hashed password that will be used to log in with.
+            /// </summary>
+            public static readonly string USERS_TABLE_HASHED_PASSWORD_KEY = "user_password";
+
+            /// <summary>
+            /// key that represents the unhashed display name for the user
+            /// </summary>
+            public static readonly string USERS_TABLE_USER_DISPLAY_NAME_KEY = "display_name";
+
+            /// <summary>
+            /// key that represents salt applied to the user's password after single hashing
+            /// </summary>
+            public static readonly string USERS_TABLE_SALT_KEY = "user_salt_key";
+
+            /// <summary>
+            /// key that represents josn-serialized last ten workspaces visited
+            /// </summary>
+            public static readonly string USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY = "last_visited_collections";
+
+            #endregion Users
 
             #region PresentationLinks
 

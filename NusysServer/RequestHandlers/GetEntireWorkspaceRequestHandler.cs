@@ -19,7 +19,7 @@ namespace NusysServer
             Debug.Assert(message.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY));
 
             var workspaceId = message.GetString(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY);
-            var userId = ActiveClient.ActiveClients[senderHandler]?.Client?.ID;
+            var userId = NusysClient.IDtoUsers[senderHandler]?.UserID;
             if (userId == null)
             {
                 throw new Exception("The client has no id");
