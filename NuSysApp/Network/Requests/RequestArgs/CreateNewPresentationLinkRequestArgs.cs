@@ -13,14 +13,14 @@ namespace NuSysApp
     {
         /// <summary>
         /// REQUIRED. 
-        /// The library element id of the element view model this presentation link was dragged from
+        /// The id of the element view model this presentation link was dragged from
         /// </summary>
-        public string LibraryElementModelInId { get; set; }
+        public string ElementViewModelInId { get; set; }
         /// <summary>
         /// REQUIRED. 
-        /// The library element id of the element view model this presentation link was dragged to
+        /// The id of the element view model this presentation link was dragged to
         /// </summary>
-        public string LibraryElementModelOutId { get; set; }
+        public string ElementViewModelOutId { get; set; }
         /// <summary>
         /// A unique id for the presentation link
         /// </summary>
@@ -40,8 +40,8 @@ namespace NuSysApp
         /// <returns></returns>
         public Message PackToRequestKeys()
         {
-            Debug.Assert(LibraryElementModelInId != null, "This is a required field, it should be populated when the link is created");
-            Debug.Assert(LibraryElementModelOutId != null, "This is a required field, it should be populated when the link is created");
+            Debug.Assert(ElementViewModelInId != null, "This is a required field, it should be populated when the link is created");
+            Debug.Assert(ElementViewModelOutId != null, "This is a required field, it should be populated when the link is created");
             Debug.Assert(ParentCollectionId != null, "This is a required field, it should be populated when the link is created");
 
             LinkId = LinkId ?? SessionController.Instance.GenerateId();
@@ -49,9 +49,9 @@ namespace NuSysApp
 
             Message message = new Message();
             message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY] = ParentCollectionId;
-            message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY] = ParentCollectionId;
-            message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY] = ParentCollectionId;
-            message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY] = ParentCollectionId;
+            message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY] = ElementViewModelInId;
+            message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY] = ElementViewModelOutId;
+            message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY] = LinkId;
             if (Annotation != null)
             {
                 message[NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY] = ParentCollectionId;

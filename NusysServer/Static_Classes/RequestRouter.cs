@@ -93,6 +93,9 @@ namespace NusysServer
                     case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
                         requestHandler = new UpdateLibraryElementRequestHandler();
                         break;
+                    case NusysConstants.RequestType.CreateNewPresentationLinkRequest:
+                        requestHandler = new CreateNewPresentationLinkRequestHandler();
+                        break;
                     default:
                         requestHandler = null;
                         return false;

@@ -393,7 +393,7 @@ namespace NuSysApp
                     // create a new instance of CreateNewPresentationLinkRequestArgs
                     var createNewPresentationLinkRequestArgs = new CreateNewPresentationLinkRequestArgs();
                     // pass in the id of the current element view model as the LibraryElementModelInId.
-                    createNewPresentationLinkRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
+                    createNewPresentationLinkRequestArgs.LibraryElementModelInId = vm.Id;
                     // pass in the parent collection id of the element model as the parent collection id
                     createNewPresentationLinkRequestArgs.ParentCollectionId = vm.Model.ParentCollectionId;
 
@@ -402,7 +402,7 @@ namespace NuSysApp
                     {
                         first = (FrameworkElement) hitsStartElements.First();
                         var dc1 = (ElementViewModel) first.DataContext;
-                        createNewPresentationLinkRequestArgs.LibraryElementModelOutId = dc1.LibraryElementId;
+                        createNewPresentationLinkRequestArgs.LibraryElementModelOutId = dc1.Id;
                     }
                     else
                     {
