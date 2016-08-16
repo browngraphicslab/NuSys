@@ -10,7 +10,7 @@ namespace NuSysApp
     abstract class NotificationHandler
     {
         /// <summary>
-        /// This is just so that the subclasses dont need to 
+        /// This is just so that the subclasses dont need to keep using SessionController.Instance.NuSysNetworkSession
         /// </summary>
         public NuSysNetworkSession NuSysNetworkSession { get; private set; }
          
