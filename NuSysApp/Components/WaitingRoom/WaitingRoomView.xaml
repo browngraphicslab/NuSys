@@ -305,8 +305,8 @@
 
             </Grid>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Margin="0,400,0,0">
-            <Button Style="{StaticResource WhiteButton}"  Width="150" Height="50" Background="{StaticResource color6}" Foreground="{StaticResource color2}" FontSize="18"  Click="NewUser_OnClick">CREATE</Button>
-            <TextBlock x:Name="NewUserLoginText" TextAlignment="Center" Foreground="{StaticResource color3}"></TextBlock>
+                <Button HorizontalAlignment="Center"  Style="{StaticResource WhiteButton}"  Width="150" Height="50" Background="{StaticResource color6}" Foreground="{StaticResource color2}" FontSize="18"  Click="NewUser_OnClick">CREATE</Button>
+                <TextBlock x:Name="NewUserLoginText" HorizontalAlignment="Center" Margin="10"  TextAlignment="Center" Foreground="{StaticResource color3}"></TextBlock>
             </StackPanel>
         </Grid>
         
