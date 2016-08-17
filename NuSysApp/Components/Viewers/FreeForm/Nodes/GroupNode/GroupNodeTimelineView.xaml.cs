@@ -57,11 +57,8 @@ namespace NuSysApp
             var model = _vm.Model;
             Loaded += async delegate
             {
-                var messages =
-                    await
-                        SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(
-                            viewModel.LibraryElementId);
-                _count = messages.Count;
+                //var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(viewModel.LibraryElementId);
+                //_count = messages.Count;
             };
             _vm.Controller.SizeChanged += GroupNode_SizeChanged;
             _sortBy = "node_creation_date";

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NusysIntermediate;
 
 namespace NusysServer
 {
@@ -17,9 +18,10 @@ namespace NusysServer
         /// </summary>
         public string PropertyKey;
 
+        private string _propertyValue;
         /// <summary>
         /// value of the property to insert or update
         /// </summary>
-        public string PropertyValue;
+        public string PropertyValue { get { return _propertyValue; } set { _propertyValue = NusysConstants.CheckString(value); } }
     }
 }

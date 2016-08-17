@@ -138,7 +138,7 @@ namespace NuSysApp
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
             var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
-            var nextElemVm = outgoingLink?.OutElementViewModel;
+            var nextElemVm = GetElementViewModelFromId(outgoingLink?.OutElementId);
             return nextElemVm;
 
         }
@@ -156,7 +156,7 @@ namespace NuSysApp
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
             var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
-            var prevElemVm = incomingLink?.InElementViewModel;
+            var prevElemVm = GetElementViewModelFromId(incomingLink?.InElementId);
             return prevElemVm;
         }
 
@@ -354,5 +354,20 @@ namespace NuSysApp
             _backwardColor = null;
             _forwardColor = null;
         }
+
+        /// <summary>
+        /// Hacky way of getting element view models from their id
+        /// </summary>
+        /// <param name="inElementId"></param>
+        /// <returns></returns>
+        public static ElementViewModel GetElementViewModelFromId(string elementViewModelId)
+        {
+            Debug.Assert(elementViewModelId != null);
+            var elementViewModels = SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(elementVM => elementVM.Id == elementViewModelId).ToList();
+            Debug.Assert(elementViewModels != null);
+            Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
+            return elementViewModels.First();
+        }
+
     }
 }

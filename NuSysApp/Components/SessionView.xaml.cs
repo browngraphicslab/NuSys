@@ -120,35 +120,6 @@ namespace NuSysApp
             {
                 NewNetworkUser(user);
             }
-
-            var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
-            foreach (var presentationlink in presentationLinks ?? new HashSet<PresentationLinkModel>())
-            {
-                Debug.Assert(presentationlink != null && presentationlink?.InElementId != null && presentationlink?.OutElementId != null);
-
-
-                // If the two elements the presentation link connects aren't on the current workspace don't make the link
-                if (SessionController.Instance.IdToControllers.ContainsKey(presentationlink.InElementId) &&
-                    SessionController.Instance.IdToControllers.ContainsKey(presentationlink.OutElementId))
-                {
-                    UITask.Run(delegate
-                   {
-                       var vm = new PresentationLinkViewModel(presentationlink);
-                       if (PresentationLinkViewModel.Models == null)
-                       {
-                           PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
-                       }
-                       PresentationLinkViewModel.Models.Add(presentationlink);
-                       new PresentationLinkView(vm);
-                   });
-
-                }
-
-            }
-
-
-
-
         }
 
 
@@ -338,8 +309,8 @@ namespace NuSysApp
             {
                 var presLink = dataContext as PresentationLinkViewModel;
 
-                var atom1 = presLink.Model.InElementViewModel;
-                var atom2 = presLink.Model.OutElementViewModel;
+                var atom1 = PresentationMode.GetElementViewModelFromId(presLink.Model.InElementId);
+                var atom2 = PresentationMode.GetElementViewModelFromId(presLink.Model.OutElementId);
 
                 // if atom1 is currently selected move to atom2
                 if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(atom1))

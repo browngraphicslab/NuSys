@@ -35,7 +35,7 @@ namespace NuSysApp
         /// Returned whether the new presentation link was added
         /// </summary>
         /// <returns></returns>
-        public bool AddPresentationLinkToLibrary()
+        public async Task<bool> AddPresentationLinkToLibrary()
         {
             if (WasSuccessful() != true)
             {
@@ -45,13 +45,46 @@ namespace NuSysApp
 
             //make sure the returned model is present
             //make sure the key for the json is present
-            Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
+            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
 
             //get the json and add it to the session
             PresentationLinkModel model = JsonConvert.DeserializeObject<PresentationLinkModel>(_returnMessage.GetString(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
-            //TODO: DO SOMETHING WITH THIS MODEL
 
-            return false;
+            return await AddPresentationLinkToLibrary(model);
+        }
+
+        /// <summary>
+        /// This is a private helper method that adds a presentation link to the library when given a presentation link model
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private async Task<bool> AddPresentationLinkToLibrary(PresentationLinkModel model)
+        {
+            // If there exists a presentation link between two element models, return and do not create a new one
+            if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == model.InElementId && item.OutElementId == model.OutElementId) != null ||
+                PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == model.InElementId && item.InElementId == model.OutElementId) != null)
+            {
+                return false;
+            }
+
+            var isSuccess = false;
+            await UITask.Run(async delegate
+            {
+                Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
+                // create a new presentation link view model
+                var vm = new PresentationLinkViewModel(model);
+                // create a new presentation link view
+                var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
+                //TODO use this collectionController stuff, check if the collection exists
+                //var collectionController = SessionController.Instance.IdToControllers[model.ParentCollectionId] as ElementCollectionController;
+                // Debug.Assert(collectionController != null, "the collectionController is not an element collection controller, check that parent collection id is being set correctly for presentation link models");
+                //collectionController.AddChild(view);
+
+                // Add the model to the list of models
+                PresentationLinkViewModel.Models.Add(vm.Model);
+                isSuccess = true;
+            });
+            return isSuccess;
         }
 
         /// <summary>
@@ -64,8 +97,10 @@ namespace NuSysApp
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
 
             //get the json and add it to the session
-            PresentationLinkModel model = JsonConvert.DeserializeObject<PresentationLinkModel>( _returnMessage.GetString(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
-            //TODO: DO SOMETHING WITH THIS MODEL
+            PresentationLinkModel model = JsonConvert.DeserializeObject<PresentationLinkModel>( _message.GetString(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
+
+            // since we always create presentation links client side the same way, just call AddPresenationLinkToLibrary
+            await AddPresentationLinkToLibrary(model);
         }
 
         //just checks to see if the message contains an id to request

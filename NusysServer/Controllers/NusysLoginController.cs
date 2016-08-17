@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NusysServer
 {
@@ -20,7 +21,6 @@ namespace NusysServer
         public long Get()
         {
             var timestamp = DateTime.UtcNow.Ticks;
-            //var xmlString = RSA.ToXmlString(false);
             return timestamp;
         }
 
@@ -36,28 +36,63 @@ namespace NusysServer
             var data = await value.Content.ReadAsStringAsync();
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
-            if (!dict.ContainsKey("user") || !dict.ContainsKey("pass") || !dict.ContainsKey("timestamp"))
+
+            //must contain user and passwrod for login attempt
+            if (!dict.ContainsKey("user") || !dict.ContainsKey("pass"))
             {
                 throw new Exception("invalid login dictionary");
             }
-            if (long.Parse(dict["timestamp"]) + 30000000 < DateTime.UtcNow.Ticks)
+            var returnDict = new Dictionary<string, string>();
+
+            Tuple<bool, NusysClient> returnTuple;
+            if (dict.ContainsKey("new_user"))
             {
-                throw new Exception("timestamp expired");
+                try
+                { 
+                    var client = NusysLogins.CreateNewUser(dict["user"], dict["pass"], dict["display_name"]);
+                    if (client != null)
+                    {
+                        returnTuple = new Tuple<bool, NusysClient>(true, client);
+                    }
+                    else
+                    {
+                        returnDict[Constants.VALID_CREDENTIALS_BOOLEAN_STRING] = false.ToString();
+                        returnDict["error_message"] = "Couldn't create a new user";
+                        return JsonConvert.SerializeObject(returnDict, settings);
+                    }
+                }
+                catch (Exception e)
+                {
+                    returnDict[Constants.VALID_CREDENTIALS_BOOLEAN_STRING] = false.ToString();
+                    returnDict["error_message"] = e.Message;
+                    return JsonConvert.SerializeObject(returnDict, settings);
+                }
             }
             else
             {
-                var returnDict = new Dictionary<string, string>();
-                var tup = NusysLogins.Validate(dict["user"], dict["pass"], dict.ContainsKey("new_user"));
-                returnDict[Constants.VALID_CREDENTIALS_BOOLEAN_STRING] = tup.Item1.ToString();
-                if (tup.Item1)
+
+                try
                 {
-                    var sessionString = Guid.NewGuid().ToString();
-                    returnDict[Constants.SERVER_SESSION_ID_STRING] = sessionString;
-                    returnDict["user_id"] = tup.Item2.ID;
-                    ActiveClient.WaitForClient(sessionString, tup.Item2);
+                    returnTuple = NusysLogins.Validate(dict["user"], dict["pass"]);
                 }
-                return JsonConvert.SerializeObject(returnDict, settings);
+                catch (Exception e)
+                {
+                    returnDict[Constants.VALID_CREDENTIALS_BOOLEAN_STRING] = false.ToString();
+                    returnDict["error_message"] = e.Message;
+                    return JsonConvert.SerializeObject(returnDict, settings);
+                }
             }
+
+            //add to the returning dictionary whether it was a valid attmept to login
+            returnDict[Constants.VALID_CREDENTIALS_BOOLEAN_STRING] = returnTuple.Item1.ToString();
+            if (returnTuple.Item1)
+            {
+                //if it was valid, add the session id
+                var sessionString = NusysConstants.GenerateId();
+                returnDict[Constants.SERVER_SESSION_ID_STRING] = sessionString;
+                NusysClient.WaitForClient(sessionString, returnTuple.Item2);
+            }
+            return JsonConvert.SerializeObject(returnDict, settings);
         }
 
         // PUT api/<controller>/5

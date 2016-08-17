@@ -87,7 +87,7 @@ namespace NuSysApp
             }
             
             UITask.Run(delegate {
-                libraryElementController.RemoveMetadata(metadataKey);
+                libraryElementController.RemoveMetadataLocally(metadataKey);
             });
             return true;
         }

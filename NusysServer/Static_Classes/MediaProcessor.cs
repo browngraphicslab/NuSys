@@ -25,6 +25,7 @@ namespace NusysServer
         /// <param name="senderHandler"></param>
         public static void ProcessCreateContentDataModelRequestMedia(Message contentDataModelMessage, string contentDataModelId, string contentUrl, NusysConstants.ElementType elementType, NuWebSocketHandler senderHandler)
         {
+            
             //create a new async Task so we don't slow down the request
             Task.Run(async delegate
             {
@@ -32,7 +33,6 @@ namespace NusysServer
 
                 //create an empty analysis model, default to null
                 AnalysisModel analysisModel = null;
-
                 switch (contentType)
                 {
                     case NusysConstants.ContentType.PDF:
@@ -69,11 +69,10 @@ namespace NusysServer
                         catch (Exception e)
                         {
                             ErrorLog.AddError(e);
-                            senderHandler.Send(e.Message + " with the url: "+contentUrl);
+                            senderHandler.SendError(e);
                         }
                         break;
                 }
-
                 //if the model was created because the content type had an async model to create
                 if (analysisModel != null)
                 {

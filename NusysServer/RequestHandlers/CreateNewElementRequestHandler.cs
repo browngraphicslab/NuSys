@@ -25,7 +25,7 @@ namespace NusysServer
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY));
 
             //set the creator of the element as the sender
-            message[NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY] = ActiveClient.ActiveClients[senderHandler].Client.ID;
+            message[NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY] = NusysClient.IDtoUsers[senderHandler].UserID;
 
             //TESTING STUFF DELETE AFTER FINISHED TESTING***************************
             //ContentController.Instance.SqlConnector.AddStringProperty(

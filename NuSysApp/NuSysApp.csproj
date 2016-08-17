@@ -103,6 +103,8 @@
     <Content Include="Assets\add from file dark.png" />
     <Content Include="Assets\audio main menu.png" />
     <Content Include="Assets\audio.png" />
+    <Content Include="Assets\back icon triangle.png" />
+    <Content Include="Assets\back icon.png" />
     <Content Include="Assets\bar chart icon.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
@@ -431,12 +433,13 @@
     </Compile>
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
+    <Compile Include="Controller\ContentDataController.cs" />
+    <Compile Include="Controller\ContentDataControllerFactory.cs" />
     <Compile Include="Controller\ElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinksController.cs" />
-    <Compile Include="Controller\RecordingNodeController.cs" />
     <Compile Include="Controller\RectangleRegionLibraryElementController.cs" />
     <Compile Include="Controller\PdfRegionLibraryElementController.cs" />
     <Compile Include="Controller\RegionLibraryElementController.cs" />
@@ -448,7 +451,6 @@
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
-    <Compile Include="Models\PresentationLinkModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
@@ -650,6 +652,9 @@
     <Compile Include="Network\Requests\GetAnalysisModelRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />
@@ -659,9 +664,11 @@
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewTimeSpanRegionRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\UpdateContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdatePresentationLinkRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdateMetadataEntryRequestArgs.cs" />
     <Compile Include="Network\Requests\SearchRequest.cs" />
+    <Compile Include="Network\Requests\UpdateContentRequest.cs" />
     <Compile Include="Network\Requests\UpdateMetadataEntryRequest.cs" />
     <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
@@ -682,7 +689,6 @@
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendClientInfoSystemRequest.cs" />
-    <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />
     <Compile Include="Components\Misc\SearchWindowView.xaml.cs">

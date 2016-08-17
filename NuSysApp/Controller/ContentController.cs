@@ -25,6 +25,9 @@ namespace NuSysApp
         private ConcurrentDictionary<string, ContentDataModel> _contentDataModels =
             new ConcurrentDictionary<string, ContentDataModel>();
 
+        private ConcurrentDictionary<string, ContentDataController> _contentDataControllers =
+            new ConcurrentDictionary<string, ContentDataController>();
+
         public delegate void NewContentEventHandler(LibraryElementModel element);
 
         public event NewContentEventHandler OnNewContent;
@@ -179,10 +182,27 @@ namespace NuSysApp
             return _contentDataModels.ContainsKey(contentId) ? _contentDataModels[contentId] : null;
         }
 
+        /// <summary>
+        /// returns null if the content controller doesn't exist
+        /// </summary>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public ContentDataController GetContentDataController(string contentId)
+        {
+            Debug.Assert(contentId != null);
+            return _contentDataControllers.ContainsKey(contentId) ? _contentDataControllers[contentId] : null;
+        }
+
         //use this method to clear every contentData model from this controller
         public void ClearAllContentDataModels()
         {
             _contentDataModels.Clear();
+        }
+
+        //use this method to clear every contentData controller from this controller
+        public void ClearAllContentDataControllers()
+        {
+            _contentDataControllers.Clear();
         }
 
         /// <summary>
@@ -197,7 +217,28 @@ namespace NuSysApp
             {
                 return false;
             }
+
+            // Here we create the controller for this content data model and add it to the ContentController's dictionary
+            var contentDataController = ContentDataControllerFactory.CreateFromContentDataModel(contentDataModel);
+            SessionController.Instance.ContentController.AddContentDataController(contentDataController);
+
             _contentDataModels.TryAdd(contentDataModel.ContentId, contentDataModel);
+            return true;
+        }
+
+        /// <summary>
+        /// should be used to add (and therefore 'load') all content data models.  
+        /// They should be recieved fully populated from the server. 
+        /// </summary>
+        /// <param name="contentDataModel"></param>
+        /// <returns></returns>
+        public bool AddContentDataController(ContentDataController contentDataController)
+        {
+            if (_contentDataModels.ContainsKey(contentDataController.ContentDataModel.ContentId))
+            {
+                return false;
+            }
+            _contentDataControllers.TryAdd(contentDataController.ContentDataModel.ContentId, contentDataController);
             return true;
         }
     }

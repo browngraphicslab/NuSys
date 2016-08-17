@@ -22,7 +22,7 @@ namespace NuSysApp
             Debug.Assert(chatMessage != null);
             Debug.Assert(user != null);
             _message[NusysConstants.CHAT_REQUEST_CHAT_MESSAGE_KEY] = chatMessage;
-            _message[NusysConstants.CHAT_REQUEST_USER_ID_KEY] = user.ID;
+            _message[NusysConstants.CHAT_REQUEST_USER_ID_KEY] = user.UserID;
         }
 
         /// <summary>

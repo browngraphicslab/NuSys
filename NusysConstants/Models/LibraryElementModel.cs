@@ -26,6 +26,10 @@ namespace NusysIntermediate
         public string MediumIconUrl { get; set; }
         public string SmallIconUrl { get; set; }
         public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
+
+        /// <summary>
+        /// the UserId of the person who made this libraryElementModel
+        /// </summary>
         public string Creator { set; get; }
 
         public string Timestamp
