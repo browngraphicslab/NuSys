@@ -153,7 +153,6 @@ namespace NuSysApp
             xContainer.RowDefinitions.Add(new RowDefinition());
             Grid.SetRow(SearchBarGrid, 0);
             ShowHelpButton.Visibility = Visibility.Visible;
-            _vm.SearchExportButtonVisibility = Visibility.Visible;
         }
 
         private void ShowHelperText()
@@ -182,7 +181,7 @@ namespace NuSysApp
             HideHelperText();
             foreach (var element in _openInfo) element.Visibility = Visibility.Collapsed;
 
-      if (args.ChosenSuggestion != null)
+            if (args.ChosenSuggestion != null)
             {
                 // User selected an item from the suggestion list, take an action on it here.
             }
