@@ -38,6 +38,7 @@ namespace NuSysApp
 
         //private ContentImporter _contentImporter = new ContentImporter();
 
+            public bool IsReadonly { get; set; }
 
         public bool IsPenMode { get; private set; }
 
@@ -95,12 +96,7 @@ namespace NuSysApp
 
             MainCanvas.SizeChanged += Resize;
  
-            // Will make the collection readonly if the active freeform viewer is readonly
-            var isReadonly = false;
-            if (isReadonly)
-            {
-                this.MakeWorkspaceReadonly();
-            }
+            
         }
 
         /// <summary>
@@ -108,10 +104,15 @@ namespace NuSysApp
         /// </summary>
         private void MakeWorkspaceReadonly()
         {
+            // toggle visibility and activity of some ui elements
             xFloatingMenu.Visibility = Visibility.Collapsed;
             xReadonlyFloatingMenu.Visibility = Visibility.Visible;
             xWorkspaceTitle.IsEnabled = false;
-            SessionController.Instance.SwitchMode(Options.Exploration);
+            xCurrentCollectionDVButton.IsEnabled = false;
+
+            // only let the user pan and zoom initially
+            _activeFreeFormViewer.SwitchMode(Options.PanZoomOnly, false);
+           
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -136,6 +137,13 @@ namespace NuSysApp
             foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
             {
                 NewNetworkUser(user);
+            }
+
+            // Will make the collection readonly if the active freeform viewer is readonly
+            IsReadonly = true;
+            if (IsReadonly)
+            {
+                this.MakeWorkspaceReadonly();
             }
         }
 
@@ -251,9 +259,9 @@ namespace NuSysApp
             SetModeButtons();
         }
 
-        public void EnterExplorationMode(ElementViewModel em)
+        public void EnterExplorationMode(ElementViewModel em = null)
         {
-            Debug.Assert(em != null);
+            //Debug.Assert(em != null);
             _modeInstance = new ExplorationMode(em);
 
             /* uncomment this and go into exploration mode for a good time :)
@@ -281,6 +289,9 @@ namespace NuSysApp
 
             // set the buttons
             SetModeButtons();
+
+            // Change mode in free form viewer
+            SessionController.Instance.SwitchMode(Options.Exploration);
         }
 
         public void ExploreSelectedObject(ElementViewModel elementViewModel)
@@ -394,6 +405,9 @@ namespace NuSysApp
             SetModeButtons();
         }
 
+        /// <summary>
+        /// Exits either presentation or exploration mode by modifying the proper UI elements
+        /// </summary>
         public void ExitMode()
         {
 
@@ -403,9 +417,19 @@ namespace NuSysApp
             PreviousNode.Visibility = Visibility.Collapsed;
             CurrentNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
-            xFloatingMenu.Visibility = Visibility.Visible;
 
-            //FreeFormViewer.CanvasColor = new SolidColorBrush(Colors.White);
+            // Make sure to make appropriate changes based on whether or not we are in read only mode
+            if (this.IsReadonly)
+            {
+                xReadonlyFloatingMenu.Visibility = Visibility.Visible;
+                xReadonlyFloatingMenu.DeactivateAllButtons();
+                _activeFreeFormViewer.SwitchMode(Options.PanZoomOnly, false);
+            }
+            else {
+                xFloatingMenu.Visibility = Visibility.Visible;
+            }
+            
+
 
         }
 
@@ -724,6 +748,11 @@ namespace NuSysApp
         public FloatingMenuView FloatingMenu
         {
             get { return xFloatingMenu; }
+        }
+
+        public ReadonlyFloatingMenuView ReadonlyFloatingMenu
+        {
+            get { return xReadonlyFloatingMenu; }
         }
 
         public Canvas MainCanvas

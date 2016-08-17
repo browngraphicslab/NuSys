@@ -531,7 +531,7 @@ namespace NuSysApp
             highlight.Visibility = Visibility.Collapsed;
 
             sv.EnterExplorationMode(vm);
-            SessionController.Instance.SwitchMode(Options.Exploration);
+            
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

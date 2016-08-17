@@ -42,6 +42,7 @@ namespace NuSysApp
         private ExploreMode _exploreMode;
         private MultiMode _explorationMode;
 
+
         private FreeFormViewerViewModel _vm;
 
         public Brush CanvasColor
@@ -98,6 +99,7 @@ namespace NuSysApp
                 _floatingMenuMode = new FloatingMenuMode(this);
                 _globalInkMode = new GlobalInkMode(this);
                 _exploreMode = new ExploreMode(this);
+           
 
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
@@ -106,6 +108,7 @@ namespace NuSysApp
                 _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
+      
 
                 SwitchMode(Options.SelectNode, false);
 
@@ -291,6 +294,9 @@ namespace NuSysApp
                     break;
                 case Options.Exploration:
                     SetViewMode(_explorationMode);
+                    break;
+                case Options.PanZoomOnly:
+                    this.SetViewMode(new MultiMode(this, _panZoomMode));
                     break;
             }
         }

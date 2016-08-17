@@ -48,10 +48,12 @@ namespace NuSysApp
         {
             this.DeactivateAllButtons();
             xExploreButton.Activate();
+            SessionController.Instance.SessionView.EnterExplorationMode();
+            
         }
 
         /// <summary>
-        /// Will revert to a readonly collection if applicable
+        /// Will revert to a normal collection if applicable
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -59,14 +61,23 @@ namespace NuSysApp
         {
             this.DeactivateAllButtons();
             xRevertButton.Activate();
+            this.RevertToNormalWorkspace();
 
+        }
 
+        /// <summary>
+        /// Will open the current collection as a normal, read-and-write-able workspace. Make sure
+        /// to fill this in later, when the functionality can be achieved after some server development.
+        /// </summary>
+        private void RevertToNormalWorkspace()
+        {
+            // TODO implement
         }
 
         /// <summary>
         /// Sets all buttons to inactive
         /// </summary>
-        private void DeactivateAllButtons()
+        public void DeactivateAllButtons()
         {
             xPresentButton.Deactivate();
             xExploreButton.Deactivate();
