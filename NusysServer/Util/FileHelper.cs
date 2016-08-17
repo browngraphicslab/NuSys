@@ -30,6 +30,7 @@ namespace NusysServer
                 case NusysConstants.ContentType.Image:
                 case NusysConstants.ContentType.Video:
                 case NusysConstants.ContentType.PDF:
+                case NusysConstants.ContentType.Word:
                     return contentUrl;
                 case NusysConstants.ContentType.Text:
                     return FetchDataFromFile(contentUrl.Substring(Constants.SERVER_ADDRESS.Length));
@@ -63,20 +64,20 @@ namespace NusysServer
         }
 
         /// <summary>
-        /// creates a content file based off the id of the file.  
+        /// creates a content file based off the content data model id of the file.  
         /// A file exstension is needed for Audio, Video, and Image contentTypes.  
         /// If the contentType isn't on of those, the extension string will be ignored.  
         /// 
         /// Returns the url to store in the database
         /// </summary>
-        /// <param name="libraryElementModelId"></param>
+        /// <param name="contentDataModelId"></param>
         /// <param name="contentType"></param>
         /// <param name="extension"></param>
         /// <returns></returns>
-        public static string CreateDataFile(string libraryElementModelId, NusysConstants.ContentType contentType, string contentData,
+        public static string CreateDataFile(string contentDataModelId, NusysConstants.ContentType contentType, string contentData,
             string fileExtension = null)
         {
-            if (libraryElementModelId == null)
+            if (contentDataModelId == null)
             {
                 throw new Exception("the libraryElementModelId Id cannot be null when creating a new content File");
             }
@@ -91,11 +92,15 @@ namespace NusysServer
                     {
                         throw new Exception("the file extension cannot be null when creating a new data file with Audio, Video, or Image contentTypes");
                     }
-                    filePath = Constants.WWW_ROOT + libraryElementModelId + fileExtension;
+                    filePath = Constants.WWW_ROOT + contentDataModelId + fileExtension;
                     var fileStream = File.Create(filePath);
                     fileStream.Dispose();
                     File.WriteAllBytes(filePath, Convert.FromBase64String(contentData));
-                    fileUrl = Constants.SERVER_ADDRESS + libraryElementModelId + fileExtension;
+                    fileUrl = Constants.SERVER_ADDRESS + contentDataModelId + fileExtension;
+                    break;
+                case NusysConstants.ContentType.Word:
+                    //var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
+
                     break;
                 case NusysConstants.ContentType.PDF:
                     //creates a file and url for each page image and returns a serialized list of urls
@@ -104,18 +109,18 @@ namespace NusysServer
                     int i = 0;
                     foreach(var bytesOfImage in listOfBytes)
                     {
-                        filePath = Constants.WWW_ROOT + libraryElementModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
+                        filePath = Constants.WWW_ROOT + contentDataModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
                         var stream1 = File.Create(filePath);
                         stream1.Dispose();
                         File.WriteAllBytes(filePath, Convert.FromBase64String(bytesOfImage));
-                        listOfUrls.Add(Constants.SERVER_ADDRESS + libraryElementModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                        listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
                         i++;
                     }
                     return JsonConvert.SerializeObject(listOfUrls);
                     break;
                 case NusysConstants.ContentType.Text:
                     var extension = Constants.TEXT_DATA_FILE_FILE_EXTENSION;
-                    filePath = libraryElementModelId + extension;
+                    filePath = contentDataModelId + extension;
                     var stream = File.Create(Constants.FILE_FOLDER + filePath);
                     stream.Dispose();
                     File.WriteAllText(Constants.FILE_FOLDER + filePath, contentData);
@@ -184,6 +189,16 @@ namespace NusysServer
                 throw new Exception("The content file you requests does not exist. file: "+fileName);
             }
             return File.ReadAllText(filepath);
+        }
+
+        /// <summary>
+        /// a public static methd that allows you to input the contentDataModel Id and get the file path of the word document for that Id;
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public static string GetWordDocumentFIlePathFromContentId(string contentDataModelId)
+        {
+            return Constants.FILE_FOLDER + contentDataModelId + ".docx";//TODO extract this out to actual constant
         }
 
     }

@@ -176,17 +176,24 @@ namespace NuSysApp
 
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
-            var name = NewWorkspaceName.Text;
-            var props = new Message();
-            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Collection.ToString();
-            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
-
             var contentRequestArgs = new CreateNewContentRequestArgs();
-            contentRequestArgs.LibraryElementArgs.Title = name;
+            contentRequestArgs.LibraryElementArgs.Title = NewWorkspaceName.Text;
             contentRequestArgs.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Collection;
-            contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Public;
 
-            var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
+            if (PublicButton.IsChecked.Value)
+            {
+                contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Public;
+            }
+            else if (PrivateButton.IsChecked.Value)
+            {
+                contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Private;
+            }
+            else
+            {
+                contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.ReadOnly;
+            }
+
+            var request = new CreateNewContentRequest(contentRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             Init();
             NewWorkspaceName.Text = "";
