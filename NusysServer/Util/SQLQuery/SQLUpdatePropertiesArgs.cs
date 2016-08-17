@@ -22,6 +22,6 @@ namespace NusysServer
         /// <summary>
         /// value of the property to insert or update
         /// </summary>
-        public string PropertyValue { get { return _propertyValue; } set { PropertyValue = NusysConstants.CheckString(value); } }
+        public string PropertyValue { get { return _propertyValue; } set { _propertyValue = NusysConstants.CheckString(value); } }
     }
 }

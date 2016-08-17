@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -1414,10 +1415,11 @@ namespace NusysIntermediate
             {
                 return null;
             }
-            return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
-            //input.Replace("'", "''");
-            //input.Replace("\"", "&quot;");
-            //return input;
+            Debug.WriteLine("here");
+            //return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
+            input = input.Replace("'", "''");
+            input = input.Replace("\"", "\"");
+            return input;
 
         }
 

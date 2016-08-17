@@ -433,6 +433,8 @@
     </Compile>
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
+    <Compile Include="Controller\ContentDataController.cs" />
+    <Compile Include="Controller\ContentDataControllerFactory.cs" />
     <Compile Include="Controller\ElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
