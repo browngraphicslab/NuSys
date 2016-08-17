@@ -116,10 +116,14 @@ namespace NuSysApp
             var entry = new MetadataEntry(xKey.Text, new List<string>(xValue.Text.Split(new char[] { ','}, StringSplitOptions.RemoveEmptyEntries)), MetadataMutability.MUTABLE);
 
             // Adds metadata entry to the library element and updates the listview
-            Metadatable.AddMetadata(entry);
-            this.Update();
-            xKey.Text = "";
-            xValue.Text = "";
+            UITask.Run(delegate
+            {
+                Metadatable.AddMetadata(entry);
+                Metadatable.AddMetadataLocally(entry);
+                this.Update();
+                xKey.Text = "";
+                xValue.Text = "";
+            });
         }
 
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NusysIntermediate
 {
@@ -386,34 +388,34 @@ namespace NusysIntermediate
         #endregion CreateNewMetadataRequest
 
             #region DeleteMetadataRequest
-        /// <summary>
-        /// key in message for library id of the element that the metadata to be deleted belongs to
-        /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+            /// <summary>
+            /// key in message for library id of the element that the metadata to be deleted belongs to
+            /// </summary>
+            public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
-        /// <summary>
-        /// key in message for signifying which entry should be deleted
-        /// </summary>
-        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
-        #endregion DeleteMetadataRequest
+            /// <summary>
+            /// key in message for signifying which entry should be deleted
+            /// </summary>
+            public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
+            #endregion DeleteMetadataRequest
+
 
             #region UpdateMetadataRequest
             /// <summary>
             /// key in message for library id of the element that the metadata to be edited belongs to
             /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+            public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
             /// <summary>
             /// key in message for signifying which entry should be edited
             /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+            public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
 
             /// <summary>
             /// key in message for signifying the new value for the entry
             /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
-
-        #endregion UpdateMetadataRequest
+            public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "metadata_value_string";
+            #endregion UpdateMetadataRequest
 
             #region GetAnalysisModelRequest
             /// <summary>
@@ -499,7 +501,25 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
         #endregion UpdatePresentationLinkRequest
+
+        #region UpdateContentRequest
+        /// <summary>
+        /// The key for sending the id of the content to update
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// The key for sending the type of the content to update
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type";
+
+        /// <summary>
+        /// The key for sending the new content
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_type";
         
+        #endregion UpdateContentRequest
+
 
         #region ChatRequest
 
@@ -512,18 +532,50 @@ namespace NusysIntermediate
             /// Key in message for sending chat messages in chat requests
             /// </summary>
             public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
-            #endregion
+        #endregion
 
         #endregion RequestKeys
 
-        #region SQLColumnNames
+        #region NotificationKeys
+
+            #region AddNetworkUserNotification
+
+            /// <summary>
+            /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
+            /// </summary>
+            public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
+
+            #endregion AddNetworkUserNotification
+
+            #region DropNetworkUserNotification
+
+            /// <summary>
+            /// key used in the drop user notification that represents the id of the user that dropped
+            /// </summary>
+            public static readonly string DROP_USER_NOTIFICATION_USER_ID_KEY = "user_id_to_drop";
+
+            #endregion DropNetworkUserNotification
+
+            #endregion NotificationKeys
+
+            #region NotificationManagementKeys
+
+            /// <summary>
+            /// the string key used to identify the notification type of a notification being sent. 
+            /// the value for this key should be an stringified NotificationType with the .ToString() method called
+            /// </summary>
+            public static readonly string NOTIFICATION_TYPE_STRING_KEY = "notification_type";
+
+            #endregion NotificationManagementKeys
+
+            #region SQLColumnNames
 
             #region alias
 
-        /// <summary>
-        /// 32 character string, aka an ID.  
-        /// </summary>
-        public static readonly string ALIAS_ID_KEY = "alias_id";
+            /// <summary>
+            /// 32 character string, aka an ID.  
+            /// </summary>
+            public static readonly string ALIAS_ID_KEY = "alias_id";
 
             /// <summary>
             /// 32 character string, aka an ID. 
@@ -692,28 +744,28 @@ namespace NusysIntermediate
             /// <summary>
             /// 32 character ID of the library element this metadata entry belongs to
             /// </summary>
-            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "library_id";
+            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "metadata_library_id";
 
             /// <summary>
             /// the string used as the name of the 'key' column for metadata.  
             /// approximately 512 characters max
             /// PROBABLY ONLY FOR SERVER-SIDE USE
             /// </summary>
-            public static readonly string METADATA_KEY_COLUMN_KEY = "key_string";
+            public static readonly string METADATA_KEY_COLUMN_KEY = "metadata_key_string";
 
             /// <summary>
             /// the string used as the name of the 'value' column for metadata.  
             /// approximately 2048 characters max
             /// PROBABLY ONLY FOR SERVER-SIDE USE
             /// </summary>
-            public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
+            public static readonly string METADATA_VALUE_COLUMN_KEY = "metadata_value_string";
 
         /// <summary>
         /// the string used as the name of the 'mutability' column for metadata.  
-        /// approximately 2048 characters max
+        /// approximately 256 characters max
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
-        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "mutability_string";
+        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "metadata_mutability_string";
 
         /// <summary>
         /// the list of all the column names for the metadata table.
@@ -723,7 +775,8 @@ namespace NusysIntermediate
             {
                 METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY,
                 METADATA_KEY_COLUMN_KEY,
-                METADATA_VALUE_COLUMN_KEY
+                METADATA_VALUE_COLUMN_KEY,
+                METADATA_MUTABILITY_COLUMN_KEY
             };
             #endregion metadata
 
@@ -816,6 +869,49 @@ namespace NusysIntermediate
             };
             #endregion Content
 
+            #region Users
+
+            /// <summary>
+            /// key that represents  the doubly-hashed username that will be used to log in with.
+            /// </summary>
+            public static readonly string USERS_TABLE_HASHED_USER_ID_KEY = "user_id";
+
+            /// <summary>
+            /// key that represents  the doubly-hashed password that will be used to log in with.
+            /// </summary>
+            public static readonly string USERS_TABLE_HASHED_PASSWORD_KEY = "user_password";
+
+            /// <summary>
+            /// key that represents the unhashed display name for the user.  
+            /// ~max 2048 chars
+            /// </summary>
+            public static readonly string USERS_TABLE_USER_DISPLAY_NAME_KEY = "display_name";
+
+            /// <summary>
+            /// key that represents salt applied to the user's password after single hashing
+            /// </summary>
+            public static readonly string USERS_TABLE_SALT_KEY = "user_salt_key";
+
+            /// <summary>
+            /// key that represents josn-serialized last ten workspaces visited.  ~max 2048 chars
+            /// </summary>
+            public static readonly string USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY = "last_visited_collections";
+
+            /// <summary>
+            /// the list of keys that will safely be entered into the users table.  
+            /// Use this to make sure that you're entering correct keys into the database
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_USERS_TABLE_KEYS = new HashSet<string>()
+                {
+                    USERS_TABLE_HASHED_USER_ID_KEY,
+                    USERS_TABLE_HASHED_PASSWORD_KEY,
+                    USERS_TABLE_USER_DISPLAY_NAME_KEY,
+                    USERS_TABLE_SALT_KEY,
+                    USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY
+                };
+
+            #endregion Users
+
             #region PresentationLinks
 
             /// <summary>
@@ -844,7 +940,7 @@ namespace NusysIntermediate
             public static readonly string PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY = "annotation";
 
             /// <summary>
-            /// the list of keys that will safely be entered into the contents table.  
+            /// the list of keys that will safely be entered into the presentation links table.  
             /// Use this to make sure that you're entering correct keys into the database
             /// </summary>
             public static readonly HashSet<string> ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS = new HashSet<string>()
@@ -1170,6 +1266,8 @@ namespace NusysIntermediate
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
             /// </summary>
             GetAnalysisModelRequest,
+
+            UpdateContentRequest,
             
             /// <summary>
             /// this request type is used to create a search over the library elements.  
@@ -1191,6 +1289,15 @@ namespace NusysIntermediate
             /// However, no contents will be loaded with this request
             /// </summary>
             GetAllLibraryElementsRequest
+        }
+
+        /// <summary>
+        /// A list of the notification types sent from the server to client
+        /// </summary>
+        public enum NotificationType
+        {
+            AddUser,
+            RemoveUser,
         }
 
         /// <summary>
@@ -1294,6 +1401,25 @@ namespace NusysIntermediate
         public static string GetDefaultThumbnailFileName(string libraryElementModelId, ThumbnailSize size)
         {
             return libraryElementModelId + "_" + size.ToString() + "_thumbnail";
+        }
+
+        /// <summary>
+        /// This method can be used to handle single and double quotes in strings. It takes in a string 
+        /// and return the clean string.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string CheckString(string input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+            //return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
+            input = input.Replace("'", "''");
+            input = input.Replace("\"", "\"");
+            return input;
+
         }
 
         #endregion staticMethods

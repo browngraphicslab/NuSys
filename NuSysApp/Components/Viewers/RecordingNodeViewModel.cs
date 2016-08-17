@@ -17,465 +17,86 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public class RecordingNodeViewModel : BaseINPC, ISelectable
+    public class RecordingNodeViewModel : BaseINPC
     {
-        #region Private Members      
+        // private variables
 
-        protected double _x, _y, _height, _width, _alpha;
-        private string _id;
-        private SolidColorBrush _color;
-        private bool _isEditing, _isEditingInk;
-        private CompositeTransform _inkScale;
-        private CompositeTransform _transform = new CompositeTransform();
-        private RecordingNodeController _controller;
-        protected bool _isSelected, _isVisible, _isPresenting;
-        private bool Favorited;
+        // the position of the recording node on the workspace
+        private double _x;
+        private double _y;
 
-        #endregion Private Members
+        // the size of the recording node
+        private double _width;
+        private double _height;
 
-        public RecordingNodeViewModel(RecordingNodeController controller)
-        {
-            _controller = controller;
-            LinkList = new ObservableCollection<LinkController>();
-            controller.MetadataChange += OnMetadataChange;
-            controller.PositionChanged += OnPositionChanged;
-            controller.SizeChanged += OnSizeChanged;
-            controller.ScaleChanged += OnScaleChanged;
-            controller.AlphaChanged += OnAlphaChanged;
-            controller.MetadataChange += OnMetadataChange;
-            if (controller.LibraryElementController != null)
-            {
-                controller.LibraryElementController.TitleChanged += OnTitleChanged;
-                controller.LibraryElementController.KeywordsChanged += KeywordsChanged;
-            }
-            controller.Disposed += OnDisposed;
-            controller.Deleted += ControllerOnDeleted;
-
-            Tags = new ObservableCollection<Button>();
-            ReadFromModel();
-        }
-
-        private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
-        {
-            CreateTags();
-        }
-
-        private void ControllerOnDeleted(object source)
-        {
-
-        }
-
-        private void OnDisposed(object source, object args)
-        {
-            Dispose();
-        }
-
-        public virtual async Task Init()
-        {
-        }
-
-        private void OnTitleChanged(object source, string title)
-        {
-            Title = title;
-            RaisePropertyChanged("Title");
-        }
-
-        protected virtual void OnPositionChanged(object source, double x, double y, double dx, double dy)
-        {
-
-            // don't move if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
-
-
-            Transform.TranslateX = x;
-            Transform.TranslateY = y;
-            RaisePropertyChanged("Transform");
-        }
-
-        protected virtual void OnSizeChanged(object source, double width, double height)
-        {
-
-            // don't scale if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
-
-            _width = width;
-            _height = height;
-
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
-        }
-
-        protected virtual void OnScaleChanged(object source, double sx, double sy)
-        {
-            Transform.ScaleX = sx;
-            Transform.ScaleY = sy;
-            RaisePropertyChanged("Transform");
-        }
-        protected virtual void OnAlphaChanged(object source, double alpha)
-        {
-            Alpha = Model.Alpha;
-        }
-
-        protected virtual void OnMetadataChange(object source, string key)
-        {
-            if (key == "tags")
-                CreateTags();
-        }
-
-        private void CreateTags()
-        {
-            Tags.Clear();
-
-            var tagList = Controller?.LibraryElementController?.LibraryElementModel?.Keywords;
-            if (tagList == null)
-            {
-                return;
-            }
-            foreach (var tag in tagList)
-            {
-                //sorry about this - should also be in frontend and not in viewmodel
-                Button tagBlock = new Button();
-                tagBlock.Background = new SolidColorBrush(Constants.color4);
-                tagBlock.Content = tag.Text;
-                tagBlock.Height = 30;
-                tagBlock.Padding = new Thickness(5);
-                tagBlock.BorderThickness = new Thickness(0);
-                tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
-                tagBlock.Margin = new Thickness(2, 2, 2, 2);///
-                tagBlock.FontStyle = FontStyle.Italic;
-                tagBlock.IsHitTestVisible = true;
-                tagBlock.Tapped += OnTagBlockTapped;
-                Tags.Add(tagBlock);
-            }
-
-            RaisePropertyChanged("Tags");
-        }
-
+        // public variables
 
         /// <summary>
-        /// When a tag block is tapped, it should signal the session view to show a box
-        /// with related elements (elements with the same tag)
+        /// The x coordinate of the recording node on the workspace
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnTagBlockTapped(object sender, TappedRoutedEventArgs e)
+        public double X
         {
-            var button = sender as Button;
-            var text = button.Content.ToString();
-            SessionController.Instance.SessionView.ShowRelatedElements(text);
-        }
-
-
-
-        #region Atom Manipulations
-
-        public virtual void ReadFromModel()
-        {
-            var model = Controller.Model;
-            Transform.TranslateX = model.X;
-            Transform.TranslateY = model.Y;
-            Transform.ScaleX = model.ScaleX;
-            Transform.ScaleY = model.ScaleY;
-
-            Id = model.Id;
-
-            Width = model.Width;
-            Height = model.Height;
-
-            Alpha = model.Alpha;
-            Title = model.Title;
-            IsVisible = true;
-            Transform.TranslateX = model.X;
-            Transform.TranslateY = model.Y;
-
-            CreateTags();
-        }
-
-        public virtual void WriteToModel()
-        {
-            var model = Controller.Model;
-            model.Id = Id;
-            model.X = Transform.TranslateX;
-            model.Y = Transform.TranslateY;
-            model.ScaleX = Transform.ScaleX;
-            model.ScaleY = Transform.ScaleY;
-            model.Width = Width;
-            model.Height = Height;
-            model.Alpha = Alpha;
-            model.Title = Title;
-            model.X = Transform.TranslateX;
-            model.Y = Transform.TranslateY;
-        }
-
-        public virtual void Dispose()
-        {
-            _controller.MetadataChange -= OnMetadataChange;
-            _controller.PositionChanged -= OnPositionChanged;
-            _controller.SizeChanged -= OnSizeChanged;
-            _controller.ScaleChanged -= OnScaleChanged;
-            _controller.AlphaChanged -= OnAlphaChanged;
-            _controller.MetadataChange -= OnMetadataChange;
-            if (_controller.LibraryElementController != null)
-            {
-                _controller.LibraryElementController.TitleChanged -= OnTitleChanged;
-                _controller.LibraryElementController.KeywordsChanged -= KeywordsChanged;
-            }
-            _controller.Disposed -= OnDisposed;
-
-            Tags = null;
-            _transform = null;
-            //         _controller = null;
-        }
-
-        public virtual void SetSize(double width, double height)
-        {
-            Width = width;
-            Height = height;
-        }
-
-        #endregion
-
-        public virtual double GetRatio()
-        {
-            return 1.01010101;
-        }
-
-
-        #region Public Properties
-
-        public ObservableCollection<LinkController> LinkList { get; set; }
-
-        public virtual bool IsSelected
-        {
-            get { return _isSelected; }
+            get { return _x; }
             set
             {
-                if (_isSelected == value)
-                {
-                    return;
-                }
-
-                _isSelected = value;
-                _controller.Selected(value);
-                RaisePropertyChanged("IsSelected");
+                _x = value;
+                RaisePropertyChanged("X");
             }
         }
 
-        public SolidColorBrush Color
+        /// <summary>
+        /// The y coordinate of the recording node on the workspace
+        /// </summary>
+        public double Y
         {
-            get { return _color; }
+            get { return _y; }
             set
             {
-                _color = value;
-                RaisePropertyChanged("Color");
+                _y = value;
+                RaisePropertyChanged("Y");
             }
         }
 
-        public string Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
-
-        public CompositeTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-                RaisePropertyChanged("Transform");
-            }
-        }
-
-        public ElementModel Model
-        {
-            get { return _controller.Model; }
-        }
-
+        /// <summary>
+        /// The width of the recording node
+        /// </summary>
         public double Width
         {
             get { return _width; }
             set
             {
-                if (value < Constants.MinNodeSize) //prevent atom from getting too small
-                    return;
                 _width = value;
                 RaisePropertyChanged("Width");
             }
         }
 
+        /// <summary>
+        /// The height of the recording node
+        /// </summary>
         public double Height
         {
             get { return _height; }
             set
             {
-                if (value < Constants.MinNodeSize)
-                    return;
-
                 _height = value;
                 RaisePropertyChanged("Height");
             }
         }
 
-        public double Alpha
-        {
-            get { return _alpha; }
-            set
-            {
-                _alpha = value;
-                RaisePropertyChanged("Alpha");
-            }
-        }
-
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-            set
-            {
-                if (_isVisible == value)
-                {
-                    return;
-                }
-                _isVisible = value;
-                RaisePropertyChanged("IsVisible");
-            }
-        }
-        public string Title { get; set; }
-        public ObservableCollection<Button> Tags { get; set; }
-        public ObservableCollection<LinkCircle> CircleLinks { get; set; }
-
-        public RecordingNodeController Controller
-        {
-            get { return _controller; }
-        }
-
-        public bool IsEditing
-        {
-            get { return _isEditing; }
-            set
-            {
-                if (_isEditing == value)
-                {
-                    return;
-                }
-                // don't edit if we are in exploration or presentation mode
-                if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                    SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-                {
-                    return;
-                }
-
-                _isEditing = value;
-                RaisePropertyChanged("IsEditing");
-            }
-        }
-
-        public bool IsEditingInk
-        {
-            get { return _isEditingInk; }
-            set
-            {
-                if (_isEditingInk == value)
-                {
-                    return;
-                }
-                _isEditingInk = value;
-                RaisePropertyChanged("IsEditingInk");
-            }
-        }
-
-        public NusysConstants.ElementType ElementType
-        {
-            get { return ((ElementModel)Model).ElementType; }
-        }
-
-        public string ContentId
-        {
-            get { return ((ElementModel)Model).LibraryId; }
-        }
-
-        public CompositeTransform InkScale
-        {
-            get { return _inkScale; }
-            set
-            {
-                _inkScale = value;
-                RaisePropertyChanged("InkScale");
-            }
-        }
-
         /// <summary>
-        /// returns the reference points to be used in multiselect. the four corners of the node are used. 
+        /// Takes in two parameters, the x and y coordinate of the recording node view on the workspace
         /// </summary>
-        public virtual PointCollection ReferencePoints
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public RecordingNodeViewModel(double x, double y)
         {
-            get
-            {
-                // must use the transform's translate x/y values in case the user has moved the node
-                double x = Transform.TranslateX;
-                double y = Transform.TranslateY;
-
-                // add each corner point to the list of reference points
-                PointCollection pts = new PointCollection();
-                pts.Add(new Point(x, y));           // top left
-                pts.Add(new Point(x + Width, y));   // top right
-                pts.Add(new Point(x, y + Height));  // bottom left
-                pts.Add(new Point(x + Width / 2, y + Height / 2)); // bottom right
-                pts.Add(new Point(x + Width / 4, y + Height / 4)); // bottom right
-                pts.Add(new Point(x + Width / 4 * 3, y + Height / 4)); // bottom right
-                pts.Add(new Point(x + Width / 4, y + Height / 4 * 3)); // bottom right
-                pts.Add(new Point(x + Width / 4 * 3, y + Height / 4 * 3)); // bottom right
-                pts.Add(new Point(x + Width, y + Height)); // bottom right
-                pts.Add(new Point(x + Width, y + Height)); // bottom right
-                return pts;
-            }
+            // set the width height and position correctly
+            X = x;
+            Y = y;
+            Width = Constants.DefaultVideoNodeSize;
+            Height = Constants.DefaultVideoNodeSize;
         }
 
-        public virtual Rect GetBoundingRect()
-        {
-            double x = Transform.TranslateX;
-            double y = Transform.TranslateY;
-            return new Rect(x, y, Width, Height);
-        }
-
-        /// <summary>
-        /// Will return if the atom has a link associated with it. This prevents "double-dipping" 
-        /// manipulation events. For example, recall that all selected atoms will move if one selected atoms 
-        /// is moved. If the moved atom is a link, then the two atoms the link is "linking" will be translated from
-        /// (1) the translate method being called in the NodeManipulationMode since it is a selected atom and (2) the 
-        /// translate method being called by the link. This method prevents this "double-dipping" from occuring.
-        /// </summary>
-        public bool ContainsSelectedLink
-        {
-            get
-            {
-                if (LinkList.Count > 0)
-                {
-                    // return true if at least one link is selected
-                    foreach (var link in LinkList)
-                    {
-                        // TODO: refactor
-                        //if (link.Model.IsSelected)
-                        //    return true;
-                    }
-                }
-                return false;
-            }
-        }
-
-        #endregion Public Properties
+        
     }
-
 }

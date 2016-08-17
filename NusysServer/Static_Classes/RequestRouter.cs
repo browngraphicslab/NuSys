@@ -5,13 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using NusysIntermediate;
+using NusysServer.RequestHandlers;
 
 namespace NusysServer
 {
     public class RequestRouter
     {
         /// <summary>
-        /// this requst will 
+        /// this class will take in a message from a request and route it to the  correct request handler.
+        /// All requests should go through this router.
+        /// This class also checks to see if the client is awaiting a response.  If so, it ALWAYS returns a message back indicating a succesful (or not) request from that client.
         /// </summary>
         /// <param name="originalMessage"></param>
         /// <param name="webSocketHandler"></param>
@@ -29,31 +32,6 @@ namespace NusysServer
                 {
                     switch (request.GetRequestType())
                     {
-/*
-
-                    case NusysConstants.RequestType.AddInkRequest:
-                        break;
-                    case NusysConstants.RequestType.ChangeContentRequest:
-                        break;
-                    case NusysConstants.RequestType.ChatDialogRequest:
-                        break;
-                    case NusysConstants.RequestType.SubscribeToCollectionRequest:
-                        break;
-                    case NusysConstants.RequestType.DuplicateNodeRequest:
-                        break;
-                    case NusysConstants.RequestType.FinalizeInkRequest:
-                        break;
-                    case NusysConstants.RequestType.NewLinkRequest:
-                        break;
-                    case NusysConstants.RequestType.NewNodeRequest:
-                        break;
-                    case NusysConstants.RequestType.NewThumbnailRequest:
-                        break;
-                    case NusysConstants.RequestType.UnsubscribeFromCollectionRequest:
-                        break;
-                    case NusysConstants.RequestType.SetTagsRequest:
-                        break;
-                        */
                     case NusysConstants.RequestType.GetAnalysisModelRequest:
                         requestHandler = new GetAnalysisModelRequestHandler();
                         break;
@@ -93,7 +71,28 @@ namespace NusysServer
                     case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
                         requestHandler = new UpdateLibraryElementRequestHandler();
                         break;
-                    default:
+                    case NusysConstants.RequestType.CreateNewPresentationLinkRequest:
+                        requestHandler = new CreateNewPresentationLinkRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.DeletePresentationLinkRequest:
+                        requestHandler = new DeletePresentationLinkRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.UpdatePresentationLinkRequest:
+                        requestHandler = new UpdatePresentationLinkRequestHandler();
+                            break;
+                    case NusysConstants.RequestType.CreateNewMetadataRequest:
+                        requestHandler = new CreateNewMetadataRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.DeleteMetadataRequest:
+                        requestHandler = new DeleteMetadataRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.UpdateMetadataEntryRequest:
+                        requestHandler = new UpdateMetadataRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.UpdateContentRequest:
+                        requestHandler = new UpdateContentRequestHandler();
+                        break;
+                        default:
                         requestHandler = null;
                         return false;
                     }

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.DynamicData.ModelProviders;
 using NusysIntermediate;
 
 namespace NusysServer
@@ -225,6 +220,9 @@ namespace NusysServer
                 case SQLTableType.AnalysisModels:
                     keys = NusysConstants.ACCEPTED_ANALYSIS_MODELS_TABLE_KEYS;
                     break;
+                case SQLTableType.Users:
+                    keys = NusysConstants.ACCEPTED_USERS_TABLE_KEYS;
+                    break;
                 default:
                     return new List<string>();
             }
@@ -249,11 +247,14 @@ namespace NusysServer
             var cleanedMessage = new Message();
             foreach (var key in acceptedKeys)
             {
+                
                 if (message.ContainsKey(key))
                 {
-                    cleanedMessage[key] = message[key];
+                    cleanedMessage[key] = NusysConstants.CheckString(message.GetString(key));
                 }
+                
             }
+
             return cleanedMessage;
         }
 

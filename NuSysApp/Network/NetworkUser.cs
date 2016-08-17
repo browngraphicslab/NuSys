@@ -5,19 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class NetworkUser
+    public class NetworkUser : BaseClient
     {
         #region Public Variables
-        public string ID { get; private set; }
-
         public Color Color
         {
             get { return _colorSet ? _color : GetColor(); }
         }
-        public string Name;
 
         public delegate void UserRemovedEventHandler();
         public event UserRemovedEventHandler OnUserRemoved;
@@ -28,21 +26,25 @@ namespace NuSysApp
         private bool _colorSet = false;
         private LibraryElementController _controller = null;
         #endregion Private Variables
-        public NetworkUser(string id, Dictionary<string,object> dict = null)
+
+
+        public NetworkUser(string userId = null)
         {
-            ID = id;
-            Name = id;
+            UserID = userId;
         }
+
         private Color GetColor()
         {
-            _color = MediaUtil.GetHashColorFromString(ID);
+            _color = MediaUtil.GetHashColorFromString(UserID);
             _colorSet = true;
             return _color;
         }
+
         public void Remove()
         {
             OnUserRemoved?.Invoke();
         }
+
         public void SetUserController(LibraryElementController controller)
         {
             //controller.SetNetworkUser(null);
@@ -59,20 +61,6 @@ namespace NuSysApp
                 }
                 _controller = controller;
             }
-            //controller.SetNetworkUser(null);
-
-            //if (controller != _controller)
-            //{
-            //    if (_controller != null)
-            //    {
-            //        _controller.SetNetworkUser(null);
-            //    }
-            //    if(controller != null)
-            //    {
-            //        controller.SetNetworkUser(this);
-            //    }
-            //    _controller = controller;
-            //}
         }
     }
 }

@@ -88,26 +88,22 @@ namespace NuSysApp
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
-            ServerNameText.TextChanged += delegate
-            {
-                ServerName = ServerNameText.Text;
+            //ServerNameText.TextChanged += delegate
+            //{
+            //    ServerName = ServerNameText.Text;
 
-            };
+            //};
             
-            SlideOutLogin.Completed += SlideOutLoginComplete;
+            //SlideOutLogin.Completed += SlideOutLoginComplete;
+            //SlideOutNewUser.Completed += SlideOutLoginComplete;
 
             //AutoLogin();
 
+            ellipse.Begin();
             _selectedCollection = null;
             _titleReverse = false;
             _dateReverse = false;
             _accessReverse = false;
-        }
-
-        private void SlideOutLoginComplete(object sender, object e)
-        {
-            login.Visibility = Visibility.Collapsed;
-            NuSysTitle.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -156,6 +152,11 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// sets position of popup for new workspace
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NewButton_OnClick(object sender, RoutedEventArgs e)
         {
             NewWorkspacePopup.HorizontalOffset = this.ActualWidth/2 - 250;
@@ -163,14 +164,14 @@ namespace NuSysApp
             NewWorkspacePopup.IsOpen = true;
         }
 
+        /// <summary>
+        /// handler of pop up's close button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClosePopupOnClick(object sender, RoutedEventArgs e)
         {
             NewWorkspacePopup.IsOpen = false;
-        }
-
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(SessionView));
         }
 
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
@@ -179,6 +180,12 @@ namespace NuSysApp
             var props = new Message();
             props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Collection.ToString();
             props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
+
+            var contentRequestArgs = new CreateNewContentRequestArgs();
+            contentRequestArgs.LibraryElementArgs.Title = name;
+            contentRequestArgs.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Collection;
+            contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Public;
+
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             Init();
@@ -216,16 +223,57 @@ namespace NuSysApp
             return l;
         }
 
+        /// <summary>
+        /// transitions to new user page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NewUserPage(object sender, RoutedEventArgs e)
+        {
+            NewUser.Visibility = Visibility.Visible;
+            NuSysTitle.Visibility = Visibility.Collapsed;
+            SlideOutLogin.Begin();
+            SlideInNewUser.Begin();
+            login.Visibility = Visibility.Collapsed;
+        }
+        /// <summary>
+        /// handles back button back to login page from createnewuser page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BackToLoginFromNew(object sender, RoutedEventArgs e)
+        {
+            login.Visibility = Visibility.Visible;
+            SlideOutNewUser.Begin();
+            SlideInLogin.Begin();
+            NewUser.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// handles back button to login from workspace list page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BackToLoginFromList(object sender, RoutedEventArgs e)
+        {
+            login.Visibility = Visibility.Visible;
+            NuSysTitle.Visibility = Visibility.Visible;
+            SlideOutWorkspace.Begin();
+            SlideInLogin.Begin();
+            workspace.Visibility = Visibility.Collapsed;
+        }
+
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
-            var username = usernameInput.Text;
-            var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
-            Login(username, password, true);
+            var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
+            var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
+            var displayName = NewDisplayName.Text;
+            Login(username, password, true, displayName);
         }
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var username = usernameInput.Text;
+            var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
             Login(username,password,false);
         }
@@ -246,7 +294,7 @@ namespace NuSysApp
                 _selectedCollection =
                     SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
                 //set properties in preview window
-                CreatorText.Text = _selectedCollection.Creator;
+                CreatorText.Text = SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.NetworkMembers[_selectedCollection.Creator].DisplayName : "...";
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
 
@@ -357,7 +405,7 @@ namespace NuSysApp
             File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
         }
 
-        private async void Login(string username, string password, bool createNewUser)
+        private async void Login(string username, string password, bool createNewUser, string displayname = null)
         {
             try
             {
@@ -371,6 +419,8 @@ namespace NuSysApp
                 cred["pass"] = password;
                 if (createNewUser)
                 {
+
+                    cred["display_name"] = displayname ?? "MIRANDA PUT THE DISLPAY NAME HEEERRE";
                     cred["new_user"] = "";
                 }
                 var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";
@@ -379,21 +429,6 @@ namespace NuSysApp
                  {
                      ClientCertificateOptions = ClientCertificateOption.Automatic
                  });
-                string getData;
-                var getResponse = await client.GetAsync(url);
-                using (var content = getResponse.Content)
-                {
-                    getData = await content.ReadAsStringAsync();
-                }
-                try
-                {
-                    var timestamp = long.Parse(getData);
-                    cred["timestamp"] = timestamp.ToString();
-                }
-                catch (Exception longParseException)
-                {
-                    throw new Exception("error trying to parse timestamp too long");
-                }
 
                 string data;
                 var text = JsonConvert.SerializeObject(cred, settings);
@@ -416,6 +451,11 @@ namespace NuSysApp
                         userID = dict["user_id"].ToString();
                     }
                     serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
+                    if (!validCredentials && dict.ContainsKey("error_message"))
+                    {
+                        loggedInText.Text = dict["error_message"];
+                        NewUserLoginText.Text = dict["error_message"];
+                    }
                 }
                 catch (Exception boolParsException)
                 {
@@ -434,6 +474,7 @@ namespace NuSysApp
                         SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
 
                         loggedInText.Text = "Logged In!";
+                        NewUserLoginText.Text = "Logged In!";
                         _collectionList = new List<LibraryElementModel>();
                         Init();
                         NewWorkspaceButton.IsEnabled = true;
@@ -448,8 +489,20 @@ namespace NuSysApp
                             });
                         }
                         LoginButton.IsEnabled = false;
-                        SlideOutLogin.Begin();
-                        SlideInWorkspace.Begin();
+                        if (createNewUser)
+                        {
+                            SlideOutNewUser.Begin();
+                            SlideInWorkspace.Begin();
+                        }
+                        else
+                        {
+                            SlideOutLogin.Begin();
+                            SlideInWorkspace.Begin();
+                        }
+
+                        login.Visibility = Visibility.Collapsed;
+                        NewUser.Visibility = Visibility.Collapsed;
+                        NuSysTitle.Visibility = Visibility.Collapsed;
 
                         UserName = userID;
                         if (userID.ToLower() != "rosemary" && userID.ToLower()!= "rms" && userID.ToLower() != "gfxadmin")
@@ -496,16 +549,9 @@ namespace NuSysApp
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
                         loggedInText.Text = "Log in failed!";
+                        NewUserLoginText.Text = "Log in failed!";
                         //     throw new Exception("Your account is probably already logged in");
                     }
-                }
-                else
-                {
-                    loggedInText.Text = "Log in failed!";
-                    /*
-                    if (!createNewUser) { 
-                        Login(true);
-                    }*/
                 }
 
             }

@@ -6,105 +6,96 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NusysServer
 {
-    public class NusysClient
+    public class NusysClient : BaseClient
     {
-        private static JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-        private static string _filepath = Constants.FILE_FOLDER + "Users";
-        public static ConcurrentDictionary<string, NusysClient> Users = new ConcurrentDictionary<string, NusysClient>();
-        public static ConcurrentDictionary<string, NusysClient> IDtoUsers = new ConcurrentDictionary<string, NusysClient>();
-        private string _hashedUsername;
-        private Dictionary<string, object> _dict;
-        private byte[] _salt;
-        private byte[] _password;
-        public bool Active { set; get; }
-        public string ID { get; private set; }
+        /// <summary>
+        ///  The dictionary of Active users. 
+        ///  This will store the users and the key will be their active websocket handler
+        /// ONLY ACTIVE USERS SHOULD BE IN THIS DICTIONARY
+        /// </summary>
+        public static ConcurrentDictionary<NuWebSocketHandler, NusysClient> IDtoUsers = new ConcurrentDictionary<NuWebSocketHandler, NusysClient>();
 
-        public bool IsRosemary { get; private set; }
-        public NusysClient(string hashedUsername, byte[] hashedpassword, byte[] salt, Dictionary<string, object> dict = null, bool save = true, string presetid = null)
+        /// <summary>
+        /// the dictiory of clients who have requested a login and been given a session id.  
+        /// They will later create a web socket with the server under the pretense of a session id.  
+        /// They will only be accepted during the web socket creation attempt if their sessionId is present in this dictionary
+        /// </summary>
+        public static ConcurrentDictionary<string, NusysClient> PreSessionClients = new ConcurrentDictionary<string, NusysClient>();
+
+        /// <summary>
+        /// the stringified password salt applied ot the singly-hashed password
+        /// </summary>
+        public string Salt { get; set; }
+
+        /// <summary>
+        /// the double hashed and singly salted password of this user
+        /// </summary>
+        public string Password { get; set; }
+
+        /// <summary>
+        /// static method used to add a session id and client to the list of waiting clients.  
+        /// Clients in this list have sessions established with this id, but have yet to start the sessions.
+        /// </summary>
+        /// <param name="sessionString"></param>
+        /// <param name="client"></param>
+        public static void WaitForClient(string sessionString, NusysClient client)
         {
-            _hashedUsername = hashedUsername;
-            _password = hashedpassword;
-            _salt = salt;
-            _dict = dict ?? new Dictionary<string, object>();
-            Active = false;
-            Users[_hashedUsername] = this;
-            //ID = presetid ?? Guid.NewGuid().ToString("N");
-            ID = _hashedUsername;
-            IDtoUsers[ID] = this;
-            _dict["id"] = ID;
+            PreSessionClients.TryAdd(sessionString, client);
+        }
 
-            if (hashedUsername == "rosemary")
+        /// <summary>
+        /// creates and returns a NusysClient from the database keys in a message. 
+        /// 
+        /// Static method.
+        /// </summary>
+        /// <param name="userMessage"></param>
+        /// <returns></returns>
+        public static NusysClient CreateFromDatabaseMessage(Message databaseMessage)
+        {
+            var baseClient = BaseClient.CreateFromDatabaseMessage(databaseMessage);
+            //create the new user based off of database keys
+            var user = new NusysClient()
             {
-                IsRosemary = true;
-            }
+                DisplayName = baseClient.DisplayName,
+                UserID = baseClient.UserID,
+                LastVisitedCollections = baseClient.LastVisitedCollections,
+                Password = databaseMessage.GetString(NusysConstants.USERS_TABLE_HASHED_PASSWORD_KEY),
+                Salt = databaseMessage.GetString(NusysConstants.USERS_TABLE_SALT_KEY)
+            };
+            return user;
         }
 
-        public void Update(Dictionary<string, object> dict)
+        /// <summary>
+        /// static method to create a web socket handler from a session Id.  
+        /// This method will return true if there was an awaiting session with that ID.
+        /// If this method returns true, it will also have added the handler to the dictionary of active clients
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public static bool FetchAwaitingSession(string sessionId, NuWebSocketHandler handler)
         {
-            if (dict != null)
+            //if either are null there is clearly an invalid session, return false
+            if (sessionId == null || handler == null)
             {
-                foreach (var kvp in dict)
-                {
-                    _dict[kvp.Key] = kvp.Value;
-                }
+                return false;
             }
-        }
-
-        public string GetUsername()
-        {
-            return _hashedUsername;
-        }
-        public byte[] GetSalt()
-        {
-            return _salt;
-        }
-
-        public byte[] GetPassword()
-        {
-            return _password;
-        }
-
-        public Dictionary<string, object> GetDict()
-        {
-            return _dict;
-        }
-
-        public static void ReadUsers()
-        {
-            try
+            if (PreSessionClients.ContainsKey(sessionId))
             {
-                return;
-                if (!Directory.Exists(Constants.FILE_FOLDER) || !File.Exists(_filepath))
-                {
-                    return;
-                }
-                string line;
-                using (StreamReader sr = new StreamReader(_filepath))
-                {
-                    line = sr.ReadToEnd();
-                }
+                //remove the session from the list of waiting sessions
+                NusysClient outClient;
+                PreSessionClients.TryRemove(sessionId, out outClient);
 
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<String, object>>>(line, settings);
-                foreach (var kvp in dict)
-                {
-                    var id = kvp.Key;
-                    var userDict = kvp.Value;
-                    var hashedUser = (string)userDict["hashed_username"];
-                    var hashedPass = NusysLogins.GetBytes((string)userDict["hashed_password"]);
-                    var salt = NusysLogins.GetBytes((string)userDict["salt"]);
-                    userDict.Remove("hashed_username");
-                    userDict.Remove("hashed_password");
-                    userDict.Remove("salt");
-                    var user = new NusysClient(hashedUser, hashedPass, salt, userDict, false, id);
-                }
+                //add the handler and client to the list of active users by WebSocketHandler
+                IDtoUsers.TryAdd(handler, outClient);
+
+                return true;
             }
-            catch (Exception e)
-            {
-                ErrorLog.AddError(e);
-            }
+            return false;
         }
     }
 }

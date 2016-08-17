@@ -45,6 +45,8 @@ namespace NuSysApp
             {
                 MadeByRosemary = true;
             }
+            AccessBox.Text = m.AccessType.ToString();
+            Access = m.AccessType.ToString();
         }
     }
 }
