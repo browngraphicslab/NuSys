@@ -17,9 +17,7 @@ namespace NuSysApp
         public string Metadata { get; set; }
         public string Data { get; set; }
         public int Importance { get; private set; }
-
-        // unused
-        public string Id { get; set; }
+        public string LibraryElementId { get; set; }
         public LibraryElementModel Model { get; set; }
 
 
@@ -34,7 +32,7 @@ namespace NuSysApp
             this.Title = model.Title;
             this.Type = model.Type;
             this.TimeStamp = parseTimeStampToDDMMYYFormat(model.Timestamp);
-            this.Creator = model.Creator;
+            this.Creator = SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator) ?? "Unknown Author";
 
             // extra info fields
             if (model.Keywords != null)
@@ -47,7 +45,7 @@ namespace NuSysApp
             }
 
             // unused
-            this.Id = model.LibraryElementId;
+            this.LibraryElementId = model.LibraryElementId;
             this.Model = model;
             //this.Data = controller.Data;
         }
