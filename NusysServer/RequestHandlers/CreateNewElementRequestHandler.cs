@@ -59,10 +59,9 @@ namespace NusysServer
             addAliasMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = results.First().GetString(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY);
 
             //if the message does not contain an access type, default to private
-            if (!addAliasMessage.ContainsKey(NusysConstants.ALIAS_ACCESS_KEY) ||
-                addAliasMessage.GetString(NusysConstants.ALIAS_ACCESS_KEY).Equals(""))
+            if (string.IsNullOrEmpty(addAliasMessage.GetString(NusysConstants.ALIAS_ACCESS_KEY)))
             {
-                addAliasMessage[NusysConstants.ALIAS_ACCESS_KEY] =NusysConstants.AccessType.Private.ToString();
+                addAliasMessage[NusysConstants.ALIAS_ACCESS_KEY] = NusysConstants.AccessType.Public.ToString();
             }
 
             var success = ContentController.Instance.SqlConnector.AddAlias(addAliasMessage);

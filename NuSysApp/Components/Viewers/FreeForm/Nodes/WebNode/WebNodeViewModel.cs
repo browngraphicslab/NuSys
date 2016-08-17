@@ -54,7 +54,7 @@ namespace NuSysApp
             //    Url = url;
             //    RaisePropertyChanged("Url");
             //};
-            controller.LibraryElementController.ContentChanged += delegate (object sender, string newData)
+            controller.LibraryElementController.ContentDataController.ContentDataUpdated += delegate (object sender, string newData)
             {
                 Url = newData;
                 RaisePropertyChanged("Url");

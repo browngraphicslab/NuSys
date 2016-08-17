@@ -108,6 +108,7 @@ namespace NuSysApp
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
 
             var l = WaitingRoomView.GetFirstLoadList();
             var firstId = WaitingRoomView.InitialWorkspaceId;
@@ -138,13 +139,28 @@ namespace NuSysApp
             {
                 UserLabel b = new UserLabel(user);
                 Users.Children.Add(b);
-                user.OnUserRemoved += delegate
+            });
+        }
+
+        /// <summary>
+        /// the private event handler for the NusysNetworkSession dropping a networkuser. 
+        /// The string will be the User ID of  the network user dropped.
+        /// </summary>
+        /// <param name="userId"></param>
+        private void DropNetworkUser(string userId)
+        {
+            UITask.Run(delegate
+            {
+                foreach (var child in Users.Children)
                 {
-                    UITask.Run(delegate
+                    var user = child as UserLabel;
+                    Debug.Assert(user != null);
+                    if (user.UserId == userId)
                     {
-                        Users.Children.Remove(b);
-                    });
-                };
+                        Users.Children.Remove(user);
+                        break;
+                    }
+                }
             });
         }
 

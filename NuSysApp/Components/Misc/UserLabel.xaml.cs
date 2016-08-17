@@ -79,5 +79,13 @@ namespace NuSysApp
         {
             UserInfoBox.Opacity = 0;
         }
+
+        /// <summary>
+        /// string getter for the UserId of the user that this label represents;
+        /// </summary>
+        public string UserId
+        {
+            get { return _user.UserID; }
+        }
     }
 }
