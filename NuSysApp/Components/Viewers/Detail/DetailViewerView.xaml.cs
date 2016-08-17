@@ -293,6 +293,7 @@ namespace NuSysApp
         public async Task CloseDv()
         {
             Visibility = Visibility.Collapsed;
+            AccessPopup.Visibility = Visibility.Collapsed;
             Dispose();
         }
 
@@ -460,6 +461,15 @@ namespace NuSysApp
             if (AccessPopup.IsOpen == false)
             {
                 AccessPopup.IsOpen = true;
+                var vm = (DetailViewerViewModel) DataContext;
+                if (vm.CurrentElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+                {
+                    xReadOnlyRadioButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    xReadOnlyRadioButton.Visibility = Visibility.Collapsed;
+                }
             }
             else
             {
