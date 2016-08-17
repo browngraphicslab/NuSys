@@ -109,6 +109,7 @@
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
+    <Content Include="Assets\dragtocollection icon.png" />
     <Content Include="Assets\exploration icon.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />

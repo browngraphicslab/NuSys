@@ -12,7 +12,7 @@
 
 
 
-    <Grid x:Name="xListView" Grid.Column="2"  VerticalAlignment="Stretch" Background="{StaticResource color1}">
+    <Grid x:Name="xListView" Grid.Column="2"  VerticalAlignment="Stretch" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -31,14 +31,14 @@
 
 
             <ListView.Header>
-                <Border BorderBrush="White" BorderThickness="0,0,0,3">
+                <Border BorderBrush="{StaticResource color3}" BorderThickness="0,0,0,3">
                     <Grid Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0,0,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock  Grid.Column="0" Padding="10,0,0,0" Text="Title" Foreground="White" FontSize="18" HorizontalAlignment="Left"></TextBlock>
-                        <TextBlock Grid.Column="1" Padding="10,0,0,0" Text="Page No." Foreground="White" FontSize="18" HorizontalAlignment="Right"></TextBlock>
+                        <TextBlock  Grid.Column="0" Padding="10,0,0,0" Text="Title" Foreground="{StaticResource color3}" FontSize="18" HorizontalAlignment="Left"></TextBlock>
+                        <TextBlock Grid.Column="1" Padding="10,0,0,0" Text="Page No." Foreground="{StaticResource color3}" FontSize="18" HorizontalAlignment="Right"></TextBlock>
                     </Grid>
                 </Border>
             </ListView.Header>
@@ -49,8 +49,8 @@
                             <ColumnDefinition Width="*" ></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Title}" Foreground="White" HorizontalAlignment="Left" ></TextBlock>
-                        <TextBlock Grid.Column="1" Text="{Binding PageLocation}" Foreground="White" HorizontalAlignment="Right"></TextBlock>
+                        <TextBlock Grid.Column="0" Text="{Binding Title}" Foreground="{StaticResource color3}" HorizontalAlignment="Left" ></TextBlock>
+                        <TextBlock Grid.Column="1" Text="{Binding PageLocation}" Foreground="{StaticResource color3}" HorizontalAlignment="Right"></TextBlock>
 
                     </Grid>
                 </DataTemplate>

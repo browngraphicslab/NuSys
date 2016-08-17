@@ -9,12 +9,21 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <StackPanel>
-        <Button x:Name="xShowHideAllRegionsButton" Click="xShowHideAllRegionsButton_Click">
-            <TextBlock x:Name="xShowHideAllRegionsButtonText" Text="Hide Regions"></TextBlock>
-        </Button>
-        <Button x:Name="xShowOnlyChildrenButton" Click="xShowOnlyChildrenButton_Click">
-            <TextBlock x:Name="xShowOnlyChildrenButtonText" Text="Show Only Children Regions"></TextBlock>
-        </Button>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+        <TextBlock Margin="10" Foreground="{StaticResource color3}">Regions Options</TextBlock>
+        <ComboBox x:Name="RegionsOptionsBox" BorderBrush="{StaticResource color3}" Width="250"  Margin="0,5,0,0" Foreground="{StaticResource color3}" >
+            <ComboBoxItem Tapped="ShowRegionsOnTapped">
+                Show regions
+            </ComboBoxItem>
+            <ComboBoxItem Tapped="HideRegionsOnTapped">
+                Hide regions
+            </ComboBoxItem>
+            <ComboBoxItem Tapped="ShowChildrenOnTapped">
+                Show only children regions
+            </ComboBoxItem>
+            <ComboBoxItem Tapped="HideChildrenOnTapped">
+                Show all regions
+            </ComboBoxItem>
+        </ComboBox>
     </StackPanel>
 </UserControl>

@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
+    d:DesignHeight="600"
     d:DesignWidth="400"
 >
     <UserControl.Resources>
@@ -19,11 +19,12 @@
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border x:Name="xBorder"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid x:Name="xWrapper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border x:Name="xBorder" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid x:Name="xWrapper" Margin="10"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
                     <local:RectangleWrapper x:Name="xClippingWrapper" >
                         <local:RectangleWrapper.RenderTransform>
@@ -46,21 +47,35 @@
                     </Button>
                 </Grid>
             </Border>
-            <local:AddToCollectionButton Grid.Row="1"/>
-            <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="2"></local:ShowHideRegionButtons>
+            
+            <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" HorizontalAlignment="Right" Grid.Row="0"></local:ShowHideRegionButtons>
+            <Grid Grid.Row="2" Height="120" x:Name="SegmentPanel">
+                <StackPanel>
+                    <local:AddToCollectionButton Grid.Row="2" HorizontalAlignment="Center"/>
+                    <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
+                        <TextBlock Foreground="{StaticResource color3}" FontSize="20">Document Analysis by Page</TextBlock>
+                    </Grid>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
 
+                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Page No.</TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Sentiment Rating</TextBlock>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Key Phrases</TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}">Page No.</TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}">Sentiment Rating</TextBlock>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}">Key Phrases</TextBlock>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </Grid>
-        <StackPanel Visibility="Collapsed">
-            <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource foreground6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>
-            <Line Stroke="{StaticResource color6}" StrokeThickness="1.5" X1="0" Y1="0" X2 ="50" Y2="0" Margin="0,15,0,0"></Line>
-            <ItemsControl x:Name="SuggestedTags" ItemsSource="{Binding SuggestedTags}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </StackPanel>
     </Grid>
     
 </UserControl>

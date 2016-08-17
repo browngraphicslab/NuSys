@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -47,70 +48,47 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Event handler for when ShowHideAllRegions button is clicked. 
+        /// Show all regions when this is selected.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void xShowHideAllRegionsButton_Click(object sender, RoutedEventArgs e)
+        private void ShowRegionsOnTapped(object sender, TappedRoutedEventArgs e)
         {
-
-            //Changes visibility of regions, update button text of show/hide button and current visibility state.
-            switch (_currentRegionsVisibility)
-            {
-                case RegionsVisibility.ShowAll:
-                    xShowHideAllRegionsButtonText.Text = "Show Regions";
-                    Wrapper.HideAllRegions();
-                    _currentRegionsVisibility = RegionsVisibility.HideAll;
-                    break;
-                case RegionsVisibility.ShowOnlyChildren:
-                    xShowHideAllRegionsButtonText.Text = "Show Regions";
-                    Wrapper.HideAllRegions();
-                    _currentRegionsVisibility = RegionsVisibility.HideOnlyChildren;  
-                    break;
-                case RegionsVisibility.HideAll:
-                    xShowHideAllRegionsButtonText.Text = "Hide Regions";
-                    Wrapper.ShowAllRegions();
-                    _currentRegionsVisibility = RegionsVisibility.ShowAll;
-                    break;
-                case RegionsVisibility.HideOnlyChildren:
-                    xShowHideAllRegionsButtonText.Text = "Hide Regions";
-                    Wrapper.ShowOnlyChildrenRegions();
-                    _currentRegionsVisibility = RegionsVisibility.ShowOnlyChildren;
-                    break;
-            }
-
+            Wrapper.ShowAllRegions();
+            _currentRegionsVisibility = RegionsVisibility.ShowAll;
         }
 
         /// <summary>
-        /// Event handler for when Show/Hide only children button is clicked.
+        /// Hide all regions when this is selected.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void xShowOnlyChildrenButton_Click(object sender, RoutedEventArgs e)
+        private void HideRegionsOnTapped(object sender, TappedRoutedEventArgs e)
         {
+            Wrapper.HideAllRegions();
+            _currentRegionsVisibility = RegionsVisibility.HideAll;
+        }
 
-            //Based on updated visibility of regions, update showonlychildren button text.
-            switch (_currentRegionsVisibility)
-            {
-                case RegionsVisibility.ShowAll:
-                    xShowOnlyChildrenButtonText.Text = "Show All Regions";
-                    Wrapper.ShowOnlyChildrenRegions();
-                    _currentRegionsVisibility = RegionsVisibility.ShowOnlyChildren;
-                    break;
-                case RegionsVisibility.ShowOnlyChildren:
-                    xShowOnlyChildrenButtonText.Text = "Show Only Children Regions";
-                    Wrapper.ShowAllRegions();
-                    _currentRegionsVisibility = RegionsVisibility.ShowAll;
-                    break;
-                case RegionsVisibility.HideAll:
-                    xShowOnlyChildrenButtonText.Text = "Show All Regions";
-                    _currentRegionsVisibility = RegionsVisibility.HideOnlyChildren;
-                    break;
-                case RegionsVisibility.HideOnlyChildren:
-                    xShowOnlyChildrenButtonText.Text = "Show Only Children Regions";
-                    _currentRegionsVisibility = RegionsVisibility.HideAll;
-                    break;
-            }
+        /// <summary>
+        /// Show only children regions when this is selected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowChildrenOnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Wrapper.ShowOnlyChildrenRegions();
+            _currentRegionsVisibility = RegionsVisibility.ShowOnlyChildren;
+        }
+
+        /// <summary>
+        /// Hide all children regions when this is selected. Close (but not the same?) to hide all regions.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HideChildrenOnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Wrapper.HideAllRegions();
+            _currentRegionsVisibility = RegionsVisibility.HideOnlyChildren;
         }
     }
 }
