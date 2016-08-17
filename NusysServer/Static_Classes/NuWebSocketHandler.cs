@@ -121,7 +121,6 @@ namespace NusysServer
                     try
                     {
                         var success = RequestRouter.HandleRequest(new Message(dict), this);
-                        
                     }
                     catch (Exception e)
                     {

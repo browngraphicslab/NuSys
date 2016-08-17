@@ -653,6 +653,7 @@
     <Compile Include="Network\Requests\GetAnalysisModelRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\GetUserIdToDisplayNameDictionaryRequest.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
