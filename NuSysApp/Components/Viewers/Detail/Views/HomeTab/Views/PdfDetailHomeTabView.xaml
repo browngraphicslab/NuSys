@@ -49,7 +49,7 @@
             </Border>
             
             <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" HorizontalAlignment="Right" Grid.Row="0"></local:ShowHideRegionButtons>
-            <Grid Grid.Row="2" Height="120" x:Name="SegmentPanel">
+            <Grid Grid.Row="2" Height="220" x:Name="SegmentPanel">
                 <StackPanel>
                     <local:AddToCollectionButton Grid.Row="2" HorizontalAlignment="Center"/>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
@@ -69,9 +69,9 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Page No.</TextBlock>
                         <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Sentiment Rating</TextBlock>
                         <TextBlock Grid.Row="2" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Key Phrases</TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}">Page No.</TextBlock>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}">Sentiment Rating</TextBlock>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}">Key Phrases</TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xPageNumberBox">Page No.</TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xSentimentBox">Sentiment Rating</TextBlock>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xKeyPhrasesBox">Key Phrases</TextBlock>
                     </Grid>
                 </StackPanel>
             </Grid>
