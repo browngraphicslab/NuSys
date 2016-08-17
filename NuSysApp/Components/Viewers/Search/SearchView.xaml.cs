@@ -88,7 +88,6 @@ namespace NuSysApp
             this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
             this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth - 30;
             this.MinWidth = resizer.ActualWidth;
-            _vm.ResultWidth = this.Width - resizer.Width;
             Canvas.SetTop(this, 0);
             Canvas.SetLeft(this, 0);
         }

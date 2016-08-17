@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
+    d:DesignHeight="1000"
     d:DesignWidth="400"
     BorderBrush="DarkSlateGray"
     BorderThickness="2"
@@ -121,7 +121,7 @@
             </Grid>
 
             <TextBlock Grid.Row="2" x:Name="HelperText" Visibility="{Binding SearchViewHelperTextVisibility}" FontFamily="FiraSans" FontSize="16" Foreground="{StaticResource color2}" VerticalAlignment="Top" HorizontalAlignment="Center" TextAlignment="Center" Margin="30,10" TextWrapping="Wrap"
-                       Text="The advanced search textbox is not setup right now but if it were the tutorial text would go here. It would be full of very helpful information."/>
+                       Text="Advanced Search enabled domain specific searching. The syntax &lt;domain key&gt; : &lt;search string&gt;. The following domain keys are recognized. To search over keywords use keyword or keywords. To search over author use creator, creators, author, authors. To search over type use type, element, or elementtype. Note that the case of the domain key is disregarded.&#10;&#10; Examples &#10; Search for all element created by J.K. Rowling&#10; &quot;author : J.K. Rowling&quot;&#10; To search for all elements created by J.K. Rowling or Cicero. &#10; &quot;author : J.K. Rowling, Cicero &quot;"/>
 
             
 

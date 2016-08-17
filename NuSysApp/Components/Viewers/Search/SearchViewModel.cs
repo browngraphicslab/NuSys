@@ -62,17 +62,7 @@ namespace NuSysApp
         }
 
         public ObservableCollection<SearchResultTemplate> PageElements { get; set; }
-        private double _resultWidth;
 
-        public double ResultWidth
-        {
-            get { return _resultWidth; }
-            set
-            {
-                _resultWidth = value;
-                RaisePropertyChanged("ResultWidth");
-            }
-        }
         public SearchViewModel()
         {
             PageElements = new ObservableCollection<SearchResultTemplate>();
