@@ -299,7 +299,8 @@ namespace NusysServer
 
             // The command below deletes all the related metadata from the metadata table.
             var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, metadataMessage, Constants.Operator.And);
-            return cmdToDeleteFromLibraryElementTable.ExecuteCommand() && cmdToDeleteRelatedMetadata.ExecuteCommand();
+            cmdToDeleteRelatedMetadata.ExecuteCommand();
+            return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }
 
         /// <summary>
