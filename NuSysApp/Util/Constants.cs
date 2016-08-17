@@ -134,6 +134,8 @@ namespace NuSysApp
         public const int ExpandOn = 400;
         #endregion Timeline
 
+        public const double MinConfidence = 0;
+
         public const int InitialPenSize = 4;
 
         public const int MaxCanvasSize = 100000;
