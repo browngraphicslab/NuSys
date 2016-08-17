@@ -33,7 +33,6 @@
                                             </Style>
                                         </TextBox.Resources>
                                     </TextBox>
-                                    <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
                                     <Button x:Name="isSearched" Visibility="Collapsed" Background="IndianRed">O</Button>
                                 </Grid>
 
@@ -51,7 +50,12 @@
                                         <Canvas.RenderTransform>
                                             <TranslateTransform X="-60"></TranslateTransform>
                                         </Canvas.RenderTransform>
-                                        <ContentControl Content="{TemplateBinding SubMenu}" />
+                                        <StackPanel Orientation="Vertical">
+                                            <Button Margin="0,2,0,2" x:Name="btnDelete" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
+                                                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+                                            </Button>
+                                            <ContentControl Content="{TemplateBinding SubMenu}"></ContentControl>
+                                        </StackPanel>
                                     </Canvas>
                                     <Canvas x:Name="SubMenuRight" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                                         <Canvas.RenderTransform>

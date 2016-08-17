@@ -44,6 +44,11 @@ namespace NuSysApp
 
         private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>();
 
+        // for telling the undo button that the delete button has been clicked
+        public delegate void DeleteClickedHandler(object sender, IUndoable action);
+
+        public event DeleteClickedHandler DeleteClicked;
+
 
         // used to check if library list items are single tapped or double tapped
         private bool _singleTap;
@@ -453,12 +458,31 @@ namespace NuSysApp
                 return;
             }
 
+            var model = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+
             Task.Run(async delegate
             {
                 var request = new DeleteLibraryElementRequest(id);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 request.DeleteLocally();
             });
+
+            //TODO fix this 817
+            var m = new Message();
+            m["id"] = model.LibraryElementId;
+            //m["data"] = model.Data;
+            m["small_thumbnail"] = model.SmallIconUrl;
+            m["medium_thumbnail"] = model.MediumIconUrl;
+            m["large_thumbnail"] = model.LargeIconUrl;
+            m["title"] = model.Title;
+            m["creator"] = model.Creator;
+            m["type"] = model.Type;
+            m["server_url"] = model.ServerUrl;
+            m["creation_timestamp"] = model.Timestamp;
+            m["last_edited_timestamp"] = model.LastEditedTimestamp;
+
+            //var action = new DeleteLibraryElementAction(m);
+            //DeleteClicked?.Invoke(this, action);
         }
     }
 
