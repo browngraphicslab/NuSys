@@ -210,11 +210,16 @@ namespace NuSysApp
                         LibraryElementId = lem.LibraryElementId
                     };
 
-                    // execute the request
-                    var request2 = new NewElementRequest(newElementRequestArgs);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    request2.AddReturnedElementToSession();
+                    // create and execute the request
+                    var requestElemToCollection = new NewElementRequest(newElementRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(requestElemToCollection);
+                    requestElemToCollection.AddReturnedElementToSession();
                 }
+
+                // add the collection to the current session
+                var collectionLEM =
+                    SessionController.Instance.ContentController.GetLibraryElementController(collectionLibElemId);
+                collectionLEM.AddElementAtPosition(x, y);
 
             });
         }
