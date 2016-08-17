@@ -585,6 +585,7 @@ namespace NuSysApp
                             }
 
                             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+                            //SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped;
 
                             foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
                             {
