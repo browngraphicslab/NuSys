@@ -87,7 +87,14 @@ namespace NuSysApp
             xPageNumberBox.Text = pageNumber.ToString();
             if (_analysisModel != null)
             {
-                xSentimentBox.Text = Math.Round(_analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating) * 100,3)+ " %";
+                if (_analysisModel.Segments.Any(segment => segment.pageNumber == pageNumber))
+                {
+                    xSentimentBox.Text = Math.Round( _analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating)*100, 3) + " %";
+                }
+                else
+                {
+                    xSentimentBox.Text = "None found";
+                }
                 xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
             }
             else

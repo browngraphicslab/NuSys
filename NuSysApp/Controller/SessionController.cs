@@ -177,6 +177,11 @@ namespace NuSysApp
         /// <returns></returns>
         public bool AddElement(ElementModel model)
         {
+            var parentLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.ParentCollectionId);
+            if (parentLibraryElementController == null)
+            {
+                return false;///could happen naturally if someone adds an public element to a private collection
+            }
 
             if (IdToControllers.ContainsKey(model.Id))
             {
@@ -184,16 +189,13 @@ namespace NuSysApp
             }
             var controller = ElementControllerFactory.CreateFromModel(model);
 
-            //Copy pasted code
+
             SessionController.Instance.IdToControllers[model.Id] = controller;
 
             UITask.Run(async delegate
             {
 
-                var parentCollectionLibraryElementController =
-                    (CollectionLibraryElementController)
-                        SessionController.Instance.ContentController.GetLibraryElementController(
-                            model.ParentCollectionId);
+                var parentCollectionLibraryElementController = (CollectionLibraryElementController) parentLibraryElementController;
                 parentCollectionLibraryElementController.AddChild(model.Id);
 
                 if (model.ElementType == NusysConstants.ElementType.Collection)
@@ -210,7 +212,6 @@ namespace NuSysApp
                     }
                 }
             });
-            //end pasted code
 
             return true;
 

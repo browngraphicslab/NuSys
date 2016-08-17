@@ -85,7 +85,7 @@ namespace NuSysApp
         /// </summary>
         public string UserId
         {
-            get { return _user.UserID; }
+            get { return _user?.UserID; }
         }
     }
 }
