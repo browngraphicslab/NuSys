@@ -517,7 +517,7 @@ namespace NuSysApp
                 {
                     ContentId = SessionController.Instance.GenerateId(),
                     LibraryElementType = NusysConstants.ElementType.Collection,
-                    Title = "Search Results Collection",
+                    Title = "Search Results for '" + SearchBox.Text + "'",
                     LibraryElementId = collectionLibElemId,
                     AccessType = newCollectionAccessType
                 };
