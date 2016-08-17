@@ -465,10 +465,22 @@ namespace NuSysApp
                 if (vm.CurrentElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
                 {
                     xReadOnlyRadioButton.Visibility = Visibility.Visible;
+                    if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
+                    {
+                        xReadOnlyRadioButton.IsChecked = true;
+                    }  
                 }
                 else
                 {
                     xReadOnlyRadioButton.Visibility = Visibility.Collapsed;
+                }
+                if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+                {
+                    xPrivateRadioButton.IsChecked = true;
+                }
+                if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
+                {
+                    xPublicRadioButton.IsChecked = true;
                 }
             }
             else
