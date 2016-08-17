@@ -305,6 +305,21 @@ namespace NuSysApp
             return libraryElementModels;
         }
 
+        /// <summary>
+        /// Get the DisplayName from the user id. 
+        /// Returns null if the userId is not in the mappoing
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public string GetDisplayNameFromUserId(string userId)
+        {
+            Debug.Assert(userId != null, "You probably don't want to be sending null ids");
+            if (UserIdToDisplayNameDictionary.ContainsKey(userId))
+            {
+                return UserIdToDisplayNameDictionary[userId];
+            }
+            return null;
+        }
     }
     public class NoRequestTypeException : Exception
     {

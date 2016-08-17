@@ -33,7 +33,7 @@ namespace NuSysApp
             {
                 String url = vm.Controller.LibraryElementController.Data;
                 url = url ?? "http://www.google.com";
-                vm.Controller.LibraryElementController?.SetContentData(url);
+                vm.Controller.LibraryElementController?.ContentDataController.SetData(url);
 
                 xUrlBox.ManipulationDelta += delegate(object o, ManipulationDeltaRoutedEventArgs eventArgs)
                 {
@@ -42,7 +42,7 @@ namespace NuSysApp
             };
 
 
-            vm.Controller.LibraryElementController.ContentChanged += delegate (object sender, string contentData)
+            vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += delegate (object sender, string contentData)
             {
                 OnUrlChanged(contentData);
             };
@@ -83,7 +83,7 @@ namespace NuSysApp
 
                 //(vm.Model as WebNodeModel).Url = xUrlBox.Text;
                 var url  = this.checkIfUrlRight(xUrlBox.Text);
-                vm.Controller.LibraryElementController?.SetContentData(url);
+                vm.Controller.LibraryElementController?.ContentDataController.SetData(url);
 
             }
         }

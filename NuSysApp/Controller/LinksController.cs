@@ -102,7 +102,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var linkables = GetInstancesOfContent(libraryElementController.ContentId);
+                var linkables = GetInstancesOfLibraryElement(libraryElementController.LibraryElementModel.LibraryElementId);
                 foreach (var toLinkTo in linkables)
                 {
                     var linkLibElemController = GetLinkLibraryElementControllerBetweenLinkables(linkable, toLinkTo);
@@ -224,18 +224,18 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// To remove all the visual links from a content
+        /// To remove all the visual links from a libraryElementController
         /// </summary>
         /// <param name="content"></param>
-        public void RemoveContent(LibraryElementController content)
+        public void RemoveContent(LibraryElementController libraryElementController)
         {
-            var libraryElementId = content?.LibraryElementModel?.LibraryElementId;
+            var libraryElementId = libraryElementController?.LibraryElementModel?.LibraryElementId;
             Debug.Assert(libraryElementId != null);
-            Debug.Assert(content?.LibraryElementModel != null);
-            if (content.LibraryElementModel.Type == NusysConstants.ElementType.Link)
+            Debug.Assert(libraryElementController?.LibraryElementModel != null);
+            if (libraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.Link)
             {
-                Debug.Assert(content.LibraryElementModel is LinkLibraryElementModel);
-                var linkLibraryElementModel = content.LibraryElementModel as LinkLibraryElementModel;
+                Debug.Assert(libraryElementController.LibraryElementModel is LinkLibraryElementModel);
+                var linkLibraryElementModel = libraryElementController.LibraryElementModel as LinkLibraryElementModel;
                 
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
@@ -246,7 +246,7 @@ namespace NuSysApp
                 _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
             }
 
-            DisposeContent(content.ContentId);
+            DisposeLibraryElement(libraryElementController.LibraryElementModel.LibraryElementId);
         }
 
         /// <summary>
@@ -471,7 +471,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
-        private IEnumerable<ILinkable> GetInstancesOfContent(string contentId)
+        private IEnumerable<ILinkable> GetInstancesOfLibraryElement(string contentId)
         {
             Debug.Assert(contentId != null);
             if (_contentIdToLinkableIds.ContainsKey(contentId))
@@ -533,14 +533,14 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// takes care of mapping when a content is removed
+        /// takes care of mapping when a LibraryElement is removed
         /// </summary>
-        /// <param name="contentId"></param>
-        private void DisposeContent(string contentId)
+        /// <param name="libraryElementId"></param>
+        private void DisposeLibraryElement(string libraryElementId)
         {
             HashSet<string> outObj;
-            _contentIdToLinkableIds.TryRemove(contentId, out outObj);
-            _contentIdToLinkContentIds.TryRemove(contentId, out outObj);
+            _contentIdToLinkableIds.TryRemove(libraryElementId, out outObj);
+            _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);
         }
 
         private void RemoveLink(BezierLinkView view)

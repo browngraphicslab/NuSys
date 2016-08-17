@@ -29,6 +29,8 @@ namespace NusysIntermediate
             _dictionary = new ConcurrentDictionary<string, object>(message);
         }
 
+
+
         /// <summary>
         /// to desialize a string to a message.
         /// This constructor calls the json convert method and de-json-stringifies the string you pass in
@@ -240,6 +242,16 @@ namespace NusysIntermediate
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return _dictionary.GetEnumerator();
+        }
+
+        public List<string> GetKeys()
+        {
+            return _dictionary.Keys.ToList();
+        }
+
+        public List<string> GetValues()
+        {
+            return new List<string>(_dictionary.Values.ToList().Select(q=> (string)q));
         }
 
         IEnumerator IEnumerable.GetEnumerator()

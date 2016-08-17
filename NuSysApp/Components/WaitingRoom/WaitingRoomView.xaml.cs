@@ -279,13 +279,6 @@ namespace NuSysApp
             {
                 UserLabel b = new UserLabel(user);
                 Users.Children.Add(b);
-                user.OnUserRemoved += delegate
-                {
-                    UITask.Run(delegate
-                    {
-                        Users.Children.Remove(b);
-                    });
-                };
             });
         }
 
@@ -585,7 +578,7 @@ namespace NuSysApp
                             }
 
                             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
-                            //SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped;
+                            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
 
                             foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
                             {
@@ -621,6 +614,27 @@ namespace NuSysApp
                 Debug.WriteLine("cannot connect to server");
             }
 
+        }
+
+        /// <summary>
+        /// event handler for when the nusysNetworkSession drop a network user.  
+        /// </summary>
+        /// <param name="userId"></param>
+        private void DropNetworkUser(string userId)
+        {
+            UITask.Run(delegate
+            {
+                foreach (var child in Users.Children)
+                {
+                    var label = child as UserLabel;
+                    Debug.Assert(label != null);
+                    if (label.UserId == userId)
+                    {
+                        Users.Children.Remove(child);
+                        break;
+                    }
+                }
+            });
         }
 
         private void ContentControllerOnOnNewContent(LibraryElementModel element)

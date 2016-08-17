@@ -62,17 +62,7 @@ namespace NuSysApp
         }
 
         public ObservableCollection<SearchResultTemplate> PageElements { get; set; }
-        private double _resultWidth;
 
-        public double ResultWidth
-        {
-            get { return _resultWidth; }
-            set
-            {
-                _resultWidth = value;
-                RaisePropertyChanged("ResultWidth");
-            }
-        }
         public SearchViewModel()
         {
             PageElements = new ObservableCollection<SearchResultTemplate>();
@@ -83,58 +73,60 @@ namespace NuSysApp
 
         public async void AdvancedSearch(QueryArgs searchQuery)
         {
+            // if the user has not submitted any characters, just show no results found and exit
+            if (string.IsNullOrWhiteSpace(searchQuery.SearchString))
+            {
+                NoResultsFound = Visibility.Visible;
+                SearchResultsListVisibility = Visibility.Collapsed;
+                SearchExportButtonVisibility = Visibility.Collapsed;
+                return;
+            }
 
             // because sorting the actual observable collection breaks binding
             var tempPageElements = new ObservableCollection<SearchResultTemplate>();
 
             var searchResults = await SessionController.Instance.NuSysNetworkSession.AdvancedSearchOverLibraryElements(searchQuery);
+            
+            // if no search results were found, show no results found and hide add to collection and search results list 
             if (searchResults == null || searchResults.Count == 0)
             {
-                if (NoResultsFound == Visibility.Collapsed)
-                {
-                    NoResultsFound = Visibility.Visible;
-                    SearchResultsListVisibility = Visibility.Collapsed;
-                    SearchExportButtonVisibility = Visibility.Collapsed;
-                }
+                NoResultsFound = Visibility.Visible;
+                SearchResultsListVisibility = Visibility.Collapsed;
+                SearchExportButtonVisibility = Visibility.Collapsed;
                 return;
             }
-            else
-            {                
-                var idResult = new Dictionary<string, SearchResultTemplate>();
+            var idResult = new Dictionary<string, SearchResultTemplate>();
 
-                foreach (var result in searchResults)
+            foreach (var result in searchResults)
+            {
+
+                if (idResult.ContainsKey(result.LibraryElementId))
                 {
-
-                    if (idResult.ContainsKey(result.LibraryElementId))
+                    //Todo possibly weight importance by result type
+                    idResult[result.LibraryElementId].IncrementImportance();
+                }
+                else
+                {
+                    var template = new SearchResultTemplate(result);
+                    if (template.LibraryElementId != null)
                     {
-                        //Todo possibly weight importance by result type
-                        idResult[result.LibraryElementId].IncrementImportance();
-                    }
-                    else
-                    {
-                        var template = new SearchResultTemplate(result);
-                        if (template.Id != null)
-                        {
-                            idResult.Add(template.Id, template);
-                            tempPageElements.Add(template);
-                        }
+                        idResult.Add(template.LibraryElementId, template);
+                        tempPageElements.Add(template);
                     }
                 }
-
-                tempPageElements = new ObservableCollection<SearchResultTemplate>(tempPageElements.OrderByDescending(i => i.Importance));
-
-                PageElements?.Clear();
-                foreach (var tempElement in tempPageElements)
-                {
-                    PageElements?.Add(tempElement);
-                }
-
-
-                SearchResultsListVisibility = Visibility.Visible;
-                SearchExportButtonVisibility = Visibility.Visible;
-
             }
-            
+
+            tempPageElements = new ObservableCollection<SearchResultTemplate>(tempPageElements.OrderByDescending(i => i.Importance));
+
+            PageElements?.Clear();
+            foreach (var tempElement in tempPageElements)
+            {
+                PageElements?.Add(tempElement);
+            }
+
+
+            SearchResultsListVisibility = Visibility.Visible;
+            SearchExportButtonVisibility = Visibility.Visible;
         }
      
     }

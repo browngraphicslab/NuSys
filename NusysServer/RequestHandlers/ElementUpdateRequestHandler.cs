@@ -66,13 +66,15 @@ namespace NusysServer
                     }
                 }
                 //Update or insert properties into table
-                SQLUpdateOrInsertPropertyQuery updateOrInsertPropertiesQuery =
-                    new SQLUpdateOrInsertPropertyQuery(propertiesToAdd);
-                if (!updateOrInsertPropertiesQuery.ExecuteCommand())
+                if (propertiesToAdd.Any())
                 {
-                    throw new Exception("Could not update or insert the properties from the sql query" + updateOrInsertPropertiesQuery.CommandString);
+                    SQLUpdateOrInsertPropertyQuery updateOrInsertPropertiesQuery =
+                    new SQLUpdateOrInsertPropertyQuery(propertiesToAdd);
+                    if (!updateOrInsertPropertiesQuery.ExecuteCommand())
+                    {
+                        throw new Exception("Could not update or insert the properties from the sql query" + updateOrInsertPropertiesQuery.CommandString);
+                    }
                 }
-
                 //update alias table
                 SQLUpdateRowQuery updateRowQueryQuery =
                     new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.Alias), elementNonPropertiesUpdates,

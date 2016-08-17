@@ -529,6 +529,19 @@ namespace NusysIntermediate
             #endregion UpdateContentRequest
 
 
+        #region CreateSnapshotOfCollectionRequest
+        /// <summary>
+        /// The key for sending the id of the collection you wish to take a snapshot of
+        /// </summary>
+        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_COLLECTION_ID = "collection_id";
+
+        /// <summary>
+        /// The key used by the server to send to clients the library element model of the newly created collection
+        /// </summary>
+        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_RETURNED_COLLECTION_LIBRARY_ELEMENT_MODEL = "returned_collection_library_element_model";
+        #endregion CreateShapshotOfCollectionRequest
+
+
             #region ChatRequest
 
             /// <summary>
@@ -827,25 +840,36 @@ namespace NusysIntermediate
         /// Should be populated by other constants as strings
         /// </summary>
         public static readonly HashSet<string> ACCEPTED_PROPERTIES_TABLE_KEYS = new HashSet<string>()
-        {
-            PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
-            PROPERTIES_KEY_COLUMN_KEY,
-            PROPERTIES_STRING_VALUE_COLUMN_KEY,
-            PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
-            PROPERTIES_DATE_VALUE_COLUMN_KEY
-        };
-            
+            {
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                PROPERTIES_KEY_COLUMN_KEY,
+                PROPERTIES_STRING_VALUE_COLUMN_KEY,
+                PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
+                PROPERTIES_DATE_VALUE_COLUMN_KEY
+            };
+
         /// <summary>
         /// List of strings that cannot be used to populate the properties table.  
         /// Keys used to manage Networking and Requests should not be stored as properties.  
         /// This list should be populated by other constants.  
         /// </summary>
         public static readonly HashSet<string> ILLEGAL_PROPERTIES_TABLE_KEY_NAMES = new HashSet<string>()
-        {
-            RETURN_AWAITABLE_REQUEST_ID_STRING,
-            REQUEST_TYPE_STRING_KEY,
-            ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY
-        };
+            {
+                RETURN_AWAITABLE_REQUEST_ID_STRING,
+                REQUEST_TYPE_STRING_KEY,
+                ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY,
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                "system_sent_timestamp",
+                ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN,
+                "sender_user_id",
+                LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY,
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                PROPERTIES_KEY_COLUMN_KEY,
+                PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
+                PROPERTIES_STRING_VALUE_COLUMN_KEY,
+                PROPERTIES_DATE_VALUE_COLUMN_KEY,
+            };
+
 
         #endregion propertiesTable
 
@@ -878,6 +902,7 @@ namespace NusysIntermediate
         #endregion Content
 
         #region Users
+
 
         /// <summary>
         /// key that represents  the doubly-hashed username that will be used to log in with.
@@ -1269,6 +1294,7 @@ namespace NusysIntermediate
             DeletePresentationLinkRequest,
             UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
+            CreateSnapshotOfCollectionRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
