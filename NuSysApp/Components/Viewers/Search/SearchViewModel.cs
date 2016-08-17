@@ -113,9 +113,9 @@ namespace NuSysApp
                     else
                     {
                         var template = new SearchResultTemplate(result);
-                        if (template.Id != null)
+                        if (template.LibraryElementId != null)
                         {
-                            idResult.Add(template.Id, template);
+                            idResult.Add(template.LibraryElementId, template);
                             tempPageElements.Add(template);
                         }
                     }

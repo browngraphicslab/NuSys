@@ -17,9 +17,7 @@ namespace NuSysApp
         public string Metadata { get; set; }
         public string Data { get; set; }
         public int Importance { get; private set; }
-
-        // unused
-        public string Id { get; set; }
+        public string LibraryElementId { get; set; }
         public LibraryElementModel Model { get; set; }
 
 
@@ -47,7 +45,7 @@ namespace NuSysApp
             }
 
             // unused
-            this.Id = model.LibraryElementId;
+            this.LibraryElementId = model.LibraryElementId;
             this.Model = model;
             //this.Data = controller.Data;
         }
