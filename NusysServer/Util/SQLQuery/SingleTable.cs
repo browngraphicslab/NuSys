@@ -11,7 +11,9 @@ namespace NusysServer
         private IEnumerable<string> _columnsToSelect;
 
         /// <summary>
-        /// Creates a new single table based on the table type passed in. If columns to Select is null it selects all the columns.
+        /// Creates a new single table based on the table type passed in.
+        ///  If columns to Select is null it selects all the columns.
+        /// REQUIRES FULL COLUMN TITLES FOR COLUMNS TO SELECT.
         /// </summary>
         /// <param name="tableType"></param>
         public SingleTable(Constants.SQLTableType tableType, IEnumerable<string> columnsToSelect = null)
@@ -46,11 +48,22 @@ namespace NusysServer
             return _sqlQueryString;
         }
 
+        /// <summary>
+        /// returns the IEnumerable of columns to select.  
+        /// Will return full columns titles
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<string> GetSQLColumnsToSelect()
         {
             return _columnsToSelect;
         }
 
+        /// <summary>
+        /// will clean the columns for database selection.  
+        /// REQUIRES FULL COLUMN TITLES
+        /// </summary>
+        /// <param name="columnsToClean"></param>
+        /// <returns></returns>
         public IEnumerable<string> CleanColumns(IEnumerable<string> columnsToClean)
         {
             IEnumerable<string> acceptedKeys = Constants.GetAcceptedKeys(_tableType, true);

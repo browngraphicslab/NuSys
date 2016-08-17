@@ -27,9 +27,19 @@ namespace NuSysApp
     public class NuSysNetworkSession
     {
         #region Public Members
-        public string LocalIP { get; private set; }
 
+        /// <summary>
+        /// all of the currently active NetworkMembers on nusys.  
+        /// The string key is the UserId, the value is the NetworkUser object
+        /// </summary>
         public ConcurrentDictionary<string, NetworkUser> NetworkMembers = new ConcurrentDictionary<string, NetworkUser>();
+
+        /// <summary>
+        /// this dictionary maps the UserId to the DisplayName for that user.
+        /// This dictionary should track all users, even those who aren't online.  
+        /// When displaying Information regarding users, (i.e. the creator of a libraryelement), this dictionary should be used to get the display name.
+        /// </summary>
+        public Dictionary<string,string> UserIdToDisplayNameDictionary = new Dictionary<string, string>();
 
         public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
@@ -49,21 +59,23 @@ namespace NuSysApp
 
         public async Task Init()
         {
-            LocalIP = NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
             _serverClient = new ServerClient();
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnNewNotification += HandleNotification;
             LockController = new LockController(_serverClient);
+
+            //asynchronously run a request that will be loading the user ID to display name dictionary 
+            Task.Run(async delegate
+            {
+                var userIdDictionaryRequest = new GetUserIdToDisplayNameDictionaryRequest();
+                await ExecuteRequestAsync(userIdDictionaryRequest);
+                userIdDictionaryRequest.AddReturnedDictionaryToSession();
+            });
         }
+
         #region Requests
 
-        public async Task ExecuteRequestLocally(Request request)
-        {
-            await request.CheckOutgoingRequest();
-            var m = new Message(request.GetFinalMessage().GetSerialized());
-            await ProcessIncomingRequest(m);
-        }
         /// <summary>
         /// Will execute a request and not return from this method until the server has processed the request and returned a confirmation message
         /// the message that is returned is the confirmation message

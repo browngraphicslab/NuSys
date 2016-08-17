@@ -320,9 +320,9 @@
                     <TextBox Style="{StaticResource DarkTextBox}"  Name="NewWorkspaceName" FontSize="16" Height="30" Width="350" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}"></TextBox>
                     <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource color2}" FontSize="18" Margin="10">Choose access settings:</TextBlock>
                     <StackPanel x:Name="ButtonGroup" HorizontalAlignment="Center" Orientation="Horizontal" Margin="18,0,0,10">
-                        <RadioButton x:Name="PrivateButton" Style="{StaticResource NuSysRadioButton}"  Foreground="{StaticResource color3}" Content="Private"></RadioButton>
-                        <RadioButton x:Name="PublicButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Public"></RadioButton>
-                        <RadioButton x:Name="ReadOnlyButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Read Only"></RadioButton>
+                        <RadioButton x:Name="PrivateButton" Style="{StaticResource NuSysRadioButton}"  Foreground="{StaticResource color3}" Content="Private" IsChecked="False"></RadioButton>
+                        <RadioButton x:Name="PublicButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Public" IsChecked="True" ></RadioButton>
+                        <RadioButton x:Name="ReadOnlyButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Read Only" IsChecked="False"></RadioButton>
                     </StackPanel>
                     <Button x:Name="NewWorkspaceButton" Click="NewWorkspaceOnClick"  HorizontalAlignment="Center" Style="{StaticResource DarkButton}" Height="30" Width="120">CREATE</Button>
                 </StackPanel>

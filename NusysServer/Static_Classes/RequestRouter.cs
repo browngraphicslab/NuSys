@@ -27,74 +27,76 @@ namespace NusysServer
                 RequestHandler requestHandler;
                 Request request = new Request(originalMessage);
                 Message messageToReturn;
-
                 try
                 {
                     switch (request.GetRequestType())
                     {
-                    case NusysConstants.RequestType.GetAnalysisModelRequest:
-                        requestHandler = new GetAnalysisModelRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.ChatRequest:
-                        requestHandler = new ChatRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.SearchRequest:
-                        requestHandler = new SearchRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.DeleteLibraryElementRequest:
-                        requestHandler = new DeleteLibraryElementRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.DeleteElementRequest:
-                        requestHandler = new DeleteElementRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.ElementUpdateRequest:
-                        requestHandler = new ElementUpdateRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.NewElementRequest:
-                        requestHandler = new CreateNewElementRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.GetContentDataModelRequest:
-                        requestHandler = new GetContentDataModelRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.CreateNewLibraryElementRequest:
-                        requestHandler = new CreateNewLibraryElementRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.GetEntireWorkspaceRequest:
-                        requestHandler = new GetEntireWorkspaceRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.CreateNewContentRequest:
-                        requestHandler = new CreateNewContentRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.GetAllLibraryElementsRequest:
-                        requestHandler = new GetAllLibraryElementsRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
-                        requestHandler = new UpdateLibraryElementRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.CreateNewPresentationLinkRequest:
-                        requestHandler = new CreateNewPresentationLinkRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.DeletePresentationLinkRequest:
-                        requestHandler = new DeletePresentationLinkRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.UpdatePresentationLinkRequest:
-                        requestHandler = new UpdatePresentationLinkRequestHandler();
+                        case NusysConstants.RequestType.GetUserIdToDisplayNameDictionaryRequest:
+                            requestHandler = new GetUserIdToDisplayNameDictionaryRequestHandler();
                             break;
-                    case NusysConstants.RequestType.CreateNewMetadataRequest:
-                        requestHandler = new CreateNewMetadataRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.DeleteMetadataRequest:
-                        requestHandler = new DeleteMetadataRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.UpdateMetadataEntryRequest:
-                        requestHandler = new UpdateMetadataRequestHandler();
-                        break;
-                    case NusysConstants.RequestType.UpdateContentRequest:
-                        requestHandler = new UpdateContentRequestHandler();
-                        break;
+                        case NusysConstants.RequestType.GetAnalysisModelRequest:
+                            requestHandler = new GetAnalysisModelRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.ChatRequest:
+                            requestHandler = new ChatRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.SearchRequest:
+                            requestHandler = new SearchRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.DeleteLibraryElementRequest:
+                            requestHandler = new DeleteLibraryElementRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.DeleteElementRequest:
+                            requestHandler = new DeleteElementRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.ElementUpdateRequest:
+                            requestHandler = new ElementUpdateRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.NewElementRequest:
+                            requestHandler = new CreateNewElementRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.GetContentDataModelRequest:
+                            requestHandler = new GetContentDataModelRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.CreateNewLibraryElementRequest:
+                            requestHandler = new CreateNewLibraryElementRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.GetEntireWorkspaceRequest:
+                            requestHandler = new GetEntireWorkspaceRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.CreateNewContentRequest:
+                            requestHandler = new CreateNewContentRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.GetAllLibraryElementsRequest:
+                            requestHandler = new GetAllLibraryElementsRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
+                            requestHandler = new UpdateLibraryElementRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.CreateNewPresentationLinkRequest:
+                            requestHandler = new CreateNewPresentationLinkRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.DeletePresentationLinkRequest:
+                            requestHandler = new DeletePresentationLinkRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.UpdatePresentationLinkRequest:
+                            requestHandler = new UpdatePresentationLinkRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.CreateNewMetadataRequest:
+                            requestHandler = new CreateNewMetadataRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.DeleteMetadataRequest:
+                            requestHandler = new DeleteMetadataRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.UpdateMetadataEntryRequest:
+                            requestHandler = new UpdateMetadataRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.UpdateContentRequest:
+                            requestHandler = new UpdateContentRequestHandler();
+                            break;
                         default:
-                        requestHandler = null;
-                        return false;
+                            requestHandler = null;
+                            return false;
                     }
                     messageToReturn = requestHandler.HandleRequest(request, webSocketHandler) ?? new Message();
                 }
