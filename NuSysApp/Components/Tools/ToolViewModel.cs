@@ -157,41 +157,69 @@ namespace NuSysApp
         {
             Task.Run(async delegate
             {
-                var collectionID = SessionController.Instance.GenerateId();
-                var request = new CreateNewLibraryElementRequest(collectionID, "", NusysConstants.ElementType.Collection,
-                    "Tool-Generated Collection");
+                // the library element id of the collection we are creating, used as the parent collection id when adding elements to it later in the method
+                var collectionLibElemId = SessionController.Instance.GenerateId();
+
+                // create a new library element args class to assist in creating the collection
+                var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs
+                {
+                    ContentId = SessionController.Instance.GenerateId(),
+                    LibraryElementType = NusysConstants.ElementType.Collection,
+                    Title = "Tool-Generated Collection",
+                    LibraryElementId = collectionLibElemId
+                };
+
+                // create a new content request args to assist in creating the collection
+                var createNewContentRequestArgs = new CreateNewContentRequestArgs
+                {
+                    LibraryElementArgs = createNewLibraryElementRequestArgs
+                };
+
+                // create the content request, and execute it, adding the collection to the library
+                var request = new CreateNewContentRequest(createNewContentRequestArgs);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                var m = new Message();
-                m["width"] = "300";
-                m["height"] = "300";
-                m["type"] = NusysConstants.ElementType.Collection.ToString();
-                m["x"] = x;
-                m["y"] = y;
-                m["contentId"] = collectionID;
-                m["autoCreate"] = true;
-                m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
-                var collRequest = new NewElementRequest(m);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collRequest);
+                request.AddReturnedLibraryElementToLibrary();
+
+               // Add all the elements to the newly created collection
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
+
+
+                    // get the library element model which needs to be added to the stack
                     var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
+
+                    // if the library element model doesn't exist, or is a link don't add it to the collection
                     if (lem == null || lem.Type == NusysConstants.ElementType.Link)
                     {
                         continue;
                     }
-                    var dict = new Message();
-                    dict["title"] = lem.Title;
-                    dict["width"] = "300";
-                    dict["height"] = "300";
-                    dict["type"] = lem.Type.ToString();
-                    dict["x"] = "50000";
-                    dict["y"] = "50000";
-                    dict["contentId"] = lem.LibraryElementId;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = collectionID;
-                    var elementRequest = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+
+                    // create a new element request args, and pass in the required fields
+                    var newElementRequestArgs = new NewElementRequestArgs
+                    {
+                        // set the position
+                        X = 50000,
+                        Y = 50000,
+
+                        // size
+                        Width = Constants.DefaultNodeSize,
+                        Height = Constants.DefaultNodeSize,
+
+                        // ids
+                        ParentCollectionId = collectionLibElemId,
+                        LibraryElementId = lem.LibraryElementId
+                    };
+
+                    // create and execute the request
+                    var requestElemToCollection = new NewElementRequest(newElementRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(requestElemToCollection);
+                    requestElemToCollection.AddReturnedElementToSession();
                 }
+
+                // add the collection to the current session
+                var collectionLEM =
+                    SessionController.Instance.ContentController.GetLibraryElementController(collectionLibElemId);
+                collectionLEM.AddElementAtPosition(x, y);
 
             });
         }
@@ -203,27 +231,42 @@ namespace NuSysApp
         {
             Task.Run(async delegate
             {
+                // use the i counter to offset each new element in the stack
                 int i = 0;
                 int offset = 40;
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
+                    // get the library element model which needs to be added to the stack
                     var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
+
+                    // if the library element model doesn't exist, is a link, or is greater than 20, don't add it to the session
                     if (lem == null || lem.Type == NusysConstants.ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
                     {
                         continue;
                     }
-                    var dict = new Message();
-                    dict["title"] = lem.Title;
-                    dict["width"] = "300";
-                    dict["height"] = "300";
-                    dict["type"] = lem.Type.ToString();
-                    dict["x"] = x + i*offset;
-                    dict["y"] = y + i*offset;
-                    dict["contentId"] = lem.LibraryElementId;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
-                    var elementRequest = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+
+                    // create a new element request args, and pass in the required fields
+                    var newElementRequestArgs = new NewElementRequestArgs
+                    {
+                        // set the position
+                        X = x + i*offset,
+                        Y = y + i*offset,
+
+                        // size
+                        Width = Constants.DefaultNodeSize,
+                        Height = Constants.DefaultNodeSize,
+
+                        // ids
+                        ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                        LibraryElementId = lem.LibraryElementId
+                    };
+
+                    // execute the request
+                    var request = new NewElementRequest(newElementRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    request.AddReturnedElementToSession();
+
+                    // increment to finish loop and perform offset
                     i++;
                 }
 

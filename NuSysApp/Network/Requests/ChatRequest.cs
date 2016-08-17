@@ -86,8 +86,16 @@ namespace NuSysApp
         /// <param name="chat"></param>
         private void AddChat(NetworkUser user, string chatMessage)
         {
-            // Obtains the chatbox and calls one of its methods to update the text
-            var cBox = SessionController.Instance.SessionView.GetChatBox();
+            // Obtains the chatbox
+            var cBox = SessionController.Instance.SessionView?.GetChatBox();
+
+            // if the chat box is null, the sessionview hasn't been instantiated yet so return
+            if (cBox == null)
+            {
+                return;
+            }
+
+            // update the text in the chat box
             cBox.AppendText(user, chatMessage);
 
             // If the chatbox is closed, make sure to notify the client about receiving a message 
