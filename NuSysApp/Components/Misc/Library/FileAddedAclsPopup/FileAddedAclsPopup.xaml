@@ -20,12 +20,6 @@
 
     <Grid x:Name="RootGrid" Padding="5" BorderBrush="SlateGray" BorderThickness="2" Background="White" Width="{Binding Width}" Height="{Binding Height}" 
           Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
-        <Grid.RenderTransform>
-            <TransformGroup x:Name="xTransformGroup">
-                <CompositeTransform x:Name="xCompositeTransform"/>
-                <MatrixTransform x:Name="xMatrixTransform"/>
-            </TransformGroup>
-        </Grid.RenderTransform>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

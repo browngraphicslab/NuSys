@@ -93,47 +93,6 @@ namespace NuSysApp
             SessionController.Instance.SessionView.MainCanvas.SizeChanged -= MainCanvas_SizeChanged;
         }
 
-        /// <summary>
-        /// Called when the user moves the pop up around the screen, cleanly keeps the grid within the bounds of the canvas
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RootGrid_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            xMatrixTransform.Matrix = xTransformGroup.Value;
-            xCompositeTransform.TranslateX = e.Delta.Translation.X;
-            xCompositeTransform.TranslateY = e.Delta.Translation.Y;
-
-            var transform = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(RootGrid);
-            var point = transform.TransformPoint(new Point(0, 0));
-            if (point.X > 0)
-            {
-                // arrived at the left side of the canvas
-                xCompositeTransform.TranslateX += point.X;//-e.Delta.Translation.X;
-                e.Complete();
-            }
-            if (point.Y > 0)
-            {
-                // arrived at the top of the canvas
-                xCompositeTransform.TranslateY += point.Y;//-e.Delta.Translation.Y;
-                e.Complete();
-            }
-            if (point.X - _vm.Width < -SessionController.Instance.SessionView.MainCanvas.ActualWidth)
-            {
-                // arrived at the right of the canvas
-                xCompositeTransform.TranslateX += SessionController.Instance.SessionView.MainCanvas.ActualWidth + point.X - _vm.Width;
-                e.Complete();
-            }
-            if (point.Y - _vm.Height < -SessionController.Instance.SessionView.MainCanvas.ActualHeight)
-            {
-                // arrived at the bottom of the canvas
-                xCompositeTransform.TranslateY += SessionController.Instance.SessionView.MainCanvas.ActualHeight + point.Y - _vm.Height;
-
-                e.Complete();
-            }
-
-            e.Handled = true;
-        }
 
         /// <summary>
         /// Pass in a list of storage files, creates a popup which prompts the user to assign acls to each of the files
