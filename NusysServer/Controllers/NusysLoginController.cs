@@ -90,6 +90,7 @@ namespace NusysServer
                 //if it was valid, add the session id
                 var sessionString = NusysConstants.GenerateId();
                 returnDict[Constants.SERVER_SESSION_ID_STRING] = sessionString;
+                returnDict["user_id"] = returnTuple.Item2.UserID;
                 NusysClient.WaitForClient(sessionString, returnTuple.Item2);
             }
             return JsonConvert.SerializeObject(returnDict, settings);

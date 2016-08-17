@@ -428,21 +428,6 @@ namespace NuSysApp
                  {
                      ClientCertificateOptions = ClientCertificateOption.Automatic
                  });
-                string getData;
-                var getResponse = await client.GetAsync(url);
-                using (var content = getResponse.Content)
-                {
-                    getData = await content.ReadAsStringAsync();
-                }
-                try
-                {
-                    var timestamp = long.Parse(getData);
-                    cred["timestamp"] = timestamp.ToString();
-                }
-                catch (Exception longParseException)
-                {
-                    throw new Exception("error trying to parse timestamp too long");
-                }
 
                 string data;
                 var text = JsonConvert.SerializeObject(cred, settings);

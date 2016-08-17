@@ -153,7 +153,6 @@ namespace NuSysApp
                         }
                     }
                     vm.Controller.SetPosition(p.X, p.Y);
-                    Debug.WriteLine(p);
                 }
             }
         }
