@@ -136,13 +136,7 @@ namespace NuSysApp
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
-
-
-        //public async void UpdateList()
-        //{
-        //    _libraryList.Update();
-        //}
-
+        
         private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             //await this.AddNode(new Point(12, 0), new Size(12, 12), ElementType.Document);
@@ -608,72 +602,111 @@ namespace NuSysApp
         /// <returns></returns>
         private async Task ExportSearchResultsToCollection(Point r)
         {
-
-            var metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
-
-            // TODO: add the graph/chart
             var contentId = SessionController.Instance.GenerateId();
             var newCollectionId = SessionController.Instance.GenerateId();
 
-            var elementMsg = new Message();
-            elementMsg["metadata"] = metadata;
-            elementMsg["width"] = 300;
-            elementMsg["height"] = 300;
-            elementMsg["x"] = r.X;
-            elementMsg["y"] = r.Y;
-            elementMsg["contentId"] = contentId;
-            elementMsg["type"] = NusysConstants.ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-            elementMsg["id"] = newCollectionId;
+            // We determine the access type of the tool generated collection based on the collection we're in and pass that in to the request
+            NusysConstants.AccessType newCollectionAccessType;
+            var currWorkSpaceAccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+            if (currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+            {
+                newCollectionAccessType = NusysConstants.AccessType.Public;
+            }
+            else
+            {
+                newCollectionAccessType = NusysConstants.AccessType.Private;
+            }
+
+            // This creates a request to create the new collection of search results 
+            var newContentRequestArgs = new CreateNewContentRequestArgs()
+            {
+                ContentId = contentId,
+                LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
+                {
+                    ContentId = contentId,
+                    AccessType = newCollectionAccessType,
+                    LibraryElementType = NusysConstants.ElementType.Collection,
+                    LibraryElementId = newCollectionId,
+                    Title = "Search Results for '" + Searchfield.Text + "'"
+                }
+            };
+
+            var newContentRequest = new CreateNewContentRequest(newContentRequestArgs);
+            // This if checks whether this collection is being generated from search results or favorites. 
+            // TODO Add functionality back in for favorites.
             if (ListContainer.Children[0] == _libraryList)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));
-            else if (ListContainer.Children[0] == _libraryFavorites)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
+            {
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newContentRequest);
+                newContentRequest.AddReturnedLibraryElementToLibrary();
+            }
+                
+            //else if (ListContainer.Children[0] == _libraryFavorites)
+            //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
-
-            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
-
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, false, new List<Windows.Foundation.Point>(), 300, 300, newCollectionId);
+            // After creating the collection, we need to instantiate an instance of the collection and place it on the workspace. 
+            var newElementRequestArgs = new NewElementRequestArgs()
+            {
+                Height = 300,
+                Width = 300,
+                X = r.X,
+                Y = r.Y,
+                ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId,
+                LibraryElementId = newCollectionId
+            };
+            var elementRequest = new NewElementRequest(newElementRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+            elementRequest.AddReturnedElementToSession();
+            
+            // We then populate this new collection with instances of the all the search results
             if (ListContainer.Children[0] == _libraryList)
             {
                 foreach (var libraryItemTemplate in _pageViewModel.ItemList.ToList().GetRange(0, Math.Min(_pageViewModel.ItemList.Count, 30)))
                 {
-                    var dict = new Message();
-                    dict["title"] = libraryItemTemplate?.Title;
-                    dict["width"] = "300";
-                    dict["height"] = "300";
-                    dict["type"] = libraryItemTemplate?.Type;
-                    dict["x"] = "50000";
-                    dict["y"] = "50000";
-                    dict["contentId"] = libraryItemTemplate?.LibraryElementId;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.LibraryElementId;
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    if (libraryItemTemplate.LibraryElementId == newCollectionId)
+                    {
+                        // Since the collection that was just created has a similar title, it gets added to the search results.
+                        // We don't do anything on that iteration of this for each loop.
+                    }
+                    else
+                    {
+                        var elementRequestArgs = new NewElementRequestArgs()
+                        {
+                            Height = 300,
+                            Width = 300,
+                            X = 50000,
+                            Y = 50000,
+                            AccessType = newCollectionAccessType,
+                            LibraryElementId = libraryItemTemplate.LibraryElementId,
+                            ParentCollectionId = newCollectionId
+                        };
+                        var embeddedElementRequest = new NewElementRequest(elementRequestArgs);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(embeddedElementRequest);
+                        embeddedElementRequest.AddReturnedElementToSession();
+                    }
+                    
                 }
             }
-            else if (ListContainer.Children[0] == _libraryFavorites)
-            {
-                foreach (var itemTemplate in _favoritesViewModel.ItemList.ToList().GetRange(0, Math.Min(_favoritesViewModel.ItemList.Count, 30)))
-                {
-                    var dict = new Message();
-                    dict["title"] = itemTemplate?.Title;
-                    dict["width"] = "300";
-                    dict["height"] = "300";
-                    dict["type"] = itemTemplate?.Type;
-                    dict["x"] = "50000";
-                    dict["y"] = "50000";
-                    dict["contentId"] = itemTemplate?.LibraryElementId;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.LibraryElementId;
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                }
-            }
+
+            // TODO This will have to be done differently for Favorites 
+            //else if (ListContainer.Children[0] == _libraryFavorites)
+            //{
+            //    foreach (var itemTemplate in _favoritesViewModel.ItemList.ToList().GetRange(0, Math.Min(_favoritesViewModel.ItemList.Count, 30)))
+            //    {
+            //        var dict = new Message();
+            //        dict["title"] = itemTemplate?.Title;
+            //        dict["width"] = "300";
+            //        dict["height"] = "300";
+            //        dict["type"] = itemTemplate?.Type;
+            //        dict["x"] = "50000";
+            //        dict["y"] = "50000";
+            //        dict["contentId"] = itemTemplate?.LibraryElementId;
+            //        dict["metadata"] = metadata;
+            //        dict["autoCreate"] = true;
+            //        dict["creator"] = controller.LibraryElementModel.LibraryElementId;
+            //        var request = new NewElementRequest(dict);
+            //        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            //    }
+            //}
         }
 
         /// <summary>
