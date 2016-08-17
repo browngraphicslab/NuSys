@@ -37,9 +37,9 @@
 
             </Grid>
         </Border>
-        <Button Grid.Row="1" Tapped="Button_Tapped">I think I put this here</Button>
-        <local:AddToCollectionButton Grid.Row="2"/>
-        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="2"></local:ShowHideRegionButtons>
+        <Button Grid.Row="1" Tapped="Button_Tapped" HorizontalAlignment="Center">Suggest regions</Button>
+        <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
+        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
     </Grid>
 </UserControl>
 
