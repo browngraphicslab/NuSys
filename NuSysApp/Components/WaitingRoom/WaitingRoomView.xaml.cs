@@ -271,10 +271,33 @@ namespace NuSysApp
 
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
-            var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
-            var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
-            var displayName = NewDisplayName.Text;
-            Login(username, password, true, displayName);
+            bool valid = true;
+            if (NewUsername.Text == "")
+            {
+                NewUserLoginText.Text = "Username required. ";
+                valid = false;
+            }
+
+            if (NewDisplayName.Text == "")
+            {
+                if (valid == false)
+                {
+                    NewUserLoginText.Text = NewUserLoginText.Text + "Display name required.";
+                }
+                else
+                {
+                    NewUserLoginText.Text = "Display name required.";
+                    valid = false;
+                }
+            }
+            if (valid == true)
+            {
+                var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
+                var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
+                var displayName = NewDisplayName.Text;
+                Login(username, password, true, displayName);
+            }
+            
         }
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)

@@ -42,6 +42,12 @@ namespace NuSysApp
         /// </summary>
         public enum RegionsVisibility { ShowAll, HideAll, ShowOnlyChildren, HideOnlyChildren }
 
+        /// <summary>
+        /// set width of the ui element from another class
+        /// </summary>
+        public static readonly DependencyProperty SetWidthProperty = DependencyProperty.RegisterAttached("SetWidth",
+            typeof(double), typeof(ShowHideRegionButtons), null);
+
         public ShowHideRegionButtons()
         {
             this.InitializeComponent();
@@ -80,15 +86,9 @@ namespace NuSysApp
             _currentRegionsVisibility = RegionsVisibility.ShowOnlyChildren;
         }
 
-        /// <summary>
-        /// Hide all children regions when this is selected. Close (but not the same?) to hide all regions.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HideChildrenOnTapped(object sender, TappedRoutedEventArgs e)
+        public double SetWidth
         {
-            Wrapper.HideAllRegions();
-            _currentRegionsVisibility = RegionsVisibility.HideOnlyChildren;
+            set { RegionsOptionsBox.Width = value; }
         }
     }
 }
