@@ -23,15 +23,15 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border x:Name="xBorder" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid x:Name="xWrapper" Margin="10"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border x:Name="xBorder" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid x:Name="xWrapper" Margin="10"  HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                    <local:RectangleWrapper x:Name="xClippingWrapper" >
+                    <local:RectangleWrapper x:Name="xClippingWrapper">
                         <local:RectangleWrapper.RenderTransform>
                             <CompositeTransform x:Name="WrapperTransform"/>
                         </local:RectangleWrapper.RenderTransform>
                         <local:RectangleWrapper.Content>
-                            <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" Source="{Binding ImageSource}"/>
+                            <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding ImageSource}"/>
                         </local:RectangleWrapper.Content>
                     </local:RectangleWrapper>
 
@@ -48,16 +48,16 @@
                 </Grid>
             </Border>
             
-            <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" HorizontalAlignment="Right" Grid.Row="0"></local:ShowHideRegionButtons>
-            <Grid Grid.Row="2" Height="220" x:Name="SegmentPanel">
+            <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" HorizontalAlignment="Right" SetWidth="200"  Grid.Row="0"></local:ShowHideRegionButtons>
+            <local:AddToCollectionButton Grid.Row="0" HorizontalAlignment="Left"/>
+            
+            <Grid Grid.Row="2" x:Name="SegmentPanel">
                 <StackPanel>
-                    <local:AddToCollectionButton Grid.Row="2" HorizontalAlignment="Center"/>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
                         <TextBlock Foreground="{StaticResource color3}" FontSize="20">Document Analysis by Page</TextBlock>
                     </Grid>
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
@@ -68,11 +68,17 @@
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Page No.</TextBlock>
                         <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Sentiment Rating</TextBlock>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="3" Foreground="{StaticResource color3}">Key Phrases</TextBlock>
                         <TextBlock Grid.Row="0" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xPageNumberBox">Page No.</TextBlock>
                         <TextBlock Grid.Row="1" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xSentimentBox">Sentiment Rating</TextBlock>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xKeyPhrasesBox">Key Phrases</TextBlock>
                     </Grid>
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Foreground="{StaticResource color3}" Margin="3">Key Phrases:</TextBlock>
+                        </Grid>
+                        <ScrollViewer MaxHeight="100">
+                            <TextBlock Name="xKeyPhrasesBox" Margin="3" TextWrapping="WrapWholeWords"></TextBlock>
+                        </ScrollViewer>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Grid>

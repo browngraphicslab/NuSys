@@ -43,7 +43,8 @@ namespace NusysServer
             _db.Open(); //open database
 
             //ResetTables(true);
-            //sSetUpTables();
+            //SetUpTables();
+
 
             TestFunc();
         }
@@ -299,6 +300,9 @@ namespace NusysServer
             //cmdToDeleteRelatedMetadata.ExecuteCommand(); 
             // DOES NOT WORK  
             //TODO, harsh fix this
+
+            // The command below deletes all the related metadata from the metadata table.
+           
 
             return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }

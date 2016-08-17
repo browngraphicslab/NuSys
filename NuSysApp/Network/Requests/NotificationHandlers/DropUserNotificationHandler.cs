@@ -23,7 +23,7 @@ namespace NuSysApp
             Debug.Assert(notificationMessage.ContainsKey(NusysConstants.DROP_USER_NOTIFICATION_USER_ID_KEY));
             var userId = notificationMessage.GetString(NusysConstants.DROP_USER_NOTIFICATION_USER_ID_KEY);
 
-            if (!NuSysNetworkSession.NetworkMembers.ContainsKey(userId))
+            if (NuSysNetworkSession.NetworkMembers.ContainsKey(userId))
             {
                 NetworkUser outUser;
                 NuSysNetworkSession.NetworkMembers.TryRemove(userId, out outUser);

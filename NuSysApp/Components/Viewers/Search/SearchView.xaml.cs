@@ -88,7 +88,6 @@ namespace NuSysApp
             this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
             this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth - 30;
             this.MinWidth = resizer.ActualWidth;
-            _vm.ResultWidth = this.Width - resizer.Width;
             Canvas.SetTop(this, 0);
             Canvas.SetLeft(this, 0);
         }
@@ -153,7 +152,6 @@ namespace NuSysApp
             xContainer.RowDefinitions.Add(new RowDefinition());
             Grid.SetRow(SearchBarGrid, 0);
             ShowHelpButton.Visibility = Visibility.Visible;
-            _vm.SearchExportButtonVisibility = Visibility.Visible;
         }
 
         private void ShowHelperText()
@@ -182,7 +180,7 @@ namespace NuSysApp
             HideHelperText();
             foreach (var element in _openInfo) element.Visibility = Visibility.Collapsed;
 
-      if (args.ChosenSuggestion != null)
+            if (args.ChosenSuggestion != null)
             {
                 // User selected an item from the suggestion list, take an action on it here.
             }
@@ -229,7 +227,7 @@ namespace NuSysApp
         {
             _isSingleTap = false;
             var item = ListView.SelectedItem as SearchResultTemplate;
-            var id = item.Id;
+            var id = item.LibraryElementId;
 
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
             
@@ -346,46 +344,59 @@ namespace NuSysApp
 
             if (_x < this.Width) return;
 
-            await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
+            //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
+            // If they are different we simply return 
+            var currWorkSpaceAccessType =
+                SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+
+            if (element.AccessType == NusysConstants.AccessType.Private &&
+                currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+            {
+                return;
+            }
+
+            await AddSearchResulttoSession(result);
         }
 
-        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
+        /// <summary>
+        /// Adds the search result to the collection at point _x, _y
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private async Task AddSearchResulttoSession(SearchResultTemplate result)
         {
-            Task.Run(async delegate
+            // get the library element model which needs to be added to the stack
+            var lem = SessionController.Instance.ContentController.GetLibraryElementModel(result.LibraryElementId);
+
+            // if the library element model doesn't exist, or is a link, don't add it to the session
+            if (lem == null || lem.Type == NusysConstants.ElementType.Link)
             {
-                if (elementType != NusysConstants.ElementType.Collection)
-                {
-                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
-                    var dict = new Message();
-                    Dictionary<string, object> metadata;
+                return;
+            }
 
-                    metadata = new Dictionary<string, object>();
-                    metadata["node_creation_date"] = DateTime.Now;
-                    metadata["node_type"] = elementType + "Node";
+            // transforms the point from the maincanvas to the workspace
+            var workspacePoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(_x, _y));
 
-                    dict = new Message();
-                    dict["title"] = element?.Title + " element";
-                    dict["width"] = size.Width.ToString();
-                    dict["height"] = size.Height.ToString();
-                    dict["type"] = elementType.ToString();
-                    dict["x"] = pos.X;
-                    dict["y"] = pos.Y;
-                    dict["contentId"] = libraryId;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                }
-                else
-                {
-                    var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
-                    await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
-                            new List<Point>(collection.ShapePoints.Select(p => new Point(p.X, p.Y))), size.Width, size.Height);
-                }
-            });
+            // create a new element request args, and pass in the required fields
+            var newElementRequestArgs = new NewElementRequestArgs
+            {
+                // set the position
+                X = workspacePoint.X,
+                Y = workspacePoint.Y,
+
+                // size
+                Width = Constants.DefaultNodeSize,
+                Height = Constants.DefaultNodeSize,
+
+                // ids
+                ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                LibraryElementId = lem.LibraryElementId
+            };
+
+            // execute the request
+            var request = new NewElementRequest(newElementRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedElementToSession();
         }
 
         private void ShowHelpButton_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -485,48 +496,84 @@ namespace NuSysApp
         private async Task ExportSearchResultsToCollection(Point r)
         {
 
-            var metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
-
-            // TODO: add the graph/chart
-            var contentId = SessionController.Instance.GenerateId();
-            var newCollectionId = SessionController.Instance.GenerateId();
-
-            var elementMsg = new Message();
-            elementMsg["metadata"] = metadata;
-            elementMsg["width"] = 300;
-            elementMsg["height"] = 300;
-            elementMsg["x"] = r.X;
-            elementMsg["y"] = r.Y;
-            elementMsg["contentId"] = contentId;
-            elementMsg["type"] = NusysConstants.ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-            elementMsg["id"] = newCollectionId;
-
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '" + SearchBox.Text + "'"));
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
-
-            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
-
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, false, new List<Windows.Foundation.Point>(), 300, 300, newCollectionId);
-            foreach (var searchResult in _vm.PageElements.ToList().GetRange(0, Math.Min(_vm.PageElements.Count, 10)))
+            Task.Run(async delegate
             {
-                var dict = new Message();
-                dict["title"] = searchResult?.Title;
-                dict["width"] = "300";
-                dict["height"] = "300";
-                dict["type"] = searchResult?.Type;
-                dict["x"] = "50000";
-                dict["y"] = "50000";
-                dict["contentId"] = searchResult?.Id;
-                dict["metadata"] = metadata;
-                dict["autoCreate"] = true;
-                dict["creator"] = controller.LibraryElementModel.LibraryElementId;
-                var request = new NewElementRequest(dict);
+                // the library element id of the collection we are creating, used as the parent collection id when adding elements to it later in the method
+                var collectionLibElemId = SessionController.Instance.GenerateId();
+
+                // We determine the access type of the tool generated collection based on the collection we're in and pass that in to the request
+                NusysConstants.AccessType newCollectionAccessType;
+                var currWorkSpaceAccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+                if (currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+                {
+                    newCollectionAccessType = NusysConstants.AccessType.Public;
+                }
+                else
+                {
+                    newCollectionAccessType = NusysConstants.AccessType.Private;
+                }
+                // create a new library element args class to assist in creating the collection
+                var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs
+                {
+                    ContentId = SessionController.Instance.GenerateId(),
+                    LibraryElementType = NusysConstants.ElementType.Collection,
+                    Title = "Search Results for '" + SearchBox.Text + "'",
+                    LibraryElementId = collectionLibElemId,
+                    AccessType = newCollectionAccessType
+                };
+
+                // create a new content request args to assist in creating the collection
+                var createNewContentRequestArgs = new CreateNewContentRequestArgs
+                {
+                    LibraryElementArgs = createNewLibraryElementRequestArgs
+                };
+
+                // create the content request, and execute it, adding the collection to the library
+                var request = new CreateNewContentRequest(createNewContentRequestArgs);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            }
+                request.AddReturnedLibraryElementToLibrary();
+
+                // Add all the elements to the newly created collection
+                foreach (var searchResult in _vm.PageElements.ToList().GetRange(0, Math.Min(_vm.PageElements.Count, 20))) //todo indicate to the user that only 20 results are added
+                {
+
+                    // get the library element model which needs to be added to the collection
+                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(searchResult.LibraryElementId);
+
+                    // if the library element model doesn't exist, or is a link don't add it to the collection
+                    if (lem == null || lem.Type == NusysConstants.ElementType.Link)
+                    {
+                        continue;
+                    }
+
+                    // create a new element request args, and pass in the required fields
+                    var newElementRequestArgs = new NewElementRequestArgs
+                    {
+                        // set the position
+                        X = 50000,
+                        Y = 50000,
+
+                        // size
+                        Width = Constants.DefaultNodeSize,
+                        Height = Constants.DefaultNodeSize,
+
+                        // ids
+                        ParentCollectionId = collectionLibElemId,
+                        LibraryElementId = lem.LibraryElementId
+                    };
+
+                    // create and execute the request
+                    var requestElemToCollection = new NewElementRequest(newElementRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(requestElemToCollection);
+                    requestElemToCollection.AddReturnedElementToSession();
+                }
+
+                // add the collection to the current session
+                var collectionLEM =
+                    SessionController.Instance.ContentController.GetLibraryElementController(collectionLibElemId);
+                collectionLEM.AddElementAtPosition(r.X, r.Y);
+
+            });
         }
 
     }

@@ -72,11 +72,11 @@ namespace NuSysApp
 
             //Removes the link from the content at the other end of the Link
             var linkModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkId) as LinkLibraryElementModel;
-            if (linkModel?.InAtomId == currentLibraryElementController.ContentId)
+            if (linkModel?.InAtomId == currentLibraryElementController.LibraryElementModel.LibraryElementId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.OutAtomId);
                 otherController?.RequestRemoveLink(linkId);
-            } else if (linkModel?.OutAtomId == currentLibraryElementController.ContentId)
+            } else if (linkModel?.OutAtomId == currentLibraryElementController.LibraryElementModel.LibraryElementId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.InAtomId);
                 otherController?.RequestRemoveLink(linkId);

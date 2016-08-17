@@ -13,6 +13,8 @@ namespace NusysServer
         /// <summary>
         /// the method that is called by the request router to actually handle an incoming request.  
         /// The senderHandler is the WebSocketHandler of the original sender.
+        /// When returning from this request, you must add to the message that the request has failed, otherwise it will default to being successful.
+        /// To add a failure indicator to the reutnred message, add to the message the key value pair: {NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false}
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -26,7 +28,7 @@ namespace NusysServer
         protected Message GetRequestMessage(Request request)
         {
             var message = request.GetMessage();
-            return message;
+            return message; 
         }
 
         /// <summary>

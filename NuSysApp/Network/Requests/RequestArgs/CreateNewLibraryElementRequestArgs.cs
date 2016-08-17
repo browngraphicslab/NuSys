@@ -139,7 +139,7 @@ namespace NuSysApp
             //set the library element's library Id
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = LibraryElementId ?? SessionController.Instance.GenerateId();
 
-            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = AccessType ?? NusysConstants.AccessType.Private;
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = (AccessType ?? NusysConstants.AccessType.Private).ToString();
 
 
             return message;

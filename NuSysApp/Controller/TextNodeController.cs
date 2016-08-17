@@ -16,7 +16,7 @@ namespace NuSysApp
         {
             if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
             {
-                LibraryElementController.ContentChanged += ContentChanged;
+                LibraryElementController.ContentDataController.ContentDataUpdated += ContentChanged;
             }
         }
 
@@ -31,7 +31,7 @@ namespace NuSysApp
            
             if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
             {
-                LibraryElementController.ContentChanged -= ContentChanged;
+                LibraryElementController.ContentDataController.ContentDataUpdated -= ContentChanged;
             }
             base.Dispose();
 

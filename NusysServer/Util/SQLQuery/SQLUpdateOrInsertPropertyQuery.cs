@@ -19,7 +19,6 @@ namespace NusysServer
         /// <param name="conditional"></param>
         public SQLUpdateOrInsertPropertyQuery(List<SQLUpdatePropertiesArgs> args)
         {
-            //TODO: use the update row and insert query generators
             CommandString = "";
             foreach (var propertyToAdd in args)
             {
@@ -28,14 +27,7 @@ namespace NusysServer
                 {
                     new SqlQueryEquals(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY, propertyToAdd.PropertyValue)
                 };
-                //Sets conditional as where the libraryoraliasid is equal to the 
-                //SqlQueryConditional conditionalID = new SqlQueryEquals(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY, propertyToAdd.LibraryOrAliasId);
-                //SqlQueryConditional conditionalKey = new SqlQueryEquals(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_KEY_COLUMN_KEY, propertyToAdd.PropertyKey);
-                //var condtionalIdAndKey = new SqlQueryOperator(conditionalID, conditionalKey, Constants.Operator.And);
-                //SQLUpdateRowQuery updateQuery = new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.Properties), propertiesToUpdate, condtionalIdAndKey);
-                //var insertQuery = new SQLInsertQuery(Constants.SQLTableType.Properties, );
-                ////TODO: use the update row and insert query generators!!!!! FINISH THIS!!!!
-
+                //TODO: use the update row and insert query generators instead of this hardcoded string!
                 CommandString = CommandString +
                          "UPDATE "+Constants.GetTableName(Constants.SQLTableType.Properties)+" SET "+NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY+" = '"+propertyToAdd.PropertyValue+"' WHERE "+NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY+" = '"+propertyToAdd.LibraryOrAliasId+"' AND "+NusysConstants.PROPERTIES_KEY_COLUMN_KEY+" = '"+propertyToAdd.PropertyKey+ "' IF @@ROWCOUNT = 0 INSERT INTO " + Constants.GetTableName(Constants.SQLTableType.Properties) + " (" + NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + ", " + NusysConstants.PROPERTIES_KEY_COLUMN_KEY + ", " + NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + ") VALUES ('" + propertyToAdd.LibraryOrAliasId + "', '" + propertyToAdd.PropertyKey + "', '" + propertyToAdd.PropertyValue + "');";
             }

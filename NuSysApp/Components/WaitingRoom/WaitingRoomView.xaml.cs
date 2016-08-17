@@ -176,17 +176,24 @@ namespace NuSysApp
 
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
-            var name = NewWorkspaceName.Text;
-            var props = new Message();
-            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Collection.ToString();
-            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
-
             var contentRequestArgs = new CreateNewContentRequestArgs();
-            contentRequestArgs.LibraryElementArgs.Title = name;
+            contentRequestArgs.LibraryElementArgs.Title = NewWorkspaceName.Text;
             contentRequestArgs.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Collection;
-            contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Public;
 
-            var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
+            if (PublicButton.IsChecked.Value)
+            {
+                contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Public;
+            }
+            else if (PrivateButton.IsChecked.Value)
+            {
+                contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.Private;
+            }
+            else
+            {
+                contentRequestArgs.LibraryElementArgs.AccessType = NusysConstants.AccessType.ReadOnly;
+            }
+
+            var request = new CreateNewContentRequest(contentRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             Init();
             NewWorkspaceName.Text = "";
@@ -263,12 +270,48 @@ namespace NuSysApp
             workspace.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Adds user labels to the user stackpanel on the collection list screen.
+        /// </summary>
+        /// <param name="user"></param>
+        private void NewNetworkUser(NetworkUser user)
+        {
+            UITask.Run(delegate
+            {
+                UserLabel b = new UserLabel(user);
+                Users.Children.Add(b);
+            });
+        }
+
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
-            var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
-            var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
-            var displayName = NewDisplayName.Text;
-            Login(username, password, true, displayName);
+            bool valid = true;
+            if (NewUsername.Text == "")
+            {
+                NewUserLoginText.Text = "Username required. ";
+                valid = false;
+            }
+
+            if (NewDisplayName.Text == "")
+            {
+                if (valid == false)
+                {
+                    NewUserLoginText.Text = NewUserLoginText.Text + "Display name required.";
+                }
+                else
+                {
+                    NewUserLoginText.Text = "Display name required.";
+                    valid = false;
+                }
+            }
+            if (valid == true)
+            {
+                var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
+                var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
+                var displayName = NewDisplayName.Text;
+                Login(username, password, true, displayName);
+            }
+            
         }
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
@@ -294,7 +337,7 @@ namespace NuSysApp
                 _selectedCollection =
                     SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
                 //set properties in preview window
-                CreatorText.Text = SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.NetworkMembers[_selectedCollection.Creator].DisplayName : "...";
+                CreatorText.Text = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[_selectedCollection.Creator] : "...";
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
 
@@ -517,6 +560,9 @@ namespace NuSysApp
                             }
                         }
 
+                        //add active users to list of users in corner
+
+
                         await Task.Run(async delegate
                         { 
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
@@ -531,6 +577,15 @@ namespace NuSysApp
                                     Debug.WriteLine(" this shouldn't ever happen.  trent was too lazy to do error hadnling");
                                 }
                             }
+
+                            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+                            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
+
+                            foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
+                            {
+                                NewNetworkUser(user);
+                            }
+
                             _isLoaded = true;
                             if (_loggedIn)
                             {
@@ -560,6 +615,27 @@ namespace NuSysApp
                 Debug.WriteLine("cannot connect to server");
             }
 
+        }
+
+        /// <summary>
+        /// event handler for when the nusysNetworkSession drop a network user.  
+        /// </summary>
+        /// <param name="userId"></param>
+        private void DropNetworkUser(string userId)
+        {
+            UITask.Run(delegate
+            {
+                foreach (var child in Users.Children)
+                {
+                    var label = child as UserLabel;
+                    Debug.Assert(label != null);
+                    if (label.UserId == userId)
+                    {
+                        Users.Children.Remove(child);
+                        break;
+                    }
+                }
+            });
         }
 
         private void ContentControllerOnOnNewContent(LibraryElementModel element)

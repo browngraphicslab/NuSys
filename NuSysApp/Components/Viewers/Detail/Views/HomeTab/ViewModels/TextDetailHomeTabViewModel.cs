@@ -16,7 +16,7 @@ namespace NuSysApp
         public TextDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             LibraryElementController = controller;
-            controller.ContentChanged += ContentChanged;
+            controller.ContentDataController.ContentDataUpdated += ContentChanged;
         }
 
         private void ContentChanged(object source, string data)

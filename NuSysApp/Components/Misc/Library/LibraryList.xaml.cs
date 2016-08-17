@@ -243,6 +243,17 @@ namespace NuSysApp
 
             rect.Hide();
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
+            
+            //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
+            // If they are different we siply return 
+            var currWorkSpaceAccessType =
+                SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+
+            if (element.AccessType == NusysConstants.AccessType.Private &&
+                currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+            {
+                return;
+            }
             await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.LibraryElementId);
         }
 
@@ -413,13 +424,6 @@ namespace NuSysApp
             SessionController.Instance.SessionView.ShowDetailView(controller);
         }
         
-        //private void RegionsPanel_OnTapped(object sender, TappedRoutedEventArgs e)
-        // {
-        //     var panel = sender as Grid;
-        //     if (panel == null) return;
-        //     panel.Visibility = Visibility.Collapsed;
-        // }
-
         private async void LibraryListItem_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             var grid = sender as Grid;

@@ -303,7 +303,9 @@ namespace NuSysApp
 
         /// <summary>
         /// method to enter a collection from anywhere.  
-        /// The id is the libraryElementId of the collection you want to enter
+        /// The id is the libraryElementId of the collection you want to enter. 
+        /// 
+        /// THis method will take care of all the clearing and crap for you, just call it with the id you want to use.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

@@ -67,21 +67,21 @@ namespace NuSysApp
             }
 
             Annotation = controller.Data;
-            controller.ContentChanged += Controller_ContentChanged; 
+            controller.ContentDataController.ContentDataUpdated += Controller_ContentChanged; 
 
         }
 
         private void Controller_ContentChanged(object source, string contentData)
         {
-            _controller.ContentChanged -= Controller_ContentChanged;
+            _controller.ContentDataController.ContentDataUpdated -= Controller_ContentChanged;
             Annotation = contentData;
-            _controller.ContentChanged += Controller_ContentChanged;
+            _controller.ContentDataController.ContentDataUpdated += Controller_ContentChanged;
 
         }
 
         public void UpdateAnnotation(string text)
         {
-            _controller.SetContentData(text);
+            _controller.ContentDataController.SetData(text);
         }
 
         // There is no region here so this method should not be called

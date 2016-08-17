@@ -267,7 +267,7 @@ namespace NuSysApp
             var vm = DataContext as TextNodeViewModel;
             var controller = (TextNodeController)vm.Controller;
             vm.TextBindingChanged -= TextChanged;
-            controller.LibraryElementController?.SetContentData(s);
+            controller.LibraryElementController?.ContentDataController.SetData(s);
             vm.TextBindingChanged += TextChanged;
             _text = s;
         }
@@ -558,7 +558,7 @@ namespace NuSysApp
         {
             var vm = DataContext as TextNodeViewModel;
             if (vm == null) return;
-            vm.Controller.LibraryElementController.SetContentData(text);
+            vm.Controller.LibraryElementController.ContentDataController.SetData(text);
         }
     }
 }

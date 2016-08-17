@@ -12,7 +12,7 @@ namespace NusysIntermediate
 {
     public class LibraryElementModel
     {
-        public HashSet<Keyword> Keywords {get; set; }
+        public HashSet<Keyword> Keywords { get; set; }
 
         public NusysConstants.ElementType Type { get; set; }
 

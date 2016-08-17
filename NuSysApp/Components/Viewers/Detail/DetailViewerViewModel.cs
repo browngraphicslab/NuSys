@@ -269,14 +269,14 @@ namespace NuSysApp
                     suggestedTags.AddRange(new HashSet<string>(kvp.Value.Values));
                 }
                 var linksController = SessionController.Instance.LinksController;
-                foreach (var linkId in linksController.GetLinkedIds(CurrentElementController?.ContentId))
+                foreach (var linkId in linksController.GetLinkedIds(CurrentElementController?.LibraryElementModel?.LibraryElementId))
                 {
                     var linkController = linksController.GetLinkLibraryElementControllerFromLibraryElementId(linkId);
                     if (linkController == null)
                     {
                         continue;
                     }
-                    var opposite = linksController.GetOppositeLibraryElementModel(CurrentElementController?.ContentId, linkController);
+                    var opposite = linksController.GetOppositeLibraryElementModel(CurrentElementController?.LibraryElementModel?.LibraryElementId, linkController);
                     if (opposite?.LibraryElementModel == null)
                     {
                         continue;
