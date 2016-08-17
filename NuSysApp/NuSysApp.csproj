@@ -651,6 +651,7 @@
     <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
     <Compile Include="Network\Requests\CreateNewMetadataRequest.cs" />
     <Compile Include="Network\Requests\CreateNewPresentationLinkRequest.cs" />
+    <Compile Include="Network\Requests\CreateSnapshotOfCollectionRequest.cs" />
     <Compile Include="Network\Requests\DeletePresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\DeleteMetadataRequest.cs" />
     <Compile Include="Network\Requests\GetAllLibraryElementsRequest.cs" />

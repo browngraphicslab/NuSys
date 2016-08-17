@@ -94,6 +94,9 @@ namespace NusysServer
                         case NusysConstants.RequestType.UpdateContentRequest:
                             requestHandler = new UpdateContentRequestHandler();
                             break;
+                       case NusysConstants.RequestType.CreateSnapshotOfCollectionRequest:
+                            requestHandler = new CreateSnapshotOfCollectionRequestHandler();
+                            break;
                         default:
                             requestHandler = null;
                             return false;
