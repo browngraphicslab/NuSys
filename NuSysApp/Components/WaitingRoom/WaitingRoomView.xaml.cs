@@ -269,6 +269,26 @@ namespace NuSysApp
             workspace.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Adds user labels to the user stackpanel on the collection list screen.
+        /// </summary>
+        /// <param name="user"></param>
+        private void NewNetworkUser(NetworkUser user)
+        {
+            UITask.Run(delegate
+            {
+                UserLabel b = new UserLabel(user);
+                Users.Children.Add(b);
+                user.OnUserRemoved += delegate
+                {
+                    UITask.Run(delegate
+                    {
+                        Users.Children.Remove(b);
+                    });
+                };
+            });
+        }
+
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
             bool valid = true;
@@ -546,6 +566,9 @@ namespace NuSysApp
                             }
                         }
 
+                        //add active users to list of users in corner
+
+
                         await Task.Run(async delegate
                         { 
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
@@ -560,6 +583,14 @@ namespace NuSysApp
                                     Debug.WriteLine(" this shouldn't ever happen.  trent was too lazy to do error hadnling");
                                 }
                             }
+
+                            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+
+                            foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
+                            {
+                                NewNetworkUser(user);
+                            }
+
                             _isLoaded = true;
                             if (_loggedIn)
                             {
