@@ -13,7 +13,7 @@ namespace NusysServer
         /// </summary>
         public string CommandString{get; private set;}
         /// <summary>
-        /// creates an insert command for the table specified. The passed in column value messages are the key value pairs for the column name and the value you want to insert.
+        /// creates an insert command for the table specified. The passed in column value messages are the key value pairs for the column name and the value you want to insert. This inserts a single row
         /// </summary>
         /// <param name="tableType"></param>
         /// <param name="columnValueMessage"></param>
@@ -45,6 +45,28 @@ namespace NusysServer
             }
             columnNames = columnNames + ")";
             values = values + ")";
+            CommandString = CommandString + columnNames + " VALUES " + values + ";";
+        }
+
+        /// <summary>
+        /// creates an insert command for the table specified. The passed in column value messages are the key value pairs for the column name and the value you want to insert. This inserts multiple rows. Each of the
+        /// messages in columnValueMessages must have THE SAME KEY. 
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <param name="columnValueMessage"></param>
+        public SQLInsertQuery(Constants.SQLTableType tableType, List<Message> columnValueMessages)
+        {
+            var cleanedMessage = columnValueMessages.Select(q => Constants.GetCleanedMessageForDatabase(q, tableType));
+            if (!cleanedMessage.First().Any())
+            {
+                throw new Exception("didn't find any valid " +
+                                    " in requested sql insert command");
+            }
+            CommandString = "INSERT INTO " + Constants.GetTableName(tableType) + " ";
+            var listOfColumns = cleanedMessage.First().GetKeys();
+            var columnNames = "(" + string.Join(",", listOfColumns) + ")" ;
+            var values = String.Join(",",
+                cleanedMessage.Select(q => "(" + string.Join(",", q.GetValues().Select(w => "'" + w + "'")) + ")"));
             CommandString = CommandString + columnNames + " VALUES " + values + ";";
         }
 

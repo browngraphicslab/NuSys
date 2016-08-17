@@ -89,6 +89,9 @@ namespace NusysServer
                     case NusysConstants.RequestType.UpdateMetadataEntryRequest:
                         requestHandler = new UpdateMetadataRequestHandler();
                         break;
+                    case NusysConstants.RequestType.CreateSnapshotOfCollectionRequest:
+                        requestHandler = new CreateSnapshotOfCollectionRequestHandler();
+                        break;
                     case NusysConstants.RequestType.UpdateContentRequest:
                         requestHandler = new UpdateContentRequestHandler();
                         break;

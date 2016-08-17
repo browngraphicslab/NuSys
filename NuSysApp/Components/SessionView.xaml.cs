@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NusysIntermediate;
+using NuSysApp.Network.Requests;
 
 namespace NuSysApp
 {
@@ -774,7 +775,10 @@ namespace NuSysApp
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         {
-            await StaticServerCalls.CreateSnapshot();
+            //await StaticServerCalls.CreateSnapshot();
+            CreateSnapshotOfCollectionRequest request = new CreateSnapshotOfCollectionRequest(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddSnapshotCollectionLocally();
         }
         private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
         {

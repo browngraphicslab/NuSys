@@ -9,6 +9,11 @@ namespace NusysServer.Util
 {
     public class PropertiesAndMetadataParser
     {
+        /// <summary>
+        /// Returns the message with all properties, and metadata that belong to a single element in a single message. 
+        /// </summary>
+        /// <param name="oldMessages"></param>
+        /// <returns></returns>
         public IEnumerable<Message> ConcatPropertiesAndMetadata(List<Message> oldMessages)
         {
             Dictionary<string, Tuple<Dictionary<string, MetadataEntry>, HashSet<KeyValuePair<string, string>>>>
@@ -28,7 +33,7 @@ namespace NusysServer.Util
                 {
                     oldMessages.Remove(message);
                 }
-                if (!message.GetString(NusysConstants.PROPERTIES_KEY_COLUMN_KEY, "").Equals(""))
+                if (!message.GetString(NusysConstants.PROPERTIES_KEY_COLUMN_KEY, "").Equals("") && propertyValueKey != null)
                 {
                     idToMetadataAndProperties[libraryId].Item2.Add(new KeyValuePair<string, string>(message.GetString(NusysConstants.PROPERTIES_KEY_COLUMN_KEY), message.GetString(propertyValueKey)));
                 }
@@ -47,7 +52,7 @@ namespace NusysServer.Util
             {
                 foreach (var property in idToMetadataAndProperties[uniqueMessage.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY)].Item2)
                 {
-                    uniqueMessage.Add(property.Key, property.Value);
+                    uniqueMessage[property.Key] = property.Value;
                 }
                 uniqueMessage[NusysConstants.LIBRARY_ELEMENT_METADATA_KEY] =
                     JsonConvert.SerializeObject(

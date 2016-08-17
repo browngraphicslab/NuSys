@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -517,8 +517,20 @@ namespace NusysIntermediate
         /// The key for sending the new content
         /// </summary>
         public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_type";
-        
+
         #endregion UpdateContentRequest
+
+        #region CreateSnapshotOfCollectionRequest
+        /// <summary>
+        /// The key for sending the id of the collection you wish to take a snapshot of
+        /// </summary>
+        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_COLLECTION_ID = "collection_id";
+
+        /// <summary>
+        /// The key used by the server to send to clients the library element model of the newly created collection
+        /// </summary>
+        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_RETURNED_COLLECTION_LIBRARY_ELEMENT_MODEL = "returned_collection_library_element_model";
+        #endregion CreateShapshotOfCollectionRequest
 
 
         #region ChatRequest
@@ -836,7 +848,17 @@ namespace NusysIntermediate
             {
                 RETURN_AWAITABLE_REQUEST_ID_STRING,
                 REQUEST_TYPE_STRING_KEY,
-                ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY
+                ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY,
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                "system_sent_timestamp",
+                ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN,
+                "sender_user_id",
+                LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY,
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                PROPERTIES_KEY_COLUMN_KEY,
+                PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
+                PROPERTIES_STRING_VALUE_COLUMN_KEY,
+                PROPERTIES_DATE_VALUE_COLUMN_KEY,
             };
 
             #endregion propertiesTable
@@ -1261,6 +1283,7 @@ namespace NusysIntermediate
             DeletePresentationLinkRequest,
             UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
+            CreateSnapshotOfCollectionRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
