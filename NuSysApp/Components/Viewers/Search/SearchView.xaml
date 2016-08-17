@@ -35,14 +35,17 @@
 
 
                 <!-- The search bar -->
-                        <AutoSuggestBox 
-                            x:Name="SearchBox"
-                            QueryIcon="Find"
-                            PlaceholderText="search..."
-                            TextChanged="SearchBox_OnTextChanged" 
-                            SuggestionChosen="SearchBox_OnSuggestionChosen"
-                            QuerySubmitted="SearchBox_OnQuerySubmitted"
-                            Margin="10,5"/>
+                        <Border BorderBrush="{StaticResource color2}" BorderThickness="1" Margin="2,0,2,0">
+                            <AutoSuggestBox 
+                                    x:Name="SearchBox"
+                                    QueryIcon="Find"
+                                    PlaceholderText="search..."
+                                    TextChanged="SearchBox_OnTextChanged" 
+                                    SuggestionChosen="SearchBox_OnSuggestionChosen"
+                                    QuerySubmitted="SearchBox_OnQuerySubmitted"
+                                    Margin="10,5"/>
+                        </Border>
+                        
                     
                         
                         <TextBox

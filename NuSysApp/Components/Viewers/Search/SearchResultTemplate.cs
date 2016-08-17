@@ -34,7 +34,7 @@ namespace NuSysApp
             this.Title = model.Title;
             this.Type = model.Type;
             this.TimeStamp = parseTimeStampToDDMMYYFormat(model.Timestamp);
-            this.Creator = model.Creator;
+            this.Creator = SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator) ?? "Unknown Author";
 
             // extra info fields
             if (model.Keywords != null)
