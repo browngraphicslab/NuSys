@@ -799,7 +799,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Retreives the chat box instance
+        /// Retreives the chat box instance, returns null if the chatbox has not been instantiated yet
         /// </summary>
         /// <returns></returns>
         public ChatBoxView GetChatBox()

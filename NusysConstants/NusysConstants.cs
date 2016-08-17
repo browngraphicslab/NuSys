@@ -1415,7 +1415,6 @@ namespace NusysIntermediate
             {
                 return null;
             }
-            Debug.WriteLine("here");
             //return Regex.Replace(input, @"[\r\n\x00\x1a\\'""]", @"\$0");
             input = input.Replace("'", "''");
             input = input.Replace("\"", "\"");

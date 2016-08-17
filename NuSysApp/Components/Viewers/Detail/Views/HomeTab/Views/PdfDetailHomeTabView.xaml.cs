@@ -28,6 +28,7 @@ namespace NuSysApp
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
 
+        private NusysPdfDocumentAnalysisModel _analysisModel;
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
@@ -51,7 +52,17 @@ namespace NuSysApp
             xClippingWrapper.ProcessLibraryElementController();
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
-            detailViewerView.Disposed += DetailViewerView_Disposed; 
+            detailViewerView.Disposed += DetailViewerView_Disposed;
+
+            Task.Run(async delegate
+            {
+                var request = new GetAnalysisModelRequest(vm.LibraryElementController.LibraryElementModel.ContentDataModelId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                _analysisModel = request.GetReturnedAnalysisModel() as NusysPdfDocumentAnalysisModel;
+                UITask.Run(async delegate {
+                    SetPdfSuggestions(vm.CurrentPageNumber);
+                });
+            });
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
@@ -64,6 +75,26 @@ namespace NuSysApp
         private void Vm_PageLocationChanged(object sender, int pageLocation)
         {
             UpdateRegionViews(pageLocation);
+            SetPdfSuggestions(pageLocation);
+        }
+
+        /// <summary>
+        /// sets the page info via the suggestion box.  THe info is gathered from the server-given Analysis Model
+        /// </summary>
+        /// <param name="pageNumber"></param>
+        private void SetPdfSuggestions(int pageNumber)
+        {
+            xPageNumberBox.Text = pageNumber.ToString();
+            if (_analysisModel != null)
+            {
+                xSentimentBox.Text = Math.Round(_analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating) * 100,3)+ " %";
+                xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
+            }
+            else
+            {
+                xSentimentBox.Text = "...";
+                xKeyPhrasesBox.Text = "...";
+            }
         }
 
         private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
