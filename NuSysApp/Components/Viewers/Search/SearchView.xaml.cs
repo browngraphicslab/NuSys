@@ -346,6 +346,16 @@ namespace NuSysApp
 
             if (_x < this.Width) return;
 
+            //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
+            // If they are different we siply return 
+            var currWorkSpaceAccessType =
+                SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+
+            if (element.AccessType == NusysConstants.AccessType.Private &&
+                currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+            {
+                return;
+            }
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
         }
 
