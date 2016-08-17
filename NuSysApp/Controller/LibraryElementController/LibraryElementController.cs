@@ -437,6 +437,10 @@ namespace NuSysApp
         /// </summary>
         public void AddKeyword(Keyword keyword)
         {
+            if (_libraryElementModel.Keywords == null)
+            {
+                _libraryElementModel.Keywords = new HashSet<Keyword>();
+            }
             _libraryElementModel.Keywords.Add(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
             if (!_blockServerInteraction)

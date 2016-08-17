@@ -37,9 +37,44 @@
 
             </Grid>
         </Border>
-        <Button Grid.Row="2" Tapped="Button_Tapped" HorizontalAlignment="Center">Suggest regions</Button>
+        
         <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
         <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
+
+        <StackPanel Grid.Row="2">
+            <Button Tapped="Button_Tapped" HorizontalAlignment="Center">Suggest regions</Button>
+            <Grid x:Name="SegmentPanel">
+                <StackPanel>
+                    <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
+                        <TextBlock Foreground="{StaticResource color3}" FontSize="20">Image Analysis</TextBlock>
+                    </Grid>
+
+                    <ScrollViewer MaxHeight="200" HorizontalAlignment="Stretch">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Foreground="{StaticResource color3}" Margin="3">Description:</TextBlock>
+                            </Grid>
+                            
+                            <TextBlock x:Name="xDescription" Margin="3" TextWrapping="WrapWholeWords"></TextBlock>
+                            
+                            <Grid>
+                                <TextBlock Foreground="{StaticResource color3}" Margin="3">Categories:</TextBlock>
+                            </Grid>
+                            
+                            <TextBlock x:Name="xCategories" Margin="3" TextWrapping="WrapWholeWords"></TextBlock>
+                            
+                            <Grid>
+                                <TextBlock Foreground="{StaticResource color3}" Margin="3">Tags:</TextBlock>
+                            </Grid>
+                            
+                            <TextBlock x:Name="xTags" Margin="3" TextWrapping="WrapWholeWords"></TextBlock>
+                        
+                        </StackPanel>
+                    </ScrollViewer>
+                    
+                </StackPanel>
+            </Grid>
+        </StackPanel>
     </Grid>
 </UserControl>
 
