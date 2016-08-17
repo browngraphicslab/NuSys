@@ -78,6 +78,7 @@
 
             <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
             <local:SpeechToTextBox x:Name="xSpeechToTextBox"></local:SpeechToTextBox>
+            <local:FileAddedAclsPopup x:Name="xFileAddedAclesPopup"></local:FileAddedAclsPopup>
         </Canvas>
         <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="White" ButtonStroke="#113D40"  BubbleTop="False"  LeftJustified="False" HorizontalAlignment="Right" VerticalAlignment="Top"  Width="{Binding ElementName=Properties, Path=Width}" Height="45" MinWidth="300"  MaxWidth="300"></local:TextInputBlock>
         <Button x:Name="CurrentCollectionDV" Click="CurrentCollectionDV_OnClick" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,300,0">
