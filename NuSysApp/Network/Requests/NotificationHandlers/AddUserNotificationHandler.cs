@@ -28,6 +28,11 @@ namespace NuSysApp
                 NuSysNetworkSession.NetworkMembers[user.UserID] = user;
             }
 
+            if (!NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(user.UserID))
+            {
+                NuSysNetworkSession.UserIdToDisplayNameDictionary.Add(user.UserID, user.DisplayName);
+            }
+
             //fire the event in the nusys network session
             NuSysNetworkSession.FireAddNetworkUser(user);
         }

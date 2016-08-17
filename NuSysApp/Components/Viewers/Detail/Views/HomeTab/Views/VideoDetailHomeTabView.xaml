@@ -18,10 +18,10 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1">
             <Grid x:Name="grid">
                 <Grid.Resources>
                     <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
@@ -41,8 +41,8 @@
 
             </Grid>
         </Border>
-        <local:AddToCollectionButton Grid.Row="1"/>
-        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="1"></local:ShowHideRegionButtons>
+        <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
+        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
 
     </Grid>
 </UserControl>

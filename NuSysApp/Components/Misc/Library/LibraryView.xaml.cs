@@ -255,6 +255,18 @@ namespace NuSysApp
             int pdfPageCount = 0;
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+
+            // get the fileAddedAclsPopup from the session view
+            var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;
+            // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
+            var fileIdToAccessMap = await fileAddedAclsPopup.GetAcls(storageFiles);
+
+            // check if the user has canceled the upload
+            if (fileIdToAccessMap == null)
+            {
+                return;
+            }
+
             foreach (var storageFile in storageFiles ?? new List<StorageFile>())
             {
                 if (storageFile == null) return;
@@ -435,6 +447,17 @@ namespace NuSysApp
 
                     args.LibraryElementArgs.Title = title;
                     args.LibraryElementArgs.LibraryElementType = elementType;
+
+                    // add the acls from the map, default to private instead of throwing an error on release
+                    Debug.Assert(fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId), "The mapping from the fileAddedPopup is not being output or set correctly");
+                    if (fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
+                    {
+                        args.LibraryElementArgs.AccessType = fileIdToAccessMap[storageFile.FolderRelativeId];
+                    }
+                    else
+                    {
+                        args.LibraryElementArgs.AccessType = NusysConstants.AccessType.Private;
+                    }
 
                     var request = new CreateNewContentRequest(args);
 

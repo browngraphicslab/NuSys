@@ -5,10 +5,8 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xaml="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:views="using:NuSysApp"
     mc:Ignorable="d"
-    d:DesignHeight="300"
+    d:DesignHeight="1000"
     d:DesignWidth="400"
     BorderBrush="DarkSlateGray"
     BorderThickness="2"
@@ -35,14 +33,17 @@
 
 
                 <!-- The search bar -->
-                        <AutoSuggestBox 
-                            x:Name="SearchBox"
-                            QueryIcon="Find"
-                            PlaceholderText="search..."
-                            TextChanged="SearchBox_OnTextChanged" 
-                            SuggestionChosen="SearchBox_OnSuggestionChosen"
-                            QuerySubmitted="SearchBox_OnQuerySubmitted"
-                            Margin="10,5"/>
+                        <Border BorderBrush="{StaticResource color2}" BorderThickness="1" Margin="2,0,2,0">
+                            <AutoSuggestBox 
+                                    x:Name="SearchBox"
+                                    QueryIcon="Find"
+                                    PlaceholderText="search..."
+                                    TextChanged="SearchBox_OnTextChanged" 
+                                    SuggestionChosen="SearchBox_OnSuggestionChosen"
+                                    QuerySubmitted="SearchBox_OnQuerySubmitted"
+                                    Margin="10,5"/>
+                        </Border>
+                        
                     
                         
                         <TextBox
@@ -59,7 +60,7 @@
                 
 
                 <!-- The search results -->
-                <ListView x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" Width="{Binding ResultWidth}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped" Visibility="{Binding SearchResultsListVisibility}">
+                <ListView x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped" Visibility="{Binding SearchResultsListVisibility}">
                     <!-- Search Result Item Template -->
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
@@ -70,13 +71,13 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid x:Name="RootGrid" Background="White"  BorderBrush="LightGray" BorderThickness="2" Width="{Binding ResultWidth}"  HorizontalAlignment="Stretch" Tapped="RootGrid_OnTapped" PointerPressed="ListItem_OnPointerPressed" ManipulationStarted="ListItem_ManipulationStarted" ManipulationDelta="ListItem_ManipulationDelta" ManipulationCompleted="ListItem_ManipulationCompleted" ManipulationMode="All">
+                            <Grid x:Name="RootGrid" Background="White"  BorderBrush="LightGray" BorderThickness="2"  HorizontalAlignment="Stretch" Tapped="RootGrid_OnTapped" PointerPressed="ListItem_OnPointerPressed" ManipulationStarted="ListItem_ManipulationStarted" ManipulationDelta="ListItem_ManipulationDelta" ManipulationCompleted="ListItem_ManipulationCompleted" ManipulationMode="All">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <!-- Top Row -->
-                                <Grid x:Name="ResultHeader" Width="{Binding ResultWidth}">
+                                <Grid x:Name="ResultHeader">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -91,7 +92,7 @@
                                     <TextBlock Text="{Binding TimeStamp}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Margin="5"/>
                                 </Grid>
                                 <!-- Expandable Information -->
-                                <Grid x:Name="ResultInfo" Grid.Row="1" Visibility="Collapsed"  HorizontalAlignment="Stretch" Width="{Binding ResultWidth}" Background="White">
+                                <Grid x:Name="ResultInfo" Grid.Row="1" Visibility="Collapsed"  HorizontalAlignment="Stretch" Background="White">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="2*"/>
@@ -120,7 +121,7 @@
             </Grid>
 
             <TextBlock Grid.Row="2" x:Name="HelperText" Visibility="{Binding SearchViewHelperTextVisibility}" FontFamily="FiraSans" FontSize="16" Foreground="{StaticResource color2}" VerticalAlignment="Top" HorizontalAlignment="Center" TextAlignment="Center" Margin="30,10" TextWrapping="Wrap"
-                       Text="The advanced search textbox is not setup right now but if it were the tutorial text would go here. It would be full of very helpful information."/>
+                       Text="Advanced Search enabled domain specific searching. The syntax &lt;domain key&gt; : &lt;search string&gt;. The following domain keys are recognized. To search over keywords use keyword or keywords. To search over author use creator, creators, author, authors. To search over type use type, element, or elementtype. Note that the case of the domain key is disregarded.&#10;&#10; Examples &#10; Search for all element created by J.K. Rowling&#10; &quot;author : J.K. Rowling&quot;&#10; To search for all elements created by J.K. Rowling or Cicero. &#10; &quot;author : J.K. Rowling, Cicero &quot;"/>
 
             
 

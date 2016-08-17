@@ -16,9 +16,7 @@ namespace NuSysApp
         {
             get { return _colorSet ? _color : GetColor(); }
         }
-
-        public delegate void UserRemovedEventHandler();
-        public event UserRemovedEventHandler OnUserRemoved;
+        
         #endregion Public Variables
 
         #region Private Variables
@@ -35,14 +33,9 @@ namespace NuSysApp
 
         private Color GetColor()
         {
-            _color = MediaUtil.GetHashColorFromString(UserID);
+            _color = MediaUtil.GetHashColorFromString(DisplayName);
             _colorSet = true;
             return _color;
-        }
-
-        public void Remove()
-        {
-            OnUserRemoved?.Invoke();
         }
 
         public void SetUserController(LibraryElementController controller)

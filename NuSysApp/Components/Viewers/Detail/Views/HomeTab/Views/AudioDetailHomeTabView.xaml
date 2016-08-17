@@ -17,12 +17,12 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch">
+        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" Grid.Row="1">
 
-            <Grid VerticalAlignment="Center" >
+            <Grid VerticalAlignment="Center">
                 <local:AudioMediaPlayer x:Name="MediaPlayer"></local:AudioMediaPlayer>
                 <ItemsControl ItemsSource="{Binding RegionViews}">
                     <ItemsControl.ItemsPanel>
@@ -33,8 +33,8 @@
                 </ItemsControl>
             </Grid>
         </Border>
-        <local:AddToCollectionButton Grid.Row="1"/>
-        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="1"></local:ShowHideRegionButtons>
+        <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
+        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
 
     </Grid>
 

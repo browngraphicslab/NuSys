@@ -269,6 +269,19 @@ namespace NuSysApp
             workspace.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Adds user labels to the user stackpanel on the collection list screen.
+        /// </summary>
+        /// <param name="user"></param>
+        private void NewNetworkUser(NetworkUser user)
+        {
+            UITask.Run(delegate
+            {
+                UserLabel b = new UserLabel(user);
+                Users.Children.Add(b);
+            });
+        }
+
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
             bool valid = true;
@@ -323,7 +336,7 @@ namespace NuSysApp
                 _selectedCollection =
                     SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
                 //set properties in preview window
-                CreatorText.Text = SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.NetworkMembers[_selectedCollection.Creator].DisplayName : "...";
+                CreatorText.Text = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[_selectedCollection.Creator] : "...";
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
 
@@ -546,6 +559,9 @@ namespace NuSysApp
                             }
                         }
 
+                        //add active users to list of users in corner
+
+
                         await Task.Run(async delegate
                         { 
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
@@ -560,6 +576,15 @@ namespace NuSysApp
                                     Debug.WriteLine(" this shouldn't ever happen.  trent was too lazy to do error hadnling");
                                 }
                             }
+
+                            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+                            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
+
+                            foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
+                            {
+                                NewNetworkUser(user);
+                            }
+
                             _isLoaded = true;
                             if (_loggedIn)
                             {
@@ -589,6 +614,27 @@ namespace NuSysApp
                 Debug.WriteLine("cannot connect to server");
             }
 
+        }
+
+        /// <summary>
+        /// event handler for when the nusysNetworkSession drop a network user.  
+        /// </summary>
+        /// <param name="userId"></param>
+        private void DropNetworkUser(string userId)
+        {
+            UITask.Run(delegate
+            {
+                foreach (var child in Users.Children)
+                {
+                    var label = child as UserLabel;
+                    Debug.Assert(label != null);
+                    if (label.UserId == userId)
+                    {
+                        Users.Children.Remove(child);
+                        break;
+                    }
+                }
+            });
         }
 
         private void ContentControllerOnOnNewContent(LibraryElementModel element)

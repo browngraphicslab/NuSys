@@ -160,13 +160,25 @@ namespace NuSysApp
                 // the library element id of the collection we are creating, used as the parent collection id when adding elements to it later in the method
                 var collectionLibElemId = SessionController.Instance.GenerateId();
 
+                // We determine the access type of the tool generated collection based on the collection we're in and pass that in to the request
+                NusysConstants.AccessType newCollectionAccessType;
+                var currWorkSpaceAccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+                if (currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+                {
+                    newCollectionAccessType = NusysConstants.AccessType.Public;
+                }
+                else
+                {
+                    newCollectionAccessType = NusysConstants.AccessType.Private;
+                }
                 // create a new library element args class to assist in creating the collection
                 var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs
                 {
                     ContentId = SessionController.Instance.GenerateId(),
                     LibraryElementType = NusysConstants.ElementType.Collection,
                     Title = "Tool-Generated Collection",
-                    LibraryElementId = collectionLibElemId
+                    LibraryElementId = collectionLibElemId,
+                    AccessType = newCollectionAccessType
                 };
 
                 // create a new content request args to assist in creating the collection

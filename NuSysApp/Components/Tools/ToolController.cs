@@ -301,7 +301,11 @@ namespace NuSysApp
                 metadata["Type"] = new List<string>() { element.Type.ToString()};
                 metadata["Date"] = new List<string>() { GetDate(element)};
                 metadata["LastEditedDate"] = new List<string>() { GetLastEditedDate(element) };
-                metadata["Creator"] = new List<string>() { element.Creator};
+                metadata["Creator"] = new List<string>()
+                {//map from the UserID hash to the User Dissplay Name
+                    SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(element.Creator ?? "") ?
+                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[element.Creator] : element.Creator
+                };
                 return metadata;
             }
             return new Dictionary<string, List<string>>();
