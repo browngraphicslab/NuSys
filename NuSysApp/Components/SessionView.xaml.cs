@@ -56,7 +56,15 @@ namespace NuSysApp
             get { return DraggingGraphImage; }
         }
 
+        /// <summary>
+        /// Gets the instance of the speech to text box on the main canvas
+        /// </summary>
         public SpeechToTextBox SpeechToTextBox => xSpeechToTextBox;
+
+        /// <summary>
+        /// Gets the instance of the FileAddedAclsPopup from the main canvas
+        /// </summary>
+        public FileAddedAclsPopup FileAddedAclsPopup => xFileAddedAclesPopup;
 
         #endregion Private Members
 
@@ -108,6 +116,7 @@ namespace NuSysApp
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
             xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
+            xFileAddedAclesPopup.DataContext = new FileAddedAclsPopupViewModel();
             xChatBox.DataContext = new ChatBoxViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");

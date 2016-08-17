@@ -310,6 +310,10 @@
     <Compile Include="Components\Misc\AdornmentView.xaml.cs">
       <DependentUpon>AdornmentView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\Library\FileAddedAclsPopup\FileAddedAclsPopup.xaml.cs">
+      <DependentUpon>FileAddedAclsPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\FileAddedAclsPopup\FileAddedAclsPopupViewModel.cs" />
     <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
@@ -948,6 +952,10 @@
     <Page Include="Components\Misc\ChatBoxView.xaml">
     </Page>
     <Page Include="Components\Misc\AdornmentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\Library\FileAddedAclsPopup\FileAddedAclsPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
