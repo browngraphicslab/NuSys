@@ -727,5 +727,70 @@ namespace NuSysApp
                 List?.Items?.Add(i);
             }
         }
+
+        private void MyWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var mycollections = new List<CollectionListBox>();
+            foreach (var i in _collectionList)
+            {
+                if (i.Creator == UserName)
+                {
+                    var listbox = new CollectionListBox(i);
+                    mycollections.Add(listbox);
+                }
+            }
+            //set items in collectionlist alphabetically
+            List?.Items?.Clear();
+            mycollections.Sort((a, b) => a.Title.CompareTo(b.Title));
+            foreach (var i in mycollections)
+            {
+                List?.Items?.Add(i);
+            }
+            _collectionAdded = true;
+            //next time title is clicked, it will reverse the list
+            _titleReverse = true;
+        }
+
+        private void OtherWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var othercollections = new List<CollectionListBox>();
+            foreach (var i in _collectionList)
+            {
+                if (i.Creator != UserName)
+                {
+                    var listbox = new CollectionListBox(i);
+                    othercollections.Add(listbox);
+                }
+            }
+            //set items in collectionlist alphabetically
+            List?.Items?.Clear();
+            othercollections.Sort((a, b) => a.Title.CompareTo(b.Title));
+            foreach (var i in othercollections)
+            {
+                List?.Items?.Add(i);
+            }
+            _collectionAdded = true;
+            //next time title is clicked, it will reverse the list
+            _titleReverse = true;
+        }
+        private void AllWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var othercollections = new List<CollectionListBox>();
+            foreach (var i in _collectionList)
+            {
+                var listbox = new CollectionListBox(i);
+                othercollections.Add(listbox);
+            }
+            //set items in collectionlist alphabetically
+            List?.Items?.Clear();
+            othercollections.Sort((a, b) => a.Title.CompareTo(b.Title));
+            foreach (var i in othercollections)
+            {
+                List?.Items?.Add(i);
+            }
+            _collectionAdded = true;
+            //next time title is clicked, it will reverse the list
+            _titleReverse = true;
+        }
     }
 }
