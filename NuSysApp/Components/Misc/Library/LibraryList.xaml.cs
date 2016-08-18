@@ -471,6 +471,7 @@ namespace NuSysApp
                 request.DeleteLocally();
             });
 
+            //Create NewLibraryElementRequestArgs with information from the libraryelementmodel that was deleted
 
             var args = new CreateNewLibraryElementRequestArgs();
             args.LibraryElementId = model.LibraryElementId;
@@ -478,16 +479,18 @@ namespace NuSysApp
             args.Favorited = model.Favorited;
             args.Keywords = model.Keywords;
             args.Title = model.Title;
-            args.Small_Thumbnail_Bytes = model.SmallIconUrl;
-            args.Medium_Thumbnail_Bytes = model.MediumIconUrl;
-            args.Large_Thumbnail_Bytes = model.LargeIconUrl;
+            //args.Small_Thumbnail_Bytes = model.SmallIconUrl;
+            //args.Medium_Thumbnail_Bytes = model.MediumIconUrl;
+            //args.Large_Thumbnail_Bytes = model.LargeIconUrl;
             args.Title = model.Title;
             //args.Creator
             args.LibraryElementType = model.Type;
             args.ContentId = model.ContentDataModelId;
           
-
+            //Creates action with CreateNewLibraryElementArgs
             var action = new DeleteLibraryElementAction(args);
+
+            //Invokes event listened to by LibraryView, which activates undo button
             DeleteClicked?.Invoke(this, action);
         }
     }

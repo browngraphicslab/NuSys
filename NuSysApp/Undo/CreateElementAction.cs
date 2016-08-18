@@ -29,33 +29,15 @@ namespace NuSysApp
 
         }
         /// <summary>
-        /// Using position and element controller, creates a message and makes a NewElementRequest with that message.
+        /// Using position and element controller, calls libraryelementcontroller's addelementatposition method.
         /// Adds a copy of the removed element to the workspace in its old position.
         /// </summary>
         public async void ExecuteAction()
         {
-            _elementController.LibraryElementController.AddElementAtPosition(_position.X, _position.Y);
-            /*
-            var element = _elementController.LibraryElementModel;
-            //var dict = new Message();
-            Dictionary<string, object> metadata;
-            
+            _elementController.LibraryElementController.AddElementAtPosition(
+                _position.X, _position.Y , null, _elementController.Model.Width,
+                _elementController.Model.Height);
 
-            dict = new Message();
-            dict["title"] = _elementController.Model.Title;
-            dict["width"] = _elementController.Model.Width;
-            dict["height"] = _elementController.Model.Height;
-            dict["type"] = _elementController.Model.ElementType.ToString();
-            dict["x"] = _position.X;
-            dict["y"] = _position.Y;
-            dict["contentId"] = element.ContentDataModelId;
-            dict["metadata"] = _elementController.LibraryElementModel.Metadata;
-            dict["autoCreate"] = true;
-            //dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            var request = new NewElementRequest(dict);
-            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            //TODO fix this 817
-            */
         }
 
         /// <summary>

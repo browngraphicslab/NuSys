@@ -105,6 +105,19 @@ namespace NuSysApp
             _originalPosition.X = manipulationStartingRoutedEventArgs.Position.X;
             _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
 
+            if (_moveNodeUndoButton != null)
+            {
+                if (_moveNodeUndoButton.State == UndoButtonState.Active)
+                {
+                    var ffvm = (FreeFormViewerViewModel)_view.DataContext;
+                    _moveNodeUndoButton.Deactivate();
+                    if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                    {
+                        ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                    }
+                }
+            }
+
             ActiveNodes.Add((UserControl)sender);
             manipulationStartingRoutedEventArgs.Handled = true;
         }
@@ -238,17 +251,6 @@ namespace NuSysApp
             {
                 //Instantiates MoveElementAction
                var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
-                if (_moveNodeUndoButton != null)
-                {
-                    if (_moveNodeUndoButton.State == UndoButtonState.Active)
-                    {
-                        _moveNodeUndoButton.Deactivate();
-                        if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
-                        {
-                            ffvm.AtomViewList.Remove(_moveNodeUndoButton);
-                        }
-                    }
-                }
 
                 _moveNodeUndoButton = new UndoButton();
                 //Activates undo button makes it appear in the old position.

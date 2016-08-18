@@ -733,7 +733,7 @@ namespace NuSysApp
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null)
+        public async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null, double width = Constants.DefaultNodeSize, double height = Constants.DefaultNodeSize)
         {
             //the workspace id we are using is the passes in one, or the session's current workspace Id if it is null
             collectionId = collectionId ?? SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
@@ -741,8 +741,8 @@ namespace NuSysApp
             //create the request args 
             var elementArgs = new NewElementRequestArgs();
             elementArgs.LibraryElementId = LibraryElementModel.LibraryElementId;
-            elementArgs.Height = Constants.DefaultNodeSize;
-            elementArgs.Width = Constants.DefaultNodeSize;
+            elementArgs.Height = height;
+            elementArgs.Width = width;
             elementArgs.ParentCollectionId = collectionId;
             elementArgs.X = x;
             elementArgs.Y = y;
