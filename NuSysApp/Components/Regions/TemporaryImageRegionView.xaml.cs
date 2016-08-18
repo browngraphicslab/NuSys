@@ -128,7 +128,7 @@ namespace NuSysApp
             if (vm.MetadataToAddUponBeingFullRegion != null)
             {
                 //add the metadata to the creation request
-                regionRequestArgs.Metadata = new Dictionary<string, MetadataEntry>(vm.MetadataToAddUponBeingFullRegion.ToDictionary(k => k.Key, en => en));
+                regionRequestArgs.Metadata = vm.MetadataToAddUponBeingFullRegion;
             }
 
             //create a request and send it to the server
