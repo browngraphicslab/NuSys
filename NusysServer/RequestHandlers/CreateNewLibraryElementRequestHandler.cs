@@ -25,12 +25,10 @@ namespace NusysServer
 
             var libraryId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY);
 
-            //If the type is a link, check to see if a link already exists, if it does, return false
+            //If the type is a link, check to see if a link already exists, if it does, return that the request failed.
             if (message.GetEnum<NusysConstants.ElementType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) ==
                 NusysConstants.ElementType.Link)
             {
-                //var CheckIfLinkExistsQuery =
-                    //"SELECT Properties.ID, Properties.Key, Properties.StringValue, COUNT(Properties.ID) FROM Properties WHERE(Properties.propertyKey = inid OR Properties.propertyKey = outid) AND(Property.PropertyValue = inid OR Property.PropertyValue = outID)) GROUP BY Properties.Id HAVING(COUNT(Properties.ID) = 2)";
                 var inLinkId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY);
                 var outLinkId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY);
                 
