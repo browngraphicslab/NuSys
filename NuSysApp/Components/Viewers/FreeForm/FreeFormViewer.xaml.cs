@@ -109,7 +109,7 @@ namespace NuSysApp
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
                 _presentationMode = new MultiMode(this, _panZoomMode);
 
-                SwitchMode(Options.SelectNode, false);
+                SwitchMode(Options.SelectNode);
 
                 var colElementModel = vm.Controller.Model as CollectionElementModel;
                 if ((SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId)as CollectionLibraryElementModel).IsFinite)
@@ -276,7 +276,7 @@ namespace NuSysApp
             await _mode.Activate();
         }
 
-        public async void SwitchMode(Options mode, bool isFixed)
+        private async void SwitchMode(Options mode)
         {
            
             switch (mode)
@@ -314,7 +314,7 @@ namespace NuSysApp
 
         public void ChangeMode(object source, Options mode)
         {
-            SwitchMode(mode, false);
+            SwitchMode(mode);
         }
 
         public void LimitManipulation()
