@@ -195,14 +195,7 @@ namespace NusysServer
                 {
                     throw new Exception("the contentId cannot be null when updating a content file");
                 }
-                if (contentType == null)
-                {
-                    throw new Exception("the content type cannot be null when updating a content file");
-                }
-                if (updatedContentData == null)
-                {
-                    throw new Exception("the content data cannot be null when updating a content file");
-                }
+                updatedContentData = updatedContentData ?? "";
                 switch (contentType)
                 {
                     case NusysConstants.ContentType.Audio:
