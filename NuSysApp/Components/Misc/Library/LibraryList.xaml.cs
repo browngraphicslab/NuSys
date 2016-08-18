@@ -478,10 +478,6 @@ namespace NuSysApp
             args.Favorited = model.Favorited;
             args.Keywords = model.Keywords;
             args.Title = model.Title;
-            args.Small_Thumbnail_Bytes = model.SmallIconUrl;
-            args.Medium_Thumbnail_Bytes = model.MediumIconUrl;
-            args.Large_Thumbnail_Bytes = model.LargeIconUrl;
-            args.Title = model.Title;
             //args.Creator
             args.LibraryElementType = model.Type;
             args.ContentId = model.ContentDataModelId;
