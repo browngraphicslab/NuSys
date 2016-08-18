@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -516,6 +516,7 @@ namespace NusysIntermediate
             #endregion UpdatePresentationLinkRequest
 
             #region UpdateContentRequest
+
             /// <summary>
             /// The key for sending the id of the content to update
             /// </summary>
@@ -529,7 +530,7 @@ namespace NusysIntermediate
             /// <summary>
             /// The key for sending the new content
             /// </summary>
-            public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_type";
+            public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_id_key";
         
             #endregion UpdateContentRequest
 

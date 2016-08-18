@@ -76,7 +76,6 @@ namespace NusysServer
                 NusysClient outClient;
                 NusysClient.IDtoUsers.TryRemove(this, out outClient);
             }
-            this.WebSocketContext.WebSocket.Dispose();
         }
 
         /// <summary>
