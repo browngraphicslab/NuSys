@@ -26,7 +26,7 @@ namespace NuSysApp
         //link id
         public string LinkLibraryElementId;
         //content id the link is linked to
-        public string ContentId;
+        public string LibraryId;
         private LibraryElementController _linkLibraryElementController;
         private bool _pinned;
 
@@ -51,11 +51,11 @@ namespace NuSysApp
         /// constructor for link circle.  takes in link-id, content Id
         /// </summary>
         /// <param name="linkLibraryElementId"></param>
-        /// <param name="contentId"></param>
-        public LinkCircle(string linkLibraryElementId, string contentId)
+        /// <param name="libraryId"></param>
+        public LinkCircle(string linkLibraryElementId, string libraryId)
         {
             this.LinkLibraryElementId = linkLibraryElementId;
-            this.ContentId = contentId;
+            this.LibraryId = libraryId;
             //represents if the image has been loaded before
             _firstTimeOpened = false;
             //thickness to make border visible/invisible
@@ -68,7 +68,7 @@ namespace NuSysApp
             //thumbnail is not pinned to begin with
             Pinned = false;
             var libraryElementController =
-                SessionController.Instance.ContentController.GetLibraryElementController(contentId);
+                SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
             _linkLibraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
             if (libraryElementController != null)
@@ -85,6 +85,8 @@ namespace NuSysApp
                 //this is sort of a bandaid rather than a fix
                 Canvas.SetZIndex(thumbnail, 50);
             }
+            linkButton.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libraryElementController.LibraryElementModel.LibraryElementId));
+            //xPinHighlight.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libraryElementController.LibraryElementModel.LibraryElementId));
         }
 
         private void LibraryElementController_LinkRemoved(object sender, string e)
@@ -175,7 +177,7 @@ namespace NuSysApp
         {
             _doubleTap = true;
             var libraryElementController =
-                SessionController.Instance.ContentController.GetLibraryElementController(ContentId);
+                SessionController.Instance.ContentController.GetLibraryElementController(LibraryId);
             Debug.Assert(libraryElementController != null);
 
             // don't show the detail view in readonly mode
