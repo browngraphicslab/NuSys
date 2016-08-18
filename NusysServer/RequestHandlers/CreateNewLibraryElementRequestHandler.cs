@@ -25,6 +25,39 @@ namespace NusysServer
 
             var libraryId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY);
 
+            //If the type is a link, check to see if a link already exists, if it does, return false
+            if (message.GetEnum<NusysConstants.ElementType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) ==
+                NusysConstants.ElementType.Link)
+            {
+                //var CheckIfLinkExistsQuery =
+                    //"SELECT Properties.ID, Properties.Key, Properties.StringValue, COUNT(Properties.ID) FROM Properties WHERE(Properties.propertyKey = inid OR Properties.propertyKey = outid) AND(Property.PropertyValue = inid OR Property.PropertyValue = outID)) GROUP BY Properties.Id HAVING(COUNT(Properties.ID) = 2)";
+                var inLinkId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY);
+                var outLinkId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY);
+                
+                SqlQueryEquals inIDKeyConditional = new SqlQueryEquals(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_KEY_COLUMN_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY);
+                SqlQueryEquals outIDKeyConditional = new SqlQueryEquals(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_KEY_COLUMN_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY);
+                SqlQueryOperator propertyKeyConditional = new SqlQueryOperator(inIDKeyConditional, outIDKeyConditional, Constants.Operator.Or);
+
+                SqlQueryEquals inIdValueConditional = new SqlQueryEquals(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY, inLinkId);
+                SqlQueryEquals outIdValueConditional = new SqlQueryEquals(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY, outLinkId);
+                SqlQueryOperator propertyValueConditional = new SqlQueryOperator(inIdValueConditional, outIdValueConditional, Constants.Operator.Or);
+
+                var propertyKeyValueConditional = new SqlQueryOperator(propertyKeyConditional, propertyValueConditional, Constants.Operator.And);
+
+                SQLSelectQuery CheckIfLinkExistsQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Properties, Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY)), propertyKeyValueConditional);
+
+                var fullStringQuery = CheckIfLinkExistsQuery.CommandString + " GROUP BY " + Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY).First() + " HAVING( COUNT("+ Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY).First() + ") = 2)";
+                var cmd = ContentController.Instance.SqlConnector.MakeCommand(fullStringQuery);
+                var returnedRows = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(cmd, false);
+                if (returnedRows.Any())
+                {
+                    var failedReturnMessage = new Message();
+                    failedReturnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = false;
+                    return failedReturnMessage;
+                }
+            }
+
+
             //create message of database keys from request keys
             var addLibraryElementMessage = RequestToSqlKeyMappings.LibraryElementRequestKeysToDatabaseKeys(message);
 

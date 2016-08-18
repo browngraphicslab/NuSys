@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -350,12 +350,12 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
                 /// <summary>
                 /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
-                /// Used during a region libraryElementRequest.  
+                /// Used during a link libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY = "link_library_element_model_id_in";
                 /// <summary>
                 /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
-                /// Used during a region libraryElementRequest.  
+                /// Used during a link libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
 
