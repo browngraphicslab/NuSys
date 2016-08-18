@@ -79,13 +79,6 @@ namespace NuSysApp
         }
         protected override void OnSizeChanged(object source, double width, double height)
         {
-            // don't edit if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
-
             SetSize(width,width * GetRatio());
         }
     }

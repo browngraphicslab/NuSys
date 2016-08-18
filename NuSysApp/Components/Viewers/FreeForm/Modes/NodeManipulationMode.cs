@@ -17,9 +17,16 @@ namespace NuSysApp
     public class NodeManipulationMode : AbstractWorkspaceViewMode
     {
         public static int _zIndexCounter = 10000;
+
         private bool _isPinAnimating;
         private bool _isFreeForm;
         private FrameworkElement _bounds;
+        private Point _originalPosition;
+        private Point _newPosition;
+        private UndoButton _moveNodeUndoButton;
+
+
+
         public List<UserControl> ActiveNodes { get; private set; }
         public bool Limited { get; set; }
         private FreeFormViewer _viewer;
@@ -29,6 +36,10 @@ namespace NuSysApp
         public NodeManipulationMode(FrameworkElement view, bool isFreeFormCollection) : base(view)
         {
             _isFreeForm = isFreeFormCollection;
+
+            _originalPosition = new Point(0,0);
+            _newPosition = new Point(0,0);
+            _moveNodeUndoButton = new UndoButton();
 
         }
 
@@ -46,14 +57,41 @@ namespace NuSysApp
                 userControl.ManipulationStarted += ManipulationStarting;
                 userControl.ManipulationDelta += OnManipulationDelta;
                 userControl.ManipulationCompleted += OnManipulationCompleted;
+                if (!(userControl is UndoButton))
+                {
+                    userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
+                }
             }
 
             vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
         }
 
+        /// <summary>
+        /// When finished moving node, calculat original and new position in global space, then
+        /// create an Undo action based on those positions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="manipulationCompletedRoutedEventArgs"></param>
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
+            //Updates new position coordinates
+            _newPosition.X = manipulationCompletedRoutedEventArgs.Position.X;
+            _newPosition.Y = manipulationCompletedRoutedEventArgs.Position.Y;
+
+            // Transforms original and new positions from screen to global space
+            _newPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _newPosition);
+            _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _originalPosition);
+
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            var elementController = vm.Controller;
+            if (!vm.IsEditing)
+            { 
+            }
             ActiveNodes.Remove((UserControl) sender);
+            manipulationCompletedRoutedEventArgs.Handled = true;
         }
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
@@ -64,7 +102,11 @@ namespace NuSysApp
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
             }
 
+            _originalPosition.X = manipulationStartingRoutedEventArgs.Position.X;
+            _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
+
             ActiveNodes.Add((UserControl)sender);
+            manipulationStartingRoutedEventArgs.Handled = true;
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -82,9 +124,14 @@ namespace NuSysApp
                     userControl.ManipulationDelta += OnManipulationDelta;
                     userControl.ManipulationStarted += ManipulationStarting;
                     userControl.ManipulationCompleted += OnManipulationCompleted;
+                    if (!(userControl is UndoButton))
+                    {
+                        userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
+                    }
                 }
             }
         }
+
 
         public override async Task Deactivate()
         {
@@ -95,6 +142,7 @@ namespace NuSysApp
                 userControl.ManipulationDelta -= OnManipulationDelta;
                 userControl.ManipulationStarted -= ManipulationStarting;
                 userControl.ManipulationCompleted -= OnManipulationCompleted;
+                userControl.ManipulationInertiaStarting -= OnManipulationIntertiaStarting;
             }
 
             vm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
@@ -112,9 +160,20 @@ namespace NuSysApp
                 return;
             }
 
+
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
+            //If the undo action for moving elements has been executed, stop inertia!
+            if(_moveNodeUndoButton != null)
+            {
+                if(_moveNodeUndoButton.ActionExecuted == true)
+                {
+                    //Completes the manipulation without inertia
+                    e.Complete();
+                    _moveNodeUndoButton.ActionExecuted = false;
+                }
+            }
             if (_isFreeForm)
             {
                 var areaView = (AreaNodeView) _view;
@@ -154,6 +213,49 @@ namespace NuSysApp
                     }
                     vm.Controller.SetPosition(p.X, p.Y);
                 }
+            }
+
+            e.Handled = true;
+        }
+        private void OnManipulationIntertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
+        {
+            var ffvm = (FreeFormViewerViewModel)_view.DataContext;
+
+            //Updates new position coordinates
+            _newPosition.X = e.Cumulative.Translation.X;
+            _newPosition.Y = e.Cumulative.Translation.Y;
+
+            // Transforms original and new positions from screen to global space
+            _newPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _newPosition);
+            _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _originalPosition);
+
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            var elementController = vm.Controller;
+            if (!vm.IsEditing)
+            {
+                //Instantiates MoveElementAction
+               var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+                if (_moveNodeUndoButton != null)
+                {
+                    if (_moveNodeUndoButton.State == UndoButtonState.Active)
+                    {
+                        _moveNodeUndoButton.Deactivate();
+                        if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                        {
+                            ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                        }
+                    }
+                }
+
+                _moveNodeUndoButton = new UndoButton();
+                //Activates undo button makes it appear in the old position.
+                ffvm.AtomViewList.Add(_moveNodeUndoButton);
+                _moveNodeUndoButton.MoveTo(_originalPosition);
+                _moveNodeUndoButton.Activate(moveElementAction);
+                
             }
         }
 

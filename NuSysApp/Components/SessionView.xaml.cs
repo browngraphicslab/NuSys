@@ -39,6 +39,10 @@ namespace NuSysApp
 
         //private ContentImporter _contentImporter = new ContentImporter();
 
+        /// <summary>
+        /// Change this to control whether the session loads as readonly or not
+        /// </summary>
+        public bool IsReadonly { get; set; }
 
         public bool IsPenMode { get; private set; }
 
@@ -56,6 +60,8 @@ namespace NuSysApp
         {
             get { return DraggingGraphImage; }
         }
+
+        
 
         /// <summary>
         /// Gets the instance of the speech to text box on the main canvas
@@ -103,7 +109,41 @@ namespace NuSysApp
             Loaded += OnLoaded;
 
             MainCanvas.SizeChanged += Resize;
-            //_glass = new MGlass(MainCanvas);
+ 
+            
+        }
+
+        /// <summary>
+        /// Makes a workspace readonly by showing the readonly menu and modifying the modes
+        /// </summary>
+        private void MakeWorkspaceReadonly()
+        {
+            // toggle visibility and activity of some ui elements
+            xFloatingMenu.Visibility = Visibility.Collapsed;
+            xReadonlyFloatingMenu.Visibility = Visibility.Visible;
+            xWorkspaceTitle.IsEnabled = false;
+            xCurrentCollectionDVButton.IsEnabled = false;
+
+            // only let the user pan and zoom initially
+            SessionController.Instance.SwitchMode(Options.PanZoomOnly);
+            this.IsReadonly = true;
+           
+        }
+
+        /// <summary>
+        /// Reverts a workspace back to editable by modifying ui elements and the session mode
+        /// </summary>
+        private void MakeWorkspaceEditable()
+        {
+            // toggle visibility of some ui elements
+            xFloatingMenu.Visibility = Visibility.Visible;
+            xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
+            xWorkspaceTitle.IsEnabled = true;
+            xCurrentCollectionDVButton.IsEnabled = true;
+
+            // give the user more control
+            SessionController.Instance.SwitchMode(Options.SelectNode);
+            this.IsReadonly = false;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -131,6 +171,13 @@ namespace NuSysApp
             {
                 NewNetworkUser(user);
             }
+
+            //// Will make the collection readonly if the active freeform viewer is readonly
+            //IsReadonly = true;
+            //if (IsReadonly)
+            //{
+            //    this.MakeWorkspaceReadonly();
+            //}
         }
 
 
@@ -225,17 +272,21 @@ namespace NuSysApp
         /// <param name="text"></param>
         public void ShowRelatedElements(string tag)
         {
-            if ((_modeInstance != null) && (_modeInstance.Mode == ModeType.EXPLORATION))
-            {
-                var exp = _modeInstance as ExplorationMode;
-                exp.ShowRelatedElements(tag);
-            }
+            var exp = _modeInstance as ExplorationMode;
+            exp.ShowRelatedElements(tag);
         }
 
         public void EnterPresentationMode(ElementViewModel em)
         {
             Debug.Assert(em != null);
+
+            // Don't do anything if we're already in presentation mode
+            if (_modeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
             _modeInstance = new PresentationMode(em);
+            SessionController.Instance.SwitchMode(Options.Presentation);
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
@@ -260,9 +311,9 @@ namespace NuSysApp
             SetModeButtons();
         }
 
-        public void EnterExplorationMode(ElementViewModel em)
+        public void EnterExplorationMode(ElementViewModel em = null)
         {
-            Debug.Assert(em != null);
+            //Debug.Assert(em != null);
             _modeInstance = new ExplorationMode(em);
 
             /* uncomment this and go into exploration mode for a good time :)
@@ -290,16 +341,12 @@ namespace NuSysApp
 
             // set the buttons
             SetModeButtons();
+
+           
         }
 
         public void ExploreSelectedObject(ElementViewModel elementViewModel)
         {
-
-            // Only explore if we are in exploration mode
-            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION)
-            {
-                return;
-            }
             var exp = _modeInstance as ExplorationMode;
 
             if (elementViewModel == null)
@@ -311,18 +358,14 @@ namespace NuSysApp
             SetModeButtons();
         }
 
+      
+
         /// <summary>
         /// Gets a data context passed in when an element is clicked
         /// </summary>
         /// <param name="datacontext"></param>
         public void ExploreSelectedObject(object dataContext)
         {
-
-            // Only explore if we are in exploration mode
-            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION)
-            {
-                return;
-            }
             var exp = _modeInstance as ExplorationMode;
 
             if (dataContext == null)
@@ -403,6 +446,9 @@ namespace NuSysApp
             SetModeButtons();
         }
 
+        /// <summary>
+        /// Exits either presentation or exploration mode by modifying the proper UI elements
+        /// </summary>
         public void ExitMode()
         {
 
@@ -412,9 +458,19 @@ namespace NuSysApp
             PreviousNode.Visibility = Visibility.Collapsed;
             CurrentNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
-            xFloatingMenu.Visibility = Visibility.Visible;
 
-            //FreeFormViewer.CanvasColor = new SolidColorBrush(Colors.White);
+            // Make sure to make appropriate changes based on whether or not we are in read only mode
+            if (this.IsReadonly)
+            {
+                xReadonlyFloatingMenu.Visibility = Visibility.Visible;
+                xReadonlyFloatingMenu.DeactivateAllButtons();
+                SessionController.Instance.SwitchMode(Options.PanZoomOnly);
+            }
+            else {
+                xFloatingMenu.Visibility = Visibility.Visible;
+            }
+            
+
 
         }
 
@@ -658,12 +714,6 @@ namespace NuSysApp
 
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
-            // don't edit if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
             if (viewable is RegionLibraryElementController)
             {
                 await xDetailViewer.ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
@@ -732,6 +782,11 @@ namespace NuSysApp
         public FloatingMenuView FloatingMenu
         {
             get { return xFloatingMenu; }
+        }
+
+        public ReadonlyFloatingMenuView ReadonlyFloatingMenu
+        {
+            get { return xReadonlyFloatingMenu; }
         }
 
         public Canvas MainCanvas
@@ -818,11 +873,8 @@ namespace NuSysApp
         /// </summary>
         public void RemoveRelatedListBox()
         {
-            if (_modeInstance != null && _modeInstance.Mode == ModeType.EXPLORATION)
-            {
-                var exp = _modeInstance as ExplorationMode;
-                exp.HideRelatedListBox();
-            }
+            var exp = _modeInstance as ExplorationMode;
+            exp.HideRelatedListBox();
 
         }
 
@@ -835,5 +887,24 @@ namespace NuSysApp
             return xChatBox;
         }
 
+        private void xTestReadonlyButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.ToggleReadonly();
+        }
+
+        /// <summary>
+        /// Changes the workspace to readonly if it is editable. Changes the workspace to editable if it is readonly.
+        /// </summary>
+        public void ToggleReadonly()
+        {
+            if (this.IsReadonly)
+            {
+                this.MakeWorkspaceEditable();
+            }
+            else
+            {
+                this.MakeWorkspaceReadonly();
+            }
+        }
     }
 }

@@ -82,14 +82,6 @@ namespace NuSysApp
                 return;
             }
 
-
-            // try to explore the selected object, only does something if we're in explorationmode
-            var frameWorkElemToBeExplored = e.OriginalSource as FrameworkElement;
-            if (frameWorkElemToBeExplored != null)
-            {
-                SessionController.Instance.SessionView.ExploreSelectedObject(frameWorkElemToBeExplored.DataContext);
-            }
-
             var dc = ((FrameworkElement)e.OriginalSource).DataContext as ISelectable;
             if (dc == null)
             {

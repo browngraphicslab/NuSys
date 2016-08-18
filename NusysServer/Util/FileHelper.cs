@@ -207,11 +207,7 @@ namespace NusysServer
                         var filePath = Constants.FILE_FOLDER + contentId + Constants.TEXT_DATA_FILE_FILE_EXTENSION;
                         if (File.Exists(filePath))
                         {
-                            using (var stream = File.OpenWrite(filePath))
-                            {
-                                var bytes = GetBytesForWritingToFile(updatedContentData);
-                                stream.Write(bytes,0,bytes.Length);  
-                            }
+                            File.WriteAllText(filePath,updatedContentData);
                             return true;
                         }
                         else

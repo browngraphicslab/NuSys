@@ -40,7 +40,11 @@ namespace NuSysApp
         private AbstractWorkspaceViewMode _prevMode;
         private NuSysInqCanvas _inqCanvas;
         private ExploreMode _exploreMode;
+        private PresentMode _presentMode;
         private MultiMode _explorationMode;
+        private MultiMode _presentationMode;
+
+
 
         private FreeFormViewerViewModel _vm;
 
@@ -98,6 +102,9 @@ namespace NuSysApp
                 _floatingMenuMode = new FloatingMenuMode(this);
                 _globalInkMode = new GlobalInkMode(this);
                 _exploreMode = new ExploreMode(this);
+                _presentMode = new PresentMode(this);
+                
+          
 
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
@@ -106,8 +113,10 @@ namespace NuSysApp
                 _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
+                _presentationMode = new MultiMode(this, _panZoomMode, _presentMode);
 
-                SwitchMode(Options.SelectNode, false);
+
+                SwitchMode(Options.SelectNode);
 
                 var colElementModel = vm.Controller.Model as CollectionElementModel;
                 if ((SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId)as CollectionLibraryElementModel).IsFinite)
@@ -202,6 +211,11 @@ namespace NuSysApp
             _mainMode?.Deactivate();
             _simpleEditMode?.Deactivate();
 
+            _presentMode?.Deactivate();
+            _exploreMode?.Deactivate();
+            _presentationMode?.Deactivate();
+            _explorationMode?.Deactivate();
+
 
 
             var vm = (FreeFormViewerViewModel) DataContext;
@@ -274,7 +288,7 @@ namespace NuSysApp
             await _mode.Activate();
         }
 
-        public async void SwitchMode(Options mode, bool isFixed)
+        private async void SwitchMode(Options mode)
         {
            
             switch (mode)
@@ -290,7 +304,17 @@ namespace NuSysApp
                   //  await SetViewMode(_globalInkMode);
                     break;
                 case Options.Exploration:
+                    SessionController.Instance.SessionView.EnterExplorationMode();
                     SetViewMode(_explorationMode);
+                    break;
+                case Options.PanZoomOnly:
+                    this.SetViewMode(_panZoomMode);
+                    break;
+                case Options.Presentation:
+                    SetViewMode(_presentationMode);
+                    break;
+                default:
+                    Debug.Fail($"You must add support for ${mode} before you can switch to it.");
                     break;
             }
         }
@@ -306,7 +330,7 @@ namespace NuSysApp
 
         public void ChangeMode(object source, Options mode)
         {
-            SwitchMode(mode, false);
+            SwitchMode(mode);
         }
 
         public void LimitManipulation()

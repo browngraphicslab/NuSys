@@ -53,10 +53,8 @@ namespace NuSysApp
             DataContext = null;
         }
         
-        private void OnDeleteClick(object sender, RoutedEventArgs e)
-        {
-            _vm.Controller.RequestDelete();
-        }
+
+        
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {

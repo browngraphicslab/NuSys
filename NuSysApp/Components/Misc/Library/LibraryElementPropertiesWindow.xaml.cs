@@ -27,7 +27,9 @@ namespace NuSysApp
         private LibraryElementModel _currentElementModel;
 
         public delegate void AddedToFavoriteHandler(object source, LibraryElementModel element);
+        public delegate void DeleteClickedHandler(object sender, IUndoable action);
         public event AddedToFavoriteHandler AddedToFavorite;
+        public event DeleteClickedHandler DeleteClicked;
 
         public LibraryElementPropertiesWindow()
         {
@@ -178,7 +180,9 @@ namespace NuSysApp
 
         private void Delete_OnClick(object sender, RoutedEventArgs e)
         {
+            
             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteLibraryElementRequest(_currentElementModel.LibraryElementId));
+
         }
 
         private async void EnterCollection_OnClick(object sender, RoutedEventArgs e)
