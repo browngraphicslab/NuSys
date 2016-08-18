@@ -53,17 +53,11 @@ namespace NuSysApp
         /// If the request was successful this will get the returned model and add it to the Session.
         /// This will throw an exception if the request hasn't returned or wasn't successful.
         /// </summary>
-        public async Task AddReturnedElementToSession()
+        public void AddReturnedElementToSession()
         {
             CheckWasSuccessfull();
             //get and add the requested element model.
             var model = GetReturnedElementModel();
-            var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(model.LibraryId);
-            Debug.Assert(libraryElementModel != null);
-            if ( SessionController.Instance.ContentController.ContainsContentDataModel( libraryElementModel.ContentDataModelId))
-            {
-                await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(libraryElementModel.ContentDataModelId);
-            }
             SessionController.Instance.AddElement(model);
         }
 
@@ -98,9 +92,15 @@ namespace NuSysApp
         {
             var model = GetReturnedElementModel();
 
+            var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(model.LibraryId);
+
             //make sure the library element model for this element exists
-            if (SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId) != null)
+            if (libraryElementModel != null)
             {
+                if (SessionController.Instance.ContentController.ContainsContentDataModel(libraryElementModel.ContentDataModelId))
+                {
+                    await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(libraryElementModel.ContentDataModelId);
+                }
                 SessionController.Instance.AddElement(model);
             }
         }
