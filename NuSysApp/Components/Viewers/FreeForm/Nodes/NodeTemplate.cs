@@ -496,8 +496,29 @@ namespace NuSysApp
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var model = (ElementModel) ((ElementViewModel) this.DataContext).Model;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(model.Id));
+
+           
+            var vm = (ElementViewModel)this.DataContext;
+            var model = (ElementModel) vm.Model;
+            
+            //Creates a DeleteElementAction
+            var removeElementAction = new DeleteElementAction(vm.Controller);
+
+            //Creates an undo button and places it in the correct position.
+
+            var position = new Point(model.X, model.Y);
+            var workspace = SessionController.Instance.ActiveFreeFormViewer;
+            var undoButton = new UndoButton();
+            workspace.AtomViewList.Add(undoButton);
+            undoButton.MoveTo(position);
+            undoButton.Activate(removeElementAction);
+            //TODO fix this 817
+            
+            vm.Controller.RequestDelete();
+
+
+
+
         }
 
         private void OnPresentationClick(object sender, RoutedEventArgs e)

@@ -400,6 +400,9 @@
     <Compile Include="Components\Tools\ToolUtilities.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
+    <Compile Include="Components\Undo\UndoButton.xaml.cs">
+      <DependentUpon>UndoButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Misc\AddToCollectionButton.xaml.cs">
       <DependentUpon>AddToCollectionButton.xaml</DependentUpon>
@@ -715,6 +718,12 @@
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />
     <Compile Include="TransformHelper.cs" />
+    <Compile Include="Undo\CreateElementAction.cs" />
+    <Compile Include="Undo\CreateLibraryElementAction.cs" />
+    <Compile Include="Undo\IUndoable.cs" />
+    <Compile Include="Undo\MoveElementAction.cs" />
+    <Compile Include="Undo\DeleteElementAction.cs" />
+    <Compile Include="Undo\DeleteLibraryElementAction.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Util\DetailViewTabType.cs" />
@@ -1040,6 +1049,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Tools\ToolLinkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Undo\UndoButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
