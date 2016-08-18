@@ -505,7 +505,7 @@ namespace NuSysApp
            
             var vm = (ElementViewModel)this.DataContext;
             var model = (ElementModel) vm.Model;
-            /*
+            
             //Creates a DeleteElementAction
             var removeElementAction = new DeleteElementAction(vm.Controller);
 
@@ -518,8 +518,8 @@ namespace NuSysApp
             undoButton.MoveTo(position);
             undoButton.Activate(removeElementAction);
             //TODO fix this 817
-            */
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(model.Id));
+            
+            vm.Controller.RequestDelete();
 
 
 

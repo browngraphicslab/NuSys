@@ -58,7 +58,7 @@ namespace NuSysApp
             CheckWasSuccessfull();
             //get and add the requested element model.
             var model = GetReturnedElementModel();
-            Debug.Assert(SessionController.Instance.AddElement(model));//make sure the adding was succesful
+            SessionController.Instance.AddElement(model);
         }
 
         /// <summary>

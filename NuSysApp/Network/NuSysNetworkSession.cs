@@ -207,6 +207,9 @@ namespace NuSysApp
                 case NusysConstants.RequestType.ChatRequest:
                     request = new ChatRequest(message);
                     break;
+                case NusysConstants.RequestType.CreateNewPresentationLinkRequest:
+                    request = new CreateNewPresentationLinkRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }

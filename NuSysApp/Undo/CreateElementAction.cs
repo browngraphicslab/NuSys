@@ -34,6 +34,7 @@ namespace NuSysApp
         /// </summary>
         public async void ExecuteAction()
         {
+            _elementController.LibraryElementController.AddElementAtPosition(_position.X, _position.Y);
             /*
             var element = _elementController.LibraryElementModel;
             //var dict = new Message();
