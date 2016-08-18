@@ -162,68 +162,72 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task ShowElement(LibraryElementController controller, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
-            Debug.Assert(controller != null);
-            _currentDetailViewable = controller;
-            //Calls the view model's ShowElement method which loads regions, etc.
-            var vm = (DetailViewerViewModel)DataContext;
-            
-            if (await vm.ShowElement(controller))
+            await UITask.Run(async delegate
             {
-                Visibility = Visibility.Visible;
-            }
+                Debug.Assert(controller != null);
+                _currentDetailViewable = controller;
+                //Calls the view model's ShowElement method which loads regions, etc.
+                var vm = (DetailViewerViewModel) DataContext;
 
-            //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
-            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
-            {
-                xRegionEditorView.ShowListView(true, NusysConstants.ElementType.PDF);
-
-            }
-            else
-            {
-                xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
-            }
-
-            // Update the list of links in the Link Editor
-            var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
-            linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
-
-            //Update the metadata tab.
-            xMetadataEditorView.Metadatable = vm.CurrentElementController;
-            xMetadataEditorView.Update();
-
-            //If a region was previously loaded in the detail view, the region viewer should be added back.
-            if (xRootPivot.Items.Count == 3)
-            {
-                var pivotItem = _regionEditorPivotItem as PivotItem;
-                xRootPivot.Items.Add(pivotItem);
-            }
-
-            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Text || controller.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
-                controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection || controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
-            {
-                if (xRootPivot?.Items?.Count == 4)
+                if (await vm.ShowElement(controller))
                 {
-                    _regionEditorPivotItem = xRootPivot.Items[3];
-                    xRootPivot.Items.RemoveAt(3);
+                    Visibility = Visibility.Visible;
                 }
-            }
 
-            switch (tabToOpenTo)
-            {
-                case DetailViewTabType.Metadata:
-                    xRootPivot.SelectedIndex = 1;
-                    break;
-                case DetailViewTabType.Links:
-                    xRootPivot.SelectedIndex = 2;
-                    break;
-                case DetailViewTabType.Regions:
-                    xRootPivot.SelectedIndex = 3;
-                    break;
-                default:
-                    xRootPivot.SelectedIndex = 0;
-                    return;
-            }
+                //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
+                if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+                {
+                    xRegionEditorView.ShowListView(true, NusysConstants.ElementType.PDF);
 
+                }
+                else
+                {
+                    xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
+                }
+
+                // Update the list of links in the Link Editor
+                var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
+                linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
+
+                //Update the metadata tab.
+                xMetadataEditorView.Metadatable = vm.CurrentElementController;
+                xMetadataEditorView.Update();
+
+                //If a region was previously loaded in the detail view, the region viewer should be added back.
+                if (xRootPivot.Items.Count == 3)
+                {
+                    var pivotItem = _regionEditorPivotItem as PivotItem;
+                    xRootPivot.Items.Add(pivotItem);
+                }
+
+                if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Text ||
+                    controller.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                    controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection ||
+                    controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
+                {
+                    if (xRootPivot?.Items?.Count == 4)
+                    {
+                        _regionEditorPivotItem = xRootPivot.Items[3];
+                        xRootPivot.Items.RemoveAt(3);
+                    }
+                }
+
+                switch (tabToOpenTo)
+                {
+                    case DetailViewTabType.Metadata:
+                        xRootPivot.SelectedIndex = 1;
+                        break;
+                    case DetailViewTabType.Links:
+                        xRootPivot.SelectedIndex = 2;
+                        break;
+                    case DetailViewTabType.Regions:
+                        xRootPivot.SelectedIndex = 3;
+                        break;
+                    default:
+                        xRootPivot.SelectedIndex = 0;
+                        return;
+                }
+            });
         }
         
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -513,6 +517,20 @@ namespace NuSysApp
         private void XReadOnlyRadioButton_OnChecked(object sender, RoutedEventArgs e)
         {
             _currentDetailViewable.SetAccessType(NusysConstants.AccessType.ReadOnly);
+        }
+
+        private void OnMakeCopyClick(object sender, RoutedEventArgs e)
+        {
+            // We get the library Id of the library element currently open in the detail view and create a copy of it
+            var vm = DataContext as DetailViewerViewModel;
+            Task.Run(async delegate
+            {
+                var libraryId = vm?.CurrentElementController.LibraryElementModel.LibraryElementId;
+                var idOfCopy = await StaticServerCalls.CreateDeepCopy(libraryId);
+                var copyController = SessionController.Instance.ContentController.GetLibraryElementController(idOfCopy);
+                SessionController.Instance.SessionView.DetailViewerView.ShowElement(copyController);
+            });
+            
         }
     }
 }
