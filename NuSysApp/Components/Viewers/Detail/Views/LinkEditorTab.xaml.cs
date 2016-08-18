@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -25,6 +26,11 @@ namespace NuSysApp
         /// Contains the libraryItemTemplate chosen by the user from the autosuggest box, null if no element is currently chosen
         /// </summary>
         private LibraryItemTemplate _chosenLibraryItemTemplate;
+
+        /// <summary>
+        /// True if we are currently requesting a link to the server, prevents us from sending multiple of the same request
+        /// </summary>
+        private bool isRequesting;
 
         public LinkEditorTab()
         {
@@ -61,6 +67,12 @@ namespace NuSysApp
                 createLinkButton.IsEnabled = false;
                 return;
             }
+            // if we currently are requesting a link from the server don't send a new request
+            if (isRequesting)
+            {
+                ShowCreateLinkErrorText("Currently Requesting a Link!");
+                return;
+            }
 
             var vm = DataContext as LinkEditorTabViewModel;
 
@@ -80,7 +92,11 @@ namespace NuSysApp
             }
 
             Debug.Assert(content != null && content.LibraryElementId != null);
-            vm.CreateLink(content.LibraryElementId);
+            isRequesting = true;
+            await vm.CreateLinkAsync(content.LibraryElementId);
+            isRequesting = false;
+            // collapse the xCreateLinkErroxBox in case it was open
+            xCreateLinkErrorBox.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>

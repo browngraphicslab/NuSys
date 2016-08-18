@@ -169,7 +169,7 @@ namespace NuSysApp
 
         }
 
-        public async void CreateLink(string idToLinkTo)
+        public async Task CreateLinkAsync(string idToLinkTo)
         {
             // don't link to itself or if the CurrentLibraryElemtnID is null
             if (CurrentLibraryElementId == null || CurrentLibraryElementId == idToLinkTo)
