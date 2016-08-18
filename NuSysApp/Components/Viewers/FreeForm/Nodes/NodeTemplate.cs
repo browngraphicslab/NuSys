@@ -219,11 +219,6 @@ namespace NuSysApp
 
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
             if (selectedTag != null)
             {
@@ -531,7 +526,7 @@ namespace NuSysApp
             highlight.Visibility = Visibility.Collapsed;
 
             sv.EnterExplorationMode(vm);
-            SessionController.Instance.SwitchMode(Options.Exploration);
+            
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -602,12 +597,9 @@ namespace NuSysApp
 
         private void Title_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION || SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                var tb = sender as TextBox;
-                Debug.Assert(tb != null);
-                tb.IsReadOnly = true;
-            }
+            var tb = sender as TextBox;
+            Debug.Assert(tb != null);
+            tb.IsReadOnly = true;
         }
     }
 }

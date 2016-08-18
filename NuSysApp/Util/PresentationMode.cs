@@ -123,6 +123,7 @@ namespace NuSysApp
         public void ExitMode()
         {
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
+            SessionController.Instance.SwitchMode(Options.SelectNode);
         }
 
         /// <summary>

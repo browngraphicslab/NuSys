@@ -319,6 +319,12 @@
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
     <Compile Include="Components\Misc\Library\LibraryItemTemplate.cs" />
+    <Compile Include="Components\Misc\ReadonlyFloatingMenuButtonView.xaml.cs">
+      <DependentUpon>ReadonlyFloatingMenuButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\ReadonlyFloatingMenuView.xaml.cs">
+      <DependentUpon>ReadonlyFloatingMenuView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
@@ -419,6 +425,7 @@
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -963,6 +970,14 @@
     <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\ReadonlyFloatingMenuButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\ReadonlyFloatingMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SpeechToTextUI\SpeechToTextBox.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -166,13 +166,23 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Shows the detail view of the linked element when the circle link is doubled tapped on
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LinkButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTap = true;
             var libraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(ContentId);
             Debug.Assert(libraryElementController != null);
-            SessionController.Instance.SessionView.ShowDetailView(libraryElementController);
+
+            // don't show the detail view in readonly mode
+            if (!SessionController.Instance.SessionView.IsReadonly)
+            {
+                SessionController.Instance.SessionView.ShowDetailView(libraryElementController);
+            }
             e.Handled = true;
         }
     }
