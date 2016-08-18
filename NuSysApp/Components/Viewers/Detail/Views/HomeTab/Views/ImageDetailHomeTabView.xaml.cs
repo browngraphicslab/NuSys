@@ -85,6 +85,7 @@ namespace NuSysApp
 
                 //get tag list and order them in order of confidence
                 var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
+                //add to items control of suggested tags
                 foreach (var i in taglist)
                 {
                     var tag = MakeSuggestedTag(i.Name);
@@ -93,11 +94,17 @@ namespace NuSysApp
             }
             
         }
-
+        /// <summary>
+        /// hyperlink button that represents an auto generated tag
+        /// on tapped they are added to the element's taglist
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         private FrameworkElement MakeSuggestedTag(string text)
         {
             HyperlinkButton tag;
             tag = new HyperlinkButton();
+            tag.Margin = new Thickness(3);
             tag.Content = text;
             tag.FontStyle = FontStyle.Italic;
             tag.Foreground = new SolidColorBrush(Constants.color3);
@@ -105,10 +112,27 @@ namespace NuSysApp
 
             return tag;
         }
-
+        /// <summary>
+        /// handler to add tag to element's taglist
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SuggestedTag_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            
+            var tag = (HyperlinkButton) sender;
+            var keyword = new Keyword((string) tag.Content, Keyword.KeywordSource.UserInput);
+            var vm = (ImageDetailHomeTabViewModel)DataContext;
+            vm.LibraryElementController.AddKeyword(keyword);
+
+            //remove from suggested tag list
+            foreach (var i in xTags?.Items)
+            {
+                var currTag = (HyperlinkButton) i;
+                if (currTag.Content == tag.Content)
+                {
+                    xTags?.Items?.Remove(i);
+                }
+            }
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
