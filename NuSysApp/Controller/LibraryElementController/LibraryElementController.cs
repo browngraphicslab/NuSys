@@ -675,16 +675,6 @@ namespace NuSysApp
         }
 
         #region Linking methods
-        public async Task RequestAddNewLink(string idToLinkTo, string title)
-        {
-            var m = new Message();
-            //these seem to be backwards, but it works, probably
-            m["id1"] = idToLinkTo; 
-            m["id2"] = LibraryElementModel.LibraryElementId;
-            m["title"] = title;
-            await SessionController.Instance.LinksController.RequestLink(m);
-        }
-
         public void RequestRemoveLink(string linkLibraryElementID)
         {
             Debug.Assert(SessionController.Instance.LinksController.GetLinkableIdsOfContentIdInstances(linkLibraryElementID).Count() != 0);
@@ -693,6 +683,17 @@ namespace NuSysApp
                 new DeleteLibraryElementRequest(linkLibraryElementID));
             
         }
+
+        /// <summary>
+        /// Invokes the link removed method on the controller, should only be called if we
+        /// are assured that the link has been removed successfully
+        /// </summary>
+        /// <param name="linkLibraryElementID"></param>
+        public void InvokeLinkRemoved(string linkLibraryElementID)
+        {
+            LinkRemoved?.Invoke(this, linkLibraryElementID);
+        }
+
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
             var linkedIds = SessionController.Instance.LinksController.GetLinkedIds(LibraryElementModel.LibraryElementId);
@@ -766,11 +767,8 @@ namespace NuSysApp
                 request.AddReturnedElementToSession();
                 return true;
             }
-            else
-            {
-                //maybe notify user
-                return false;
-            }
+            //maybe notify user
+            return false;
         }
 
     }
