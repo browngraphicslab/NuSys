@@ -675,15 +675,6 @@ namespace NuSysApp
         }
 
         #region Linking methods
-        public void RequestRemoveLink(string linkLibraryElementID)
-        {
-            Debug.Assert(SessionController.Instance.LinksController.GetLinkableIdsOfContentIdInstances(linkLibraryElementID).Count() != 0);
-            LinkRemoved?.Invoke(this, linkLibraryElementID);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
-                new DeleteLibraryElementRequest(linkLibraryElementID));
-            
-        }
-
         /// <summary>
         /// Invokes the link removed method on the controller, should only be called if we
         /// are assured that the link has been removed successfully
