@@ -516,6 +516,7 @@ namespace NusysIntermediate
             #endregion UpdatePresentationLinkRequest
 
             #region UpdateContentRequest
+
             /// <summary>
             /// The key for sending the id of the content to update
             /// </summary>
@@ -529,7 +530,7 @@ namespace NusysIntermediate
             /// <summary>
             /// The key for sending the new content
             /// </summary>
-            public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_type";
+            public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_id_key";
         
             #endregion UpdateContentRequest
 

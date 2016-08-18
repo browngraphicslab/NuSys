@@ -288,6 +288,10 @@ namespace NuSysApp
         private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             await CloseDv();
+            if (AccessPopup.IsOpen)
+            {
+                AccessPopup.IsOpen = false;
+            }
         }
 
         /// <summary>
@@ -302,7 +306,6 @@ namespace NuSysApp
                 return;
             }
             Visibility = Visibility.Collapsed;
-            AccessPopup.Visibility = Visibility.Collapsed;
             Dispose();
         }
 
@@ -467,34 +470,28 @@ namespace NuSysApp
 
         private void OnAccessClick(object sender, RoutedEventArgs e)
         {
-            if (AccessPopup.IsOpen == false)
+            AccessPopup.IsOpen = true;
+            
+            var vm = (DetailViewerViewModel) DataContext;
+            if (vm.CurrentElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
             {
-                AccessPopup.IsOpen = true;
-                var vm = (DetailViewerViewModel) DataContext;
-                if (vm.CurrentElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+                xReadOnlyRadioButton.Visibility = Visibility.Visible;
+                if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
                 {
-                    xReadOnlyRadioButton.Visibility = Visibility.Visible;
-                    if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
-                    {
-                        xReadOnlyRadioButton.IsChecked = true;
-                    }  
-                }
-                else
-                {
-                    xReadOnlyRadioButton.Visibility = Visibility.Collapsed;
-                }
-                if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
-                {
-                    xPrivateRadioButton.IsChecked = true;
-                }
-                if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
-                {
-                    xPublicRadioButton.IsChecked = true;
-                }
+                    xReadOnlyRadioButton.IsChecked = true;
+                }  
             }
             else
             {
-                AccessPopup.IsOpen = false;
+                xReadOnlyRadioButton.Visibility = Visibility.Collapsed;
+            }
+            if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+            {
+                xPrivateRadioButton.IsChecked = true;
+            }
+            if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
+            {
+                xPublicRadioButton.IsChecked = true;
             }
         }
 

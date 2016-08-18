@@ -50,8 +50,7 @@ namespace NusysServer
             //insert all the metadata
             if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY))
             {
-                var metadataEntries =
-                    message.GetDict<string, MetadataEntry>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY).Values;
+                var metadataEntries = message.GetList<MetadataEntry>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY);
                 var metadataMessagesList = new List<Message>();
                 foreach (var metadataEntry in metadataEntries)
                 {
@@ -60,15 +59,15 @@ namespace NusysServer
                     metadataMessage[NusysConstants.METADATA_KEY_COLUMN_KEY] = metadataEntry.Key;
                     metadataMessage[NusysConstants.METADATA_MUTABILITY_COLUMN_KEY] = metadataEntry.Mutability.ToString();
                     metadataMessage[NusysConstants.METADATA_VALUE_COLUMN_KEY] = JsonConvert.SerializeObject(metadataEntry.Values);
-                    metadataMessagesList.Add(message);
+                    metadataMessagesList.Add(metadataMessage);
                 }
                 if (metadataMessagesList.Any())
                 {
                     SQLInsertQuery insertQuery = new SQLInsertQuery(Constants.SQLTableType.Metadata, metadataMessagesList);
                     var metadataSuccess = insertQuery.ExecuteCommand();
                     Debug.Assert(metadataSuccess);
-                    addLibraryElementMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY] =
-                        JsonConvert.SerializeObject(metadataEntries);
+                    addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_METADATA_KEY] =
+                        JsonConvert.SerializeObject(metadataEntries.ToDictionary(entry => entry.Key, e => e));
 
                 }
             }

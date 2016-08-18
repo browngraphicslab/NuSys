@@ -48,6 +48,12 @@ namespace NusysServer
             TestFunc();
         }
 
+        public void CloseSqlConnection()
+        {
+            _db?.Close();
+            _db?.Dispose();
+        }
+
         public void TestFunc()
         {
         }

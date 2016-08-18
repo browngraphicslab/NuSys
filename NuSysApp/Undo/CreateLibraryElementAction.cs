@@ -31,6 +31,8 @@ namespace NuSysApp
         {
             var request = new CreateNewLibraryElementRequest(_args);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
+
         }
 
         /// <summary>

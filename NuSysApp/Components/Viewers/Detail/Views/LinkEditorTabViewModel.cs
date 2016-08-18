@@ -64,35 +64,37 @@ namespace NuSysApp
                 });
             }
         }
-        internal void DeleteLink(string linkId)
+
+        /// <summary>
+        /// Deletes the link associated with the passed in linkLibraryElementId
+        /// </summary>
+        /// <param name="linkLibraryElementId"></param>
+        /// <returns>true if the link was deleted succesfully false otherwise</returns>
+        internal async Task<bool> DeleteLink(string linkLibraryElementId)
         {
-            var currentLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(CurrentLibraryElementId);
-            // Rmeoves link from the linkTabable open in the DV
-            currentLibraryElementController.RequestRemoveLink(linkId);
+            // delete the link using the SessionController
+            var success = await SessionController.Instance.LinksController.RemoveLink(linkLibraryElementId);
 
-            //Removes the link from the content at the other end of the Link
-            var linkModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkId) as LinkLibraryElementModel;
-            if (linkModel?.InAtomId == currentLibraryElementController.LibraryElementModel.LibraryElementId)
+            // the link was deleted succesfully
+            if (success)
             {
-                var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.OutAtomId);
-                otherController?.RequestRemoveLink(linkId);
-            } else if (linkModel?.OutAtomId == currentLibraryElementController.LibraryElementModel.LibraryElementId)
-            {
-                var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.InAtomId);
-                otherController?.RequestRemoveLink(linkId);
-            }
-
-            //Create templates to display in the list view
-            foreach (var template in LinkTemplates)
-            {
-                if (template.ID == linkId)
+                //Remove all instances of the link from the list view 
+                foreach (var template in LinkTemplates)
                 {
-                    LinkTemplates.Remove(template);
-                    break;
+                    if (template.ID == linkLibraryElementId)
+                    {
+                        LinkTemplates.Remove(template);
+                        break; // break because there shoudl only be one instance of the link
+                    }
                 }
+
+                // return true to show that the link was deleted succesfully
+                return true;
             }
-            
-         }
+
+            // return false to show that the link was not deleted successfully
+            return false;
+        }
 
         public void ChangeLinkTemplates(string newLibraryElementModelId)
         {

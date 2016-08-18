@@ -148,15 +148,15 @@ namespace NuSysApp
                         {
                             var rect = suggestedRegion.FaceRectangle;
 
-                            var metadataDict = new Dictionary<string,MetadataEntry>() {};
+                            var metadataDict = new List<MetadataEntry>() ;
 
                             if (suggestedRegion.Age != null)//to add the age to the future region
                             {
-                                metadataDict.Add("suggested_age",new MetadataEntry("suggested_age",new List<string>() {suggestedRegion.Age.Value.ToString()},MetadataMutability.MUTABLE));
+                                metadataDict.Add(new MetadataEntry("suggested_age",new List<string>() {suggestedRegion.Age.Value.ToString()},MetadataMutability.MUTABLE));
                             }
                             if (!string.IsNullOrEmpty(suggestedRegion.Gender))//to add the gender to the future region
                             {
-                                metadataDict.Add("suggested_gender", new MetadataEntry("suggested_gender", new List<string>() { suggestedRegion.Gender}, MetadataMutability.MUTABLE));
+                                metadataDict.Add(new MetadataEntry("suggested_gender", new List<string>() { suggestedRegion.Gender}, MetadataMutability.MUTABLE));
                             }
 
                             if (rect == null || rect.Left == null || rect.Top == null || rect.Height == null || rect.Width == null)
@@ -166,6 +166,7 @@ namespace NuSysApp
                             //create a temp region for every face
                             var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel);
                             var tempview = new TemporaryImageRegionView(tempvm);
+                            tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
                             xClippingWrapper.AddTemporaryRegion(tempview);
                         }
                     }

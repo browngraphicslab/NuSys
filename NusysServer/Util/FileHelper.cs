@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using NusysIntermediate;
 using Newtonsoft.Json;
@@ -12,6 +13,11 @@ namespace NusysServer
     public class FileHelper
     {
         /// <summary>
+        /// the encoding when writing bytes to a file.
+        /// </summary>
+        private static UnicodeEncoding Encoding = new UnicodeEncoding();
+
+        /// <summary>
         /// returns the correct data for a ContentDataModel based on the contentUrl from the database. 
         /// Will return the passed in Url for Images, Videos, and Audio contentTypes
         /// </summary>
@@ -20,22 +26,29 @@ namespace NusysServer
         /// <returns></returns>
         public static string GetDataFromContentURL(string contentUrl, NusysConstants.ContentType contentType)
         {
-            if (contentUrl.Length <= Constants.SERVER_ADDRESS.Length)
+            try
             {
-                throw new Exception("the suggested content URL is too short");
+                if (contentUrl.Length <= Constants.SERVER_ADDRESS.Length)
+                {
+                    throw new Exception("the suggested content URL is too short");
+                }
+                switch (contentType)
+                {
+                    case NusysConstants.ContentType.Audio:
+                    case NusysConstants.ContentType.Image:
+                    case NusysConstants.ContentType.Video:
+                    case NusysConstants.ContentType.PDF:
+                    case NusysConstants.ContentType.Word:
+                        return contentUrl;
+                    case NusysConstants.ContentType.Text:
+                        return FetchDataFromFile(contentUrl.Substring(Constants.SERVER_ADDRESS.Length));
+                }
+                throw new Exception("the requested contentType is not supported yet for url-to-data conversion");
             }
-            switch (contentType)
+            catch (Exception e)
             {
-                case NusysConstants.ContentType.Audio:
-                case NusysConstants.ContentType.Image:
-                case NusysConstants.ContentType.Video:
-                case NusysConstants.ContentType.PDF:
-                case NusysConstants.ContentType.Word:
-                    return contentUrl;
-                case NusysConstants.ContentType.Text:
-                    return FetchDataFromFile(contentUrl.Substring(Constants.SERVER_ADDRESS.Length));
+                throw new Exception(e.Message + "  FileHelper Method: GetDataFromContentURL");
             }
-            throw new Exception("the requested contentType is not supported yet for url-to-data conversion");
         }
 
         /// <summary>
@@ -48,19 +61,34 @@ namespace NusysServer
         /// <returns></returns>
         public static string CreateThumbnailFile(string libraryElementId, NusysConstants.ThumbnailSize size, string byteString)
         {
-            if (byteString == null)
+            try
             {
-                return null;
+                if (byteString == null)
+                {
+                    return null;
+                }
+                if (libraryElementId == null)
+                {
+                    throw new Exception("the libraryElementModelId Id cannot be null when creating a new thumbnail File");
+                }
+                var fileName = NusysConstants.GetDefaultThumbnailFileName(libraryElementId, size) +
+                               NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
+                var fileStream = File.Create(Constants.WWW_ROOT + fileName);
+                fileStream.Dispose();
+
+                using (var fstream = File.OpenWrite(Constants.WWW_ROOT + fileName))
+                {
+                    var bytes = Convert.FromBase64String(byteString);
+                    fstream.Write(bytes, 0, bytes.Length);
+                }
+
+
+                return Constants.SERVER_ADDRESS + fileName;
             }
-            if (libraryElementId == null)
+            catch (Exception e)
             {
-                throw new Exception("the libraryElementModelId Id cannot be null when creating a new thumbnail File");
+                throw new Exception(e.Message + "  FileHelper Method: CreateThumbnailFile");
             }
-            var fileName = NusysConstants.GetDefaultThumbnailFileName(libraryElementId, size) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
-            var fileStream = File.Create(Constants.WWW_ROOT + fileName);
-            fileStream.Dispose();
-            File.WriteAllBytes(Constants.WWW_ROOT + fileName,Convert.FromBase64String(byteString));
-            return Constants.SERVER_ADDRESS + fileName;
         }
 
         /// <summary>
@@ -74,64 +102,85 @@ namespace NusysServer
         /// <param name="contentType"></param>
         /// <param name="extension"></param>
         /// <returns></returns>
-        public static string CreateDataFile(string contentDataModelId, NusysConstants.ContentType contentType, string contentData,
-            string fileExtension = null)
+        public static string CreateDataFile(string contentDataModelId, NusysConstants.ContentType contentType, string contentData, string fileExtension = null)
         {
-            if (contentDataModelId == null)
+            try
             {
-                throw new Exception("the libraryElementModelId Id cannot be null when creating a new content File");
-            }
-            string filePath = null;
-            string fileUrl = null;
-            switch (contentType)
-            {
-                case NusysConstants.ContentType.Audio:
-                case NusysConstants.ContentType.Image:
-                case NusysConstants.ContentType.Video:
-                    if (fileExtension == null)
-                    {
-                        throw new Exception("the file extension cannot be null when creating a new data file with Audio, Video, or Image contentTypes");
-                    }
-                    filePath = Constants.WWW_ROOT + contentDataModelId + fileExtension;
-                    var fileStream = File.Create(filePath);
-                    fileStream.Dispose();
-                    File.WriteAllBytes(filePath, Convert.FromBase64String(contentData));
-                    fileUrl = Constants.SERVER_ADDRESS + contentDataModelId + fileExtension;
-                    break;
-                case NusysConstants.ContentType.Word:
-                    //var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
+                if (contentDataModelId == null)
+                {
+                    throw new Exception("the libraryElementModelId Id cannot be null when creating a new content File");
+                }
+                string filePath = null;
+                string fileUrl = null;
+                switch (contentType)
+                {
+                    case NusysConstants.ContentType.Audio:
+                    case NusysConstants.ContentType.Image:
+                    case NusysConstants.ContentType.Video:
+                        if (fileExtension == null)
+                        {
+                            throw new Exception(
+                                "the file extension cannot be null when creating a new data file with Audio, Video, or Image contentTypes");
+                        }
+                        filePath = Constants.WWW_ROOT + contentDataModelId + fileExtension;
+                        var fileStream = File.Create(filePath);
+                        fileStream.Dispose();
 
-                    break;
-                case NusysConstants.ContentType.PDF:
-                    //creates a file and url for each page image and returns a serialized list of urls
-                    var listOfBytes = JsonConvert.DeserializeObject<List<string>>(contentData);
-                    List<string> listOfUrls = new List<string>();
-                    int i = 0;
-                    foreach(var bytesOfImage in listOfBytes)
-                    {
-                        filePath = Constants.WWW_ROOT + contentDataModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
-                        var stream1 = File.Create(filePath);
-                        stream1.Dispose();
-                        File.WriteAllBytes(filePath, Convert.FromBase64String(bytesOfImage));
-                        listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
-                        i++;
-                    }
-                    return JsonConvert.SerializeObject(listOfUrls);
-                    break;
-                case NusysConstants.ContentType.Text:
-                    var extension = Constants.TEXT_DATA_FILE_FILE_EXTENSION;
-                    filePath = contentDataModelId + extension;
-                    var stream = File.Create(Constants.FILE_FOLDER + filePath);
-                    stream.Dispose();
-                    File.WriteAllText(Constants.FILE_FOLDER + filePath, contentData);
-                    fileUrl = Constants.SERVER_ADDRESS + filePath;
-                    break;
+                        using (var fstream = File.OpenWrite(filePath))//write the bytes to file
+                        {
+                            var bytes = Convert.FromBase64String(contentData);
+                            fstream.Write(bytes, 0, bytes.Length);
+                        }
+
+                        fileUrl = Constants.SERVER_ADDRESS + contentDataModelId + fileExtension;
+                        break;
+                    case NusysConstants.ContentType.Word:
+                        //var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
+
+                        break;
+                    case NusysConstants.ContentType.PDF:
+                        //creates a file and url for each page image and returns a serialized list of urls
+                        var listOfBytes = JsonConvert.DeserializeObject<List<string>>(contentData);
+                        List<string> listOfUrls = new List<string>();
+                        int i = 0;
+                        foreach (var bytesOfImage in listOfBytes)
+                        {
+                            filePath = Constants.WWW_ROOT + contentDataModelId + "_" + i +
+                                       NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
+                            var stream1 = File.Create(filePath);
+                            stream1.Dispose();
+
+                            using (var fstream = File.OpenWrite(filePath))
+                            {
+                                var bytes = Convert.FromBase64String(bytesOfImage);
+                                fstream.Write(bytes, 0, bytes.Length);
+                            }
+
+                            listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + i +
+                                           NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                            i++;
+                        }
+                        return JsonConvert.SerializeObject(listOfUrls);
+                        break;
+                    case NusysConstants.ContentType.Text:
+                        var extension = Constants.TEXT_DATA_FILE_FILE_EXTENSION;
+                        filePath = contentDataModelId + extension;
+                        var stream = File.Create(Constants.FILE_FOLDER + filePath);
+                        stream.Dispose();
+                        File.WriteAllText(Constants.FILE_FOLDER + filePath, contentData);
+                        fileUrl = Constants.SERVER_ADDRESS + filePath;
+                        break;
+                }
+                if (filePath == null || fileUrl == null)
+                {
+                    throw new Exception("this content type is not supported yet for creating Content Data Files");
+                }
+                return fileUrl;
             }
-            if (filePath == null || fileUrl == null)
+            catch (Exception e)
             {
-                throw new Exception("this content type is not supported yet for creating Content Data Files");
+                throw new Exception(e.Message + "  FileHelper Method: CreateDataFile");
             }
-            return fileUrl;
         }
 
         /// <summary>
@@ -140,39 +189,60 @@ namespace NusysServer
         /// <returns></returns>
         public static bool UpdateContentDataFile(string contentId, NusysConstants.ContentType contentType, string updatedContentData)
         {
-            if (contentId == null)
+            try
             {
-                throw new Exception("the contentId cannot be null when updating a content file");
-            }
-            if (contentType == null)
-            {
-                throw new Exception("the content type cannot be null when updating a content file");
-            }
-            if (updatedContentData == null)
-            {
-                throw new Exception("the content data cannot be null when updating a content file");
-            }
-            switch (contentType)
-            {
-                case NusysConstants.ContentType.Audio:
-                case NusysConstants.ContentType.Image:
-                case NusysConstants.ContentType.Video:
-                case NusysConstants.ContentType.PDF:
-                    throw new Exception("only text content can be updated");
-                case NusysConstants.ContentType.Text:
-                    var filePath = Constants.FILE_FOLDER + contentId + Constants.TEXT_DATA_FILE_FILE_EXTENSION;
-                    if (File.Exists(filePath))
-                    {
-                        File.WriteAllText(filePath, updatedContentData);
-                        return true;
-                    }
-                    else
-                    {
+                if (contentId == null)
+                {
+                    throw new Exception("the contentId cannot be null when updating a content file");
+                }
+                if (contentType == null)
+                {
+                    throw new Exception("the content type cannot be null when updating a content file");
+                }
+                if (updatedContentData == null)
+                {
+                    throw new Exception("the content data cannot be null when updating a content file");
+                }
+                switch (contentType)
+                {
+                    case NusysConstants.ContentType.Audio:
+                    case NusysConstants.ContentType.Image:
+                    case NusysConstants.ContentType.Video:
+                    case NusysConstants.ContentType.PDF:
+                        throw new Exception("only text content can be updated");
+                    case NusysConstants.ContentType.Text:
+                        var filePath = Constants.FILE_FOLDER + contentId + Constants.TEXT_DATA_FILE_FILE_EXTENSION;
+                        if (File.Exists(filePath))
+                        {
+                            using (var stream = File.OpenWrite(filePath))
+                            {
+                                var bytes = GetBytesForWritingToFile(updatedContentData);
+                                stream.Write(bytes,0,bytes.Length);  
+                            }
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    default:
                         return false;
-                    }
-                default:
-                    return false;
+                }
             }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message + "  FileHelper Method: UpdateContentDataFile");
+            }
+        }
+
+        /// <summary>
+        /// gets the bytes from the public encoding before saving to files;
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private static byte[] GetBytesForWritingToFile(string text)
+        {
+            return Encoding.GetBytes(text);
         }
 
         /// <summary>
@@ -188,7 +258,14 @@ namespace NusysServer
             {
                 throw new Exception("The content file you requests does not exist. file: "+fileName);
             }
-            return File.ReadAllText(filepath);
+            try
+            {
+                return File.ReadAllText(filepath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message + "  FileHelper Method: FetchDataFromFile");
+            }
         }
 
         /// <summary>
