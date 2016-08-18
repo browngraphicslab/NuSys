@@ -65,11 +65,11 @@ namespace NusysServer
         private void SetUpTables()
         {
             var usersTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Users) + " (" +
-                NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY + " varchar(128), " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY + " varchar(128), " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY + " varchar(128), " +
-                NusysConstants.PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY + " varchar(4096));");
+                NusysConstants.USERS_TABLE_HASHED_USER_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.USERS_TABLE_HASHED_PASSWORD_KEY + " varchar(128), " +
+                NusysConstants.USERS_TABLE_SALT_KEY + " varchar(128), " +
+                NusysConstants.USERS_TABLE_USER_DISPLAY_NAME_KEY + " varchar(4096), " +
+                NusysConstants.USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY + " varchar(4096));");
 
             var analysisModelsTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels) + " (" +
                 NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
@@ -85,6 +85,7 @@ namespace NusysServer
             var contentTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content) + " (" +
                 NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
+                NusysConstants.METADATA_MUTABILITY_COLUMN_KEY + " varchar(256)," +
                 NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(MAX));");
 
             var libraryElementTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " (" +
@@ -299,16 +300,11 @@ namespace NusysServer
             }
             var cmdToDeleteFromLibraryElementTable = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
 
-            //TODO, add in aliases deleting
+            var metadataMessage = new Message();
+            metadataMessage[NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY] = message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY);
 
-            // Deletes all the related metadata from the metadata table.
-            //var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
-            //cmdToDeleteRelatedMetadata.ExecuteCommand(); 
-            // DOES NOT WORK  
-            //TODO, harsh fix this
-
-            // The command below deletes all the related metadata from the metadata table.
-           
+            var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, metadataMessage, Constants.Operator.And);
+            cmdToDeleteRelatedMetadata.ExecuteCommand();
 
             return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }
