@@ -425,6 +425,7 @@
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>

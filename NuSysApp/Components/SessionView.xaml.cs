@@ -61,6 +61,8 @@ namespace NuSysApp
             get { return DraggingGraphImage; }
         }
 
+        
+
         /// <summary>
         /// Gets the instance of the speech to text box on the main canvas
         /// </summary>
@@ -124,7 +126,24 @@ namespace NuSysApp
 
             // only let the user pan and zoom initially
             SessionController.Instance.SwitchMode(Options.PanZoomOnly);
+            this.IsReadonly = true;
            
+        }
+
+        /// <summary>
+        /// Reverts a workspace back to editable by modifying ui elements and the session mode
+        /// </summary>
+        private void MakeWorkspaceEditable()
+        {
+            // toggle visibility of some ui elements
+            xFloatingMenu.Visibility = Visibility.Visible;
+            xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
+            xWorkspaceTitle.IsEnabled = true;
+            xCurrentCollectionDVButton.IsEnabled = true;
+
+            // give the user more control
+            SessionController.Instance.SwitchMode(Options.SelectNode);
+            this.IsReadonly = false;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -153,12 +172,12 @@ namespace NuSysApp
                 NewNetworkUser(user);
             }
 
-            // Will make the collection readonly if the active freeform viewer is readonly
-            IsReadonly = false;
-            if (IsReadonly)
-            {
-                this.MakeWorkspaceReadonly();
-            }
+            //// Will make the collection readonly if the active freeform viewer is readonly
+            //IsReadonly = true;
+            //if (IsReadonly)
+            //{
+            //    this.MakeWorkspaceReadonly();
+            //}
         }
 
 
@@ -259,7 +278,7 @@ namespace NuSysApp
 
         public void EnterPresentationMode(ElementViewModel em)
         {
-            Debug.Assert(em != null);
+            //Debug.Assert(em != null);
             _modeInstance = new PresentationMode(em);
             SessionController.Instance.SwitchMode(Options.Presentation);
 
@@ -333,6 +352,8 @@ namespace NuSysApp
             exp?.MoveTo(elementViewModel);
             SetModeButtons();
         }
+
+      
 
         /// <summary>
         /// Gets a data context passed in when an element is clicked
@@ -862,5 +883,24 @@ namespace NuSysApp
             return xChatBox;
         }
 
+        private void xTestReadonlyButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.ToggleReadonly();
+        }
+
+        /// <summary>
+        /// Changes the workspace to readonly if it is editable. Changes the workspace to editable if it is readonly.
+        /// </summary>
+        public void ToggleReadonly()
+        {
+            if (this.IsReadonly)
+            {
+                this.MakeWorkspaceEditable();
+            }
+            else
+            {
+                this.MakeWorkspaceReadonly();
+            }
+        }
     }
 }

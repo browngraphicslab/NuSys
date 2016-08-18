@@ -40,6 +40,7 @@ namespace NuSysApp
         private AbstractWorkspaceViewMode _prevMode;
         private NuSysInqCanvas _inqCanvas;
         private ExploreMode _exploreMode;
+        private PresentMode _presentMode;
         private MultiMode _explorationMode;
         private MultiMode _presentationMode;
 
@@ -101,6 +102,8 @@ namespace NuSysApp
                 _floatingMenuMode = new FloatingMenuMode(this);
                 _globalInkMode = new GlobalInkMode(this);
                 _exploreMode = new ExploreMode(this);
+                _presentMode = new PresentMode(this);
+                
            
 
                 _tagMode = new TagNodeMode(this);
@@ -110,7 +113,7 @@ namespace NuSysApp
                 _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
-                _presentationMode = new MultiMode(this, _panZoomMode);
+                _presentationMode = new MultiMode(this, _panZoomMode, _presentMode);
 
 
                 SwitchMode(Options.SelectNode);

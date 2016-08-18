@@ -37,6 +37,8 @@ namespace NuSysApp
         {
             this.DeactivateAllButtons();
             xPresentButton.Activate();
+            SessionController.Instance.SwitchMode(Options.Presentation);
+            //SessionController.Instance.SessionView.EnterPresentationMode();
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace NuSysApp
         private void xRevertButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             this.DeactivateAllButtons();
-            xRevertButton.Activate();
+            //xRevertButton.Activate();
             this.RevertToNormalWorkspace();
 
         }
@@ -72,6 +74,7 @@ namespace NuSysApp
         private void RevertToNormalWorkspace()
         {
             // TODO implement
+            SessionController.Instance.SessionView.ToggleReadonly();
         }
 
         /// <summary>
