@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -47,7 +48,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="imageUrl"></param>
         /// <returns></returns>
-        private static async Task<OcrResults> GetOcrResults(string imageUrl)
+        private static async Task<OcrResults> GetOcrResultsAsync(string imageUrl)
         {
             // Create Project Oxford Vision API Service client
             VisionServiceClient VisionServiceClient = new VisionServiceClient(CognitiveApiConstants.COMPUTER_VISION);
@@ -94,6 +95,67 @@ namespace NusysServer
                 Description = new CognitiveApiDescriptionModel { Tags = analysisResult.Description?.Tags, Captions = analysisResult.Description?.Captions.Select(caption => new CognitiveApiCaptionModel { Confidence = caption.Confidence, Text = caption.Text }).ToArray() }
                 
             };
+            return a;
+        }
+
+        /// <summary>
+        /// Performs Object Character Recognition on an ImgUrl and returns a NuSysOcrAnalysisModel
+        /// 
+        /// Supported image formats: JPEG, PNG, GIF, BMP.
+        /// Image file size must be less than 4MB.
+        /// Image dimensions must be between 40 x 40 and 3200 x 3200 pixels, and the image cannot be larger than 100 megapixels.
+        /// </summary>
+        /// <param name="ImgURL">The image url of the image to be analyzed</param>
+        /// <param name="contentDataModelId">The string id of the contentDataModel that this image analysis model is analyzing</param>
+        /// <param name="imageWidth">The width of the image to be analyzed</param>
+        /// <param name="imageHeight">The height of theimage to be analyzed</param>
+        /// <returns></returns>
+        public static async Task<NuSysOcrAnalysisModel> GetNusysOcrAnalysisModelFromUrlAsync(string ImgURL, string contentDataModelId, double imageWidth, double imageHeight)
+        {
+            var ocrResult = await GetOcrResultsAsync(ImgURL);
+
+            // crazy object initializer syntax that converts an ocr result to a NuSysOcrAnalysisModel. : )
+            var a = new NuSysOcrAnalysisModel(contentDataModelId)
+            {
+                // simply set the property of the nusysImageAnalysisModel using different paths in the analysisResult
+                Language = ocrResult.Language,
+                Orientation = ocrResult.Orientation,
+                TextAngle = ocrResult.TextAngle,
+
+                // These are slightly more complex because we are setting the value for each item in an array
+                Regions = ocrResult.Regions?.Select(region => new CognitiveApiRegionModel
+                {
+                    Rectangle = new CognitiveApiRectangleModel
+                    {
+                        Height = region.Rectangle.Height / imageHeight,
+                        Left = region.Rectangle.Left / imageWidth,
+                        Top = region.Rectangle.Top / imageHeight,
+                        Width = region.Rectangle.Width / imageWidth
+                    },
+                    Lines = region.Lines.Select(line => new CognitiveApiLineModel
+                    {
+                        Rectangle = new CognitiveApiRectangleModel
+                        {
+                            Height = region.Rectangle.Height / imageHeight,
+                            Left = region.Rectangle.Left / imageWidth,
+                            Top = region.Rectangle.Top / imageHeight,
+                            Width = region.Rectangle.Width / imageWidth
+                        },
+                        Words = line.Words.Select(word => new CognitiveApiWordModel
+                        {
+                            Rectangle = new CognitiveApiRectangleModel
+                            {
+                                Height = region.Rectangle.Height / imageHeight,
+                                Left = region.Rectangle.Left / imageWidth,
+                                Top = region.Rectangle.Top / imageHeight,
+                                Width = region.Rectangle.Width / imageWidth
+                            },
+                            Text = word.Text
+                        }).ToList()
+                    }).ToList()
+                }).ToList()
+            };
+
             return a;
         }
     }
