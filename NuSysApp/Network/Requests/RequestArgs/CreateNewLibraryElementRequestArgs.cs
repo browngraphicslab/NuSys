@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Media.Core;
 using Newtonsoft.Json;
 using NusysIntermediate;
 
@@ -54,7 +55,7 @@ namespace NuSysApp
         /// <summary>
         /// Any initial metadata you want the library element To have
         /// </summary>
-        public Dictionary<string, MetadataEntry> Metadata { get; set; } // TODO put back in
+        public List<MetadataEntry> Metadata { get; set; } // TODO put back in
 
         /// <summary>
         /// The base-64 string bytes of the small thumbnail for this new libraryElement
@@ -96,6 +97,11 @@ namespace NuSysApp
             Debug.Assert(LibraryElementType != null);
 
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = LibraryElementType.ToString();
+
+            if (Metadata != null && Metadata.Count > 0)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY] = JsonConvert.SerializeObject(Metadata);
+            }
 
             //set the keywords
             if (Keywords != null)

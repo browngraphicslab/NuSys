@@ -68,18 +68,23 @@ namespace NuSysApp
                 var bestDescription = descriptionlist.OrderByDescending(x => x.Confidence).FirstOrDefault();
                 xDescription.Text = bestDescription.Text;
 
-                //get categories and add the category if the score meets min confidence level
-                var categorylist = _analysisModel.Categories.ToList();
-                var categories = categorylist.Where(x => x.Score > Constants.MinConfidence).OrderByDescending(x => x.Score);
-                foreach (var i in categories)
+                if (_analysisModel.Categories != null && _analysisModel.Categories.Any())
                 {
-                    i.Name = i.Name.Replace("_", " ");
-                    i.Name.Trim();
+                    //get categories and add the category if the score meets min confidence level
+                    var categorylist = _analysisModel.Categories.ToList();
+                    var categories =
+                        categorylist.Where(x => x.Score > Constants.MinConfidence).OrderByDescending(x => x.Score);
+                    foreach (var i in categories)
+                    {
+                        i.Name = i.Name.Replace("_", " ");
+                        i.Name.Trim();
+                    }
+                    xCategories.Text = string.Join(", ", categories.Select(category => string.Join(", ", category.Name)));
                 }
-                xCategories.Text = string.Join(", ", categories.Select(category => string.Join(", ", category.Name)));
+
 
                 //get tag list and order them in order of confidence
-                var taglist = _analysisModel.Tags.ToList().OrderByDescending(x => x.Confidence);
+                var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
 
 
             }
