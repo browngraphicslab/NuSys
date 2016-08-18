@@ -15,14 +15,12 @@ namespace NuSysApp
         private CreateNewLibraryElementRequestArgs _args;
 
         /// <summary>
-        /// Message must contain fields for id, data, small_thumbnail, medium_thumbnail, large_thumbnail,
+        /// Args must contain fields for id, data, small_thumbnail, medium_thumbnail, large_thumbnail,
         /// type, title, server_url, creation_timestamp, last_edited_timestamp
         /// </summary>
-        /// <param name="m"></param>
+        /// <param name="args"></param>
         public DeleteLibraryElementAction(CreateNewLibraryElementRequestArgs args)
         {
-            //TODO FIX THIS 817
-            // _message = m;
             _args = args;
         }
 
@@ -32,7 +30,6 @@ namespace NuSysApp
         /// <returns></returns>
         public IUndoable GetInverse()
         {
-            // return new CreateLibraryElementAction(_message);
             return new CreateLibraryElementAction(_args);
         }
 

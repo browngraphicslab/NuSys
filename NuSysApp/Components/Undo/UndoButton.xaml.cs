@@ -40,6 +40,7 @@ namespace NuSysApp
         public IUndoable OriginalAction { get; set; }
         public UndoButtonState State { get { return _state; } }
 
+        //Whether the action was just executed. This is useful for calling things right after the action was executed (e.g., stopping manipulation delta caused by inertia after move undo)
         public bool ActionExecuted { set; get; }
 
         private Timer _timer;

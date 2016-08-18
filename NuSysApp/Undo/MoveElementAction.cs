@@ -14,9 +14,11 @@ namespace NuSysApp
     /// </summary>
     public class MoveElementAction : IUndoable
     {
-
+        //ElementController for the node being moved
         private ElementController _elementController;
+        //Position before the move
         private Point _oldPosition;
+        //Position after the move
         private Point _newPosition;
 
         /// <summary>
