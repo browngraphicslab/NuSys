@@ -32,8 +32,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Select All" VerticalAlignment="Center"></TextBlock>
-            <CheckBox Grid.Column="1" x:Name="publicSelectAll" Margin="10,5,5,5" Content="Public" Checked="SelectAll_OnChecked"/>
+            <TextBlock Text="Select All" VerticalAlignment="Center" Margin="0,0,20,0"></TextBlock>
+            <CheckBox Grid.Column="1" x:Name="publicSelectAll" Margin="5" Content="Public" Checked="SelectAll_OnChecked"/>
             <CheckBox Grid.Column="2" x:Name="privateSelectAll" Margin="5" Content="Private" Checked="SelectAll_OnChecked"/>
         </Grid>
         <!-- ListView Containing file names and acls options -->
