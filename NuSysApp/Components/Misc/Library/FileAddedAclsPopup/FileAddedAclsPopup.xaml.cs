@@ -117,9 +117,15 @@ namespace NuSysApp
             // add all the storage files to the observable collection
             foreach (var storageFile in storageFiles)
             {
-                _vm.Files.Add(storageFile);
+                _vm.Files.Add(storageFile); // these are all instantiated as public from the xaml because the list is created dynamically from binding
             }
-            
+
+            // select the publicSelectAll box, do it in ui task cause this code isn't called from the ui thread
+            UITask.Run(() =>
+            {
+                publicSelectAll.IsChecked = true;
+            });
+
             // enable the popup
             _vm.IsEnabled = true;
 
@@ -137,57 +143,6 @@ namespace NuSysApp
 
             // return the dictionary
             return _vm.AccessDictionary;
-        }
-
-        /// <summary>
-        /// Called every time the user checks a radio button, enables the submit button if all the radio buttons have been checked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Access_OnChecked(object sender, RoutedEventArgs e)
-        {
-            // if we are not in a select all call then deselect the selectall checkboxes
-            if (!isSelectAll)
-            {
-                publicSelectAll.IsChecked = false;
-                privateSelectAll.IsChecked = false;
-            }
-
-            // get the radio button that sends the access
-            var radioButton = (sender as RadioButton);
-
-            // get the file that the access is correlated to
-            var file = radioButton.DataContext as StorageFile;
-
-            // because we check the radio button in xaml, the datacontext is not always instantiated when this is called
-            if (file == null)
-            {
-                return;
-            }
-
-            // get the access level from the radio button name, this is poor coding but simplifies the implementation immensely
-            NusysConstants.AccessType selectedAcess = NusysConstants.AccessType.Public;
-            if (radioButton.Name == "publicRadio")
-            {
-                selectedAcess = NusysConstants.AccessType.Public;
-            } else if (radioButton.Name == "privateRadio")
-            {
-                selectedAcess = NusysConstants.AccessType.Private;
-            }
-            else
-            {
-                Debug.Fail("Sorry these are switched by name, make sure the strings above match the strings in the xaml list view");
-            }
-
-            // set the access level
-            if (_vm.AccessDictionary.ContainsKey(file.FolderRelativeId))
-            {
-                _vm.AccessDictionary[file.FolderRelativeId] = selectedAcess;
-            }
-            else
-            {
-                _vm.AccessDictionary.Add(file.FolderRelativeId, selectedAcess);
-            }
         }
 
         /// <summary>
@@ -292,8 +247,13 @@ namespace NuSysApp
                 var radioButtons = AllRadioButtons(container);
 
                 // the radio button we are going to select, automatically deselects the other one.
-                var radioButton = radioButtons.First(c => c.Name == childName); // if this fails, check that the childName matches the radiobutton name in xaml list view
-                radioButton.IsChecked = true;
+                var radioButton = radioButtons?.First(c => c.Name == childName); // if this fails, check that the childName matches the radiobutton name in xaml list view
+
+                if (radioButton != null)
+                {
+                    radioButton.IsChecked = true;
+                }
+
             }
 
             // the call has finished so we can set isSelectAll to true, to reflect that we are no longer in the method
@@ -301,12 +261,19 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns all the radio buttons for an item in the list view
+        /// Returns all the radio buttons for an item in the list view,
+        /// Can return null if the visual tree has not been loaded
         /// </summary>
         /// <param name="parent"></param>
         /// <returns></returns>
         private List<RadioButton> AllRadioButtons(DependencyObject parent)
         {
+            // can occur if the visual tree has not been loaded
+            if (parent == null)
+            {
+                return null;
+            }
+
             var _List = new List<RadioButton>();
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
@@ -330,6 +297,35 @@ namespace NuSysApp
 
             // transition the underlying task completion source to show that the user has finished filling out the popup dialog
             tcs?.TrySetResult(false);
+        }
+
+        /// <summary>
+        /// Called whenever the user selects a radio button, deselects the selectAll buttons
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Access_OnChecked(object sender, RoutedEventArgs e)
+        {
+            // get the sender as the radio button
+            var radioButton = sender as RadioButton;
+
+            // if the sender was a private radio button
+            if (radioButton.Name == "privateRadio")
+            {
+                // deselect the public select all box
+                publicSelectAll.IsChecked = false;
+            }
+            // else if the sender was a public radio button
+            else if (radioButton.Name == "publicRadio")
+            {
+                // deselect the private select all box
+                privateSelectAll.IsChecked = false;
+            }
+            else
+            {
+                Debug.Fail($"The passed in name, {radioButton.Name} should be used in one of the above statements");
+            }
+
         }
     }
 }
