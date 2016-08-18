@@ -31,14 +31,14 @@ namespace NuSysApp
     public sealed partial class WaitingRoomView : Page
     {
         public FreeFormViewer _freeFormViewer;
-        
+
         public static string InitialWorkspaceId { get; set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        
+
 
         public static bool IS_HUB = false;
 
@@ -93,7 +93,7 @@ namespace NuSysApp
             //    ServerName = ServerNameText.Text;
 
             //};
-            
+
             //SlideOutLogin.Completed += SlideOutLoginComplete;
             //SlideOutNewUser.Completed += SlideOutLoginComplete;
 
@@ -104,6 +104,21 @@ namespace NuSysApp
             _titleReverse = false;
             _dateReverse = false;
             _accessReverse = false;
+
+            // Every time a new collection is added by another user, the list of collections is refreshed by calling Init
+            SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
+        }
+
+        /// <summary>
+        /// This handler is responsible for refreshing the list of collections every time another user adds a new collection.
+        /// </summary>
+        /// <param name="model"></param>
+        private void ContentController_OnNewContent(ContentDataModel model)
+        {
+            if (model.ContentType == NusysConstants.ContentType.Text)
+            {
+                Init();
+            }
         }
 
         /// <summary>
@@ -159,8 +174,8 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void NewButton_OnClick(object sender, RoutedEventArgs e)
         {
-            NewWorkspacePopup.HorizontalOffset = this.ActualWidth/2 - 250;
-            NewWorkspacePopup.VerticalOffset = this.ActualHeight/2 - 110;
+            NewWorkspacePopup.HorizontalOffset = this.ActualWidth / 2 - 250;
+            NewWorkspacePopup.VerticalOffset = this.ActualHeight / 2 - 110;
             NewWorkspacePopup.IsOpen = true;
         }
 
@@ -203,7 +218,7 @@ namespace NuSysApp
         {
             if (_selectedCollection != null)
             {
-                SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
+                SessionController.Instance.ContentController.OnNewLibraryElement -= LibraryElementControllerOnOnNewLibraryElement;
                 var id = _selectedCollection.LibraryElementId;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
@@ -216,6 +231,9 @@ namespace NuSysApp
                 this.Frame.Navigate(typeof(SessionView));
 
             }
+
+            // Detach the handler for refreshing the list of collections
+            SessionController.Instance.ContentController.OnNewContent -= ContentController_OnNewContent;
         }
 
         public static IEnumerable<ElementModel> GetFirstLoadList()
@@ -310,14 +328,14 @@ namespace NuSysApp
                 var displayName = NewDisplayName.Text;
                 Login(username, password, true, displayName);
             }
-            
+
         }
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
             var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
-            Login(username,password,false);
+            Login(username, password, false);
         }
 
         /// <summary>
@@ -514,7 +532,7 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.Init();
                         SessionController.Instance.LocalUserID = userID;
 
-                        SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
+                        SessionController.Instance.ContentController.OnNewLibraryElement += LibraryElementControllerOnOnNewLibraryElement;
 
                         loggedInText.Text = "Logged In!";
                         NewUserLoginText.Text = "Logged In!";
@@ -548,7 +566,7 @@ namespace NuSysApp
                         NuSysTitle.Visibility = Visibility.Collapsed;
 
                         UserName = userID;
-                        if (userID.ToLower() != "rosemary" && userID.ToLower()!= "rms" && userID.ToLower() != "gfxadmin")
+                        if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" && userID.ToLower() != "gfxadmin")
                         {
 
                             foreach (var box in List.Items)
@@ -564,7 +582,7 @@ namespace NuSysApp
 
 
                         await Task.Run(async delegate
-                        { 
+                        {
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                             foreach (var model in models)
                             {
@@ -638,7 +656,7 @@ namespace NuSysApp
             });
         }
 
-        private void ContentControllerOnOnNewContent(LibraryElementModel element)
+        private void LibraryElementControllerOnOnNewLibraryElement(LibraryElementModel element)
         {
             if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
@@ -674,8 +692,8 @@ namespace NuSysApp
         {
             var collections = List?.Items.ToList();
             List?.Items?.Clear();
-            var sorttype = ((Button) sender).Name;
-            
+            var sorttype = ((Button)sender).Name;
+
             switch (sorttype)
             {
                 case "TitleHeader":
