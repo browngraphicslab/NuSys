@@ -564,9 +564,8 @@ namespace NuSysApp
                 elementsLeft.Remove(element.Id);
                 return;
             }
-            var type = libraryModel.Type;
 
-            SessionController.Instance.AddElement(element);
+            await SessionController.Instance.AddElementAsync(element);
 
             ///add element
             elementsLeft.Remove(element.Id);

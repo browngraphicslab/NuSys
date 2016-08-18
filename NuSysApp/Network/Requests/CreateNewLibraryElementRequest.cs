@@ -32,9 +32,10 @@ namespace NuSysApp
         /// <param name="data"></param>
         /// <param name="type"></param>
         /// <param name="title"></param>
-        public CreateNewLibraryElementRequest(string id, string data, NusysConstants.ElementType type, string title = "")
-            : base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
+        public CreateNewLibraryElementRequest(string id, string data, NusysConstants.ElementType type, string title = ""): base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
         {
+            Debug.Fail("Congrats you found a deprecated method that's causing randon bad shit to happen in NuSys!  " +
+                       "You should tell Me (Trent) so we can fix this so we don't call this method anymore.");
             _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = id;
             _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = data;
             _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = type.ToString();
