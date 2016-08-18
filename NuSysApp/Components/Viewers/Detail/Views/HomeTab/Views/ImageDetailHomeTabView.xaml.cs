@@ -135,6 +135,18 @@ namespace NuSysApp
                         foreach (var suggestedRegion in analysisModel.Faces)
                         {
                             var rect = suggestedRegion.FaceRectangle;
+
+                            var metadataDict = new Dictionary<string,MetadataEntry>() {};
+
+                            if (suggestedRegion.Age != null)//to add the age to the future region
+                            {
+                                metadataDict.Add("suggested_age",new MetadataEntry("suggested_age",new List<string>() {suggestedRegion.Age.Value.ToString()},MetadataMutability.MUTABLE));
+                            }
+                            if (!string.IsNullOrEmpty(suggestedRegion.Gender))//to add the gender to the future region
+                            {
+                                metadataDict.Add("suggested_gender", new MetadataEntry("suggested_gender", new List<string>() { suggestedRegion.Gender}, MetadataMutability.MUTABLE));
+                            }
+
                             if (rect == null || rect.Left == null || rect.Top == null || rect.Height == null || rect.Width == null)
                             {
                                 continue;

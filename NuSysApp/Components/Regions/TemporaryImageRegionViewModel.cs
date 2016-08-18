@@ -83,6 +83,11 @@ namespace NuSysApp
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
 
+        /// <summary>
+        /// a list of metadata entries that will be applied to the new region after it has been made into a full region, if ever. 
+        /// </summary>
+        public List<MetadataEntry> MetadataToAddUponBeingFullRegion { get; set; }
+
         public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel)
         {
             NormalizedTopLeftPoint = topLeftPoint;
