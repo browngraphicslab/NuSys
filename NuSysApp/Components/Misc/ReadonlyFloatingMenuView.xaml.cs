@@ -50,7 +50,8 @@ namespace NuSysApp
         {
             this.DeactivateAllButtons();
             xExploreButton.Activate();
-            SessionController.Instance.SessionView.EnterExplorationMode();
+            SessionController.Instance.SwitchMode(Options.Exploration);
+           
             
         }
 

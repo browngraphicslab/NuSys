@@ -278,7 +278,13 @@ namespace NuSysApp
 
         public void EnterPresentationMode(ElementViewModel em)
         {
-            //Debug.Assert(em != null);
+            Debug.Assert(em != null);
+
+            // Don't do anything if we're already in presentation mode
+            if (_modeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
             _modeInstance = new PresentationMode(em);
             SessionController.Instance.SwitchMode(Options.Presentation);
 
@@ -336,8 +342,7 @@ namespace NuSysApp
             // set the buttons
             SetModeButtons();
 
-            // Change mode in free form viewer
-            SessionController.Instance.SwitchMode(Options.Exploration);
+           
         }
 
         public void ExploreSelectedObject(ElementViewModel elementViewModel)

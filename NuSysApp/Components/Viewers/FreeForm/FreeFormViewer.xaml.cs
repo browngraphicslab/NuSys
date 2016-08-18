@@ -104,7 +104,7 @@ namespace NuSysApp
                 _exploreMode = new ExploreMode(this);
                 _presentMode = new PresentMode(this);
                 
-           
+          
 
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
@@ -211,6 +211,11 @@ namespace NuSysApp
             _mainMode?.Deactivate();
             _simpleEditMode?.Deactivate();
 
+            _presentMode?.Deactivate();
+            _exploreMode?.Deactivate();
+            _presentationMode?.Deactivate();
+            _explorationMode?.Deactivate();
+
 
 
             var vm = (FreeFormViewerViewModel) DataContext;
@@ -299,6 +304,7 @@ namespace NuSysApp
                   //  await SetViewMode(_globalInkMode);
                     break;
                 case Options.Exploration:
+                    SessionController.Instance.SessionView.EnterExplorationMode();
                     SetViewMode(_explorationMode);
                     break;
                 case Options.PanZoomOnly:

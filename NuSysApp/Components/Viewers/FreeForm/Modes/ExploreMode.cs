@@ -14,6 +14,10 @@ namespace NuSysApp
     {
         private PointerEventHandler _pointerPressedHandler;
 
+        /// <summary>
+        /// Mode to be set when the user wants to click on things and enter exploration mode
+        /// </summary>
+        /// <param name="view"></param>
         public ExploreMode(FreeFormViewer view):base(view)
         {
             _pointerPressedHandler = OnPointerPressed;
