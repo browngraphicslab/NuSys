@@ -43,7 +43,38 @@ namespace NuSysApp
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY] = LibraryElementModelOutId;
             }
+            
+            // set access level to the lower of the two end points
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = GetLowerAccessOfEndPoints().ToString();
+
             return message;
+        }
+
+        /// <summary>
+        /// Gets the lower Accesstype of the two wend points of the link
+        /// </summary>
+        /// <returns></returns>
+        private NusysConstants.AccessType GetLowerAccessOfEndPoints()
+        {
+            // get the access level of the LibraryElementModelInId model
+            var inAccess =
+                SessionController.Instance.ContentController.GetLibraryElementModel(LibraryElementModelInId)
+                    .AccessType;
+            // if the access level is read only set it to private else keep it the same
+            if (inAccess == NusysConstants.AccessType.ReadOnly)
+            {
+                inAccess = NusysConstants.AccessType.Private;
+            }
+            // get the access level of the LibraryElementModelOutId model
+            var outAccess =
+                SessionController.Instance.ContentController.GetLibraryElementModel(LibraryElementModelOutId)
+                    .AccessType;
+            // if the access level is read only set it to private else keep it the same
+            if (outAccess == NusysConstants.AccessType.ReadOnly)
+            {
+                outAccess = NusysConstants.AccessType.Private;
+            }
+            return inAccess < outAccess ? inAccess : outAccess;
         }
     }
 }
