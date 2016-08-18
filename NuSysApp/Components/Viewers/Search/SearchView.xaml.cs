@@ -565,7 +565,7 @@ namespace NuSysApp
                     // create and execute the request
                     var requestElemToCollection = new NewElementRequest(newElementRequestArgs);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(requestElemToCollection);
-                    requestElemToCollection.AddReturnedElementToSession();
+                    await requestElemToCollection.AddReturnedElementToSessionAsync();
                 }
 
                 // add the collection to the current session
