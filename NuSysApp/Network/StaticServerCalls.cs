@@ -143,13 +143,10 @@ namespace NuSysApp
                 var newLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs()
                 {
                     Title = originalController.Title + " copy",
-                    ContentId = originalController.LibraryElementModel.ContentDataModelId,
+                    ContentId = originalController.ContentId,
                     AccessType = originalController.LibraryElementModel.AccessType,
                     LibraryElementType = originalController.LibraryElementModel.Type,
-                    LibraryElementId = newLibraryId,
-                    Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri,
-                    Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri,
-                    Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri
+                    LibraryElementId = newLibraryId
                 };
                 var newLibraryElementRequest = new CreateNewLibraryElementRequest(newLibraryElementRequestArgs);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);
