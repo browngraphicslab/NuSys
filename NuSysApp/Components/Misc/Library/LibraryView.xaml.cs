@@ -310,9 +310,6 @@ namespace NuSysApp
                 {
                     elementType = NusysConstants.ElementType.PDF;
 
-                    // create a list of strings which contain the image data for each page of the pdf
-                    List<string> pdfPages = new List<string>();
-
                     // read the contents of storageFile into a MUPDF Document
                     byte[] fileBytes;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
@@ -324,50 +321,49 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes)); 
-                    
-                    // convert each page of the pdf into an image file, and store it in the pdfPages list
+
+                    // set data to the file bytes
+                    data = Convert.ToBase64String(fileBytes);
+
+                    // read the fileBytes into a MuPDFDoc
+                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
+
+                    // foreach page
                     for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
                     {
-                        // set the pdf text by page for the current page number
+                        // add the text of the page to the list of text pdfTextByPage
                         pdfTextByPage.Add(MuPdfDoc.GetAllTexts(pageNumber));
-
-                        // get variables for drawing the page
-                        var pageSize = MuPdfDoc.GetPageSize(pageNumber);
-                        var width = pageSize.X;
-                        var height = pageSize.Y;
-
-                        // create an image to use for converting
-                        var image = new WriteableBitmap(width, height);
-
-                        // create a buffer to draw the page on
-                        IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
-                        buf.Length = image.PixelBuffer.Length;
-
-                        // draw the page onto the buffer
-                        MuPdfDoc.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-                        var ss = buf.AsStream();
-
-                        // copy the buffer to the image
-                        await ss.CopyToAsync(image.PixelBuffer.AsStream());
-                        image.Invalidate();
-
-                        // save the image as a file (temporarily)
-                        var x = await image.SaveAsync(NuSysStorages.SaveFolder);
-
-                        // use the system to convert the file to a byte array
-                        pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
-                        if (pageNumber == 0)
-                        {
-                            // if we are on the first apge, get thumbnails of the file from the system
-                            thumbnails = await MediaUtil.GetThumbnailDictionary(x);
-                        }
-
-                        // delete the image file that we saved
-                        await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
                     }
 
-                    data = JsonConvert.SerializeObject(pdfPages);
+                    // get variables for drawing the page
+                    var pageSize = MuPdfDoc.GetPageSize(0);
+                    var width = pageSize.X;
+                    var height = pageSize.Y;
+
+                    // create an image to use for converting
+                    var image = new WriteableBitmap(width, height);
+
+                    // create a buffer to draw the page on
+                    IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                    buf.Length = image.PixelBuffer.Length;
+
+                    // draw the page onto the buffer
+                    MuPdfDoc.DrawPage(0, buf, 0, 0, width, height, false);
+                    var ss = buf.AsStream();
+
+                    // copy the buffer to the image
+                    await ss.CopyToAsync(image.PixelBuffer.AsStream());
+                    image.Invalidate();
+
+                    // save the image as a file (temporarily)
+                    var x = await image.SaveAsync(NuSysStorages.SaveFolder);
+
+                    // get thumbnails of the file from the system
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(x);
+
+                    // delete the image file that we saved
+                    await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
