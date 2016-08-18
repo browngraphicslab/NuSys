@@ -96,10 +96,10 @@ namespace NuSysApp
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<DetailViewTabTemplate>();
-            SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
+            SessionController.Instance.ContentController.OnLibraryElementDelete += ContentControllerOnLibraryElementDelete;
         }
 
-        private void ContentController_OnElementDelete(LibraryElementModel element)
+        private void ContentControllerOnLibraryElementDelete(LibraryElementModel element)
         {
             RemoveTab(element.LibraryElementId);
             // set tab visibility to true if there is more than one
