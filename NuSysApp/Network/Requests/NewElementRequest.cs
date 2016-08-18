@@ -58,7 +58,27 @@ namespace NuSysApp
             CheckWasSuccessfull();
             //get and add the requested element model.
             var model = GetReturnedElementModel();
-            Debug.Assert(SessionController.Instance.AddElement(model));//make sure the adding was succesful
+            Task.Run(async delegate {
+                var success = await SessionController.Instance.AddElementAsync(model);
+                Debug.Assert(success == true);
+            });
+        }
+
+        /// <summary>
+        /// Adds the returned elelementModel to the current session.  
+        /// This will throw an exception if the request hasn't returned or wasn't successful. 
+        /// This async method will not return until the element has succesfully been added or been rejected.
+        /// Returns true if the element was added succesfully. 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> AddReturnedElementToSessionAsync()
+        {
+            CheckWasSuccessfull();
+            //get and add the requested element model.
+            var model = GetReturnedElementModel();
+            var success = await SessionController.Instance.AddElementAsync(model);
+            Debug.Assert(success == true);
+            return success;
         }
 
         /// <summary>
@@ -93,11 +113,8 @@ namespace NuSysApp
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
             var model = ElementModelFactory.DeserializeFromString(_message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
 
-            //make sure the library element model for this element exists
-            if (SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId) != null)
-            {
-                SessionController.Instance.AddElement(model);
-            }
+            var success = await SessionController.Instance.AddElementAsync(model);
+            Debug.Assert(success == true);
         }
     }
 

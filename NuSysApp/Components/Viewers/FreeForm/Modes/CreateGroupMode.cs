@@ -84,10 +84,14 @@ namespace NuSysApp
         private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             if (_hoveredNode == null)
+            {
                 return;
+            }
 
             if (!_isHovering)
+            {
                 return;
+            }
 
             var draggedView = (FrameworkElement) sender;
             draggedView.Opacity = 1;
@@ -104,11 +108,13 @@ namespace NuSysApp
             }
 
             if (id1 == id2)
+            {
                 return;
+            }
 
             var p = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(e.Position);
             p.X -= 150;
-            p.Y -= 150;
+            p.Y -= 150;//TODO not have this heere, factor out to half on a constantly-defined default width and height
 
             if (!SessionController.Instance.IdToControllers.ContainsKey(id1))
             {
@@ -141,15 +147,39 @@ namespace NuSysApp
                 draggedView.Visibility = Visibility.Collapsed;
                 _hoveredView.Visibility  = Visibility.Collapsed;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "New Collection"));
+                var newContentRequestArgs = new CreateNewContentRequestArgs()
+                {
+                    LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
+                    {
+                        LibraryElementId = newCollectionId,
+                        ContentId = contentId,
+                        AccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
+                        Title = "New Collection",
+                        LibraryElementType = NusysConstants.ElementType.Collection
+                    },
+                    ContentId =  contentId
+                };
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
+                var newCollectionRequest = new CreateNewContentRequest(newContentRequestArgs);//create and execute request fro new collection content and libraryElement
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newCollectionRequest);
+                newCollectionRequest.AddReturnedLibraryElementToLibrary();
 
-                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, false, new List<Windows.Foundation.Point>(), 380, 300, newCollectionId);
+                var newElementArgs = new NewElementRequestArgs()
+                {
+                    ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                    X = p.X,
+                    Y = p.Y,
+                    Height = Constants.DefaultNodeSize,
+                    Width = Constants.DefaultNodeSize,
+                    LibraryElementId = newCollectionId
+                };
+
+                var newElementRequest = new NewElementRequest(newElementArgs);//create new element request and execute and add to session
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
+                await newElementRequest.AddReturnedElementToSessionAsync();
 
                 await controller2.RequestMoveToCollection(contentId);
                 await controller1.RequestMoveToCollection(contentId);
-
 
                 _isHovering = false;
                 return;

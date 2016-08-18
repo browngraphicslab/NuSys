@@ -24,7 +24,7 @@ namespace NuSysApp
         {
             LibraryElementController = controller;
             Editable = true;
-            LibraryElementController.ContentChanged += ChangeContent;
+            LibraryElementController.ContentDataController.ContentDataUpdated += ChangeContent;
         }
 
         private void ChangeContent(object source, string contentData)

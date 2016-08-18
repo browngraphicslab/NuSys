@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Windows.UI.Text;
 using NusysIntermediate;
 
 
@@ -27,6 +28,7 @@ namespace NuSysApp
 {
     public sealed partial class ImageDetailHomeTabView : UserControl
     {
+        private NusysImageAnalysisModel _analysisModel;
         public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
             DataContext = vm;
@@ -35,8 +37,6 @@ namespace NuSysApp
             //Show hide region buttons need access to rectangle/audio wrapper for methods to work.
             xShowHideRegionButtons.Wrapper = xClippingWrapper;
 
-
-
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
             xClippingWrapper.Controller = vm.LibraryElementController;
@@ -44,6 +44,57 @@ namespace NuSysApp
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
+
+            Task.Run(async delegate
+            {
+                var request = new GetAnalysisModelRequest(vm.LibraryElementController.LibraryElementModel.ContentDataModelId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                _analysisModel = request.GetReturnedAnalysisModel() as NusysImageAnalysisModel;
+                UITask.Run(async delegate {
+                    SetImageAnalysis();
+                });
+            });
+        }
+
+        /// <summary>
+        /// Set information gained from cognitive image analysis.
+        /// </summary>
+        private void SetImageAnalysis()
+        {
+            if (_analysisModel != null)
+            {
+                //set description to caption with highest confidence
+                var descriptionlist = _analysisModel.Description.Captions.ToList();
+                var bestDescription = descriptionlist.OrderByDescending(x => x.Confidence).FirstOrDefault();
+                xDescription.Text = bestDescription.Text;
+
+                if (_analysisModel.Categories != null && _analysisModel.Categories.Any())
+                {
+                    //get categories and add the category if the score meets min confidence level
+                    var categorylist = _analysisModel.Categories.ToList();
+                    var categories =
+                        categorylist.Where(x => x.Score > Constants.MinConfidence).OrderByDescending(x => x.Score);
+                    foreach (var i in categories)
+                    {
+                        i.Name = i.Name.Replace("_", " ");
+                        i.Name.Trim();
+                    }
+                    xCategories.Text = string.Join(", ", categories.Select(category => string.Join(", ", category.Name)));
+                }
+
+
+                //get tag list and order them in order of confidence
+                var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
+
+
+            }
+            
+        }
+
+        private void MakeTag(string text)
+        {
+            var tag = new HyperlinkButton();
+
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
@@ -96,6 +147,18 @@ namespace NuSysApp
                         foreach (var suggestedRegion in analysisModel.Faces)
                         {
                             var rect = suggestedRegion.FaceRectangle;
+
+                            var metadataDict = new List<MetadataEntry>() ;
+
+                            if (suggestedRegion.Age != null)//to add the age to the future region
+                            {
+                                metadataDict.Add(new MetadataEntry("suggested_age",new List<string>() {suggestedRegion.Age.Value.ToString()},MetadataMutability.MUTABLE));
+                            }
+                            if (!string.IsNullOrEmpty(suggestedRegion.Gender))//to add the gender to the future region
+                            {
+                                metadataDict.Add(new MetadataEntry("suggested_gender", new List<string>() { suggestedRegion.Gender}, MetadataMutability.MUTABLE));
+                            }
+
                             if (rect == null || rect.Left == null || rect.Top == null || rect.Height == null || rect.Width == null)
                             {
                                 continue;
@@ -103,6 +166,7 @@ namespace NuSysApp
                             //create a temp region for every face
                             var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel);
                             var tempview = new TemporaryImageRegionView(tempvm);
+                            tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
                             xClippingWrapper.AddTemporaryRegion(tempview);
                         }
                     }

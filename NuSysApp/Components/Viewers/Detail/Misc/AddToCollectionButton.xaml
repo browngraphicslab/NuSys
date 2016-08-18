@@ -11,13 +11,13 @@
 
     <Border Grid.Row="1" Background="Transparent" Padding="5" Margin="0,0,0,0"
                 Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
-        <StackPanel>
+        <StackPanel Orientation="Horizontal">
             <Image x:Name="AddToCollection" PointerPressed="AddToCollection_OnPointerPressed"
                    ManipulationStarted="AddToCollection_OnManipulationStarted"
                    ManipulationDelta="AddToCollection_ManipulationDelta"
                    ManipulationCompleted="AddToCollection_ManipulationCompleted"
-                   ManipulationMode="TranslateX,TranslateY" Source="ms-appx:///Assets/dragtocollection icon.png" Height="25" Margin="0,0,15,0"/>
-            <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource color2}" FontSize="12" Margin="5">Drag To Collection</TextBlock>
+                   ManipulationMode="TranslateX,TranslateY" Source="ms-appx:///Assets/dragtocollection icon.png" Height="20"/>
+            <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource color2}" FontSize="12" Margin="5" Height="18"> Drag To Collection</TextBlock>
         </StackPanel>
     </Border>
 </UserControl>

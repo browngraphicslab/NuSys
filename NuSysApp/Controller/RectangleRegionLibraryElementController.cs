@@ -36,7 +36,7 @@ namespace NuSysApp
             SizeChanged?.Invoke(this, RectangleRegionModel.Width, RectangleRegionModel.Height);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("rectangle_height", height);
+                _debouncingDictionary.Add(NusysConstants.RECTANGLE_REGION_HEIGHT_KEY, height);
             }
         }
         public void SetWidth(double width)
@@ -45,7 +45,7 @@ namespace NuSysApp
             SizeChanged?.Invoke(this, RectangleRegionModel.Width, RectangleRegionModel.Height);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("rectangle_width", width);
+                _debouncingDictionary.Add(NusysConstants.RECTANGLE_REGION_WIDTH_KEY, width);
             }
         }
         public void SetLocation(Point topLeft)
@@ -55,7 +55,7 @@ namespace NuSysApp
             LocationChanged?.Invoke(this, new Point(RectangleRegionModel.TopLeftPoint.X, RectangleRegionModel.TopLeftPoint.Y));
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("rectangle_location", RectangleRegionModel.TopLeftPoint);
+                _debouncingDictionary.Add(NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY, RectangleRegionModel.TopLeftPoint);
             }
         }
 
@@ -66,17 +66,17 @@ namespace NuSysApp
         public override void UnPack(Message message)
         {
             SetBlockServerBoolean(true);
-            if (message.ContainsKey("rectangle_height"))
+            if (message.ContainsKey(NusysConstants.RECTANGLE_REGION_HEIGHT_KEY))
             {
-                SetHeight(message.GetDouble("rectangle_height"));
+                SetHeight(message.GetDouble(NusysConstants.RECTANGLE_REGION_HEIGHT_KEY));
             }
-            if (message.ContainsKey("rectangle_width"))
+            if (message.ContainsKey(NusysConstants.RECTANGLE_REGION_WIDTH_KEY))
             {
-                SetWidth(message.GetDouble("rectangle_width"));
+                SetWidth(message.GetDouble(NusysConstants.RECTANGLE_REGION_WIDTH_KEY));
             }
-            if (message.ContainsKey("rectangle_location"))
+            if (message.ContainsKey(NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY))
             {
-                var pointString = message.GetString("rectangle_location");
+                var pointString = message.GetString(NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY);
                 var point = JsonConvert.DeserializeObject<Point>(pointString);
                 SetLocation(point);
             }

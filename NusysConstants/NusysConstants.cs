@@ -358,9 +358,14 @@ namespace NusysIntermediate
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
+
+                /// <summary>
+                /// the key that will hold the serialized dictionary from string to metadataentry when creating a new library element
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY = "metadata";
         #endregion NewLibraryElementRequest
 
-            #region CreateNewMetadataRequest
+        #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
@@ -397,8 +402,16 @@ namespace NusysIntermediate
             /// key in message for signifying which entry should be deleted
             /// </summary>
             public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
-            #endregion DeleteMetadataRequest
+        #endregion DeleteMetadataRequest
 
+            #region  GetUserIdToDisplayNameDictionaryRequest
+
+            /// <summary>
+            /// The key used to hold the json-stringified version of the user Id to display name dictionary for the returning GetUserIdToDisplayNameDictionaryRequest
+            /// </summary>
+            public static readonly string GET_USER_ID_TO_DISPLAY_NAME_DICTIONARY_REQUEST_RETURNED_DICTIONARY = "returned_dictionary";
+
+            #endregion  GetUserIdToDisplayNameDictionaryRequest
 
             #region UpdateMetadataRequest
             /// <summary>
@@ -406,16 +419,16 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "metadata_library_id";
 
-            /// <summary>
-            /// key in message for signifying which entry should be edited
-            /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
+                    /// <summary>
+                    /// key in message for signifying which entry should be edited
+                    /// </summary>
+                    public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "metadata_key_string";
 
-            /// <summary>
-            /// key in message for signifying the new value for the entry
-            /// </summary>
-            public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "metadata_value_string";
-            #endregion UpdateMetadataRequest
+                    /// <summary>
+                    /// key in message for signifying the new value for the entry
+                    /// </summary>
+                    public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "metadata_value_string";
+                    #endregion UpdateMetadataRequest
 
             #region GetAnalysisModelRequest
             /// <summary>
@@ -430,109 +443,123 @@ namespace NusysIntermediate
 
             #endregion GetAnalysisModelRequest
 
-        #region CreateNewPresentationLinkRequest
-        /// <summary>
-        /// The key for sending the link id for the create new presentation link request
-        /// </summary>
-        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
-
-        /// <summary>
-        /// The key for sending the link IN id for the create new presentation link request
-        /// </summary>
-        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
-
-        /// <summary>
-        /// The key for sending the link OUT id for the create new presentation link request
-        /// </summary>
-        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
-
-        /// <summary>
-        /// The key for sending the parent collection id for the create new presentation link request
-        /// </summary>
-        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
-
-        /// <summary>
-        /// The key for sending the annotation for the create new presentation link request
-        /// </summary>
-        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
-
-        /// <summary>
-        /// The key for sending the annotation for the create new presentation link request
-        /// </summary>
-        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
-
-        #endregion CreateNewPresentationLinkRequest
-
-        #region DeletePresentationLinkRequest
-        /// <summary>
-        /// The key for sending the link id for the delete presentation link request
-        /// </summary>
-        public static readonly string DELETE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
-        #endregion DeletePresentationLinkRequest
-
-        #region UpdatePresentationLinkRequest
-        /// <summary>
-        /// The key for sending the link id for the update presentation link request
-        /// </summary>
-        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
-
-        /// <summary>
-        /// The key for sending the link IN id for the update presentation link request
-        /// </summary>
-        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
-
-        /// <summary>
-        /// The key for sending the link OUT id for the update presentation link request
-        /// </summary>
-        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
-
-        /// <summary>
-        /// The key for sending the parent collection id for the update presentation link request
-        /// </summary>
-        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
-
-        /// <summary>
-        /// The key for sending the annotation for the update presentation link request
-        /// </summary>
-        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
-
-        /// <summary>
-        /// The key for sending the annotation for the update presentation link request
-        /// </summary>
-        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
-        #endregion UpdatePresentationLinkRequest
-
-        #region UpdateContentRequest
-        /// <summary>
-        /// The key for sending the id of the content to update
-        /// </summary>
-        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id";
-
-        /// <summary>
-        /// The key for sending the type of the content to update
-        /// </summary>
-        public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type";
-
-        /// <summary>
-        /// The key for sending the new content
-        /// </summary>
-        public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_type";
-        
-        #endregion UpdateContentRequest
-
-
-        #region ChatRequest
-
-        /// <summary>
-        /// Key in message for sending user id in chat requests
-        /// </summary>
-        public static readonly string CHAT_REQUEST_USER_ID_KEY="user";
+            #region CreateNewPresentationLinkRequest
+            /// <summary>
+            /// The key for sending the link id for the create new presentation link request
+            /// </summary>
+            public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
 
             /// <summary>
-            /// Key in message for sending chat messages in chat requests
+            /// The key for sending the link IN id for the create new presentation link request
             /// </summary>
-            public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
-        #endregion
+            public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+            /// <summary>
+            /// The key for sending the link OUT id for the create new presentation link request
+            /// </summary>
+            public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+            /// <summary>
+            /// The key for sending the parent collection id for the create new presentation link request
+            /// </summary>
+            public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+            /// <summary>
+            /// The key for sending the annotation for the create new presentation link request
+            /// </summary>
+            public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+            /// <summary>
+            /// The key for sending the annotation for the create new presentation link request
+            /// </summary>
+            public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+
+            #endregion CreateNewPresentationLinkRequest
+
+            #region DeletePresentationLinkRequest
+            /// <summary>
+            /// The key for sending the link id for the delete presentation link request
+            /// </summary>
+            public static readonly string DELETE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+            #endregion DeletePresentationLinkRequest
+
+            #region UpdatePresentationLinkRequest
+            /// <summary>
+            /// The key for sending the link id for the update presentation link request
+            /// </summary>
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+            /// <summary>
+            /// The key for sending the link IN id for the update presentation link request
+            /// </summary>
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+            /// <summary>
+            /// The key for sending the link OUT id for the update presentation link request
+            /// </summary>
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+            /// <summary>
+            /// The key for sending the parent collection id for the update presentation link request
+            /// </summary>
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+            /// <summary>
+            /// The key for sending the annotation for the update presentation link request
+            /// </summary>
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+            /// <summary>
+            /// The key for sending the annotation for the update presentation link request
+            /// </summary>
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+            #endregion UpdatePresentationLinkRequest
+
+            #region UpdateContentRequest
+
+            /// <summary>
+            /// The key for sending the id of the content to update
+            /// </summary>
+            public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id";
+
+            /// <summary>
+            /// The key for sending the type of the content to update
+            /// </summary>
+            public static readonly string UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type";
+
+            /// <summary>
+            /// The key for sending the new content
+            /// </summary>
+            public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_id_key";
+        
+            #endregion UpdateContentRequest
+
+
+        #region CreateSnapshotOfCollectionRequest
+        /// <summary>
+        /// The key for sending the id of the collection you wish to take a snapshot of
+        /// </summary>
+        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_COLLECTION_ID = "collection_id";
+
+        /// <summary>
+        /// The key used by the server to send to clients the library element model of the newly created collection
+        /// </summary>
+        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_RETURNED_COLLECTION_LIBRARY_ELEMENT_MODEL = "returned_collection_library_element_model";
+        #endregion CreateShapshotOfCollectionRequest
+
+
+            #region ChatRequest
+
+            /// <summary>
+            /// Key in message for sending user id in chat requests
+            /// </summary>
+            public static readonly string CHAT_REQUEST_USER_ID_KEY="user";
+
+                /// <summary>
+                /// Key in message for sending chat messages in chat requests
+                /// </summary>
+                public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
+            #endregion
 
         #endregion RequestKeys
 
@@ -558,267 +585,267 @@ namespace NusysIntermediate
 
             #endregion NotificationKeys
 
-            #region NotificationManagementKeys
+        #region NotificationManagementKeys
 
-            /// <summary>
-            /// the string key used to identify the notification type of a notification being sent. 
-            /// the value for this key should be an stringified NotificationType with the .ToString() method called
-            /// </summary>
-            public static readonly string NOTIFICATION_TYPE_STRING_KEY = "notification_type";
+        /// <summary>
+        /// the string key used to identify the notification type of a notification being sent. 
+        /// the value for this key should be an stringified NotificationType with the .ToString() method called
+        /// </summary>
+        public static readonly string NOTIFICATION_TYPE_STRING_KEY = "notification_type";
 
-            #endregion NotificationManagementKeys
+        #endregion NotificationManagementKeys
 
-            #region SQLColumnNames
+        #region SQLColumnNames
 
-            #region alias
-
-            /// <summary>
-            /// 32 character string, aka an ID.  
-            /// </summary>
-            public static readonly string ALIAS_ID_KEY = "alias_id";
-
-            /// <summary>
-            /// 32 character string, aka an ID. 
-            /// the library element ID that this alias points to
-            /// </summary>
-            public static readonly string ALIAS_LIBRARY_ID_KEY = "library_id";
-
-            /// <summary>
-            /// double, the x coordinate of this alias
-            /// </summary>
-            public static readonly string ALIAS_LOCATION_X_KEY = "x";
-
-            /// <summary>
-            /// double, the y coordinate of this alias
-            /// </summary>
-            public static readonly string ALIAS_LOCATION_Y_KEY = "y";
-
-            /// <summary>
-            /// double, the width of this alias
-            /// </summary>
-            public static readonly string ALIAS_SIZE_WIDTH_KEY = "width";
-
-            /// <summary>
-            /// double, the height of this alias
-            /// </summary>
-            public static readonly string ALIAS_SIZE_HEIGHT_KEY = "height";
-
-            /// <summary>
-            /// 32 character string, aka an ID.  
-            /// the id of the user who created the alias
-            /// </summary>
-            public static readonly string ALIAS_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+        #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
-        /// the id of the collection that this alias belongs inside of
         /// </summary>
-        public static readonly string ALIAS_CREATOR_ID_KEY = "creator_user_id";
+        public static readonly string ALIAS_ID_KEY = "alias_id";
 
         /// <summary>
-        /// 32 character string  
-        /// Represents the level of access.
+        /// 32 character string, aka an ID. 
+        /// the library element ID that this alias points to
         /// </summary>
-        public static readonly string ALIAS_ACCESS_KEY = "access";
+        public static readonly string ALIAS_LIBRARY_ID_KEY = "library_id";
 
         /// <summary>
-        /// the dictionary from keys that are accepted and put into the Alias table to their type. 
-        /// the keys not included in this list are put into the properties table
+        /// double, the x coordinate of this alias
         /// </summary>
-        public static readonly Dictionary<string, Type> ALIAS_ACCEPTED_KEYS = new Dictionary<string, Type>()
-            {
-                {ALIAS_ID_KEY, typeof(string)},
-                { ALIAS_LIBRARY_ID_KEY, typeof(string)},
-                { ALIAS_LOCATION_X_KEY,typeof(float)},
-                { ALIAS_LOCATION_Y_KEY,typeof(float)},
-                {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
-                { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
-                { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
-                {  ALIAS_CREATOR_ID_KEY, typeof(string) },
-            {ALIAS_ACCESS_KEY, typeof(string) }
-            };
-
-            #endregion alias
-
-            #region libraryElementModel
-            /// <summary>
-            /// element type enum in string form.  call ElementType.ToString() to get this string when you have an elementtype variable
-            /// 32 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_TYPE_KEY = "type";
-
-            /// <summary>
-            /// 32 character string, aka an ID.  
-            /// the id of this library element
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_LIBRARY_ID_KEY = "library_id";
-
-            /// <summary>
-            /// 32 character string, aka an ID.  
-            /// the content that this library element points to
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_CONTENT_ID_KEY = "content_id";
-
-            /// <summary>
-            /// string that represents the json-stringified dictionary of keywords
-            /// approximately 2048 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_KEYWORDS_KEY = "keywords";
-
-            /// <summary>
-            /// string title for the library element
-            /// approximately 2048 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_TITLE_KEY = "title";
-
-            /// <summary>
-            /// boolean representing if the library element model is favorited
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_FAVORITED_KEY = "favorited";
-
-            /// <summary>
-            /// URL for the large icon for this library element model.  
-            /// approximately 512 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_LARGE_ICON_URL_KEY = "large_icon_url";
-
-            /// <summary>
-            /// URL for the medium icon for this library element model.  
-            /// approximately 512 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY = "medium_icon_url";
-
-            /// <summary>
-            /// URL for the small icon for this library element model.  
-            /// approximately 512 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_SMALL_ICON_URL_KEY = "small_icon_url";
-
-            /// <summary>
-            /// string id (NOT A REGULAR, 32-CHAR STRING ID) for the user creator of this object.
-            /// approximately 2048 characters max  
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_CREATOR_USER_ID_KEY = "creator_user_id";
-
-            /// <summary>
-            /// datetime-parseable string for the creation of the current libraryelementmodel. 
-            /// approximately 512 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY = "creation_timestamp";
-
-            /// <summary>
-            /// datetime-parseable string for the last edited time of the current libraryElementModel. 
-            /// approximately 512 characters max
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+        public static readonly string ALIAS_LOCATION_X_KEY = "x";
 
         /// <summary>
-        /// 32 character string  
-        /// Represents the level of access.
+        /// double, the y coordinate of this alias
         /// </summary>
-        public static readonly string LIBRARY_ELEMENT_ACCESS_KEY = "access";
+        public static readonly string ALIAS_LOCATION_Y_KEY = "y";
 
         /// <summary>
-        /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
-        /// the keys not included in this list are put into the properties table
+        /// double, the width of this alias
         /// </summary>
-        public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
-            {
-                {LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, typeof(string)},
-                { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
-                { LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_FAVORITED_KEY,typeof(bool)},
-                { LIBRARY_ELEMENT_TITLE_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_KEYWORDS_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
-                { LIBRARY_ELEMENT_ACCESS_KEY,typeof(string)},
-            };
-            #endregion libraryElementModel
-
-            #region metadata
-            /// <summary>
-            /// 32 character ID of the library element this metadata entry belongs to
-            /// </summary>
-            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "metadata_library_id";
-
-            /// <summary>
-            /// the string used as the name of the 'key' column for metadata.  
-            /// approximately 512 characters max
-            /// PROBABLY ONLY FOR SERVER-SIDE USE
-            /// </summary>
-            public static readonly string METADATA_KEY_COLUMN_KEY = "metadata_key_string";
-
-            /// <summary>
-            /// the string used as the name of the 'value' column for metadata.  
-            /// approximately 2048 characters max
-            /// PROBABLY ONLY FOR SERVER-SIDE USE
-            /// </summary>
-            public static readonly string METADATA_VALUE_COLUMN_KEY = "metadata_value_string";
+        public static readonly string ALIAS_SIZE_WIDTH_KEY = "width";
 
         /// <summary>
-        /// the string used as the name of the 'mutability' column for metadata.  
-        /// approximately 256 characters max
+        /// double, the height of this alias
+        /// </summary>
+        public static readonly string ALIAS_SIZE_HEIGHT_KEY = "height";
+
+        /// <summary>
+        /// 32 character string, aka an ID.  
+        /// the id of the user who created the alias
+        /// </summary>
+        public static readonly string ALIAS_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+    /// <summary>
+    /// 32 character string, aka an ID.  
+    /// the id of the collection that this alias belongs inside of
+    /// </summary>
+    public static readonly string ALIAS_CREATOR_ID_KEY = "creator_user_id";
+
+    /// <summary>
+    /// 32 character string  
+    /// Represents the level of access.
+    /// </summary>
+    public static readonly string ALIAS_ACCESS_KEY = "access";
+
+    /// <summary>
+    /// the dictionary from keys that are accepted and put into the Alias table to their type. 
+    /// the keys not included in this list are put into the properties table
+    /// </summary>
+    public static readonly Dictionary<string, Type> ALIAS_ACCEPTED_KEYS = new Dictionary<string, Type>()
+        {
+            {ALIAS_ID_KEY, typeof(string)},
+            { ALIAS_LIBRARY_ID_KEY, typeof(string)},
+            { ALIAS_LOCATION_X_KEY,typeof(float)},
+            { ALIAS_LOCATION_Y_KEY,typeof(float)},
+            {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
+            { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
+            { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
+            {  ALIAS_CREATOR_ID_KEY, typeof(string) },
+        {ALIAS_ACCESS_KEY, typeof(string) }
+        };
+
+        #endregion alias
+
+        #region libraryElementModel
+        /// <summary>
+        /// element type enum in string form.  call ElementType.ToString() to get this string when you have an elementtype variable
+        /// 32 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_TYPE_KEY = "type";
+
+        /// <summary>
+        /// 32 character string, aka an ID.  
+        /// the id of this library element
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// 32 character string, aka an ID.  
+        /// the content that this library element points to
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// string that represents the json-stringified dictionary of keywords
+        /// approximately 2048 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_KEYWORDS_KEY = "keywords";
+
+        /// <summary>
+        /// string title for the library element
+        /// approximately 2048 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_TITLE_KEY = "title";
+
+        /// <summary>
+        /// boolean representing if the library element model is favorited
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_FAVORITED_KEY = "favorited";
+
+        /// <summary>
+        /// URL for the large icon for this library element model.  
+        /// approximately 512 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_LARGE_ICON_URL_KEY = "large_icon_url";
+
+        /// <summary>
+        /// URL for the medium icon for this library element model.  
+        /// approximately 512 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY = "medium_icon_url";
+
+        /// <summary>
+        /// URL for the small icon for this library element model.  
+        /// approximately 512 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_SMALL_ICON_URL_KEY = "small_icon_url";
+
+        /// <summary>
+        /// string id (NOT A REGULAR, 32-CHAR STRING ID) for the user creator of this object.
+        /// approximately 2048 characters max  
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_CREATOR_USER_ID_KEY = "creator_user_id";
+
+        /// <summary>
+        /// datetime-parseable string for the creation of the current libraryelementmodel. 
+        /// approximately 512 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY = "creation_timestamp";
+
+        /// <summary>
+        /// datetime-parseable string for the last edited time of the current libraryElementModel. 
+        /// approximately 512 characters max
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+
+    /// <summary>
+    /// 32 character string  
+    /// Represents the level of access.
+    /// </summary>
+    public static readonly string LIBRARY_ELEMENT_ACCESS_KEY = "access";
+
+    /// <summary>
+    /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
+    /// the keys not included in this list are put into the properties table
+    /// </summary>
+    public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
+        {
+            {LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, typeof(string)},
+            { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
+            { LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_FAVORITED_KEY,typeof(bool)},
+            { LIBRARY_ELEMENT_TITLE_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_KEYWORDS_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_ACCESS_KEY,typeof(string)},
+        };
+        #endregion libraryElementModel
+
+        #region metadata
+        /// <summary>
+        /// 32 character ID of the library element this metadata entry belongs to
+        /// </summary>
+        public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "metadata_library_id";
+
+        /// <summary>
+        /// the string used as the name of the 'key' column for metadata.  
+        /// approximately 512 characters max
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
-        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "metadata_mutability_string";
+        public static readonly string METADATA_KEY_COLUMN_KEY = "metadata_key_string";
 
         /// <summary>
-        /// the list of all the column names for the metadata table.
+        /// the string used as the name of the 'value' column for metadata.  
+        /// approximately 2048 characters max
+        /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// </summary>
+        public static readonly string METADATA_VALUE_COLUMN_KEY = "metadata_value_string";
+
+    /// <summary>
+    /// the string used as the name of the 'mutability' column for metadata.  
+    /// approximately 256 characters max
+    /// PROBABLY ONLY FOR SERVER-SIDE USE
+    /// </summary>
+    public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "metadata_mutability_string";
+
+    /// <summary>
+    /// the list of all the column names for the metadata table.
+    /// Should be populated by other constants as strings
+    /// </summary>
+    public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
+        {
+            METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY,
+            METADATA_KEY_COLUMN_KEY,
+            METADATA_VALUE_COLUMN_KEY,
+            METADATA_MUTABILITY_COLUMN_KEY
+        };
+        #endregion metadata
+
+        #region propertiesTable
+
+        /// <summary>
+        /// 32 character ID of the library element or alias that this property belongs to
+        /// </summary>
+        public static readonly string PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY = "library_or_alias_id";
+
+        /// <summary>
+        /// the string used as the name of the 'key' column for unique properties.  
+        /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// approximately 512 characters max
+        /// IF YOU CHANGE THIS STRING TO JUST 'key' IT WILL BREAK THE SQL STATEMENTS
+        /// </summary>
+        public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key_string";
+
+        /// <summary>
+        /// the string used as the name of the string 'value' column for properties.  
+        /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// approximately 2048 characters max
+        /// </summary>
+        public static readonly string PROPERTIES_STRING_VALUE_COLUMN_KEY = "string_value";
+
+        /// <summary>
+        /// the string used as the name of the numerical 'value' column for properties.  
+        /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// </summary>
+        public static readonly string PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY = "numerical_value";
+
+        /// <summary>
+        /// the string used as the name of the date 'value' column for properties.  
+        /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// </summary>
+        public static readonly string PROPERTIES_DATE_VALUE_COLUMN_KEY = "date_value";
+
+        /// <summary>
+        /// the list of all the column names for the properties table.
         /// Should be populated by other constants as strings
         /// </summary>
-        public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
-            {
-                METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY,
-                METADATA_KEY_COLUMN_KEY,
-                METADATA_VALUE_COLUMN_KEY,
-                METADATA_MUTABILITY_COLUMN_KEY
-            };
-            #endregion metadata
-
-            #region propertiesTable
-
-            /// <summary>
-            /// 32 character ID of the library element or alias that this property belongs to
-            /// </summary>
-            public static readonly string PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY = "library_or_alias_id";
-
-            /// <summary>
-            /// the string used as the name of the 'key' column for unique properties.  
-            /// PROBABLY ONLY FOR SERVER-SIDE USE
-            /// approximately 512 characters max
-            /// IF YOU CHANGE THIS STRING TO JUST 'key' IT WILL BREAK THE SQL STATEMENTS
-            /// </summary>
-            public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key_string";
-
-            /// <summary>
-            /// the string used as the name of the string 'value' column for properties.  
-            /// PROBABLY ONLY FOR SERVER-SIDE USE
-            /// approximately 2048 characters max
-            /// </summary>
-            public static readonly string PROPERTIES_STRING_VALUE_COLUMN_KEY = "string_value";
-
-            /// <summary>
-            /// the string used as the name of the numerical 'value' column for properties.  
-            /// PROBABLY ONLY FOR SERVER-SIDE USE
-            /// </summary>
-            public static readonly string PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY = "numerical_value";
-
-            /// <summary>
-            /// the string used as the name of the date 'value' column for properties.  
-            /// PROBABLY ONLY FOR SERVER-SIDE USE
-            /// </summary>
-            public static readonly string PROPERTIES_DATE_VALUE_COLUMN_KEY = "date_value";
-
-            /// <summary>
-            /// the list of all the column names for the properties table.
-            /// Should be populated by other constants as strings
-            /// </summary>
-            public static readonly HashSet<string> ACCEPTED_PROPERTIES_TABLE_KEYS = new HashSet<string>()
+        public static readonly HashSet<string> ACCEPTED_PROPERTIES_TABLE_KEYS = new HashSet<string>()
             {
                 PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
                 PROPERTIES_KEY_COLUMN_KEY,
@@ -826,161 +853,173 @@ namespace NusysIntermediate
                 PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
                 PROPERTIES_DATE_VALUE_COLUMN_KEY
             };
-            
-            /// <summary>
-            /// List of strings that cannot be used to populate the properties table.  
-            /// Keys used to manage Networking and Requests should not be stored as properties.  
-            /// This list should be populated by other constants.  
-            /// </summary>
-            public static readonly HashSet<string> ILLEGAL_PROPERTIES_TABLE_KEY_NAMES = new HashSet<string>()
+
+        /// <summary>
+        /// List of strings that cannot be used to populate the properties table.  
+        /// Keys used to manage Networking and Requests should not be stored as properties.  
+        /// This list should be populated by other constants.  
+        /// </summary>
+        public static readonly HashSet<string> ILLEGAL_PROPERTIES_TABLE_KEY_NAMES = new HashSet<string>()
             {
                 RETURN_AWAITABLE_REQUEST_ID_STRING,
                 REQUEST_TYPE_STRING_KEY,
-                ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY
+                ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY,
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                "system_sent_timestamp",
+                ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN,
+                "sender_user_id",
+                LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY,
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                PROPERTIES_KEY_COLUMN_KEY,
+                PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
+                PROPERTIES_STRING_VALUE_COLUMN_KEY,
+                PROPERTIES_DATE_VALUE_COLUMN_KEY,
             };
 
-            #endregion propertiesTable
 
-            #region Content
-            /// <summary>
-            /// 32 character ID of the content
-            /// </summary>
-            public static readonly string CONTENT_TABLE_CONTENT_ID_KEY = "content_id";
+        #endregion propertiesTable
 
-            /// <summary>
-            /// 32 character type of content. e.g. image, video, pdf
-            /// </summary>
-            public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
+        #region Content
+        /// <summary>
+        /// 32 character ID of the content
+        /// </summary>
+        public static readonly string CONTENT_TABLE_CONTENT_ID_KEY = "content_id";
 
-            /// <summary>
-            /// varchar url of the content. MAX
-            /// </summary>
-            public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
+        /// <summary>
+        /// 32 character type of content. e.g. image, video, pdf
+        /// </summary>
+        public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
 
-            /// <summary>
-            /// the list of keys that will safely be entered into the contents table.  
-            /// Use this to make sure that you're entering correct keys into the database
-            /// </summary>
-            public static readonly HashSet<string> ACCEPTED_CONTENT_TABLE_KEYS = new HashSet<string>()
+        /// <summary>
+        /// varchar url of the content. MAX
+        /// </summary>
+        public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
+
+        /// <summary>
+        /// the list of keys that will safely be entered into the contents table.  
+        /// Use this to make sure that you're entering correct keys into the database
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_CONTENT_TABLE_KEYS = new HashSet<string>()
+        {
+            CONTENT_TABLE_CONTENT_ID_KEY,
+            CONTENT_TABLE_TYPE_KEY,
+            CONTENT_TABLE_CONTENT_URL_KEY
+        };
+        #endregion Content
+
+        #region Users
+
+
+        /// <summary>
+        /// key that represents  the doubly-hashed username that will be used to log in with.
+        /// </summary>
+        public static readonly string USERS_TABLE_HASHED_USER_ID_KEY = "user_id";
+
+        /// <summary>
+        /// key that represents  the doubly-hashed password that will be used to log in with.
+        /// </summary>
+        public static readonly string USERS_TABLE_HASHED_PASSWORD_KEY = "user_password";
+
+        /// <summary>
+        /// key that represents the unhashed display name for the user.  
+        /// ~max 2048 chars
+        /// </summary>
+        public static readonly string USERS_TABLE_USER_DISPLAY_NAME_KEY = "display_name";
+
+        /// <summary>
+        /// key that represents salt applied to the user's password after single hashing
+        /// </summary>
+        public static readonly string USERS_TABLE_SALT_KEY = "user_salt_key";
+
+        /// <summary>
+        /// key that represents josn-serialized last ten workspaces visited.  ~max 2048 chars
+        /// </summary>
+        public static readonly string USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY = "last_visited_collections";
+
+        /// <summary>
+        /// the list of keys that will safely be entered into the users table.  
+        /// Use this to make sure that you're entering correct keys into the database
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_USERS_TABLE_KEYS = new HashSet<string>()
             {
-                CONTENT_TABLE_CONTENT_ID_KEY,
-                CONTENT_TABLE_TYPE_KEY,
-                CONTENT_TABLE_CONTENT_URL_KEY
-            };
-            #endregion Content
-
-            #region Users
-
-            /// <summary>
-            /// key that represents  the doubly-hashed username that will be used to log in with.
-            /// </summary>
-            public static readonly string USERS_TABLE_HASHED_USER_ID_KEY = "user_id";
-
-            /// <summary>
-            /// key that represents  the doubly-hashed password that will be used to log in with.
-            /// </summary>
-            public static readonly string USERS_TABLE_HASHED_PASSWORD_KEY = "user_password";
-
-            /// <summary>
-            /// key that represents the unhashed display name for the user.  
-            /// ~max 2048 chars
-            /// </summary>
-            public static readonly string USERS_TABLE_USER_DISPLAY_NAME_KEY = "display_name";
-
-            /// <summary>
-            /// key that represents salt applied to the user's password after single hashing
-            /// </summary>
-            public static readonly string USERS_TABLE_SALT_KEY = "user_salt_key";
-
-            /// <summary>
-            /// key that represents josn-serialized last ten workspaces visited.  ~max 2048 chars
-            /// </summary>
-            public static readonly string USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY = "last_visited_collections";
-
-            /// <summary>
-            /// the list of keys that will safely be entered into the users table.  
-            /// Use this to make sure that you're entering correct keys into the database
-            /// </summary>
-            public static readonly HashSet<string> ACCEPTED_USERS_TABLE_KEYS = new HashSet<string>()
-                {
-                    USERS_TABLE_HASHED_USER_ID_KEY,
-                    USERS_TABLE_HASHED_PASSWORD_KEY,
-                    USERS_TABLE_USER_DISPLAY_NAME_KEY,
-                    USERS_TABLE_SALT_KEY,
-                    USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY
-                };
-
-            #endregion Users
-
-            #region PresentationLinks
-
-            /// <summary>
-            /// 32 character Id of the presentation link.
-            /// </summary>
-            public static readonly string PRESENTATION_LINKS_TABLE_LINK_ID_KEY = "link_id";
-
-            /// <summary>
-            ///  32 character Id of the presentation link's In-Element ElementId;
-            /// </summary>
-            public static readonly string PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY = "link_in_element_id";
-
-            /// <summary>
-            ///  32 character Id of the presentation link's Out-Element ElementId;
-            /// </summary>
-            public static readonly string PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY = "link_out_element_id";
-
-            /// <summary>
-            ///  32 character Id of the presentation link's parent collection Id.
-            /// </summary>
-            public static readonly string PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY = "parent_collection_id";
-
-            /// <summary>
-            ///  max 2048 character string that will be the presentation link's annotation string.
-            /// </summary>
-            public static readonly string PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY = "annotation";
-
-            /// <summary>
-            /// the list of keys that will safely be entered into the presentation links table.  
-            /// Use this to make sure that you're entering correct keys into the database
-            /// </summary>
-            public static readonly HashSet<string> ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS = new HashSet<string>()
-            {
-                PRESENTATION_LINKS_TABLE_LINK_ID_KEY,
-                PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY,
-                PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY,
-                PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY,
-                PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY
+                USERS_TABLE_HASHED_USER_ID_KEY,
+                USERS_TABLE_HASHED_PASSWORD_KEY,
+                USERS_TABLE_USER_DISPLAY_NAME_KEY,
+                USERS_TABLE_SALT_KEY,
+                USERS_TABLE_LAST_TEN_COLLECTIONS_USED_KEY
             };
 
-            #endregion PresentationLinks
+        #endregion Users
 
-            #region AnalysisModels
+        #region PresentationLinks
 
-            /// <summary>
-            /// 32 character string ID of the analysis model in the row.
-            /// </summary>
-            public static readonly string ANALYIS_MODELS_TABLE_CONTENT_ID_KEY = "content_id";
+        /// <summary>
+        /// 32 character Id of the presentation link.
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_TABLE_LINK_ID_KEY = "link_id";
 
-            /// <summary>
-            /// the json-serializeed string that is the analysis model for the contentId;
-            /// </summary>
-            public static readonly string ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY = "analysis_model";
+        /// <summary>
+        ///  32 character Id of the presentation link's In-Element ElementId;
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY = "link_in_element_id";
 
-            /// <summary>
-            /// the list of keys that will safely be entered into the analysis models table.  
-            /// Use this to make sure that you're entering correct keys into the database
-            /// </summary>
-            public static readonly HashSet<string> ACCEPTED_ANALYSIS_MODELS_TABLE_KEYS = new HashSet<string>()
-            {
-                ANALYIS_MODELS_TABLE_CONTENT_ID_KEY,
-                ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY,
-            };
+        /// <summary>
+        ///  32 character Id of the presentation link's Out-Element ElementId;
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY = "link_out_element_id";
 
-            #endregion AnalysisModels
+        /// <summary>
+        ///  32 character Id of the presentation link's parent collection Id.
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        ///  max 2048 character string that will be the presentation link's annotation string.
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY = "annotation";
+
+        /// <summary>
+        /// the list of keys that will safely be entered into the presentation links table.  
+        /// Use this to make sure that you're entering correct keys into the database
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS = new HashSet<string>()
+        {
+            PRESENTATION_LINKS_TABLE_LINK_ID_KEY,
+            PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY,
+            PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY,
+            PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY,
+            PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY
+        };
+
+        #endregion PresentationLinks
+
+        #region AnalysisModels
+
+        /// <summary>
+        /// 32 character string ID of the analysis model in the row.
+        /// </summary>
+        public static readonly string ANALYIS_MODELS_TABLE_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// the json-serializeed string that is the analysis model for the contentId;
+        /// </summary>
+        public static readonly string ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY = "analysis_model";
+
+        /// <summary>
+        /// the list of keys that will safely be entered into the analysis models table.  
+        /// Use this to make sure that you're entering correct keys into the database
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_ANALYSIS_MODELS_TABLE_KEYS = new HashSet<string>()
+        {
+            ANALYIS_MODELS_TABLE_CONTENT_ID_KEY,
+            ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY,
+        };
+
+        #endregion AnalysisModels
 
 
 
-        #endregion SQLColumnNames
+    #endregion SQLColumnNames
 
         #region SQLTableNames
 
@@ -1213,20 +1252,18 @@ namespace NusysIntermediate
         public enum AccessType
         {
             /// <summary>
-            /// This accesstype means that everyone on your server can see and edit this object
-            /// </summary>
-            Public, 
-
-            /// <summary>
             /// This accesstype means that only the creator of the object can see or edit this object.
             /// </summary>
-            Private,
-
+            Private = 0,
             /// <summary>
             /// this accesstype is (as of 8/12/16) limited to just Collections.  
             /// It is meant that everyone on your server can see this object, but only the creator can edit it.  
             /// </summary>
-            ReadOnly
+            ReadOnly = 1,
+            /// <summary>
+            /// This accesstype means that everyone on your server can see and edit this object
+            /// </summary>
+            Public = 2
         }
 
         /// <summary>
@@ -1261,6 +1298,7 @@ namespace NusysIntermediate
             DeletePresentationLinkRequest,
             UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
+            CreateSnapshotOfCollectionRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
@@ -1288,7 +1326,13 @@ namespace NusysIntermediate
             /// this request will get you all of the library elements that exist.  
             /// However, no contents will be loaded with this request
             /// </summary>
-            GetAllLibraryElementsRequest
+            GetAllLibraryElementsRequest,
+
+            /// <summary>
+            /// request used to fetch the dictionary of ALL user ID's to DisplayNames.  
+            /// This will be used to show the display names of people instead of the seemingly random hash
+            /// </summary>
+            GetUserIdToDisplayNameDictionaryRequest
         }
 
         /// <summary>

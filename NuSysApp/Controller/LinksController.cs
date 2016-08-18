@@ -102,7 +102,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var linkables = GetInstancesOfContent(libraryElementController.ContentId);
+                var linkables = GetInstancesOfLibraryElement(libraryElementController.LibraryElementModel.LibraryElementId);
                 foreach (var toLinkTo in linkables)
                 {
                     var linkLibElemController = GetLinkLibraryElementControllerBetweenLinkables(linkable, toLinkTo);
@@ -202,40 +202,19 @@ namespace NuSysApp
             return _contentIdToLinkContentIds[contentId];
         }
 
-        public async Task RequestLink(Message m)
-        {
-            Debug.Assert(m.ContainsKey("id1"));
-            Debug.Assert(m.ContainsKey("id2"));
-            // don't create a link between two library element models, if there is already a link
-            // element controller between them
-            if(
-                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id1")) != null &&
-                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id2")) != null &&
-                GetLinkLibraryElementControllerBetweenContent(m.GetString("id1"), m.GetString("id2")) != null)
-            {
-                return;
-            }
-            m["title"] = m["title"] ?? "Unnamed Link";
-            var contentId = SessionController.Instance.GenerateId();
-            m["contentId"] = contentId;
-            var request = new NewLinkRequest(m);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo(contentId);
-        }
-
         /// <summary>
-        /// To remove all the visual links from a content
+        /// To remove all the visual links from a libraryElementController
         /// </summary>
         /// <param name="content"></param>
-        public void RemoveContent(LibraryElementController content)
+        public void RemoveContent(LibraryElementController libraryElementController)
         {
-            var libraryElementId = content?.LibraryElementModel?.LibraryElementId;
+            var libraryElementId = libraryElementController?.LibraryElementModel?.LibraryElementId;
             Debug.Assert(libraryElementId != null);
-            Debug.Assert(content?.LibraryElementModel != null);
-            if (content.LibraryElementModel.Type == NusysConstants.ElementType.Link)
+            Debug.Assert(libraryElementController?.LibraryElementModel != null);
+            if (libraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.Link)
             {
-                Debug.Assert(content.LibraryElementModel is LinkLibraryElementModel);
-                var linkLibraryElementModel = content.LibraryElementModel as LinkLibraryElementModel;
+                Debug.Assert(libraryElementController.LibraryElementModel is LinkLibraryElementModel);
+                var linkLibraryElementModel = libraryElementController.LibraryElementModel as LinkLibraryElementModel;
                 
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
@@ -246,7 +225,7 @@ namespace NuSysApp
                 _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
             }
 
-            DisposeContent(content.ContentId);
+            DisposeLibraryElement(libraryElementController.LibraryElementModel.LibraryElementId);
         }
 
         /// <summary>
@@ -471,7 +450,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
-        private IEnumerable<ILinkable> GetInstancesOfContent(string contentId)
+        private IEnumerable<ILinkable> GetInstancesOfLibraryElement(string contentId)
         {
             Debug.Assert(contentId != null);
             if (_contentIdToLinkableIds.ContainsKey(contentId))
@@ -533,30 +512,49 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// takes care of mapping when a content is removed
+        /// takes care of mapping when a LibraryElement is removed
         /// </summary>
-        /// <param name="contentId"></param>
-        private void DisposeContent(string contentId)
+        /// <param name="libraryElementId"></param>
+        private void DisposeLibraryElement(string libraryElementId)
         {
             HashSet<string> outObj;
-            _contentIdToLinkableIds.TryRemove(contentId, out outObj);
-            _contentIdToLinkContentIds.TryRemove(contentId, out outObj);
+            _contentIdToLinkableIds.TryRemove(libraryElementId, out outObj);
+            _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);
         }
 
-        private void RemoveLink(BezierLinkView view)
+        /// <summary>
+        /// Takes in a link id, and removes the link. takes care of firing linkremoved on both end points
+        /// </summary>
+        /// <param name="linkLibraryElementId"></param>
+        /// <returns>returns true if link was deleted successfully, false otherwise</returns>
+        public async Task<bool> RemoveLink(string linkLibraryElementId)
         {
-            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(view);
+            // get the linkLibraryElementController from the link id
+            var linkLibraryElementController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(linkLibraryElementId);
+
+            var request = new DeleteLibraryElementRequest(linkLibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            // if the request was performed successfully
+            if (request.DeleteLocally())
+            {
+                // get the library element controllers for each side of the link and fire the link removed events on them
+                var inLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.InAtomId;
+                var inLibElemController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(inLibraryElementId);
+                inLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+
+                var outLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.OutAtomId;
+                var outLibElemController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(outLibraryElementId);
+                outLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+
+                // return true because request was performed succesfully
+                return true;
+            }
+
+            // return false if the request was performed unsuccesfully
+            return false;
         }
-
-        //private ILinkable GetLinkableBetweenLinkables(ILinkable one, ILinkable two)
-        //{
-        //    Debug.Assert(one != null && _linkableIdToLinkIds.ContainsKey(one.Id));
-        //    var oneLinkables = _linkableIdToLinkIds[one];
-
-        //    Debug.Assert(one != null && _linkableIdToLinkIds.ContainsKey(one.Id));
-        //    var oneLinkables = _linkableIdToLinkIds[one];
-        //    _linkableIdToLinkIds
-        //}
 
     }
 }

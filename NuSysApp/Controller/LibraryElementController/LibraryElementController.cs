@@ -51,13 +51,11 @@ namespace NuSysApp
         }
 
         #region Events
-        public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void MetadataChangedEventHandler(object source);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void DeletedEventHandler(object sender);
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
-        public event ContentChangedEventHandler ContentChanged;
         public event MetadataChangedEventHandler MetadataChanged;
         public event EventHandler Disposed;
         public event EventHandler<string> TitleChanged;
@@ -86,6 +84,19 @@ namespace NuSysApp
             {
                 Debug.Assert(LibraryElementModel.ContentDataModelId != null);
                 return SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
+            }
+        }
+
+        /// <summary>
+        ///  returns the Content Data controllerfor the content data model for this library element controller's library elent model;
+        /// Will return null if it doesn't exist LOCALLY.  
+        /// </summary>
+        public ContentDataController ContentDataController
+        {
+            get
+            {
+                Debug.Assert(LibraryElementModel.ContentDataModelId != null);
+                return SessionController.Instance.ContentController.GetContentDataController(LibraryElementModel.ContentDataModelId);
             }
         }
 
@@ -153,21 +164,6 @@ namespace NuSysApp
         /// <param name="sender"></param>
         /// <param name="newCollectionLibraryId"></param>
         protected virtual void OnSessionControllerEnterNewCollectionStarting(object sender, string newCollectionLibraryId){ }
-
-        /// <summary>
-        /// This will change the library element model's data and update the server.  
-        /// Then it will fire an event notifying all listeners of the change
-        /// </summary>
-        public void SetContentData (string contentData)
-        {
-            //TODO add in checks and error handling for the line below
-            SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId).SetData(contentData);
-            ContentChanged?.Invoke(this, contentData);
-            if (!_blockServerInteraction)
-            {
-                _debouncingDictionary.Add("data", contentData);
-            }
-        }
 
         /// <summary>
         /// This will change the library element model's title and update the server.  
@@ -437,6 +433,10 @@ namespace NuSysApp
         /// </summary>
         public void AddKeyword(Keyword keyword)
         {
+            if (_libraryElementModel.Keywords == null)
+            {
+                _libraryElementModel.Keywords = new HashSet<Keyword>();
+            }
             _libraryElementModel.Keywords.Add(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
             if (!_blockServerInteraction)
@@ -602,10 +602,6 @@ namespace NuSysApp
                     ChangeMetadata(metadata);
                 }
             }
-            if (message.ContainsKey("data"))
-            {
-                SetContentData(message.GetString("data"));
-            }
             if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY))
             {
                 SetTitle(message.GetString(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY));
@@ -663,15 +659,6 @@ namespace NuSysApp
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        public string ContentId
-        {
-            get
-            {
-                Debug.Assert(LibraryElementModel?.LibraryElementId != null);
-                return LibraryElementModel.LibraryElementId;
-            }
-        }
-
         public void SetNetworkUser(NetworkUser user)
         {
             UserChanged?.Invoke(this, user);
@@ -688,24 +675,16 @@ namespace NuSysApp
         }
 
         #region Linking methods
-        public async Task RequestAddNewLink(string idToLinkTo, string title)
+        /// <summary>
+        /// Invokes the link removed method on the controller, should only be called if we
+        /// are assured that the link has been removed successfully
+        /// </summary>
+        /// <param name="linkLibraryElementID"></param>
+        public void InvokeLinkRemoved(string linkLibraryElementID)
         {
-            var m = new Message();
-            //these seem to be backwards, but it works, probably
-            m["id1"] = idToLinkTo; 
-            m["id2"] = LibraryElementModel.LibraryElementId;
-            m["title"] = title;
-            await SessionController.Instance.LinksController.RequestLink(m);
+            LinkRemoved?.Invoke(this, linkLibraryElementID);
         }
 
-        public void RequestRemoveLink(string linkLibraryElementID)
-        {
-            Debug.Assert(SessionController.Instance.LinksController.GetLinkableIdsOfContentIdInstances(linkLibraryElementID).Count() != 0);
-            LinkRemoved?.Invoke(this, linkLibraryElementID);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
-                new DeleteLibraryElementRequest(linkLibraryElementID));
-            
-        }
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
             var linkedIds = SessionController.Instance.LinksController.GetLinkedIds(LibraryElementModel.LibraryElementId);
@@ -776,14 +755,11 @@ namespace NuSysApp
 
             if (request.WasSuccessful() == true) //if it returned sucesssfully
             {
-                request.AddReturnedElementToSession();
+                await request.AddReturnedElementToSessionAsync();
                 return true;
             }
-            else
-            {
-                //maybe notify user
-                return false;
-            }
+            //maybe notify user
+            return false;
         }
 
     }

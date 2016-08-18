@@ -113,7 +113,7 @@ namespace NuSysApp
             if (vm.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
                 // xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X * ResizerTransform.ScaleX, 25);
+                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X * ResizerTransform.ScaleX, Math.Max(25, ResizerTransform.ScaleX));
 
             }
             //CHANGE IN HEIGHT
@@ -121,7 +121,7 @@ namespace NuSysApp
             if (vm.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
                 //   xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y * ResizerTransform.ScaleY, 25);
+                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y * ResizerTransform.ScaleY, 25 * ResizerTransform.ScaleY);
             }
 
             //Updates viewmodel

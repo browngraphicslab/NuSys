@@ -229,7 +229,7 @@ namespace NuSysApp
                 return;
             }
             vm.TextChanged -= VmOnTextBindingChanged;
-            vm.LibraryElementController.SetContentData(s);
+            vm.LibraryElementController.ContentDataController.SetData(s);
             vm.TextChanged += VmOnTextBindingChanged;
         }
 
@@ -256,7 +256,7 @@ namespace NuSysApp
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
                 var vm = (TextDetailHomeTabViewModel)DataContext;
-                vm.LibraryElementController.SetContentData(session.SpeechString);
+                vm.LibraryElementController.ContentDataController.SetData(session.SpeechString);
             }
             else
             {

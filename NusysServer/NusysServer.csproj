@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GemBox.Document, Version=25.3.30.1185, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
+      <HintPath>..\packages\GemBox.Document.25.3.30.1185\lib\net30\GemBox.Document.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -235,7 +239,9 @@
     <Compile Include="RequestHandlers\CreateNewLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
+    <Compile Include="RequestHandlers\CreateSnapshotOfCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteMetadataRequestHandler.cs" />

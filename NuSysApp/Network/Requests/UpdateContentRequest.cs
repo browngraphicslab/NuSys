@@ -34,11 +34,19 @@ namespace NuSysApp
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY));
             var contentId = _returnMessage.GetString(NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY);
             var updatedContent = _returnMessage.GetString(NusysConstants.UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY);
-            //TODO Update the content localy
+
+            //get the controller of the content data model that we want to update
+            var contentDataController = SessionController.Instance.ContentController.GetContentDataController(contentId);
+
+            if (contentDataController != null)
+            {
+                contentDataController.UpdateFromServer(updatedContent);
+            }
         }
 
         /// <summary>
-        /// This should be called when the server forwards the request to the client (except the client who initially created the request). It should update the content locally.
+        /// This should be called when the server forwards the request to the client (except the client who initially created the request). 
+        /// It should update the content locally.
         /// </summary>
         /// <returns></returns>
         public override async Task ExecuteRequestFunction()
@@ -47,8 +55,14 @@ namespace NuSysApp
             Debug.Assert(_message.ContainsKey(NusysConstants.UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY));
             var contentId = _message.GetString(NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY);
             var updatedContent = _message.GetString(NusysConstants.UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY);
-            //TODO Update the content localy
 
+            //get the controller of the content data model that we want to update
+            var contentDataController = SessionController.Instance.ContentController.GetContentDataController(contentId);
+
+            if (contentDataController != null)
+            {
+                contentDataController.UpdateFromServer(updatedContent);
+            }
         }
 
         /// <summary>

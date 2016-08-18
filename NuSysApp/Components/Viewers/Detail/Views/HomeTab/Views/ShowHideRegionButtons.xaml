@@ -10,8 +10,7 @@
     d:DesignWidth="400">
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-        <TextBlock Margin="10" Foreground="{StaticResource color3}">Regions Options</TextBlock>
-        <ComboBox x:Name="RegionsOptionsBox" BorderBrush="{StaticResource color3}" Width="250"  Margin="0,5,0,0" Foreground="{StaticResource color3}" >
+        <ComboBox x:Name="RegionsOptionsBox" BorderBrush="{StaticResource color3}" Width="250"  Margin="0,5,0,0" Foreground="{StaticResource color3}" PlaceholderText="-Regions options-">
             <ComboBoxItem Tapped="ShowRegionsOnTapped">
                 Show regions
             </ComboBoxItem>
@@ -20,9 +19,6 @@
             </ComboBoxItem>
             <ComboBoxItem Tapped="ShowChildrenOnTapped">
                 Show only children regions
-            </ComboBoxItem>
-            <ComboBoxItem Tapped="HideChildrenOnTapped">
-                Show all regions
             </ComboBoxItem>
         </ComboBox>
     </StackPanel>

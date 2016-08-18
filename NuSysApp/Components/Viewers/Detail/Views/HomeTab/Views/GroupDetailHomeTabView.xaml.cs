@@ -39,7 +39,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             DataContext = vm;
-            _libraryElementId = vm.LibraryElementController.ContentId;
+            _libraryElementId = vm.LibraryElementController.LibraryElementModel?.LibraryElementId;
 
             var model = vm.Model;
             //If same collection, disable enter collection button
@@ -104,7 +104,7 @@ namespace NuSysApp
 
         private void UpdateModelText(String s)
         {
-             ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.SetContentData(s);
+             ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.ContentDataController.SetData(s);
         }
 
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
@@ -211,8 +211,6 @@ namespace NuSysApp
 
         private void EnterCollectionButton_Click(object sender, RoutedEventArgs e)
         {
-
-            
             var id = ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.LibraryElementId;
             if (id != SessionController.Instance.ActiveFreeFormViewer.LibraryElementId)
             {

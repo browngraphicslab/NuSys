@@ -183,6 +183,7 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Gets the content data controller class for a contentDataModel Id that you pass in 
         /// returns null if the content controller doesn't exist
         /// </summary>
         /// <param name="contentId"></param>

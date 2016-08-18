@@ -31,6 +31,11 @@ namespace NuSysApp
             Canvas.SetZIndex(xButtonStack, 20);
         }
 
+        private void AddRegionButtonClicked(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         private async void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
@@ -81,6 +86,14 @@ namespace NuSysApp
             regionRequestArgs.LibraryElementType = type;
             regionRequestArgs.Title = "Region " + vm.CurrentElementController.Title; // TODO factor out this hard-coded string to a constant
             regionRequestArgs.ClippingParentLibraryId = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
+            if (PublicRegionButton.IsChecked == true)
+            {
+                regionRequestArgs.AccessType = NusysConstants.AccessType.Public;
+            }
+            else
+            {
+                regionRequestArgs.AccessType = NusysConstants.AccessType.Private;
+            }
 
             var request = new CreateNewLibraryElementRequest(regionRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

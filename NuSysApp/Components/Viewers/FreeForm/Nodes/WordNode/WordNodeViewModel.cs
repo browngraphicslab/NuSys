@@ -46,7 +46,7 @@ namespace NuSysApp
             var wnlec = controller?.LibraryElementController as WordNodeLibraryElementController;
             wnlec.Locked += LibraryElementController_Locked;
             wnlec.UnLocked += LibraryElementController_UnLocked;
-            controller.LibraryElementController.ContentChanged += ChangeContent;
+            controller.LibraryElementController.ContentDataController.ContentDataUpdated += ChangeContent;
         }
         private void ChangeContent(object source, string contentData)
         {

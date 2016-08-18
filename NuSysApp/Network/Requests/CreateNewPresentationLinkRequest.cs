@@ -103,7 +103,10 @@ namespace NuSysApp
             await AddPresentationLinkToLibrary(model);
         }
 
-        //just checks to see if the message contains an id to request
+        /// <summary>
+        /// just checks to see if the message contains the necessary keys
+        /// </summary>
+        /// <returns></returns>
         public override async Task CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY));

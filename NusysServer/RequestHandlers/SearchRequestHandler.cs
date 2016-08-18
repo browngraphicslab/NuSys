@@ -33,7 +33,8 @@ namespace NusysServer
             var query = message.Get<QueryArgs>(NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY);
             if (query.SearchString.Equals(""))
             {
-                message.Add(NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false);
+                message.Add(NusysConstants.REQUEST_SUCCESS_BOOL_KEY, true);
+                message[NusysConstants.SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY] = JsonConvert.SerializeObject(new List<SearchResult>());
                 return message;
             }
             //todo actually search and return a new search result

@@ -13,11 +13,11 @@ namespace NusysServer
         /// <summary>
         /// API Key used to submit requests to cognitive services computer vision api
         /// </summary>
-        public const string COMPUTER_VISION = "d670935ac1b94221be9288c5a2b3f307";
+        public const string COMPUTER_VISION = "32ef911520a34ebc981154a75bb922e0";
 
         /// <summary>
         /// API Key used to submit requests to cognitive services text analytics api
         /// </summary>
-        public const string TEXT_ANALYTICS = "06ae6c84d15140a7a39d62527d72ec88";
+        public const string TEXT_ANALYTICS = "7eb29bcf36b547e986427cb5f0076e41";
     }
 }

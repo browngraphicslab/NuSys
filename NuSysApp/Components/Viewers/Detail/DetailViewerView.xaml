@@ -202,13 +202,15 @@
                                         </ItemsControl.ItemsPanel>
                                     </ItemsControl>
                                 </Grid>
-                                <ItemsControl x:Name="Tags" Grid.Row="1" ItemsSource="{Binding Tags}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <local:WrapPanel/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
+                                <ScrollViewer Grid.Row="1">
+                                    <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <local:WrapPanel/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </ScrollViewer>
                             </Grid>
 
                         </Grid>
@@ -272,7 +274,7 @@
                     <TextBlock Text="change access controls" HorizontalAlignment="Center"  Foreground="{StaticResource color3}" FontSize="25" Margin="0,30,0,30" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"></TextBlock>
                     <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xPrivateRadioButton" Checked="XPrivateRadioButton_OnChecked" >Private</RadioButton>
                     <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xPublicRadioButton" Checked="XPublicRadioButton_OnChecked">Public</RadioButton>
-                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xReadOnlyRadioButton" Checked ="XReadOnlyRadioButton_OnChecked">Read-Only</RadioButton>
+                    <RadioButton Visibility="Collapsed"  Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xReadOnlyRadioButton" Checked ="XReadOnlyRadioButton_OnChecked">Read-Only</RadioButton>
                     <Button Margin="0,30,0,30" Background="{StaticResource color2}" Foreground="White"  Width="80" Height="40" HorizontalAlignment="Center" FontSize="20"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Click="OnSaveAccessClick">save</Button>
                 </StackPanel>
             </Grid>

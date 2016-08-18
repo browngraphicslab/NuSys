@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NusysIntermediate;
+using NuSysApp.Network.Requests;
 
 namespace NuSysApp
 {
@@ -56,7 +57,15 @@ namespace NuSysApp
             get { return DraggingGraphImage; }
         }
 
+        /// <summary>
+        /// Gets the instance of the speech to text box on the main canvas
+        /// </summary>
         public SpeechToTextBox SpeechToTextBox => xSpeechToTextBox;
+
+        /// <summary>
+        /// Gets the instance of the FileAddedAclsPopup from the main canvas
+        /// </summary>
+        public FileAddedAclsPopup FileAddedAclsPopup => xFileAddedAclesPopup;
 
         #endregion Private Members
 
@@ -100,6 +109,7 @@ namespace NuSysApp
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
 
             var l = WaitingRoomView.GetFirstLoadList();
             var firstId = WaitingRoomView.InitialWorkspaceId;
@@ -108,6 +118,7 @@ namespace NuSysApp
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
             xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
+            xFileAddedAclesPopup.DataContext = new FileAddedAclsPopupViewModel();
             xChatBox.DataContext = new ChatBoxViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
@@ -129,13 +140,28 @@ namespace NuSysApp
             {
                 UserLabel b = new UserLabel(user);
                 Users.Children.Add(b);
-                user.OnUserRemoved += delegate
+            });
+        }
+
+        /// <summary>
+        /// the private event handler for the NusysNetworkSession dropping a networkuser. 
+        /// The string will be the User ID of  the network user dropped.
+        /// </summary>
+        /// <param name="userId"></param>
+        private void DropNetworkUser(string userId)
+        {
+            UITask.Run(delegate
+            {
+                foreach (var child in Users.Children)
                 {
-                    UITask.Run(delegate
+                    var user = child as UserLabel;
+                    Debug.Assert(user != null);
+                    if (user.UserId == userId)
                     {
-                        Users.Children.Remove(b);
-                    });
-                };
+                        Users.Children.Remove(user);
+                        break;
+                    }
+                }
             });
         }
 
@@ -538,9 +564,8 @@ namespace NuSysApp
                 elementsLeft.Remove(element.Id);
                 return;
             }
-            var type = libraryModel.Type;
 
-            SessionController.Instance.AddElement(element);
+            await SessionController.Instance.AddElementAsync(element);
 
             ///add element
             elementsLeft.Remove(element.Id);
@@ -774,7 +799,10 @@ namespace NuSysApp
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         {
-            await StaticServerCalls.CreateSnapshot();
+            //await StaticServerCalls.CreateSnapshot();
+            CreateSnapshotOfCollectionRequest request = new CreateSnapshotOfCollectionRequest(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddSnapshotCollectionLocally();
         }
         private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
         {

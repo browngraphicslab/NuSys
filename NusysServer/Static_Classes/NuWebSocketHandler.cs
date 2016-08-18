@@ -121,7 +121,6 @@ namespace NusysServer
                     try
                     {
                         var success = RequestRouter.HandleRequest(new Message(dict), this);
-                        
                     }
                     catch (Exception e)
                     {
@@ -157,77 +156,7 @@ namespace NusysServer
             errorMessage[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message;
             Send(errorMessage.GetSerialized());
         }
-
-        /*
-public static void BroadcastContentUpdate(string id, IEnumerable<string> keysToUpdate,
-   HashSet<NuWebSocketHandler> ignoreHandlers = null)
-{
-   ignoreHandlers = ignoreHandlers ?? new HashSet<NuWebSocketHandler>();
-   if (id == null || ContentsHolder.Instance.Contents[id] == null)
-   {
-       return;
-   }
-   var dict = new Dictionary<string, object>();
-   var contentDict = ContentsHolder.Instance.Contents[id].Dictionary;
-
-   foreach (var key in keysToUpdate)
-   {
-       if (contentDict.ContainsKey(key))
-       {
-           dict[key] = contentDict[key];
-       }
-   }
-   dict["notification_type"] = "content_update";
-   dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-   dict["id"] = id;
-   foreach (var client in clients)
-   {
-       if (ignoreHandlers.Contains(client))
-       {
-           continue;
-       }
-       (client as NuWebSocketHandler)?.Send(dict);
-   }
-}*/
-        /*
-        public static void BroadcastContentDataUpdate(NusysContent content)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["notification_type"] = "content_data_update";
-            var id = content.GetID();
-            dict["id"] = id;
-            dict["data"] = content.GetData();
-
-            HashSet<string> set = new HashSet<string>();
-            if (Alias.ContentIdtoAliasesDictionary.ContainsKey(id))
-            {
-                foreach (var alias in Alias.ContentIdtoAliasesDictionary[id])
-                {
-                    set.Add(alias.Creator);
-                }
-            }
-            foreach (string collectionID in set)
-            {
-                if (ActiveClient.CollectionSubscriptions.ContainsKey(collectionID))
-                {
-                    foreach (var activeClient in ActiveClient.CollectionSubscriptions[collectionID])
-                    {
-                        activeClient.SocketHandler.Send(dict);
-                    }
-                }
-            }
-        }
-
-        public static void BroadcastContentAvailable(NusysContent content)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>(content.Dictionary);
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["notification_type"] = "content_available";
-            dict["id"] = content.GetID();
-            Broadcast(dict);
-        }*/
-
+        
         /// <summary>
         /// broadcasts a message to all clients except the ones in the exclusions list
         /// </summary>

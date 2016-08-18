@@ -292,10 +292,23 @@ namespace NuSysApp
         private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             await CloseDv();
+            if (AccessPopup.IsOpen)
+            {
+                AccessPopup.IsOpen = false;
+            }
         }
 
+        /// <summary>
+        /// Should be the only way the detail view is ever closed, fires all the detail view dispose events
+        /// </summary>
+        /// <returns></returns>
         public async Task CloseDv()
         {
+            // if the detail view is already hidden, don't fire dispose events, its creates null reference errors
+            if (Visibility == Visibility.Collapsed)
+            {
+                return;
+            }
             Visibility = Visibility.Collapsed;
             Dispose();
         }
@@ -461,13 +474,28 @@ namespace NuSysApp
 
         private void OnAccessClick(object sender, RoutedEventArgs e)
         {
-            if (AccessPopup.IsOpen == false)
+            AccessPopup.IsOpen = true;
+            
+            var vm = (DetailViewerViewModel) DataContext;
+            if (vm.CurrentElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
             {
-                AccessPopup.IsOpen = true;
+                xReadOnlyRadioButton.Visibility = Visibility.Visible;
+                if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
+                {
+                    xReadOnlyRadioButton.IsChecked = true;
+                }  
             }
             else
             {
-                AccessPopup.IsOpen = false;
+                xReadOnlyRadioButton.Visibility = Visibility.Collapsed;
+            }
+            if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+            {
+                xPrivateRadioButton.IsChecked = true;
+            }
+            if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
+            {
+                xPublicRadioButton.IsChecked = true;
             }
         }
 
