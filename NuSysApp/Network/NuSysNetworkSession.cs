@@ -210,8 +210,11 @@ namespace NuSysApp
                 case NusysConstants.RequestType.CreateNewPresentationLinkRequest:
                     request = new CreateNewPresentationLinkRequest(message);
                     break;
+                case NusysConstants.RequestType.UpdateContentRequest:
+                    request = new UpdateContentRequest(message);
+                    break;
                 default:
-                    throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
+                    throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }
             var systemDict = new Dictionary<string, object>();
             var systemIP = (string)((message.ContainsKey("system_sender_ip") ? message["system_sender_ip"] : ""));

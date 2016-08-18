@@ -358,9 +358,14 @@ namespace NusysIntermediate
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
-            #endregion NewLibraryElementRequest
 
-            #region CreateNewMetadataRequest
+                /// <summary>
+                /// the key that will hold the serialized dictionary from string to metadataentry when creating a new library element
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY = "metadata";
+        #endregion NewLibraryElementRequest
+
+        #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
@@ -1246,20 +1251,18 @@ namespace NusysIntermediate
         public enum AccessType
         {
             /// <summary>
-            /// This accesstype means that everyone on your server can see and edit this object
-            /// </summary>
-            Public, 
-
-            /// <summary>
             /// This accesstype means that only the creator of the object can see or edit this object.
             /// </summary>
-            Private,
-
+            Private = 0,
             /// <summary>
             /// this accesstype is (as of 8/12/16) limited to just Collections.  
             /// It is meant that everyone on your server can see this object, but only the creator can edit it.  
             /// </summary>
-            ReadOnly
+            ReadOnly = 1,
+            /// <summary>
+            /// This accesstype means that everyone on your server can see and edit this object
+            /// </summary>
+            Public = 2
         }
 
         /// <summary>

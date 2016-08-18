@@ -88,7 +88,7 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
 
                 //add the collection element after the sucessful request
-                elementRequest.AddReturnedElementToSession();
+                await elementRequest.AddReturnedElementToSession();
 
                 //if we haven't loaded this collection before
                 if (!SessionController.Instance.ContentController.ContainsContentDataModel( collectionController.ContentDataModelId))

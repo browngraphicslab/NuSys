@@ -471,22 +471,24 @@ namespace NuSysApp
                 request.DeleteLocally();
             });
 
-            //TODO fix this 817
-            var m = new Message();
-            m["id"] = model.LibraryElementId;
-            //m["data"] = model.Data;
-            m["small_thumbnail"] = model.SmallIconUrl;
-            m["medium_thumbnail"] = model.MediumIconUrl;
-            m["large_thumbnail"] = model.LargeIconUrl;
-            m["title"] = model.Title;
-            m["creator"] = model.Creator;
-            m["type"] = model.Type;
-            m["server_url"] = model.ServerUrl;
-            m["creation_timestamp"] = model.Timestamp;
-            m["last_edited_timestamp"] = model.LastEditedTimestamp;
 
-            //var action = new DeleteLibraryElementAction(m);
-            //DeleteClicked?.Invoke(this, action);
+            var args = new CreateNewLibraryElementRequestArgs();
+            args.LibraryElementId = model.LibraryElementId;
+            args.AccessType = model.AccessType;
+            args.Favorited = model.Favorited;
+            args.Keywords = model.Keywords;
+            args.Title = model.Title;
+            //args.Small_Thumbnail_Bytes = model.SmallIconUrl;
+            //args.Medium_Thumbnail_Bytes = model.MediumIconUrl;
+            //args.Large_Thumbnail_Bytes = model.LargeIconUrl;
+            args.Title = model.Title;
+            //args.Creator
+            args.LibraryElementType = model.Type;
+            args.ContentId = model.ContentDataModelId;
+          
+
+            var action = new DeleteLibraryElementAction(args);
+            DeleteClicked?.Invoke(this, action);
         }
     }
 

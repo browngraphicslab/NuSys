@@ -103,7 +103,9 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task<Dictionary<string, NusysConstants.AccessType>> GetAcls(IEnumerable<StorageFile> storageFiles)
         {
-            if (_vm == null)
+            // if the _vm is null then the datacontext hasn't been set, this should never happen
+            // if the storageFiles is empty don't show the pop up
+            if (_vm == null || !storageFiles.Any())
             {
                 return null;
             }

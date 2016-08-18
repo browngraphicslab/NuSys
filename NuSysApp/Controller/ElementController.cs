@@ -208,7 +208,7 @@ namespace NuSysApp
             // Set up the request, execute it, and add the new element to the session
             var request = new NewElementRequest(args);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            request.AddReturnedElementToSession();
+            await request.AddReturnedElementToSession();
 
         }
 
@@ -274,7 +274,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             //add the new element locally
-            request.AddReturnedElementToSession();
+            await request.AddReturnedElementToSession();
         }
 
         public ElementModel Model

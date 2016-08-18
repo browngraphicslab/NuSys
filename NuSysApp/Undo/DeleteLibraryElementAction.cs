@@ -12,17 +12,18 @@ namespace NuSysApp
     public class DeleteLibraryElementAction : IUndoable
     {
 
-        //private Message _message;
+        private CreateNewLibraryElementRequestArgs _args;
 
         /// <summary>
         /// Message must contain fields for id, data, small_thumbnail, medium_thumbnail, large_thumbnail,
         /// type, title, server_url, creation_timestamp, last_edited_timestamp
         /// </summary>
         /// <param name="m"></param>
-        public DeleteLibraryElementAction()
+        public DeleteLibraryElementAction(CreateNewLibraryElementRequestArgs args)
         {
             //TODO FIX THIS 817
-           // _message = m;
+            // _message = m;
+            _args = args;
         }
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace NuSysApp
         public IUndoable GetInverse()
         {
             // return new CreateLibraryElementAction(_message);
-            return null;
+            return new CreateLibraryElementAction(_args);
         }
 
         /// <summary>
@@ -40,8 +41,8 @@ namespace NuSysApp
         /// </summary>
         public void ExecuteAction()
         {
-           // var request = new DeleteLibraryElementRequest(_message);
-           // SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            var request = new DeleteLibraryElementRequest(_args.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
     }
 }
