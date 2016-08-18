@@ -763,7 +763,7 @@ namespace NuSysApp
 
             if (request.WasSuccessful() == true) //if it returned sucesssfully
             {
-                request.AddReturnedElementToSession();
+                await request.AddReturnedElementToSession();
                 return true;
             }
             else

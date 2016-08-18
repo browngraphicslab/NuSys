@@ -504,7 +504,7 @@ namespace NuSysApp
                     }
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    request.AddReturnedElementToSession();
+                    await request.AddReturnedElementToSession();
                 }
                 else
                 {
@@ -678,7 +678,7 @@ namespace NuSysApp
             };
             var elementRequest = new NewElementRequest(newElementRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
-            elementRequest.AddReturnedElementToSession();
+            await elementRequest.AddReturnedElementToSession();
             
             // We then populate this new collection with instances of the all the search results
             if (ListContainer.Children[0] == _libraryList)
@@ -704,7 +704,7 @@ namespace NuSysApp
                         };
                         var embeddedElementRequest = new NewElementRequest(elementRequestArgs);
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(embeddedElementRequest);
-                        embeddedElementRequest.AddReturnedElementToSession();
+                        await embeddedElementRequest.AddReturnedElementToSession();
                     }
                     
                 }

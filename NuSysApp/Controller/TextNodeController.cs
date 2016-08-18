@@ -29,7 +29,7 @@ namespace NuSysApp
         public override void Dispose()
         {
            
-            if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
+            if (LibraryElementController.ContentDataController != null)
             {
                 LibraryElementController.ContentDataController.ContentDataUpdated -= ContentChanged;
             }
