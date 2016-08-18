@@ -85,16 +85,30 @@ namespace NuSysApp
 
                 //get tag list and order them in order of confidence
                 var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
-
-
+                foreach (var i in taglist)
+                {
+                    var tag = MakeSuggestedTag(i.Name);
+                    xTags?.Items?.Add(tag);
+                }
             }
             
         }
 
-        private void MakeTag(string text)
+        private FrameworkElement MakeSuggestedTag(string text)
         {
-            var tag = new HyperlinkButton();
+            HyperlinkButton tag;
+            tag = new HyperlinkButton();
+            tag.Content = text;
+            tag.FontStyle = FontStyle.Italic;
+            tag.Foreground = new SolidColorBrush(Constants.color3);
+            tag.Tapped += SuggestedTag_OnTapped;
 
+            return tag;
+        }
+
+        private void SuggestedTag_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
