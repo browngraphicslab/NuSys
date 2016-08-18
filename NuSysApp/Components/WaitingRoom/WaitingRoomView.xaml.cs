@@ -336,6 +336,7 @@ namespace NuSysApp
                 _selectedCollection =
                     SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
                 //set properties in preview window
+                SelectedCollectionTitle.Text = _selectedCollection.Title;
                 CreatorText.Text = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[_selectedCollection.Creator] : "...";
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
