@@ -28,7 +28,11 @@ namespace NuSysApp
         private ConcurrentDictionary<string, ContentDataController> _contentDataControllers =
             new ConcurrentDictionary<string, ContentDataController>();
 
-        public delegate void NewContentEventHandler(LibraryElementModel element);
+        public delegate void NewLibraryElementEventHandler(LibraryElementModel element);
+
+        public event NewLibraryElementEventHandler OnNewLibraryElement;
+
+        public delegate void NewContentEventHandler(ContentDataModel model);
 
         public event NewContentEventHandler OnNewContent;
 
@@ -115,7 +119,7 @@ namespace NuSysApp
 
                 AddModelToControllers(model);
 
-                OnNewContent?.Invoke(model);
+                OnNewLibraryElement?.Invoke(model);
                 return model.LibraryElementId;
             }
             Debug.WriteLine("content failed to add directly due to invalid id");
@@ -224,6 +228,7 @@ namespace NuSysApp
             SessionController.Instance.ContentController.AddContentDataController(contentDataController);
 
             _contentDataModels.TryAdd(contentDataModel.ContentId, contentDataModel);
+            
             return true;
         }
 

@@ -104,6 +104,21 @@ namespace NuSysApp
             _titleReverse = false;
             _dateReverse = false;
             _accessReverse = false;
+
+            // Every time a new collection is added by another user, the list of collections is refreshed by calling Init
+            SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
+        }
+
+        /// <summary>
+        /// This handler is responsible for refreshing the list of collections every time another user adds a new collection.
+        /// </summary>
+        /// <param name="model"></param>
+        private void ContentController_OnNewContent(ContentDataModel model)
+        {
+            if (model.ContentType == NusysConstants.ContentType.Text)
+            {
+                Init();
+            }
         }
 
         /// <summary>
@@ -203,7 +218,7 @@ namespace NuSysApp
         {
             if (_selectedCollection != null)
             {
-                SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
+                SessionController.Instance.ContentController.OnNewLibraryElement -= LibraryElementControllerOnOnNewLibraryElement;
                 var id = _selectedCollection.LibraryElementId;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
@@ -216,6 +231,9 @@ namespace NuSysApp
                 this.Frame.Navigate(typeof(SessionView));
 
             }
+
+            // Detach the handler for refreshing the list of collections
+            SessionController.Instance.ContentController.OnNewContent -= ContentController_OnNewContent;
         }
 
         public static IEnumerable<ElementModel> GetFirstLoadList()
@@ -514,7 +532,7 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.Init();
                         SessionController.Instance.LocalUserID = userID;
 
-                        SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
+                        SessionController.Instance.ContentController.OnNewLibraryElement += LibraryElementControllerOnOnNewLibraryElement;
 
                         loggedInText.Text = "Logged In!";
                         NewUserLoginText.Text = "Logged In!";
@@ -638,7 +656,7 @@ namespace NuSysApp
             });
         }
 
-        private void ContentControllerOnOnNewContent(LibraryElementModel element)
+        private void LibraryElementControllerOnOnNewLibraryElement(LibraryElementModel element)
         {
             if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
