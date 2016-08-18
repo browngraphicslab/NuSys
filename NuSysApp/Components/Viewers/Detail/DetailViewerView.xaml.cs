@@ -290,8 +290,17 @@ namespace NuSysApp
             await CloseDv();
         }
 
+        /// <summary>
+        /// Should be the only way the detail view is ever closed, fires all the detail view dispose events
+        /// </summary>
+        /// <returns></returns>
         public async Task CloseDv()
         {
+            // if the detail view is already hidden, don't fire dispose events, its creates null reference errors
+            if (Visibility == Visibility.Collapsed)
+            {
+                return;
+            }
             Visibility = Visibility.Collapsed;
             AccessPopup.Visibility = Visibility.Collapsed;
             Dispose();
