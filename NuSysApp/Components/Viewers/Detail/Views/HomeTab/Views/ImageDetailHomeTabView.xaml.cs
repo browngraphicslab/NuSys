@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Windows.UI.Text;
 using NusysIntermediate;
 
 
@@ -79,10 +80,16 @@ namespace NuSysApp
 
                 //get tag list and order them in order of confidence
                 var taglist = _analysisModel.Tags.ToList().OrderByDescending(x => x.Confidence);
-                xTags.Text = string.Join(",", taglist.Select(tag => string.Join(", ", tag.Name)));
+
 
             }
             
+        }
+
+        private void MakeTag(string text)
+        {
+            var tag = new HyperlinkButton();
+
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)

@@ -67,7 +67,7 @@
                                 <TextBlock Foreground="{StaticResource color3}" Margin="3">Tags:</TextBlock>
                             </Grid>
                             
-                            <TextBlock x:Name="xTags" Margin="3" TextWrapping="WrapWholeWords"></TextBlock>
+                            <ItemsControl x:Name="xTags" Margin="3"></ItemsControl>
                         
                         </StackPanel>
                     </ScrollViewer>
