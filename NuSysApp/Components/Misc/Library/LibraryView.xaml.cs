@@ -692,17 +692,6 @@ namespace NuSysApp
             //{
             //    foreach (var itemTemplate in _favoritesViewModel.ItemList.ToList().GetRange(0, Math.Min(_favoritesViewModel.ItemList.Count, 30)))
             //    {
-            //        var dict = new Message();
-            //        dict["title"] = itemTemplate?.Title;
-            //        dict["width"] = "300";
-            //        dict["height"] = "300";
-            //        dict["type"] = itemTemplate?.Type;
-            //        dict["x"] = "50000";
-            //        dict["y"] = "50000";
-            //        dict["contentId"] = itemTemplate?.LibraryElementId;
-            //        dict["metadata"] = metadata;
-            //        dict["autoCreate"] = true;
-            //        dict["creator"] = controller.LibraryElementModel.LibraryElementId;
             //        var request = new NewElementRequest(dict);
             //        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             //    }

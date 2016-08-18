@@ -110,7 +110,7 @@ namespace NuSysApp
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY));
 
             //get the json and add it to the session
-            var modelString = _returnMessage.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY);
+            var modelString = _message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY);
             AddModelStringToSession(modelString);
         }
     }
