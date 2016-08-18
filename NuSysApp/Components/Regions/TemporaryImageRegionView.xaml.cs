@@ -114,19 +114,28 @@ namespace NuSysApp
             var vm = this.DataContext as TemporaryImageRegionViewModel;
             var regionRequestArgs = vm.HomeTabViewModel?.GetNewCreateLibraryElementRequestArgs() as CreateNewRectangleRegionLibraryElementRequestArgs;
             var type = NusysConstants.ElementType.ImageRegion;
+
             // We need to then populate our new figures into it
             regionRequestArgs.RegionHeight = vm.NormalizedHeight;
             regionRequestArgs.RegionWidth = vm.NormalizedWidth;
             regionRequestArgs.TopLeftPoint = new PointModel(vm.NormalizedTopLeftPoint.X,vm.NormalizedTopLeftPoint.Y);
+
             // this is the rest of what's left to do to make this
             regionRequestArgs.ContentId = vm.HomeTabViewModel.LibraryElementController.LibraryElementModel.ContentDataModelId;
             regionRequestArgs.LibraryElementType = type;
             regionRequestArgs.Title = "Region " + vm.HomeTabViewModel.LibraryElementController.Title; // TODO factor out this hard-coded string to a constant
             regionRequestArgs.ClippingParentLibraryId = vm.HomeTabViewModel.LibraryElementController.LibraryElementModel.LibraryElementId;
+            if (vm.MetadataToAddUponBeingFullRegion != null)
+            {
+                //add the metadata to the creation request
+                regionRequestArgs.Metadata = vm.MetadataToAddUponBeingFullRegion;
+            }
+
             //create a request and send it to the server
             var request = new CreateNewLibraryElementRequest(regionRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             request.AddReturnedLibraryElementToLibrary();
+
             //this then removes the temporary region
             vm.RectangleWrapper.RemoveTemporaryRegion(vm);
         }

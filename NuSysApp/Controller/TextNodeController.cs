@@ -14,7 +14,7 @@ namespace NuSysApp
         
         public TextNodeController(TextElementModel model) : base(model)
         {
-            if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
+            if (LibraryElementController.ContentDataController != null)
             {
                 LibraryElementController.ContentDataController.ContentDataUpdated += ContentChanged;
             }
@@ -29,7 +29,7 @@ namespace NuSysApp
         public override void Dispose()
         {
            
-            if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
+            if (LibraryElementController.ContentDataController != null)
             {
                 LibraryElementController.ContentDataController.ContentDataUpdated -= ContentChanged;
             }

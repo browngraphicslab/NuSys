@@ -111,7 +111,7 @@ namespace NuSysApp
                 || Array.IndexOf(chatArr, "hi") > -1 || Array.IndexOf(chatArr, "Hi") > -1)
             {
                 string another = "I only say hi to good coders";
-                cBox.AppendText(new NetworkUser("slackbot"), another);
+                cBox.AppendText(new NetworkUser("slackbot") {DisplayName = "SlackBot"}, another);
             }
         }
 

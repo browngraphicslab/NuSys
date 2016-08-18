@@ -47,6 +47,31 @@ namespace NusysServer
             }
             var success = ContentController.Instance.SqlConnector.AddLibraryElement(addLibraryElementMessage);
 
+            //insert all the metadata
+            if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY))
+            {
+                var metadataEntries = message.GetList<MetadataEntry>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY);
+                var metadataMessagesList = new List<Message>();
+                foreach (var metadataEntry in metadataEntries)
+                {
+                    Message metadataMessage = new Message();
+                    metadataMessage[NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY] = libraryId;
+                    metadataMessage[NusysConstants.METADATA_KEY_COLUMN_KEY] = metadataEntry.Key;
+                    metadataMessage[NusysConstants.METADATA_MUTABILITY_COLUMN_KEY] = metadataEntry.Mutability.ToString();
+                    metadataMessage[NusysConstants.METADATA_VALUE_COLUMN_KEY] = JsonConvert.SerializeObject(metadataEntry.Values);
+                    metadataMessagesList.Add(metadataMessage);
+                }
+                if (metadataMessagesList.Any())
+                {
+                    SQLInsertQuery insertQuery = new SQLInsertQuery(Constants.SQLTableType.Metadata, metadataMessagesList);
+                    var metadataSuccess = insertQuery.ExecuteCommand();
+                    Debug.Assert(metadataSuccess);
+                    addLibraryElementMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY] =
+                        JsonConvert.SerializeObject(metadataEntries);
+
+                }
+            }
+
             //create a libraryElementModel as requested and serialize it
             var model = LibraryElementModelFactory.CreateFromMessage(addLibraryElementMessage);
             var modelJson = JsonConvert.SerializeObject(model);

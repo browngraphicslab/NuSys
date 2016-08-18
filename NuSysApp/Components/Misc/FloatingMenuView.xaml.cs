@@ -30,7 +30,8 @@ namespace NuSysApp
         SelectNode,
         PenGlobalInk,
         Exploration,
-        PanZoomOnly
+        PanZoomOnly,
+        Presentation
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -278,8 +279,6 @@ namespace NuSysApp
                 
             } else if (elementType == NusysConstants.ElementType.Text || elementType == NusysConstants.ElementType.Web || elementType == NusysConstants.ElementType.Collection)
             {
-
-
                 var title = string.Empty;
                 if (elementType == NusysConstants.ElementType.Text)
                     title = "Unnamed Text";
@@ -291,6 +290,8 @@ namespace NuSysApp
                 newContentArgs.LibraryElementArgs.LibraryElementType = elementType;
                 newContentArgs.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
                 newContentArgs.LibraryElementArgs.Title = title; //TODO factor this out to a constant in nusysApp
+                newContentArgs.LibraryElementArgs.AccessType =
+                    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
                 newContentArgs.ContentId = SessionController.Instance.GenerateId();
 
                 var newElementArgs = new NewElementRequestArgs();

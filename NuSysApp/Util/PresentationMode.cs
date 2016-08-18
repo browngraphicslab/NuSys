@@ -123,6 +123,7 @@ namespace NuSysApp
         public void ExitMode()
         {
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
+            SessionController.Instance.SwitchMode(Options.SelectNode);
         }
 
         /// <summary>
@@ -170,8 +171,8 @@ namespace NuSysApp
         /// <param name="nextElemVm"></param>
         private void Load(ElementViewModel currentElemVm, out ElementViewModel previousElemVm, out ElementViewModel nextElemVm)
         {
-            previousElemVm = GetNext(currentElemVm);
-            nextElemVm = GetPrevious(currentElemVm);
+            previousElemVm = GetPrevious(currentElemVm);
+            nextElemVm = GetNext(currentElemVm);
         }
 
 
@@ -362,7 +363,10 @@ namespace NuSysApp
         /// <returns></returns>
         public static ElementViewModel GetElementViewModelFromId(string elementViewModelId)
         {
-            Debug.Assert(elementViewModelId != null);
+            if (elementViewModelId == null)
+            {
+                return null;
+            }
             var elementViewModels = SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(elementVM => elementVM.Id == elementViewModelId).ToList();
             Debug.Assert(elementViewModels != null);
             Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple

@@ -30,6 +30,9 @@ namespace NuSysApp
         /// </summary>
         public event EventHandler<string> EnterNewCollectionStarting;
 
+        /// <summary>
+        /// Be careful adding to this event, check that the handlers you want to take care can't be taken care of in a mode instance in the free form viewer
+        /// </summary>
         public event ModeChangedEventHandler OnModeChanged;
 
         private static readonly object _syncRoot = new Object();
@@ -163,7 +166,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Use this to change the mode of the Free form viewer
+        /// Use this method to switch the mode of the entire workspace.
         /// </summary>
         /// <param name="mode"></param>
         public void SwitchMode(Options mode)
@@ -181,6 +184,11 @@ namespace NuSysApp
         /// <returns></returns>
         public bool AddElement(ElementModel model)
         {
+            var parentLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.ParentCollectionId);
+            if (parentLibraryElementController == null)
+            {
+                return false;///could happen naturally if someone adds an public element to a private collection
+            }
 
             if (IdToControllers.ContainsKey(model.Id))
             {
@@ -188,16 +196,13 @@ namespace NuSysApp
             }
             var controller = ElementControllerFactory.CreateFromModel(model);
 
-            //Copy pasted code
+
             SessionController.Instance.IdToControllers[model.Id] = controller;
 
             UITask.Run(async delegate
             {
 
-                var parentCollectionLibraryElementController =
-                    (CollectionLibraryElementController)
-                        SessionController.Instance.ContentController.GetLibraryElementController(
-                            model.ParentCollectionId);
+                var parentCollectionLibraryElementController = (CollectionLibraryElementController) parentLibraryElementController;
                 parentCollectionLibraryElementController.AddChild(model.Id);
 
                 if (model.ElementType == NusysConstants.ElementType.Collection)
@@ -214,7 +219,6 @@ namespace NuSysApp
                     }
                 }
             });
-            //end pasted code
 
             return true;
 

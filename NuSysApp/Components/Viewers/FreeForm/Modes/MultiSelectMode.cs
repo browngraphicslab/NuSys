@@ -61,14 +61,14 @@ namespace NuSysApp
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
          //   vm.DeleteMultiSelecttion();
-            _cview.SwitchMode(Options.SelectNode, false);
+         SessionController.Instance.SwitchMode(Options.SelectNode);
         }
 
         private void Group_OnClick(object sender, RoutedEventArgs e)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-         //   vm.GroupFromMultiSelection();
-            _cview.SwitchMode(Options.SelectNode, false);
+            //   vm.GroupFromMultiSelection();
+            SessionController.Instance.SwitchMode(Options.SelectNode);
         }
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
