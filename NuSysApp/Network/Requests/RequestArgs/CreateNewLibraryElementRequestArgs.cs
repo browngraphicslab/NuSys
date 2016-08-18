@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -106,6 +107,12 @@ namespace NuSysApp
             if (Title != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = Title;
+            }
+
+            //Set the metadata
+            if (Metadata != null && Metadata.Any())
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY] = JsonConvert.SerializeObject(Metadata);
             }
 
             //set the favorited boolean

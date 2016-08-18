@@ -358,9 +358,14 @@ namespace NusysIntermediate
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
-            #endregion NewLibraryElementRequest
 
-            #region CreateNewMetadataRequest
+                /// <summary>
+                /// the key that will hold the serialized dictionary from string to metadataentry when creating a new library element
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY = "metadata";
+        #endregion NewLibraryElementRequest
+
+        #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
