@@ -25,6 +25,7 @@ namespace NuSysApp
         /// Contains the libraryItemTemplate chosen by the user from the autosuggest box, null if no element is currently chosen
         /// </summary>
         private LibraryItemTemplate _chosenLibraryItemTemplate;
+
         public LinkEditorTab()
         {
             DataContext = new LinkEditorTabViewModel();
@@ -43,6 +44,14 @@ namespace NuSysApp
             vm?.SortByTitle();
         }
 
+        /// <summary>
+        /// Called when the user taps the create link button, creates a request
+        /// to the server to create the desired link. Fails if the autosuggest box
+        /// does not contain any text, but should be disabled in that case.
+        /// Checks to make sure invalid requests are not sent.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void CreateLinkButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var content = _chosenLibraryItemTemplate;
@@ -55,8 +64,37 @@ namespace NuSysApp
 
             var vm = DataContext as LinkEditorTabViewModel;
 
+            // check to make sure the link does not already exist
+            var inLibElemId = vm.CurrentLibraryElementId;
+            var outLibElemId = content.LibraryElementId;
+
+            // if there is a link between two libraryelements then possible link will not be null
+            var possibleLink = SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(inLibElemId,
+                outLibElemId);
+
+            // if possible link is not null then return and show an error message
+            if (possibleLink != null)
+            {
+                ShowCreateLinkErrorText("That Link Already Exists!");
+                return;
+            }
+
             Debug.Assert(content != null && content.LibraryElementId != null);
             vm.CreateLink(content.LibraryElementId);
+        }
+
+        /// <summary>
+        /// Shows error text on the detail view if the create link button fails for some reason.
+        /// Make sure to hide the error text correctly.
+        /// </summary>
+        /// <param name="text">The error text you wish to show.</param>
+        private void ShowCreateLinkErrorText(string text)
+        {
+            xCreateLinkErrorBox.Text = text;
+            if (xCreateLinkErrorBox.Visibility == Visibility.Collapsed)
+            {
+                xCreateLinkErrorBox.Visibility = Visibility.Visible;
+            }
         }
 
         private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)
@@ -91,16 +129,19 @@ namespace NuSysApp
             {
                 // disable the createLinkButton, in case the user is changing their link selection
                 createLinkButton.IsEnabled = false;
+
+                // close the error message, the user has probably read the error and is performing a fix now
+                xCreateLinkErrorBox.Visibility = Visibility.Collapsed;
+
                 // set chose LibaryItemTemplate to null to reflect the change in selection
                 _chosenLibraryItemTemplate = null;
 
-                // get the current library element id
-                var libraryElementId =
-(SessionController.Instance.SessionView.DetailViewerView.DataContext as DetailViewerViewModel)
-                        .CurrentElementController.LibraryElementModel.LibraryElementId;
+                // use vm to get the current library element id
+                var vm = DataContext as LinkEditorTabViewModel;
+
                 // filter the data shown by the autosuggest box to only library elements whose titles contain the text entered
                 // and whose library element ids don't match the id of the library element currently shown in the detail veiwer
-                var filteredData = (DataContext as LinkEditorTabViewModel).LibraryElements.Where(t => t.Title.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()) && t.LibraryElementId != libraryElementId);
+                var filteredData = (DataContext as LinkEditorTabViewModel).LibraryElements.Where(t => t.Title.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()) && t.LibraryElementId != vm.CurrentLibraryElementId);
                 // set the LinkToBox.ItemsSource to the filtered data to update the suggestions
                 LinkToBox.ItemsSource = filteredData;
             }
