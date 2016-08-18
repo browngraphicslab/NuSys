@@ -37,9 +37,6 @@ namespace NuSysApp
 
             _view.RemoveHandler(UIElement.PointerPressedEvent, _pointerPressedHandler);
 
-
-            //    var vm = _view.DataContext as FreeFormViewerViewModel;
-            //    vm.ClearSelection();
         }
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)

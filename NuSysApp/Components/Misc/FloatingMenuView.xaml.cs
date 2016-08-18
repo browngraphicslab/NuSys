@@ -29,7 +29,8 @@ namespace NuSysApp
         Idle,
         SelectNode,
         PenGlobalInk,
-        Exploration
+        Exploration,
+        Presentation
     }
 
     public sealed partial class FloatingMenuView : UserControl

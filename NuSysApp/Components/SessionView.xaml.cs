@@ -225,17 +225,15 @@ namespace NuSysApp
         /// <param name="text"></param>
         public void ShowRelatedElements(string tag)
         {
-            if ((_modeInstance != null) && (_modeInstance.Mode == ModeType.EXPLORATION))
-            {
-                var exp = _modeInstance as ExplorationMode;
-                exp.ShowRelatedElements(tag);
-            }
+            var exp = _modeInstance as ExplorationMode;
+            exp.ShowRelatedElements(tag);
         }
 
         public void EnterPresentationMode(ElementViewModel em)
         {
             Debug.Assert(em != null);
             _modeInstance = new PresentationMode(em);
+            SessionController.Instance.SwitchMode(Options.Presentation);
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
@@ -294,12 +292,6 @@ namespace NuSysApp
 
         public void ExploreSelectedObject(ElementViewModel elementViewModel)
         {
-
-            // Only explore if we are in exploration mode
-            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION)
-            {
-                return;
-            }
             var exp = _modeInstance as ExplorationMode;
 
             if (elementViewModel == null)
@@ -317,12 +309,6 @@ namespace NuSysApp
         /// <param name="datacontext"></param>
         public void ExploreSelectedObject(object dataContext)
         {
-
-            // Only explore if we are in exploration mode
-            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION)
-            {
-                return;
-            }
             var exp = _modeInstance as ExplorationMode;
 
             if (dataContext == null)
@@ -659,12 +645,6 @@ namespace NuSysApp
 
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
-            // don't edit if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
             if (viewable is RegionLibraryElementController)
             {
                 await xDetailViewer.ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
@@ -819,11 +799,8 @@ namespace NuSysApp
         /// </summary>
         public void RemoveRelatedListBox()
         {
-            if (_modeInstance != null && _modeInstance.Mode == ModeType.EXPLORATION)
-            {
-                var exp = _modeInstance as ExplorationMode;
-                exp.HideRelatedListBox();
-            }
+            var exp = _modeInstance as ExplorationMode;
+            exp.HideRelatedListBox();
 
         }
 

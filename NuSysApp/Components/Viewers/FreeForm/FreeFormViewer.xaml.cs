@@ -41,6 +41,7 @@ namespace NuSysApp
         private NuSysInqCanvas _inqCanvas;
         private ExploreMode _exploreMode;
         private MultiMode _explorationMode;
+        private MultiMode _presentationMode;
 
         private FreeFormViewerViewModel _vm;
 
@@ -106,6 +107,7 @@ namespace NuSysApp
                 _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
+                _presentationMode = new MultiMode(this, _panZoomMode);
 
                 SwitchMode(Options.SelectNode, false);
 
@@ -291,6 +293,12 @@ namespace NuSysApp
                     break;
                 case Options.Exploration:
                     SetViewMode(_explorationMode);
+                    break;
+                case Options.Presentation:
+                    SetViewMode(_presentationMode);
+                    break;
+                default:
+                    Debug.Fail($"You must add support for ${mode} before you can switch to it.");
                     break;
             }
         }
