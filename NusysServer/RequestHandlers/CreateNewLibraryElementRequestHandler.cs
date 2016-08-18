@@ -66,8 +66,8 @@ namespace NusysServer
                     SQLInsertQuery insertQuery = new SQLInsertQuery(Constants.SQLTableType.Metadata, metadataMessagesList);
                     var metadataSuccess = insertQuery.ExecuteCommand();
                     Debug.Assert(metadataSuccess);
-                    addLibraryElementMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY] =
-                        JsonConvert.SerializeObject(metadataEntries);
+                    addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_METADATA_KEY] =
+                        JsonConvert.SerializeObject(metadataEntries.ToDictionary(entry => entry.Key, e => e));
 
                 }
             }

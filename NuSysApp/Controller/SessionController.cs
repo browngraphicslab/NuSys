@@ -177,15 +177,15 @@ namespace NuSysApp
         /// <summary>
         /// adds an element to the its parentCollection and adds its controller to the ID to controller's list.
         /// This also will create the controller class for that model.
-        /// 
+        /// This method will fetch the contentDataModel for the element if it doesn't exist locally;
         /// Returns true if the adding was successful;
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public bool AddElement(ElementModel model)
+        public async Task<bool> AddElementAsync(ElementModel model)
         {
             var parentLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.ParentCollectionId);
-            if (parentLibraryElementController == null)
+            if (parentLibraryElementController == null) //if the parent collection that this node will be in is null
             {
                 return false;///could happen naturally if someone adds an public element to a private collection
             }
@@ -194,12 +194,19 @@ namespace NuSysApp
             {
                 return false;
             }
+
+            var elementLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId);
+            if (!ContentController.ContainsContentDataModel(elementLibraryElementController.LibraryElementModel.ContentDataModelId))//if the content data model isn't present
+            {
+                await NuSysNetworkSession.FetchContentDataModelAsync(elementLibraryElementController.LibraryElementModel.ContentDataModelId);//load the content
+            }
+
             var controller = ElementControllerFactory.CreateFromModel(model);
 
 
             SessionController.Instance.IdToControllers[model.Id] = controller;
 
-            UITask.Run(async delegate
+            await UITask.Run(async delegate
             {
 
                 var parentCollectionLibraryElementController = (CollectionLibraryElementController) parentLibraryElementController;

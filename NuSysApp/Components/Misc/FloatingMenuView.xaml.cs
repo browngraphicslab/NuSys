@@ -313,7 +313,7 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
 
-                newElementRequest.AddReturnedElementToSession();
+                await newElementRequest.AddReturnedElementToSessionAsync();
 
             }
 
