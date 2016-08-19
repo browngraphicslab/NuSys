@@ -44,8 +44,6 @@ namespace NuSysApp
         private MultiMode _explorationMode;
         private MultiMode _presentationMode;
 
-
-
         private FreeFormViewerViewModel _vm;
 
         public Brush CanvasColor
@@ -115,9 +113,19 @@ namespace NuSysApp
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
                 _presentationMode = new MultiMode(this, _panZoomMode, _presentMode);
 
-
-                SwitchMode(Options.SelectNode);
-
+                if (vm.Controller.LibraryElementModel.AccessType != NusysConstants.AccessType.ReadOnly)
+                {
+                    if (vm.Controller.LibraryElementModel.Creator != SessionController.Instance.LocalUserID)
+                    {
+                        SwitchMode(Options.SelectNode);
+                    }
+                   
+                }
+                else
+                {
+                    SwitchMode(Options.PanZoomOnly);
+                }
+                
                 var colElementModel = vm.Controller.Model as CollectionElementModel;
                 if ((SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId)as CollectionLibraryElementModel).IsFinite)
                 {

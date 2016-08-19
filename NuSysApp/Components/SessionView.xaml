@@ -47,7 +47,7 @@
                     <TranslateTransform X ="50"/>
                 </Button.RenderTransform>
             </Button>
-                <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
+            <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
                 <Image Source="/Assets/presentation_backward.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,5,0"></Image>
             </Button>
             <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
@@ -80,7 +80,7 @@
             <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
             <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
-            <local:ReadonlyFloatingMenuView x:Name="xReadonlyFloatingMenu" Canvas.Left="120" Canvas.Top="125" Visibility="Collapsed"/>
+            <local:ReadonlyFloatingMenuView x:Name="xReadonlyFloatingMenu" Visibility="Collapsed"/>
 
             <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
             <local:SpeechToTextBox x:Name="xSpeechToTextBox"></local:SpeechToTextBox>

@@ -117,6 +117,10 @@ namespace NuSysApp
         private void ContentController_OnNewLibraryElememt(LibraryElementModel model)
         {
             Init();
+            if (model.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(model.LibraryElementId))
+            {
+                _preloadedIDs.Add(model.LibraryElementId);
+            }
         }
 
         /// <summary>
@@ -216,9 +220,9 @@ namespace NuSysApp
         {
             if (_selectedCollection != null)
             {
-                SessionController.Instance.ContentController.OnNewLibraryElement -= LibraryElementControllerOnOnNewLibraryElement;
-
                 var id = _selectedCollection.LibraryElementId;
+                var m = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+                
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
                 foreach (var content in collectionRequest.GetReturnedContentDataModels())
@@ -227,7 +231,15 @@ namespace NuSysApp
                 }
                 _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
-                this.Frame.Navigate(typeof(SessionView));
+
+                if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserName))
+                {
+                    this.Frame.Navigate(typeof(SessionView), m.AccessType);
+                }
+                else
+                {
+                    this.Frame.Navigate(typeof(SessionView));
+                }
 
                 // Detach the handler for refreshing the list of collections
                 SessionController.Instance.ContentController.OnNewLibraryElement -= ContentController_OnNewLibraryElememt;
@@ -541,8 +553,6 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.Init();
                         SessionController.Instance.LocalUserID = userID;
 
-                        SessionController.Instance.ContentController.OnNewLibraryElement += LibraryElementControllerOnOnNewLibraryElement;
-
                         loggedInText.Text = "Logged In!";
                         NewUserLoginText.Text = "Logged In!";
                         _collectionList = new List<LibraryElementModel>();
@@ -663,14 +673,6 @@ namespace NuSysApp
                     }
                 }
             });
-        }
-
-        private void LibraryElementControllerOnOnNewLibraryElement(LibraryElementModel element)
-        {
-            if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
-            {
-                _preloadedIDs.Add(element.LibraryElementId);
-            }
         }
 
         //TODO: move this crypto stuff elsewhere, only here temporarily

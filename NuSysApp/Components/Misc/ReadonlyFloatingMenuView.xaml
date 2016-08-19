@@ -14,9 +14,9 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <local:ReadonlyFloatingMenuButtonView x:Name="xPresentButton" ButtonText="P" Tapped="xPresentButton_Tapped"/>
-            <local:ReadonlyFloatingMenuButtonView x:Name="xExploreButton" ButtonText="E" Tapped="xExploreButton_Tapped" />
-            <local:ReadonlyFloatingMenuButtonView x:Name="xRevertButton" ButtonText="R" Tapped="xRevertButton_Tapped"/>
+            <local:ReadonlyFloatingMenuButtonView x:Name="xPresentButton" Icon="ms-appx:///Assets/presentation mode dark.png"  Tapped="xPresentButton_Tapped"/>
+            <local:ReadonlyFloatingMenuButtonView x:Name="xExploreButton" Icon="ms-appx:///Assets/exploration mode dark.png"  Tapped="xExploreButton_Tapped" />
+            <local:ReadonlyFloatingMenuButtonView x:Name="xRevertButton" Icon="ms-appx:///Assets/collection main menu.png"  Tapped="xRevertButton_Tapped"/>
         </StackPanel>
     </Grid>
 </UserControl>
