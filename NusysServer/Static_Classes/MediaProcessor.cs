@@ -59,11 +59,13 @@ namespace NusysServer
                             }
                             try
                             {
+                                senderHandler.SendError(new Exception("here 0"));
                                 var pdfDocModel = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(pdfText);//get the document analysis
 
                                 var pageUrls = JsonConvert.DeserializeObject<List<string>>(contentUrl);//get the list of urls for the pdf pages as images
 
                                 var OCRModels = new NuSysOcrAnalysisModel[pageUrls.Count()];//create empty list for the page model analyses
+                                senderHandler.SendError(new Exception("here 1"));
 
                                 int returned = 0;
                                 var i = 0;
@@ -72,12 +74,12 @@ namespace NusysServer
                                     RunPageOcr(i, OCRModels, pageUrl,senderHandler);
                                     i++;
                                 }
-
+                                senderHandler.SendError(new Exception("here 2"));
                                 while (OCRModels.Any(model => model == null))
                                 {
                                     await Task.Delay(400); //wait until all the pages return
                                 }
-
+                                senderHandler.SendError(new Exception("here 3"));
                                 var pdfModel = new NusysPdfAnalysisModel(contentDataModelId)//create the actual important pdf model
                                 {
                                     DocumentAnalysisModel = pdfDocModel,
@@ -85,23 +87,31 @@ namespace NusysServer
                                 };
                                 analysisModel = pdfModel; //set the analysis model
 
+                                senderHandler.SendError(new Exception("here 4"));
+
                                 var regions = pdfModel.PageImageAnalysisModels.SelectMany(page => page.Regions);//get all the ocr regions
 
                                 var topics = await GetTopicsOfText(string.Join(" ", pdfText), title);
                                 
                                 var sortedList = new SortedList<double, CognitiveApiRegionModel>(); //create a sorted list to get the most important topics
-
+                                senderHandler.SendError(new Exception("here 5"));
                                 int regionNumber = 0;
                                 var regionCount = regions.Count();
 
                                 foreach (var region in regions)//for each region in all the ocr regins
                                 {
-                                    var regionText = string.Join(" ",region?.Lines?.SelectMany(line => line?.Words?.Select(word => word?.Text) ?? new List<string>()) ?? new List<string>()) ?? "";
+                                    var words = region?.Lines?.SelectMany(line => line?.Words?.Select(word => word?.Text) ?? new List<string>()) ?? new List<string>();
+                                    var regionText = string.Join(" ", words);//create a text from all the words
                                     var matches = topics?.Sum(topic => Regex.Matches(regionText, topic).Count) ?? 0;
-                                    sortedList.Add(matches + (double)((double)regionNumber/(double)regionCount), region); //add to the sorted list the number of matches of topics and the region
+                                    var key = (double)((double)matches/(Math.Max(words?.Count() ?? 1, 1))) + (double)((double)regionNumber / (double)(regionCount));
+                                    while (sortedList.ContainsKey(key))
+                                    {
+                                        key += .00000001;
+                                    }
+                                    sortedList.Add(key, region); //add to the sorted list the number of matches of topics and the region
                                     regionNumber++;
                                 }
-
+                                senderHandler.SendError(new Exception("here 6"));
                                 var topCount = Math.Min(10, sortedList.Count);//get the count of how many we can mark important
 
                                 for (int k = 0; k < topCount; k++)//for the number of important regions
@@ -109,6 +119,7 @@ namespace NusysServer
                                     sortedList[sortedList.Max(r => r.Key)].MarkedImportant = true;//mark the top region as important
                                     sortedList.Remove(sortedList.Max(r => r.Key));
                                 }
+                                senderHandler.SendError(new Exception("here 7"));
                             }
                             catch (Exception e)
                             {
@@ -154,6 +165,7 @@ namespace NusysServer
         {
             try
             {
+                senderHandler.SendError(new Exception("starting async fetch"));
                 var image = Image.FromFile(FileHelper.FilePathFromUrl(pageUrl));
                 var ocrModel = await ImageProcessor.GetNusysOcrAnalysisModelFromUrlAsync(pageUrl, image.Width, image.Height);
                 foreach (var r in ocrModel?.Regions ?? new List<CognitiveApiRegionModel>())
@@ -164,6 +176,7 @@ namespace NusysServer
                     }
                 }
                 array[pageNumber] = ocrModel;
+                senderHandler.SendError(new Exception("ending async fetch"));
             }
             catch (Exception e)
             {
