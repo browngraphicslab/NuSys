@@ -140,6 +140,12 @@ namespace NuSysApp
         {
             Debug.Assert(evm != null);
 
+            // don't do anything if we are already a the node
+            if (_currentNode == evm)
+            {
+                return;
+            }
+
             // push the current node if it isn't null
             if (_currentNode != null)
             {
@@ -312,9 +318,6 @@ namespace NuSysApp
             _flyOutStoryBoard.Stop();
             _flyInStoryBoard.Stop();
 
-            // set the duration of the outAnimation
-            var outDuration = new Duration(TimeSpan.FromSeconds(.5));
-
             // get the current position and scale values from the ActiveFreeFormViewerTransform
             var currentTransform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             var currentX = currentTransform.CenterX;
@@ -323,9 +326,14 @@ namespace NuSysApp
             var currentTranslateX = currentTransform.TranslateX;
             var currentTranslateY = currentTransform.TranslateY;
 
-            // get the smaller of the two scales and divide by 2 so we fly out the farthest.
+            // Get the distance we are going to travel
             var dist = Math.Sqrt(Math.Pow(Math.Abs(currentX - x), 2) + Math.Pow(Math.Abs(currentY - y), 2));
-            var halfScale = (currentScale < scale ? currentScale : scale)/ Math.Pow(dist, 1.0/3.0);
+
+            // set the scale of the animation based on the distance
+            var halfScale = Math.Pow(dist, 1.0 / 3.0) / Math.Pow(dist, 1.0 / 2.0);
+
+            // set the duration of the outAnimation based on the distance
+            var outDuration = new Duration(TimeSpan.FromSeconds(Math.Log(Math.Abs(dist) <= 0 ? dist + .0001 : dist, 5 ) / 5)); // we check that distance isn't exactly zero so log doesn't fail
 
             // get the center point of the halfway location we are going to
             var halfCenterX = (currentX + x )/2.0;
@@ -364,7 +372,7 @@ namespace NuSysApp
             }
 
             // set the duration of the inAnimation
-            var inDuration = new Duration(TimeSpan.FromSeconds(.5));
+            var inDuration = new Duration(TimeSpan.FromSeconds(Math.Log(dist, 5) / 5));
 
             // Create the flyin animation elements
             var inScaleAnimationX = MakeAnimationElement(scale, "ScaleX", inDuration, easeMode:EasingMode.EaseInOut);

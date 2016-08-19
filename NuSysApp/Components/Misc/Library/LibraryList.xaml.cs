@@ -259,52 +259,12 @@ namespace NuSysApp
             {
                 return;
             }
-            await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.LibraryElementId);
+
+            var libraryElementController =
+                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            libraryElementController.AddElementAtPosition(r.X, r.Y);
         }
 
-        private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            return;
-            /*
-            var listItem = sender as ListView;
-            
-            var regionsPanel = listItem?.FindName("RegionsPanel") as Grid;
-            
-            if (regionsPanel?.Visibility == Visibility.Visible)
-            {
-                regionsPanel.Visibility = Visibility.Collapsed;
-                return;
-            }
-
-            regionsPanel?.RowDefinitions.Clear();
-            var x = listItem.SelectedItem;
-            var elementModel = ListView.SelectedItem as LibraryElementModel;
-            var count = 0;
-
-            if (elementModel?.Regions == null)
-            {
-                regionsPanel?.RowDefinitions.Add(new RowDefinition());
-                var textBox = new TextBlock();
-                textBox.Text = "No regions associated with this element.";
-                regionsPanel?.Children.Add(textBox);
-                Grid.SetRow(textBox, 0);
-                regionsPanel.Visibility = Visibility.Visible;
-                return;
-            }
-           
-            foreach (var regionModel in elementModel.Regions)
-            {
-                regionsPanel?.RowDefinitions.Add(new RowDefinition());
-                var textBox = new TextBlock();
-                textBox.Text = regionModel.Name;
-                regionsPanel?.Children.Add(textBox);
-                Grid.SetRow(textBox, count);
-                count++;
-            }
-
-            regionsPanel.Visibility = Visibility.Visible;
-            */
-        }
 
 
         private void LibraryListItem_OnTapped(object sender, TappedRoutedEventArgs e)

@@ -44,6 +44,7 @@ namespace NuSysApp
         private bool IsPenMode;
         private bool checkPointerAdded;
         private CompositeTransform floatingTransform;
+        private Point _exportPos;
 
         public FloatingMenuView()
         {
@@ -68,10 +69,10 @@ namespace NuSysApp
             //Canvas.SetLeft(_lib, 100);
             Canvas.SetTop(libProp, 100);
             Canvas.SetLeft(libProp, 450);
-            AddNodeSubmenuButton(btnText);
-            AddNodeSubmenuButton(btnRecording);
-            AddNodeSubmenuButton(btnNew);
-            AddNodeSubmenuButton(btnTools);
+            AddNodeSubmenuButton(btnAddTextNode);
+            AddNodeSubmenuButton(btnAddRecordingNode);
+            AddNodeSubmenuButton(btnAddCollectionNode);
+            AddNodeSubmenuButton(btnAddTools);
         }
 
         private void CheckPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -102,6 +103,11 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Called when the user taps on the search icon in the floating menu view
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnSearch_Tapped(object sender, TappedRoutedEventArgs e)
         {
 
@@ -157,12 +163,16 @@ namespace NuSysApp
         private void AddNodeSubmenuButton(FrameworkElement btn)
         {
             btn.ManipulationMode = ManipulationModes.All;
-            btn.ManipulationStarting += BtnAddNodeOnManipulationStarting;
             btn.ManipulationStarted += BtnAddNodeOnManipulationStarted;
             btn.ManipulationDelta += BtnAddNodeOnManipulationDelta;
             btn.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
         }
 
+        /// <summary>
+        /// Called when the user taps on the add node icon in the floating menu view
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _lib.Visibility = Visibility.Collapsed;
@@ -184,6 +194,11 @@ namespace NuSysApp
             
         }
 
+        /// <summary>
+        /// Called when the user taps on the library icon in the floating menu view
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _lib.ToggleVisiblity();
@@ -206,129 +221,167 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// When the user finishes dragging a button from the floating menu view, this method creates an element at the desired location
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
-            if (_dragItem == null)
-                return;
-            xWrapper.Children.Remove(_dragItem);
-           var r = xWrapper.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(args.Position.X, args.Position.Y));
-           await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
+            // Hide the library dragging rect
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            rect.Hide();
 
-        }
-         
-        private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
-        {
-            if (_dragItem == null)
-                return;
-            var t = (CompositeTransform)_dragItem.RenderTransform;
-            t.TranslateX += args.Delta.Translation.X;
-            t.TranslateY += args.Delta.Translation.Y;
+            // Add the element at the dropped location
+            var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_exportPos);
+            await AddElementToCollection(dropPoint);
+
             args.Handled = true;
+
         }
 
+        /// <summary>
+        /// Called when the user moves the pointer after pressing a floating menu view icon, translates the libraryDragElement
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            // Obtain the library dragging rectangle  
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+
+            // Update its transform
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+            
+            // Update the position instance variable
+            _exportPos.X += e.Delta.Translation.X;
+            _exportPos.Y += e.Delta.Translation.Y;
+
+            // Handled!
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Called when the user presses an icon, instantiates libraryDragElement
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
         {
-            if (_dragItem == null)
-                return;
-            _dragItem.Opacity = 0.5;
-            var t = (CompositeTransform)_dragItem.RenderTransform;
-            t.TranslateX += args.Position.X - _dragItem.ActualWidth / 2;
-            t.TranslateY += args.Position.Y - _dragItem.ActualHeight / 2;
-            args.Handled = true;
-        }
 
-        private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
-        {
-            if (_dragItem != null && xWrapper.Children.Contains(_dragItem))
-                xWrapper.Children.Remove(_dragItem);
-
-      
-            if (sender == btnText)
+            // set the _elementType based on the sender
+            if (sender == btnAddTextNode)
+            {
                 _elementType = NusysConstants.ElementType.Text;
-            if (sender == btnRecording)
+            }
+            else if (sender == btnAddRecordingNode)
+            {
                 _elementType = NusysConstants.ElementType.Recording;
-            if (sender == btnNew)
+            }
+            else if (sender == btnAddCollectionNode)
+            {
                 _elementType = NusysConstants.ElementType.Collection;
-            if (sender == btnTools)
+            }
+            else if (sender == btnAddTools)
+            {
                 _elementType = NusysConstants.ElementType.Tools;
+            }
+            else
+            {
+                Debug.Fail($"We do not have support for {_elementType} yet please add it yourself in the if statement above, the SwitchType method below and in OnManipulationCompleted");
+            }
 
-            args.Container = xWrapper;
-            var bmp = new RenderTargetBitmap();
-            await bmp.RenderAsync((UIElement)sender);
-            var img = new Image();
-            img.Opacity = 0;
-            var t = new CompositeTransform();
+            // add the icon and start controlling the icon rect
+            var view = SessionController.Instance.SessionView;
+            view.LibraryDraggingRectangle.SetIcon(_elementType);
+            view.LibraryDraggingRectangle.Show();
+            var rect = view.LibraryDraggingRectangle;
+            Canvas.SetZIndex(rect, 3);
 
-            img.RenderTransform = new CompositeTransform();
-            img.Source = bmp;
-
-
-            _dragItem = img;
-
-            xWrapper.Children.Add(_dragItem);
+            // Make the rectangle movable and set its position
+            rect.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += _exportPos.X;
+            t.TranslateY = _exportPos.Y;
             args.Handled = true;
         }
 
-        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, object data = null)
+        /// <summary>
+        /// Adds the element from the floating menu view to the collection at the specified point
+        /// where the point is in workspace coordinates not the session view
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        private async Task AddElementToCollection(Point position)
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
-            if (elementType == NusysConstants.ElementType.Recording)
+
+            // take care of filtering out elements that do not require requests to the server
+            switch (_elementType)
             {
-                var r = new RecordingNodeView(new RecordingNodeViewModel(pos.X, pos.Y));
-                vm.AtomViewList.Add(r);
-                
-            } else if (elementType == NusysConstants.ElementType.Text || elementType == NusysConstants.ElementType.Web || elementType == NusysConstants.ElementType.Collection)
-            {
-                var title = string.Empty;
-                if (elementType == NusysConstants.ElementType.Text)
-                    title = "Unnamed Text";
-                if (elementType == NusysConstants.ElementType.Collection)
-                    title = "Unnamed Collection";
-
-                var newContentArgs = new CreateNewContentRequestArgs();
-                newContentArgs.DataBytes = data?.ToString();
-                newContentArgs.LibraryElementArgs.LibraryElementType = elementType;
-                newContentArgs.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
-                newContentArgs.LibraryElementArgs.Title = title; //TODO factor this out to a constant in nusysApp
-                newContentArgs.LibraryElementArgs.AccessType =
-                    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
-                newContentArgs.ContentId = SessionController.Instance.GenerateId();
-
-                var newElementArgs = new NewElementRequestArgs();
-                newElementArgs.LibraryElementId = newContentArgs.LibraryElementArgs.LibraryElementId;
-                newElementArgs.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-                newElementArgs.Width = size.Width;
-                newElementArgs.Height = size.Height;
-                newElementArgs.X = pos.X;
-                newElementArgs.Y = pos.Y;
-
-                var newElementRequest = new NewElementRequest(newElementArgs);
-                var contentRequest = new CreateNewContentRequest(newContentArgs);
-                
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
-
-                contentRequest.AddReturnedLibraryElementToLibrary(); //before making element, add library element to the library
-
-                await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(newContentArgs.ContentId);
-
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
-
-                await newElementRequest.AddReturnedElementToSessionAsync();
-
+                case NusysConstants.ElementType.Collection:
+                    break;
+                case NusysConstants.ElementType.Text:
+                    break;
+                case NusysConstants.ElementType.Tools:
+                    ToolFilterView filter = new ToolFilterView(position.X, position.Y);
+                    vm.AtomViewList.Add(filter);
+                    return;
+                case NusysConstants.ElementType.Recording:
+                    // add a recording node view to the collection
+                    var r = new RecordingNodeView(new RecordingNodeViewModel(position.X, position.Y));
+                    vm.AtomViewList.Add(r);
+                    return;
+                default:
+                    Debug.Fail($"We do not support adding {_elementType} to the collection yet, please add support for it here");
+                    return;
             }
-
-            // Adds a toolview to the atom view list when an tool is droped
-            else if (_elementType == NusysConstants.ElementType.Tools)
+            // Create a new content request
+            var createNewContentRequestArgs = new CreateNewContentRequestArgs
             {
-                ToolFilterView filter = new ToolFilterView(pos.X, pos.Y);
-                vm.AtomViewList.Add(filter);
+                LibraryElementArgs = new CreateNewLibraryElementRequestArgs
+                {
+                    AccessType =
+                        SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
+                    LibraryElementType = _elementType,
+                    Title = _elementType == NusysConstants.ElementType.Collection ? "Unnamed Collection" : "Unnamed Text",
+                    LibraryElementId = SessionController.Instance.GenerateId()
+                },
+                ContentId = SessionController.Instance.GenerateId()
+            };
 
-            }
+            // execute the content request
+            var contentRequest = new CreateNewContentRequest(createNewContentRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
+            contentRequest.AddReturnedLibraryElementToLibrary();
 
-          //  _lib.UpdateList();
+            // create a new add element to collection request
+            var newElementRequestArgs = new NewElementRequestArgs
+            {
+                LibraryElementId = createNewContentRequestArgs.LibraryElementArgs.LibraryElementId,
+                ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                Height = Constants.DefaultNodeSize,
+                Width = Constants.DefaultNodeSize,
+                X = position.X,
+                Y = position.Y
+            };
+
+            // execute the add element to collection request
+            var elementRequest = new NewElementRequest(newElementRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(createNewContentRequestArgs.ContentId);
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+
+            await elementRequest.AddReturnedElementToSessionAsync();
+
+            // remove any selections from the activeFreeFormViewer
             vm.ClearSelection();
+
         }
-        
+
         public FrameworkElement Panel
         {
             get { return FloatingMenuPanel; }
@@ -344,5 +397,12 @@ namespace NuSysApp
             get { return _lib; }
         }
 
+        private void btnAdd_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var view = SessionController.Instance.SessionView;
+            _exportPos.X = e.GetCurrentPoint(view).Position.X - 25;
+            _exportPos.Y = e.GetCurrentPoint(view).Position.Y - 25;
+            e.Handled = true;
+        }
     }
 }
