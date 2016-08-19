@@ -261,7 +261,8 @@ namespace NuSysApp
         /// <param name="vm"></param>
         private void MakeRelevanceLines(ElementViewModel vm)
         {
-            
+            //get list of node's relevant documents
+            //foreach document in the list as long as the relevance is above .25, make a relevance line for it
         }
 
         public void Dispose()
