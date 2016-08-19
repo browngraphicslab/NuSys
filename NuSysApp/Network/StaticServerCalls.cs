@@ -96,24 +96,7 @@ namespace NuSysApp
                     //create a request to get the elements on the new collection
                     var getWorkspaceRequest = new GetEntireWorkspaceRequest(collectionLibraryElementId);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(getWorkspaceRequest);
-
-                    var contentDataModels = getWorkspaceRequest.GetReturnedContentDataModels();
-                    var elements = getWorkspaceRequest.GetReturnedElementModels();
-
-                    //for each contentDataModel, add it to the contentController if it doesn't exist
-                    foreach (var content in contentDataModels)
-                    {
-                        if (!SessionController.Instance.ContentController.ContainsContentDataModel(content.ContentId))
-                        {
-                            SessionController.Instance.ContentController.AddContentDataModel(content);
-                        }
-                    }
-
-                    //make the collection
-                    await SessionController.Instance.SessionView.MakeCollection(
-                        elements.Select(element => new KeyValuePair<string, ElementModel>(element.Id, element))
-                            .ToDictionary(k => k.Key, v => v.Value));
-
+                    await getWorkspaceRequest.AddReturnedElementsToSessionAsync();
                 }
                 //get and return the element collection controller
                 if (SessionController.Instance.IdToControllers.ContainsKey(newId))

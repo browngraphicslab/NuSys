@@ -16,6 +16,7 @@ namespace NuSysApp
     {
         private List<ContentDataModel> _returnedContentDataModels;
         private List<ElementModel> _returnedElementModels;
+        private List<PresentationLinkModel> _returnedPresentationLinkModels;
 
         /// <summary>
         /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch.  
@@ -39,7 +40,7 @@ namespace NuSysApp
         /// <returns></returns>
         public List<ContentDataModel> GetReturnedContentDataModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
             {
                 GetReturnedArgs();
             }
@@ -52,11 +53,24 @@ namespace NuSysApp
         /// <returns></returns>
         public List<ElementModel> GetReturnedElementModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
             {
                 GetReturnedArgs();
             }
             return _returnedElementModels;
+        }
+
+        /// <summary>
+        /// public method to return the list of presentation links models parsed from the returned Request.  
+        /// </summary>
+        /// <returns></returns>
+        public List<PresentationLinkModel> GetReturnedPresentationLinkModels()
+        {
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
+            {
+                GetReturnedArgs();
+            }
+            return _returnedPresentationLinkModels;
         }
 
 
@@ -85,12 +99,53 @@ namespace NuSysApp
                     _returnedContentDataModels.Add(ContentDataModelFactory.DeserializeFromString(contentString));
                 }
 
+                //create the presentation links
+                _returnedPresentationLinkModels = new List<PresentationLinkModel>();
+                foreach (var presentationLink in args.PresentationLinks)
+                {
+                    _returnedPresentationLinkModels.Add(JsonConvert.DeserializeObject<PresentationLinkModel>(presentationLink));
+                }
+
             }
             catch (JsonException parseException)
             {
                 Debug.Fail("Shouldn't have failed the parse!");
                 _returnedElementModels = new List<ElementModel>();
                 _returnedContentDataModels = new List<ContentDataModel>();
+                _returnedPresentationLinkModels = new List<PresentationLinkModel>();
+            }
+        }
+
+        /// <summary>
+        /// this method performs the common functions on all the returned elements.  
+        /// THis method will add the returned elements to the correct collections and will add all the new contentDataModels it needs to.
+        /// Most times you use this request, you should call this method
+        /// </summary>
+        /// <returns></returns>
+        public async Task AddReturnedElementsToSessionAsync()
+        {
+            //get the contents and elements
+            var contentDataModels = GetReturnedContentDataModels();
+            var elements = GetReturnedElementModels();
+            var presentationLinks = GetReturnedPresentationLinkModels();
+
+            //for each contentDataModel, add it to the contentController if it doesn't exist
+            foreach (var content in contentDataModels)
+            {
+                if (!SessionController.Instance.ContentController.ContainsContentDataModel(content.ContentId))
+                {
+                    SessionController.Instance.ContentController.AddContentDataModel(content);
+                }
+            }
+
+            //make the collection
+            await SessionController.Instance.SessionView.MakeCollection(
+                elements.Select(element => new KeyValuePair<string, ElementModel>(element.Id, element))
+                    .ToDictionary(k => k.Key, v => v.Value));
+
+            foreach (var presentationLink in presentationLinks)//add the presentation links
+            {
+                await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
             }
         }
     }
