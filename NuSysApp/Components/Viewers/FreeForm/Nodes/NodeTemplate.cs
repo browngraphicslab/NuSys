@@ -539,15 +539,13 @@ namespace NuSysApp
         private void OnExplorationClick(object sender, RoutedEventArgs e)
         {
             var vm = ((ElementViewModel) this.DataContext);
-            var sv = SessionController.Instance.SessionView;
 
             // unselect start element
             vm.IsSelected = false;
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
 
-            sv.EnterExplorationMode(vm);
-            
+            SessionController.Instance.SwitchMode(Options.Exploration);         
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

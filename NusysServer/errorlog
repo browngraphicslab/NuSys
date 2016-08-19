@@ -1,0 +1,276 @@
+8/19/2016 12:38:15 AM   the suggested content URL is too short  NusysServer     at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 25
+   at NusysServer.GetEntireWorkspaceRequestHandler.<>c.<HandleRequest>b__0_1(Message strippedMessage) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 36
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value, JsonSerializerSettings settings)
+   at NusysIntermediate.Message.GetSerialized()
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 129
+8/19/2016 12:38:22 AM   the suggested content URL is too short  NusysServer     at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 25
+   at NusysServer.GetEntireWorkspaceRequestHandler.<>c.<HandleRequest>b__0_1(Message strippedMessage) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 36
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value, JsonSerializerSettings settings)
+   at NusysIntermediate.Message.GetSerialized()
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 129
+8/19/2016 1:22:51 AM   the suggested content URL is too short  NusysServer     at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 25
+   at NusysServer.GetEntireWorkspaceRequestHandler.<>c.<HandleRequest>b__0_1(Message strippedMessage) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 36
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value, JsonSerializerSettings settings)
+   at NusysIntermediate.Message.GetSerialized()
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 129
+8/19/2016 1:22:53 AM   the suggested content URL is too short  NusysServer     at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 25
+   at NusysServer.GetEntireWorkspaceRequestHandler.<>c.<HandleRequest>b__0_1(Message strippedMessage) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 36
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value, JsonSerializerSettings settings)
+   at NusysIntermediate.Message.GetSerialized()
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 129
+8/19/2016 1:41:05 AM   the suggested content URL is too short  NusysServer     at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 25
+   at NusysServer.GetEntireWorkspaceRequestHandler.<>c.<HandleRequest>b__0_1(Message strippedMessage) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 36
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value, JsonSerializerSettings settings)
+   at NusysIntermediate.Message.GetSerialized()
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 129
+8/19/2016 1:41:06 AM   the suggested content URL is too short  NusysServer     at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 25
+   at NusysServer.GetEntireWorkspaceRequestHandler.<>c.<HandleRequest>b__0_1(Message strippedMessage) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 36
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.<>c__DisplayClass7_0`3.<CombineSelectors>b__0(TSource x)
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value, JsonSerializerSettings settings)
+   at NusysIntermediate.Message.GetSerialized()
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 129
+8/19/2016 1:41:11 AM   The content file you requests does not exist. file: 4ec1fc1a577a45deae2beea30af775ee.txt  NusysServer     at NusysServer.FileHelper.FetchDataFromFile(String fileName) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 189
+   at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 36
+   at NusysServer.SQLConnector.GetContentDataModel(String contentDataModelId) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\SqlConnector.cs:line 384
+   at NusysServer.GetContentDataModelRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetContentDataModelRequestHandler.cs:line 22
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 104
+8/19/2016 1:41:15 AM   The content file you requests does not exist. file: 6a41a861065d44b090f9ee0c27f004ed.txt  NusysServer     at NusysServer.FileHelper.FetchDataFromFile(String fileName) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 189
+   at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Util\FileHelper.cs:line 36
+   at NusysServer.SQLConnector.GetContentDataModel(String contentDataModelId) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\SqlConnector.cs:line 384
+   at NusysServer.GetContentDataModelRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\RequestHandlers\GetContentDataModelRequestHandler.cs:line 22
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 104
+8/19/2016 1:41:32 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__34`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__16`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__14.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 36
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 73
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass0_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 67
+8/19/2016 1:41:32 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__34`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__16`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__14.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 36
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 73
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass0_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 67
+8/19/2016 1:41:32 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__34`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__16`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__14.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 36
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 73
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass0_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 67
+8/19/2016 2:33:11 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__34`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__16`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__14.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 36
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 73
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass0_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 67
+8/19/2016 2:33:11 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__34`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__16`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__14.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 36
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 73
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass0_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 67
+8/19/2016 2:33:11 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__34`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__16`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__14.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 36
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 73
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass0_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 67
