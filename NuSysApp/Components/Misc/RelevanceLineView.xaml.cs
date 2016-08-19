@@ -41,16 +41,13 @@ namespace NuSysApp
 
         /// <summary>
         /// if the relevance is in the form of a double - this will normalize it between 0 and 1 and set appropriate opacity
+        /// we can do something special here if we want to. otherwise for now it's just gonna set it to the relevance number.
         /// </summary>
         /// <param name="relevance"></param>
         /// <returns></returns>
         private double CalculateOpacity(double relevance)
         {
-            if (relevance > .25)
-            {
-                return 1;
-            }
-            return 0;
+            return relevance;
         }
     }
 }
