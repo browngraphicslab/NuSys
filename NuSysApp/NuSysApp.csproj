@@ -111,6 +111,7 @@
     <Content Include="Assets\collection_1.png" />
     <Content Include="Assets\dragtocollection icon.png" />
     <Content Include="Assets\exploration icon.png" />
+    <Content Include="Assets\exploration mode dark.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />
     <Content Include="Assets\icon_chat.png" />
@@ -909,6 +910,7 @@
     <Content Include="Assets\piegraph bluegreen.png" />
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\present icon.png" />
+    <Content Include="Assets\presentation mode dark.png" />
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />
     <Content Include="Assets\record dark.png" />

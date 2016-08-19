@@ -203,9 +203,10 @@ namespace NuSysApp
         {
             if (_selectedCollection != null)
             {
-                var isReadOnly = true;
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
                 var id = _selectedCollection.LibraryElementId;
+                var m = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+                
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
                 foreach (var content in collectionRequest.GetReturnedContentDataModels())
@@ -214,7 +215,15 @@ namespace NuSysApp
                 }
                 _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
-                this.Frame.Navigate(typeof(SessionView));
+
+                if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserName))
+                {
+                    this.Frame.Navigate(typeof(SessionView), m.AccessType);
+                }
+                else
+                {
+                    this.Frame.Navigate(typeof(SessionView));
+                }
 
             }
         }
