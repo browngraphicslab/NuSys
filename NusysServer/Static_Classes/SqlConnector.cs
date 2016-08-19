@@ -327,7 +327,8 @@ namespace NusysServer
         }
 
         /// <summary>
-        /// To remove a single alias from the server, the passed in message should contain the ALIAS_ID_KEY.
+        /// To remove a single alias from the server, the passed in message should contain the ALIAS_ID_KEY. This also deletes
+        /// all the properties associated with the alias
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -337,6 +338,13 @@ namespace NusysServer
             {
                 return false;
             }
+            //Delete all the properties
+            var messageToDeleteProperties = new Message();
+            messageToDeleteProperties[NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY] =
+                message.GetString(NusysConstants.ALIAS_ID_KEY);
+            var cmdToDeleteProperties = new SQLDeleteQuery(Constants.SQLTableType.Properties, messageToDeleteProperties, Constants.Operator.And);
+            cmdToDeleteProperties.ExecuteCommand();
+
             var cmd = new SQLDeleteQuery(Constants.SQLTableType.Alias, message, Constants.Operator.And);
             return cmd.ExecuteCommand();
         }
