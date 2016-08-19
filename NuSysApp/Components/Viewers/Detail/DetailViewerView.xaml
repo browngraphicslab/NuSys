@@ -117,7 +117,7 @@
         </Style>
     </local:AnimatableUserControl.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid x:Name="xRootGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="3,0,0,0"  Padding="25,10,25,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
