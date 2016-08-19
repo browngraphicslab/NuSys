@@ -88,13 +88,13 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
-            //Get elements controller
-            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
-            var elementController = vm.Controller;
-            if (!vm.IsEditing)
-            { 
-            }
+
             ActiveNodes.Remove((UserControl) sender);
+
+            //Disposes of pointer released event needed for move undo button
+            var userControl = (UserControl)sender;
+            userControl.PointerReleased -= UserControl_PointerReleased;
+
             manipulationCompletedRoutedEventArgs.Handled = true;
         }
 
@@ -126,8 +126,33 @@ namespace NuSysApp
                 }
             }
 
+
+            userControl.PointerReleased += UserControl_PointerReleased;
+
             ActiveNodes.Add((UserControl)sender);
             manipulationStartingRoutedEventArgs.Handled = true;
+        }
+
+        private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+
+            var ffvm = (FreeFormViewerViewModel)_view.DataContext;
+
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            var elementController = vm.Controller;
+            if (!vm.IsEditing)
+            {
+                //Instantiates MoveElementAction
+                var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+
+                _moveNodeUndoButton = new UndoButton();
+                //Activates undo button makes it appear in the old position.
+                ffvm.AtomViewList.Add(_moveNodeUndoButton);
+                _moveNodeUndoButton.MoveTo(_originalPosition);
+                _moveNodeUndoButton.Activate(moveElementAction);
+            }
+     
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -252,21 +277,7 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
-            //Get elements controller
-            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
-            var elementController = vm.Controller;
-            if (!vm.IsEditing)
-            {
-                //Instantiates MoveElementAction
-               var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
 
-                _moveNodeUndoButton = new UndoButton();
-                //Activates undo button makes it appear in the old position.
-                ffvm.AtomViewList.Add(_moveNodeUndoButton);
-                _moveNodeUndoButton.MoveTo(_originalPosition);
-                _moveNodeUndoButton.Activate(moveElementAction);
-                
-            }
         }
 
         public bool CheckInBounds(Point p)
