@@ -342,8 +342,7 @@ namespace NuSysApp
             var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
 
-            Login(username,password,false);
-
+            Login(username, password, false);
         }
 
         /// <summary>

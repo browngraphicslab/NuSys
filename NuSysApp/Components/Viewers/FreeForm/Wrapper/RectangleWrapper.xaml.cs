@@ -478,6 +478,11 @@ namespace NuSysApp
             return xClippingCanvas.Items;
         }
 
+        public ItemCollection GetTemporaryRegionItems()
+        {
+            return xTemporaryClippingCanvas.Items;
+        }
+
         public void Dispose()
         {
             if (Controller != null)
