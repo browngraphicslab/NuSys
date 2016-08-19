@@ -56,12 +56,6 @@ namespace NuSysApp
         {
             get { return LibraryDraggingNode; }
         }
-
-        public Image GraphImage
-        {
-            get { return DraggingGraphImage; }
-        }
-
         
 
         /// <summary>
@@ -913,12 +907,6 @@ namespace NuSysApp
         {
             return xChatBox;
         }
-
-        private void xTestReadonlyButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.ToggleReadonly();
-        }
-
         /// <summary>
         /// Changes the workspace to readonly if it is editable. Changes the workspace to editable if it is readonly.
         /// </summary>

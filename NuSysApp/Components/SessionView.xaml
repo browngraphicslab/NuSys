@@ -42,11 +42,6 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="xOuterMost" >
         <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
-            <Button x:Name="xTestReadonlyButton" Click="xTestReadonlyButton_Click" Content="Test">
-                <Button.RenderTransform>
-                    <TranslateTransform X ="50"/>
-                </Button.RenderTransform>
-            </Button>
             <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
                 <Image Source="/Assets/presentation_backward.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,5,0"></Image>
             </Button>
