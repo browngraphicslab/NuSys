@@ -136,6 +136,22 @@ namespace NuSysApp
 
         private async void UpdateRegionViews(int currentPageNumber)
         {
+            foreach(var item in xClippingWrapper.GetTemporaryRegionItems())
+            {
+                var tempRegion = item as TemporaryImageRegionView;
+                var tempRegionDC = tempRegion.DataContext as TemporaryImageRegionViewModel;
+
+                if (tempRegionDC.PageLocation != null)
+                {
+                    await UITask.Run(() =>
+                    {
+                        tempRegion.Visibility = tempRegionDC.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
+
+                    });
+                }
+
+            }
+
             foreach (var item in xClippingWrapper.GetRegionItems())
             {
                 var regionView = item as PDFRegionView;
@@ -159,7 +175,64 @@ namespace NuSysApp
             xClippingWrapper.Dispose();
         }
 
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = (PdfDetailHomeTabViewModel)DataContext;
+            if (vm == null)
+            {
+                return;
+            }
+            var tempvm = new TemporaryImageRegionViewModel(new Point(0.2, 0.2), 0.5, 0.5, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,0);
+            var tempview = new TemporaryImageRegionView(tempvm);
+            xClippingWrapper.AddTemporaryRegion(tempview);
+            var tempvm2 = new TemporaryImageRegionViewModel(new Point(0.2, 0.2), 0.5, 0.5, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel, 1);
+            var tempview2 = new TemporaryImageRegionView(tempvm2);
+            xClippingWrapper.AddTemporaryRegion(tempview2);
+            /*
+            var contentDataModelId = vm.LibraryElementController.LibraryElementModel.ContentDataModelId;
+            Task.Run(async delegate
+            {
+                //create the request to get the analysis model
+                var request = new GetAnalysisModelRequest(contentDataModelId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                var analysisModel = request.GetReturnedAnalysisModel() as NusysImageAnalysisModel;
 
+                //switch back to UI thread for adding the regions
+                await UITask.Run(delegate
+                {
+                    if (analysisModel != null && analysisModel.Faces != null && analysisModel.Faces.Length > 0)
+                    {
+                        //iterate through each suggestion
+                        foreach (var suggestedRegion in analysisModel.Faces)
+                        {
+                            var rect = suggestedRegion.FaceRectangle;
 
-    }
+                            var metadataDict = new List<MetadataEntry>();
+
+                            if (suggestedRegion.Age != null)//to add the age to the future region
+                            {
+                                metadataDict.Add(new MetadataEntry("suggested_age", new List<string>() { suggestedRegion.Age.Value.ToString() }, MetadataMutability.MUTABLE));
+                            }
+                            if (!string.IsNullOrEmpty(suggestedRegion.Gender))//to add the gender to the future region
+                            {
+                                metadataDict.Add(new MetadataEntry("suggested_gender", new List<string>() { suggestedRegion.Gender }, MetadataMutability.MUTABLE));
+                            }
+
+                            if (rect == null || rect.Left == null || rect.Top == null || rect.Height == null || rect.Width == null)
+                            {
+                                continue;
+                            }
+                            //create a temp region for every face
+                            var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel);
+                            var tempview = new TemporaryImageRegionView(tempvm);
+                            tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
+                            xClippingWrapper.AddTemporaryRegion(tempview);
+                        }
+                    }
+                });
+
+            });
+        */
+        }
+}
 }

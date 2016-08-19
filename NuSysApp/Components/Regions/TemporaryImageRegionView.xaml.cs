@@ -112,14 +112,21 @@ namespace NuSysApp
         {
             //We create a request using the detail view's create args function
             var vm = this.DataContext as TemporaryImageRegionViewModel;
-            var regionRequestArgs = vm.HomeTabViewModel?.GetNewCreateLibraryElementRequestArgs() as CreateNewRectangleRegionLibraryElementRequestArgs;
-            var type = NusysConstants.ElementType.ImageRegion;
+            CreateNewRectangleRegionLibraryElementRequestArgs regionRequestArgs;
+            if (vm.PageLocation != null)
+            {
+                regionRequestArgs = vm.HomeTabViewModel?.GetNewCreateLibraryElementRequestArgs() as CreateNewPDFRegionLibraryElementRequestArgs;
+                (regionRequestArgs as CreateNewPDFRegionLibraryElementRequestArgs).PageLocation = (int)vm.PageLocation;
+            }
+            else {
+                regionRequestArgs = vm.HomeTabViewModel?.GetNewCreateLibraryElementRequestArgs() as CreateNewRectangleRegionLibraryElementRequestArgs;
+            }
+            var type = (vm.PageLocation == null ) ?NusysConstants.ElementType.ImageRegion : NusysConstants.ElementType.PdfRegion;
 
             // We need to then populate our new figures into it
             regionRequestArgs.RegionHeight = vm.NormalizedHeight;
             regionRequestArgs.RegionWidth = vm.NormalizedWidth;
             regionRequestArgs.TopLeftPoint = new PointModel(vm.NormalizedTopLeftPoint.X,vm.NormalizedTopLeftPoint.Y);
-
             // this is the rest of what's left to do to make this
             regionRequestArgs.ContentId = vm.HomeTabViewModel.LibraryElementController.LibraryElementModel.ContentDataModelId;
             regionRequestArgs.LibraryElementType = type;

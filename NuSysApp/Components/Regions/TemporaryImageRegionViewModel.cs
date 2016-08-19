@@ -24,6 +24,10 @@ namespace NuSysApp
         /// <summary>
         /// This is the disposed event that the children of the temp view listen to to get their handlers stripped from them
         /// </summary>
+        /// 
+
+        private int? _pageLocation;
+
         public event EventHandler Disposed;
         /// <summary>
         /// This is the height that the view binds to. It is denormalized based on the size of the wrapper
@@ -36,6 +40,19 @@ namespace NuSysApp
                 _height = value;
                 RaisePropertyChanged("Height");
             }
+        }
+        /// <summary>
+        /// Page location of temporary region view. If null, it's an temporaryregionview for images. If not, it's a trv for PDFs.
+        /// </summary>
+        public int? PageLocation
+        {
+            get { return _pageLocation; }
+            set
+            {
+                _pageLocation = value;
+                RaisePropertyChanged("PageLocation");
+            }
+
         }
         /// <summary>
         /// this is the width that the view binds to, it is denormalized based on the size of the wrapper
@@ -88,11 +105,14 @@ namespace NuSysApp
         /// </summary>
         public List<MetadataEntry> MetadataToAddUponBeingFullRegion { get; set; }
 
-        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel)
+        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel, int? pageLocation = null)
         {
             NormalizedTopLeftPoint = topLeftPoint;
             NormalizedWidth = width;
             NormalizedHeight = height;
+
+            PageLocation = pageLocation;
+
             RectangleWrapper = rectangleWrapper;
             HomeTabViewModel = hometabViewModel;
 

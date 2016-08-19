@@ -319,16 +319,18 @@ namespace NuSysApp
             if (!_singleTap) return;
 
             var listItem = (Grid)sender;
-            var regionsPanel = listItem.FindName("RegionsPanel") as Grid;
+            var buttonPanel = listItem.FindName("ButtonPanel") as Grid;
 
-            if (regionsPanel?.Visibility == Visibility.Visible)
+            if (buttonPanel?.Visibility == Visibility.Visible)
             {
-                regionsPanel.Visibility = Visibility.Collapsed;
+                buttonPanel.Visibility = Visibility.Collapsed;
                 return;
             }
-
-            regionsPanel?.RowDefinitions.Clear();
-            regionsPanel?.Children.Clear();
+            buttonPanel.Width = listItem.ActualWidth;
+            buttonPanel.Visibility = Visibility.Visible;
+            /*
+            buttonPanel?.RowDefinitions.Clear();
+            buttonPanel?.Children.Clear();
             var elementTemplate = ListView.SelectedItem as LibraryItemTemplate;
 
             if (elementTemplate == null) // This become true when the item is deleted from the library
@@ -411,6 +413,7 @@ namespace NuSysApp
             {
                 regionsPanel.Visibility = Visibility.Collapsed;
             };
+            */
         }
 
         private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -431,25 +434,25 @@ namespace NuSysApp
         
         private async void LibraryListItem_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            var grid = sender as Grid;
-            var timestamp = grid?.FindName("TimeStampBox") as TextBlock;
-            var delete = grid?.FindName("DeleteBox") as Button;
-            timestamp.Visibility = Visibility.Collapsed;
-            delete.Visibility = Visibility.Visible;
-            delete.IsHitTestVisible = true;
+            //var grid = sender as Grid;
+            //var timestamp = grid?.FindName("TimeStampBox") as TextBlock;
+            //var delete = grid?.FindName("DeleteBox") as Button;
+            //timestamp.Visibility = Visibility.Collapsed;
+            //delete.Visibility = Visibility.Visible;
+            //delete.IsHitTestVisible = true;
 
-            await Task.Delay(4000);
+            //await Task.Delay(4000);
 
-            timestamp.Visibility = Visibility.Visible;
-            delete.Visibility = Visibility.Collapsed;
-            delete.IsHitTestVisible = false;
+            //timestamp.Visibility = Visibility.Visible;
+            //delete.Visibility = Visibility.Collapsed;
+            //delete.IsHitTestVisible = false;
 
         }
         
         private void DeleteBox_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var textBlock = sender as Button;
-            var id = textBlock?.DataContext as string;
+            var deleteButton = sender as Button;
+            var id = deleteButton?.DataContext as string;
 
             // get the currWorkSpaceId
             var currWorkSpaceId =
@@ -485,6 +488,18 @@ namespace NuSysApp
 
             var action = new DeleteLibraryElementAction(args);
             DeleteClicked?.Invoke(this, action);
+        }
+        
+        private void CopyButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var copyButton = sender as Button;
+            var id = copyButton?.DataContext as string;
+
+            // Simply create a deep copy. See the function call for more.
+            Task.Run(async delegate
+            {
+                StaticServerCalls.CreateDeepCopy(id);
+            });
         }
     }
 

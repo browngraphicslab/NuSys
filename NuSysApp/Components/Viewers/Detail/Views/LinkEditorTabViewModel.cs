@@ -40,12 +40,12 @@ namespace NuSysApp
                 
             }
             
-            SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
-            SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
+            SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewContent;
+            SessionController.Instance.ContentController.OnLibraryElementDelete += ContentControllerOnLibraryElementDelete;
 
         }
 
-        private void ContentController_OnElementDelete(LibraryElementModel element)
+        private void ContentControllerOnLibraryElementDelete(LibraryElementModel element)
         {
             foreach (var item in new HashSet<LibraryItemTemplate>(LibraryElements))
             {

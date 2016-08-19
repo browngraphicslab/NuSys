@@ -31,14 +31,14 @@ namespace NuSysApp
     public sealed partial class WaitingRoomView : Page
     {
         public FreeFormViewer _freeFormViewer;
-        
+
         public static string InitialWorkspaceId { get; set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        
+
 
         public static bool IS_HUB = false;
 
@@ -94,7 +94,7 @@ namespace NuSysApp
             //    ServerName = ServerNameText.Text;
 
             //};
-            
+
             //SlideOutLogin.Completed += SlideOutLoginComplete;
             //SlideOutNewUser.Completed += SlideOutLoginComplete;
 
@@ -105,6 +105,18 @@ namespace NuSysApp
             _titleReverse = false;
             _dateReverse = false;
             _accessReverse = false;
+
+            // Every time a new collection is added by another user, the list of collections is refreshed by calling Init
+            SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewLibraryElememt;
+        }
+
+        /// <summary>
+        /// This handler is responsible for refreshing the list of collections every time another user adds a new collection.
+        /// </summary>
+        /// <param name="model"></param>
+        private void ContentController_OnNewLibraryElememt(LibraryElementModel model)
+        {
+            Init();
         }
 
         /// <summary>
@@ -112,7 +124,7 @@ namespace NuSysApp
         /// </summary>
         private async void Init()
         {
-
+            SessionController.Instance.ContentController.OnNewLibraryElement -= ContentController_OnNewLibraryElememt;//remove the habndler so it doesn't Init() forever
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
@@ -149,8 +161,7 @@ namespace NuSysApp
                 Debug.WriteLine("not a valid server");
                 // TODO: fix this
             }
-
-
+            SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewLibraryElememt; //re-add the handler so we start listening for new contents again
         }
 
         /// <summary>
@@ -160,8 +171,8 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void NewButton_OnClick(object sender, RoutedEventArgs e)
         {
-            NewWorkspacePopup.HorizontalOffset = this.ActualWidth/2 - 250;
-            NewWorkspacePopup.VerticalOffset = this.ActualHeight/2 - 110;
+            NewWorkspacePopup.HorizontalOffset = this.ActualWidth / 2 - 250;
+            NewWorkspacePopup.VerticalOffset = this.ActualHeight / 2 - 110;
             NewWorkspacePopup.IsOpen = true;
         }
 
@@ -200,12 +211,13 @@ namespace NuSysApp
             NewWorkspaceName.Text = "";
             NewWorkspacePopup.IsOpen = false;
         }
+
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
             if (_selectedCollection != null)
             {
-                var isReadOnly = true;
-                SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
+                SessionController.Instance.ContentController.OnNewLibraryElement -= LibraryElementControllerOnOnNewLibraryElement;
+
                 var id = _selectedCollection.LibraryElementId;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
@@ -217,6 +229,8 @@ namespace NuSysApp
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
 
+                // Detach the handler for refreshing the list of collections
+                SessionController.Instance.ContentController.OnNewLibraryElement -= ContentController_OnNewLibraryElememt;
             }
         }
 
@@ -327,8 +341,7 @@ namespace NuSysApp
             _isLoggingIn = true;
             var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
-            Login(username,password,false);
-           // _isLoggingIn = false;
+            Login(username, password, false);
         }
 
         /// <summary>
@@ -527,7 +540,7 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.Init();
                         SessionController.Instance.LocalUserID = userID;
 
-                        SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
+                        SessionController.Instance.ContentController.OnNewLibraryElement += LibraryElementControllerOnOnNewLibraryElement;
 
                         loggedInText.Text = "Logged In!";
                         NewUserLoginText.Text = "Logged In!";
@@ -561,7 +574,7 @@ namespace NuSysApp
                         NuSysTitle.Visibility = Visibility.Collapsed;
 
                         UserName = userID;
-                        if (userID.ToLower() != "rosemary" && userID.ToLower()!= "rms" && userID.ToLower() != "gfxadmin")
+                        if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" && userID.ToLower() != "gfxadmin")
                         {
 
                             foreach (var box in List.Items)
@@ -577,7 +590,7 @@ namespace NuSysApp
 
 
                         await Task.Run(async delegate
-                        { 
+                        {
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                             foreach (var model in models)
                             {
@@ -651,7 +664,7 @@ namespace NuSysApp
             });
         }
 
-        private void ContentControllerOnOnNewContent(LibraryElementModel element)
+        private void LibraryElementControllerOnOnNewLibraryElement(LibraryElementModel element)
         {
             if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
@@ -687,8 +700,8 @@ namespace NuSysApp
         {
             var collections = List?.Items.ToList();
             List?.Items?.Clear();
-            var sorttype = ((Button) sender).Name;
-            
+            var sorttype = ((Button)sender).Name;
+
             switch (sorttype)
             {
                 case "TitleHeader":

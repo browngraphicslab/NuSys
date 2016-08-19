@@ -50,8 +50,9 @@
             
             <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" HorizontalAlignment="Right" SetWidth="200"  Grid.Row="0"></local:ShowHideRegionButtons>
             <local:AddToCollectionButton Grid.Row="0" HorizontalAlignment="Left"/>
-            
+
             <Grid Grid.Row="2" x:Name="SegmentPanel">
+                <Button Tapped="Button_Tapped" HorizontalAlignment="Center">Suggest regions</Button>
                 <StackPanel>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
                         <TextBlock Foreground="{StaticResource color3}" FontSize="20">Document Analysis by Page</TextBlock>

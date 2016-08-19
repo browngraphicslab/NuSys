@@ -289,6 +289,21 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY = "small_icon_bytes";
 
                 /// <summary>
+                /// key in message for sending large icon url. To be used when copying an existing library element.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL = "large_icon_url";
+
+                /// <summary>
+                /// key in message for sending medium icon url. To be used when copying an existing library element.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL = "medium_icon_url";
+
+                /// <summary>
+                /// key in message for sending an existing small icon url. To be used when copying an existing library element.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL = "small_icon_url";
+
+                /// <summary>
                 /// key in message for sending creator id when creating new library element request 
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";

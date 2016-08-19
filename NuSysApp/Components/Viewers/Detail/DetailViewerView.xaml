@@ -140,6 +140,7 @@
                     <Button.Flyout>
                         <MenuFlyout Placement="Bottom">
                             <MenuFlyoutItem HorizontalAlignment="Center" Click="OnAccessClick">Change Access</MenuFlyoutItem>
+                            <MenuFlyoutItem HorizontalAlignment="Center" Click="OnMakeCopyClick">Make Copy</MenuFlyoutItem>
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
