@@ -22,5 +22,10 @@ namespace NusysIntermediate
         /// </summary>
         public CognitiveApiRectangleModel Rectangle { get; set; }
 
+        /// <summary>
+        /// the boolean representing whether the server has marked this specific region to be particularly important.  
+        /// NOT FROM THE COGNITIVE SERVICES API. 
+        /// </summary>
+        public bool MarkedImportant { get; set; }
     }
 }

@@ -226,6 +226,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Lda\Constants.cs" />
+    <Compile Include="Lda\Conversion.cs" />
+    <Compile Include="Lda\Dictionary.cs" />
+    <Compile Include="Lda\DieStopWords.cs" />
+    <Compile Include="Lda\Document.cs" />
+    <Compile Include="Lda\DocumentReformatter.cs" />
+    <Compile Include="Lda\Estimator.cs" />
+    <Compile Include="Lda\Inferencer.cs" />
+    <Compile Include="Lda\LDADataset.cs" />
+    <Compile Include="Lda\MainTest.cs" />
+    <Compile Include="Lda\Model.cs" />
+    <Compile Include="Lda\Option.cs" />
+    <Compile Include="Lda\Pair.cs" />
+    <Compile Include="Lda\Parser.cs" />
     <Compile Include="Misc\SqlJoinOperationArgs.cs" />
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
     <Compile Include="Notifications\DropUserNotification.cs" />

@@ -102,6 +102,8 @@ namespace NuSysApp
                 xSentimentBox.Text = "...";
                 xKeyPhrasesBox.Text = "...";
             }
+
+            var s = _analysisModel.PageImageAnalysisModels.SelectMany(item => item.Regions).Where(i => i.MarkedImportant);
         }
 
         private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)

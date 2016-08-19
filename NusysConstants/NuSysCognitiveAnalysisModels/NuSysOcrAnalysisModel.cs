@@ -34,8 +34,5 @@ namespace NusysIntermediate
         /// </summary>
         public List<CognitiveApiRegionModel> Regions { get; set; }
 
-
-
-
     }
 }
