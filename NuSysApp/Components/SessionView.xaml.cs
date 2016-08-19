@@ -273,7 +273,10 @@ namespace NuSysApp
         public void ShowRelatedElements(string tag)
         {
             var exp = _modeInstance as ExplorationMode;
-            exp.ShowRelatedElements(tag);
+            if (exp != null)
+            {
+                exp.ShowRelatedElements(tag);
+            }
         }
 
         public void EnterPresentationMode(ElementViewModel em)
