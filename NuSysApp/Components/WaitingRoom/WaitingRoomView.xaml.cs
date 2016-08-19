@@ -45,6 +45,7 @@ namespace NuSysApp
         private static IEnumerable<ElementModel> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
+        private bool _isLoggingIn = false;
 
         //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
@@ -320,6 +321,7 @@ namespace NuSysApp
             }
             if (valid == true)
             {
+
                 var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
                 var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
                 var displayName = NewDisplayName.Text;
@@ -330,9 +332,18 @@ namespace NuSysApp
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
+            if (_isLoggingIn)
+            {
+                return;
+            }
+            // to prevent multiple logins we must block logins, the call to allow more logins is after the server sends back and says that 
+            // the login was incorrect
+            _isLoggingIn = true;
             var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
-            Login(username, password, false);
+
+            Login(username,password,false);
+
         }
 
         /// <summary>
@@ -513,6 +524,8 @@ namespace NuSysApp
                     {
                         loggedInText.Text = dict["error_message"];
                         NewUserLoginText.Text = dict["error_message"];
+                        //We stop blocking the login becausethere is an error in logging in
+                        _isLoggingIn = false;
                     }
                 }
                 catch (Exception boolParsException)
