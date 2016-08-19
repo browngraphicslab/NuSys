@@ -83,16 +83,65 @@ namespace NuSysApp
 
                 // Sets MaxHeight and MaxWidth such that the DV doesn't go off screen
                 this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-                this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth, 0);
+                // 70 is the width of the snapshot button plus 2* the margin of the snapshat button from SessionView.xaml
+                this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - 70, 0);
 
                 AccessPopup.VerticalOffset = this.Height / 2 - 150;
                 AccessPopup.HorizontalOffset = this.Width / 2 - 200;
 
                 // Sets the DV's position on screen
                 Canvas.SetTop(this, 0);
-                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);                
-              };
+                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
+
+                // Add an event so the detail viewer resized when the window resizes
+                SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
+            };
             
+        }
+
+        /// <summary>
+        /// When the window resizes, resize the detail viewer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SessionView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // resize the height only
+            this.ResizeView(false, true);
+        }
+
+        /// <summary>
+        /// Sets the view equal to the size of the window
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        private void ResizeView(bool width, bool height)
+        {
+            // resize width
+            if (width)
+            {
+                this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
+            }
+            // resize height
+            if (height)
+            {
+                this.Height = SessionController.Instance.SessionView.ActualHeight;
+            }
+
+            // set the max height and width
+            this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+            // 70 is the width of the snapshot button plus 2* the margin of the snapshat button from SessionView.xaml
+            this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - 70, 0);
+            // Sets the DV's position on screen
+            Canvas.SetTop(this, 0);
+            Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);            
+
+            // Sets the width for the tab pane on top of the DV
+            var vm = DataContext as DetailViewerViewModel;
+            vm.TabPaneWidth = this.Width;
+
+            AccessPopup.VerticalOffset = this.Height / 2 - 150;
+            AccessPopup.HorizontalOffset = this.Width / 2 - 200;
         }
 
         private void Vm_OnTitleChanged(object source, string newTitle)
@@ -314,6 +363,8 @@ namespace NuSysApp
             Disposed?.Invoke(this, EventArgs.Empty);
             var vm = DataContext as DetailViewerViewModel;
             vm.Tabs.Clear();
+            SessionController.Instance.SessionView.SizeChanged -= SessionView_SizeChanged;
+
             vm.Dispose();
         }
 
