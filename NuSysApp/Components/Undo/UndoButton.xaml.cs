@@ -46,7 +46,6 @@ namespace NuSysApp
         private Timer _timer;
         private UndoButtonState _state;
 
-
         /// <summary>
         /// Creates a general undo button. No input parameters so UndoButtons can be added in XAML.
         /// </summary>
@@ -59,8 +58,6 @@ namespace NuSysApp
             ActionExecuted = false;
 
         }
-
-
 
         /// <summary>
         /// Moves the undo button to position of the passed in point
@@ -111,7 +108,7 @@ namespace NuSysApp
         public void Deactivate()
         {
             _state=UndoButtonState.Inactive;
-            this.Opacity = .1;
+            this.Opacity = 0;
             _timer.Dispose();
         }
        

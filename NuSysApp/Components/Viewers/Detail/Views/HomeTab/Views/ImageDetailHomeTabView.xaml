@@ -49,7 +49,7 @@
                         <TextBlock Foreground="{StaticResource color3}" FontSize="20">Image Analysis</TextBlock>
                     </Grid>
 
-                    <ScrollViewer MaxHeight="200" HorizontalAlignment="Stretch">
+                    <ScrollViewer MaxHeight="200" MinHeight="200"  HorizontalAlignment="Stretch">
                         <StackPanel>
                             <Grid>
                                 <TextBlock Foreground="{StaticResource color3}" Margin="3">Description:</TextBlock>

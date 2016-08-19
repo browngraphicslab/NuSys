@@ -109,6 +109,7 @@
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
+    <Content Include="Assets\dark undo.png" />
     <Content Include="Assets\dragtocollection icon.png" />
     <Content Include="Assets\exploration icon.png" />
     <Content Include="Assets\exploration mode dark.png" />
@@ -937,6 +938,7 @@
     <Content Include="Assets\text.png" />
     <Content Include="Assets\tools icon.png" />
     <Content Include="Assets\tool_icon.png" />
+    <Content Include="Assets\undo icon.png" />
     <Content Include="Assets\video icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\word.png" />

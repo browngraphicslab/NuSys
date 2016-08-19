@@ -898,7 +898,7 @@
         <Setter Property="Foreground" Value="{StaticResource color3}"/>
         <Setter Property="Background" Value="{StaticResource color2}"/>
         <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}"/>
-        <Setter Property="SelectionHighlightColor" Value="Transparent"/>
+        <Setter Property="SelectionHighlightColor" Value="{StaticResource color2}"/>
         <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}"/>
         <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
         <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
@@ -1039,7 +1039,7 @@
         <Setter Property="Foreground" Value="{StaticResource color6}"/>
         <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundAltHighBrush}"/>
         <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}"/>
-        <Setter Property="SelectionHighlightColor" Value="Transparent"/>
+        <Setter Property="SelectionHighlightColor" Value="{StaticResource color2}"/>
         <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}"/>
         <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
         <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
@@ -1176,7 +1176,7 @@
         <Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}"/>
         <Setter Property="Foreground" Value="{StaticResource color6}"/>
         <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundAltHighBrush}"/>
-        <Setter Property="SelectionHighlightColor" Value="Transparent"/>
+        <Setter Property="SelectionHighlightColor" Value="{StaticResource color2}"/>
         <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}"/>
         <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}"/>
         <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
