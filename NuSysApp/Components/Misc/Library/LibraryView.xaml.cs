@@ -421,7 +421,7 @@ namespace NuSysApp
             await elementRequest.AddReturnedElementToSessionAsync();
             
             // We then populate this new collection with instances of the all the search results
-            if (ListContainer.Children[0] == _libraryList)
+            if (ListContainer.Children[0] == _libraryList) // if there are search results
             {
                 foreach (var libraryItemTemplate in _pageViewModel.ItemList.ToList().GetRange(0, Math.Min(_pageViewModel.ItemList.Count, 30)))
                 {

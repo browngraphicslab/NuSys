@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Newtonsoft.Json;
 using NusysIntermediate;
 
@@ -737,6 +738,23 @@ namespace NuSysApp
         {
             //the workspace id we are using is the passes in one, or the session's current workspace Id if it is null
             collectionId = collectionId ?? SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
+
+            // get the element type
+            var elementType = LibraryElementModel.Type;
+
+            // if the element is a collection, use the StaticServerCalls Method
+            if (elementType == NusysConstants.ElementType.Collection)
+            {
+                var collectionLibraryElementModel = LibraryElementModel as CollectionLibraryElementModel;
+                Debug.Assert(collectionLibraryElementModel != null);
+
+                // try to add the collection to the collection
+                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, collectionId,
+                    collectionLibraryElementModel.IsFinite, collectionLibraryElementModel.ShapePoints.Select(pointModel => new Point(pointModel.X, pointModel.Y)).ToList());
+
+                // return whether the method succeeded
+                return success != null;
+            }
 
             //create the request args 
             var elementArgs = new NewElementRequestArgs();
