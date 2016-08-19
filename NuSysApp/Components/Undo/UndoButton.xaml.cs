@@ -108,7 +108,7 @@ namespace NuSysApp
         public void Deactivate()
         {
             _state=UndoButtonState.Inactive;
-            this.Opacity = .1;
+            this.Opacity = 0;
             _timer.Dispose();
         }
        
