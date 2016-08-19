@@ -174,7 +174,10 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility == Visibility.Collapsed)
                 return;
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
-            await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
+
+            var controller =
+                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            controller.AddElementAtPosition(r.X, r.Y);
         }
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)

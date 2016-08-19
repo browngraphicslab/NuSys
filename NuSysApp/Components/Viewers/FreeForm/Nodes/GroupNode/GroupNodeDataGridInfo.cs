@@ -14,7 +14,7 @@ namespace NuSysApp
             Id = id;
 
             this._timeStamp = time;
-            this._creator = name;
+            this._creator = name; // this creator shoudl be the plain english not the hash
             this._nodetype = nodetype;
             this._title = title;
         }

@@ -56,12 +56,6 @@ namespace NuSysApp
         {
             get { return LibraryDraggingNode; }
         }
-
-        public Image GraphImage
-        {
-            get { return DraggingGraphImage; }
-        }
-
         
 
         /// <summary>
