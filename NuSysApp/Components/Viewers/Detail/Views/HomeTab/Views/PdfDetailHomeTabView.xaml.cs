@@ -96,14 +96,13 @@ namespace NuSysApp
                     xSentimentBox.Text = "None found";
                 }
                 xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
+                var s = _analysisModel.PageImageAnalysisModels.SelectMany(item => item.Regions).Where(i => i.MarkedImportant);
             }
             else
             {
                 xSentimentBox.Text = "...";
                 xKeyPhrasesBox.Text = "...";
             }
-
-            var s = _analysisModel.PageImageAnalysisModels.SelectMany(item => item.Regions).Where(i => i.MarkedImportant);
         }
 
         private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
