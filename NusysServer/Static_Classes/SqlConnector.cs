@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -117,7 +118,8 @@ namespace NusysServer
             var metadataTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Metadata)+" ("+
                 NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY + " varchar(128)," +
                 NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
-                NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
+                NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096), " + 
+                NusysConstants.METADATA_MUTABILITY_COLUMN_KEY + " varchar(128));");
 
             var propertiesTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties) + " (" +
                 NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " varchar(128), " +
@@ -183,6 +185,11 @@ namespace NusysServer
                 clearContent.ExecuteNonQuery();
                 clearAnalysisModels.ExecuteNonQuery();
                 clearUsers.ExecuteNonQuery();
+            }
+
+            if (File.Exists(Constants.FILE_FOLDER + "docsave.txt"))//delete a dictionary json saving Junsu' comparisons
+            {
+                File.Delete(Constants.FILE_FOLDER + "docsave.txt");
             }
         }
 

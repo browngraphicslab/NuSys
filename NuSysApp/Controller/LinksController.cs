@@ -147,7 +147,7 @@ namespace NuSysApp
             }
             _contentIdToLinkContentIds[inId].Add(libraryId);
             _contentIdToLinkContentIds[outId].Add(libraryId);
-        }
+         }
 
         /// <summary>
         /// Gets the list of linkable ids that correspond to LINKS OR NODES that are instances of the given contetn
@@ -384,6 +384,7 @@ namespace NuSysApp
         /// <summary>
         /// returns the LinkLibraryElementController for two libraryElementModels passed in via their Id's
         /// null if no link existed between them
+        /// returns null if the link doesn't exist
         /// </summary>
         /// <param name="libElemId1"></param>
         /// <param name="libElemId2"></param>
@@ -391,12 +392,14 @@ namespace NuSysApp
         public LinkLibraryElementController GetLinkLibraryElementControllerBetweenContent(string libElemId1, string libElemId2)
         {
 
-            Debug.Assert(libElemId1 != null && _contentIdToLinkContentIds.ContainsKey(libElemId1));
-            Debug.Assert(libElemId2 != null && _contentIdToLinkContentIds.ContainsKey(libElemId2));
-            //Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId1) != null);
-            //Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId2) != null);
 
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId1) != null);
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId2) != null);
 
+            if (!_contentIdToLinkContentIds.ContainsKey(libElemId1) || !_contentIdToLinkContentIds.ContainsKey(libElemId2))
+            {
+                return null;
+            }
             var linkLibElemControllersIds1 = _contentIdToLinkContentIds[libElemId1];
             var linkLibElemControllersIds2 = _contentIdToLinkContentIds[libElemId2];
             var intersect = linkLibElemControllersIds1.Intersect(linkLibElemControllersIds2).ToList();

@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NusysIntermediate;
 using NuSysApp.Network.Requests;
@@ -27,7 +28,7 @@ namespace NuSysApp
     public sealed partial class SessionView : Page
     {
         #region Private Members
-
+       
         private int _penSize = Constants.InitialPenSize;
         private CortanaMode _cortanaModeInstance;
         private FreeFormViewer _activeFreeFormViewer;
@@ -55,12 +56,6 @@ namespace NuSysApp
         {
             get { return LibraryDraggingNode; }
         }
-
-        public Image GraphImage
-        {
-            get { return DraggingGraphImage; }
-        }
-
         
 
         /// <summary>
@@ -109,14 +104,29 @@ namespace NuSysApp
             Loaded += OnLoaded;
 
             MainCanvas.SizeChanged += Resize;
- 
+
+
+
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter != null)
+            {
+                var accessType = (NusysConstants.AccessType)e.Parameter;
             
+                if (accessType == NusysConstants.AccessType.ReadOnly)
+                {
+                    MakeWorkspaceReadonly();
+                    IsReadonly = true;
+                }
+            } 
         }
 
         /// <summary>
         /// Makes a workspace readonly by showing the readonly menu and modifying the modes
         /// </summary>
-        private void MakeWorkspaceReadonly()
+        public void MakeWorkspaceReadonly()
         {
             // toggle visibility and activity of some ui elements
             xFloatingMenu.Visibility = Visibility.Collapsed;
@@ -273,7 +283,10 @@ namespace NuSysApp
         public void ShowRelatedElements(string tag)
         {
             var exp = _modeInstance as ExplorationMode;
-            exp.ShowRelatedElements(tag);
+            if (exp != null)
+            {
+                exp.ShowRelatedElements(tag);
+            }
         }
 
         public void EnterPresentationMode(ElementViewModel em)
@@ -290,6 +303,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
+            xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
             this.xDetailViewer.CloseDv();
 
 
@@ -323,6 +337,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
+            xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
             this.xDetailViewer.CloseDv();
 
             // center the buttons, make them visibile
@@ -481,6 +496,10 @@ namespace NuSysApp
             if (sender == xPresentation)
             {
                 ExitMode();
+                if (IsReadonly)
+                {
+                    xReadonlyFloatingMenu.Visibility = Visibility.Visible;
+                }
                 return;
             }
 
@@ -688,6 +707,8 @@ namespace NuSysApp
             Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
+            Canvas.SetLeft(xReadonlyFloatingMenu, mainCanvas.ActualWidth / 2 - xReadonlyFloatingMenu.ActualWidth/2);
+            Canvas.SetTop(xReadonlyFloatingMenu, mainCanvas.ActualHeight - xReadonlyFloatingMenu.ActualHeight - 20);
             //Canvas.SetLeft(ChatNotifs, 37);
             //Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
             //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
@@ -886,12 +907,6 @@ namespace NuSysApp
         {
             return xChatBox;
         }
-
-        private void xTestReadonlyButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.ToggleReadonly();
-        }
-
         /// <summary>
         /// Changes the workspace to readonly if it is editable. Changes the workspace to editable if it is readonly.
         /// </summary>

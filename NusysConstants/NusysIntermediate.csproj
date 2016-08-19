@@ -84,6 +84,7 @@
     <Compile Include="NuSysCognitiveAnalysisModels\CognitiveJsonModels\CognitiveApiWordModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysImageAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NuSysOcrAnalysisModel.cs" />
+    <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfDocumentAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\CognitiveJsonModels\NusysPdfSegmentAnalysisModel.cs" />
     <Compile Include="Request.cs" />

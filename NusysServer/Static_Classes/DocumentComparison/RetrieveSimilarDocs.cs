@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using NusysServer.Static_Classes.DocumentComparison;
 
 namespace NusysServer.DocumentComparison
 {
     public class RetrieveSimilarDocs
     {
         /// <summary>
-        /// Given a document, returns the top k similar matches
+        /// Given a document, returns the top k similar matches in sorted order from closest to farthest
         /// </summary>
         /// <param name="document"></param>
         /// <param name="k"></param>
-        public static Tuple<string, double>[] GetSimilarDocs(Document document, List<Document> documentList, int k)
+        public static List<Tuple<string, double>> GetSimilarDocs(Document document, List<Document> documentList, int k)
         {
-            // TODO Try with quickselect
-
-            // document dictionary
+            // TODO Rough implementation for now, quickselect probably more efficient. But k will always be ~5, so worth changing?
+            
+            // Tfidf vector for the document we are retrieving similar docs for
             Dictionary<int, double> documentDictionary = document.GetTFIDFVector();
             
             // array that will hold the k documents
-            Tuple<string, double>[] closestDocuments = new Tuple<string, double>[k];
+            List<Tuple<string, double>> closestDocuments = new List<Tuple<string, double>>();
+
+            // loop through the array and initialize values to 2 (0 <= cosine distance <= 1 in our case)
             for (int i = 0; i < k; i++)
             {
-                closestDocuments[i] = new Tuple<string, double>("", Double.MaxValue);
+                closestDocuments[i] = new Tuple<string, double>("", 2);
             }
 
             int farthestIndex = 0;
@@ -31,33 +35,40 @@ namespace NusysServer.DocumentComparison
                 if (doc.Id != document.Id)
                 {
                     double distance = VectorUtil.CosineDistance(doc.GetTFIDFVector(), documentDictionary);
-                    if (distance < closestDocuments[farthestIndex].Item2)
-                    {
-                        closestDocuments[farthestIndex] = new Tuple<string, double>(doc.Id, distance);
-                        farthestIndex = getFarthestIndex(closestDocuments);
-                    }
+                    string title = DocSave.getTitle(doc.Id);
+                    Tuple<string, double> tuple = new Tuple<string, double>(title, distance);
+
+                    insertTupleIntoSortedList(closestDocuments, tuple, k);
                 }    
             }
 
             return closestDocuments;
         }
 
-        private static int getFarthestIndex(Tuple<string,double>[] array)
+        /// <summary>
+        /// Given a sorted list and a tuple, inserts the tuple into the correct location
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="tuple"></param>
+        private static void insertTupleIntoSortedList(List<Tuple<string, double>> list, Tuple<string, double> tuple, int k)
         {
-            int counter = 0;
-            double max = Double.MinValue;
-            int index = -1;
+            int markIndex = -1;
 
-            foreach (Tuple<string,double> tuple in array)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (tuple.Item2 > max)
+                if (list[i].Item2 > tuple.Item2)
                 {
-                    max = tuple.Item2;
-                    index = counter;
-                }
-                counter++;
+                    // save index
+                    markIndex = i;
+                }                
             }
-            return index;
+            
+            // only if index != -1, we need to insert into list
+            if (markIndex > 0)
+            {
+                list.Insert(markIndex, tuple);
+                list.RemoveAt(k);
+            }
         }
     }
 }

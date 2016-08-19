@@ -273,7 +273,7 @@ namespace NusysServer
         /// <param name="contentDataModelId">the string Id of the contentDataModel that this analysis model is analyzing</param>
         /// <param name="textByPage"></param>
         /// <returns></returns>
-        public static async Task<NusysPdfDocumentAnalysisModel> GetNusysPdfAnalysisModelFromTextAsync(List<string> textByPage, string contentDataModelId)
+        public static async Task<NusysPdfDocumentAnalysisModel> GetNusysPdfAnalysisModelFromTextAsync(List<string> textByPage)
         {
             // a hash of document ids to page ids
             var docIdToPageMapping = new Dictionary<int, int>();
@@ -347,7 +347,7 @@ namespace NusysServer
             }
 
 
-            return new NusysPdfDocumentAnalysisModel(contentDataModelId) {Segments = idToSegmentMapping.Values.ToList()};
+            return new NusysPdfDocumentAnalysisModel {Segments = idToSegmentMapping.Values.ToList()};
         }
 
         /// <summary>

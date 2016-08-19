@@ -33,7 +33,7 @@ namespace NusysIntermediate
                     model = JsonConvert.DeserializeObject<NusysImageAnalysisModel>(analysisModelJson);
                     break;
                 case NusysConstants.ContentType.PDF:
-                    model = JsonConvert.DeserializeObject<NusysPdfDocumentAnalysisModel>(analysisModelJson);
+                    model = JsonConvert.DeserializeObject<NusysPdfAnalysisModel>(analysisModelJson);
                     break;
                 default:
                     throw new Exception(" this content type does not support analysis models yet.");

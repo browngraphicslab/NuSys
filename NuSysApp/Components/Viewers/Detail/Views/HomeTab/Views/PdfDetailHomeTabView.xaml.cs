@@ -28,7 +28,7 @@ namespace NuSysApp
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
 
-        private NusysPdfDocumentAnalysisModel _analysisModel;
+        private NusysPdfAnalysisModel _analysisModel;
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
@@ -58,7 +58,7 @@ namespace NuSysApp
             {
                 var request = new GetAnalysisModelRequest(vm.LibraryElementController.LibraryElementModel.ContentDataModelId);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                _analysisModel = request.GetReturnedAnalysisModel() as NusysPdfDocumentAnalysisModel;
+                _analysisModel = request.GetReturnedAnalysisModel() as NusysPdfAnalysisModel;
                 UITask.Run(async delegate {
                     SetPdfSuggestions(vm.CurrentPageNumber);
                 });
@@ -87,15 +87,15 @@ namespace NuSysApp
             xPageNumberBox.Text = pageNumber.ToString();
             if (_analysisModel != null)
             {
-                if (_analysisModel.Segments.Any(segment => segment.pageNumber == pageNumber))
+                if (_analysisModel.DocumentAnalysisModel.Segments.Any(segment => segment.pageNumber == pageNumber))
                 {
-                    xSentimentBox.Text = Math.Round( _analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating)*100, 3) + " %";
+                    xSentimentBox.Text = Math.Round( _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating)*100, 3) + " %";
                 }
                 else
                 {
                     xSentimentBox.Text = "None found";
                 }
-                xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
+                xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
             }
             else
             {
@@ -136,6 +136,22 @@ namespace NuSysApp
 
         private async void UpdateRegionViews(int currentPageNumber)
         {
+            foreach(var item in xClippingWrapper.GetTemporaryRegionItems())
+            {
+                var tempRegion = item as TemporaryImageRegionView;
+                var tempRegionDC = tempRegion.DataContext as TemporaryImageRegionViewModel;
+
+                if (tempRegionDC.PageLocation != null)
+                {
+                    await UITask.Run(() =>
+                    {
+                        tempRegion.Visibility = tempRegionDC.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
+
+                    });
+                }
+
+            }
+
             foreach (var item in xClippingWrapper.GetRegionItems())
             {
                 var regionView = item as PDFRegionView;
@@ -159,7 +175,77 @@ namespace NuSysApp
             xClippingWrapper.Dispose();
         }
 
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = (PdfDetailHomeTabViewModel)DataContext;
+            if (vm == null)
+            {
+                return;
+            }
 
+            if (_analysisModel != null)
+            {
+                var suggestedRegions = _analysisModel.PageImageAnalysisModels.SelectMany(item => item?.Regions ?? new List<CognitiveApiRegionModel>());//.Where(i => i.MarkedImportant);
 
-    }
+                foreach (var region in suggestedRegions)
+                {
+                    var rect = region.Rectangle;
+                    if (rect.Height == null || rect.Left == null || rect.Top == null || rect.Width == null)
+                    {
+                        continue;
+                    }
+                    var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel, region.PageNumber);
+                    var tempview = new TemporaryImageRegionView(tempvm);
+                    xClippingWrapper.AddTemporaryRegion(tempview);
+                }
+                vm.Goto(vm.CurrentPageNumber);
+            }
+
+            /*
+            var contentDataModelId = vm.LibraryElementController.LibraryElementModel.ContentDataModelId;
+            Task.Run(async delegate
+            {
+                //create the request to get the analysis model
+                var request = new GetAnalysisModelRequest(contentDataModelId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                var analysisModel = request.GetReturnedAnalysisModel() as NusysImageAnalysisModel;
+
+                //switch back to UI thread for adding the regions
+                await UITask.Run(delegate
+                {
+                    if (analysisModel != null && analysisModel.Faces != null && analysisModel.Faces.Length > 0)
+                    {
+                        //iterate through each suggestion
+                        foreach (var suggestedRegion in analysisModel.Faces)
+                        {
+                            var rect = suggestedRegion.FaceRectangle;
+
+                            var metadataDict = new List<MetadataEntry>();
+
+                            if (suggestedRegion.Age != null)//to add the age to the future region
+                            {
+                                metadataDict.Add(new MetadataEntry("suggested_age", new List<string>() { suggestedRegion.Age.Value.ToString() }, MetadataMutability.MUTABLE));
+                            }
+                            if (!string.IsNullOrEmpty(suggestedRegion.Gender))//to add the gender to the future region
+                            {
+                                metadataDict.Add(new MetadataEntry("suggested_gender", new List<string>() { suggestedRegion.Gender }, MetadataMutability.MUTABLE));
+                            }
+
+                            if (rect == null || rect.Left == null || rect.Top == null || rect.Height == null || rect.Width == null)
+                            {
+                                continue;
+                            }
+                            //create a temp region for every face
+                            var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel);
+                            var tempview = new TemporaryImageRegionView(tempvm);
+                            tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
+                            xClippingWrapper.AddTemporaryRegion(tempview);
+                        }
+                    }
+                });
+
+            });
+        */
+        }
+}
 }

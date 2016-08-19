@@ -36,6 +36,21 @@ namespace NuSysApp
             //Show/hide region buttons need access to the audiowrapper for event handlers
             xShowHideRegionButtons.Wrapper = VideoMediaPlayer.AudioWrapper;
 
+            if (!vm.LibraryElementController.ContentLoaded)
+            {
+                UITask.Run(async delegate
+                {
+                    await vm.LibraryElementController.LoadContentDataModelAsync();
+                    LoadVideo(this);
+                });
+            }
+            else
+            {
+                LoadVideo(this);
+            }
+
+
+
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed; 
@@ -46,6 +61,12 @@ namespace NuSysApp
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed -= DetailViewerView_Disposed;
             Dispose();
+        }
+
+        private void LoadVideo(object sender)
+        {
+            var vm = DataContext as VideoDetailHomeTabViewModel;
+            VideoMediaPlayer.Source = new Uri(vm.LibraryElementController.Data);
         }
 
         public void Dispose()

@@ -22,5 +22,16 @@ namespace NusysIntermediate
         /// </summary>
         public CognitiveApiRectangleModel Rectangle { get; set; }
 
+        /// <summary>
+        /// the boolean representing whether the server has marked this specific region to be particularly important.  
+        /// NOT FROM THE COGNITIVE SERVICES API. 
+        /// </summary>
+        public bool MarkedImportant { get; set; }
+
+        /// <summary>
+        /// the page number that this ocr moel is on if a pdf analysis model.
+        /// NOT FROM THE COGNITIVE SERVICES API. 
+        /// </summary>
+        public int PageNumber { get; set; }
     }
 }

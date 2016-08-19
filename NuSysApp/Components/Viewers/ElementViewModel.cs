@@ -165,10 +165,6 @@ namespace NuSysApp
 
                     circlelink.Disposed += Circlelink_Disposed;
 
-                    //Color color = linkLibraryElementModel.Color; //TODO add back in link color
-                    var color = Colors.MediumVioletRed;
-                    circlelink.Circle.Fill = new SolidColorBrush(color);
-
                     CircleLinks.Add(circlelink);
                 }
                 

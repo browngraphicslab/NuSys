@@ -110,12 +110,12 @@ namespace NusysServer
         /// <param name="imageWidth">The width of the image to be analyzed</param>
         /// <param name="imageHeight">The height of theimage to be analyzed</param>
         /// <returns></returns>
-        public static async Task<NuSysOcrAnalysisModel> GetNusysOcrAnalysisModelFromUrlAsync(string ImgURL, string contentDataModelId, double imageWidth, double imageHeight)
+        public static async Task<NuSysOcrAnalysisModel> GetNusysOcrAnalysisModelFromUrlAsync(string ImgURL, double imageWidth, double imageHeight)
         {
             var ocrResult = await GetOcrResultsAsync(ImgURL);
 
             // crazy object initializer syntax that converts an ocr result to a NuSysOcrAnalysisModel. : )
-            var a = new NuSysOcrAnalysisModel(contentDataModelId)
+            var a = new NuSysOcrAnalysisModel()
             {
                 // simply set the property of the nusysImageAnalysisModel using different paths in the analysisResult
                 Language = ocrResult.Language,

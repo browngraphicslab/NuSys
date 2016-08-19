@@ -45,6 +45,7 @@ namespace NuSysApp
         private static IEnumerable<ElementModel> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
+        private bool _isLoggingIn = false;
 
         //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
@@ -84,7 +85,7 @@ namespace NuSysApp
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             //ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
-            ServerName = NusysConstants.TEST_LOCAL_BOOLEAN ? "localhost:2685" : "nusysrepo.azurewebsites.net";
+            ServerName = NusysConstants.TEST_LOCAL_BOOLEAN ? "localhost:2776" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
@@ -116,6 +117,10 @@ namespace NuSysApp
         private void ContentController_OnNewLibraryElememt(LibraryElementModel model)
         {
             Init();
+            if (model.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(model.LibraryElementId))
+            {
+                _preloadedIDs.Add(model.LibraryElementId);
+            }
         }
 
         /// <summary>
@@ -215,9 +220,9 @@ namespace NuSysApp
         {
             if (_selectedCollection != null)
             {
-                SessionController.Instance.ContentController.OnNewLibraryElement -= LibraryElementControllerOnOnNewLibraryElement;
-
                 var id = _selectedCollection.LibraryElementId;
+                var m = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+                
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
                 foreach (var content in collectionRequest.GetReturnedContentDataModels())
@@ -226,7 +231,15 @@ namespace NuSysApp
                 }
                 _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
-                this.Frame.Navigate(typeof(SessionView));
+
+                if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserName))
+                {
+                    this.Frame.Navigate(typeof(SessionView), m.AccessType);
+                }
+                else
+                {
+                    this.Frame.Navigate(typeof(SessionView));
+                }
 
                 // Detach the handler for refreshing the list of collections
                 SessionController.Instance.ContentController.OnNewLibraryElement -= ContentController_OnNewLibraryElememt;
@@ -320,6 +333,7 @@ namespace NuSysApp
             }
             if (valid == true)
             {
+
                 var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
                 var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
                 var displayName = NewDisplayName.Text;
@@ -330,8 +344,16 @@ namespace NuSysApp
 
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
+            if (_isLoggingIn)
+            {
+                return;
+            }
+            // to prevent multiple logins we must block logins, the call to allow more logins is after the server sends back and says that 
+            // the login was incorrect
+            _isLoggingIn = true;
             var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
+
             Login(username, password, false);
         }
 
@@ -513,6 +535,8 @@ namespace NuSysApp
                     {
                         loggedInText.Text = dict["error_message"];
                         NewUserLoginText.Text = dict["error_message"];
+                        //We stop blocking the login becausethere is an error in logging in
+                        _isLoggingIn = false;
                     }
                 }
                 catch (Exception boolParsException)
@@ -528,8 +552,6 @@ namespace NuSysApp
                     {
                         await SessionController.Instance.NuSysNetworkSession.Init();
                         SessionController.Instance.LocalUserID = userID;
-
-                        SessionController.Instance.ContentController.OnNewLibraryElement += LibraryElementControllerOnOnNewLibraryElement;
 
                         loggedInText.Text = "Logged In!";
                         NewUserLoginText.Text = "Logged In!";
@@ -651,14 +673,6 @@ namespace NuSysApp
                     }
                 }
             });
-        }
-
-        private void LibraryElementControllerOnOnNewLibraryElement(LibraryElementModel element)
-        {
-            if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
-            {
-                _preloadedIDs.Add(element.LibraryElementId);
-            }
         }
 
         //TODO: move this crypto stuff elsewhere, only here temporarily

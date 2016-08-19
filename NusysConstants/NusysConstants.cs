@@ -546,9 +546,21 @@ namespace NusysIntermediate
             /// The key for sending the new content
             /// </summary>
             public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_id_key";
-        
-            #endregion UpdateContentRequest
 
+        #endregion UpdateContentRequest
+
+            #region GetRelatedDocumentsRequest
+            /// <summary>
+            /// The key for sending library id of the document you wish to get related items for
+            /// </summary>
+            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+            /// <summary>
+            /// The key for sending a list of library ids of which the original document is related to
+            /// back to the client from the server
+            /// </summary>
+            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_LIBRARY_IDS_KEY = "related_document_ids";
+            #endregion GetReleatedDocumentsRequest
 
         #region CreateSnapshotOfCollectionRequest
         /// <summary>
@@ -1314,6 +1326,7 @@ namespace NusysIntermediate
             UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
             CreateSnapshotOfCollectionRequest,
+            GetRelatedDocumentsRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
