@@ -64,7 +64,7 @@ namespace NuSysApp
                     return BasicToolModel.Selection.Select(s => s.ToLower()).Contains(libraryElementModel.Type.ToString().ToLower());
                     break;
                 case ToolModel.ToolFilterTypeTitle.Creator:
-                    return BasicToolModel.Selection.Contains(libraryElementModel.Creator);
+                    return BasicToolModel.Selection.Contains(SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(libraryElementModel.Creator));
                     break;
                 case ToolModel.ToolFilterTypeTitle.Date:
                     return BasicToolModel.Selection.Contains(GetDate(libraryElementModel));
