@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,8 +26,28 @@ namespace NuSysApp
         private PointerEventHandler _pointerReleasedHandler;
         private DoubleTappedEventHandler _doubleTappedHandler;
 
+        /// <summary>
+        /// mapping of pointerIds to SessionView Positions for relatedDocumentsGesture
+        /// </summary>
+        private Dictionary<uint, Point> _pointerIdToStartLocation;
+
+        /// <summary>
+        /// A List of possible element types that relatedDocumentsGesture can find
+        /// </summary>
+        private readonly List<Type> _possibleElements = new List<Type>
+        {
+            typeof(ImageNodeView),
+            typeof(PdfNodeView),
+            typeof(GroupNodeView),
+            typeof(AudioNodeView),
+            typeof(VideoNodeView),
+        };
+
         public SelectMode(FreeFormViewer view):base(view)
         {
+            // instantiated the _pointerIdToStartLocation dictionary
+            _pointerIdToStartLocation = new Dictionary<uint, Point>();
+            // add the mode specific event handlers
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
             _doubleTappedHandler = OnDoubleTapped;
@@ -63,8 +84,33 @@ namespace NuSysApp
         //    vm.ClearSelection();
         }
 
+        /// <summary>
+        /// Called every time the user presses anywhere on the workspace while in SelectMode
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
+        { 
+            // Add the pointer to the mapping of pointerIds to SessionView Positions
+            _pointerIdToStartLocation.Add(e.Pointer.PointerId,
+                e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
+
+            // if there are five pointers in contact with the screen
+            if (_pointerIdToStartLocation.Count == 5)
+            {
+                // get the list of point locations
+                var points = _pointerIdToStartLocation.Values;
+
+                // 
+                
+                // calculate the minimum bounding rect
+                var minBoundingRect = new Rect(new Point(points.Min(point => point.X), points.Min(point => point.Y)), new Point(points.Max(point => point.X), points.Max(point => point.Y)));
+                if (minBoundingRect.Width < 400 && minBoundingRect.Height < 400) // 400 px is slightly smaller than the avg American hand size according to Sahil
+                {
+                    GetRelatedElements(minBoundingRect);
+                }
+            }
+
             if (SessionController.Instance.SessionView.FreeFormViewer.MultiMenu.Visibility == Visibility.Visible)
             {
                 return;
@@ -125,10 +171,35 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Takes in a rectangle and performs Junsu's Algorithm if there is only one element view model contained within in
+        /// </summary>
+        /// <param name="rect"></param>
+        private void GetRelatedElements(Rect rect)
+        {
+            // returns a list of all the xaml stuff that is contained in the rectangle
+            var xamlElements = VisualTreeHelper.FindElementsInHostCoordinates(rect, null);
+
+            // get a list of views which the relatedDocumentsGesture can comprehend
+            var possibleElements = xamlElements.Where(uiElem =>
+                                _possibleElements.Contains(uiElem.GetType())).ToList();
+            if (possibleElements.Count == 1)
+            {
+                var elementViewModel = (possibleElements[0] as FrameworkElement).DataContext as ElementViewModel;
+            }
+        }
+
+        /// <summary>
+        /// Called when the user releases their pointer from the screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            // set released to true, used for code which ignores accidental pointer pressed events
             _released = true;
-       //     e.Handled = true;
+            // remove the Pointer from the mapping of pointerIds to start locations
+            _pointerIdToStartLocation.Remove(e.Pointer.PointerId);
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
