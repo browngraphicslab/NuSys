@@ -1,4 +1,12 @@
-﻿     Creating library Win32\Release\MuPDFWinRT.lib and object Win32\Release\MuPDFWinRT.exp
+﻿  Document.cpp
+  LinkInfoInternal.cpp
+  LinkInfoRemote.cpp
+  LinkInfoURI.cpp
+  LinkInfoVisitor.cpp
+  MuPDFDoc.cpp
+  OutlineItem.cpp
+  Utilities.cpp
+     Creating library Win32\Release\MuPDFWinRT.lib and object Win32\Release\MuPDFWinRT.exp
   Generating code
   Finished generating code
-  MuPDFWinRT.vcxproj -> C:\Users\graphics_lab\Documents\Trent_Nusys\nusys\MuPDFWinRT\Win8\Win32\Release\MuPDFWinRT.dll
+  MuPDFWinRT.vcxproj -> C:\Users\graphics_lab\Documents\Trent_Nusys\nusys4\nusys\MuPDFWinRT\Win8\Win32\Release\MuPDFWinRT.dll

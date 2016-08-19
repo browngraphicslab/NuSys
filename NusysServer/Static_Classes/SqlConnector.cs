@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -183,6 +184,11 @@ namespace NusysServer
                 clearContent.ExecuteNonQuery();
                 clearAnalysisModels.ExecuteNonQuery();
                 clearUsers.ExecuteNonQuery();
+            }
+
+            if (File.Exists(Constants.FILE_FOLDER + "docsave.txt"))//delete a dictionary json saving Junsu' comparisons
+            {
+                File.Delete(Constants.FILE_FOLDER + "docsave.txt");
             }
         }
 

@@ -267,5 +267,15 @@ namespace NusysServer
             return Constants.FILE_FOLDER + contentDataModelId + ".docx";//TODO extract this out to actual constant
         }
 
+        /// <summary>
+        /// Gets the file path for a certain url if that url points to our server.
+        /// Will return gibberish if it's not for our server.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string FilePathFromUrl(string url)
+        {
+            return Constants.WWW_ROOT + url.Substring(Constants.SERVER_ADDRESS.Length);
+        }
     }
 }

@@ -274,9 +274,8 @@
     <Compile Include="Static_Classes\CognitiveApi\ICognitiveApiDocumentable.cs" />
     <Compile Include="Static_Classes\ContentController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\DocSave.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Document.cs" />
-    <Compile Include="Static_Classes\DocumentComparison\IdToTFIDF.cs" />
-    <Compile Include="Static_Classes\DocumentComparison\MegaDictionary.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Parser.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Stemmer.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\StopWords.cs" />
@@ -339,7 +338,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2776</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

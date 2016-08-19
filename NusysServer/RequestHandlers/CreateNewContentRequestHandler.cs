@@ -18,7 +18,7 @@ namespace NusysServer
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.CreateNewContentRequest);
             var message = GetRequestMessage(request);
-            //Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY));
+            Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES));
             var returnMessage = new Message();

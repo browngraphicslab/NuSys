@@ -6,15 +6,8 @@ using System.Threading.Tasks;
 
 namespace NusysIntermediate
 {
-    public class NusysPdfDocumentAnalysisModel : AnalysisModel
+    public class NusysPdfDocumentAnalysisModel
     {
-
-        /// <summary>
-        /// constructor requires that a content Data model Id be set.  
-        /// Pass in the Id of the content data model that this analysis model analyzes.
-        /// </summary>
-        /// <param name="contentDataModelId"></param>
-        public NusysPdfDocumentAnalysisModel(string contentDataModelId) : base(contentDataModelId){ }
 
         /// <summary>
         /// A List of segments, representing single sentences within the pdf

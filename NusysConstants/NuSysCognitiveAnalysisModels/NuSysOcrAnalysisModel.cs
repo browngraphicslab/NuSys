@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace NusysIntermediate
 {
-    public class NuSysOcrAnalysisModel : AnalysisModel
+    public class NuSysOcrAnalysisModel
     {
-        /// <summary>
-        /// constructor requires that a content Data model Id be set.  
-        /// Pass in the Id of the content data model that this analysis model analyzes.
-        /// </summary>
-        /// <param name="contentDataModelId"></param>
-        public NuSysOcrAnalysisModel(string contentDataModelId) : base(contentDataModelId){ }
 
         /// <summary>
         /// The identified Language of the object character recognition results.

@@ -332,21 +332,25 @@ namespace NusysServer.DocumentComparison
                                 }
                             }
                             if (!found) return;
-                            switch (sb.ToString(sb.Length - 2, 2))
+                            if (sb.Length > 2)
                             {
-                                case "at":
-                                case "bl":
-                                case "iz":
-                                    sb.Append("e");
+                                switch (sb.ToString(sb.Length - 2, 2))
+                                {
+                                    case "at":
+                                    case "bl":
+                                    case "iz":
+                                        sb.Append("e");
+                                        return;
+                                }
+                                if (arrayContains(doubles, sb.ToString(sb.Length - 2, 2)))
+                                {
+                                    sb.Remove(sb.Length - 1, 1);
                                     return;
+                                }
+                                if (isShortWord(sb, r1))
+                                    sb.Append("e");
                             }
-                            if (arrayContains(doubles, sb.ToString(sb.Length - 2, 2)))
-                            {
-                                sb.Remove(sb.Length - 1, 1);
-                                return;
-                            }
-                            if (isShortWord(sb, r1))
-                                sb.Append("e");
+                            
                             break;
                     }
                     return;
