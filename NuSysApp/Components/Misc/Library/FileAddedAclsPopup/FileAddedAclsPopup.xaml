@@ -18,7 +18,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid x:Name="RootGrid" Padding="5" BorderBrush="SlateGray" BorderThickness="2" Background="White" Width="{Binding Width}" Height="{Binding Height}" 
+    <Grid x:Name="RootGrid" Padding="5" BorderBrush="{StaticResource color2}" BorderThickness="2" Background="White" Width="{Binding Width}" Height="{Binding Height}" 
           Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,9 +32,9 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Select All" VerticalAlignment="Center"></TextBlock>
-            <CheckBox Grid.Column="1" x:Name="publicSelectAll" Margin="10,5,5,5" Content="Public" Checked="SelectAll_OnChecked"/>
-            <CheckBox Grid.Column="2" x:Name="privateSelectAll" Margin="5" Content="Private" Checked="SelectAll_OnChecked"/>
+            <TextBlock Foreground="{StaticResource color3}"  Text="Select All" VerticalAlignment="Center" Margin="0,0,20,0"></TextBlock>
+            <CheckBox Grid.Column="1" Style="{StaticResource NuSysCheckBox}"  Foreground="{StaticResource color3}"  x:Name="publicSelectAll" Margin="5" Content="Public" Checked="SelectAll_OnChecked"/>
+            <CheckBox Grid.Column="2" Style="{StaticResource NuSysCheckBox}"  x:Name="privateSelectAll" Margin="5" Content="Private" Checked="SelectAll_OnChecked"/>
         </Grid>
         <!-- ListView Containing file names and acls options -->
             <ListView x:Name="ListView" Grid.Row="1" ItemsSource="{Binding Files}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollMode="Enabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -61,9 +61,9 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
-                            <RadioButton Grid.Column="1" x:Name="publicRadio" Margin="5" Content="Public" Checked="Access_OnChecked" IsChecked="True"/>
-                            <RadioButton Grid.Column="2" x:Name="privateRadio" Margin="5" Content="Private" Checked="Access_OnChecked"/>
+                            <TextBlock Text="{Binding DisplayName}" Foreground="{StaticResource color3}" VerticalAlignment="Center"></TextBlock>
+                            <RadioButton Grid.Column="1" Style="{StaticResource NuSysRadioButton}"  x:Name="publicRadio" Margin="5" Content="Public" Checked="Access_OnChecked" IsChecked="True"/>
+                            <RadioButton Grid.Column="2" Style="{StaticResource NuSysRadioButton}"  x:Name="privateRadio" Margin="5" Content="Private" Checked="Access_OnChecked"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -73,8 +73,8 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="xSubmitButton" Content="Submit" Tapped="XSubmitButton_OnTapped" HorizontalAlignment="Center"/>
-            <Button x:Name="xCancelButton" Grid.Column="1" Content="Cancel" Tapped="XCancelButton_OnTapped" HorizontalAlignment="Center"/>
+            <Button x:Name="xSubmitButton" Style="{StaticResource DarkButton}"  Content="Submit" Tapped="XSubmitButton_OnTapped" HorizontalAlignment="Center"/>
+            <Button x:Name="xCancelButton" Style="{StaticResource DarkButton}"  Grid.Column="1" Content="Cancel" Tapped="XCancelButton_OnTapped" HorizontalAlignment="Center"/>
         </Grid>
 
 

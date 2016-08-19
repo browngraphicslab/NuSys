@@ -30,6 +30,9 @@ namespace NuSysApp
         /// </summary>
         public event EventHandler<string> EnterNewCollectionStarting;
 
+        /// <summary>
+        /// Be careful adding to this event, check that the handlers you want to take care can't be taken care of in a mode instance in the free form viewer
+        /// </summary>
         public event ModeChangedEventHandler OnModeChanged;
 
         private static readonly object _syncRoot = new Object();
@@ -162,6 +165,10 @@ namespace NuSysApp
             return NusysConstants.GenerateId();
         }
 
+        /// <summary>
+        /// Use this method to switch the mode of the entire workspace.
+        /// </summary>
+        /// <param name="mode"></param>
         public void SwitchMode(Options mode)
         {
             OnModeChanged?.Invoke(this, mode);

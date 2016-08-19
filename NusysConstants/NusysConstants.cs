@@ -350,12 +350,12 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
                 /// <summary>
                 /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
-                /// Used during a region libraryElementRequest.  
+                /// Used during a link libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY = "link_library_element_model_id_in";
                 /// <summary>
                 /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
-                /// Used during a region libraryElementRequest.  
+                /// Used during a link libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
 

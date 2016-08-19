@@ -127,12 +127,6 @@ namespace NuSysApp
         /// </summary>
         private void UpdateControlPoints()
         {
-            // don't edit if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
 
             this.UpdateEndPoints();
             this.UpdateArrow();
@@ -200,13 +194,9 @@ namespace NuSysApp
 
         private void Title_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                var tb = sender as TextBox;
-                Debug.Assert(tb != null);
-                tb.IsReadOnly = true;
-            }
+            var tb = sender as TextBox;
+            Debug.Assert(tb != null);
+            tb.IsReadOnly = true;
         }
         private void LinkDirectionButton_OnClick(object sender, RoutedEventArgs e)
         {

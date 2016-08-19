@@ -195,14 +195,7 @@ namespace NusysServer
                 {
                     throw new Exception("the contentId cannot be null when updating a content file");
                 }
-                if (contentType == null)
-                {
-                    throw new Exception("the content type cannot be null when updating a content file");
-                }
-                if (updatedContentData == null)
-                {
-                    throw new Exception("the content data cannot be null when updating a content file");
-                }
+                updatedContentData = updatedContentData ?? "";
                 switch (contentType)
                 {
                     case NusysConstants.ContentType.Audio:
@@ -214,11 +207,7 @@ namespace NusysServer
                         var filePath = Constants.FILE_FOLDER + contentId + Constants.TEXT_DATA_FILE_FILE_EXTENSION;
                         if (File.Exists(filePath))
                         {
-                            using (var stream = File.OpenWrite(filePath))
-                            {
-                                var bytes = GetBytesForWritingToFile(updatedContentData);
-                                stream.Write(bytes,0,bytes.Length);  
-                            }
+                            File.WriteAllText(filePath,updatedContentData);
                             return true;
                         }
                         else

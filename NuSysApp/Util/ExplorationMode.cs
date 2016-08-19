@@ -38,17 +38,18 @@ namespace NuSysApp
         // Required by IModeable
         public ModeType Mode { get { return ModeType.EXPLORATION;} }
 
-        public ExplorationMode(ElementViewModel start)
+        public ExplorationMode(ElementViewModel start=null)
         {
 
-            Debug.Assert(start != null);
+            //Debug.Assert(start != null);
 
             _currentNode = start;
             _explorationHistory = new Stack<ElementViewModel>();
 
             // Clear the current selection in the session controller, and add the current node to it
             SessionController.Instance.ActiveFreeFormViewer.Selections.Clear();
-            SelectElement(_currentNode);
+            
+            
 
             // instantiate animation variables
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1) };
@@ -58,7 +59,11 @@ namespace NuSysApp
             // copy active free from viewer transform to return back to original view upon exit
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
 
-            FullScreen(_currentNode);    
+            if (start != null)
+            {
+                SelectElement(_currentNode);
+                FullScreen(_currentNode);
+            }
         }
 
         /// <summary>

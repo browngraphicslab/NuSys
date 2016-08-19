@@ -16,7 +16,10 @@ namespace NuSysApp
         public ObservableCollection<LinkTemplate> LinkTemplates { get; }
         public ObservableCollection<LibraryItemTemplate> LibraryElements { get; } 
 
-        private string CurrentLibraryElementId;
+        /// <summary>
+        /// The library element id of the library element the detail viewer is currently open to
+        /// </summary>
+        public string CurrentLibraryElementId;
 
         public LinkEditorTabViewModel()
         {
@@ -166,7 +169,7 @@ namespace NuSysApp
 
         }
 
-        public async void CreateLink(string idToLinkTo)
+        public async Task CreateLinkAsync(string idToLinkTo)
         {
             // don't link to itself or if the CurrentLibraryElemtnID is null
             if (CurrentLibraryElementId == null || CurrentLibraryElementId == idToLinkTo)

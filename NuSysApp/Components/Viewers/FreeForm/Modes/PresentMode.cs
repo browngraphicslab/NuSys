@@ -3,35 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
-    public class ExploreMode : AbstractWorkspaceViewMode
+    public class PresentMode : AbstractWorkspaceViewMode
     {
         private PointerEventHandler _pointerPressedHandler;
 
         /// <summary>
-        /// Mode to be set when the user wants to click on things and enter exploration mode
+        /// Mode to be set in the FreeFormViewer when the user tries to start a presentation
         /// </summary>
         /// <param name="view"></param>
-        public ExploreMode(FreeFormViewer view):base(view)
+        public PresentMode(FreeFormViewer view):base(view)
         {
             _pointerPressedHandler = OnPointerPressed;
         }
 
-        public ExploreMode(AreaNodeView view) : base(view)
-        {
-            _pointerPressedHandler = OnPointerPressed;
-        }
+       
         public override async Task Activate()
         {
             //TODO possibly clear the current selections
             _view.IsDoubleTapEnabled = false;
-
+   
             _view.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, false);
 
         }
@@ -43,6 +38,11 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// When the user clicks on something, try and start a presentation at that element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             //this is most likely deprecated
@@ -51,14 +51,12 @@ namespace NuSysApp
                 return;
             }
 
-            // try to explore the selected object, if it is explorable
+            // try to present starting with the selected object, if it is presentation
             var frameWorkElemToBeExplored = e.OriginalSource as FrameworkElement;
-            if (frameWorkElemToBeExplored != null)
+            if (frameWorkElemToBeExplored != null && frameWorkElemToBeExplored.DataContext as ElementViewModel!=null)
             {
-                SessionController.Instance.SessionView.ExploreSelectedObject(frameWorkElemToBeExplored.DataContext);
+                SessionController.Instance.SessionView.EnterPresentationMode(frameWorkElemToBeExplored.DataContext as ElementViewModel);
             }
         }
-
     }
 }
-

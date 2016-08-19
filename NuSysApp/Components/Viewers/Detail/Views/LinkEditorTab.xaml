@@ -100,7 +100,12 @@
             <TextBox x:Name="Tags" PlaceholderText="tags - separate with commas"  HorizontalAlignment="Stretch"></TextBox>
         </Grid>
         <Grid VerticalAlignment="Top" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Button x:Name="createLinkButton" Content="create link" Tapped="CreateLinkButton_OnTapped"  HorizontalAlignment="Center" IsEnabled="False"></Button>
+            <TextBlock x:Name="xCreateLinkErrorBox" Grid.Row="1" HorizontalAlignment="Center" Visibility="Collapsed"></TextBlock>
         </Grid>
 
         <Grid Padding="20,10,20,10" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch">

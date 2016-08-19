@@ -99,15 +99,6 @@ namespace NuSysApp
 
         protected virtual void OnPositionChanged(object source, double x, double y, double dx, double dy)
         {
-
-            // don't move if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
-
-
             Transform.TranslateX = x;
             Transform.TranslateY = y;
             RaisePropertyChanged("Transform");
@@ -115,14 +106,6 @@ namespace NuSysApp
 
         protected virtual void OnSizeChanged(object source, double width, double height)
         {
-
-            // don't scale if we are in exploration or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
-
             _width = width;
             _height = height;
             
@@ -445,12 +428,6 @@ namespace NuSysApp
             set
             {
                 if (_isEditing == value)
-                {
-                    return;
-                }
-                // don't edit if we are in exploration or presentation mode
-                if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                    SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
                 {
                     return;
                 }
