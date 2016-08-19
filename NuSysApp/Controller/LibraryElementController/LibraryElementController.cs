@@ -126,7 +126,7 @@ namespace NuSysApp
                 }
                 if (!metadata.ContainsKey("Creator"))
                 {
-                    metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { LibraryElementModel.Creator }, MetadataMutability.IMMUTABLE));
+                    metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(LibraryElementModel.Creator) }, MetadataMutability.IMMUTABLE));
                 }
                 if (!metadata.ContainsKey("Title"))
                 {
