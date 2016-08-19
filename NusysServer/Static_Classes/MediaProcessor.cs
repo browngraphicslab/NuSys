@@ -156,6 +156,13 @@ namespace NusysServer
             {
                 var image = Image.FromFile(FileHelper.FilePathFromUrl(pageUrl));
                 var ocrModel = await ImageProcessor.GetNusysOcrAnalysisModelFromUrlAsync(pageUrl, image.Width, image.Height);
+                foreach (var r in ocrModel?.Regions ?? new List<CognitiveApiRegionModel>())
+                {
+                    if (r != null)
+                    {
+                        r.PageNumber = pageNumber;
+                    }
+                }
                 array[pageNumber] = ocrModel;
             }
             catch (Exception e)

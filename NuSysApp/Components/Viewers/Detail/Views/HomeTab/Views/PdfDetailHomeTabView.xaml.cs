@@ -96,7 +96,6 @@ namespace NuSysApp
                     xSentimentBox.Text = "None found";
                 }
                 xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
-                var s = _analysisModel.PageImageAnalysisModels.SelectMany(item => item.Regions).Where(i => i.MarkedImportant);
             }
             else
             {
@@ -183,12 +182,24 @@ namespace NuSysApp
             {
                 return;
             }
-            var tempvm = new TemporaryImageRegionViewModel(new Point(0.2, 0.2), 0.5, 0.5, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,0);
-            var tempview = new TemporaryImageRegionView(tempvm);
-            xClippingWrapper.AddTemporaryRegion(tempview);
-            var tempvm2 = new TemporaryImageRegionViewModel(new Point(0.2, 0.2), 0.5, 0.5, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel, 1);
-            var tempview2 = new TemporaryImageRegionView(tempvm2);
-            xClippingWrapper.AddTemporaryRegion(tempview2);
+
+            if (_analysisModel != null)
+            {
+                var suggestedRegions = _analysisModel.PageImageAnalysisModels.SelectMany(item => item?.Regions ?? new List<CognitiveApiRegionModel>()).Where(i => i.MarkedImportant);
+
+                foreach (var region in suggestedRegions)
+                {
+                    var rect = region.Rectangle;
+                    if (rect.Height == null || rect.Left == null || rect.Top == null || rect.Width == null)
+                    {
+                        continue;
+                    }
+                    var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel, region.PageNumber);
+                    var tempview = new TemporaryImageRegionView(tempvm);
+                    xClippingWrapper.AddTemporaryRegion(tempview);
+                }
+            }
+
             /*
             var contentDataModelId = vm.LibraryElementController.LibraryElementModel.ContentDataModelId;
             Task.Run(async delegate
