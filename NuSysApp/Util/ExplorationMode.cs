@@ -13,6 +13,7 @@ using MyToolkit.Utilities;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using NusysIntermediate;
 using NuSysApp.Util;
 
 namespace NuSysApp
@@ -23,17 +24,32 @@ namespace NuSysApp
     class ExplorationMode : IDisposable, IModable
     {
       
+        /// <summary>
+        /// The ElementViewModel we are currently exploring
+        /// </summary>
+        private ElementViewModel _currentNode;
 
-        private ElementViewModel _currentNode;          // current node we're on
-        private RelatedListBox _relatedListBox;         // box of related elements, (i.e. click on tag)
-        // stacks for moving forward and backward in exploration mode
+        /// <summary>
+        /// Box containing a list of related elements
+        /// </summary>
+        private RelatedListBox _relatedListBox;
+
+        /// <summary>
+        /// A stack of ElementViewModels we have already explored, for the back button.
+        /// </summary>
         private Stack<ElementViewModel> _explorationHistory;
+
+        /// <summary>
+        /// A stack of ElementViewModels which have been popped off the _explorationHistory, for the forward button
+        /// </summary>
         private Stack<ElementViewModel> _explorationFuture;
 
         // animation variables
         private CompositeTransform _originalTransform;
         private DispatcherTimer _timer;
-        private Storyboard _storyboard;
+        private Storyboard _flyOutStoryBoard;
+        private Storyboard _flyInStoryBoard;
+        private CompositeTransform _endTransform;
 
         // Required by IModeable
         public ModeType Mode { get { return ModeType.EXPLORATION;} }
@@ -41,20 +57,19 @@ namespace NuSysApp
         public ExplorationMode(ElementViewModel start=null)
         {
 
-            //Debug.Assert(start != null);
-
             _currentNode = start;
             _explorationHistory = new Stack<ElementViewModel>();
 
             // Clear the current selection in the session controller, and add the current node to it
             SessionController.Instance.ActiveFreeFormViewer.Selections.Clear();
             
-            
-
-            // instantiate animation variables
+            // instantiate a timer that redraws the inqCanvas
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1) };
             _timer.Tick += OnTick;
-            _storyboard = new Storyboard();
+
+            // instantiate the storyboards so they don't have null exceptions on the first run
+            _flyInStoryBoard = new Storyboard();
+            _flyOutStoryBoard = new Storyboard();
 
             // copy active free from viewer transform to return back to original view upon exit
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
@@ -184,7 +199,8 @@ namespace NuSysApp
         public void ExitMode()
         {
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
-           HideRelatedListBox();
+            _timer.Tick -= OnTick;
+            HideRelatedListBox();
             SessionController.Instance.SwitchMode(Options.SelectNode);
         }
 
@@ -254,8 +270,6 @@ namespace NuSysApp
             var heightAdjustment = sv.ActualHeight / 2;
 
             // Reset the scaling and translate the free form viewer so that the passed in element is at the center
-            var scaleX = 1;
-            var scaleY = 1;
             var translateX = widthAdjustment - x;
             var translateY = heightAdjustment - y;
             double scale;
@@ -265,13 +279,11 @@ namespace NuSysApp
             if (nodeWidth > nodeHeight)
             {
                 scale = sv.ActualWidth / nodeWidth;
-                if (nodeWidth - nodeHeight <= 20)
+                if (nodeWidth - nodeHeight <= Constants.MinNodeSize)
                     scale = scale * .50;
                 else
                     scale = scale * .55;
             }
-
-
             else
             {
                 scale = sv.ActualHeight / nodeHeight;
@@ -290,37 +302,105 @@ namespace NuSysApp
         /// and finally starting the story board
         /// </summary>
         /// <param name="scale"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="translateX"></param>
-        /// <param name="translateY"></param>
+        /// <param name="x">The workspace coordinate of the center of the element view model we are moving to</param>
+        /// <param name="y">The workspace coordinate of the center of the element view model we are moving to</param>
+        /// <param name="translateX">The translation from the upper left corner of the workspace to the upper left corner of the camera</param>
+        /// <param name="translateY">The translation from the upper left corner of the workspace to the upper left corner of the camera</param>
         private void AnimatePresentation(double scale, double x, double y, double translateX, double translateY)
         {
+            // stop any current animations
+            _flyOutStoryBoard.Stop();
+            _flyInStoryBoard.Stop();
 
-            var duration = new Duration(TimeSpan.FromSeconds(1));
-            _storyboard.Stop();
-            _storyboard = new Storyboard();
+            // set the duration of the outAnimation
+            var outDuration = new Duration(TimeSpan.FromSeconds(.5));
 
+            // get the current position and scale values from the ActiveFreeFormViewerTransform
+            var currentTransform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            var currentX = currentTransform.CenterX;
+            var currentY = currentTransform.CenterY;
+            var currentScale = currentTransform.ScaleX;
+            var currentTranslateX = currentTransform.TranslateX;
+            var currentTranslateY = currentTransform.TranslateY;
 
-            _storyboard.Duration = duration;
+            // get the smaller of the two scales and divide by 2 so we fly out the farthest.
+            var dist = Math.Sqrt(Math.Pow(Math.Abs(currentX - x), 2) + Math.Pow(Math.Abs(currentY - y), 2));
+            var halfScale = (currentScale < scale ? currentScale : scale)/ Math.Pow(dist, 1.0/3.0);
 
-            // Create a DoubleAnimation for each property to animate
-            var scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
-            var scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
-            var centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
-            var centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
-            var translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
-            var translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
-            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { scaleAnimationX, scaleAnimationY, centerAnimationX, centerAnimationY, translateAnimationX, translateAnimationY });
+            // get the center point of the halfway location we are going to
+            var halfCenterX = (currentX + x )/2.0;
+            var halfCenterY = (currentY + y) / 2.0;
+
+            // get the translation point of the halfway location we are going to
+            var halfTransX = (translateX + currentTranslateX) /2.0;
+            var halfTransY = (translateY + currentTranslateY) / 2.0;
+            
+            // create the flyout animation elements
+            var outScaleAnimationX = MakeAnimationElement(halfScale, "ScaleX", outDuration, easeMode: EasingMode.EaseOut);
+            var outScaleAnimationY = MakeAnimationElement(halfScale, "ScaleY", outDuration, easeMode: EasingMode.EaseOut);
+            var outCenterAnimationX = MakeAnimationElement(halfCenterX, "CenterX", outDuration, easeMode: EasingMode.EaseOut);
+            var outCenterAnimationY = MakeAnimationElement(halfCenterY, "CenterY", outDuration, easeMode: EasingMode.EaseOut);
+            var outTranslateAnimationX = MakeAnimationElement(halfTransX, "TranslateX", outDuration, easeMode: EasingMode.EaseOut);
+            var outTranslateAnimationY = MakeAnimationElement(halfTransY, "TranslateY", outDuration, easeMode: EasingMode.EaseOut);
+            var outAnimationList = new List<DoubleAnimation>
+            {
+                outScaleAnimationX,
+                outScaleAnimationY,
+                outCenterAnimationX,
+                outCenterAnimationY,
+                outTranslateAnimationX,
+                outTranslateAnimationY
+            };
+
+            // create the flyout storyboard
+            _flyOutStoryBoard = new Storyboard();
+            // set the duration of the flyout storyboard to duration
+            _flyOutStoryBoard.Duration = outDuration;
 
             // Add each animation to the storyboard
-            foreach (var anim in animationList)
+            foreach (var animation in outAnimationList)
             {
-                _storyboard.Children.Add(anim);
+                _flyOutStoryBoard.Children.Add(animation);
             }
 
-            // Saves the final product as a composite transform and updates other transforms based on this
-            var tt = new CompositeTransform
+            // set the duration of the inAnimation
+            var inDuration = new Duration(TimeSpan.FromSeconds(.5));
+
+            // Create the flyin animation elements
+            var inScaleAnimationX = MakeAnimationElement(scale, "ScaleX", inDuration, easeMode:EasingMode.EaseInOut);
+            var inScaleAnimationY = MakeAnimationElement(scale, "ScaleY", inDuration, easeMode: EasingMode.EaseInOut);
+            var inCenterAnimationX = MakeAnimationElement(x, "CenterX", inDuration, easeMode: EasingMode.EaseInOut);
+            var inCenterAnimationY = MakeAnimationElement(y, "CenterY", inDuration, easeMode: EasingMode.EaseInOut);
+            var inTranslateAnimationX = MakeAnimationElement(translateX, "TranslateX", inDuration, easeMode: EasingMode.EaseInOut);
+            var inTranslateAnimationY = MakeAnimationElement(translateY, "TranslateY", inDuration, easeMode: EasingMode.EaseInOut);
+            var inAnimationList = new List<DoubleAnimation>{ inScaleAnimationX, inScaleAnimationY, inCenterAnimationX, inCenterAnimationY, inTranslateAnimationX, inTranslateAnimationY };
+
+            // create the flyin storyboard
+            _flyInStoryBoard = new Storyboard();
+            // set the duration of the flyin storyboard to duration
+            _flyInStoryBoard.Duration = inDuration;
+
+            // Add each animation to the storyboard
+            foreach (var animation in inAnimationList)
+            {
+                _flyInStoryBoard.Children.Add(animation);
+            }
+
+            // Save the transform information for the midpoint and update the panzoom transform, for culling composition rendering or something
+            var midTransform = new CompositeTransform
+            {
+                TranslateX = halfTransX,
+                TranslateY = halfTransY,
+                ScaleX = halfScale,
+                ScaleY = halfScale,
+                CenterX = halfCenterX,
+                CenterY = halfCenterY
+            };
+            SessionController.Instance.SessionView.FreeFormViewer.PanZoom.UpdateTempTransform(midTransform);
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = midTransform;
+
+            // Save the transform information for the end point we will update the pan zoom transform when the flyOutStoryBoard is completed
+            _endTransform = new CompositeTransform
             {
                 TranslateX = translateX,
                 TranslateY = translateY,
@@ -329,13 +409,19 @@ namespace NuSysApp
                 CenterX = x,
                 CenterY = y
             };
-            SessionController.Instance.SessionView.FreeFormViewer.PanZoom.UpdateTempTransform(tt);
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = tt;
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
 
             // Begin the animation.
-            _storyboard.Begin();
+            _flyOutStoryBoard.Begin();
+            // start the second animation when the first one completes
+            _flyOutStoryBoard.Completed += _flyOutStoryBoard_Completed;
+        }
 
+        private void _flyOutStoryBoard_Completed(object sender, object e)
+        {
+            _flyOutStoryBoard.Completed -= _flyOutStoryBoard_Completed;
+            SessionController.Instance.SessionView.FreeFormViewer.PanZoom.UpdateTempTransform(_endTransform);
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = _endTransform;
+            _flyInStoryBoard.Begin();
         }
 
 
@@ -343,28 +429,42 @@ namespace NuSysApp
         /// Produces an animation element to animate a certain property transition using a storyboard
         /// </summary>
         /// <param name="to"></param>
-        /// <param name="name"></param>
-        /// <param name="duration"></param>
+        /// <param name="transformPath">The path on the transform to the property we are animating</param>
+        /// <param name="duration">Gets or sets the length of time for which this timeline plays, not counting repetitions.</param>
         /// <param name="transform"></param>
-        /// <param name="dependent"></param>
+        /// <param name="dependent">If an animation will cause the ui thread to slow down, this has to be set to true so the animation works</param>
+        /// <param name="easeMode">Sets the easing mode of the animation</param>
         /// <returns></returns>
-        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration,
-            CompositeTransform transform = null, bool dependent = false)
+        private DoubleAnimation MakeAnimationElement(double to, String transformPath, Duration duration,
+            CompositeTransform transform = null, bool dependent = false, EasingMode easeMode = EasingMode.EaseInOut)
         {
-
+            // allows us to avoid passing in the transform on each call, the default transform is the ActiveFreeFormViewer
             if (transform == null)
             {
                 transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             }
 
-            var toReturn = new DoubleAnimation();
-            toReturn.EnableDependentAnimation = true;
-            toReturn.Duration = duration;
-            Storyboard.SetTarget(toReturn, transform);
-            Storyboard.SetTargetProperty(toReturn, name);
-            toReturn.To = to;
-            toReturn.EasingFunction = new QuadraticEase();
-            return toReturn;
+            // create a newAnimation and set properties on it
+            var newAnimation = new DoubleAnimation();
+
+            // this allows the animation to consist of things that might slow down ui thread
+            newAnimation.EnableDependentAnimation = dependent;
+
+            // Gets or sets the length of time for which this timeline plays, not counting repetitions
+            newAnimation.Duration = duration;
+
+            // Set the target of the animation to the transform
+            Storyboard.SetTarget(newAnimation, transform);
+
+            // Set the target property of the animation to the path of what's being animated
+            Storyboard.SetTargetProperty(newAnimation, transformPath);
+
+            // set the value we are animating the double ot
+            newAnimation.To = to;
+
+            // set the easing mode of the animation
+            newAnimation.EasingFunction = new SineEase { EasingMode = easeMode};
+            return newAnimation;
         }
 
         /// <summary>
@@ -396,7 +496,7 @@ namespace NuSysApp
             _currentNode = null;
             _originalTransform = null;
             _timer = null;
-            _storyboard = null;
+            _flyOutStoryBoard = null;
         }
 
 
