@@ -113,17 +113,17 @@ namespace NuSysApp
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
                 _presentationMode = new MultiMode(this, _panZoomMode, _presentMode);
 
-                if (vm.Controller.LibraryElementModel.AccessType != NusysConstants.AccessType.ReadOnly)
+                if (vm.Controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
                 {
                     if (vm.Controller.LibraryElementModel.Creator != SessionController.Instance.LocalUserID)
                     {
-                        SwitchMode(Options.SelectNode);
+                        SwitchMode(Options.PanZoomOnly);
                     }
                    
                 }
                 else
                 {
-                    SwitchMode(Options.PanZoomOnly);
+                    SwitchMode(Options.SelectNode);
                 }
                 
                 var colElementModel = vm.Controller.Model as CollectionElementModel;
