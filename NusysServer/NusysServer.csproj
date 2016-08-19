@@ -255,6 +255,7 @@
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateSnapshotOfCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />

@@ -97,6 +97,9 @@ namespace NusysServer
                        case NusysConstants.RequestType.CreateSnapshotOfCollectionRequest:
                             requestHandler = new CreateSnapshotOfCollectionRequestHandler();
                             break;
+                        case NusysConstants.RequestType.GetRelatedDocumentsRequest:
+                            requestHandler = new GetRelatedDocumentsRequestHandler();
+                            break;
                         default:
                             requestHandler = null;
                             return false;
