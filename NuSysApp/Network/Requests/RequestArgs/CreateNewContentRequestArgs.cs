@@ -67,12 +67,8 @@ namespace NuSysApp
                 LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Link)
             {
                 Debug.Assert(DataBytes != null);
-                message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = DataBytes;
             }
-            else
-            {
-                message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = null;
-            }
+            message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = DataBytes;
 
             //if the requsted content will need a specific filetype server-side, require the file extension
             if (LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Audio ||

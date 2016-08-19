@@ -32,11 +32,11 @@ namespace NuSysApp
                 ItemList.Add(template);   
             }
             _controllerList = new List<LibraryElementController>(controllers);
-            SessionController.Instance.ContentController.OnNewContent += NewContent;
-            SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
+            SessionController.Instance.ContentController.OnNewLibraryElement += NewLibraryElement;
+            SessionController.Instance.ContentController.OnLibraryElementDelete += DeleteContent;
         }
 
-        private void NewContent(LibraryElementModel content)
+        private void NewLibraryElement(LibraryElementModel content)
         {
             UITask.Run(() =>
             {
