@@ -324,6 +324,7 @@ namespace NuSysApp
             {
                 return UserIdToDisplayNameDictionary[userId];
             }
+            Debug.Fail("The userId should always exist");
             return null;
         }
     }

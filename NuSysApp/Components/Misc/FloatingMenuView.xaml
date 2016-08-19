@@ -30,7 +30,7 @@
                     <TranslateTransform X="40" Y="40"></TranslateTransform>
                 </StackPanel.RenderTransform>
                 <StackPanel Orientation="Horizontal">
-                    <Grid x:Name="btnRecording" Width="60" Height="60"  Margin="10,0,10,0" Background="Transparent">
+                    <Grid x:Name="btnAddRecordingNode" Width="60" Height="60"  Margin="10,0,10,0" Background="Transparent" PointerPressed="btnAdd_OnPointerPressed">
                         <TextBlock Margin="0,0,0,12" Text="Recording" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" ></TextBlock>
                         <!--<Canvas Background="Transparent" Width="20" Height="20">
                             <Canvas.RenderTransform>
@@ -42,7 +42,7 @@
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4710" Fill="{StaticResource color3}" Data="m 8 10 3 -2 0 5 -3 -2 z"/>-->
                         <!--</Canvas>-->
                     </Grid>
-                    <Grid x:Name="btnText" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent">
+                    <Grid x:Name="btnAddTextNode" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent" PointerPressed="btnAdd_OnPointerPressed">
                         <TextBlock Margin="0,0,0,12" Text="Text"  TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" ></TextBlock>
                         <!--<Canvas Background="Transparent" Width="20" Height="20">
                             <Canvas.RenderTransform>
@@ -55,7 +55,7 @@
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4156" Fill="{StaticResource color3}" Data="m 10.5 9 -7 0 C 3.224 9 3 8.776 3 8.5 3 8.224 3.224 8 3.5 8 l 7 0 C 10.776 8 11 8.224 11 8.5 11 8.776 10.776 9 10.5 9 Z"/>-->
                         <!--</Canvas>-->
                     </Grid>
-                    <Grid x:Name="btnNew" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent">
+                    <Grid x:Name="btnAddCollectionNode" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent" PointerPressed="btnAdd_OnPointerPressed">
                         <TextBlock Margin="0,0,0,12" Text="Collection" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" ></TextBlock>
                         <!--<Canvas Background="Transparent" Width="20" Height="20">
                             <Canvas.RenderTransform>
@@ -66,7 +66,7 @@
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4140" Fill="{StaticResource color3}" Data="M 8.421 0.659 C 7.615 0.068 7.224 0 7 0 L 1.25 0 C 0.561 0 0 0.561 0 1.25 l 0 11.5 c 0 0.604 0.43 1.109 1 1.225 L 1 1.25 C 1 1.115 1.115 1 1.25 1 L 8.857 1 C 8.706 0.876 8.56 0.762 8.42 0.659 Z"/>-->
                         <!--</Canvas>-->
                     </Grid>
-                    <Grid x:Name="btnTools" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent">
+                    <Grid x:Name="btnAddTools" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent" PointerPressed="btnAdd_OnPointerPressed">
                         <TextBlock Margin="0,0,0,12" Text="Tools" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" ></TextBlock>
                         <!--<Canvas Background="Transparent" Width="20" Height="20">
                             <Canvas.RenderTransform>
