@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -25,7 +26,7 @@ namespace NusysServer
         /// <param name="senderHandler"></param>
         public static void ProcessCreateContentDataModelRequestMedia(Message contentDataModelMessage, string contentDataModelId, string contentUrl, NusysConstants.ElementType elementType, NuWebSocketHandler senderHandler)
         {
-            
+
             //create a new async Task so we don't slow down the request
             Task.Run(async delegate
             {
@@ -43,7 +44,7 @@ namespace NusysServer
                         {
                             if (Constants.user == "junsu") //TODO remove after junsu tests  AND not make it only use the first page
                             {
-                                var tup = new Tuple<string, string>(pdfText.First(), contentDataModelMessage.GetString( NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
+                                var tup = new Tuple<string, string>(pdfText.First(), contentDataModelMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
                                 ContentController.Instance.ComparisonController.AddDocument(tup);
                                 ContentController.Instance.ComparisonController.CompareRandonDoc();
                             }
@@ -51,7 +52,37 @@ namespace NusysServer
                             {
                                 try
                                 {
-                                    analysisModel = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(pdfText, contentDataModelId);
+                                    var pdfDocModel = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(pdfText);//get the document analysis
+
+                                    var pageUrls = JsonConvert.DeserializeObject<List<string>>(contentUrl); //get the list of urls for the pdf pages as images
+
+                                    var OCRModels = new NuSysOcrAnalysisModel[pageUrls.Count];//create empty list for the page model analyses
+
+                                    int returned = 0;
+                                    var i = 0;
+                                    foreach (var pageUrl in pageUrls)
+                                    {
+                                        Task.Run(async delegate
+                                        {
+                                            int index = Convert.ToInt32(i);
+                                            var image = Image.FromFile(FileHelper.FilePathFromUrl(pageUrl));
+                                            var ocrModel = await ImageProcessor.GetNusysOcrAnalysisModelFromUrlAsync(pageUrl, contentDataModelId, image.Width, image.Height);
+                                            OCRModels[index] = ocrModel;
+                                            returned++;
+                                        });
+                                        i++;
+                                    }
+
+                                    while (returned < pageUrls.Count())
+                                    {
+                                        Task.Delay(50);//wait until all the pages return
+                                    }
+
+                                    analysisModel = new NusysPdfAnalysisModel(contentDataModelId)
+                                    {
+                                        DocumentAnalysisModel = pdfDocModel,
+                                        PageImageAnalysisModels = new List<NuSysOcrAnalysisModel>(OCRModels)
+                                    };
                                 }
                                 catch (Exception e)
                                 {

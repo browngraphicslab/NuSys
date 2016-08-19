@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using NusysIntermediate;
 using Newtonsoft.Json;
+using NusysServer.Util;
 
 namespace NusysServer
 {
@@ -139,27 +140,32 @@ namespace NusysServer
 
                         break;
                     case NusysConstants.ContentType.PDF:
+                        var tempPath = Constants.WWW_ROOT + contentDataModelId + ".pdf";//create a temporary .pdf path
+                        File.WriteAllBytes(tempPath, Convert.FromBase64String(contentData));
+
                         //creates a file and url for each page image and returns a serialized list of urls
-                        var listOfBytes = JsonConvert.DeserializeObject<List<string>>(contentData);
+                        var listOfBytes = PdfUtil.GetPdfPageBytes(tempPath);
+
+                        
+
                         List<string> listOfUrls = new List<string>();
                         int i = 0;
                         foreach (var bytesOfImage in listOfBytes)
                         {
-                            filePath = Constants.WWW_ROOT + contentDataModelId + "_" + i +
-                                       NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
+                            filePath = Constants.WWW_ROOT + contentDataModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
                             var stream1 = File.Create(filePath);
                             stream1.Dispose();
 
                             using (var fstream = File.OpenWrite(filePath))
                             {
-                                var bytes = Convert.FromBase64String(bytesOfImage);
-                                fstream.Write(bytes, 0, bytes.Length);
+                                fstream.Write(bytesOfImage, 0, bytesOfImage.Length);
                             }
 
                             listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + i +
                                            NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
                             i++;
                         }
+
                         return JsonConvert.SerializeObject(listOfUrls);
                         break;
                     case NusysConstants.ContentType.Text:
@@ -207,7 +213,7 @@ namespace NusysServer
                         var filePath = Constants.FILE_FOLDER + contentId + Constants.TEXT_DATA_FILE_FILE_EXTENSION;
                         if (File.Exists(filePath))
                         {
-                            File.WriteAllText(filePath,updatedContentData);
+                            File.WriteAllText(filePath, updatedContentData);
                             return true;
                         }
                         else
@@ -245,7 +251,7 @@ namespace NusysServer
             var filepath = Constants.FILE_FOLDER + fileName;
             if (!File.Exists(filepath))
             {
-                throw new Exception("The content file you requests does not exist. file: "+fileName);
+                throw new Exception("The content file you requests does not exist. file: " + fileName);
             }
             try
             {
@@ -267,5 +273,15 @@ namespace NusysServer
             return Constants.FILE_FOLDER + contentDataModelId + ".docx";//TODO extract this out to actual constant
         }
 
+        /// <summary>
+        /// Gets the file path for a certain url if that url points to our server.
+        /// Will return gibberish if it's not for our server.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string FilePathFromUrl(string url)
+        {
+            return Constants.WWW_ROOT + url.Substring(Constants.SERVER_ADDRESS.Length);
+        }
     }
 }

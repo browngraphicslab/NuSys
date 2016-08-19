@@ -3,33 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
-using NAudio.MediaFoundation;
 using Newtonsoft.Json;
 using NusysIntermediate;
-using SharpDX.Direct2D1;
-using SharpDX.WIC;
 using WinRTXamlToolkit.Imaging;
 using Image = Windows.UI.Xaml.Controls.Image;
 using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
@@ -56,8 +42,8 @@ namespace NuSysApp
         private LibraryElementPropertiesWindow _propertiesWindow;
         private LibraryPageViewModel _pageViewModel;
         private LibraryFavoritesViewModel _favoritesViewModel;
-        private Point2d _searchExportPos; 
-        
+        private Point2d _searchExportPos;
+
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
@@ -82,7 +68,7 @@ namespace NuSysApp
                     properties.Visibility = Visibility.Collapsed;
                 });
             };
-            _searchExportPos = new Point2d(0,0);
+            _searchExportPos = new Point2d(0, 0);
         }
 
 
@@ -104,31 +90,6 @@ namespace NuSysApp
                 _propertiesWindow.Visibility = Visibility.Collapsed;
             }
         }
-        //public async Task InitializeLibrary()
-        //{
-        //    Task.Run(async delegate
-        //    {
-        //        var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-        //        foreach (var kvp in dictionaries)
-        //        {
-        //            var id = kvp.Value["id"];
-        //            var element = new LibraryElement(kvp.Value);
-        //            if (!_elements.ContainsKey(id))
-        //            {
-        //                _elements.Add(id, element);
-        //            }
-        //        }
-        //        UITask.Run(delegate {
-        //            OnNewContents?.Invoke(_elements.ContentValues);
-        //        });
-        //    })
-        //}
-
-        //public void AddNewElement(LibraryElement element)
-        //{
-        //    _elements.Add(element.ContentID, element);
-        //    OnNewElementAvailable?.Invoke(element);
-        //}
         public void MakeViews(LibraryPageViewModel pageViewModel, LibraryElementPropertiesWindow properties)
         {
             //_libraryGrid = new LibraryGrid(this, pageViewModel, properties);
@@ -148,78 +109,6 @@ namespace NuSysApp
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
-        
-        private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            //await this.AddNode(new Point(12, 0), new Size(12, 12), ElementType.Document);
-            //this.UpdateList();
-            //if (WorkspacePivot.Content != _libraryGrid)
-            //{
-            //    await _libraryGrid.Update();
-            //    WorkspacePivot.Content = _libraryGrid;
-            //}
-        }
-
-
-        //private void GridViewDragStarting(object sender, DragStartingEventArgs e)
-        //{
-        //    //e.Data.Properties.
-        //}
-        //private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
-        //{
-        //    List<LibraryElement> elements = new List<LibraryElement>();
-        //    foreach (var element in e.Items)
-        //    {
-        //        var id = ((LibraryElement)element).ContentID;
-        //        elements.Add((LibraryElement)element);
-        //        if (SessionController.Instance.ContentController.Get(id) == null)
-        //        {
-        //            Task.Run(async delegate
-        //            {
-        //                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementDataAsync(id);
-        //            });
-        //        }
-        //    }
-        //    e.Data.OperationCompleted += DataOnOperationCompleted;
-        //    e.Data.Properties.Add("LibraryElements", elements);
-        //    var title = ((LibraryElement)e.Items[0]).Title ?? "";
-        //    var type = ((LibraryElement)e.Items[0]).NodeType.ToString();
-        //    e.Data.SetText(type + "  :  " + title);
-        //    e.Cancel = false;
-        //}
-        //private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
-        //{
-        //    UITask.Run(delegate
-        //    {
-        //        var ids = (List<LibraryElement>)sender.Properties["LibraryElements"];
-
-        //        var width = SessionController.Instance.SessionView.ActualWidth;
-        //        var height = SessionController.Instance.SessionView.ActualHeight;
-        //        var centerpoint =
-        //            SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
-        //                new Point(width / 2, height / 2));
-        //        Task.Run(delegate
-        //        {
-        //            foreach (var element in ids)
-        //            {
-        //                Message m = new Message();
-        //                m["contentId"] = element.ContentID;
-        //                m["x"] = centerpoint.X - 200;
-        //                m["y"] = centerpoint.Y - 200;
-        //                m["width"] = 400;
-        //                m["height"] = 400;
-        //                m["nodeType"] = element.NodeType.ToString();
-        //                m["autoCreate"] = true;
-        //                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.ContentId };
-
-        //                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-        //            }
-        //        });
-        //    });
-        //}
-
-
-
         private void AddToFavorites(object sender, LibraryElementModel element)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
@@ -289,7 +178,7 @@ namespace NuSysApp
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.Word;
-                    
+
                     byte[] fileBytes = null;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {
@@ -310,9 +199,6 @@ namespace NuSysApp
                 {
                     elementType = NusysConstants.ElementType.PDF;
 
-                    // create a list of strings which contain the image data for each page of the pdf
-                    List<string> pdfPages = new List<string>();
-
                     // read the contents of storageFile into a MUPDF Document
                     byte[] fileBytes;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
@@ -324,50 +210,49 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes)); 
-                    
-                    // convert each page of the pdf into an image file, and store it in the pdfPages list
+
+                    // set data to the file bytes
+                    data = Convert.ToBase64String(fileBytes);
+
+                    // read the fileBytes into a MuPDFDoc
+                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
+
+                    // foreach page
                     for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
                     {
-                        // set the pdf text by page for the current page number
+                        // add the text of the page to the list of text pdfTextByPage
                         pdfTextByPage.Add(MuPdfDoc.GetAllTexts(pageNumber));
-
-                        // get variables for drawing the page
-                        var pageSize = MuPdfDoc.GetPageSize(pageNumber);
-                        var width = pageSize.X;
-                        var height = pageSize.Y;
-
-                        // create an image to use for converting
-                        var image = new WriteableBitmap(width, height);
-
-                        // create a buffer to draw the page on
-                        IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
-                        buf.Length = image.PixelBuffer.Length;
-
-                        // draw the page onto the buffer
-                        MuPdfDoc.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-                        var ss = buf.AsStream();
-
-                        // copy the buffer to the image
-                        await ss.CopyToAsync(image.PixelBuffer.AsStream());
-                        image.Invalidate();
-
-                        // save the image as a file (temporarily)
-                        var x = await image.SaveAsync(NuSysStorages.SaveFolder);
-
-                        // use the system to convert the file to a byte array
-                        pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
-                        if (pageNumber == 0)
-                        {
-                            // if we are on the first apge, get thumbnails of the file from the system
-                            thumbnails = await MediaUtil.GetThumbnailDictionary(x);
-                        }
-
-                        // delete the image file that we saved
-                        await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
                     }
 
-                    data = JsonConvert.SerializeObject(pdfPages);
+                    // get variables for drawing the page
+                    var pageSize = MuPdfDoc.GetPageSize(0);
+                    var width = pageSize.X;
+                    var height = pageSize.Y;
+
+                    // create an image to use for converting
+                    var image = new WriteableBitmap(width, height);
+
+                    // create a buffer to draw the page on
+                    IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                    buf.Length = image.PixelBuffer.Length;
+
+                    // draw the page onto the buffer
+                    MuPdfDoc.DrawPage(0, buf, 0, 0, width, height, false);
+                    var ss = buf.AsStream();
+
+                    // copy the buffer to the image
+                    await ss.CopyToAsync(image.PixelBuffer.AsStream());
+                    image.Invalidate();
+
+                    // save the image as a file (temporarily)
+                    var x = await image.SaveAsync(NuSysStorages.SaveFolder);
+
+                    // get thumbnails of the file from the system
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(x);
+
+                    // delete the image file that we saved
+                    await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
@@ -386,7 +271,7 @@ namespace NuSysApp
                     }
 
                     data = Convert.ToBase64String(fileBytes);
-                    thumbnails=await MediaUtil.GetThumbnailDictionary(storageFile);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.AudioFileTypes.Contains(fileType))
                 {
@@ -461,7 +346,7 @@ namespace NuSysApp
 
                     //update listview so item is added to top of list
                     var listvm = (LibraryPageViewModel)_libraryList.DataContext;
-                    
+
                     vm.ClearSelection();
                 }
                 else
@@ -478,8 +363,8 @@ namespace NuSysApp
 
         private void ThumbnailTest(string b64)
         {
-           //ShellFile file =new ShellFile();
-          
+            //ShellFile file =new ShellFile();
+
 
         }
 
@@ -510,7 +395,7 @@ namespace NuSysApp
                     var contentDataModelId = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId)?.ContentDataModelId;
                     Debug.Assert(contentDataModelId != null);
 
-                    if(!SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
+                    if (!SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
                     {
                         await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(contentDataModelId);
                     }
@@ -674,7 +559,7 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newContentRequest);
                 newContentRequest.AddReturnedLibraryElementToLibrary();
             }
-                
+
             //else if (ListContainer.Children[0] == _libraryFavorites)
             //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
 
@@ -691,7 +576,7 @@ namespace NuSysApp
             var elementRequest = new NewElementRequest(newElementRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
             await elementRequest.AddReturnedElementToSessionAsync();
-            
+
             // We then populate this new collection with instances of the all the search results
             if (ListContainer.Children[0] == _libraryList)
             {
@@ -718,7 +603,7 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(embeddedElementRequest);
                         embeddedElementRequest.AddReturnedElementToSession();
                     }
-                    
+
                 }
             }
 
@@ -740,7 +625,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-          
+
             // Since we are adding a collection, we should make the dragging rectangle reflect this
             var view = SessionController.Instance.SessionView;
             view.LibraryDraggingRectangle.SwitchType(NusysConstants.ElementType.Collection);
@@ -796,7 +681,7 @@ namespace NuSysApp
             var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
             await ExportSearchResultsToCollection(dropPoint);
             e.Handled = true;
-           
+
         }
 
         /// <summary>

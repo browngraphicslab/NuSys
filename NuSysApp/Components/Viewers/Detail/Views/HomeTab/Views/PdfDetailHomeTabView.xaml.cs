@@ -27,8 +27,11 @@ namespace NuSysApp
 {
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
-
-        private NusysPdfDocumentAnalysisModel _analysisModel;
+        /// <summary>
+        /// the private instance of the analysis model for this pdf dcument.
+        /// This will be loaded asynchronously to add a new suggestion box for the pdf/
+        /// </summary>
+        private NusysPdfAnalysisModel _analysisModel;
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
@@ -58,7 +61,7 @@ namespace NuSysApp
             {
                 var request = new GetAnalysisModelRequest(vm.LibraryElementController.LibraryElementModel.ContentDataModelId);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                _analysisModel = request.GetReturnedAnalysisModel() as NusysPdfDocumentAnalysisModel;
+                _analysisModel = request.GetReturnedAnalysisModel() as NusysPdfAnalysisModel;
                 UITask.Run(async delegate {
                     SetPdfSuggestions(vm.CurrentPageNumber);
                 });
@@ -87,15 +90,15 @@ namespace NuSysApp
             xPageNumberBox.Text = pageNumber.ToString();
             if (_analysisModel != null)
             {
-                if (_analysisModel.Segments.Any(segment => segment.pageNumber == pageNumber))
+                if (_analysisModel.DocumentAnalysisModel.Segments.Any(segment => segment.pageNumber == pageNumber))
                 {
-                    xSentimentBox.Text = Math.Round( _analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating)*100, 3) + " %";
+                    xSentimentBox.Text = Math.Round( _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating)*100, 3) + " %";
                 }
                 else
                 {
                     xSentimentBox.Text = "None found";
                 }
-                xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
+                xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
             }
             else
             {
