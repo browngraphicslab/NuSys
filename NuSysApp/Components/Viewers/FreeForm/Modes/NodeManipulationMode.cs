@@ -53,14 +53,18 @@ namespace NuSysApp
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             foreach (var userControl in vm.AtomViewList)
             {
+
+
                 userControl.ManipulationMode = ManipulationModes.All;
-                userControl.ManipulationStarted += ManipulationStarting;
+
                 userControl.ManipulationDelta += OnManipulationDelta;
                 userControl.ManipulationCompleted += OnManipulationCompleted;
-                if (!(userControl is UndoButton))
-                {
-                    userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
-                }
+                userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
+                userControl.ManipulationStarted += ManipulationStarting;
+
+                
+
+
             }
 
             vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
@@ -96,6 +100,10 @@ namespace NuSysApp
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
+            if(sender is UndoButton)
+            {
+                return;
+            }
             var userControl = (UserControl)sender;
             if (userControl.DataContext is ElementViewModel && !(userControl.DataContext is LinkViewModel))
             {

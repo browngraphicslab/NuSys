@@ -527,8 +527,8 @@ namespace NuSysApp
                 }
             });
 
-            // TODO: Remove Tood
-            // TOOD: refresh library
+
+
         }
 
         private void Folder_Tapped(object sender, TappedRoutedEventArgs e)

@@ -149,6 +149,7 @@ namespace NuSysApp
                     {
                         wvm.AtomViewList.Remove(this);
                         Loaded -= UndoButton_Loaded;
+                        xMainGrid.Tapped -= UndoButton_OnTapped; 
                     }
                     else
                     {
