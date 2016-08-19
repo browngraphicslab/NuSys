@@ -22,6 +22,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Border x:Name="xBorder" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid x:Name="xWrapper" Margin="10"  HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -50,9 +51,8 @@
             
             <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" HorizontalAlignment="Right" SetWidth="200"  Grid.Row="0"></local:ShowHideRegionButtons>
             <local:AddToCollectionButton Grid.Row="0" HorizontalAlignment="Left"/>
-
-            <Grid Grid.Row="2" x:Name="SegmentPanel">
-                <Button Tapped="Button_Tapped" HorizontalAlignment="Center">Suggest regions</Button>
+            <Button Grid.Row="2" Tapped="Button_Tapped" Style="{StaticResource DarkButton}" HorizontalAlignment="Center">Suggest regions</Button>
+            <Grid Grid.Row="3" x:Name="SegmentPanel">
                 <StackPanel>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
                         <TextBlock Foreground="{StaticResource color3}" FontSize="20">Document Analysis by Page</TextBlock>

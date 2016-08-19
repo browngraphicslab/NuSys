@@ -135,6 +135,18 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// dispose suggestedtag_ontapped method
+        /// </summary>
+        private void DisposeTags()
+        {
+            foreach (var i in xTags?.Items)
+            {
+                var currTag = (HyperlinkButton) i;
+                currTag.Tapped -= SuggestedTag_OnTapped;
+            }
+        }
+
         private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
@@ -145,6 +157,7 @@ namespace NuSysApp
         private void Dispose()
         {
             xClippingWrapper.Dispose();
+            DisposeTags();
         }
         
         private void ControllerOnDisposed(object source, object args)
