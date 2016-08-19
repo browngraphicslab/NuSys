@@ -1,38 +1,21 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
-using NAudio.MediaFoundation;
 using Newtonsoft.Json;
 using NusysIntermediate;
-using SharpDX.Direct2D1;
-using SharpDX.WIC;
 using WinRTXamlToolkit.Imaging;
-using Image = Windows.UI.Xaml.Controls.Image;
-using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -40,19 +23,11 @@ namespace NuSysApp
 {
     public sealed partial class LibraryView : UserControl
     {
-        //public delegate void NewContentsEventHandler(ICollection<LibraryElement> elements);
-        //public event NewContentsEventHandler OnNewContents;
-        //private LibraryGrid workspaceGrid;
-        //private LibraryList workspaceList;
 
-        //public delegate void NewElementAvailableEventHandler(LibraryElement element);
-        //public event NewElementAvailableEventHandler OnNewElementAvailable;
         private LibraryFavorites _libraryFavorites;
         private LibraryList _libraryList;
         private LibraryGrid _libraryGrid;
         private FloatingMenuView _menu;
-        private double _graphButtonX;
-        private double _graphButtonY;
         private LibraryElementPropertiesWindow _propertiesWindow;
         private LibraryPageViewModel _pageViewModel;
         private LibraryFavoritesViewModel _favoritesViewModel;
@@ -73,7 +48,6 @@ namespace NuSysApp
             ListContainer.Children.Add(_libraryList);
             Searchfield.SetHeight = 34;
             _menu = menu;
-            this.updateTabs();
 
             vm.OnElementDeleted += delegate
             {
@@ -104,38 +78,11 @@ namespace NuSysApp
                 _propertiesWindow.Visibility = Visibility.Collapsed;
             }
         }
-        //public async Task InitializeLibrary()
-        //{
-        //    Task.Run(async delegate
-        //    {
-        //        var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-        //        foreach (var kvp in dictionaries)
-        //        {
-        //            var id = kvp.Value["id"];
-        //            var element = new LibraryElement(kvp.Value);
-        //            if (!_elements.ContainsKey(id))
-        //            {
-        //                _elements.Add(id, element);
-        //            }
-        //        }
-        //        UITask.Run(delegate {
-        //            OnNewContents?.Invoke(_elements.ContentValues);
-        //        });
-        //    })
-        //}
 
-        //public void AddNewElement(LibraryElement element)
-        //{
-        //    _elements.Add(element.ContentID, element);
-        //    OnNewElementAvailable?.Invoke(element);
-        //}
         public void MakeViews(LibraryPageViewModel pageViewModel, LibraryElementPropertiesWindow properties)
         {
-            //_libraryGrid = new LibraryGrid(this, pageViewModel, properties);
             _libraryList = new LibraryList(this, pageViewModel, properties);
             _libraryFavorites = new LibraryFavorites(this, _favoritesViewModel, properties);
-            //_libraryList.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).ListViewBase_OnDragItemsStarting;
-            //_libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
         }
 
 
@@ -148,77 +95,6 @@ namespace NuSysApp
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
-        
-        private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            //await this.AddNode(new Point(12, 0), new Size(12, 12), ElementType.Document);
-            //this.UpdateList();
-            //if (WorkspacePivot.Content != _libraryGrid)
-            //{
-            //    await _libraryGrid.Update();
-            //    WorkspacePivot.Content = _libraryGrid;
-            //}
-        }
-
-
-        //private void GridViewDragStarting(object sender, DragStartingEventArgs e)
-        //{
-        //    //e.Data.Properties.
-        //}
-        //private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
-        //{
-        //    List<LibraryElement> elements = new List<LibraryElement>();
-        //    foreach (var element in e.Items)
-        //    {
-        //        var id = ((LibraryElement)element).ContentID;
-        //        elements.Add((LibraryElement)element);
-        //        if (SessionController.Instance.ContentController.Get(id) == null)
-        //        {
-        //            Task.Run(async delegate
-        //            {
-        //                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementDataAsync(id);
-        //            });
-        //        }
-        //    }
-        //    e.Data.OperationCompleted += DataOnOperationCompleted;
-        //    e.Data.Properties.Add("LibraryElements", elements);
-        //    var title = ((LibraryElement)e.Items[0]).Title ?? "";
-        //    var type = ((LibraryElement)e.Items[0]).NodeType.ToString();
-        //    e.Data.SetText(type + "  :  " + title);
-        //    e.Cancel = false;
-        //}
-        //private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
-        //{
-        //    UITask.Run(delegate
-        //    {
-        //        var ids = (List<LibraryElement>)sender.Properties["LibraryElements"];
-
-        //        var width = SessionController.Instance.SessionView.ActualWidth;
-        //        var height = SessionController.Instance.SessionView.ActualHeight;
-        //        var centerpoint =
-        //            SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
-        //                new Point(width / 2, height / 2));
-        //        Task.Run(delegate
-        //        {
-        //            foreach (var element in ids)
-        //            {
-        //                Message m = new Message();
-        //                m["contentId"] = element.ContentID;
-        //                m["x"] = centerpoint.X - 200;
-        //                m["y"] = centerpoint.Y - 200;
-        //                m["width"] = 400;
-        //                m["height"] = 400;
-        //                m["nodeType"] = element.NodeType.ToString();
-        //                m["autoCreate"] = true;
-        //                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.ContentId };
-
-        //                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-        //            }
-        //        });
-        //    });
-        //}
-
-
 
         private void AddToFavorites(object sender, LibraryElementModel element)
         {
@@ -469,67 +345,7 @@ namespace NuSysApp
                     Debug.WriteLine("tried to import invalid filetype");
                 }
             }
-        }
-
-        private Task Goto(int v)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ThumbnailTest(string b64)
-        {
-           //ShellFile file =new ShellFile();
-          
-
-        }
-
-        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
-        {
-            Task.Run(async delegate
-            {
-                if (elementType != NusysConstants.ElementType.Collection)
-                {
-                    var dict = new Message();
-                    Dictionary<string, object> metadata;
-
-                    metadata = new Dictionary<string, object>();
-                    metadata["node_creation_date"] = DateTime.Now;
-                    metadata["node_type"] = elementType + "Node";
-                    dict["metadata"] = metadata;
-
-                    var elementRequestArgs = new NewElementRequestArgs();
-                    elementRequestArgs.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-                    elementRequestArgs.LibraryElementId = libraryId;
-                    elementRequestArgs.Width = size.Width;
-                    elementRequestArgs.Height = size.Height;
-                    elementRequestArgs.X = pos.X;
-                    elementRequestArgs.Y = pos.Y;
-
-                    var request = new NewElementRequest(elementRequestArgs);
-
-                    var contentDataModelId = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId)?.ContentDataModelId;
-                    Debug.Assert(contentDataModelId != null);
-
-                    if(!SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
-                    {
-                        await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(contentDataModelId);
-                    }
-
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    await request.AddReturnedElementToSessionAsync();
-                }
-                else
-                {
-                    var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
-                    await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
-                            new List<Point>(collection?.ShapePoints?.Select(p => new Point(p.X, p.Y)) ?? new List<Point>()), size.Width, size.Height);
-                }
-            });
-
-            // TODO: Remove Tood
-            // TOOD: refresh library
-        }
+        }     
 
         private void Folder_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -539,94 +355,6 @@ namespace NuSysApp
         public FrameworkElement HeaderRow
         {
             get { return xHeaderRow; }
-        }
-
-
-        //private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
-        //{
-
-        //    _propertiesWindow.Visibility = Visibility.Collapsed;
-
-        //    if (((Button)sender == btnFav))
-        //    {
-        //        ListContainer.Children.Clear();
-        //        ListContainer.Children.Add(_libraryFavorites);
-        //    }
-        //    else if (((Button)sender == btnAll))
-        //    {
-        //        ListContainer.Children.Clear();
-        //        ListContainer.Children.Add(_libraryList);
-        //    }
-
-        //    this.updateTabs();
-
-        //}
-
-        private void updateTabs()
-        {
-            //if (ListContainer.Children[0] == _libraryFavorites)
-            //{
-            //    btnFav.Background = new SolidColorBrush(Colors.White);
-            //    btnAll.Background = (SolidColorBrush)Application.Current.Resources["color9"];
-            //}
-            //else if (ListContainer.Children[0] == _libraryList)
-            //{
-            //    btnAll.Background = new SolidColorBrush(Colors.White);
-            //    btnFav.Background = (SolidColorBrush)Application.Current.Resources["color9"];
-            //}
-        }
-
-        private void Graph_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            // find x and y coordintes of pointer, to be used in graph image manipulation
-            var view = SessionController.Instance.SessionView;
-            _graphButtonX = e.GetCurrentPoint(view).Position.X;
-            _graphButtonY = e.GetCurrentPoint(view).Position.Y;
-        }
-
-        private void Graph_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            // show draggable graph image
-            var draggedGraphImage = SessionController.Instance.SessionView.GraphImage;
-            Canvas.SetZIndex(draggedGraphImage, 3);
-            draggedGraphImage.Width = 100;
-            draggedGraphImage.Height = 100;
-
-            // set up transforms
-            draggedGraphImage.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)draggedGraphImage.RenderTransform;
-            t.TranslateX += _graphButtonX - (draggedGraphImage.Width / 2);
-            t.TranslateY += _graphButtonY - (draggedGraphImage.Height / 2);
-        }
-
-
-
-        private void Graph_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            // moves draggable graph image based on pointer manipulation
-            var view = SessionController.Instance.SessionView;
-            var t = (CompositeTransform)view.GraphImage.RenderTransform;
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
-        }
-
-        private async void Graph_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            // Hid the dragged graph image/button
-            var draggedGraphImage = SessionController.Instance.SessionView.GraphImage;
-            draggedGraphImage.Width = 0;
-            draggedGraphImage.Height = 0;
-
-            // extract composite transform and add the chart/graph based on the dropped location
-            var t = (CompositeTransform)draggedGraphImage.RenderTransform;
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            //     var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(e.Position.X, e.Position.Y, 300, 300));
-            var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(t.TranslateX, t.TranslateY));
-
-
-            // graph is added by passing in the bounding rectangle
-            await ExportSearchResultsToCollection(r);
-
         }
 
         /// <summary>
@@ -722,26 +450,6 @@ namespace NuSysApp
                 }
             }
 
-            // TODO This will have to be done differently for Favorites 
-            //else if (ListContainer.Children[0] == _libraryFavorites)
-            //{
-            //    foreach (var itemTemplate in _favoritesViewModel.ItemList.ToList().GetRange(0, Math.Min(_favoritesViewModel.ItemList.Count, 30)))
-            //    {
-            //        var dict = new Message();
-            //        dict["title"] = itemTemplate?.Title;
-            //        dict["width"] = "300";
-            //        dict["height"] = "300";
-            //        dict["type"] = itemTemplate?.Type;
-            //        dict["x"] = "50000";
-            //        dict["y"] = "50000";
-            //        dict["contentId"] = itemTemplate?.LibraryElementId;
-            //        dict["metadata"] = metadata;
-            //        dict["autoCreate"] = true;
-            //        dict["creator"] = controller.LibraryElementModel.LibraryElementId;
-            //        var request = new NewElementRequest(dict);
-            //        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            //    }
-            //}
         }
 
         /// <summary>
@@ -754,7 +462,7 @@ namespace NuSysApp
           
             // Since we are adding a collection, we should make the dragging rectangle reflect this
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SwitchType(NusysConstants.ElementType.Collection);
+            view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);

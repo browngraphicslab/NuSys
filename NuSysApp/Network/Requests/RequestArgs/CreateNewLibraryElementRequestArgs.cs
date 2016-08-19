@@ -76,7 +76,7 @@ namespace NuSysApp
 
         /// <summary>
         /// REQUIRED
-        /// the contentID for the library element.  
+        /// the contentID for the library element. Not required for use in CreateNewContentRequestArgs  
         /// </summary>
         public string ContentId { get; set; }
 

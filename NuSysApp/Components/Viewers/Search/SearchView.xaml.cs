@@ -414,7 +414,7 @@ namespace NuSysApp
 
             // Since we are adding a collection, we should make the dragging rectangle reflect this
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SwitchType(NusysConstants.ElementType.Collection);
+            view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);
