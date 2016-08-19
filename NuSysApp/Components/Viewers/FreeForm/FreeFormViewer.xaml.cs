@@ -234,6 +234,8 @@ namespace NuSysApp
             _inqCanvas = null;
         }
 
+
+
         private void VmOnSelectionChanged(object source)
         {
             var vm = (FreeFormViewerViewModel) DataContext;
@@ -252,6 +254,14 @@ namespace NuSysApp
             {
                 SetViewMode(_mainMode);
             }
+        }
+        /// <summary>
+        /// make the lines of relevance from one node to its five most relevant nodes
+        /// </summary>
+        /// <param name="vm"></param>
+        private void MakeRelevanceLines(ElementViewModel vm)
+        {
+            
         }
 
         public void Dispose()
