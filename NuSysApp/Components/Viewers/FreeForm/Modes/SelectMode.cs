@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -96,7 +97,7 @@ namespace NuSysApp
                 e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
 
             // if there are five pointers in contact with the screen
-            if (_pointerIdToStartLocation.Count == 5)
+            if (_pointerIdToStartLocation.Count >=5)
             {
                 // get the list of point locations
                 var points = _pointerIdToStartLocation.Values;
@@ -186,8 +187,58 @@ namespace NuSysApp
             if (possibleElements.Count == 1)
             {
                 var elementViewModel = (possibleElements[0] as FrameworkElement).DataContext as ElementViewModel;
+                if (elementViewModel != null)
+                {
+                    UITask.Run(async delegate {
+                        MakeRelevanceLines(elementViewModel.Controller);
+                    });
+                }
             }
         }
+
+        private IEnumerable<string> GetStrings(IEnumerable<Keyword> words)
+        {
+            return words?.Select(w => w?.Text?.ToLower() ?? "") ?? new List<string>();
+        }
+
+        /// <summary>
+        /// make the lines of relevance from one node to its five most relevant nodes
+        /// </summary>
+        /// <param name="vm"></param>
+        private async Task MakeRelevanceLines(ElementController controller)
+        {
+            //get list of node's relevant documents
+            //foreach document in the list as long as the relevance is above .25, make a relevance line for it
+
+            var keywordsToCompare = GetStrings(controller.LibraryElementModel.Keywords ?? new HashSet<Keyword>());
+
+            var count = (controller.LibraryElementModel.Keywords ?? new HashSet<Keyword>()).Count();
+
+            var viewModels = (SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => item?.DataContext is ElementViewModel)).Select(fe => fe.DataContext as ElementViewModel).ToImmutableHashSet();
+
+            var dict = viewModels.ToDictionary(vm => vm, 
+                item => ((double)GetStrings(item.Controller?.LibraryElementModel?.Keywords ??
+                   new HashSet<Keyword>()).Intersect(keywordsToCompare).Count())/(double)count);
+
+            foreach (var kvp in dict)
+            {
+                var line = new RelevanceLineView(controller.Model, kvp.Key.Controller.Model, kvp.Value);
+                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(line);
+            }
+
+
+            Task.Run(async delegate
+            {
+                if (controller.LibraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+                {
+                    var request = new GetAnalysisModelRequest(controller.LibraryElementController.LibraryElementModel.ContentDataModelId);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    var analysisModel = request.GetReturnedAnalysisModel() as NusysPdfAnalysisModel;
+                }
+            });
+
+        }
+
 
         /// <summary>
         /// Called when the user releases their pointer from the screen

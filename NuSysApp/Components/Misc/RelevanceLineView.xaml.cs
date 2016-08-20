@@ -49,5 +49,14 @@ namespace NuSysApp
         {
             return relevance;
         }
+
+        /// <summary>
+        /// set opacity of the line
+        /// </summary>
+        public double Opacity
+        {
+            get { return xLine.Opacity; }
+            set { xLine.Opacity = value; }
+        }
     }
 }

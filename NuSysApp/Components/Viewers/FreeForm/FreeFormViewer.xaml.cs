@@ -255,15 +255,6 @@ namespace NuSysApp
                 SetViewMode(_mainMode);
             }
         }
-        /// <summary>
-        /// make the lines of relevance from one node to its five most relevant nodes
-        /// </summary>
-        /// <param name="vm"></param>
-        private void MakeRelevanceLines(ElementViewModel vm)
-        {
-            //get list of node's relevant documents
-            //foreach document in the list as long as the relevance is above .25, make a relevance line for it
-        }
 
         public void Dispose()
         {
