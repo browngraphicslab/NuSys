@@ -93,8 +93,18 @@ namespace NuSysApp
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         { 
             // Add the pointer to the mapping of pointerIds to SessionView Positions
-            _pointerIdToStartLocation.Add(e.Pointer.PointerId,
-                e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
+            try
+            {
+                _pointerIdToStartLocation.Add(e.Pointer.PointerId,
+                    e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
+            }
+            catch (ArgumentException exception)
+            {
+                // this catches Hash collisions, which rarely occur and wouldn't break any other code
+                // just clear the dictionary so the exception doesn't occur again
+                _pointerIdToStartLocation.Clear();
+            }
+
 
             // if there are five pointers in contact with the screen
             if (_pointerIdToStartLocation.Count >=5)
@@ -278,7 +288,13 @@ namespace NuSysApp
                         if (vm.ElementType == NusysConstants.ElementType.PDF || vm.ElementType == NusysConstants.ElementType.PdfRegion)
                         {
                             var pdfVm = (PdfNodeViewModel)vm;
-                            PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber;
+                            PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber; // this is a static field so we can set it here, even though it looks weird
+
+                            // disable opening the detail viewer for the pageRight and pageLeft buttons
+                            if ((e.OriginalSource as FrameworkElement).Parent is Button)
+                            {
+                                return;
+                            } 
                         }
 
                         SessionController.Instance.SessionView.ShowDetailView(vm.Controller.LibraryElementController);
