@@ -136,6 +136,7 @@ namespace NuSysApp
 
         private async void UpdateRegionViews(int currentPageNumber)
         {
+            // takes care of visibility of temporary regions
             foreach(var item in xClippingWrapper.GetTemporaryRegionItems())
             {
                 var tempRegion = item as TemporaryImageRegionView;
@@ -152,6 +153,7 @@ namespace NuSysApp
 
             }
 
+            // takes care of visibility of normal regions
             foreach (var item in xClippingWrapper.GetRegionItems())
             {
                 var regionView = item as PDFRegionView;
