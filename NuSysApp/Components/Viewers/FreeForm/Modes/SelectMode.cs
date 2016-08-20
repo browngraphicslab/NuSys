@@ -95,19 +95,13 @@ namespace NuSysApp
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        { 
+        {
             // Add the pointer to the mapping of pointerIds to SessionView Positions
-            try
+            if (_pointerIdToStartLocation.ContainsKey(e.Pointer.PointerId))
             {
-                _pointerIdToStartLocation.Add(e.Pointer.PointerId,
-                    e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
+                _pointerIdToStartLocation.Clear(); // in some edge cases the pointer fails to release, so we can just clear the dictionary if that happens
             }
-            catch (ArgumentException exception)
-            {
-                // this catches Hash collisions, which rarely occur and wouldn't break any other code
-                // just clear the dictionary so the exception doesn't occur again
-                _pointerIdToStartLocation.Clear();
-            }
+            _pointerIdToStartLocation.Add(e.Pointer.PointerId, e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
 
 
             // if there are five pointers in contact with the screen

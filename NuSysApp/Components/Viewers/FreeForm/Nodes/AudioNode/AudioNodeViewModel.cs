@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using System.Diagnostics;
 using NetTopologySuite.Utilities;
 using NusysIntermediate;
+using BitConverter = System.BitConverter;
 using Line = Windows.UI.Xaml.Shapes.Line;
 
 namespace NuSysApp
@@ -57,110 +58,6 @@ namespace NuSysApp
             {
                 await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            InitWhenReady(this);
         }
-
-        private async void InitWhenReady(object sender)
-        {
-            //HttpWebRequest request = (HttpWebRequest) WebRequest.Create(AudioSource);
-            //HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync();
-            //Stream resStream = response.GetResponseStream();
-
-            //byte[] dataBytes = new byte[(int) response.ContentLength];
-            //resStream.Read(dataBytes, 0, (int) response.ContentLength);
-            //resStream.Dispose();
-            //Visualize(dataBytes);
-        }
-
-        /*
-        #region cool wavestream stuff
-
-        
-        private async void Visualize(byte[] bytes)
-        {
-            MemoryStream s = new MemoryStream(bytes);
-            var stream = s.AsRandomAccessStream();
-
-
-            WaveStream waveStream = new MediaFoundationReaderUniversal(stream);
-            int bytesPerSample = (waveStream.WaveFormat.BitsPerSample/8)*waveStream.WaveFormat.Channels;
-            waveStream.Position = 0;
-            int bytesRead = 1;
-            int samplesPerPixel = 1024;
-
-            if (waveStream.TotalTime.TotalMinutes > 15)
-            {
-                samplesPerPixel = 65536;
-            }
-            else if (waveStream.TotalTime.TotalMinutes > 8)
-            {
-                samplesPerPixel = 32768;
-            }
-            else if (waveStream.TotalTime.TotalMinutes > 5)
-            {
-                samplesPerPixel = 16384;
-            }
-            else if (waveStream.TotalTime.TotalMinutes > 3)
-            {
-                samplesPerPixel = 8192;
-            }
-            else if (waveStream.TotalTime.TotalMinutes > 0.5)
-            {
-                samplesPerPixel = 2048;
-            }
-
-            byte[] waveData = new byte[samplesPerPixel*bytesPerSample];
-            _visualGrid = new Grid();
-            float x = 0;
-            while (bytesRead != 0)
-            {
-                short low = 0;
-                short high = 0;
-                bytesRead = waveStream.Read(waveData, 0, samplesPerPixel*bytesPerSample);
-
-                for (int n = 0; n < bytesRead; n += 2)
-                {
-                    short sample = BitConverter.ToInt16(waveData, n);
-                    if (sample < low) low = sample;
-                    if (sample > high) high = sample;
-                }
-                float lowPercent = ((((float) low) - short.MinValue)/ushort.MaxValue);
-                float highPercent = ((((float) high) - short.MinValue)/ushort.MaxValue);
-
-                Line line = new Line();
-                line.X1 = x;
-                line.X2 = x;
-                line.Y1 = 100*(highPercent);
-                line.Y2 = 100*(lowPercent);
-                line.Stroke = new SolidColorBrush(Colors.Crimson);
-                line.StrokeThickness = 1;
-                x++;
-                _visualGrid.Children.Add(line);
-
-            }
-            _visualGrid.Height = 100;
-            _visualGrid.Width = x;
-            Line middleLine = new Line();
-            middleLine.X1 = 0;
-            middleLine.X2 = x;
-            middleLine.Y1 = _visualGrid.Height/2;
-            middleLine.Y2 = _visualGrid.Height/2;
-
-            middleLine.Stroke = new SolidColorBrush(Colors.Crimson);
-            middleLine.StrokeThickness = 1;
-            _visualGrid.Children.Add(middleLine);
-
-            OnVisualizationLoaded?.Invoke();
-        }
-
-        public Grid VisualGrid
-        {
-            get { return _visualGrid; }
-        }
-
-#endregion cool wavestream stuff
-        */
-
-
     }
 }
