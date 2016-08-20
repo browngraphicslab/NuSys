@@ -35,7 +35,7 @@ namespace NuSysApp
         /// <summary>
         /// These are the lines that will be removed once the jesus hold has been released
         /// </summary>
-        private List<RelevanceLineView> _relevanceLineViewsToRemove; 
+        private HashSet<RelevanceLineView> _relevanceLineViewsToRemove; 
 
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace NuSysApp
         {
             // instantiated the _pointerIdToStartLocation dictionary and the _relevanceLineViewsToRemove
             _pointerIdToStartLocation = new Dictionary<uint, Point>();
-            _relevanceLineViewsToRemove = new List<RelevanceLineView>();
+            _relevanceLineViewsToRemove = new HashSet<RelevanceLineView>();
 
 
             // add the mode specific event handlers
