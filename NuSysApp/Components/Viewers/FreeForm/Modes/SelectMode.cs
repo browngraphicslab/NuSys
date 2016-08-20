@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media;
 using Windows.System;
@@ -13,8 +12,11 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Microsoft.Office.Interop.Word;
 using MyToolkit.Utilities;
 using NusysIntermediate;
+using Point = Windows.Foundation.Point;
+using Task = System.Threading.Tasks.Task;
 
 namespace NuSysApp
 {
@@ -220,12 +222,21 @@ namespace NuSysApp
                 item => ((double)GetStrings(item.Controller?.LibraryElementModel?.Keywords ??
                    new HashSet<Keyword>()).Intersect(keywordsToCompare).Count())/(double)count);
 
+            var lineDict = new Dictionary<ContentDataModel, RelevanceLineView>();
+
             foreach (var kvp in dict)
             {
+                if (controller?.LibraryElementController?.ContentDataModel == null)
+                {
+                    continue;
+                }
                 var line = new RelevanceLineView(controller.Model, kvp.Key.Controller.Model, kvp.Value);
                 SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(line);
+                if (!lineDict.ContainsKey(controller.LibraryElementController.ContentDataModel))
+                {
+                    lineDict.Add(controller.LibraryElementController.ContentDataModel, line);
+                }
             }
-
 
             Task.Run(async delegate
             {
