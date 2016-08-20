@@ -33,6 +33,12 @@ namespace NuSysApp
         private Dictionary<uint, Point> _pointerIdToStartLocation;
 
         /// <summary>
+        /// These are the lines that will be removed once the jesus hold has been released
+        /// </summary>
+        private List<RelevanceLineView> _relevanceLineViewsToRemove; 
+
+
+        /// <summary>
         /// A List of possible element types that relatedDocumentsGesture can find
         /// </summary>
         private readonly List<Type> _possibleElements = new List<Type>
@@ -46,8 +52,11 @@ namespace NuSysApp
 
         public SelectMode(FreeFormViewer view):base(view)
         {
-            // instantiated the _pointerIdToStartLocation dictionary
+            // instantiated the _pointerIdToStartLocation dictionary and the _relevanceLineViewsToRemove
             _pointerIdToStartLocation = new Dictionary<uint, Point>();
+            _relevanceLineViewsToRemove = new List<RelevanceLineView>();
+
+
             // add the mode specific event handlers
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
@@ -101,9 +110,7 @@ namespace NuSysApp
             {
                 // get the list of point locations
                 var points = _pointerIdToStartLocation.Values;
-
                 // 
-                
                 // calculate the minimum bounding rect
                 var minBoundingRect = new Rect(new Point(points.Min(point => point.X), points.Min(point => point.Y)), new Point(points.Max(point => point.X), points.Max(point => point.Y)));
                 if (minBoundingRect.Width < 400 && minBoundingRect.Height < 400) // 400 px is slightly smaller than the avg American hand size according to Sahil
@@ -167,9 +174,7 @@ namespace NuSysApp
                 {
                     viwerVm?.AddSelection(dc);
                 }
-
             }
-
         }
 
         /// <summary>
@@ -226,7 +231,6 @@ namespace NuSysApp
                 SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(line);
             }
 
-
             Task.Run(async delegate
             {
                 if (controller.LibraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
@@ -251,6 +255,23 @@ namespace NuSysApp
             _released = true;
             // remove the Pointer from the mapping of pointerIds to start locations
             _pointerIdToStartLocation.Remove(e.Pointer.PointerId);
+            if (_pointerIdToStartLocation.Count < 5)
+            {
+                foreach (var relevanceLine in new List<RelevanceLineView>(_relevanceLineViewsToRemove))
+                {
+                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(relevanceLine);
+                    _relevanceLineViewsToRemove.Remove(relevanceLine);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Pass in the relevance lines that need to be removed when you release your jesus hold
+        /// </summary>
+        /// <param name="relevanceLines"></param>
+        public void PrepareToRemoveRelevanceLines(IEnumerable<RelevanceLineView> relevanceLines)
+        {
+            _relevanceLineViewsToRemove.AddRange(relevanceLines);
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

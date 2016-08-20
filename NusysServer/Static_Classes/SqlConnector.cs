@@ -321,12 +321,11 @@ namespace NusysServer
             var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, metadataMessage, Constants.Operator.And);
             cmdToDeleteRelatedMetadata.ExecuteCommand();
 
-
-
+            
             return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }
 
-        /// <summary>
+        /// <summary> 
         /// To remove a single alias from the server, the passed in message should contain the ALIAS_ID_KEY. This also deletes
         /// all the properties associated with the alias
         /// </summary>
