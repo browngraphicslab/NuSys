@@ -184,7 +184,7 @@ namespace NuSysApp
                 var elementToBeAdded = (hoverIsCollection ? draggedController : hoveredController);
                 var parentVm = (FreeFormViewerViewModel) _view.DataContext;
                 var found  = parentVm.AtomViewList.Where(a => (a.DataContext as ElementViewModel)?.Controller == collection);
-                if (!found.Any())
+                if (!found.Any() || !(found.First() is GroupNodeView))
                     return;
                 var groupnode = (GroupNodeView)found.First();
 

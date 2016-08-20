@@ -261,6 +261,32 @@ namespace NuSysApp
             var model = request.GetReturnedContentDataModel();
             return SessionController.Instance.ContentController.AddContentDataModel(model);
         }
+
+        /// <summary>
+        /// async method used to fetch an anlysis model asynchronously.  
+        /// The content data model id is the id of the content data model whose analysis model you wish to fetch.  
+        /// Will return null if it doesn't exist on the server.  
+        /// As of 8/19/16, anything buy image and pdfs will return null;
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public async Task<AnalysisModel> FetchAnalysisModelAsync(string contentDataModelId )
+        {
+            Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
+            if (SessionController.Instance.ContentController.HasAnalysisModel(contentDataModelId))//if it is already present locally
+            {
+                return SessionController.Instance.ContentController.GetAnalysisModel(contentDataModelId);//return it
+            }
+            var request = new GetAnalysisModelRequest(contentDataModelId);//otherwise make a reuqest
+            await ExecuteRequestAsync(request);
+
+            var returnedAnalysisModel = request.GetReturnedAnalysisModel();//get the returned analysis model
+
+            SessionController.Instance.ContentController.AddAnalysisModel(returnedAnalysisModel, contentDataModelId);//add the new model to the session controller
+
+            return returnedAnalysisModel;//return it
+        }
+
         public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
         {
             return (await AdvancedSearchOverLibraryElements(QueryArgsBuilder.GetQueryArgs(searchText))).Select(q => q.LibraryElementId);

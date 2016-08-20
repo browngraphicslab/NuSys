@@ -56,9 +56,7 @@ namespace NuSysApp
 
             Task.Run(async delegate
             {
-                var request = new GetAnalysisModelRequest(vm.LibraryElementController.LibraryElementModel.ContentDataModelId);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                _analysisModel = request.GetReturnedAnalysisModel() as NusysPdfAnalysisModel;
+                _analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(vm.LibraryElementController.LibraryElementModel.ContentDataModelId) as NusysPdfAnalysisModel;
                 UITask.Run(async delegate {
                     SetPdfSuggestions(vm.CurrentPageNumber);
                 });
