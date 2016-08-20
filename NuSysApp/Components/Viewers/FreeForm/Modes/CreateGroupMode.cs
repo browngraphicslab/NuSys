@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -17,6 +18,9 @@ namespace NuSysApp
     {
         private DispatcherTimer _timer;
         private bool _isHovering;
+        /// <summary>
+        /// The element view model we are hovering over
+        /// </summary>
         private ElementViewModel _hoveredNode;
         private string _createdGroupId;
 
@@ -81,66 +85,66 @@ namespace NuSysApp
             manipulationStartingRoutedEventArgs.Container = _view;
         }
 
+        /// <summary>
+        /// Fired when the user lets go of a UserControl i.e. Node/Element, if the node is hovering over another noe
+        /// this creates a collection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (_hoveredNode == null)
+            // if we are not over a node or the node is null then return, we cannot create a collection
+            if (_hoveredNode == null || !_isHovering)
             {
                 return;
             }
 
-            if (!_isHovering)
-            {
-                return;
-            }
-
-            var draggedView = (FrameworkElement) sender;
+            // set the opacity of the item we are dragging back to 1 
+            var draggedView = sender as FrameworkElement;
+            Debug.Assert(draggedView != null, "This should always be a framework element");
             draggedView.Opacity = 1;
-            var draggedItem = (((FrameworkElement) sender).DataContext as ElementViewModel);
 
-            if (draggedItem is LinkViewModel)
-                return;
+            // get the draggedItem as an ElementViewModel
+            var draggedItem = draggedView.DataContext as ElementViewModel;
 
-            var id1 = draggedItem.Id;
-            var id2 = _hoveredNode.Id;
-            if (_hoveredNode.IsEditing)//TODO FIX?
+            // get the ids of the dragged and hover item
+            var draggedId = draggedItem.Id;
+            var hoveredId = _hoveredNode.Id;
+            if (_hoveredNode.IsEditing)//TODO FIX?. I think this is fine, would really only occur in concurrent workspaces, and in that case is desired
             {
                 return; //makes sure you don't add a node to a group that it is already in when in simple edit mode
             }
 
-            if (id1 == id2)
+            // dont add an item to itself
+            if (draggedId == hoveredId) //todo this probably isn't possible because elementIds should be unique? i think
             {
                 return;
             }
 
+            // get the point on the workspace where we want to add the element
             var p = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(e.Position);
             p.X -= 150;
             p.Y -= 150;//TODO not have this heere, factor out to half on a constantly-defined default width and height
 
-            if (!SessionController.Instance.IdToControllers.ContainsKey(id1))
+            if (!SessionController.Instance.IdToControllers.ContainsKey(draggedId))
             {
                 return;
             }
 
-            if (!SessionController.Instance.IdToControllers.ContainsKey(id2))
+            if (!SessionController.Instance.IdToControllers.ContainsKey(hoveredId))
             {
                 return;
             }
 
-            var controller1 = SessionController.Instance.IdToControllers[id1];
-            var controller2 = SessionController.Instance.IdToControllers[id2];
+            // get the element controllers from the ids
+            var draggedController = SessionController.Instance.IdToControllers[draggedId];
+            var hoveredController = SessionController.Instance.IdToControllers[hoveredId];
 
-            var c1IsCollection = controller1 is ElementCollectionController;
-            var c2IsCollection = controller2 is ElementCollectionController;
+            var draggedIsCollection = draggedController is ElementCollectionController;
+            var hoverIsCollection = hoveredController is ElementCollectionController;
            
-
-            var metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
-            // TODO: remove temp
-            Random rnd = new Random();
-            metadata["random_id"] = rnd.Next(1, 1000);
-            metadata["random_id2"] = rnd.Next(1, 100);
-
-            if (!(c1IsCollection || c2IsCollection)) { 
+            // if neither element is a collection
+            if (!(draggedIsCollection || hoverIsCollection)) { 
                 var contentId = SessionController.Instance.GenerateId();
                 var newCollectionId = SessionController.Instance.GenerateId();
 
@@ -152,7 +156,6 @@ namespace NuSysApp
                     LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
                     {
                         LibraryElementId = newCollectionId,
-                        ContentId = contentId,
                         AccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
                         Title = "New Collection",
                         LibraryElementType = NusysConstants.ElementType.Collection
@@ -164,31 +167,23 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newCollectionRequest);
                 newCollectionRequest.AddReturnedLibraryElementToLibrary();
 
-                var newElementArgs = new NewElementRequestArgs()
-                {
-                    ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
-                    X = p.X,
-                    Y = p.Y,
-                    Height = Constants.DefaultNodeSize,
-                    Width = Constants.DefaultNodeSize,
-                    LibraryElementId = newCollectionId
-                };
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(newCollectionId);
+                controller.AddElementAtPosition(p.X, p.Y);
 
-                var newElementRequest = new NewElementRequest(newElementArgs);//create new element request and execute and add to session
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
-                await newElementRequest.AddReturnedElementToSessionAsync();
-
-                await controller2.RequestMoveToCollection(contentId);
-                await controller1.RequestMoveToCollection(contentId);
+                await hoveredController.RequestMoveToCollection(newCollectionId);
+                await draggedController.RequestMoveToCollection(newCollectionId);
 
                 _isHovering = false;
                 return;
             }
-
-            if (c2IsCollection)
+            // if either element is a collection
+            if (hoverIsCollection || draggedIsCollection)
             {
+
+                var collection = (hoverIsCollection ? hoveredController : draggedController) as ElementCollectionController;
+                var elementToBeAdded = (hoverIsCollection ? draggedController : hoveredController);
                 var parentVm = (FreeFormViewerViewModel) _view.DataContext;
-                var found  = parentVm.AtomViewList.Where(a => a.DataContext == _hoveredNode);
+                var found  = parentVm.AtomViewList.Where(a => (a.DataContext as ElementViewModel)?.Controller == collection);
                 if (!found.Any())
                     return;
                 var groupnode = (GroupNodeView)found.First();
@@ -197,11 +192,11 @@ namespace NuSysApp
 
                 if (groupnode.FreeFormView != null)
                 {
-                    var np =new Point(e.Position.X - controller2.Model.Width/2, e.Position.Y - controller2.Model.Height/2);
+                    var np =new Point(e.Position.X - hoveredController.Model.Width/2, e.Position.Y - hoveredController.Model.Height/2);
                     var canvas = groupnode.FreeFormView.AtomContainer;
                     targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(e.Position);
-                    targetPoint.X -= controller1.Model.Width/2;
-                    targetPoint.Y -= controller1.Model.Height/2;
+                    targetPoint.X -= draggedController.Model.Width/2;
+                    targetPoint.Y -= draggedController.Model.Height/2;
 
                 }
                 else
@@ -209,18 +204,9 @@ namespace NuSysApp
                     targetPoint = new Point(50000,50000);
                 } 
 
-                await controller1.RequestMoveToCollection(controller2.Model.LibraryId, targetPoint.X, targetPoint.Y);
-                return;
+                await elementToBeAdded.RequestMoveToCollection(collection.Model.LibraryId, targetPoint.X, targetPoint.Y);
+                _isHovering = false;
             }
-
-            if (c1IsCollection)
-            {
-                await controller2.RequestMoveToCollection(controller1.Model.LibraryId);
-            }
- 
-         
-
-            _isHovering = false;
 
         }
 
