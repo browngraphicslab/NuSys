@@ -108,7 +108,7 @@ namespace NuSysApp
                 var minBoundingRect = new Rect(new Point(points.Min(point => point.X), points.Min(point => point.Y)), new Point(points.Max(point => point.X), points.Max(point => point.Y)));
                 if (minBoundingRect.Width < 400 && minBoundingRect.Height < 400) // 400 px is slightly smaller than the avg American hand size according to Sahil
                 {
-                    GetRelatedElements(minBoundingRect);
+                    InitializeRelatedElementsGesture(minBoundingRect);
                 }
             }
 
@@ -173,10 +173,15 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Takes in a rectangle and performs Junsu's Algorithm if there is only one element view model contained within in
+        /// Takes in a rectangle and determines if it contains a single ElementViewModel
+        /// for which relatedElementsGesture is supported. IF so, it initializes the 
+        /// relatedElementsGesture.
+        /// 
+        /// The elements that are supported by relatedElementsGesture are stored
+        /// in the in the possibleElements list
         /// </summary>
         /// <param name="rect"></param>
-        private void GetRelatedElements(Rect rect)
+        private void InitializeRelatedElementsGesture(Rect rect)
         {
             // returns a list of all the xaml stuff that is contained in the rectangle
             var xamlElements = VisualTreeHelper.FindElementsInHostCoordinates(rect, null);
@@ -250,7 +255,7 @@ namespace NuSysApp
             // set released to true, used for code which ignores accidental pointer pressed events
             _released = true;
             // remove the Pointer from the mapping of pointerIds to start locations
-            _pointerIdToStartLocation.Remove(e.Pointer.PointerId);
+            _pointerIdToStartLocation.Clear();
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
