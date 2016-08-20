@@ -97,8 +97,18 @@ namespace NuSysApp
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         { 
             // Add the pointer to the mapping of pointerIds to SessionView Positions
-            _pointerIdToStartLocation.Add(e.Pointer.PointerId,
-                e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
+            try
+            {
+                _pointerIdToStartLocation.Add(e.Pointer.PointerId,
+                    e.GetCurrentPoint(SessionController.Instance.SessionView).Position);
+            }
+            catch (ArgumentException exception)
+            {
+                // this catches Hash collisions, which rarely occur and wouldn't break any other code
+                // just clear the dictionary so the exception doesn't occur again
+                _pointerIdToStartLocation.Clear();
+            }
+
 
             // if there are five pointers in contact with the screen
             if (_pointerIdToStartLocation.Count >=5)
@@ -112,7 +122,7 @@ namespace NuSysApp
                 var minBoundingRect = new Rect(new Point(points.Min(point => point.X), points.Min(point => point.Y)), new Point(points.Max(point => point.X), points.Max(point => point.Y)));
                 if (minBoundingRect.Width < 400 && minBoundingRect.Height < 400) // 400 px is slightly smaller than the avg American hand size according to Sahil
                 {
-                    GetRelatedElements(minBoundingRect);
+                    InitializeRelatedElementsGesture(minBoundingRect);
                 }
             }
 
@@ -177,10 +187,15 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Takes in a rectangle and performs Junsu's Algorithm if there is only one element view model contained within in
+        /// Takes in a rectangle and determines if it contains a single ElementViewModel
+        /// for which relatedElementsGesture is supported. IF so, it initializes the 
+        /// relatedElementsGesture.
+        /// 
+        /// The elements that are supported by relatedElementsGesture are stored
+        /// in the in the possibleElements list
         /// </summary>
         /// <param name="rect"></param>
-        private void GetRelatedElements(Rect rect)
+        private void InitializeRelatedElementsGesture(Rect rect)
         {
             // returns a list of all the xaml stuff that is contained in the rectangle
             var xamlElements = VisualTreeHelper.FindElementsInHostCoordinates(rect, null);
@@ -355,7 +370,7 @@ namespace NuSysApp
             // set released to true, used for code which ignores accidental pointer pressed events
             _released = true;
             // remove the Pointer from the mapping of pointerIds to start locations
-            _pointerIdToStartLocation.Remove(e.Pointer.PointerId);
+            _pointerIdToStartLocation.Clear();
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -378,7 +393,13 @@ namespace NuSysApp
                         if (vm.ElementType == NusysConstants.ElementType.PDF || vm.ElementType == NusysConstants.ElementType.PdfRegion)
                         {
                             var pdfVm = (PdfNodeViewModel)vm;
-                            PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber;
+                            PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber; // this is a static field so we can set it here, even though it looks weird
+
+                            // disable opening the detail viewer for the pageRight and pageLeft buttons
+                            if ((e.OriginalSource as FrameworkElement).Parent is Button)
+                            {
+                                return;
+                            } 
                         }
 
                         SessionController.Instance.SessionView.ShowDetailView(vm.Controller.LibraryElementController);
