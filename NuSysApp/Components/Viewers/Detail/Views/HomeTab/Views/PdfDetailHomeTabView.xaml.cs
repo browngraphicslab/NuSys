@@ -133,36 +133,122 @@ namespace NuSysApp
                 return;
             await vm.FlipRight();
         }
-
+        /// <summary>
+        /// Updates region views so that views on current page are visible. Also depends on current regions visibility option.
+        /// </summary>
+        /// <param name="currentPageNumber"></param>
         private async void UpdateRegionViews(int currentPageNumber)
         {
-            // takes care of visibility of temporary regions
-            foreach(var item in xClippingWrapper.GetTemporaryRegionItems())
+            //TODO THIS HSOULD BE A TEMPORARY PDF REGION VIEW
+
+            //Hides all temporary regions, regardless of which page it's on. 
+            foreach (var item in xClippingWrapper.GetTemporaryRegionItems())
+            {
+                if ((item as FrameworkElement).Visibility == Visibility.Visible)
+                {
+                    await UITask.Run(() =>
+                    {
+                        (item as FrameworkElement).Visibility = Visibility.Collapsed;
+
+                    });
+                }
+            }
+
+            //Make a list of temporary region views that have a page location equal to current page number.
+            var temporaryRegions = xClippingWrapper.GetTemporaryRegionItems().Where(item =>
+            ((item as TemporaryImageRegionView).DataContext as TemporaryImageRegionViewModel).PageLocation == currentPageNumber);
+
+            // takes care of visibility of temporary regions on this page
+            foreach (var item in temporaryRegions)
             {
                 var tempRegion = item as TemporaryImageRegionView;
                 var tempRegionDC = tempRegion.DataContext as TemporaryImageRegionViewModel;
 
-                if (tempRegionDC.PageLocation != null)
+                switch (xShowHideRegionButtons.CurrentRegionsVisibility)
                 {
-                    await UITask.Run(() =>
-                    {
-                        tempRegion.Visibility = tempRegionDC.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
+                    //Don't do anything, since everything's already been set to collapsed.
+                    case ShowHideRegionButtons.RegionsVisibility.HideAll:
+                        break;
+                    //Show all temporary regions on this page
+                    case ShowHideRegionButtons.RegionsVisibility.ShowAll:
+                        await UITask.Run(() =>
+                        {
+                            tempRegion.Visibility = Visibility.Visible;
 
-                    });
+                        });
+                        break;
+                    //Show only temporaryregions that are "children" to current libraryelementmodel TODO: ask sahil about desired behavior here
+                    case ShowHideRegionButtons.RegionsVisibility.ShowOnlyChildren:
+                        await UITask.Run(() =>
+                        {
+                            tempRegion.Visibility = Visibility.Visible;
+
+                        });
+                        break;
+                    default:
+                        Debug.Fail("Shouldn't happen, dude");
+                        break;
+
                 }
+
 
             }
 
             // takes care of visibility of normal regions
+
+            //sets visibility as collapsed of every pdfregion in the wrapper
             foreach (var item in xClippingWrapper.GetRegionItems())
             {
-                var regionView = item as PDFRegionView;
-                var model = (regionView?.DataContext as PdfRegionViewModel)?.Model as PdfRegionModel;
-                Debug.Assert(regionView != null);
-                await UITask.Run(() =>
+                if ((item as FrameworkElement).Visibility == Visibility.Visible)
                 {
-                    regionView.Visibility = model?.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
-                });
+                    await UITask.Run(() =>
+                    {
+                        (item as FrameworkElement).Visibility = Visibility.Collapsed;
+
+                    });
+                }
+            }
+            //Make a list of pdfregions region views that have a page location equal to current page number.
+            var pdfRegions = xClippingWrapper.GetRegionItems().Where(item =>
+            (((item as PDFRegionView).DataContext as PdfRegionViewModel).Model as PdfRegionModel).PageLocation == currentPageNumber);
+
+
+            //Sets visibility based on region visibility option
+            foreach (var item in pdfRegions)
+            {
+                var pdfRegion = item as PDFRegionView;
+                var pdfRegionDC = pdfRegion.DataContext as PdfRegionViewModel;
+
+                switch (xShowHideRegionButtons.CurrentRegionsVisibility)
+                {
+                    //Don't do anything, since everything's already been set to collapsed.
+                    case ShowHideRegionButtons.RegionsVisibility.HideAll:
+                        break;
+                    //Show all pdf regions on this page
+                    case ShowHideRegionButtons.RegionsVisibility.ShowAll:
+                        await UITask.Run(() =>
+                        {
+                            pdfRegion.Visibility = Visibility.Visible;
+
+                        });
+                        break;
+                    //Show only pdf regions that are "children" to current libraryelementmodel
+                    case ShowHideRegionButtons.RegionsVisibility.ShowOnlyChildren:
+                        if (pdfRegionDC.Model.ClippingParentId == xClippingWrapper.Controller.LibraryElementModel.LibraryElementId)
+                        {
+                            await UITask.Run(() =>
+                            {
+                                pdfRegion.Visibility = Visibility.Visible;
+
+                            });
+                        }
+                        break;
+                    default:
+                        Debug.Fail("Shouldn't happen, dude");
+                        break;
+
+                }
+
             }
         }
 
