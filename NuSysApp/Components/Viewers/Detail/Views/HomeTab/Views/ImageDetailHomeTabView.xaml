@@ -42,14 +42,14 @@
         <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
 
         <StackPanel Grid.Row="2">
-            <Button Tapped="Button_Tapped" HorizontalAlignment="Center">Suggest regions</Button>
+            <Button Tapped="Button_Tapped" HorizontalAlignment="Center" Style="{StaticResource DarkButton}">Suggest regions</Button>
             <Grid x:Name="SegmentPanel">
                 <StackPanel>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
                         <TextBlock Foreground="{StaticResource color3}" FontSize="20">Image Analysis</TextBlock>
                     </Grid>
 
-                    <ScrollViewer MaxHeight="200" HorizontalAlignment="Stretch">
+                    <ScrollViewer MaxHeight="200" MinHeight="200"  HorizontalAlignment="Stretch">
                         <StackPanel>
                             <Grid>
                                 <TextBlock Foreground="{StaticResource color3}" Margin="3">Description:</TextBlock>

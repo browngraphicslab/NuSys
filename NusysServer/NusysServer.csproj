@@ -226,6 +226,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Lda\Constants.cs" />
+    <Compile Include="Lda\Conversion.cs" />
+    <Compile Include="Lda\Dictionary.cs" />
+    <Compile Include="Lda\DieStopWords.cs" />
+    <Compile Include="Lda\Document.cs" />
+    <Compile Include="Lda\DocumentReformatter.cs" />
+    <Compile Include="Lda\Estimator.cs" />
+    <Compile Include="Lda\Inferencer.cs" />
+    <Compile Include="Lda\LDADataset.cs" />
+    <Compile Include="Lda\MainTest.cs" />
+    <Compile Include="Lda\Model.cs" />
+    <Compile Include="Lda\Option.cs" />
+    <Compile Include="Lda\Pair.cs" />
+    <Compile Include="Lda\Parser.cs" />
     <Compile Include="Misc\SqlJoinOperationArgs.cs" />
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
     <Compile Include="Notifications\DropUserNotification.cs" />
@@ -241,6 +255,7 @@
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateSnapshotOfCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />
@@ -274,9 +289,8 @@
     <Compile Include="Static_Classes\CognitiveApi\ICognitiveApiDocumentable.cs" />
     <Compile Include="Static_Classes\ContentController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\DocSave.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Document.cs" />
-    <Compile Include="Static_Classes\DocumentComparison\IdToTFIDF.cs" />
-    <Compile Include="Static_Classes\DocumentComparison\MegaDictionary.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Parser.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Stemmer.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\StopWords.cs" />
@@ -339,7 +353,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2776</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

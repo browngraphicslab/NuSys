@@ -50,7 +50,9 @@ namespace NuSysApp
 
                     var id = _nodeModel.Id;
                     var timeStamp = Controller.LibraryElementController.GetMetadata("node_creation_date")?.First();
-                    var creator = _nodeModel.CreatorId;
+                    var creator =
+                        SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(vm.Model.CreatorId) ??
+                        "Unknown Author";
                     var nodeType = _nodeModel.ElementType.ToString();
                     var title = _nodeModel.Title;
 

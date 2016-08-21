@@ -15,7 +15,7 @@
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
         <Grid>
-            <Border x:Name="xMainRectangleBorder" BorderBrush="Honeydew"  BorderThickness="3,3,3,3" Tapped="xMainRectangleBorder_Tapped">
+            <Border x:Name="xMainRectangleBorder" BorderBrush="{StaticResource color4}"  BorderThickness="3,3,3,3" Tapped="xMainRectangleBorder_Tapped">
                 <Rectangle  x:Name="xMainRectangle"  Width="{Binding Width}" Height="{Binding Height}" Fill="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" >
                     <Rectangle.RenderTransform>
                         <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>

@@ -5,8 +5,8 @@ namespace NusysServer.DocumentComparison
     public class Document
     {
         public string Id { get; set; }
-        private Dictionary<string, int> _termFreqDictionary;
-        private Dictionary<int, double> _tfidfVector; 
+        public Dictionary<string, int> _termFreqDictionary { get; set; }
+        public Dictionary<int, double> _tfidfVector { get; set; } 
 
         public Document(Dictionary<string, int> dict, string id = "")
         {

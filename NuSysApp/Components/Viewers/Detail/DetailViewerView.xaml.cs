@@ -48,7 +48,7 @@ namespace NuSysApp
             {
                 var dataContext = DataContext as DetailViewerViewModel;
 
-                // called initially so this returns before anything ba can happen
+                // called initially so this returns before anything bad can happen
                 if (dataContext == null) { 
                     return;
                 }
@@ -74,25 +74,62 @@ namespace NuSysApp
                 // Sets the data for the metadata editor
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
                 
-                // Initially the DV's width is set to half the screen width and the height to the height of the screen
-                this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
-                this.Height = SessionController.Instance.SessionView.ActualHeight;
+                // resize the height and width of the screen
+                ResizeView(true, true);
 
-                // Sets the width for the tab pane on top of the DV
-                vm.TabPaneWidth = this.Width; 
-
-                // Sets MaxHeight and MaxWidth such that the DV doesn't go off screen
-                this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-                this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth, 0);
-
-                AccessPopup.VerticalOffset = this.Height / 2 - 150;
-                AccessPopup.HorizontalOffset = this.Width / 2 - 200;
-
-                // Sets the DV's position on screen
-                Canvas.SetTop(this, 0);
-                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);                
-              };
+                // Add an event so the detail viewer resized when the window resizes
+                SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
+            };
             
+        }
+
+        /// <summary>
+        /// When the window resizes, resize the detail viewer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SessionView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // resize the height only
+            this.ResizeView(false, true);
+        }
+
+        /// <summary>
+        /// Sets the view equal to the size of the window
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        private void ResizeView(bool width, bool height)
+        {
+            // resize width
+            if (width)
+            {
+                Width = SessionController.Instance.SessionView.ActualWidth / 2;
+            }
+            // resize height
+            if (height)
+            {
+                Height = SessionController.Instance.SessionView.ActualHeight;
+            }
+
+            // set the max height and width
+            MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+            // 70 is the width of the snapshot button plus 2* the margin of the snapshat button from SessionView.xaml
+            MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - 70, 0);
+            // set the MinWidth to a quarter of the screen
+            MinWidth = SessionController.Instance.SessionView.ActualWidth/4.0;
+
+            // Sets the DV's position on screen
+            Canvas.SetTop(this, 0);
+            Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);            
+
+            // Sets the width for the tab pane on top of the DV
+            var vm = DataContext as DetailViewerViewModel;
+            vm.TabPaneWidth = Width;
+
+            // Set the AccessPopup based on the Height and Width
+            AccessPopup.VerticalOffset = Height / 2 - 150;
+            AccessPopup.HorizontalOffset = Width / 2 - 200;
         }
 
         private void Vm_OnTitleChanged(object source, string newTitle)
@@ -162,68 +199,72 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task ShowElement(LibraryElementController controller, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
-            Debug.Assert(controller != null);
-            _currentDetailViewable = controller;
-            //Calls the view model's ShowElement method which loads regions, etc.
-            var vm = (DetailViewerViewModel)DataContext;
-            
-            if (await vm.ShowElement(controller))
+            await UITask.Run(async delegate
             {
-                Visibility = Visibility.Visible;
-            }
+                Debug.Assert(controller != null);
+                _currentDetailViewable = controller;
+                //Calls the view model's ShowElement method which loads regions, etc.
+                var vm = (DetailViewerViewModel) DataContext;
 
-            //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
-            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
-            {
-                xRegionEditorView.ShowListView(true, NusysConstants.ElementType.PDF);
-
-            }
-            else
-            {
-                xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
-            }
-
-            // Update the list of links in the Link Editor
-            var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
-            linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
-
-            //Update the metadata tab.
-            xMetadataEditorView.Metadatable = vm.CurrentElementController;
-            xMetadataEditorView.Update();
-
-            //If a region was previously loaded in the detail view, the region viewer should be added back.
-            if (xRootPivot.Items.Count == 3)
-            {
-                var pivotItem = _regionEditorPivotItem as PivotItem;
-                xRootPivot.Items.Add(pivotItem);
-            }
-
-            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Text || controller.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
-                controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection || controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
-            {
-                if (xRootPivot?.Items?.Count == 4)
+                if (await vm.ShowElement(controller))
                 {
-                    _regionEditorPivotItem = xRootPivot.Items[3];
-                    xRootPivot.Items.RemoveAt(3);
+                    Visibility = Visibility.Visible;
                 }
-            }
 
-            switch (tabToOpenTo)
-            {
-                case DetailViewTabType.Metadata:
-                    xRootPivot.SelectedIndex = 1;
-                    break;
-                case DetailViewTabType.Links:
-                    xRootPivot.SelectedIndex = 2;
-                    break;
-                case DetailViewTabType.Regions:
-                    xRootPivot.SelectedIndex = 3;
-                    break;
-                default:
-                    xRootPivot.SelectedIndex = 0;
-                    return;
-            }
+                //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
+                if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+                {
+                    xRegionEditorView.ShowListView(true, NusysConstants.ElementType.PDF);
 
+                }
+                else
+                {
+                    xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
+                }
+
+                // Update the list of links in the Link Editor
+                var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
+                linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
+
+                //Update the metadata tab.
+                xMetadataEditorView.Metadatable = vm.CurrentElementController;
+                xMetadataEditorView.Update();
+
+                //If a region was previously loaded in the detail view, the region viewer should be added back.
+                if (xRootPivot.Items.Count == 3)
+                {
+                    var pivotItem = _regionEditorPivotItem as PivotItem;
+                    xRootPivot.Items.Add(pivotItem);
+                }
+
+                if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Text ||
+                    controller.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                    controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection ||
+                    controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
+                {
+                    if (xRootPivot?.Items?.Count == 4)
+                    {
+                        _regionEditorPivotItem = xRootPivot.Items[3];
+                        xRootPivot.Items.RemoveAt(3);
+                    }
+                }
+
+                switch (tabToOpenTo)
+                {
+                    case DetailViewTabType.Metadata:
+                        xRootPivot.SelectedIndex = 1;
+                        break;
+                    case DetailViewTabType.Links:
+                        xRootPivot.SelectedIndex = 2;
+                        break;
+                    case DetailViewTabType.Regions:
+                        xRootPivot.SelectedIndex = 3;
+                        break;
+                    default:
+                        xRootPivot.SelectedIndex = 0;
+                        return;
+                }
+            });
         }
         
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -314,6 +355,8 @@ namespace NuSysApp
             Disposed?.Invoke(this, EventArgs.Empty);
             var vm = DataContext as DetailViewerViewModel;
             vm.Tabs.Clear();
+            SessionController.Instance.SessionView.SizeChanged -= SessionView_SizeChanged;
+
             vm.Dispose();
         }
 
@@ -345,22 +388,49 @@ namespace NuSysApp
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
-            
+
+            // if the width is greater than maxWidth and the x translation is to the left, then complete the manipulationdelta
+            if (Width > MaxWidth && e.Delta.Translation.X <= 0)
+            {
+                e.Complete();
+            }
+            // if the width is less than the minWidth and the x translation is to the right then complete the manipulationdelta
+            else if (Width < MinWidth && e.Delta.Translation.X >= 0)
+            {
+                e.Complete();
+            }
             // Checks if the DV should be allowed to be resized and calls Resize if needed.
-            if ((this.Width >= 600 || e.Delta.Translation.X <= 0) && (Canvas.GetLeft(this) >= 0 || e.Delta.Translation.X >= 0) && (Canvas.GetLeft(this) >= 30 || e.Delta.Translation.X >= 0))
+            else if ((Width >= MinWidth || e.Delta.Translation.X <= 0) &&
+                (Canvas.GetLeft(this) >= 30 || e.Delta.Translation.X >= 0))
             {
                 var rightCoordinate = Canvas.GetLeft(this) + this.Width;
                 Resize(this, rightCoordinate - newWidth, newWidth, Height);
-                e.Handled = true;
             }
 
             // Here the tab pane width is set again to make the tabs on the DV as wide as the DV itself.
             var vm = (DetailViewerViewModel)DataContext;
-            vm.TabPaneWidth = this.Width;
-            if(vm.Tabs.Count == 0) { return; }
+            // if the TabPaneWidth is less than minWidth, set the TabPaneWidth to MinWidth
+            if (Width < MinWidth)
+            {
+                vm.TabPaneWidth = MinWidth;
+            }
+            // if the TabPaneWidth is more than maxWidth, set the TabPaneWidth to maxWidth
+            else if (Width > MaxWidth)
+            {
+                vm.TabPaneWidth = MaxWidth;
+            }
+            // else set the TabPaneWidth to the width
+            else
+            {
+                vm.TabPaneWidth = Width;
+            }
+            if (vm.Tabs.Count == 0) { return; }
             vm.TabWidth = vm.TabPaneWidth/vm.Tabs.Count;
             
             AccessPopup.HorizontalOffset = this.Width/2 - 200;
+
+            e.Handled = true;
+
         }
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -513,6 +583,20 @@ namespace NuSysApp
         private void XReadOnlyRadioButton_OnChecked(object sender, RoutedEventArgs e)
         {
             _currentDetailViewable.SetAccessType(NusysConstants.AccessType.ReadOnly);
+        }
+
+        private void OnMakeCopyClick(object sender, RoutedEventArgs e)
+        {
+            // We get the library Id of the library element currently open in the detail view and create a copy of it
+            var vm = DataContext as DetailViewerViewModel;
+            Task.Run(async delegate
+            {
+                var libraryId = vm?.CurrentElementController.LibraryElementModel.LibraryElementId;
+                var idOfCopy = await StaticServerCalls.CreateDeepCopy(libraryId);
+                var copyController = SessionController.Instance.ContentController.GetLibraryElementController(idOfCopy);
+                SessionController.Instance.SessionView.DetailViewerView.ShowElement(copyController);
+            });
+            
         }
     }
 }

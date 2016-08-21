@@ -1,0 +1,18 @@
+﻿<UserControl
+    x:Class="NuSysApp.RelevanceLineView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <!-- bind opacity to relevance, x1y1 to focused node, x2y2 to relevant node -->
+        <Line x:Name="xLine" StrokeThickness="3" Stroke="{StaticResource color2}">
+            
+        </Line>
+    </Grid>
+</UserControl>

@@ -147,7 +147,7 @@ namespace NuSysApp
             }
             _contentIdToLinkContentIds[inId].Add(libraryId);
             _contentIdToLinkContentIds[outId].Add(libraryId);
-        }
+         }
 
         /// <summary>
         /// Gets the list of linkable ids that correspond to LINKS OR NODES that are instances of the given contetn
@@ -384,6 +384,7 @@ namespace NuSysApp
         /// <summary>
         /// returns the LinkLibraryElementController for two libraryElementModels passed in via their Id's
         /// null if no link existed between them
+        /// returns null if the link doesn't exist
         /// </summary>
         /// <param name="libElemId1"></param>
         /// <param name="libElemId2"></param>
@@ -391,12 +392,14 @@ namespace NuSysApp
         public LinkLibraryElementController GetLinkLibraryElementControllerBetweenContent(string libElemId1, string libElemId2)
         {
 
-            Debug.Assert(libElemId1 != null && _contentIdToLinkContentIds.ContainsKey(libElemId1));
-            Debug.Assert(libElemId2 != null && _contentIdToLinkContentIds.ContainsKey(libElemId2));
-            //Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId1) != null);
-            //Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId2) != null);
 
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId1) != null);
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId2) != null);
 
+            if (!_contentIdToLinkContentIds.ContainsKey(libElemId1) || !_contentIdToLinkContentIds.ContainsKey(libElemId2))
+            {
+                return null;
+            }
             var linkLibElemControllersIds1 = _contentIdToLinkContentIds[libElemId1];
             var linkLibElemControllersIds2 = _contentIdToLinkContentIds[libElemId2];
             var intersect = linkLibElemControllersIds1.Intersect(linkLibElemControllersIds2).ToList();
@@ -556,5 +559,39 @@ namespace NuSysApp
             return false;
         }
 
+
+        /// <summary>
+        /// This is a essentially static method that adds a presentation link to the library when given a presentation link model
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<bool> AddPresentationLinkToLibrary(PresentationLinkModel model)
+        {
+            // If there exists a presentation link between two element models, return and do not create a new one
+            if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == model.InElementId && item.OutElementId == model.OutElementId) != null ||
+                PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == model.InElementId && item.InElementId == model.OutElementId) != null)
+            {
+                return false;
+            }
+
+            var isSuccess = false;
+            await UITask.Run(async delegate
+            {
+                Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
+                // create a new presentation link view model
+                var vm = new PresentationLinkViewModel(model);
+                // create a new presentation link view
+                var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
+                //TODO use this collectionController stuff, check if the collection exists
+                //var collectionController = SessionController.Instance.IdToControllers[model.ParentCollectionId] as ElementCollectionController;
+                // Debug.Assert(collectionController != null, "the collectionController is not an element collection controller, check that parent collection id is being set correctly for presentation link models");
+                //collectionController.AddChild(view);
+
+                // Add the model to the list of models
+                PresentationLinkViewModel.Models.Add(vm.Model);
+                isSuccess = true;
+            });
+            return isSuccess;
+        }
     }
 }

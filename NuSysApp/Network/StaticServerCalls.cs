@@ -96,24 +96,7 @@ namespace NuSysApp
                     //create a request to get the elements on the new collection
                     var getWorkspaceRequest = new GetEntireWorkspaceRequest(collectionLibraryElementId);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(getWorkspaceRequest);
-
-                    var contentDataModels = getWorkspaceRequest.GetReturnedContentDataModels();
-                    var elements = getWorkspaceRequest.GetReturnedElementModels();
-
-                    //for each contentDataModel, add it to the contentController if it doesn't exist
-                    foreach (var content in contentDataModels)
-                    {
-                        if (!SessionController.Instance.ContentController.ContainsContentDataModel(content.ContentId))
-                        {
-                            SessionController.Instance.ContentController.AddContentDataModel(content);
-                        }
-                    }
-
-                    //make the collection
-                    await SessionController.Instance.SessionView.MakeCollection(
-                        elements.Select(element => new KeyValuePair<string, ElementModel>(element.Id, element))
-                            .ToDictionary(k => k.Key, v => v.Value));
-
+                    await getWorkspaceRequest.AddReturnedElementsToSessionAsync();
                 }
                 //get and return the element collection controller
                 if (SessionController.Instance.IdToControllers.ContainsKey(newId))
@@ -122,6 +105,66 @@ namespace NuSysApp
                 }
                 return null;
             });
+        }
+
+        /// <summary>
+        /// This method can be used to create a copy of a library element which will appear in the library as 
+        /// a separate entity. Takes in the library id of the element to be copied. 
+        /// Returns the Library Id of the newly created copy.
+        /// </summary>
+        /// <param name="libraryElementId"></param>
+        public static async Task<string> CreateDeepCopy(string libraryElementId)
+        {
+            var originalController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementId);
+            // Generate a new content Id (only for text) and library Id for the copy
+            var newContentId = SessionController.Instance.GenerateId();
+            var newLibraryId = SessionController.Instance.GenerateId();
+
+            if (originalController.LibraryElementModel.Type != NusysConstants.ElementType.Text)
+            {
+                //Create and execute the new Library element request
+                var newLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs()
+                {
+                    Title = originalController.Title + " copy",
+                    ContentId = originalController.LibraryElementModel.ContentDataModelId,
+                    AccessType = originalController.LibraryElementModel.AccessType,
+                    LibraryElementType = originalController.LibraryElementModel.Type,
+                    LibraryElementId = newLibraryId,
+                    Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri,
+                    Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri,
+                    Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri
+                };
+                var newLibraryElementRequest = new CreateNewLibraryElementRequest(newLibraryElementRequestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);
+                newLibraryElementRequest.AddReturnedLibraryElementToLibrary();
+                return newLibraryId;
+            }
+            else
+            {
+                // For text elements, we make a copy of both the contnt data model and the library element model
+                // Create and execute a new content request that carries the same data as the content we are trying to make a 
+                // copy of.
+                var newContentRequestArgs = new CreateNewContentRequestArgs()
+                {
+                    ContentId = newContentId,
+                    DataBytes = originalController.ContentDataModel.Data,
+                    LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
+                    {
+                        Title = originalController.Title + " copy",
+                        ContentId = newContentId,
+                        AccessType = originalController.LibraryElementModel.AccessType,
+                        LibraryElementType = NusysConstants.ElementType.Text,
+                        LibraryElementId = newLibraryId
+                    }
+                };
+
+                var newContentRequest = new CreateNewContentRequest(newContentRequestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newContentRequest);
+                newContentRequest.AddReturnedLibraryElementToLibrary();
+                return newLibraryId;
+                
+            }
+            
         }
     }
 }

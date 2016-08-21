@@ -33,8 +33,8 @@ namespace NuSysApp
 
         public LibraryBucketViewModel()
         {
-            SessionController.Instance.ContentController.OnNewContent += FireNewContentAvailable;
-            SessionController.Instance.ContentController.OnElementDelete += FireElementDeleted;
+            SessionController.Instance.ContentController.OnNewLibraryElement += FireNewContentAvailable;
+            SessionController.Instance.ContentController.OnLibraryElementDelete += FireLibraryElementDeleted;
         }
         
         private void FireNewContentAvailable(LibraryElementModel content)
@@ -42,7 +42,7 @@ namespace NuSysApp
             OnNewElementAvailable?.Invoke(content);
         }
 
-        private void FireElementDeleted(LibraryElementModel element)
+        private void FireLibraryElementDeleted(LibraryElementModel element)
         {
             OnElementDeleted?.Invoke(element);
         }

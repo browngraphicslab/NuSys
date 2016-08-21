@@ -28,13 +28,36 @@ namespace NuSysApp
         private ConcurrentDictionary<string, ContentDataController> _contentDataControllers =
             new ConcurrentDictionary<string, ContentDataController>();
 
-        public delegate void NewContentEventHandler(LibraryElementModel element);
+        /// <summary>
+        /// delegate for the OnNewLibraryElement.
+        /// It defines a single new library element being passed in
+        /// </summary>
+        /// <param name="libraryElement"></param>
+        public delegate void NewLibraryElementEventHandler(LibraryElementModel libraryElement);
 
+        /// <summary>
+        /// Event fired whenever a new Library element is added to this session. 
+        /// It will pass the new library element as a parameter
+        /// </summary>
+        public event NewLibraryElementEventHandler OnNewLibraryElement;
+
+        /// <summary>
+        /// the delegate for the OnNewContent event
+        /// </summary>
+        /// <param name="model"></param>
+        public delegate void NewContentEventHandler(ContentDataModel model);
+
+        /// <summary>
+        /// event fired when a new contentDataModel is added.  
+        /// It passes the new contentDataModel as an argument. 
+        /// </summary>
+        /// <param name="model"></param>
         public event NewContentEventHandler OnNewContent;
+
 
         public delegate void ElementDeletedEventHandler(LibraryElementModel element);
 
-        public event ElementDeletedEventHandler OnElementDelete;
+        public event ElementDeletedEventHandler OnLibraryElementDelete;
 
         public int Count
         {
@@ -115,7 +138,7 @@ namespace NuSysApp
 
                 AddModelToControllers(model);
 
-                OnNewContent?.Invoke(model);
+                OnNewLibraryElement?.Invoke(model);
                 return model.LibraryElementId;
             }
             Debug.WriteLine("content failed to add directly due to invalid id");
@@ -155,7 +178,7 @@ namespace NuSysApp
             LibraryElementController removedController;
             _contentControllers.TryRemove(model.LibraryElementId, out removedController);
             _contents.TryRemove(model.LibraryElementId, out removedElement);
-            OnElementDelete?.Invoke(model);
+            OnLibraryElementDelete?.Invoke(model);
             return true;
         }
 
@@ -224,6 +247,9 @@ namespace NuSysApp
             SessionController.Instance.ContentController.AddContentDataController(contentDataController);
 
             _contentDataModels.TryAdd(contentDataModel.ContentId, contentDataModel);
+
+            OnNewContent?.Invoke(contentDataModel);
+
             return true;
         }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -117,7 +118,8 @@ namespace NusysServer
             var metadataTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Metadata)+" ("+
                 NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY + " varchar(128)," +
                 NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
-                NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
+                NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096), " + 
+                NusysConstants.METADATA_MUTABILITY_COLUMN_KEY + " varchar(128));");
 
             var propertiesTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties) + " (" +
                 NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " varchar(128), " +
@@ -183,6 +185,11 @@ namespace NusysServer
                 clearContent.ExecuteNonQuery();
                 clearAnalysisModels.ExecuteNonQuery();
                 clearUsers.ExecuteNonQuery();
+            }
+
+            if (File.Exists(Constants.FILE_FOLDER + "docsave.txt"))//delete a dictionary json saving Junsu' comparisons
+            {
+                File.Delete(Constants.FILE_FOLDER + "docsave.txt");
             }
         }
 
@@ -288,7 +295,7 @@ namespace NusysServer
 
         /// <summary>
         /// To remove a single library element from the server, the passed in message should contain the LIBRARY_ELEMENT_LIBRARY_ID_KEY.
-        /// This also takes care of deleting all the related metadata from the metadata table.
+        /// This also takes care of deleting all the related metadata from the metadata table and all the properties from the properties table
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -300,17 +307,28 @@ namespace NusysServer
             }
             var cmdToDeleteFromLibraryElementTable = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
 
+            //Delete all the properties
+            var messageToDeleteProperties = new Message();
+            messageToDeleteProperties[NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY] =
+                message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY);
+            var cmdToDeleteProperties = new SQLDeleteQuery(Constants.SQLTableType.Properties, messageToDeleteProperties, Constants.Operator.And);
+            cmdToDeleteProperties.ExecuteCommand();
+
+            //Delete the metadata associated
             var metadataMessage = new Message();
             metadataMessage[NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY] = message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY);
 
             var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, metadataMessage, Constants.Operator.And);
             cmdToDeleteRelatedMetadata.ExecuteCommand();
 
+
+
             return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }
 
         /// <summary>
-        /// To remove a single alias from the server, the passed in message should contain the ALIAS_ID_KEY.
+        /// To remove a single alias from the server, the passed in message should contain the ALIAS_ID_KEY. This also deletes
+        /// all the properties associated with the alias
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -320,6 +338,13 @@ namespace NusysServer
             {
                 return false;
             }
+            //Delete all the properties
+            var messageToDeleteProperties = new Message();
+            messageToDeleteProperties[NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY] =
+                message.GetString(NusysConstants.ALIAS_ID_KEY);
+            var cmdToDeleteProperties = new SQLDeleteQuery(Constants.SQLTableType.Properties, messageToDeleteProperties, Constants.Operator.And);
+            cmdToDeleteProperties.ExecuteCommand();
+
             var cmd = new SQLDeleteQuery(Constants.SQLTableType.Alias, message, Constants.Operator.And);
             return cmd.ExecuteCommand();
         }

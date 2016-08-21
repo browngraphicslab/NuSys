@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         #region RequestManagementKeys
 
@@ -289,6 +289,21 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY = "small_icon_bytes";
 
                 /// <summary>
+                /// key in message for sending large icon url. To be used when copying an existing library element.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL = "large_icon_url";
+
+                /// <summary>
+                /// key in message for sending medium icon url. To be used when copying an existing library element.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL = "medium_icon_url";
+
+                /// <summary>
+                /// key in message for sending an existing small icon url. To be used when copying an existing library element.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL = "small_icon_url";
+
+                /// <summary>
                 /// key in message for sending creator id when creating new library element request 
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";
@@ -531,9 +546,21 @@ namespace NusysIntermediate
             /// The key for sending the new content
             /// </summary>
             public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_id_key";
-        
-            #endregion UpdateContentRequest
 
+        #endregion UpdateContentRequest
+
+            #region GetRelatedDocumentsRequest
+            /// <summary>
+            /// The key for sending contentDataModel id of the document you wish to get related items for
+            /// </summary>
+            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
+
+            /// <summary>
+            /// The key for sending a list of contentDataModel ids of which the original document is related to
+            /// back to the client from the server
+            /// </summary>
+            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_CONTENT_IDS_KEY = "related_document_ids";
+            #endregion GetReleatedDocumentsRequest
 
         #region CreateSnapshotOfCollectionRequest
         /// <summary>
@@ -1299,6 +1326,7 @@ namespace NusysIntermediate
             UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
             CreateSnapshotOfCollectionRequest,
+            GetRelatedDocumentsRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.

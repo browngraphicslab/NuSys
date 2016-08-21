@@ -72,11 +72,26 @@ namespace NuSysApp
         /// </summary>
         public string Large_Thumbnail_Bytes { get; set; }
 
+        /// <summary>
+        /// The existing string URL of the small thumbnail. To be used when making a copy of a library element.
+        /// </summary>
+        public string Small_Thumbnail_Url { get; set; }
+
+        /// <summary>
+        /// The existing string URL of the medium thumbnail. To be used when making a copy of a library element.
+        /// </summary>
+        public string Medium_Thumbnail_Url { get; set; }
+
+        /// <summary>
+        /// The existing string URL of the large thumbnail. To be used when making a copy of a library element.
+        /// </summary>
+        public string Large_Thumbnail_Url { get; set; }
+
         #region Required
 
         /// <summary>
         /// REQUIRED
-        /// the contentID for the library element.  
+        /// the contentID for the library element. Not required for use in CreateNewContentRequestArgs  
         /// </summary>
         public string ContentId { get; set; }
 
@@ -125,6 +140,25 @@ namespace NuSysApp
             if (Favorited != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY] = Favorited.Value;
+            }
+
+            // Add in the thumbnail URLs. These will be passed in if we are creating a copy of an existing library element. 
+            //small
+            if (Small_Thumbnail_Url != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL] = Small_Thumbnail_Url;
+            }
+
+            //medium
+            if (Medium_Thumbnail_Url != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL] = Medium_Thumbnail_Url;
+            }
+
+            //large
+            if (Large_Thumbnail_Url != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL] = Large_Thumbnail_Url;
             }
 
             //add in thumbnail byte strings

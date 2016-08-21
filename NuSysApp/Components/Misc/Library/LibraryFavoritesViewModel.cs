@@ -39,13 +39,8 @@ namespace NuSysApp
                     ItemList.Add(new LibraryItemTemplate(controller));
             };
 
-            SessionController.Instance.ContentController.OnNewContent += NewContent;
-            SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
-                
-            
-
-
-            // SessionController.Instance.ContentController.OnNewFavorite += NewFavorite;
+            SessionController.Instance.ContentController.OnNewLibraryElement += NewLibraryElement;
+            SessionController.Instance.ContentController.OnLibraryElementDelete += DeleteContent;
         }
 
         private void LibraryElementModel_OnFavorited(object sender, bool favorited)
@@ -70,10 +65,9 @@ namespace NuSysApp
 
            // OnItemsChanged?.Invoke(this, favorited);
         }
-
         
 
-        private void NewContent(LibraryElementModel content)
+        private void NewLibraryElement(LibraryElementModel content)
         {
             UITask.Run(() =>
             {
@@ -96,77 +90,14 @@ namespace NuSysApp
         {
             UITask.Run(() =>
             {
-                //_orgList.Remove(content);
-                //var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
-                //if (controller == null)
-                //{
-                    foreach (var item in ItemList.ToList())
+                foreach (var item in ItemList.ToList())
+                {
+                    if (item.LibraryElementId == content.LibraryElementId)
                     {
-                        if (item.LibraryElementId == content.LibraryElementId)
-                        {
-                            ItemList.Remove(item);
-                        }
+                        ItemList.Remove(item);
                     }
-                //}
-                //ItemList.Remove(new LibraryItemTemplate(controller));
+                }
             });
         }
-
-        /*
-        public async Task Sort(string s)
-        {
-            List<LibraryElementModel> ordered = null;
-            switch (s.ToLower().Replace(" ", string.Empty))
-            {
-                //case "title":
-                //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
-                //    break;
-                //case "nodetype":
-                //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
-                //    break;
-                case "title":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Title));
-                    break;
-                case "nodetype":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString()));
-                    break;
-                case "timestamp":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => ((LibraryElementModel)l).GetTimestampTicks()));
-                    break;
-                default:
-                    break;
-            }
-            if (ordered != null)
-            {
-
-                //  ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
-                PageElements.Clear();
-
-                foreach (var item in ordered)
-                {
-                    PageElements.Add(item);
-                }
-
-            }
-        }
-        */
-
-        /*
-        public async Task Search(string s)
-        {
-            _searchString = s;
-            PageElements.Clear();
-
-            foreach (var item in _orgList)
-            {
-                if (item.InSearch(s))
-                {
-                    PageElements.Add(item);
-                }
-            }
-        }
-
-    */
-
     }
 }

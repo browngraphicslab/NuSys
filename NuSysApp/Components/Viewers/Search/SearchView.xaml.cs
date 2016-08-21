@@ -414,7 +414,7 @@ namespace NuSysApp
 
             // Since we are adding a collection, we should make the dragging rectangle reflect this
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SwitchType(NusysConstants.ElementType.Collection);
+            view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);
@@ -465,7 +465,7 @@ namespace NuSysApp
             // Add a collection to the dropped location
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
-            await ExportSearchResultsToCollection(dropPoint);
+            ExportSearchResultsToCollection(dropPoint);
             e.Handled = true;
 
         }
@@ -493,10 +493,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="r"></param>
         /// <returns></returns>
-        private async Task ExportSearchResultsToCollection(Point r)
+        private async void ExportSearchResultsToCollection(Point r)
         {
-
-            Task.Run(async delegate
+            // literally has to be a UITask because of the SearchBoxText getter in createNewLibraryElementRequestArgs
+            UITask.Run(async delegate
             {
                 // the library element id of the collection we are creating, used as the parent collection id when adding elements to it later in the method
                 var collectionLibElemId = SessionController.Instance.GenerateId();

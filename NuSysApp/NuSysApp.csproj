@@ -109,8 +109,10 @@
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
+    <Content Include="Assets\dark undo.png" />
     <Content Include="Assets\dragtocollection icon.png" />
     <Content Include="Assets\exploration icon.png" />
+    <Content Include="Assets\exploration mode dark.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />
     <Content Include="Assets\icon_chat.png" />
@@ -361,6 +363,9 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Misc\RelevanceLineView.xaml.cs">
+      <DependentUpon>RelevanceLineView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\BarChartItem.xaml.cs">
       <DependentUpon>BarChartItem.xaml</DependentUpon>
     </Compile>
@@ -668,6 +673,7 @@
     <Compile Include="Network\Requests\GetAnalysisModelRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\GetRelatedDocumentsRequest.cs" />
     <Compile Include="Network\Requests\GetUserIdToDisplayNameDictionaryRequest.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
@@ -909,6 +915,7 @@
     <Content Include="Assets\piegraph bluegreen.png" />
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\present icon.png" />
+    <Content Include="Assets\presentation mode dark.png" />
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />
     <Content Include="Assets\record dark.png" />
@@ -934,6 +941,7 @@
     <Content Include="Assets\text.png" />
     <Content Include="Assets\tools icon.png" />
     <Content Include="Assets\tool_icon.png" />
+    <Content Include="Assets\undo icon.png" />
     <Content Include="Assets\video icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\word.png" />
@@ -1017,6 +1025,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Regions\PDFRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\RelevanceLineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

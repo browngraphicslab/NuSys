@@ -130,7 +130,6 @@ namespace NuSysApp
             userControl.PointerReleased += UserControl_PointerReleased;
 
             ActiveNodes.Add((UserControl)sender);
-            manipulationStartingRoutedEventArgs.Handled = true;
         }
 
         private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
@@ -260,8 +259,6 @@ namespace NuSysApp
                     vm.Controller.SetPosition(p.X, p.Y);
                 }
             }
-
-            e.Handled = true;
         }
         private void OnManipulationIntertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
         {

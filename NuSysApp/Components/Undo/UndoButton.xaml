@@ -18,7 +18,7 @@
                 <Setter Property="Template" >
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Grid Width="54" Height="54">
+                            <Grid Width="40" Height="40">
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal" />
@@ -40,7 +40,7 @@
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-                                <Ellipse Height="54" Width ="54" Fill="{StaticResource color3}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" HorizontalAlignment="Center"/>
+                                <Ellipse Height="40" Width ="40" Fill="{StaticResource color1}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" HorizontalAlignment="Center"/>
                                 <ContentPresenter></ContentPresenter>
                             </Grid>
                         </ControlTemplate>
@@ -51,14 +51,8 @@
     </UserControl.Resources>
 
 
+    <Button x:Name="UndoCircle"  Style="{StaticResource FloatingButton}" Tapped="UndoButton_OnTapped">
+        <Image Height="20" Margin="0,0,0,2"  Source="ms-appx:///Assets/dark undo.png"></Image>
+    </Button>
 
-    <Grid x:Name="xMainGrid" Width="54" Height="54" Tapped="UndoButton_OnTapped" >
-        <Button x:Name="xAddRegion" Style="{StaticResource FloatingButton}" BorderBrush="{StaticResource color2}" >
-            <Button.Content>
-                <StackPanel Orientation="Vertical">
-                    <!--<Image x:Name="icon" Width="30" Height="30" Margin="0,10,0,0" VerticalAlignment="Stretch" Stretch="Uniform" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/icon_redo.png"></Image>-->
-                </StackPanel>
-            </Button.Content>
-        </Button>
-    </Grid> 
 </local:AnimatableUserControl>
