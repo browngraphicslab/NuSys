@@ -35,11 +35,7 @@ namespace NuSysApp
         /// mapping of pointerIds to SessionView Positions for relatedDocumentsGesture
         /// </summary>
         private Dictionary<uint, Point> _pointerIdToStartLocation;
-
-        /// <summary>
-        /// These are the lines that will be removed once the jesus hold has been released
-        /// </summary>
-        private HashSet<RelevanceLineView> _relevanceLineViewsToRemove; 
+        
 
 
         /// <summary>
@@ -56,9 +52,8 @@ namespace NuSysApp
 
         public SelectMode(FreeFormViewer view):base(view)
         {
-            // instantiated the _pointerIdToStartLocation dictionary and the _relevanceLineViewsToRemove
+            // instantiated the _pointerIdToStartLocation dictionary
             _pointerIdToStartLocation = new Dictionary<uint, Point>();
-            _relevanceLineViewsToRemove = new HashSet<RelevanceLineView>();
 
 
             // add the mode specific event handlers
