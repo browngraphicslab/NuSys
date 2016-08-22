@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using Newtonsoft.Json;
 using NusysIntermediate;
 
 namespace NusysServer.RequestHandlers
@@ -9,15 +11,21 @@ namespace NusysServer.RequestHandlers
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.GetRelatedDocumentsRequest);
             var message = GetRequestMessage(request);
-            Debug.Assert(message.ContainsKey(NusysConstants.GET_RELATED_DOCUMENTS_REQUEST_LIBRARY_ID_KEY));
-            var libraryId = message.Get(NusysConstants.GET_RELATED_DOCUMENTS_REQUEST_LIBRARY_ID_KEY);
-            //TODO DO stuff with related documents and return the list of related documents
-            
-            var returnMessage = new Message(message);
-            //returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
-            //returnMessage[NusysConstants.GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_LIBRARY_IDS_KEY] = success;
-            return returnMessage;
+            Debug.Assert(message.ContainsKey(NusysConstants.GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY));
+            var contentId = message.Get(NusysConstants.GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY);
+            try
+            {
+                var tuples = ContentController.Instance.ComparisonController.GetComparison(contentId, 5); //get the five most related docs
 
+                var returnMessage = new Message(message);
+                returnMessage[NusysConstants.GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_CONTENT_IDS_KEY] = JsonConvert.SerializeObject(tuples);
+                return returnMessage;
+            }
+            catch (Exception e)
+            {
+                senderHandler.SendError(new Exception("exception in doc comparison: "+e.Message));
+                return new Message() { {NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false}};
+            }
         }
     }
 }

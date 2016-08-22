@@ -113,6 +113,16 @@ namespace NuSysApp
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
             var model = ElementModelFactory.DeserializeFromString(_message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
 
+            var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId);
+            Debug.Assert(libraryElementController != null); //make sure the controller exists
+            if (libraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection && //if we have a collection
+                !SessionController.Instance.ContentController.ContainsContentDataModel(libraryElementController.LibraryElementModel.ContentDataModelId))//and the content isn't loaded
+            {//send a request to fetch the entire workspace
+                var workspaceRequest = new GetEntireWorkspaceRequest(libraryElementController.LibraryElementModel.ContentDataModelId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(workspaceRequest);
+                await workspaceRequest.AddReturnedElementsToSessionAsync();
+            }
+
             var success = await SessionController.Instance.AddElementAsync(model);
             Debug.Assert(success == true);
         }

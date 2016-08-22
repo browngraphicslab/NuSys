@@ -91,7 +91,6 @@ namespace NuSysApp
             { 
             }
             ActiveNodes.Remove((UserControl) sender);
-            manipulationCompletedRoutedEventArgs.Handled = true;
         }
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
@@ -106,7 +105,6 @@ namespace NuSysApp
             _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
 
             ActiveNodes.Add((UserControl)sender);
-            manipulationStartingRoutedEventArgs.Handled = true;
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -214,8 +212,6 @@ namespace NuSysApp
                     vm.Controller.SetPosition(p.X, p.Y);
                 }
             }
-
-            e.Handled = true;
         }
         private void OnManipulationIntertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
         {

@@ -551,15 +551,15 @@ namespace NusysIntermediate
 
             #region GetRelatedDocumentsRequest
             /// <summary>
-            /// The key for sending library id of the document you wish to get related items for
+            /// The key for sending contentDataModel id of the document you wish to get related items for
             /// </summary>
-            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_LIBRARY_ID_KEY = "library_id";
+            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
 
             /// <summary>
-            /// The key for sending a list of library ids of which the original document is related to
+            /// The key for sending a list of contentDataModel ids of which the original document is related to
             /// back to the client from the server
             /// </summary>
-            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_LIBRARY_IDS_KEY = "related_document_ids";
+            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_CONTENT_IDS_KEY = "related_document_ids";
             #endregion GetReleatedDocumentsRequest
 
         #region CreateSnapshotOfCollectionRequest

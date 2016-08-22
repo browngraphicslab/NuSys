@@ -234,6 +234,8 @@ namespace NuSysApp
             _inqCanvas = null;
         }
 
+
+
         private void VmOnSelectionChanged(object source)
         {
             var vm = (FreeFormViewerViewModel) DataContext;

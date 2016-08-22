@@ -611,14 +611,14 @@ namespace NuSysApp
         {
             var tb = sender as TextBox;
             Debug.Assert(tb != null);
-            tb.IsReadOnly = false;
+            tb.IsReadOnly = true;
         }
 
         private void Title_GotFocus(object sender, RoutedEventArgs e)
         {
             var tb = sender as TextBox;
             Debug.Assert(tb != null);
-            tb.IsReadOnly = true;
+            tb.IsReadOnly = false;
         }
     }
 }
