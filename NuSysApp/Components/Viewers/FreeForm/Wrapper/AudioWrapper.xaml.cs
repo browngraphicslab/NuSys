@@ -222,14 +222,18 @@ namespace NuSysApp
                         break;
 
                 }
-
-                // set editable based on the parent data context
-                vm.Editable = false;
-                if (ParentDC != null)
+                // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
+                view.Loaded += delegate
                 {
-                    vm.Editable = ParentDC.Editable;
-                }
+                    var ParentDetailDC = DataContext as DetailHomeTabViewModel;
 
+                    // set editable based on the parent data context
+                    vm.Editable = false;
+                    if (ParentDetailDC != null)
+                    {
+                        vm.Editable = ParentDetailDC.Editable;
+                    }
+                };
                 // add the region to thew view
                 xClippingCanvas.Items.Add(view);
 
