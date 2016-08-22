@@ -361,9 +361,9 @@ namespace NuSysApp
                         first = (FrameworkElement)hitsStartElements.First();
                         var dc = (ElementViewModel)first.DataContext;
 
-                        // Diable linking to links or tools
+                        // Diable linking to links, tools and collections
                         // TODO: Enable linking to links 
-                        if (dc.ElementType == NusysConstants.ElementType.Link || dc.ElementType == NusysConstants.ElementType.Tools)
+                        if (dc.ElementType == NusysConstants.ElementType.Link || dc.ElementType == NusysConstants.ElementType.Tools  || dc.ElementType == NusysConstants.ElementType.Collection)
                         {
                             break;
                         }
