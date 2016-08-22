@@ -12,7 +12,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Microsoft.Office.Interop.Word;
 using MyToolkit.Utilities;
 using NusysIntermediate;
 using Image = SharpDX.Direct2D1.Image;
