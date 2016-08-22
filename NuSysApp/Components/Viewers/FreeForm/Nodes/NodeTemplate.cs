@@ -558,7 +558,7 @@ namespace NuSysApp
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var resizeX = vm.Model.Width + e.Delta.Translation.X/zoom;
             var resizeY = vm.Model.Height + e.Delta.Translation.Y/zoom;
-            if (resizeY > 0 && resizeX > 0)
+            if (resizeY > Constants.MinNodeSize && resizeX > Constants.MinNodeSize)
             {
                 vm.Controller.SetSize(resizeX, resizeY);
             }
