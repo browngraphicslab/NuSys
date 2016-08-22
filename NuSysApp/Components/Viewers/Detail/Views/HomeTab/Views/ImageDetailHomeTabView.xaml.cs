@@ -47,9 +47,7 @@ namespace NuSysApp
 
             Task.Run(async delegate
             {
-                var request = new GetAnalysisModelRequest(vm.LibraryElementController.LibraryElementModel.ContentDataModelId);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                _analysisModel = request.GetReturnedAnalysisModel() as NusysImageAnalysisModel;
+                _analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(vm.LibraryElementController.LibraryElementModel.ContentDataModelId) as NusysImageAnalysisModel;
                 UITask.Run(async delegate {
                     SetImageAnalysis();
                 });
@@ -184,10 +182,7 @@ namespace NuSysApp
             var contentDataModelId = vm.LibraryElementController.LibraryElementModel.ContentDataModelId;
             Task.Run(async delegate
             {
-                //create the request to get the analysis model
-                var request = new GetAnalysisModelRequest(contentDataModelId);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                var analysisModel = request.GetReturnedAnalysisModel() as NusysImageAnalysisModel;
+                var analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(contentDataModelId) as NusysImageAnalysisModel;
 
                 //switch back to UI thread for adding the regions
                 await UITask.Run(delegate

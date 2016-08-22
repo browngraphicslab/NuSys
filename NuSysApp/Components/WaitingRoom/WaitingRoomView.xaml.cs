@@ -40,7 +40,7 @@ namespace NuSysApp
 
 
 
-        public static bool IS_HUB = false;
+        public static bool IS_HUB = true;
 
         private static IEnumerable<ElementModel> _firstLoadList;
         private bool _loggedIn = false;

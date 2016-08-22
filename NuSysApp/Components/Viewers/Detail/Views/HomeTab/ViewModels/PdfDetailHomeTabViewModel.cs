@@ -117,5 +117,13 @@ namespace NuSysApp
 
             return args;
         }
+
+        /// <summary>
+        /// Call this when you need to update region visiblity to reflect the current page
+        /// </summary>
+        public void InvokePageLocationChanged()
+        {
+            PageLocationChanged?.Invoke(this, CurrentPageNumber);
+        }
     }
 }

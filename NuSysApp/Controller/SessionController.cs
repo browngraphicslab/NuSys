@@ -198,6 +198,10 @@ namespace NuSysApp
             var elementLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId);
             if (!ContentController.ContainsContentDataModel(elementLibraryElementController.LibraryElementModel.ContentDataModelId))//if the content data model isn't present
             {
+                if (model.Title.Equals("Puppy-And-Kitten-In-Basket-Animals-Picture"))
+                {
+                    var x = 1;
+                }
                 await NuSysNetworkSession.FetchContentDataModelAsync(elementLibraryElementController.LibraryElementModel.ContentDataModelId);//load the content
             }
 

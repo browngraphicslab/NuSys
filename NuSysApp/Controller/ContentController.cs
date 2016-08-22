@@ -29,6 +29,11 @@ namespace NuSysApp
             new ConcurrentDictionary<string, ContentDataController>();
 
         /// <summary>
+        /// the dictionary of content data mode id to analysis model
+        /// </summary>
+        private ConcurrentDictionary<string, AnalysisModel> _analysisModels = new ConcurrentDictionary<string, AnalysisModel>();
+
+        /// <summary>
         /// delegate for the OnNewLibraryElement.
         /// It defines a single new library element being passed in
         /// </summary>
@@ -267,6 +272,42 @@ namespace NuSysApp
             }
             _contentDataControllers.TryAdd(contentDataController.ContentDataModel.ContentId, contentDataController);
             return true;
+        }
+
+        /// <summary>
+        /// returns whether the analysis model for the given content data model is present locally.  
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public bool HasAnalysisModel(string contentDataModelId)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
+            return _analysisModels.ContainsKey(contentDataModelId);
+        }
+
+        /// <summary>
+        /// method to add OR OVERWRITER  an analysis model locally.  
+        /// You must also pass in a contentDataModel Id because THE MODELS YOU SAVE CAN BE NULL.  
+        /// When it stores a null value, it means that it doesn't have one.  
+        /// </summary>
+        /// <param name="model"></param>
+        public void AddAnalysisModel(AnalysisModel model, string contentDataModelId)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
+            _analysisModels[contentDataModelId] = model;
+        }
+
+        /// <summary>
+        /// method used to fetch the analysis model for a given content data model. 
+        /// You must make sure it is present before using this method.  
+        /// You can be sure it is already present by calling HasAnalysisModel(string contentDataModelId). 
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public AnalysisModel GetAnalysisModel(string contentDataModelId)
+        {
+            Debug.Assert(HasAnalysisModel(contentDataModelId));
+            return _analysisModels[contentDataModelId];
         }
     }
 }

@@ -47,7 +47,7 @@ namespace NuSysApp
         /// <returns></returns>
         private double CalculateOpacity(double relevance)
         {
-            return relevance;
+            return double.IsNaN(relevance) ? 0 : relevance;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace NuSysApp
         public double Opacity
         {
             get { return xLine.Opacity; }
-            set { xLine.Opacity = value; }
+            set { xLine.Opacity = Math.Max(.01,value); }
         }
     }
 }
