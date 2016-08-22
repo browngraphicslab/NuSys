@@ -580,6 +580,15 @@ namespace NuSysApp
                 Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
                 // create a new presentation link view model
                 var vm = new PresentationLinkViewModel(model);
+
+                // Check to ensure that the presentation link isn't being made to the current collection
+                var currentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                if (vm.Model.InElementId == currentCollectionId || vm.Model.OutElementId == currentCollectionId || vm.Model.OutElementId == "Fake Instance ID")
+                {
+                    // For some reason the element ID defaults to "Fake Instance ID" when trying to make a trail to the collection. 
+                    isSuccess = false;
+                    return;
+                }
                 // create a new presentation link view
                 var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
                 //TODO use this collectionController stuff, check if the collection exists
