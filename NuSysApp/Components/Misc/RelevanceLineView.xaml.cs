@@ -56,7 +56,7 @@ namespace NuSysApp
         public double Opacity
         {
             get { return xLine.Opacity; }
-            set { xLine.Opacity = Math.Max(.01,value); }
+            set { xLine.Opacity = Math.Max(0,value); }
         }
     }
 }

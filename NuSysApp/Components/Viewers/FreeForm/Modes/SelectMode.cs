@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media;
 using Microsoft.Office.Interop.Word;
 using MyToolkit.Utilities;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 using Image = SharpDX.Direct2D1.Image;
 using Line = Windows.UI.Xaml.Shapes.Line;
 using Point = Windows.Foundation.Point;
@@ -240,7 +241,7 @@ namespace NuSysApp
                 item => ((double)GetStrings(item.Controller?.LibraryElementModel?.Keywords ??
                    new HashSet<Keyword>()).Intersect(keywordsToCompare).Count())/(double)count);
 
-            var lineDict = new Dictionary<ContentDataModel, RelevanceLineView>();
+            var lineDict = new Dictionary<ContentDataModel, IEnumerable<RelevanceLineView>>();
 
             foreach (var kvp in dict)
             {
@@ -252,8 +253,9 @@ namespace NuSysApp
                 SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(line);
                 if (!lineDict.ContainsKey(kvp.Key.Controller.LibraryElementController.ContentDataModel))
                 {
-                    lineDict.Add(kvp.Key.Controller.LibraryElementController.ContentDataModel, line);
+                    lineDict.Add(kvp.Key.Controller.LibraryElementController.ContentDataModel, new List<RelevanceLineView>());
                 }
+                (lineDict[kvp.Key.Controller.LibraryElementController.ContentDataModel] as List<RelevanceLineView>).Add(line);
             }
             Task.Run(async delegate
             {
@@ -289,21 +291,41 @@ namespace NuSysApp
                         }
                         count = keywordsToCompare?.Count() ?? 0;
                     }
+
+                    if (controller.LibraryElementController.ContentDataModel.ContentType == NusysConstants.ContentType.PDF && false)
+                    {
+                        var relatedRequest =
+                            new GetRelatedDocumentsRequest(
+                                controller.LibraryElementController.ContentDataModel.ContentId);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(relatedRequest);
+                        if (relatedRequest.WasSuccessful() == true)
+                        {
+                            foreach (var tup in relatedRequest.ParseRelatedDocumentsLocally())
+                            {
+                                var content = SessionController.Instance.ContentController.GetContentDataModel(tup.Item1);
+                                if (lineDict.ContainsKey(content))
+                                {
+                                    lineDict[content].ForEach(line => line.Opacity = 1);
+                                }
+                            }
+                        }
+                    }
                 });
 
+                int returned = 0;
+                var needed = lineDict.Keys.Count(c => c.ContentType == NusysConstants.ContentType.Image || c.ContentType == NusysConstants.ContentType.PDF);
                 foreach (var content in lineDict.Keys)
                 {
-                    if (controller.LibraryElementController.ContentDataModel.ContentType ==
-                        NusysConstants.ContentType.Image ||
-                        controller.LibraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+                    if (content.ContentType == NusysConstants.ContentType.Image ||
+                        content.ContentType == NusysConstants.ContentType.PDF)
                     {
-                        Task.Run(async delegate
+                        await Task.Run(async delegate
                         {
                             var model = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(content.ContentId);
 
                             IEnumerable<string> keywords;
 
-                            if (controller.LibraryElementController.ContentDataModel.ContentType ==NusysConstants.ContentType.Image) //type switch
+                            if (content.ContentType == NusysConstants.ContentType.Image) //type switch
                             {
                                 var imageModel = model as NusysImageAnalysisModel;
                                 if (imageModel?.ContentDataModelId == null)
@@ -330,6 +352,7 @@ namespace NuSysApp
                                     .Concat(pdfModel?.PageImageAnalysisModels?.SelectMany(
                                         m => m?.Regions?.SelectMany(r => r?.Lines?.SelectMany(l => l.Words.Select(wo => wo?.Text?.ToLower() ?? "") ?? new List<string>()) ?? new List<string>())?? new List<string>()) ?? new List<string>());
                             }
+                            returned ++;
                             UITask.Run(delegate
                             {
                                 if (lineDict.ContainsKey(content) && keywordsToCompare != null)
@@ -340,13 +363,19 @@ namespace NuSysApp
                                             (intersect?.Count() ?? 0)*
                                             1.25, Math.Max(count, 1));
                                     var bot = Math.Max(count, 1);
-                                    lineDict[content].Opacity = top/bot;
-                                }
-                                else
-                                {
-                                    
+                                    lineDict[content].ForEach(line => line.Opacity = top/bot);
                                 }
                             });
+                            Debug.WriteLine(returned + " / " + needed);
+                            if (returned >= needed) //if all have returned
+                            {
+                                var avg = lineDict.SelectMany(l => l.Value).Where(l => l.Opacity > .01).Average(line => line.Opacity);
+                                var change = .5/avg;
+                                lineDict.SelectMany(l => l.Value)
+                                    .Where(l => l.Opacity > .01)
+                                    .ToList()
+                                    .ForEach(l => l.Opacity*=change);
+                            }
                         });
                     }
                 }
