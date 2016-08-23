@@ -329,17 +329,29 @@ namespace NuSysApp
              {
                  foreach (var visualId1 in _contentIdToLinkableIds[contentId1])
                  {
-                    // We add the circle links even so that even if one of them is not on the current workspace we can still see that a link exists
-                    GetLinkable(visualId1).UpdateCircleLinks();
                      foreach (var visualId2 in _contentIdToLinkableIds[contentId2])
                      {
-                        GetLinkable(visualId2).UpdateCircleLinks();
                         CreateBezierLinkBetween(visualId1, visualId2);
                      }
                  }
  
              }
-         }
+            if (_contentIdToLinkableIds.ContainsKey(contentId1)) {
+                foreach (var visualId in _contentIdToLinkableIds[contentId1])
+                {
+                    // We add the circle links even so that even if one of them is not on the current workspace we can still see that a link exists
+                    GetLinkable(visualId).UpdateCircleLinks();
+                }
+            }
+            if (_contentIdToLinkableIds.ContainsKey(contentId2)){
+                foreach (var visualId in _contentIdToLinkableIds[contentId2])
+                {
+                    // We add the circle links even so that even if one of them id not on the current workspace we can still see that a link exists
+                    GetLinkable(visualId).UpdateCircleLinks();
+                }
+            }
+
+        }
 
 
 
