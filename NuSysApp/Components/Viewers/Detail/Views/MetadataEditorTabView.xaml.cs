@@ -332,16 +332,17 @@ namespace NuSysApp
             var rp = sp.GetVisualParent() as RelativePanel;
             var grid = rp.GetVisualParent() as Grid;
 
-            // The first text box is in the relative panel
+            // The first text box is in the relative panel. Currently, we do not support editing metadata keys.
+            // TODO: Add this functionality back in.
             foreach (var child in rp.Children)
             {
-                if (child.ToString().Equals("Windows.UI.Xaml.Controls.TextBox"))
-                {
-                    var box = child as TextBox;     
-                    box.Background = new SolidColorBrush(Colors.CornflowerBlue);
-                    box.IsHitTestVisible = true;
-                    _highlightedTextBoxes.Add(box);
-                }
+                //if (child.ToString().Equals("Windows.UI.Xaml.Controls.TextBox"))
+                //{
+                //    var box = child as TextBox;     
+                //    box.Background = new SolidColorBrush(Colors.CornflowerBlue);
+                //    box.IsHitTestVisible = true;
+                //    _highlightedTextBoxes.Add(box);
+                //}
             }
 
             // The second text box is in the grid 
@@ -463,6 +464,41 @@ namespace NuSysApp
             }
         }
 
-    
+        /// <summary>
+        /// Makes the metadata entry editable.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            // Clears the previous selection
+            HideSelectionButtonsFromPreviousSelection();
+
+            // Since the double tapped is associated with the Grid, we can cast sender to the Grid
+            var grid = sender as Grid;
+            
+            // The value text box is in the grid. 
+            foreach (var child in grid.Children)
+            {
+                // Only the value text box is a TextBox, the key is a TextBlock
+                if (child.ToString().Equals("Windows.UI.Xaml.Controls.TextBox"))
+                {
+                    var textbox = child as TextBox;
+                    var entry = textbox.DataContext as MetadataEntry;
+                    
+                    // If the entry is immutable, we should return, else we make the entry text box editable.
+                    if (entry.Mutability == MetadataMutability.IMMUTABLE)
+                    {
+                        return;
+                    }
+                    textbox.Background = new SolidColorBrush(Colors.White);
+                    textbox.IsHitTestVisible = true;
+                    _highlightedTextBoxes.Add(textbox);
+
+                    // Shifts focus to the keyboard
+                    textbox.Focus(FocusState.Keyboard);
+                }
+            }
+        }
     }
 }
