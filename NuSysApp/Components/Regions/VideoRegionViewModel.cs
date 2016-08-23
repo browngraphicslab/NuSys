@@ -52,14 +52,6 @@ namespace NuSysApp
                 RaisePropertyChanged("Name");
             }
         }
-        public bool Editable {
-            get { return _editable; }
-            set
-            {
-                _editable = value;
-                RaisePropertyChanged("Editable");
-            }
-        }
 
         public double RectangleHeight {
             get

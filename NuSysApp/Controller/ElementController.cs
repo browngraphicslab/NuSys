@@ -107,7 +107,7 @@ namespace NuSysApp
 
         public virtual void SetSize(double width, double height)
         {
-            if (width < 20 || height < 20)
+            if (width < Constants.MinNodeSize || height < Constants.MinNodeSize)
             {
                 return;
             }

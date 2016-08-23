@@ -14,14 +14,6 @@ namespace NuSysApp
     public class RegionLibraryElementController : LibraryElementController
     {
         public event EventHandler<string> TitleChanged;
-        public delegate void SelectHandler(RegionLibraryElementController regionLibraryElementController);
-        public event SelectHandler OnSelect;
-        public delegate void DeselectHandler(RegionLibraryElementController regionLibraryElementController);
-        public event DeselectHandler OnDeselect;
-        public event EventHandler<LinkLibraryElementController> LinkAdded;
-        public event EventHandler<string> LinkRemoved;
-        public delegate void MetadataChangedEventHandler(object source);
-        public event MetadataChangedEventHandler MetadataChanged;
 
         public Region RegionModel
         {
@@ -56,18 +48,6 @@ namespace NuSysApp
         //    Model.Metadata.Add(entry.Key,entry);
         //    return true;
         //}
-
-        public void Select()
-        {
-            _selected = true;
-            OnSelect?.Invoke(this);
-        }
-
-        public void Deselect()
-        {
-            _selected = false;
-            OnDeselect?.Invoke(this);
-        }
 
         /// <summary>
         /// This mehtod should only be called from the server upon other updates.  It will pass in a region

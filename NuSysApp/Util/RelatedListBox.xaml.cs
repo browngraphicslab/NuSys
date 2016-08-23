@@ -61,7 +61,7 @@ namespace NuSysApp
 
             // relatedContent has all of the library element models with the keywords
             var allContent = SessionController.Instance.ContentController.ContentValues;
-            var relatedContent = allContent.Where(item => item.Keywords.Select(keyword => keyword.Text).Contains(tag));
+            var relatedContent = allContent.Where(item => item.Keywords != null && item.Keywords.Select(keyword => keyword.Text).Contains(tag));
 
             // the atomViewList has all of the framework elements in the collection
             var atomViewList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList;

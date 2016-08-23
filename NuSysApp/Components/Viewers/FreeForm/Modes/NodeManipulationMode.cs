@@ -105,6 +105,15 @@ namespace NuSysApp
             _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
 
             ActiveNodes.Add((UserControl)sender);
+
+            //If an action had been done and a new manipulation has started then we want to then make sure that it doesn't interfere with our current manipulation
+            if (_moveNodeUndoButton != null)
+            {
+                if (_moveNodeUndoButton.ActionExecuted == true)
+                {
+                    _moveNodeUndoButton.ActionExecuted = false; // This prevents the node from being immovable right agter being undo'd
+                }
+            }
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)

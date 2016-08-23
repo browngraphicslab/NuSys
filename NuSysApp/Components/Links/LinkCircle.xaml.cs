@@ -164,7 +164,7 @@ namespace NuSysApp
             var regionController = SessionController.Instance.ContentController.GetLibraryElementController(LinkLibraryElementId) as RegionLibraryElementController;
             if (regionController != null)
             {
-                regionController.Select();
+             //   regionController.Select();
             }
         }
 
