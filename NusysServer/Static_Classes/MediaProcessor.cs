@@ -91,7 +91,7 @@ namespace NusysServer
 
                                 var regions = pdfModel.PageImageAnalysisModels.SelectMany(page => page?.Regions ?? new List<CognitiveApiRegionModel>());//get all the ocr regions
 
-                                var topics = await GetTopicsOfText(string.Join(" ", pdfText ?? new List<string>()), title) ?? new List<string>();
+                                var topics = await GetTopicsOfText(string.Join(" ", pdfText ?? new List<string>()), title ?? "") ?? new List<string>();
                                 
                                 var sortedList = new SortedList<double, CognitiveApiRegionModel>(); //create a sorted list to get the most important topics
                                 senderHandler.SendError(new Exception("here 5"));
@@ -100,14 +100,17 @@ namespace NusysServer
                                 {
                                     var words = region?.Lines?.SelectMany(line => line?.Words?.Select(word => word?.Text ?? "") ?? new List<string>()) ?? new List<string>();
                                     var regionText = string.Join(" ", words ?? new List<string>());//create a text from all the words
-                                    var matches = topics?.Sum(topic => Regex.Matches(regionText ?? "", topic ?? "").Count) ?? 0;
+                                    var matches = topics?.Sum(topic => Regex.Matches(regionText ?? "", topic ?? "")?.Count ?? 0) ?? 0;
                                     var key = (double)((double)matches/(Math.Max(words?.Count() ?? 1, 1)));
                                     while (sortedList.ContainsKey(key))
                                     {
                                         key += .00000001;
                                     }
-                                    sortedList.Add(key, region); //add to the sorted list the number of matches of topics and the region  
-                               }
+                                    if (region != null)
+                                    {
+                                        sortedList.Add(key, region); //add to the sorted list the number of matches of topics and the region  
+                                    }
+                                }
                                 senderHandler.SendError(new Exception("here 6"));
                                 var topCount = Math.Min(10, sortedList.Count);//get the count of how many we can mark important
 

@@ -314,8 +314,6 @@ namespace NuSysApp
                     }
                 });
 
-                int returned = 0;
-                var needed = lineDict.Keys.Count(c => c.ContentType == NusysConstants.ContentType.Image || c.ContentType == NusysConstants.ContentType.PDF);
                 foreach (var content in lineDict.Keys)
                 {
                     if (content.ContentType == NusysConstants.ContentType.Image ||
@@ -354,30 +352,16 @@ namespace NuSysApp
                                     .Concat(pdfModel?.PageImageAnalysisModels?.SelectMany(
                                         m => m?.Regions?.SelectMany(r => r?.Lines?.SelectMany(l => l.Words.Select(wo => wo?.Text?.ToLower() ?? "") ?? new List<string>()) ?? new List<string>())?? new List<string>()) ?? new List<string>());
                             }
-                            returned ++;
                             UITask.Run(delegate
                             {
                                 if (lineDict.ContainsKey(content) && keywordsToCompare != null)
                                 {
                                     var intersect = keywords?.Intersect(keywordsToCompare);
-                                    var top =
-                                        Math.Min(
-                                            (intersect?.Count() ?? 0)*
-                                            1.25, Math.Max(count, 1));
+                                    var top = Math.Min((intersect?.Count() ?? 0)* 1.25, Math.Max(count, 1));
                                     var bot = Math.Max(count, 1);
                                     lineDict[content].ForEach(line => line.Opacity = top/bot);
                                 }
                             });
-                            Debug.WriteLine(returned + " / " + needed);
-                            if (returned >= needed) //if all have returned
-                            {
-                                var avg = lineDict.SelectMany(l => l.Value).Where(l => l.Opacity > .01).Average(line => line.Opacity);
-                                var change = .5/avg;
-                                lineDict.SelectMany(l => l.Value)
-                                    .Where(l => l.Opacity > .01)
-                                    .ToList()
-                                    .ForEach(l => l.Opacity*=change);
-                            }
                         });
                     }
                 }

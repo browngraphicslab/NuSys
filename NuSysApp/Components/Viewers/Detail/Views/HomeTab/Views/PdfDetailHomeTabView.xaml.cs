@@ -271,7 +271,7 @@ namespace NuSysApp
 
             if (_analysisModel != null)
             {
-                var suggestedRegions = _analysisModel.PageImageAnalysisModels.SelectMany(item => item?.Regions ?? new List<CognitiveApiRegionModel>());//.Where(i => i.MarkedImportant);
+                var suggestedRegions = _analysisModel.PageImageAnalysisModels.SelectMany(item => item?.Regions ?? new List<CognitiveApiRegionModel>()).Where(i => i.MarkedImportant);
 
                 foreach (var region in suggestedRegions)
                 {

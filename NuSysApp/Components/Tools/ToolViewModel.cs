@@ -252,7 +252,7 @@ namespace NuSysApp
                     var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
 
                     // if the library element model doesn't exist, is a link, or is greater than 20, don't add it to the session
-                    if (lem == null || lem.Type == NusysConstants.ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
+                    if (lem == null || lem.Type == NusysConstants.ElementType.Link)
                     {
                         continue;
                     }
