@@ -62,12 +62,13 @@ namespace NuSysApp
         private void OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
             var src = args.OriginalSource as FrameworkElement;
-            var gridInfo = src?.DataContext as GroupNodeDataGridViewModel;
+            var gridInfo = src?.DataContext as GroupNodeDataGridInfo;
             if (gridInfo != null)
             {
                 src.ManipulationMode = ManipulationModes.All; // for dragging out via touch
                 _drag = new Image();//TODO temporary
-                BitmapImage textimage = new BitmapImage(new Uri("ms-appx:///Assets/icon_new_workspace.png", UriKind.Absolute));
+                var itemController = SessionController.Instance.IdToControllers[gridInfo?.Id].LibraryElementController;
+                BitmapImage textimage = new BitmapImage(itemController.SmallIconUri);
                 _drag.Source = textimage;
 
                 var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
