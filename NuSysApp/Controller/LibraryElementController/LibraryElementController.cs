@@ -749,7 +749,7 @@ namespace NuSysApp
                 Debug.Assert(collectionLibraryElementModel != null);
 
                 // try to add the collection to the collection
-                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, collectionId,
+                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, LibraryElementModel.LibraryElementId,
                     collectionLibraryElementModel.IsFinite, collectionLibraryElementModel.ShapePoints?.Select(pointModel => new Point(pointModel.X, pointModel.Y)).ToList() ?? new List<Point>());
 
                 // return whether the method succeeded

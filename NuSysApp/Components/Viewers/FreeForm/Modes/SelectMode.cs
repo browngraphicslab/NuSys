@@ -34,6 +34,8 @@ namespace NuSysApp
         /// mapping of pointerIds to SessionView Positions for relatedDocumentsGesture
         /// </summary>
         private Dictionary<uint, Point> _pointerIdToStartLocation;
+        
+
 
         /// <summary>
         /// A List of possible element types that relatedDocumentsGesture can find
@@ -51,6 +53,8 @@ namespace NuSysApp
         {
             // instantiated the _pointerIdToStartLocation dictionary
             _pointerIdToStartLocation = new Dictionary<uint, Point>();
+
+
             // add the mode specific event handlers
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
@@ -108,9 +112,7 @@ namespace NuSysApp
             {
                 // get the list of point locations
                 var points = _pointerIdToStartLocation.Values;
-
                 // 
-                
                 // calculate the minimum bounding rect
                 var minBoundingRect = new Rect(new Point(points.Min(point => point.X), points.Min(point => point.Y)), new Point(points.Max(point => point.X), points.Max(point => point.Y)));
                 if (minBoundingRect.Width < 400 && minBoundingRect.Height < 400) // 400 px is slightly smaller than the avg American hand size according to Sahil
@@ -174,9 +176,7 @@ namespace NuSysApp
                 {
                     viwerVm?.AddSelection(dc);
                 }
-
             }
-
         }
 
         /// <summary>
@@ -362,10 +362,8 @@ namespace NuSysApp
         {
             // set released to true, used for code which ignores accidental pointer pressed events
             _released = true;
-            // remove the Pointer from the mapping of pointerIds to start locations
-            _pointerIdToStartLocation.Clear();
         }
-
+        
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTapped = true;

@@ -423,7 +423,7 @@ namespace NuSysApp
             var t = (CompositeTransform)_dragFilterItem.RenderTransform;
             t.TranslateX = _x;
             t.TranslateY = _y;
-            _dragFilterItem.Visibility = Visibility.Visible;
+            _dragFilterItem.Visibility = Visibility.Collapsed;
             _draggedOutside = false;
             //not a great way of doing this. find out if there is a way to STOP all manipulation events once a new manipulation event has started.
             currentManipultaionSender = sender;
