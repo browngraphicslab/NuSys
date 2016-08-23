@@ -308,7 +308,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private async void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = this.DataContext as ImageRegionViewModel;
             if (vm == null)
@@ -319,7 +319,11 @@ namespace NuSysApp
             vm.Dispose(this, EventArgs.Empty);
             // delete all the references to this region from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(removeRequest);
+            if (removeRequest.WasSuccessful() == true)
+            {
+                removeRequest.DeleteLocally();
+            }
         }
 
         /// <summary>
