@@ -132,7 +132,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Stopped)
             {
                 MediaElement.Stop();
-
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -141,7 +142,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Paused)
             {
                 MediaElement.Pause();
-
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -151,7 +153,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
                 MediaElement.Play();
-
+                Play.Visibility = Visibility.Collapsed;
+                Pause.Visibility = Visibility.Visible;
             }
         }
 

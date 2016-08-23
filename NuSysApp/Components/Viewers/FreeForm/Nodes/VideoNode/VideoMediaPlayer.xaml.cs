@@ -139,7 +139,8 @@ namespace NuSysApp
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
             MediaElement.Stop();
-
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
         }
 
         private void XAudioWrapper_OnIntervalChanged(object sender, double start, double end)
@@ -179,17 +180,22 @@ namespace NuSysApp
 
 
             MediaElement.Play();
+            play.Visibility = Visibility.Collapsed;
+            pause.Visibility = Visibility.Visible;
         }
 
         public void StopVideo()
         {
             MediaElement.Stop();
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
             MediaElement.Pause();
-
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
             // e.Handled = true;
         }
         private void MediaEnded(object sender, RoutedEventArgs e)
@@ -274,6 +280,8 @@ namespace NuSysApp
         public void StopMedia()
         {
             MediaElement.Stop();
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
         }
 
         private void MediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
