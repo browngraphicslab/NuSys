@@ -39,6 +39,11 @@ namespace NusysServer
             //    "test value 3");
             //****************************************************************    
 
+            //Check to make sure your not adding a collection onto itself.
+            if (message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY).Equals(message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY)))
+            {
+                return new Message(new Dictionary<string, object>() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false } });
+            }
 
             //query the library elements to get the type
             var typeQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.LibraryElement),
@@ -72,7 +77,8 @@ namespace NusysServer
             }
             var model = JsonConvert.SerializeObject(ElementModelFactory.CreateFromMessage(addAliasMessage));
 
-            //if the new element isn't a private alias
+            //if the new element isn't a private alias. 
+            //TODO: Check if collection element is part of is private or public
             if (addAliasMessage.GetEnum<NusysConstants.AccessType>(NusysConstants.ALIAS_ACCESS_KEY) != NusysConstants.AccessType.Private)
             {
                 //forward the element message with the json to other clients
