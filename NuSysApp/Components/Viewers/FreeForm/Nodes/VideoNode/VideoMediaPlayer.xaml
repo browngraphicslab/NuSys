@@ -39,7 +39,7 @@
             <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_play_dark.png" Height="20"></Image>
             </Button>
-            <Button x:Name="pause" Tapped="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="pause" Visibility="Collapsed"  Tapped="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_pause_dark.png" Height="20"></Image>
             </Button>
             <Button x:Name="stop" Tapped ="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
