@@ -114,7 +114,12 @@ namespace NuSysApp
             var model = ElementModelFactory.DeserializeFromString(_message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
 
             var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId);
-             Debug.Assert(libraryElementController != null); //make sure the controller exists
+            //make sure the controller exists. If it doesnt exist this probably means that someone added a public library element
+            //to a private workspace so you cant see it.
+            if (libraryElementController == null)
+            {
+                return;
+            }
             if (libraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection && //if we have a collection
                 !SessionController.Instance.ContentController.ContainsContentDataModel(libraryElementController.LibraryElementModel.ContentDataModelId))//and the content isn't loaded
             {//send a request to fetch the entire workspace
