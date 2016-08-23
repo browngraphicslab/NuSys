@@ -36,12 +36,20 @@ namespace NuSysApp
         public ContentDataModel ContentDataModel { get; private set; }
 
         /// <summary>
+        /// the protected debouncing dictionary that will be used to update the properties and content data string for this content data model;
+        /// As of 8/23/16 should only be used to update the data string for the text node contents
+        /// </summary>
+        protected ContentDebouncingDictionary _debouncingDictionary;
+
+        /// <summary>
         /// The constructor of the controller only takes in a Content Data Model.  
         /// </summary>
         /// <param name="contentDataModel"></param>
         public ContentDataController(ContentDataModel contentDataModel)
         {
             ContentDataModel = contentDataModel;
+            Debug.Assert(contentDataModel?.ContentId != null);
+            _debouncingDictionary = new ContentDebouncingDictionary(contentDataModel.ContentId, contentDataModel.ContentType);//instantiate the deboucning dictionary
         }
 
         /// <summary>
@@ -56,19 +64,7 @@ namespace NuSysApp
             //if we are not already updating from the server
             if (!_blockServerInteraction)
             {
-                //update the server
-                Task.Run(async delegate
-                {
-                    var args = new UpdateContentRequestArgs();
-                    args.ContentId = ContentDataModel.ContentId;
-                    args.ContentType = ContentDataModel.ContentType = ContentDataModel.ContentType;
-                    args.UpdatedContent = data;
-
-                    //create the update request
-                    var updateRequest =  new UpdateContentRequest(args);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(updateRequest);
-                    Debug.Assert(updateRequest.WasSuccessful() == true);
-                });
+                _debouncingDictionary.AddLatestContent(data);
             }
         }
 

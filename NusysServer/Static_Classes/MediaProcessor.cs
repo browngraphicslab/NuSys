@@ -50,7 +50,7 @@ namespace NusysServer
                             try
                             {
                                 var tup = new Tuple<string, string>(string.Join("",pdfText), contentDataModelId);
-                                ContentController.Instance.ComparisonController.AddDocument(tup, title);
+                                //ContentController.Instance.ComparisonController.AddDocument(tup, title);
                             }
                             catch (Exception e)
                             {

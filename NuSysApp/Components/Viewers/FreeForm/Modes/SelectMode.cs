@@ -284,11 +284,11 @@ namespace NuSysApp
                             var pdfModel = model as NusysPdfAnalysisModel;
                             keywordsToCompare = keywordsToCompare?.Concat(
                                 pdfModel?.DocumentAnalysisModel?.Segments?.SelectMany(
-                                    s => s?.KeyPhrases?.Select(p => p?.ToLower()) ?? new List<string>()) ??
+                                    s => s?.KeyPhrases?.Select(p => p?.ToLower() ?? "") ?? new List<string>()) ??
                                 new List<string>())
                                 .Concat(
-                                    pdfModel.PageImageAnalysisModels.SelectMany(
-                                        m => m?.Regions?.SelectMany(r => r?.Lines?.SelectMany(l => l?.Words?.Select(wo => wo?.Text?.ToLower() ?? "") ?? new List<string>()) ?? new List<string>()) ?? new List<string>())) ??
+                                    pdfModel?.PageImageAnalysisModels?.SelectMany(
+                                        m => m?.Regions?.SelectMany(r => r?.Lines?.SelectMany(l => l?.Words?.Select(wo => wo?.Text?.ToLower() ?? "") ?? new List<string>()) ?? new List<string>()) ?? new List<string>()) ?? new List<string>()) ??
                                                 new List<string>();
                         }
                         count = keywordsToCompare?.Count() ?? 0;

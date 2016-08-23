@@ -67,7 +67,7 @@ namespace NuSysApp
 
             if (_model != null)
             {
-                _debouncingDictionary = new DebouncingDictionary(model.Id);
+                _debouncingDictionary = new ElementDebouncingDictionary(model.Id);
             }
             if (LibraryElementController != null)
             {

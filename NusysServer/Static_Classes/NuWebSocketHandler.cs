@@ -154,7 +154,10 @@ namespace NusysServer
         {
             var errorMessage = new Message();
             errorMessage[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message;
-            Send(errorMessage.GetSerialized());
+            if (this.WebSocketContext.IsClientConnected)
+            {
+                Send(errorMessage.GetSerialized());
+            }
         }
         
         /// <summary>

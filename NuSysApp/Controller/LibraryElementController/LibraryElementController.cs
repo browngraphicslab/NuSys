@@ -152,9 +152,9 @@ namespace NuSysApp
         /// 
         public LibraryElementController(LibraryElementModel libraryElementModel)
         {
-            Debug.Assert(libraryElementModel != null);
+            Debug.Assert(libraryElementModel?.LibraryElementId != null);
             _libraryElementModel = libraryElementModel;
-            _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
+            _debouncingDictionary = new LibraryElementDebouncingDictionary(libraryElementModel.LibraryElementId);
             Title = libraryElementModel.Title;
             SessionController.Instance.EnterNewCollectionStarting += OnSessionControllerEnterNewCollectionStarting;
         }
@@ -756,9 +756,15 @@ namespace NuSysApp
                 var collectionLibraryElementModel = LibraryElementModel as CollectionLibraryElementModel;
                 Debug.Assert(collectionLibraryElementModel != null);
 
+                var args  = new NewElementRequestArgs();//create new args class for the putting on an element collection on the main instance
+                args.X = x;
+                args.Y = y;
+                args.LibraryElementId = LibraryElementModel.LibraryElementId;
+                args.Height = Constants.DefaultNodeSize;
+                args.Width = Constants.DefaultNodeSize;
+
                 // try to add the collection to the collection
-                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, LibraryElementModel.LibraryElementId,
-                    collectionLibraryElementModel.IsFinite, collectionLibraryElementModel.ShapePoints?.Select(pointModel => new Point(pointModel.X, pointModel.Y)).ToList() ?? new List<Point>());
+                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
 
                 // return whether the method succeeded
                 return success != null;

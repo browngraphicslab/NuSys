@@ -658,6 +658,9 @@
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\CachePDF.cs" />
     <Compile Include="Network\ClientHandler.cs" />
+    <Compile Include="Network\DebouncingDictionaries\ContentDebouncingDictionary.cs" />
+    <Compile Include="Network\DebouncingDictionaries\ElementDebouncingDictionary.cs" />
+    <Compile Include="Network\DebouncingDictionaries\LibraryElementDebouncingDictionary.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NetworkUser.cs" />
@@ -831,9 +834,8 @@
     <Compile Include="Util\PdfRenderer.cs" />
     <Compile Include="Util\StorageUtil.cs" />
     <Compile Include="Models\LinkModel.cs" />
-    <Compile Include="Models\PinModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
-    <Compile Include="Network\DebouncingDictionary.cs" />
+    <Compile Include="Network\DebouncingDictionaries\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
