@@ -26,6 +26,10 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source, object args)
         {
+            foreach (var item in AtomDataList)
+            {
+                item.Dispose();
+            }
             AtomDataList.Clear();
             _infoDict = null;
             AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
@@ -55,8 +59,9 @@ namespace NuSysApp
                         "Unknown Author";
                     var nodeType = _nodeModel.ElementType.ToString();
                     var title = _nodeModel.Title;
-
+                    
                     var atomData = new GroupNodeDataGridInfo(id, timeStamp, creator, nodeType, title);
+                    
                     AtomDataList.Add(atomData);
                     _infoDict[atomTest] = atomData;
                 }
@@ -78,6 +83,8 @@ namespace NuSysApp
 
             }
         }
+
+        
 
         private void OnTitleChanged(object sender, string newTitle)
         {
