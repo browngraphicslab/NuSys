@@ -580,6 +580,7 @@ namespace NuSysApp
                 Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
                 // create a new presentation link view model
                 var vm = new PresentationLinkViewModel(model);
+
                 // create a new presentation link view
                 var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
                 //TODO use this collectionController stuff, check if the collection exists

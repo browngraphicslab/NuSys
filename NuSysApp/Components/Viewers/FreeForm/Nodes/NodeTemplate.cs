@@ -361,6 +361,13 @@ namespace NuSysApp
                         first = (FrameworkElement)hitsStartElements.First();
                         var dc = (ElementViewModel)first.DataContext;
 
+                        // Diable linking to links, tools and collections
+                        // TODO: Enable linking to links 
+                        if (dc.ElementType == NusysConstants.ElementType.Link || dc.ElementType == NusysConstants.ElementType.Tools  || dc.ElementType == NusysConstants.ElementType.Collection)
+                        {
+                            break;
+                        }
+
                         createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
                         createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
                     }
@@ -397,6 +404,12 @@ namespace NuSysApp
                     {
                         first = (FrameworkElement) hitsStartElements.First();
                         var dc1 = (ElementViewModel) first.DataContext;
+
+                        // If trying to create a presentation link to collection, do nothing.
+                        if (dc1.Model.ElementType == NusysConstants.ElementType.Collection)
+                        {
+                            break;
+                        }
                         createNewPresentationLinkRequestArgs.ElementViewModelOutId = dc1.Id;
                     }
                     else
