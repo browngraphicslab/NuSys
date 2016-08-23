@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
@@ -22,6 +23,8 @@ namespace NuSysApp
         public event EventHandler<string> Disposed;
         public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
+        public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel>();
+
         /// <summary>
         /// The unique ID used in the tool startable dictionary
         /// </summary>
@@ -29,7 +32,12 @@ namespace NuSysApp
 
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
-       
+        protected FreeFormElementViewModelFactory _elementVmFactory = new FreeFormElementViewModelFactory();
+
+        public Vector2 CameraTranslation { get; set; } = new Vector2(-Constants.MaxCanvasSize / 2f, -Constants.MaxCanvasSize / 2f);
+        public Vector2 CameraCenter { get; set; } = new Vector2(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
+        public float CameraScale { get; set; } = 1f;
+
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
             controller.ChildAdded += OnChildAdded;
@@ -74,12 +82,15 @@ namespace NuSysApp
 
         private async Task CreateChild(ElementController controller)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(controller);
-            AtomViewList.Add(view);
-            if (controller is LinkController)
+            var vm = await _elementVmFactory.CreateFromSendable(controller);
+            Elements.Add(vm);
+
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Audio || controller.LibraryElementModel.Type == NusysConstants.ElementType.Video)
             {
-                return;
+                var view = await _nodeViewFactory.CreateFromSendable(controller);
+                AtomViewList.Add(view);
             }
+
             controller.Deleted += OnChildDeleted;
         }
         

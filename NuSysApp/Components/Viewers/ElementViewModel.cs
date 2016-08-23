@@ -99,6 +99,8 @@ namespace NuSysApp
 
         protected virtual void OnPositionChanged(object source, double x, double y, double dx, double dy)
         {
+            X = x;
+            Y = y;
             Transform.TranslateX = x;
             Transform.TranslateY = y;
             RaisePropertyChanged("Transform");
@@ -231,7 +233,9 @@ namespace NuSysApp
             Transform.TranslateY = model.Y;
             Transform.ScaleX = model.ScaleX;
             Transform.ScaleY = model.ScaleY;
-            
+            X = model.X;
+            Y = model.Y;
+
             Id = model.Id;
 
             Width = model.Width;
@@ -282,6 +286,9 @@ namespace NuSysApp
             _transform = null;
    //         _controller = null;
         }
+
+        public double X { get; set; }
+        public double Y { get; set; }
 
         public virtual void SetSize(double width, double height)
         {

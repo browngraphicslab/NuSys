@@ -1,0 +1,96 @@
+﻿<UserControl
+    x:Class="NuSysApp2.LoadingBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp2"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <Storyboard x:Name="animateload" AutoReverse="True" RepeatBehavior="Forever">
+            <ColorAnimation Duration="0:0:1.5" To="#FF62BCD5" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle" d:IsOptimized="True"/>
+            <ColorAnimation Duration="0:0:1.5" To="#FF62BCD5" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle1" d:IsOptimized="True"/>
+            <ColorAnimation Duration="0:0:1.5" To="#FF62BCD5" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle2" d:IsOptimized="True"/>
+            <ColorAnimation Duration="0:0:1.5" To="#FF62BCD5" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle3" d:IsOptimized="True"/>
+            <ColorAnimation Duration="0:0:1.5" To="#FF62BCD5" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle4" d:IsOptimized="True"/>
+            <ColorAnimation Duration="0:0:1.5" To="#FF62BCD5" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle5" d:IsOptimized="True"/>
+            <ColorAnimation Duration="0:0:1.5" To="#FF9DDBE0" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Bar" d:IsOptimized="True"/>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="Loading..." Foreground="#62bdc5" Width="175" TextAlignment="Center" Margin="5,5,5,5"></TextBlock>
+            <Border x:Name="Bar" Height="20" Width="175" BorderBrush="#62bdc5" BorderThickness="1" Background="#62bdc5">
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <Rectangle x:Name="rectangle" Height="20" Width="15" Fill="#FF9DDBE0" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Height="20" Width="15" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle x:Name="rectangle1" Height="20" Width="15" Fill="#FF9DDBE0"  RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Height="20" Width="15" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle x:Name="rectangle2" Height="20" Width="15" Fill="#FF9DDBE0" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Height="20" Width="15" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle x:Name="rectangle3" Height="20" Width="15" Fill="#FF9DDBE0" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Height="20" Width="15" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle x:Name="rectangle4" Height="20" Width="15" Fill="#FF9DDBE0" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Height="20" Width="15" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle x:Name="rectangle5" Height="20" Width="15" Fill="#FF9DDBE0" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Height="20" Width="15" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <CompositeTransform SkewX="-30"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                </StackPanel>
+
+            </Border>
+            <!--<ProgressBar Height="5" Width="175" Foreground="#62bcd5" IsIndeterminate="True"></ProgressBar>-->
+        </StackPanel>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,82 @@
+﻿<nuSysApp:AnimatableUserControl
+    x:Class="NuSysApp2.BaseToolView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp2.Components.Tools"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:nuSysApp="using:NuSysApp2"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    Width="{Binding Width}"
+    Height="{Binding Height}"
+    RenderTransform="{Binding Transform}"
+    IsDoubleTapEnabled="True">
+    <Canvas x:Name="xCanvas" VerticalAlignment="Stretch" Margin="0">
+        <Grid Height="{Binding Height}"  VerticalAlignment="Stretch" Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Visibility="Collapsed" Name="xParentOperatorGrid" Width="70" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="100,0,100,0">
+                <TextBlock Text="OR" Name="xParentOperatorText" HorizontalAlignment="Center" FontSize="24"  VerticalAlignment="Center"></TextBlock>
+            </Border>
+            <Grid Grid.Row="1"  VerticalAlignment="Stretch" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"  x:Name="xDeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,45,5,0"  Click ="Delete_Click" VerticalAlignment="Top">
+                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
+                </Button>
+                <Grid Grid.Column="1" Width="{Binding Width}" VerticalAlignment="Stretch" Margin="0">
+
+                    <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White"  VerticalAlignment="Stretch" Margin="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid Height="45" Grid.Row="0" Background="{StaticResource color1}">
+                            <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="{StaticResource color3}"  Text="filter type" Height="22" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
+                        </Grid>
+                        <Grid Name="xViewTypeGrid" Grid.Row="1" VerticalAlignment="Stretch" Margin="0">
+                        </Grid>
+                        <Grid Name ="xbottompanel" Background="{StaticResource color1}" Padding="0,0,40,0"  Height="50" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
+                            <StackPanel Orientation="Horizontal">
+                                <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
+                                    <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="30" Width="30"></Image>
+                                </Button>
+                                <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
+                                    <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="30" Width="30"></Image>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+
+                    <Path x:Name="xResizer" Grid.Row="0" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                      Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
+                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
+                </Grid>
+                <StackPanel Grid.Column="2" Margin="0,40,0,0"  Orientation="Vertical">
+                    <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Right" Margin="0,0,0,0">
+                        <StackPanel>
+                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="xStackElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Right" Margin="0,0,0,0">
+                        <StackPanel>
+                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                            <TextBlock Text="Stack" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+        
+    </Canvas>
+</nuSysApp:AnimatableUserControl>
+

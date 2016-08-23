@@ -10,6 +10,13 @@ namespace NuSysApp
 {
     public class ElementCollectionController : ElementController
     {
+        public delegate void CameraPositionChangedHandler(float x, float y);
+        public event CameraPositionChangedHandler CameraPositionChanged;
+
+        public delegate void CameraScaleChangedHandler(object source, float x);
+        public event CameraScaleChangedHandler CameraScaleChanged;
+
+        public event CameraPositionChangedHandler CameraCenterChanged;
 
         public delegate void ChildChangedHandler(object source, ElementController child);
         public event ChildChangedHandler ChildAdded;
@@ -78,6 +85,16 @@ namespace NuSysApp
         {
             ChildRemoved?.Invoke(this, child);
         }
+
+        public void SetCameraPosition(float x, float y)
+        {
+            CameraPositionChanged?.Invoke(x, y);
+        }
+        public void SetCameraCenter(float x, float y)
+        {
+            CameraCenterChanged?.Invoke(x, y);
+        }
+
 
         public void SetCollectionViewType(CollectionElementModel.CollectionViewType type)
         {

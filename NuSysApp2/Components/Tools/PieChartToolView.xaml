@@ -1,0 +1,614 @@
+﻿<nuSysApp:AnimatableUserControl
+    x:Class="NuSysApp2.PieChartToolView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp2.Components.Tools"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
+    xmlns:dataVisualization="using:WinRTXamlToolkit.Controls.DataVisualization"
+    xmlns:controls="using:WinRTXamlToolkit.Controls"
+    xmlns:nuSysApp="using:NuSysApp2"
+    xmlns:primitives="using:WinRTXamlToolkit.Controls.DataVisualization.Charting.Primitives"
+    mc:Ignorable="d"
+    IsDoubleTapEnabled="True"
+    >
+    <nuSysApp:AnimatableUserControl.Resources>
+        <ControlTemplate x:Key="MyPieDataPointTemplate"
+                    TargetType="charting:PieDataPoint">
+            <Grid Tapped="Slice_OnTapped" DoubleTapped="Slice_OnDoubleTapped"  PointerPressed="Slice_OnPointerPressed" ManipulationMode="All" ManipulationStarted="PieSlice_ManipulationStarted" ManipulationDelta="PieSlice_ManipulationDelta" ManipulationCompleted="PieSlice_ManipulationCompleted"
+                        x:Name="Root"
+                        Opacity="0">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup
+                                x:Name="CommonStates">
+                        <VisualStateGroup.Transitions>
+                            <VisualTransition
+                                        GeneratedDuration="0:0:0.1" />
+                        </VisualStateGroup.Transitions>
+                        <VisualState
+                                    x:Name="Normal" />
+                        <VisualState
+                                    x:Name="MouseOver">
+                            <Storyboard>
+                                <DoubleAnimation
+                                            Storyboard.TargetName="MouseOverHighlight"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0.6"
+                                            Duration="0" />
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                    <VisualStateGroup
+                                x:Name="SelectionStates">
+                        <VisualStateGroup.Transitions>
+                            <VisualTransition
+                                        GeneratedDuration="0:0:0.1" />
+                        </VisualStateGroup.Transitions>
+                        <VisualState
+                                    x:Name="Unselected" />
+                        <VisualState
+                                    x:Name="Selected">
+                            <Storyboard>
+                                <DoubleAnimation
+                                            Storyboard.TargetName="SelectionHighlight"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0.6"
+                                            Duration="0" />
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                    <VisualStateGroup
+                                x:Name="RevealStates">
+                        <VisualStateGroup.Transitions>
+                            <VisualTransition
+                                        GeneratedDuration="0:0:0.1" />
+                        </VisualStateGroup.Transitions>
+                        <VisualState
+                                    x:Name="Shown">
+                            <Storyboard>
+                                <DoubleAnimation
+                                            Storyboard.TargetName="Root"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0" />
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState
+                                    x:Name="Hidden">
+                            <Storyboard>
+                                <DoubleAnimation
+                                            Storyboard.TargetName="Root"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0" />
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Path
+                            x:Name="Slice"
+                            Data="{TemplateBinding Geometry}"
+                            Fill="{TemplateBinding Background}"
+                            Stroke="{TemplateBinding BorderBrush}"
+                            StrokeMiterLimit="1">
+                    <ToolTipService.ToolTip>
+                        <StackPanel>
+                            <ContentControl
+                                        Content="{TemplateBinding FormattedIndependentValue}" />
+                            <ContentControl
+                                        Content="{TemplateBinding FormattedRatio}" />
+                        </StackPanel>
+                    </ToolTipService.ToolTip>
+                </Path>
+                <Path
+                            x:Name="SelectionHighlight"
+                            Data="{TemplateBinding GeometrySelection}"
+                            Fill="Red"
+                            StrokeMiterLimit="1"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+                <Path
+                            x:Name="MouseOverHighlight"
+                            Data="{TemplateBinding GeometryHighlight}"
+                            Fill="White"
+                            StrokeMiterLimit="1"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+            </Grid>
+        </ControlTemplate>
+        <charting:ResourceDictionaryCollection x:Key="MyStylePalette">
+            <!-- Blue -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Blue" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Red -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Red" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Light Green -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="LightGreen" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Yellow -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Yellow" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Indigo -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Indigo" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Magenta -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Magenta" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Dark Green -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="DarkGreen" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Gray Shade -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Gray" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Blue -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="LightBlue" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Brown -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Brown" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Cyan -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="Cyan" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Special Blue -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="LightSkyBlue" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Gray Shade 2 -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="LightGray" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Gray Shade 3 -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="DarkSlateGray" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+            <!-- Gray Shade 4 -->
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="Background" Color="SlateGray" />
+                <Style
+                            x:Key="DataPointStyle"
+                            TargetType="Control">
+                    <Setter Property="Template"
+                                    Value="{StaticResource MyPieDataPointTemplate}"/>
+                    <Setter
+                                Property="Background"
+                                Value="{StaticResource Background}" />
+                </Style>
+                <Style
+                            x:Key="DataShapeStyle"
+                            TargetType="Shape">
+                    <Setter
+                                Property="Stroke"
+                                Value="{StaticResource Background}" />
+                    <Setter
+                                Property="StrokeThickness"
+                                Value="2" />
+                    <Setter
+                                Property="StrokeMiterLimit"
+                                Value="1" />
+                    <Setter
+                                Property="Fill"
+                                Value="{StaticResource Background}" />
+                </Style>
+            </ResourceDictionary>
+        </charting:ResourceDictionaryCollection>
+    </nuSysApp:AnimatableUserControl.Resources>
+    <Grid x:Name="xCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+        <charting:Chart x:Name="xPieChart" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0,0,0" Width="Auto" Height="Auto">
+            <charting:PieSeries x:Name="xPieSeries" Palette="{StaticResource MyStylePalette}"  Margin="0,0,0,0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+            <charting:Chart.LegendStyle>
+                <Style TargetType="dataVisualization:Legend">
+                    <Setter Property="VerticalAlignment" Value="Stretch" />
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <controls:UniformGrid x:Name="xLegendGrid" VerticalAlignment="Center" Columns="1"/>
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="ItemContainerStyle" xmlns:series="using:WinRTXamlToolkit.Controls.DataVisualization.Charting">
+                        <Setter.Value>
+                            <Style TargetType="series:LegendItem">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="series:LegendItem">
+                                            <Border MinWidth="200" BorderThickness="3" Margin="20,10" CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="{StaticResource color2}">
+                                                <dataVisualization:Title HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontWeight="Bold" Content="Fuck everyone" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="dataVisualization:Legend">
+                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="2">
+                                    <Grid ManipulationMode="All" Width ="200">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <dataVisualization:Title  Grid.Row="0" x:Name="HeaderContent" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" Style="{TemplateBinding TitleStyle}" />
+                                        <ScrollViewer Grid.Row="1" BorderThickness="0" Padding="0" IsTabStop="False">
+                                            <ItemsPresenter x:Name="Items" VerticalAlignment="Center" Margin="10,0,10,10" />
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </charting:Chart.LegendStyle>
+          
+        </charting:Chart>
+
+            
+    </Grid>
+</nuSysApp:AnimatableUserControl>
+
+
+

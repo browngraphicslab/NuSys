@@ -9,8 +9,10 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Input.Inking;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.Devices.Input;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
 
 
@@ -45,12 +47,9 @@ namespace NuSysApp
         private MultiMode _presentationMode;
 
         private FreeFormViewerViewModel _vm;
+        private List<uint> _activePointers = new List<uint>();
 
-        public Brush CanvasColor
-        {
-            get { return xInqCanvasContainer.Background; }
-            set { xInqCanvasContainer.Background = value; }
-        }
+        public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
@@ -60,58 +59,11 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
             _vm = vm;
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                _inqCanvas = new NuSysInqCanvas(wetCanvas, dryCanvas);
-                _inqCanvas.Transform = vm.CompositeTransform;
-                _inqCanvas.InkStrokeAdded += InkStrokedAdded;
-                _inqCanvas.InkStrokeRemoved += InkStrokedRemoved;
-                _inqCanvas.AdornmentAdded += AdormnentAdded;
-                _inqCanvas.AdornmentRemoved += AdornmentRemoved;
-
-                var collectionController = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(vm.Controller.LibraryElementModel.LibraryElementId);
-
-                collectionController.OnInkAdded += delegate(string id)
-
-                {
-                    if (InkStorage._inkStrokes.ContainsKey(id))
-                    {
-                        var x = InkStorage._inkStrokes[id];
-                        if (x.Type == "ink")
-                        {
-                            _inqCanvas.AddStroke(x.Stroke);
-                            _inqCanvas.Redraw();
-                        }
-                        else
-                        {
-                            _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
-                            _inqCanvas.Redraw();
-                        }
-                    }
-                };
-
-                _nodeManipulationMode = new NodeManipulationMode(this);
-                _createGroupMode = new CreateGroupMode(this);
-                _duplicateMode = new DuplicateNodeMode(this);
-                _panZoomMode = new PanZoomMode(this);
-                _panZoomMode.UpdateTempTransform(vm.CompositeTransform);
-                _gestureMode = new GestureMode(this);
-                _selectMode = new SelectMode(this);
-                _floatingMenuMode = new FloatingMenuMode(this);
-                _globalInkMode = new GlobalInkMode(this);
-                _exploreMode = new ExploreMode(this);
-                _presentMode = new PresentMode(this);
-                
-          
-
-                _tagMode = new TagNodeMode(this);
-                _linkMode = new LinkMode(this);
-
-                _mainMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _gestureMode, _createGroupMode, _floatingMenuMode);
-                _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
-                _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
-                _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
-                _presentationMode = new MultiMode(this, _panZoomMode, _presentMode);
+                await NuSysRenderer.Instance.Init(xRenderCanvas);
+                xRenderCanvas.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(XRenderCanvasOnPointerPressed), true);
+                xRenderCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(XRenderCanvasOnPointerReleased), true);
 
                 if (vm.Controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
                 {
@@ -132,13 +84,18 @@ namespace NuSysApp
                     LimitManipulation();
                 }
             };
+        }
 
-            SizeChanged += delegate(object sender, SizeChangedEventArgs args)
-            {
-                xInqCanvasContainer.Width = args.NewSize.Width;
-                xInqCanvasContainer.Height = args.NewSize.Height;
-            };
+        private void XRenderCanvasOnPointerReleased(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+                _activePointers.Remove(args.Pointer.PointerId);
+        }
 
+        private void XRenderCanvasOnPointerPressed(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+                _activePointers.Add(args.Pointer.PointerId);
         }
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -288,6 +245,7 @@ namespace NuSysApp
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
         {
+            return;
             _prevMode = _mode;
             if (mode == _mode)
                 return;
@@ -300,7 +258,7 @@ namespace NuSysApp
 
         private async void SwitchMode(Options mode)
         {
-           
+            return;
             switch (mode)
             {
                 case Options.Idle:

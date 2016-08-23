@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage.Streams;
@@ -233,8 +234,10 @@ namespace NuSysApp
             rect.Hide();
 
             // Add the element at the dropped location
-            var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_exportPos);
-            await AddElementToCollection(dropPoint);
+            var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(_exportPos);
+            var dropPoint = NuSysRenderer.Instance.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
+
+            await AddElementToCollection(new Point(dropPoint.X, dropPoint.Y));
 
             args.Handled = true;
 

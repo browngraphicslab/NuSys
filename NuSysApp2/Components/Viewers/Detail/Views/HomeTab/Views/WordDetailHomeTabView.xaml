@@ -1,0 +1,49 @@
+﻿<UserControl
+    x:Class="NuSysApp.WordDetailHomeTabView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="500"
+    d:DesignWidth="400">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Border x:Name="xBorder">
+            <Grid x:Name="xWrapper">
+                <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Source="{Binding ImageSource}"  VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0,0,0,65">
+                    <Image.RenderTransform>
+                        <CompositeTransform></CompositeTransform>
+                    </Image.RenderTransform>
+                </Image>
+                <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Margin="0,0,0,55"  Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
+                    <Button.Content>
+                        <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Margin="0,0,0,55" Background="Transparent" HorizontalAlignment="Right" Click="OnPageRightClick">
+                    <Button.Content>
+                        <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
+                    </Button.Content>
+                </Button>
+            </Grid>
+        </Border>
+        <Grid  VerticalAlignment="Bottom" Margin="10,0,0,10">
+            <Button HorizontalAlignment="Left"  Name="SourceBttn" Background="{StaticResource color2}" Height="35"  Foreground="{StaticResource foreground6}" Click="OnGoToSource">EDIT IN MICROSOFT WORD</Button>
+            <Button HorizontalAlignment="right"  Name="CaptureButton" Background="{StaticResource color2}" Height="35"  Foreground="{StaticResource foreground6}" Click="OnCapture">TAKE WORD CAPTURE</Button>
+        </Grid>
+        <StackPanel Visibility="Collapsed">
+            <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource foreground6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>
+            <Line Stroke="{StaticResource color6}" StrokeThickness="1.5" X1="0" Y1="0" X2 ="50" Y2="0" Margin="0,15,0,0"></Line>
+        </StackPanel>
+    </Grid>
+
+</UserControl>

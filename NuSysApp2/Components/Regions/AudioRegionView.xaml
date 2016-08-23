@@ -1,0 +1,49 @@
+﻿<UserControl
+    x:Class="NuSysApp2.AudioRegionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp2"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid x:Name="Canvas" DoubleTapped="XGrid_OnDoubleTapped">
+        <Grid.RenderTransform>
+        <CompositeTransform TranslateY="10"></CompositeTransform>
+    </Grid.RenderTransform>
+        <Rectangle x:Name="Rect" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding RegionWidth}" Fill="#DB97B3" Height="100"  Opacity=".42" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
+            <Rectangle.RenderTransform>
+                <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Grid x:Name="xToolBar"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="{Binding RegionWidth}" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="15"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" x:Name="xNameTextBox" IsReadOnly="{Binding IsReadOnly}" Height="15" Text="{Binding Name}" HorizontalAlignment="Center" TextChanged="xNameTextBox_TextChanged" VerticalContentAlignment="Center">
+            </TextBox>
+            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+
+
+            <Grid.RenderTransform>
+                <CompositeTransform TranslateX="{Binding LeftHandleX}" TranslateY="100"/>
+            </Grid.RenderTransform>
+        </Grid>
+
+        <local:AudioRegionBound x:Name="Bound1"  Y1="0" Y2="100"  ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" 
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Bound1_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased" ManipulationCompleted="OnManipulationCompleted">
+            <local:AudioRegionBound.RenderTransform>
+                <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
+            </local:AudioRegionBound.RenderTransform>
+        </local:AudioRegionBound>
+        <local:AudioRegionBound x:Name="Bound2"  Y1="0" Y2="100" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" 
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta2" PointerReleased="Handle_OnPointerReleased"  ManipulationCompleted="OnManipulationCompleted" >
+            <local:AudioRegionBound.RenderTransform>
+                <CompositeTransform TranslateX="{Binding RightHandleX}"/>
+            </local:AudioRegionBound.RenderTransform>
+        </local:AudioRegionBound>
+    </Grid>
+</UserControl>

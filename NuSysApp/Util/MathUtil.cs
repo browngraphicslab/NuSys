@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using Windows.Foundation;
 
 
@@ -185,6 +186,23 @@ namespace NuSysApp
         public static bool IsWithinRange(double min, double max, double val)
         {
             return (val >= min && val <= max);
+        }
+
+        public static double Dist(Vector2 p0, Vector2 p1)
+        {
+            return Math.Sqrt(Math.Pow(p1.X - p0.X, 2) + Math.Pow(p1.Y - p0.Y, 2));
+        }
+
+        public static double Dist(Point p0, Point p1)
+        {
+            return Math.Sqrt(Math.Pow(p1.X - p0.X, 2) + Math.Pow(p1.Y - p0.Y, 2));
+        }
+
+        public static Point GetPointOnBezierCurve(Point p0, Point p1, Point p2, Point p3, double t)
+        {
+            var x = (1 - t) * (1 - t) * (1 - t) * p0.X + 3 * (1 - t) * (1 - t) * t * p1.X + 3 * (1 - t) * t * t * p2.X + t * t * t * p3.X;
+            var y = (1 - t) * (1 - t) * (1 - t) * p0.Y + 3 * (1 - t) * (1 - t) * t * p1.Y + 3 * (1 - t) * t * t * p2.Y + t * t * t * p3.Y;
+            return new Point(x, y);
         }
     }
 }

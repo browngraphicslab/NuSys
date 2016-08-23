@@ -340,6 +340,28 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
+    <Compile Include="Components\NuSysRenderer\AdornmentRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\AudioElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\BaseRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
+    <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\ElementSelectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
+    <Compile Include="Components\NuSysRenderer\HTMLParser.cs" />
+    <Compile Include="Components\NuSysRenderer\I2dTransformable.cs" />
+    <Compile Include="Components\NuSysRenderer\ImageElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\InkRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\LinkRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\MinimapRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\NodeMenuButtonRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\NuSysRenderer.cs" />
+    <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\TempLinkRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\TextElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
     <Compile Include="Components\Regions\TemporaryImageRegionView.xaml.cs">
       <DependentUpon>TemporaryImageRegionView.xaml</DependentUpon>
     </Compile>
@@ -432,6 +454,7 @@
     <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\FreeFormElementViewModelFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">

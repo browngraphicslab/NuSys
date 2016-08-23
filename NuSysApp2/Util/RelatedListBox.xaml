@@ -1,0 +1,78 @@
+﻿<UserControl
+    x:Class="NuSysApp2.RelatedListBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp2"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <!-- On Wednesdays, we code in pink-->
+    <Grid x:Name="xRootGrid" Width="300" Background="{StaticResource color1}" ManipulationMode="TranslateX,TranslateY" ManipulationDelta="XRootGrid_OnManipulationDelta">
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="xTitle" Text="Related Elements" Grid.Column="0" FontWeight="Bold" FontSize="18" Padding="10" IsColorFontEnabled="True" Foreground="White"></TextBlock>
+            <Border Grid.Column="1" x:Name="xExitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="XExitButton_OnTapped"  Padding="5,0,10,0">
+                <TextBlock Text="X" Foreground="White" FontSize="28"/>
+            </Border>
+        </Grid>
+
+
+        <ListView Grid.Row="1" Background="White" x:Name="xListView" ItemsSource="{x:Bind RelatedElements}" SelectionMode="Extended" >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Height" Value="Auto"/>
+                    <Setter Property="MinHeight" Value="0"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:LibraryElementModel">
+                    <Grid PointerPressed="Grid_OnTapped" BorderBrush="Gray" BorderThickness="2" Background="White">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="11*"/>
+                            <ColumnDefinition Width="19*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Title}" x:Name="xListViewItem" Grid.ColumnSpan="2" Padding="5,5"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" x:Name="xRandomButton" HorizontalAlignment="Left"  Tapped="XRandomButton_OnTapped"  Padding="10,0,10,0" Height="30"/>
+        </Grid>
+
+
+        <Grid.RenderTransform>
+            <TransformGroup x:Name="xTransformGroup">
+                <MatrixTransform x:Name="xMatrixTransform"></MatrixTransform>
+                <CompositeTransform x:Name="xCompositeTransform"></CompositeTransform>
+            </TransformGroup>
+        </Grid.RenderTransform>
+    </Grid>
+</UserControl>

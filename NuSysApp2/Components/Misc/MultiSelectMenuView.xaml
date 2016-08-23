@@ -1,0 +1,41 @@
+﻿<UserControl
+    x:Class="NuSysApp2.MultiSelectMenuView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp2"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Canvas>
+        <Grid x:Name="Buttons" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" x:Name="DeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
+            </Button>
+            <Button Grid.Column="1" x:Name="GroupButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+                <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="20" Width="20"></Image>
+            </Button>
+            <Button Grid.Column="2" x:Name="AdornmentButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+                <Image Source="ms-appx:///Assets/region icon.png" Height="30" Width="30"></Image>
+            </Button>
+        </Grid>
+
+        <StackPanel x:Name="ColorPicker" Orientation="Horizontal" Padding="10,10" Background="LightGray" Visibility="Collapsed">
+            <StackPanel.RenderTransform>
+                <TranslateTransform  />
+            </StackPanel.RenderTransform>
+            <Rectangle Width="30" Height="30" Fill="LightBlue" PointerReleased="Rectangle_PointerReleased"></Rectangle>
+            <Rectangle Width="30" Height="30" Fill="LightCoral" PointerReleased="Rectangle_PointerReleased"></Rectangle>
+            <Rectangle Width="30" Height="30" Fill="LightCyan" PointerReleased="Rectangle_PointerReleased"></Rectangle>
+            <Rectangle Width="30" Height="30" Fill="LightGreen" PointerReleased="Rectangle_PointerReleased"></Rectangle>
+            
+        </StackPanel>
+    </Canvas>
+</UserControl>

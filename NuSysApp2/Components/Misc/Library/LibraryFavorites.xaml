@@ -1,0 +1,77 @@
+﻿<UserControl
+    x:Class="NuSysApp2.LibraryFavorites"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp2"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+
+    <Grid>
+        <!--<Image Source="ms-appx:///Assets/icon_new_workspace.png" Height="300"/>-->
+        <ListView ItemsSource="{Binding PageElements}" Margin="0,0,0,0" SelectionChanged="ListView_SelectionChanged">
+
+            <ListView.Header>
+                <Grid VerticalAlignment="Center" Background="White ">
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="185" />
+                        <ColumnDefinition Width="90" />
+                        <ColumnDefinition Width="125" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--<TextBlock  HorizontalAlignment="Left" Grid.Column="0"  Foreground="#9cc5c2"   FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        title
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Left" Grid.Column="1"  Foreground="#9cc5c2"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        type
+                    </TextBlock>
+                    <TextBlock  HorizontalAlignment="Left" Grid.Column="2" Foreground="#9cc5c2" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        date
+                    </TextBlock>-->
+
+
+                    <Button  HorizontalAlignment="Left" Grid.Column="0"  Background="Transparent"  Foreground="{StaticResource color2}"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        Title
+                    </Button>
+                    <Button HorizontalAlignment="Left" Grid.Column="1" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        Type
+                    </Button>
+                    <Button  HorizontalAlignment="Left" Grid.Column="2" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        Date/Timestamp
+                    </Button>
+
+
+                </Grid>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+
+                <DataTemplate>
+                    <!--<Grid x:Name="LibraryListItem"  Height="20" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">-->
+                    <Grid x:Name="LibraryListItem"  Height="20" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="175" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="125" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"  Text="{Binding Title}" FontSize="12" />
+                        <TextBlock Grid.Column="2"  Text="{Binding Type}" FontSize="12"/>
+                        <TextBlock Grid.Column="3" Text="{Binding Timestamp}" FontSize="12"/>
+
+
+                    </Grid>
+                </DataTemplate>
+
+            </ListView.ItemTemplate>
+
+
+
+        </ListView>
+    </Grid>
+</UserControl>
