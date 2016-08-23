@@ -253,10 +253,6 @@ namespace NuSysApp
             //Make sure that the element isn't within the library list
             var el = (FrameworkElement)sender;
             var sp = el.TransformToVisual(this).TransformPoint(e.Position);
-            if (sp.Y > 0 && sp.Y < this.ActualHeight && (sp.X < this.ActualWidth || sp.X > 0))
-            {
-                return;
-            }
 
             //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
             // If they are different we siply return 
