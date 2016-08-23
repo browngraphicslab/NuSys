@@ -49,18 +49,10 @@ namespace NuSysApp
           
             List<Uri> AllowedUris = new List<Uri>();
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
-           
-            Loaded += async delegate (object sender, RoutedEventArgs args)
-            {
-                await SessionController.Instance.InitializeRecog();
-                SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
-            };
-            
-            SizeChanged += delegate(object sender, SizeChangedEventArgs args)
-            {
-                SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
-                SetDimension(SessionController.Instance.SessionView.DetailViewerView.ActualWidth);
-            };
+
+            Loaded += TextDetailHomeTabView_Loaded;
+
+            SizeChanged += TextDetailHomeTabView_SizeChanged;
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
             MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
@@ -74,10 +66,20 @@ namespace NuSysApp
 
         }
 
+        private async void TextDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
+        {
+            await SessionController.Instance.InitializeRecog();
+            SetHeight(SessionController.Instance.SessionView.ActualHeight / 2);
+        }
+
+        private void TextDetailHomeTabView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetHeight(SessionController.Instance.SessionView.ActualHeight / 2);
+            SetDimension(SessionController.Instance.SessionView.DetailViewerView.ActualWidth);
+        }
+
         private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
-            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
-            detailViewerView.Disposed -= DetailViewerView_Disposed;
             Dispose();
         }
 
@@ -93,6 +95,8 @@ namespace NuSysApp
             vm.TextChanged -= VmOnTextBindingChanged;
             MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;
+            Loaded -= TextDetailHomeTabView_Loaded;
+            SizeChanged -= TextDetailHomeTabView_SizeChanged;
             DataContext = null;
         }
 
@@ -235,6 +239,21 @@ namespace NuSysApp
 
         public void Dispose()
         {
+            var vm = DataContext as TextDetailHomeTabViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
+            vm.TextChanged -= VmOnTextBindingChanged;
+            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
+
+            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
+
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            vm.TextChanged -= VmOnTextBindingChanged;
+            vm.Dispose();
             //UpdateModelText(_modelText);
         }
 
