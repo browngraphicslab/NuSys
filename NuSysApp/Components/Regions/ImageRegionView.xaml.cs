@@ -231,8 +231,12 @@ namespace NuSysApp
 
         public void Deselect()
         {
-            xMainRectangleBorder.BorderThickness = new Thickness(3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX, 3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX);
+            xMainRectangleBorder.BorderThickness = new Thickness(Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness));
             xResizingTriangle.Visibility = Visibility.Collapsed;
+
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
      
@@ -241,7 +245,10 @@ namespace NuSysApp
 
         public void Select()
         {
-            xMainRectangleBorder.BorderThickness = new Thickness(6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX, 6 * ResizerTransform.ScaleY,6 * ResizerTransform.ScaleX);
+            xMainRectangleBorder.BorderThickness = new Thickness(Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness));
 
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
@@ -362,8 +369,11 @@ namespace NuSysApp
             xResizingTriangle.Margin = new Thickness(-25 / scaleX ,-25 / scaleY, 0, 0); // move resizing triangle so bottom and left are in line with the bottom and right side of the rectangle border
 
                
-            //xMainRectangle.StrokeThickness = 3 / scaleX;
-            xMainRectangleBorder.BorderThickness = new Thickness(3/scaleX, 3/scaleY, 3/scaleX, 3/scaleY);
+            //xMainRectangle.StrokeThickness = Constants.RegionBorderNormalThickness/ scaleX;
+            xMainRectangleBorder.BorderThickness = new Thickness(Math.Max(Constants.RegionBorderNormalThickness/scaleX,Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness / scaleY, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness / scaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness / scaleY, Constants.RegionBorderSmallestThickness));
         }
 
         public void Dispose(object sender, EventArgs e)

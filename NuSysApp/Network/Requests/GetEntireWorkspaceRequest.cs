@@ -19,12 +19,14 @@ namespace NuSysApp
         private List<PresentationLinkModel> _returnedPresentationLinkModels;
 
         /// <summary>
-        /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch.  
+        /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch, and the levels of recursion you want.
+        /// The default levels of recursion is 2.
         /// </summary>
         /// <param name="collectionId"></param>
-        public GetEntireWorkspaceRequest(string collectionId) : base(NusysConstants.RequestType.GetEntireWorkspaceRequest)
+        public GetEntireWorkspaceRequest(string collectionId, int levelsOfRecursion = 2) : base(NusysConstants.RequestType.GetEntireWorkspaceRequest)
         {
             _message[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY] = collectionId;
+            _message[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_LEVELS_OF_RECURSION] = levelsOfRecursion;
         }
 
 

@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using MyToolkit.Utilities;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 using Image = SharpDX.Direct2D1.Image;
 using Line = Windows.UI.Xaml.Shapes.Line;
 using Point = Windows.Foundation.Point;
@@ -34,6 +35,8 @@ namespace NuSysApp
         /// mapping of pointerIds to SessionView Positions for relatedDocumentsGesture
         /// </summary>
         private Dictionary<uint, Point> _pointerIdToStartLocation;
+        
+
 
         /// <summary>
         /// A List of possible element types that relatedDocumentsGesture can find
@@ -51,6 +54,8 @@ namespace NuSysApp
         {
             // instantiated the _pointerIdToStartLocation dictionary
             _pointerIdToStartLocation = new Dictionary<uint, Point>();
+
+
             // add the mode specific event handlers
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
@@ -59,6 +64,9 @@ namespace NuSysApp
 
         public SelectMode(AreaNodeView view) : base(view)
         {
+            // instantiated the _pointerIdToStartLocation dictionary
+            _pointerIdToStartLocation = new Dictionary<uint, Point>();
+
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
             _doubleTappedHandler = OnDoubleTapped;
@@ -108,9 +116,7 @@ namespace NuSysApp
             {
                 // get the list of point locations
                 var points = _pointerIdToStartLocation.Values;
-
                 // 
-                
                 // calculate the minimum bounding rect
                 var minBoundingRect = new Rect(new Point(points.Min(point => point.X), points.Min(point => point.Y)), new Point(points.Max(point => point.X), points.Max(point => point.Y)));
                 if (minBoundingRect.Width < 400 && minBoundingRect.Height < 400) // 400 px is slightly smaller than the avg American hand size according to Sahil
@@ -174,9 +180,7 @@ namespace NuSysApp
                 {
                     viwerVm?.AddSelection(dc);
                 }
-
             }
-
         }
 
         /// <summary>
@@ -239,7 +243,7 @@ namespace NuSysApp
                 item => ((double)GetStrings(item.Controller?.LibraryElementModel?.Keywords ??
                    new HashSet<Keyword>()).Intersect(keywordsToCompare).Count())/(double)count);
 
-            var lineDict = new Dictionary<ContentDataModel, RelevanceLineView>();
+            var lineDict = new Dictionary<ContentDataModel, IEnumerable<RelevanceLineView>>();
 
             foreach (var kvp in dict)
             {
@@ -251,8 +255,9 @@ namespace NuSysApp
                 SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(line);
                 if (!lineDict.ContainsKey(kvp.Key.Controller.LibraryElementController.ContentDataModel))
                 {
-                    lineDict.Add(kvp.Key.Controller.LibraryElementController.ContentDataModel, line);
+                    lineDict.Add(kvp.Key.Controller.LibraryElementController.ContentDataModel, new List<RelevanceLineView>());
                 }
+                (lineDict[kvp.Key.Controller.LibraryElementController.ContentDataModel] as List<RelevanceLineView>).Add(line);
             }
             Task.Run(async delegate
             {
@@ -288,21 +293,39 @@ namespace NuSysApp
                         }
                         count = keywordsToCompare?.Count() ?? 0;
                     }
+
+                    if (controller.LibraryElementController.ContentDataModel.ContentType == NusysConstants.ContentType.PDF && false)
+                    {
+                        var relatedRequest =
+                            new GetRelatedDocumentsRequest(
+                                controller.LibraryElementController.ContentDataModel.ContentId);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(relatedRequest);
+                        if (relatedRequest.WasSuccessful() == true)
+                        {
+                            foreach (var tup in relatedRequest.ParseRelatedDocumentsLocally())
+                            {
+                                var content = SessionController.Instance.ContentController.GetContentDataModel(tup.Item1);
+                                if (lineDict.ContainsKey(content))
+                                {
+                                    lineDict[content].ForEach(line => line.Opacity = 1);
+                                }
+                            }
+                        }
+                    }
                 });
 
                 foreach (var content in lineDict.Keys)
                 {
-                    if (controller.LibraryElementController.ContentDataModel.ContentType ==
-                        NusysConstants.ContentType.Image ||
-                        controller.LibraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+                    if (content.ContentType == NusysConstants.ContentType.Image ||
+                        content.ContentType == NusysConstants.ContentType.PDF)
                     {
-                        Task.Run(async delegate
+                        await Task.Run(async delegate
                         {
                             var model = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(content.ContentId);
 
                             IEnumerable<string> keywords;
 
-                            if (controller.LibraryElementController.ContentDataModel.ContentType ==NusysConstants.ContentType.Image) //type switch
+                            if (content.ContentType == NusysConstants.ContentType.Image) //type switch
                             {
                                 var imageModel = model as NusysImageAnalysisModel;
                                 if (imageModel?.ContentDataModelId == null)
@@ -334,16 +357,9 @@ namespace NuSysApp
                                 if (lineDict.ContainsKey(content) && keywordsToCompare != null)
                                 {
                                     var intersect = keywords?.Intersect(keywordsToCompare);
-                                    var top =
-                                        Math.Min(
-                                            (intersect?.Count() ?? 0)*
-                                            1.25, Math.Max(count, 1));
+                                    var top = Math.Min((intersect?.Count() ?? 0)* 1.25, Math.Max(count, 1));
                                     var bot = Math.Max(count, 1);
-                                    lineDict[content].Opacity = top/bot;
-                                }
-                                else
-                                {
-                                    
+                                    lineDict[content].ForEach(line => line.Opacity = top/bot);
                                 }
                             });
                         });
@@ -362,10 +378,10 @@ namespace NuSysApp
         {
             // set released to true, used for code which ignores accidental pointer pressed events
             _released = true;
-            // remove the Pointer from the mapping of pointerIds to start locations
+
             _pointerIdToStartLocation.Clear();
         }
-
+        
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTapped = true;

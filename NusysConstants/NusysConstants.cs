@@ -86,14 +86,19 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
 
-            #endregion GetEntireWorkspaceRequest
+        /// <summary>
+        /// The key used to hold the levels of recursion deep. (Collections within collections within..)
+        /// </summary>
+        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_LEVELS_OF_RECURSION = "levels_of_recursion";
 
-            #region CreateNewContentRequest
+        #endregion GetEntireWorkspaceRequest
 
-            /// <summary>
-            /// The key used to hold the type of content being added
-            /// </summary>
-            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
+        #region CreateNewContentRequest
+
+        /// <summary>
+        /// The key used to hold the type of content being added
+        /// </summary>
+        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
 
             /// <summary>
             /// The key used to hold the content id.

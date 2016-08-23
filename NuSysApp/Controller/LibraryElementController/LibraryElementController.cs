@@ -568,9 +568,11 @@ namespace NuSysApp
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
+                    case NusysConstants.ElementType.PdfRegion:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
                     case NusysConstants.ElementType.Audio:
+                    case NusysConstants.ElementType.AudioRegion:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
                     case NusysConstants.ElementType.Text:
@@ -584,6 +586,12 @@ namespace NuSysApp
                         break;
                     case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
+                    case NusysConstants.ElementType.ImageRegion:
+                        return new Uri("ms-appx:///Assets/image icon.png");
+                        break;
+                    case NusysConstants.ElementType.VideoRegion:
+                        return new Uri("ms-appx:///Assets/video icon.png");
                         break;
                     default:
                         return new Uri("ms-appx:///Assets/icon_chat.png");
@@ -749,7 +757,7 @@ namespace NuSysApp
                 Debug.Assert(collectionLibraryElementModel != null);
 
                 // try to add the collection to the collection
-                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, collectionId,
+                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, LibraryElementModel.LibraryElementId,
                     collectionLibraryElementModel.IsFinite, collectionLibraryElementModel.ShapePoints?.Select(pointModel => new Point(pointModel.X, pointModel.Y)).ToList() ?? new List<Point>());
 
                 // return whether the method succeeded

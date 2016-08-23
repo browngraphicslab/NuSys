@@ -50,8 +50,6 @@ namespace NuSysApp
 
         public RectangleWrapper RectangleWrapper { get; set; } 
 
-        public delegate void SizeChangedEventHandler(object sender, double width, double height);
-        public event SizeChangedEventHandler SizeChanged;
 
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
@@ -120,7 +118,6 @@ namespace NuSysApp
             
             Height = model.Height * RectangleWrapper.GetHeight();
             Width = model.Width * RectangleWrapper.GetWidth();
-            SizeChanged?.Invoke(this, Width, Height);
 
         }
 
