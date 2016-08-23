@@ -213,6 +213,15 @@ namespace NuSysApp
                 case NusysConstants.RequestType.UpdateContentRequest:
                     request = new UpdateContentRequest(message);
                     break;
+                case NusysConstants.RequestType.CreateNewMetadataRequest:
+                    request = new CreateNewMetadataRequest(message);
+                    break;
+                case NusysConstants.RequestType.DeleteMetadataRequest:
+                    request = new DeleteMetadataRequest(message);
+                    break;
+                case NusysConstants.RequestType.UpdateMetadataEntryRequest:
+                    request = new UpdateMetadataEntryRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }

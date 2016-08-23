@@ -42,6 +42,9 @@ namespace NuSysApp
 
         public const double DefaultVideoNodeSize = 300;
 
+        public const double RegionBorderNormalThickness = 4;
+        public const double RegionBorderSelectedThickness = 6;
+
         #endregion Node Dimensions
 
         #region Font 

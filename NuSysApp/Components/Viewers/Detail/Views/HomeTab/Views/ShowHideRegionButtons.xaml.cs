@@ -25,7 +25,7 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class ShowHideRegionButtons : UserControl
     {
-
+        public RegionsVisibility CurrentRegionsVisibility => _currentRegionsVisibility;
         private RegionsVisibility _currentRegionsVisibility;
 
         //RectangleWrapper or AudioWrapper

@@ -273,6 +273,7 @@ namespace NuSysApp
         {
             var oneParentCollectionId = one.GetParentCollectionId();
             var twoParentCollectionId = two.GetParentCollectionId();
+
             if (oneParentCollectionId != twoParentCollectionId || oneParentCollectionId == null)
             {
                 return;
@@ -306,6 +307,8 @@ namespace NuSysApp
                 {
                     SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
                 }
+                controller.OutElement.UpdateCircleLinks();
+                controller.InElement.UpdateCircleLinks();
                 //TODO Change ElementCollectionViewModel child added and removed code to take link controllers or element controllers
                 Canvas.SetZIndex(view, -2);
             });
@@ -326,9 +329,12 @@ namespace NuSysApp
              {
                  foreach (var visualId1 in _contentIdToLinkableIds[contentId1])
                  {
+                    // We add the circle links even so that even if one of them is not on the current workspace we can still see that a link exists
+                    GetLinkable(visualId1).UpdateCircleLinks();
                      foreach (var visualId2 in _contentIdToLinkableIds[contentId2])
                      {
-                         CreateBezierLinkBetween(visualId1, visualId2);
+                        GetLinkable(visualId2).UpdateCircleLinks();
+                        CreateBezierLinkBetween(visualId1, visualId2);
                      }
                  }
  
@@ -580,6 +586,7 @@ namespace NuSysApp
                 Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
                 // create a new presentation link view model
                 var vm = new PresentationLinkViewModel(model);
+
                 // create a new presentation link view
                 var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
                 //TODO use this collectionController stuff, check if the collection exists

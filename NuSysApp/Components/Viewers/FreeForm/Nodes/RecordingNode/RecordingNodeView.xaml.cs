@@ -38,9 +38,15 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void XRootBorder_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            _vm.X += e.Delta.Translation.X;
-            _vm.Y += e.Delta.Translation.Y;
+            var workspaceTransform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            _vm.X += e.Delta.Translation.X / workspaceTransform.ScaleX;
+            _vm.Y += e.Delta.Translation.Y / workspaceTransform.ScaleY;
             e.Handled = true;
+        }
+
+        private void btnDelete_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
         }
     }
 }
