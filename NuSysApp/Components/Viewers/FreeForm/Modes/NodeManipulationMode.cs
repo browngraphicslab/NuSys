@@ -86,11 +86,13 @@ namespace NuSysApp
 
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            if (vm != null) { 
             var elementController = vm.Controller;
             if (!vm.IsEditing)
             { 
             }
             ActiveNodes.Remove((UserControl) sender);
+}
         }
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
@@ -238,29 +240,33 @@ namespace NuSysApp
 
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
-            var elementController = vm.Controller;
-            if (!vm.IsEditing)
+            if (vm != null)
             {
-                //Instantiates MoveElementAction
-               var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
-                if (_moveNodeUndoButton != null)
+                var elementController = vm.Controller;
+
+                if (!vm.IsEditing)
                 {
-                    if (_moveNodeUndoButton.State == UndoButtonState.Active)
+                    //Instantiates MoveElementAction
+                    var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+                    if (_moveNodeUndoButton != null)
                     {
-                        _moveNodeUndoButton.Deactivate();
-                        if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                        if (_moveNodeUndoButton.State == UndoButtonState.Active)
                         {
-                            ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                            _moveNodeUndoButton.Deactivate();
+                            if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                            {
+                                ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                            }
                         }
                     }
-                }
 
-                _moveNodeUndoButton = new UndoButton();
-                //Activates undo button makes it appear in the old position.
-                ffvm.AtomViewList.Add(_moveNodeUndoButton);
-                _moveNodeUndoButton.MoveTo(_originalPosition);
-                _moveNodeUndoButton.Activate(moveElementAction);
-                
+                    _moveNodeUndoButton = new UndoButton();
+                    //Activates undo button makes it appear in the old position.
+                    ffvm.AtomViewList.Add(_moveNodeUndoButton);
+                    _moveNodeUndoButton.MoveTo(_originalPosition);
+                    _moveNodeUndoButton.Activate(moveElementAction);
+
+                }
             }
         }
 

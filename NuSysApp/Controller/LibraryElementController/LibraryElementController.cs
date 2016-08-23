@@ -346,6 +346,10 @@ namespace NuSysApp
         /// <returns></returns>
         public bool UpdateMetadata(MetadataEntry original, string key, List<string> values)
         {
+            if (_libraryElementModel.Metadata == null)
+            {
+                _libraryElementModel.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
+            }
             // Error checking for the passed in parameters
             if (original == null || string.IsNullOrEmpty(key) || string.IsNullOrWhiteSpace(key) || values == null || !_libraryElementModel.Metadata.ContainsKey(original.Key))
             {
