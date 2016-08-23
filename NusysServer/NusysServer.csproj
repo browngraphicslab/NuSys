@@ -248,12 +248,14 @@
     <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\ChatRequestHandler.cs" />
+    <Compile Include="RequestHandlers\CreateInkStrokeRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateSnapshotOfCollectionRequestHandler.cs" />
+    <Compile Include="RequestHandlers\DeleteInkStrokeRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />

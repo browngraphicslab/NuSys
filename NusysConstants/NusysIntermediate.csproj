@@ -43,6 +43,7 @@
     <Compile Include="IRequestArgumentable.cs" />
     <Compile Include="ModelFactories\AnalysisModelFactory.cs" />
     <Compile Include="ModelFactories\ContentDataModelFactory.cs" />
+    <Compile Include="Models\InkModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\CognitiveJsonModels\CognitiveApiCaptionModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\CognitiveJsonModels\CognitiveApiCategoryModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\CognitiveJsonModels\CognitiveApiDescriptionModel.cs" />
