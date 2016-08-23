@@ -64,6 +64,9 @@ namespace NuSysApp
 
         public SelectMode(AreaNodeView view) : base(view)
         {
+            // instantiated the _pointerIdToStartLocation dictionary
+            _pointerIdToStartLocation = new Dictionary<uint, Point>();
+
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
             _doubleTappedHandler = OnDoubleTapped;
