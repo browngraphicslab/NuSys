@@ -391,6 +391,8 @@ namespace NuSysApp
         {
             // set released to true, used for code which ignores accidental pointer pressed events
             _released = true;
+
+            _pointerIdToStartLocation.Clear();
         }
         
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
