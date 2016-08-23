@@ -26,6 +26,7 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source, object args)
         {
+            // We need to dispose of the title changed handler for all of the list items
             foreach (var item in AtomDataList)
             {
                 item.Dispose();
