@@ -217,7 +217,10 @@ namespace NuSysApp
         }
         private void Deselect()
         {
-            xMainRectangleBorder.BorderThickness = new Thickness(Constants.RegionBorderNormalThickness* ResizerTransform.ScaleY, Constants.RegionBorderNormalThickness* ResizerTransform.ScaleX, Constants.RegionBorderNormalThickness* ResizerTransform.ScaleY, Constants.RegionBorderNormalThickness* ResizerTransform.ScaleX);
+            xMainRectangleBorder.BorderThickness = new Thickness(Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness));
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -227,8 +230,10 @@ namespace NuSysApp
 
         private void Select()
         {
-            xMainRectangleBorder.BorderThickness = new Thickness(Constants.RegionBorderSelectedThickness* ResizerTransform.ScaleY, Constants.RegionBorderSelectedThickness* ResizerTransform.ScaleX, Constants.RegionBorderSelectedThickness* ResizerTransform.ScaleY, Constants.RegionBorderSelectedThickness* ResizerTransform.ScaleX);
-
+            xMainRectangleBorder.BorderThickness = new Thickness(Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderSelectedThickness * ResizerTransform.ScaleY, Constants.RegionBorderSmallestThickness));
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
@@ -341,8 +346,10 @@ namespace NuSysApp
 
 
             //xMainRectangle.StrokeThickness = Constants.RegionBorderNormalThickness/ scaleX;
-            xMainRectangleBorder.BorderThickness = new Thickness(Constants.RegionBorderNormalThickness/ scaleX, Constants.RegionBorderNormalThickness/ scaleY, Constants.RegionBorderNormalThickness/ scaleX, Constants.RegionBorderNormalThickness/ scaleY);
-
+            xMainRectangleBorder.BorderThickness = new Thickness(Math.Max(Constants.RegionBorderNormalThickness / scaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness / scaleY, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness / scaleX, Constants.RegionBorderSmallestThickness),
+                Math.Max(Constants.RegionBorderNormalThickness / scaleY, Constants.RegionBorderSmallestThickness));
         }
 
         public void Dispose(object sender, EventArgs e)
