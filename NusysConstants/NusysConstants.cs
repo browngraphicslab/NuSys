@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         #region RequestManagementKeys
 
@@ -591,18 +591,48 @@ namespace NusysIntermediate
                 /// Key in message for sending chat messages in chat requests
                 /// </summary>
                 public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
-            #endregion
+        #endregion
+
+        #region CreateInkStrokeRequest
+        /// <summary>
+        /// Key in message for ink stroke unique id for the create ink stroke request
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
+
+        /// <summary>
+        /// Key in message for the content id for the content where the ink stroke was placed. Used for the create ink stroke request
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// Key in message for sending the json serialized list of points that compose the stroke. Used for the create ink stroke request
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "content_id";
+
+        /// <summary>
+        /// Key in message used by the server to send the InkModel back to clients. 
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_RETURNED_INK_MODEL_KEY = "returned_ink_model";
+        #endregion CreateInkStrokeRequest
+
+        #region DeleteInkStrokeRequest
+        /// <summary>
+        /// Key in message for ink stroke unique id for the delete ink stroke request
+        /// </summary>
+        public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
+        
+        #endregion DeleteInkStrokeRequest
 
         #endregion RequestKeys
 
         #region NotificationKeys
 
-            #region AddNetworkUserNotification
+        #region AddNetworkUserNotification
 
-            /// <summary>
-            /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
-            /// </summary>
-            public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
+        /// <summary>
+        /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
+        /// </summary>
+        public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
 
             #endregion AddNetworkUserNotification
 
@@ -1049,9 +1079,38 @@ namespace NusysIntermediate
 
         #endregion AnalysisModels
 
+        #region Ink
+        /// <summary>
+        /// the unique id of the ink stroke
+        /// </summary>
+        public static readonly string INK_TABLE_STROKE_ID = "stroke_id";
+
+        /// <summary>
+        /// the id of the content of which the ink stroke is on
+        /// </summary>
+        public static readonly string INK_TABLE_CONTENT_ID = "content_id";
+
+        /// <summary>
+        /// This stores the JSON serialized list of points that compose the ink stroke
+        /// </summary>
+        public static readonly string INK_TABLE_POINTS = "points";
+
+        /// <summary>
+        /// the list of keys that will safely be entered into the INK table.  
+        /// Use this to make sure that you're entering correct keys into the database
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_INK_TABLE_KEYS = new HashSet<string>()
+        {
+            INK_TABLE_CONTENT_ID,
+            INK_TABLE_STROKE_ID,
+            INK_TABLE_POINTS
+        };
+        #endregion Ink
 
 
-    #endregion SQLColumnNames
+
+
+        #endregion SQLColumnNames
 
         #region SQLTableNames
 
@@ -1094,6 +1153,11 @@ namespace NusysIntermediate
         /// The string name of the presentation links SQL table in our database
         /// </summary>
         public static readonly string USERS_SQL_TABLE_NAME = "users";
+
+        /// <summary>
+        /// The string name of the ink stroke SQL table in our database
+        /// </summary>
+        public static readonly string INK_SQL_TABLE_NAME = "ink";
 
         #endregion SQLTableNames
 
@@ -1332,6 +1396,8 @@ namespace NusysIntermediate
             UpdateMetadataEntryRequest,
             CreateSnapshotOfCollectionRequest,
             GetRelatedDocumentsRequest,
+            CreateInkStrokeRequest,
+            DeleteInkStrokeRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
