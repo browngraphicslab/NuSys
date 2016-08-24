@@ -378,7 +378,7 @@ namespace NuSysApp
                     }
                     // if the link is between two different libary element models then execute the create link request
                     if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId != createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId && 
-                        SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(createNewLinkLibraryElementRequestArgs.LibraryElementModelInId,createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) != null)
+                        SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(createNewLinkLibraryElementRequestArgs.LibraryElementModelInId,createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
                     {
                         var contentRequestArgs = new CreateNewContentRequestArgs();
                         contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;

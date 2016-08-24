@@ -33,22 +33,13 @@ namespace NuSysApp
 
         public override void SetSize(double width, double height)
         {
-            var model = (VideoNodeModel)Model;
-            if (model.ResolutionX < 1)
+            if (width * GetRatio() < Constants.MinNodeSize)
             {
-                return;
+                return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour
             }
-            if (width > height)
-            {
-                var r = model.ResolutionY / (double)model.ResolutionX;
-                base.SetSize(width, width * r + 150);
-            }
-            else
-            {
 
-                var r = model.ResolutionX / (double)model.ResolutionY;
-                base.SetSize(height * r, height + 150);
-            }
+            base.SetSize(width, width * GetRatio());
+        
         }
 
         protected override void OnSizeChanged(object source, double width, double height)
