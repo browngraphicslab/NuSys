@@ -132,7 +132,7 @@ var Editor = (function () {
 
                 var buttons = document.getElementById("buttons");
                 // after countless hours trying every permutation: the line below is the only way to make the popover element unclickable.
-                buttons.parentElement.parentElement.setAttribute("contenteditable", "true");
+                buttons.parentElement.parentElement.setAttribute("contenteditable", "false");
 
                 var link = this.getAttribute("href");
                 e.preventDefault();
@@ -148,7 +148,7 @@ var Editor = (function () {
                     window.external.notify('BrowserOpen:' + link);
                 });
                 */
-
+                //Makes every hyperlink clickable
                 var link = this.getAttribute("href");
                 window.external.notify('BrowserOpen:' + link);
                 return false;
