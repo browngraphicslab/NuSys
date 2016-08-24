@@ -262,11 +262,16 @@ namespace NuSysApp
             if (element.AccessType == NusysConstants.AccessType.Private &&
                 currWorkSpaceAccessType == NusysConstants.AccessType.Public)
             {
+                //SessionController.Instance.SessionView.ShowAccessInvalid();
                 return;
             }
 
             var libraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            var id = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+            var currCollectionAccess =
+                SessionController.Instance.ContentController.GetLibraryElementController(id)
+                    .LibraryElementModel.AccessType;
             libraryElementController.AddElementAtPosition(r.X, r.Y);
         }
 
