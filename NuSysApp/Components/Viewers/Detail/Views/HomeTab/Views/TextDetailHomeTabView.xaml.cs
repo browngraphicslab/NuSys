@@ -129,8 +129,21 @@ namespace NuSysApp
             }
             else if (data.ToLower().StartsWith("browseropen:"))
             {
-                String potentialLink = "http://" + data.Substring("BrowserOpen:".Length);
-                Launcher.LaunchUriAsync(new Uri(potentialLink));
+                var link = data.Substring("BrowserOpen:".Length);
+                //If link already starts with http or httpps, don't do anythin
+                if ((link.Substring(0, "http://".Length) == "http://") ||
+                    link.Substring(0, "https://".Length) == "https://")
+                {
+                    Launcher.LaunchUriAsync(new Uri(link));
+
+                }
+                //otherwise concatenate http:// at the beginning
+                else
+                {
+                    var concatenatedLink = "http://" + link;
+                    Launcher.LaunchUriAsync(new Uri(concatenatedLink));
+
+                }
 
             }
             else if (data != "")

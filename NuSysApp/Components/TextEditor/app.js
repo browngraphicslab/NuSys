@@ -119,22 +119,23 @@ var Editor = (function () {
     Editor.prototype.clickableLinks = function () {
         var links = document.querySelectorAll("#editor a");
         for (var i = 0; i < links.length; i++) {
-
+            /*
             $(links[i]).popover({
                 html: true,
                 placement: 'bottom',
-                content: "<div id = 'buttons'><input type = 'button' value = 'NUSYS' detailViewOpenElementContentId = 'nusys'><input type = 'button' value = 'BROWSER' detailViewOpenElementContentId = 'browser'></div>"
+                content: "<div id = 'buttons'><input type = 'button' value = 'BROWSER' detailViewOpenElementContentId = 'browser'></div>"
             });
+            */
 
             links[i].addEventListener("click", function (e) {
+                /*
 
                 var buttons = document.getElementById("buttons");
                 // after countless hours trying every permutation: the line below is the only way to make the popover element unclickable.
-                buttons.parentElement.parentElement.setAttribute("contenteditable", "false");
+                buttons.parentElement.parentElement.setAttribute("contenteditable", "true");
 
                 var link = this.getAttribute("href");
                 e.preventDefault();
-
                 var nusys = document.getElementById("nusys");
                 nusys.addEventListener("click", function (e) {
                     e.preventDefault();
@@ -146,7 +147,10 @@ var Editor = (function () {
                     e.preventDefault();
                     window.external.notify('BrowserOpen:' + link);
                 });
+                */
 
+                var link = this.getAttribute("href");
+                window.external.notify('BrowserOpen:' + link);
                 return false;
             });
         }
