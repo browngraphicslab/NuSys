@@ -441,7 +441,7 @@ namespace NuSysApp
         
         public void RemoveRegionView(string regionLibraryElementId)
         {
-                foreach (var item in xClippingCanvas.Items)
+                foreach (var item in new HashSet<object>(xClippingCanvas.Items))
                 {
                     var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                     Debug.Assert(regionVM != null);
