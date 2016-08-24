@@ -201,5 +201,44 @@ namespace NuSysApp
                 }
             }
         }
+        /// <summary>
+        /// This opens the detail view of the link whose title was tapped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LinkTitle_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var textBlock = sender as TextBlock;
+            var linkTemplate = textBlock?.DataContext as LinkTemplate;
+
+            if (linkTemplate == null)
+            {
+                return;
+            }
+            // We get the controller of the link and use it to open the detail view
+            var linkId = linkTemplate.ID;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkId);
+            SessionController.Instance.SessionView.DetailViewerView.ShowElement(controller);
+        }
+
+        /// <summary>
+        /// This opens the detail view of the element in the LinkedTo column of the LinkEditor Tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LinkedTo_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var textBlock = sender as TextBlock;
+            var linkTemplate = textBlock?.DataContext as LinkTemplate;
+
+            if (linkTemplate == null)
+            {
+                return;
+            }
+            // We get the controller of the end point of the link and use it to open the detail view
+            var linkedToId = linkTemplate?.IDLinkedTo;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkedToId);
+            SessionController.Instance.SessionView.DetailViewerView.ShowElement(controller);
+        }
     }
 }
