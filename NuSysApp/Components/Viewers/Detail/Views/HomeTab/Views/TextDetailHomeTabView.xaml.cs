@@ -234,7 +234,7 @@ namespace NuSysApp
             detailViewerView.Disposed -= DetailViewerView_Disposed;
             vm.TextChanged -= VmOnTextBindingChanged;
             vm.Dispose();
-            MyWebView = null;
+            MyWebView = null;//This is essential because without it the webview does not dispose on time so it continues to keep taking up memory
             //UpdateModelText(_modelText);
         }
         public static int createCount = 0;
