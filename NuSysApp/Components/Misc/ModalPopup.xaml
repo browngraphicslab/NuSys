@@ -1,0 +1,20 @@
+﻿<UserControl
+    x:Class="NuSysApp.ModalPopup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="720"
+    d:DesignWidth="1280">
+
+    <Grid>
+        <Grid x:Name="xOverlay" Background="DarkSlateGray" Opacity=".25"></Grid>
+        <Grid MaxWidth="500" Background="White" MaxHeight="200"  BorderBrush="{StaticResource color2}" BorderThickness="2">
+            <TextBlock x:Name="xAlertText" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Margin="20,20,20,0">Placeholder text</TextBlock>
+            <StackPanel x:Name="xButtonRow" Orientation="Horizontal" VerticalAlignment="Bottom" Height="50" Margin="20,20,20,20"></StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

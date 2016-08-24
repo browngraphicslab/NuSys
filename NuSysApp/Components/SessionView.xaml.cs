@@ -104,10 +104,13 @@ namespace NuSysApp
             Loaded += OnLoaded;
 
             MainCanvas.SizeChanged += Resize;
-
-            xAccessInvalidPopup.Visibility = Visibility.Collapsed;
+            
         }
 
+        /// <summary>
+        /// called when frame.navigate goes to sessionview page
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             if (e.Parameter != null)
@@ -618,31 +621,6 @@ namespace NuSysApp
             xLoadingGrid.Visibility = Visibility.Collapsed;
         }
 
-        /// <summary>
-        /// shows access invalid popup
-        /// </summary>
-        public void ShowAccessInvalid()
-        {
-            xAccessInvalidPopup.Visibility = Visibility.Visible;
-        }
-
-        /// <summary>
-        /// hides access invalid popup
-        /// </summary>
-        public void HideAccessInvalid()
-        {
-            xAccessInvalidPopup.Visibility = Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// sets element of access invalid popup so it can make changes on its access if necessary
-        /// </summary>
-        /// <param name="element"></param>
-        public void SetAccessInvalidElement(LibraryElementModel element)
-        {
-            xAccessInvalidPopup.Element = element;
-        } 
-
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
         {
             var made = new HashSet<string>();
@@ -732,8 +710,6 @@ namespace NuSysApp
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
             Canvas.SetLeft(xReadonlyFloatingMenu, mainCanvas.ActualWidth / 2 - xReadonlyFloatingMenu.ActualWidth/2);
             Canvas.SetTop(xReadonlyFloatingMenu, mainCanvas.ActualHeight - xReadonlyFloatingMenu.ActualHeight - 20);
-            Canvas.SetLeft(xAccessInvalidPopup, mainCanvas.ActualWidth/2 - xAccessInvalidPopup.ActualWidth/2);
-            Canvas.SetTop(xAccessInvalidPopup,mainCanvas.ActualHeight/2 - xAccessInvalidPopup.ActualHeight/2);
             //Canvas.SetLeft(ChatNotifs, 37);
             //Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
             //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
@@ -945,6 +921,11 @@ namespace NuSysApp
             {
                 this.MakeWorkspaceReadonly();
             }
+        }
+
+        private void GoBackToWaitingRoom_OnClick(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof (WaitingRoomView), this);
         }
     }
 }
