@@ -439,8 +439,10 @@ namespace NuSysApp
             }
         }
         
-        public void RemoveRegionView(string regionLibraryElementId)
+        public async void RemoveRegionView(string regionLibraryElementId)
         {
+            await UITask.Run(delegate
+            {
                 foreach (var item in new HashSet<object>(xClippingCanvas.Items))
                 {
                     var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
@@ -448,12 +450,14 @@ namespace NuSysApp
 
 
                     if (regionVM.Model.LibraryElementId == regionLibraryElementId)
-                   {
-                    regionVM.Dispose(null, EventArgs.Empty);
-                    xClippingCanvas.Items.Remove(item);
+                    {
+                        regionVM.Dispose(null, EventArgs.Empty);
+                        xClippingCanvas.Items.Remove(item);
                         return;
                     }
                 }
+            });
+
         }
         
         public double GetWidth()
