@@ -156,8 +156,7 @@ namespace NusysIntermediate
         {
             if (WasSuccessful() != true)//Weird syntax because of nullable bool
             {
-                var extraInfo = _returnMessage.GetString(NusysConstants.REQUEST_ERROR_MESSAGE_KEY) ?? ""; //THIS IS VERY HELPFUL FOR DEBUGGING
-                //I PUT THIS HERE BECAUSE PEOPLE WEREN'T REALIZING THAT BAD REQUESTS USUALLY GIVE REASONS FOR FAILURE.  -Trent
+                var extraInfo = _returnMessage.GetString(NusysConstants.REQUEST_ERROR_MESSAGE_KEY) ?? ""; //THIS CAN BE VERY HELPFUL FOR DEBUGGING 
 
                 //If this fails here, check with .WasSuccessful() before calling this method.
                 throw new Exception("The request hasn't returned yet or was unsuccessful. Server error message: "+extraInfo);

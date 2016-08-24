@@ -11,6 +11,7 @@ namespace NuSysApp
     /// the deboucncing dictionary used to update Elements; 
     /// This subclass of the abstract DebouncingDictionary should only be used in the ElementControllerClass.
     /// It will be used to add properties to the base class to be updated whenever the timer expires.
+    /// Check the base DebouncingDictionary class description to learn more about debouncing dictionaries in general;
     /// </summary>
     public class ElementDebouncingDictionary : DebouncingDictionary
     {

@@ -136,38 +136,6 @@ namespace NuSysApp
             args.Y = bb.Y;
             args.LibraryElementId = newLibraryElementId;
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
-            
-            foreach (var vm in selections.ToArray())
-            {
-                if (vm is ElementViewModel)
-                {
-                    var elementViewModel = vm as ElementViewModel;
-
-                    var libraryElementModel = elementViewModel.Controller.LibraryElementModel;
-                    var dict = new Message();
-                    dict["title"] = libraryElementModel?.Title;
-                    dict["width"] = elementViewModel.Width;
-                    dict["height"] = elementViewModel.Height;
-                    dict["type"] = libraryElementModel.Type.ToString();
-                    dict["x"] = elementViewModel.Transform.TranslateX - bb.X + Constants.MaxCanvasSize / 2.0;
-                    dict["y"] = elementViewModel.Transform.TranslateY - bb.Y + Constants.MaxCanvasSize / 2.0;
-                    dict["contentId"] = libraryElementModel.LibraryElementId;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.LibraryElementId;
-
-                    if (elementViewModel is PdfNodeViewModel)
-                    {
-                        dict["page"] = (elementViewModel as PdfNodeViewModel).CurrentPageNumber;
-                    }
-
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    elementViewModel.Controller.RequestDelete();
-                }
-                // do something with links here
-                
-            }
 
             Visibility = Visibility.Collapsed;
         }
