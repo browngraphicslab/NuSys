@@ -477,6 +477,17 @@
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
         }
       },
+      "SharpDX.MediaFoundation/3.0.2": {
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        }
+      },
       "sqlite-net/1.0.8": {},
       "SQLite.Net-PCL/3.1.1": {
         "dependencies": {
@@ -2268,7 +2279,7 @@
           }
         }
       },
-      "Win2D.uwp/1.19.0": {
+      "Win2D.uwp/1.18.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -3011,6 +3022,17 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        }
+      },
+      "SharpDX.MediaFoundation/3.0.2": {
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
         }
       },
       "sqlite-net/1.0.8": {},
@@ -4656,7 +4678,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.19.0": {
+      "Win2D.uwp/1.18.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -5427,6 +5449,17 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        }
+      },
+      "SharpDX.MediaFoundation/3.0.2": {
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
         }
       },
       "sqlite-net/1.0.8": {},
@@ -7072,7 +7105,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.19.0": {
+      "Win2D.uwp/1.18.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -7813,6 +7846,17 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        }
+      },
+      "SharpDX.MediaFoundation/3.0.2": {
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
         }
       },
       "sqlite-net/1.0.8": {},
@@ -9458,7 +9502,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.19.0": {
+      "Win2D.uwp/1.18.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -10240,6 +10284,17 @@
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
         }
       },
+      "SharpDX.MediaFoundation/3.0.2": {
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        }
+      },
       "sqlite-net/1.0.8": {},
       "SQLite.Net-PCL/3.1.1": {
         "dependencies": {
@@ -11883,7 +11938,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.19.0": {
+      "Win2D.uwp/1.18.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -12624,6 +12679,17 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        }
+      },
+      "SharpDX.MediaFoundation/3.0.2": {
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
         }
       },
       "sqlite-net/1.0.8": {},
@@ -14269,7 +14335,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.19.0": {
+      "Win2D.uwp/1.18.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -15049,6 +15115,17 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        }
+      },
+      "SharpDX.MediaFoundation/3.0.2": {
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll": {}
         }
       },
       "sqlite-net/1.0.8": {},
@@ -16694,7 +16771,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.19.0": {
+      "Win2D.uwp/1.18.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -18231,6 +18308,18 @@
         "lib/net45/SharpDX.Mathematics.xml",
         "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll",
         "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.xml"
+      ]
+    },
+    "SharpDX.MediaFoundation/3.0.2": {
+      "sha512": "WhqCIQhYfHrLjgSbQpY/ucorDcaszEy+4UZIj5aJvyhXFzPmi4D9L5rmVz9BumJY464RZQJSMH6yw2FqywRNTg==",
+      "type": "package",
+      "files": [
+        "SharpDX.MediaFoundation.3.0.2.nupkg.sha512",
+        "SharpDX.MediaFoundation.nuspec",
+        "lib/net45/SharpDX.MediaFoundation.dll",
+        "lib/net45/SharpDX.MediaFoundation.xml",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.dll",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.MediaFoundation.xml"
       ]
     },
     "sqlite-net/1.0.8": {
@@ -23150,11 +23239,11 @@
         "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll"
       ]
     },
-    "Win2D.uwp/1.19.0": {
-      "sha512": "pLL/gLb3uY75IlswAKzOvQnwwiGrMxZyBl2DbJOjuzG6SOWMp0sg+tkj+HZU8uyQ8jIdAbOE0Iu5+z9zyT5E6Q==",
+    "Win2D.uwp/1.18.0": {
+      "sha512": "qPRgHJF9l7vKLyM/adOjUHE9OE90nYFCpa3/IOaBu1lMyiMwcfXyV2JEri+beNir0eo7luzz8dRBpyBIkjK9qw==",
       "type": "package",
       "files": [
-        "Win2D.uwp.1.19.0.nupkg.sha512",
+        "Win2D.uwp.1.18.0.nupkg.sha512",
         "Win2D.uwp.nuspec",
         "Win2d.githash.txt",
         "build/native/Win2D.uwp.targets",
@@ -23908,9 +23997,10 @@
       "SharpDX.Direct2D1 >= 3.0.2",
       "SharpDX.Direct3D11 >= 3.0.2",
       "SharpDX.Mathematics >= 3.0.2",
+      "SharpDX.MediaFoundation >= 3.0.2",
       "System.Data.SQLite >= 1.0.102",
       "System.Security.Cryptography.Algorithms >= 4.2.0",
-      "Win2D.uwp >= 1.19.0",
+      "Win2D.uwp >= 1.18.0",
       "WinRTXamlToolkit.Controls.DataVisualization.UWP >= 2.0.0",
       "sqlite-net >= 1.0.8"
     ],

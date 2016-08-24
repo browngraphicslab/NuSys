@@ -31,11 +31,16 @@ namespace NuSysApp
             Controller.SetSize(Model.Width, Model.Height);
         }
 
+        
         public override void SetSize(double width, double height)
         {
+         //   Debug.WriteLine("setting size");
+            base.SetSize(width, height);
+            return;
             var model = (VideoNodeModel)Model;
             if (model.ResolutionX < 1)
             {
+                Debug.WriteLine(model.ResolutionX);
                 return;
             }
             if (width > height)
@@ -50,6 +55,7 @@ namespace NuSysApp
                 base.SetSize(height * r, height + 150);
             }
         }
+        
 
         protected override void OnSizeChanged(object source, double width, double height)
         {

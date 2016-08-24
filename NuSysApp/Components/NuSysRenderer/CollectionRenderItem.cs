@@ -35,8 +35,7 @@ namespace NuSysApp
         public Transformable Camera { get; set; } = new Transformable();
 
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
-        {
-            
+        {            
             ViewModel = vm;
             (vm.Controller as ElementCollectionController).CameraPositionChanged += OnCameraPositionChanged;
             (vm.Controller as ElementCollectionController).CameraCenterChanged += OnCameraCenterChanged;
@@ -122,6 +121,8 @@ namespace NuSysApp
 
                 foreach (var item in _renderItems3.ToArray())
                     item.Draw(ds);
+
+
 
                 ds.Transform = orgTransform;
             }

@@ -14,6 +14,7 @@ using Windows.UI.Input;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -546,7 +547,7 @@ namespace NuSysApp
                         var nx = t.Position.X - dtx;
                         var ny = t.Position.Y - dty;
                         elem.Controller.SetPosition(nx, ny);
-
+                        
                         if (elem is ElementCollectionViewModel)
                         {
                             var elemc = elem as ElementCollectionViewModel;
@@ -563,6 +564,7 @@ namespace NuSysApp
                             controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
                             controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
                         }
+                        UpdateVideoPlayer();
                     }
                 }
                 else
@@ -614,6 +616,7 @@ namespace NuSysApp
                             e.Controller.SetPosition(newXe, newYe);
                         }
                     }
+                    UpdateVideoPlayer();
                 }
             }
         }
@@ -627,6 +630,21 @@ namespace NuSysApp
             vm.CompositeTransform.CenterY = NuSysRenderer.Instance.InitialCollection.Camera.C.M32;
             vm.CompositeTransform.ScaleX = NuSysRenderer.Instance.InitialCollection.Camera.S.M11;
             vm.CompositeTransform.ScaleY = NuSysRenderer.Instance.InitialCollection.Camera.S.M22;
+
+            UpdateVideoPlayer();
+        }
+
+        private void UpdateVideoPlayer()
+        {
+            if (NuSysRenderer.Instance.ActiveVideoRenderItem != null)
+            {
+                var t = NuSysRenderer.Instance.ActiveVideoRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(NuSysRenderer.Instance.ActiveVideoRenderItem);
+                var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.RenderTransform;
+                ct.TranslateX = t.M31;
+                ct.TranslateY = t.M32;
+                ct.ScaleX = t.M11;
+                ct.ScaleY = t.M22;
+            }
         }
 
         protected void PanZoom(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
@@ -668,8 +686,6 @@ namespace NuSysApp
             target.C = Matrix3x2.CreateTranslation(ncx, ncy);
             target.S = Matrix3x2.CreateScale((float) nsx, (float) nsy);
             target.Update();
-
-            
         }
     }
 }

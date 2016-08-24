@@ -146,6 +146,7 @@ namespace NuSysApp
             RaisePropertyChanged("ImageSource");
         }
 
+        /*
         public override void SetSize(double width, double height)
         {
             if (ImageSource == null)
@@ -181,6 +182,7 @@ namespace NuSysApp
             }
 
         }
+        */
 
         protected override void OnSizeChanged(object source, double width, double height)
         {

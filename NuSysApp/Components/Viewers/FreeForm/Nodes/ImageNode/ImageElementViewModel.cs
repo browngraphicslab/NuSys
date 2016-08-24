@@ -80,6 +80,14 @@ namespace NuSysApp
         protected override void OnSizeChanged(object source, double width, double height)
         {
             SetSize(width,width * GetRatio());
+            if (double.IsNaN(GetRatio()))
+            {
+                SetSize(width, height);
+            }
+            else
+            {
+                SetSize(width, width * GetRatio());
+            }
         }
     }
 }

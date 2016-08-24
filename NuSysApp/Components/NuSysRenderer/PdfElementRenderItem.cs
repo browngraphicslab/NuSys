@@ -15,6 +15,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -26,7 +27,7 @@ namespace NuSysApp
         public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
-            _vm.PropertyChanged += OnPropertyChanged;
+
         }
 
         public override void Dispose()
@@ -37,18 +38,11 @@ namespace NuSysApp
             _bmp = null;
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        public override async Task Load()
         {
-            // TODO: fix!   
-            /*
-            if (_bmp == null && args.PropertyName == "ImageSource")
-            {
-                _bmp?.Dispose();    
-                _bmp = CanvasBitmap.CreateFromBytes(ResourceCreator, _vm.Buffer, (int)_vm.PdfSize.Width, (int)_vm.PdfSize.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
-                _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
-                _vm.DisposeData();
-            }
-            */
+            var content = _vm.Controller.LibraryElementController.ContentDataModel as PdfContentDataModel;
+            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(content.PageUrls[0]), ResourceCreator.Dpi);
+            _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -56,10 +50,11 @@ namespace NuSysApp
             base.Draw(ds);
             var orgTransform = ds.Transform;
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+            ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
+
             if (_bmp != null)
-            {
-                ds.DrawImage(_bmp, new Rect {X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height});
-            }
+                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height });
+
             ds.Transform = orgTransform;
         }
     }

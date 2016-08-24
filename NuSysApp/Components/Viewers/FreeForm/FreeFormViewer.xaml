@@ -27,10 +27,15 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </Canvas>
-
-
-            <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
-
+            <Canvas x:Name="xVideoCanvas" HorizontalAlignment="Left">
+                <local:VideoMediaPlayer x:Name="xVideoPlayer">
+                    <local:VideoMediaPlayer.RenderTransform>
+                        <CompositeTransform></CompositeTransform>
+                    </local:VideoMediaPlayer.RenderTransform>
+                </local:VideoMediaPlayer>
+            </Canvas>
+            
+        <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
 
         </Canvas>
     </Canvas>

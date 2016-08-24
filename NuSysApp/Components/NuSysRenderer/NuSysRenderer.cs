@@ -24,6 +24,8 @@ using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using MyToolkit.UI;
 using Point = Windows.Foundation.Point;
 using Vector2 = System.Numerics.Vector2;
 using NusysIntermediate;
@@ -47,6 +49,7 @@ namespace NuSysApp
         private enum LinkType { Semantic, Trail, None }
         private LinkType _currentLinkType = LinkType.Semantic;
         private LinkType _selectedLinkType = LinkType.None;
+        public VideoElementRenderItem ActiveVideoRenderItem;
 
 
         public CanvasAnimatedControl Canvas
@@ -126,6 +129,20 @@ namespace NuSysApp
 
         private void OnItemLongTapped(BaseRenderItem element, PointerRoutedEventArgs args)
         {
+            if (element is VideoElementRenderItem)
+            {
+                ActiveVideoRenderItem = (VideoElementRenderItem) element;
+                var t = ActiveVideoRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(NuSysRenderer.Instance.ActiveVideoRenderItem);
+                var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.RenderTransform;
+                ct.TranslateX = t.M31;
+                ct.TranslateY = t.M32;
+                ct.ScaleX = t.M11;
+                ct.ScaleY = t.M22;
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source = new Uri(ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController.Data);
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Visible;
+                return;
+            }
+
             var collection = element as CollectionRenderItem;
             SwitchCollection(collection);
         }
@@ -295,16 +312,6 @@ namespace NuSysApp
             _markingMenuStartPos = _interactionManagers[CurrentCollection].MarkingMenuPointerPosition;
             _tempLink = new TempLinkRenderItem(element1, element2, color, CurrentCollection, _canvas);
             CurrentCollection.AddTempLink(_tempLink);
-
-            /*
-            if (element1.ViewModel.ContentId == element2.ViewModel.ContentId)
-                return;
-
-            var m = new Message();
-            m["id1"] = element1.ViewModel.ContentId;
-            m["id2"] = element2.ViewModel.ContentId;
-            SessionController.Instance.LinksController.RequestLink(m);
-            */
         }
 
         private void OnItemTapped(BaseRenderItem element, PointerRoutedEventArgs args)
@@ -357,6 +364,7 @@ namespace NuSysApp
 
         private void ClearSelections()
         {
+           // SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Collapsed;
             foreach (var selection in Selections)
             {
                 selection.ViewModel.IsSelected = false;
@@ -400,7 +408,7 @@ namespace NuSysApp
             return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
         }
 
-        public Matrix3x2 GetTransformUntil(BaseRenderItem item, bool withCamera = false)
+        public Matrix3x2 GetTransformUntil(BaseRenderItem item)
         {
             var transforms = new List<I2dTransformable>();
         
@@ -415,8 +423,6 @@ namespace NuSysApp
 
             return transforms.Select(t1 => t1 as CollectionRenderItem).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
         }
-
-
 
         private BaseRenderItem _GetRenderItemAt(CollectionRenderItem collection, Vector2 sp, Matrix3x2 transform, int currentLevel, int maxLevel)
         {

@@ -50,6 +50,7 @@ namespace NuSysApp
         private List<uint> _activePointers = new List<uint>();
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
+        public VideoMediaPlayer VideoPlayer => xVideoPlayer;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {

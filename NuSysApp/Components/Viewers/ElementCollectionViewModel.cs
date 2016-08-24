@@ -85,7 +85,7 @@ namespace NuSysApp
             var vm = await _elementVmFactory.CreateFromSendable(controller);
             Elements.Add(vm);
 
-            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Audio || controller.LibraryElementModel.Type == NusysConstants.ElementType.Video)
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Audio)
             {
                 var view = await _nodeViewFactory.CreateFromSendable(controller);
                 AtomViewList.Add(view);

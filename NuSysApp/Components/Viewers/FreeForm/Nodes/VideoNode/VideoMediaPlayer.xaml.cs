@@ -30,9 +30,6 @@ namespace NuSysApp
             xAudioWrapper.OnIntervalChanged += XAudioWrapper_OnIntervalChanged;
         }
 
-
-
-
         public Uri Source
         {
             get { return MediaElement.Source; }
@@ -53,7 +50,8 @@ namespace NuSysApp
             MediaElement.Markers.Clear();
             //Start and end must be preserved
             //     MediaElement.Markers.Add(StartMarker);
-            MediaElement.Markers.Add(EndMarker);
+            if (EndMarker != null)
+                MediaElement.Markers.Add(EndMarker);
 
             foreach (var normalizedTimelineMarkerTime in regionMarkers)
             {
@@ -77,18 +75,17 @@ namespace NuSysApp
                 var vmodel = DataContext as VideoDetailHomeTabViewModel;
                 xAudioWrapper.Controller = vmodel.LibraryElementController;
             }
-            else if (DataContext is VideoNodeViewModel)
-            {
-                var vmodel = DataContext as VideoNodeViewModel;
-                xAudioWrapper.Controller = vmodel.Controller.LibraryElementController;
-            }
             else
             {
-                Debug.Fail("We should always be in a node or the detail view, if not we must add functionality here");
+                // Debug.Fail("We should always be in a node or the detail view, if not we must add functionality here");
+                DataContext = NuSysRenderer.Instance.ActiveVideoRenderItem.ViewModel;
+                xAudioWrapper.Controller = NuSysRenderer.Instance.ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController;
             }
             xAudioWrapper.ProcessLibraryElementController();
+
             if (this.DataContext is VideoNodeViewModel)
             {
+                return;
                 var vm = this.DataContext as VideoNodeViewModel;
                 var model = vm.Model as VideoNodeModel;
                 model.ResolutionX = MediaElement.AspectRatioWidth;
@@ -97,6 +94,7 @@ namespace NuSysApp
                 double width = this.ActualWidth;
                 double height = this.ActualHeight;
                 vm.Controller.SetSize(width, height);
+
             }
          //   MediaElement.Position = new TimeSpan(0);
             double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
@@ -279,10 +277,10 @@ namespace NuSysApp
 
         private void MediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
         {
-            if (e.Marker.Time == StartMarker.Time)
+            if (StartMarker != null && e.Marker.Time == StartMarker.Time)
             {
             }
-            else if (e.Marker.Time == EndMarker.Time)
+            else if (EndMarker != null && e.Marker.Time == EndMarker.Time)
             {
                 //Goes back to start of region
                 MediaElement.Pause();
