@@ -84,12 +84,12 @@
                     <Image x:Name="TextImg" Source="ms-appx:///Assets/icon_node_text.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>-->
 
-            <Button x:Name="RecordButton"  Click="RecordButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
-                    <Image  x:Name="RecordImg" Source= "ms-appx:///Assets/record dark.png" MaxHeight="18" MaxWidth="18"/>
-                </Button>
-                <Button x:Name="InkButton" Click="InkButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
-                    <Image  x:Name="InkImg" Source="ms-appx:///Assets/ink.png" MaxHeight="18" MaxWidth="18"/>
-                </Button>
+                <Button x:Name="RecordButton"  Click="RecordButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
+                        <Image  x:Name="RecordImg" Source= "ms-appx:///Assets/record dark.png" MaxHeight="18" MaxWidth="18"/>
+                    </Button>
+                <Button x:Name="InkButton" Visibility="Collapsed" Click="InkButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
+                        <Image  x:Name="InkImg" Source="ms-appx:///Assets/ink.png" MaxHeight="18" MaxWidth="18"/>
+                    </Button>
             </StackPanel>
         <!--</StackPanel>-->
     </Grid>

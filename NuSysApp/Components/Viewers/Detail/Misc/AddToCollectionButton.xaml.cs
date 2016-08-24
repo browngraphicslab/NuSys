@@ -110,7 +110,11 @@ namespace NuSysApp
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == controller.LibraryElementModel.LibraryElementId) || (controller.LibraryElementModel.Type == NusysConstants.ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == controller.LibraryElementModel.LibraryElementId) || (controller.LibraryElementModel.Type == NusysConstants.ElementType.Link) ||
+                (controller.LibraryElementModel.AccessType == NusysConstants.AccessType.Private &&
+                SessionController.Instance.ActiveFreeFormViewer.Model.AccessType != NusysConstants.AccessType.Private) ||
+                (controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly &&
+                SessionController.Instance.ActiveFreeFormViewer.Model.AccessType != NusysConstants.AccessType.Public))
             {
                 e.Handled = true;
                 return;

@@ -441,6 +441,7 @@ namespace NuSysApp
         
         public void RemoveRegionView(string regionLibraryElementId)
         {
+            var toDelete = new HashSet<FrameworkElement>();
                 foreach (var item in xClippingCanvas.Items)
                 {
                     var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
@@ -450,10 +451,14 @@ namespace NuSysApp
                     if (regionVM.Model.LibraryElementId == regionLibraryElementId)
                    {
                     regionVM.Dispose(null, EventArgs.Empty);
-                    xClippingCanvas.Items.Remove(item);
+                       toDelete.Add(item as FrameworkElement);
                         return;
                     }
                 }
+            foreach (var item in toDelete)
+            {
+                xClippingCanvas.Items.Remove(item);
+            }
         }
         
         public double GetWidth()
