@@ -33,7 +33,15 @@ namespace NuSysApp
 
         private void AddRegionButtonClicked(object sender, RoutedEventArgs e)
         {
-            
+            var vm = SessionController.Instance.SessionView.DetailViewerView.DataContext as DetailViewerViewModel;
+            if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+            {
+                PublicRegionButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                PublicRegionButton.Visibility = Visibility.Visible;
+            }
         }
 
         private async void AddRegion_Clicked(object sender, RoutedEventArgs e)
