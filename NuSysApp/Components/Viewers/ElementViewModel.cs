@@ -174,6 +174,8 @@ namespace NuSysApp
         private void Circlelink_Disposed(object sender, EventArgs e)
         {
             Debug.Assert(sender is LinkCircle);
+            var circleLink = sender as LinkCircle;
+            circleLink.Disposed -= Circlelink_Disposed;
             CircleLinks.Remove(sender as LinkCircle);
         }
 
@@ -270,6 +272,7 @@ namespace NuSysApp
             _controller.SizeChanged -= OnSizeChanged;
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
+            _controller.AnchorChanged -= ControllerOnAnchorChanged;
             _controller.MetadataChange -= OnMetadataChange;
             if (_controller.LibraryElementController != null)
             {
@@ -277,10 +280,13 @@ namespace NuSysApp
                 _controller.LibraryElementController.KeywordsChanged -= KeywordsChanged;
             }
             _controller.Disposed -= OnDisposed;
-            
+            _controller.Deleted -= ControllerOnDeleted;
+            _controller.LinksUpdated -= ControllerLinksUpdated;
+
             Tags = null;
             _transform = null;
-   //         _controller = null;
+            _controller = null;
+            
         }
 
         public virtual void SetSize(double width, double height)
