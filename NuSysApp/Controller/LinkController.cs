@@ -42,8 +42,6 @@ namespace NuSysApp
         {
             get
             {
-                //return new Point2d((OutElement.Anchor.X + (Math.Abs(OutElement.Anchor.X - InElement.Anchor.X) / 2)),
-                //(InElement.Anchor.Y + (Math.Abs(OutElement.Anchor.Y - InElement.Anchor.Y) / 2)));
                 return new Point2d((InElement.Anchor.X + OutElement.Anchor.X)/2, (OutElement.Anchor.Y + InElement.Anchor.Y)/2);
             }
         }
@@ -68,9 +66,7 @@ namespace NuSysApp
             Model.SetLibraryId(controller.LibraryElementModel.LibraryElementId);
             Debug.Assert(model.LibraryId != null);
             LibraryElementController = controller;
-            //LibraryElementController.Title = "Unnamed Link";
             
-
             InElement = SessionController.Instance.LinksController.GetLinkable(model.InAtomId);
             OutElement = SessionController.Instance.LinksController.GetLinkable(model.OutAtomId);
 
@@ -128,14 +124,6 @@ namespace NuSysApp
                 ? InElement.GetParentCollectionId()
                 : null;
         }
-
-        /*
-        public void UpdateAnchor()
-        {
-            Anchor = new Point2d((int)(OutElement.Anchor.X + (Math.Abs(OutElement.Anchor.X - InElement.Anchor.X) / 2)),
-                (int)(InElement.Anchor.Y + (Math.Abs(OutElement.Anchor.Y - InElement.Anchor.Y) / 2)));
-
-        }*/
-
+        
     }
 }
