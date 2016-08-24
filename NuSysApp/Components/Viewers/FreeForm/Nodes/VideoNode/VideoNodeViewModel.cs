@@ -30,7 +30,12 @@ namespace NuSysApp
             }
             Controller.SetSize(Model.Width, Model.Height);
         }
-
+        /// <summary>
+        /// This is the function that recieves a set size event from the element controller and appropriately 
+        /// resizes the node that is attached to the controller according to the aspect ratio
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public override void SetSize(double width, double height)
         {
             if (width * GetRatio() < Constants.MinNodeSize)

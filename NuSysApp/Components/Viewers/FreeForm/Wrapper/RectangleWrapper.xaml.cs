@@ -438,7 +438,11 @@ namespace NuSysApp
                 } 
             }
         }
-        
+        /// <summary>
+        /// Whenever we remove a region from the library and we need to get rid of it's visual copies we
+        /// call this method to remove it from the current rectangle wrapper
+        /// </summary>
+        /// <param name="regionLibraryElementId"></param>
         public async void RemoveRegionView(string regionLibraryElementId)
         {
             await UITask.Run(delegate
