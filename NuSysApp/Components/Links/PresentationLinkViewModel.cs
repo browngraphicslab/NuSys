@@ -44,7 +44,7 @@ namespace NuSysApp
         public PresentationLinkViewModel(PresentationLinkModel model) 
         {
             //if you fail these debugs, keep them and simply dont create presentation link instead
-            Debug.Assert(model?.InElementId != null && SessionController.Instance.IdToControllers.ContainsKey(model.InElementId));
+             Debug.Assert(model?.InElementId != null && SessionController.Instance.IdToControllers.ContainsKey(model.InElementId));
             Debug.Assert(model?.OutElementId != null && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId));
 
             _inElementController = SessionController.Instance.IdToControllers[model.InElementId];
