@@ -244,13 +244,18 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID = "library_element_id_to_update";
 
-            #endregion UpdateLibraryElementRequest
+        /// <summary>
+        /// In the UpdateLibraryElementRequest this is the key that will be used to hold the bool on whether on not to save the update to the server
+        /// </summary>
+        public static readonly string UPDATE_LIBRARY_ELEMENT_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_changes_to_server";
 
-            #region NewLibraryElementRequest
-                /// <summary>
-                /// key in message for sending element type when creating new library element request
-                /// </summary>
-                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
+        #endregion UpdateLibraryElementRequest
+
+        #region NewLibraryElementRequest
+        /// <summary>
+        /// key in message for sending element type when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
 
                 /// <summary>
                 /// key in message for sending library id when creating new library element request
@@ -530,9 +535,14 @@ namespace NusysIntermediate
             public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
 
             /// <summary>
-            /// The key for sending the annotation for the update presentation link request
+            /// The key for sending the bool on whether or not to save the changes to the server
             /// </summary>
-            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_changes_to_server";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
             #endregion UpdatePresentationLinkRequest
 
             #region UpdateContentRequest
@@ -552,13 +562,18 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_id_key";
 
+        /// <summary>
+        /// The key for sending the bool on whether or not to save the request to the server.
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_to_server";
+
         #endregion UpdateContentRequest
 
-            #region GetRelatedDocumentsRequest
-            /// <summary>
-            /// The key for sending contentDataModel id of the document you wish to get related items for
-            /// </summary>
-            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
+        #region GetRelatedDocumentsRequest
+        /// <summary>
+        /// The key for sending contentDataModel id of the document you wish to get related items for
+        /// </summary>
+        public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
 
             /// <summary>
             /// The key for sending a list of contentDataModel ids of which the original document is related to

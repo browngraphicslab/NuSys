@@ -17,17 +17,28 @@ namespace NusysServer.RequestHandlers
             //Check to make sure message has everything we need
             Debug.Assert(message.ContainsKey(NusysConstants.UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY));
             var linkId = message.GetString(NusysConstants.UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY);
-            var propertiesToUpdate = GetPropertiesToUpdate(message);
-            if (!propertiesToUpdate.Any())
+            //If you dont want to save the update to the server just forward the message to everyone else
+            var success = true;
+            if (message.GetBool(NusysConstants.UPDATE_PRESENTATION_LINK_REQUEST_SAVE_TO_SERVER_BOOLEAN, true))
             {
-                return new Message(new Dictionary<string, object>() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false } });
+                var propertiesToUpdate = GetPropertiesToUpdate(message);
+                if (!propertiesToUpdate.Any())
+                {
+                    return
+                        new Message(new Dictionary<string, object>() {{NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false}});
+                }
+                SQLUpdateRowQuery updateQuery =
+                    new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.PresentationLink), propertiesToUpdate,
+                        new SqlQueryEquals(Constants.SQLTableType.PresentationLink,
+                            NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY, linkId));
+                success = updateQuery.ExecuteCommand();
             }
-            SQLUpdateRowQuery updateQuery = new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.PresentationLink), propertiesToUpdate, new SqlQueryEquals(Constants.SQLTableType.PresentationLink, NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY, linkId));
-            var success = updateQuery.ExecuteCommand();
-            if (success)
+
+            if(success)
             {
                 ForwardMessage(message, senderHandler);
             }
+            
             var returnMessage = new Message(message);
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
             return returnMessage;

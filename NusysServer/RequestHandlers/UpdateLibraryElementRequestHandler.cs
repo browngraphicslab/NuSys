@@ -29,8 +29,25 @@ namespace NusysServer
             {
                 throw new Exception("An Updatelibrary element Request must have an library ID to update");
             }
-            var libraryId = message.GetString(NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID);
             ForwardMessage(message, senderHandler);
+            if (message.GetBool(NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_SAVE_TO_SERVER_BOOLEAN, true))
+            {
+                SaveToServer(message);
+            }
+            
+            var returnMessage = new Message();
+            returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
+
+            return returnMessage;
+        }
+
+        /// <summary>
+        /// This method should update all the necessary sql tables to update the library element.
+        /// </summary>
+        /// <param name="message"></param>
+        private void SaveToServer(Message message)
+        {
+            var libraryId = message.GetString(NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID);
             List<SQLUpdatePropertiesArgs> propertiesToAdd = new List<SQLUpdatePropertiesArgs>();
             List<SqlQueryEquals> libraryElementNonPropertiesUpdates = new List<SqlQueryEquals>();
             //Set the last edited time stamp to now
@@ -77,10 +94,7 @@ namespace NusysServer
             {
                 throw new Exception("Could not update library element from the sql query" + updateRowQueryQuery.CommandString);
             }
-            var returnMessage = new Message();
-            returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
-
-            return returnMessage;
         }
+
     }
 }
