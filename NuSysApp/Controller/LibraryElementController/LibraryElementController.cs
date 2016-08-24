@@ -152,9 +152,9 @@ namespace NuSysApp
         /// 
         public LibraryElementController(LibraryElementModel libraryElementModel)
         {
-            Debug.Assert(libraryElementModel != null);
+            Debug.Assert(libraryElementModel?.LibraryElementId != null);
             _libraryElementModel = libraryElementModel;
-            _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
+            _debouncingDictionary = new LibraryElementDebouncingDictionary(libraryElementModel.LibraryElementId);
             Title = libraryElementModel.Title;
             SessionController.Instance.EnterNewCollectionStarting += OnSessionControllerEnterNewCollectionStarting;
         }
@@ -346,6 +346,10 @@ namespace NuSysApp
         /// <returns></returns>
         public bool UpdateMetadata(MetadataEntry original, string key, List<string> values)
         {
+            if (_libraryElementModel.Metadata == null)
+            {
+                _libraryElementModel.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
+            }
             // Error checking for the passed in parameters
             if (original == null || string.IsNullOrEmpty(key) || string.IsNullOrWhiteSpace(key) || values == null || !_libraryElementModel.Metadata.ContainsKey(original.Key))
             {
@@ -568,9 +572,11 @@ namespace NuSysApp
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
+                    case NusysConstants.ElementType.PdfRegion:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
                     case NusysConstants.ElementType.Audio:
+                    case NusysConstants.ElementType.AudioRegion:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
                     case NusysConstants.ElementType.Text:
@@ -584,6 +590,12 @@ namespace NuSysApp
                         break;
                     case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
+                    case NusysConstants.ElementType.ImageRegion:
+                        return new Uri("ms-appx:///Assets/image icon.png");
+                        break;
+                    case NusysConstants.ElementType.VideoRegion:
+                        return new Uri("ms-appx:///Assets/video icon.png");
                         break;
                     default:
                         return new Uri("ms-appx:///Assets/icon_chat.png");
@@ -748,9 +760,15 @@ namespace NuSysApp
                 var collectionLibraryElementModel = LibraryElementModel as CollectionLibraryElementModel;
                 Debug.Assert(collectionLibraryElementModel != null);
 
+                var args  = new NewElementRequestArgs();//create new args class for the putting on an element collection on the main instance
+                args.X = x;
+                args.Y = y;
+                args.LibraryElementId = LibraryElementModel.LibraryElementId;
+                args.Height = Constants.DefaultNodeSize;
+                args.Width = Constants.DefaultNodeSize;
+
                 // try to add the collection to the collection
-                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, collectionId,
-                    collectionLibraryElementModel.IsFinite, collectionLibraryElementModel.ShapePoints?.Select(pointModel => new Point(pointModel.X, pointModel.Y)).ToList() ?? new List<Point>());
+                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
 
                 // return whether the method succeeded
                 return success != null;

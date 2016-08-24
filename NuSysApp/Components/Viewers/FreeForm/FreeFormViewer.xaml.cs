@@ -51,6 +51,7 @@ namespace NuSysApp
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
         public VideoMediaPlayer VideoPlayer => xVideoPlayer;
+        public AudioMediaPlayer AudioPlayer => xAudioPlayer;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {

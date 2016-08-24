@@ -24,7 +24,9 @@ namespace NuSysApp
         public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
         public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel>();
+        public ObservableCollection<LinkViewModel> Links { get; set; } = new ObservableCollection<LinkViewModel>();
 
+        public ObservableCollection<PresentationLinkViewModel> Trails { get; set; } = new ObservableCollection<PresentationLinkViewModel>();
         /// <summary>
         /// The unique ID used in the tool startable dictionary
         /// </summary>
@@ -84,13 +86,6 @@ namespace NuSysApp
         {
             var vm = await _elementVmFactory.CreateFromSendable(controller);
             Elements.Add(vm);
-
-            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Audio)
-            {
-                var view = await _nodeViewFactory.CreateFromSendable(controller);
-                AtomViewList.Add(view);
-            }
-
             controller.Deleted += OnChildDeleted;
         }
         

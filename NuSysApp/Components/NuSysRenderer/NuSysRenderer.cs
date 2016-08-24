@@ -50,6 +50,7 @@ namespace NuSysApp
         private LinkType _currentLinkType = LinkType.Semantic;
         private LinkType _selectedLinkType = LinkType.None;
         public VideoElementRenderItem ActiveVideoRenderItem;
+        public AudioElementRenderItem ActiveAudioRenderItem;
 
 
         public CanvasAnimatedControl Canvas
@@ -142,6 +143,22 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Visible;
                 return;
             }
+            if (element is AudioElementRenderItem)
+            {
+                ActiveAudioRenderItem = (AudioElementRenderItem)element;
+                var t = ActiveAudioRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(NuSysRenderer.Instance.ActiveAudioRenderItem);
+                var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.RenderTransform;
+                ct.TranslateX = t.M31;
+                ct.TranslateY = t.M32;
+                ct.ScaleX = t.M11;
+                ct.ScaleY = t.M22;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource = new Uri(ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController.Data); ;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
+                return;
+            }
+
+
+
 
             var collection = element as CollectionRenderItem;
             SwitchCollection(collection);
@@ -241,19 +258,18 @@ namespace NuSysApp
         private async void OnMarkingMenuPointerReleased()
         {
             CurrentCollection.Remove(_tempLink);
-            
+
             if (_tempLink.Element1.ViewModel.LibraryElementId == _tempLink.Element2.ViewModel.LibraryElementId)
+            {
                 return;
-
-            var m = new Message();
-            m["id1"] = _tempLink.Element1.ViewModel.LibraryElementId;
-            m["id2"] = _tempLink.Element2.ViewModel.LibraryElementId;
-
+            }
 
             if (_selectedLinkType == LinkType.Semantic)
             {
                 var args = new CreateNewLinkLibraryElementRequestArgs();//new args for link library element
                 args.LibraryElementId = SessionController.Instance.GenerateId();
+                args.LibraryElementModelInId = _tempLink.Element1.ViewModel.LibraryElementId;
+                args.LibraryElementModelOutId = _tempLink.Element2.ViewModel.LibraryElementId;
 
                 var request = new CreateNewContentRequest(new CreateNewContentRequestArgs() { LibraryElementArgs = args });
 
@@ -273,6 +289,7 @@ namespace NuSysApp
                 var args = new CreateNewPresentationLinkRequestArgs();
                 args.ElementViewModelInId = _tempLink.Element1.ViewModel.Id;
                 args.ElementViewModelOutId = _tempLink.Element2.ViewModel.Id;
+                args.ParentCollectionId = CurrentCollection.ViewModel.LibraryElementId;
 
                 var request = new CreateNewPresentationLinkRequest(args);
 
@@ -337,6 +354,10 @@ namespace NuSysApp
             if (elementRenderItem == InitialCollection || elementRenderItem == CurrentCollection || elementRenderItem == null)
             {
                 ClearSelections();
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source = null;
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Collapsed;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource= null;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Collapsed;
                 if (element == null)
                     SwitchCollection(InitialCollection);
             }
@@ -355,7 +376,9 @@ namespace NuSysApp
                 if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
                 {
                     if (_activePointers.Count == 0)
+                    {
                         ClearSelections();
+                    }
                     elementRenderItem.ViewModel.IsSelected = true;
                     Selections.Add(elementRenderItem);
                 }

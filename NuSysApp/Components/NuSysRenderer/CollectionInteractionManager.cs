@@ -645,6 +645,16 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
             }
+
+            if (NuSysRenderer.Instance.ActiveAudioRenderItem != null)
+            {
+                var t = NuSysRenderer.Instance.ActiveAudioRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(NuSysRenderer.Instance.ActiveAudioRenderItem);
+                var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.RenderTransform;
+                ct.TranslateX = t.M31;
+                ct.TranslateY = t.M32;
+                ct.ScaleX = t.M11;
+                ct.ScaleY = t.M22;
+            }
         }
 
         protected void PanZoom(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)

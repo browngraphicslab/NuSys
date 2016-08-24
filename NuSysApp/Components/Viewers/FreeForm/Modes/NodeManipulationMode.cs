@@ -86,11 +86,13 @@ namespace NuSysApp
 
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            if (vm != null) { 
             var elementController = vm.Controller;
             if (!vm.IsEditing)
             { 
             }
             ActiveNodes.Remove((UserControl) sender);
+}
         }
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
@@ -105,6 +107,15 @@ namespace NuSysApp
             _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
 
             ActiveNodes.Add((UserControl)sender);
+
+            //If an action had been done and a new manipulation has started then we want to then make sure that it doesn't interfere with our current manipulation
+            if (_moveNodeUndoButton != null)
+            {
+                if (_moveNodeUndoButton.ActionExecuted == true)
+                {
+                    _moveNodeUndoButton.ActionExecuted = false; // This prevents the node from being immovable right agter being undo'd
+                }
+            }
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -229,29 +240,33 @@ namespace NuSysApp
 
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
-            var elementController = vm.Controller;
-            if (!vm.IsEditing)
+            if (vm != null)
             {
-                //Instantiates MoveElementAction
-               var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
-                if (_moveNodeUndoButton != null)
+                var elementController = vm.Controller;
+
+                if (!vm.IsEditing)
                 {
-                    if (_moveNodeUndoButton.State == UndoButtonState.Active)
+                    //Instantiates MoveElementAction
+                    var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+                    if (_moveNodeUndoButton != null)
                     {
-                        _moveNodeUndoButton.Deactivate();
-                        if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                        if (_moveNodeUndoButton.State == UndoButtonState.Active)
                         {
-                            ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                            _moveNodeUndoButton.Deactivate();
+                            if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                            {
+                                ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                            }
                         }
                     }
-                }
 
-                _moveNodeUndoButton = new UndoButton();
-                //Activates undo button makes it appear in the old position.
-                ffvm.AtomViewList.Add(_moveNodeUndoButton);
-                _moveNodeUndoButton.MoveTo(_originalPosition);
-                _moveNodeUndoButton.Activate(moveElementAction);
-                
+                    _moveNodeUndoButton = new UndoButton();
+                    //Activates undo button makes it appear in the old position.
+                    ffvm.AtomViewList.Add(_moveNodeUndoButton);
+                    _moveNodeUndoButton.MoveTo(_originalPosition);
+                    _moveNodeUndoButton.Activate(moveElementAction);
+
+                }
             }
         }
 

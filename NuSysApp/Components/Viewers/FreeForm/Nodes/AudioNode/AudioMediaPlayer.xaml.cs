@@ -39,7 +39,6 @@ namespace NuSysApp
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
             xAudioWrapper.OnRegionSeeked += onSeekedTo;
             xAudioWrapper.OnIntervalChanged += XAudioWrapper_OnIntervalChanged;
-            positionBinding = new Binding();
             DataContextChanged += AudioMediaPlayer_DataContextChanged;
 
         }
@@ -52,6 +51,8 @@ namespace NuSysApp
         /// <param name="args"></param>
         private void AudioMediaPlayer_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
+            
+
             if (DataContext is AudioNodeViewModel)
             {
                 VisualizationImage.Source = new BitmapImage((DataContext as AudioNodeViewModel)?.Controller.LibraryElementController.LargeIconUri);
@@ -68,7 +69,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail($"Add Support for Visualization of audio datacontext {DataContext} here");
+              //  Debug.Fail($"Add Support for Visualization of audio datacontext {DataContext} here");
             }
         }
 
@@ -132,7 +133,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Stopped)
             {
                 MediaElement.Stop();
-
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -141,7 +143,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Paused)
             {
                 MediaElement.Pause();
-
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -151,7 +154,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
                 MediaElement.Play();
-
+                Play.Visibility = Visibility.Collapsed;
+                Pause.Visibility = Visibility.Visible;
             }
         }
 
@@ -159,7 +163,7 @@ namespace NuSysApp
         private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
 
-
+            positionBinding = new Binding();
             positionBinding.ElementName = "MediaElement";
             positionBinding.Path = new PropertyPath("Position.TotalMilliseconds");
             positionBinding.Mode = BindingMode.TwoWay;
@@ -178,7 +182,9 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail("We should always be in a node or the detail view, if not we must add functionality here");
+                //   Debug.Fail("We should always be in a node or the detail view, if not we must add functionality here");
+                DataContext = NuSysRenderer.Instance.ActiveAudioRenderItem.ViewModel;
+                xAudioWrapper.Controller = NuSysRenderer.Instance.ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController;
             }
             xAudioWrapper.ProcessLibraryElementController();
 

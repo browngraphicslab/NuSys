@@ -135,7 +135,7 @@ namespace NuSysApp
                 var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(nr.CurrentCollection)));
 
                var rects = new List<Rect>();
-                foreach (var vm in currentColl.ViewModel.Elements)
+                foreach (var vm in currentColl.ViewModel.Elements.ToArray())
                 {
                     try
                     {

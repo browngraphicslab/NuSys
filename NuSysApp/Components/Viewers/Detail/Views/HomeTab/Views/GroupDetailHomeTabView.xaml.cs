@@ -414,37 +414,22 @@ namespace NuSysApp
         {
             Task.Run(async delegate
             {
+                var args = new NewElementRequestArgs();
+                args.Width = size.Width;
+                args.Height = size.Height;
+                args.LibraryElementId = libraryId;
+                args.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                args.X = pos.X;
+                args.Y = pos.Y;
+
                 if (elementType != NusysConstants.ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
-                    var dict = new Message();
-                    Dictionary<string, object> metadata;
-
-                    metadata = new Dictionary<string, object>();
-                    metadata["node_creation_date"] = DateTime.Now;
-                    metadata["node_type"] = elementType + "Node";
-
-                    dict = new Message();
-                    dict["title"] = element?.Title + " element";
-                    dict["width"] = size.Width.ToString();
-                    dict["height"] = size.Height.ToString();
-                    dict["type"] = elementType.ToString();
-                    dict["x"] = pos.X;
-                    dict["y"] = pos.Y;
-                    dict["contentId"] = libraryId;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-                    var request = new NewElementRequest(dict);
+                    var request = new NewElementRequest(args);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {
-                    var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
-                    await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
-                            new List<Point>(collection.ShapePoints.Select(p => new Point(p.X, p.Y))), size.Width, size.Height);
+                    await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
                 }
             });
         }

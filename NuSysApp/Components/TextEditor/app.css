@@ -11,6 +11,10 @@
     z-index: -10;
 }*/
 
+.container {
+    margin: 0;
+}
+
 #buttonbar {
    top: 0;
    left: 0;

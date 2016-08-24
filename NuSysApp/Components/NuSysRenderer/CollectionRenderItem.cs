@@ -48,7 +48,9 @@ namespace NuSysApp
             Camera.S = Matrix3x2.CreateScale(vm.CameraScale);
             
 
-            vm.Elements.CollectionChanged += ElementsChanged;
+            vm.Elements.CollectionChanged += OnElementsChanged;
+            vm.Links.CollectionChanged += OnElementsChanged;
+            vm.Trails.CollectionChanged += OnElementsChanged;
 
             InkRenderItem = new InkRenderItem(this, canvas);
             _renderItems0.Add(InkRenderItem);
@@ -128,14 +130,14 @@ namespace NuSysApp
             }
         }
 
-        private async void ElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private async void OnElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
                 foreach (var newItem in e.NewItems)
                 {
                     BaseRenderItem item;
-                    var vm = (ElementViewModel) newItem;
+                    var vm = newItem;
                     if (vm is TextNodeViewModel)
                     {
                         item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
@@ -172,9 +174,17 @@ namespace NuSysApp
                         await item.Load();
                         _renderItems2.Add(item);
                     }
+                    else if (vm is LinkViewModel)
+                    {
+                        AddLink((LinkViewModel)vm);
+                    }
+                    else if (vm is PresentationLinkViewModel)
+                    {
+                        AddTrail((PresentationLinkViewModel)vm);
+                    }
                     else
                     {
-                        item = new ElementRenderItem(vm, this, ResourceCreator);
+                        item = new ElementRenderItem((ElementViewModel)vm, this, ResourceCreator);
                         await item.Load();
                         _renderItems2.Add(item);
                     }

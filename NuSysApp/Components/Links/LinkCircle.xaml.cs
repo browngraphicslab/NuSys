@@ -85,7 +85,7 @@ namespace NuSysApp
                 //this is sort of a bandaid rather than a fix
                 Canvas.SetZIndex(thumbnail, 50);
             }
-            linkButton.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libraryElementController.LibraryElementModel.LibraryElementId));
+            linkButton.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libraryElementController?.LibraryElementModel?.LibraryElementId));
             //xPinHighlight.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libraryElementController.LibraryElementModel.LibraryElementId));
         }
 
@@ -164,7 +164,7 @@ namespace NuSysApp
             var regionController = SessionController.Instance.ContentController.GetLibraryElementController(LinkLibraryElementId) as RegionLibraryElementController;
             if (regionController != null)
             {
-                regionController.Select();
+             //   regionController.Select();
             }
         }
 

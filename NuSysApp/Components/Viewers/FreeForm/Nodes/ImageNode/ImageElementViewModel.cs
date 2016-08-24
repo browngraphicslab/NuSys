@@ -88,6 +88,7 @@ namespace NuSysApp
             {
                 SetSize(width, width * GetRatio());
             }
+
         }
     }
 }

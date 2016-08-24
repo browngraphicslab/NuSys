@@ -33,6 +33,11 @@
                         <CompositeTransform></CompositeTransform>
                     </local:VideoMediaPlayer.RenderTransform>
                 </local:VideoMediaPlayer>
+                <local:AudioMediaPlayer x:Name="xAudioPlayer">
+                    <local:AudioMediaPlayer.RenderTransform>
+                        <CompositeTransform></CompositeTransform>
+                    </local:AudioMediaPlayer.RenderTransform>
+                </local:AudioMediaPlayer>
             </Canvas>
             
         <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>

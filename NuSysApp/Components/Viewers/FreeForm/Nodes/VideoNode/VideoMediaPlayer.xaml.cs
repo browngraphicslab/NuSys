@@ -96,7 +96,7 @@ namespace NuSysApp
                 vm.Controller.SetSize(width, height);
 
             }
-         //   MediaElement.Position = new TimeSpan(0);
+            //   MediaElement.Position = new TimeSpan(0);
             double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
             double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
@@ -136,8 +136,9 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
-            MediaElement.Pause();
-
+            MediaElement.Stop();
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
         }
 
         private void XAudioWrapper_OnIntervalChanged(object sender, double start, double end)
@@ -177,18 +178,22 @@ namespace NuSysApp
 
 
             MediaElement.Play();
+            play.Visibility = Visibility.Collapsed;
+            pause.Visibility = Visibility.Visible;
         }
 
         public void StopVideo()
         {
-            MediaElement.Pause();
+            MediaElement.Stop();
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
-            MediaElement.Stop();
-            scrubBar.Value = 0;
-
+            MediaElement.Pause();
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
             // e.Handled = true;
         }
         private void MediaEnded(object sender, RoutedEventArgs e)
@@ -214,7 +219,7 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             MediaElement.Stop();
-            var vm = (VideoNodeViewModel) DataContext;
+            var vm = (VideoNodeViewModel)DataContext;
             vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
@@ -256,7 +261,7 @@ namespace NuSysApp
                 MediaElement.Position = time;
 
 
-               ((UIElement)sender).CapturePointer(e.Pointer);
+                ((UIElement)sender).CapturePointer(e.Pointer);
 
 
                 e.Handled = true;
@@ -267,12 +272,14 @@ namespace NuSysApp
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-                ((UIElement)sender).ReleasePointerCapture(e.Pointer);
+            ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
 
         public void StopMedia()
         {
             MediaElement.Stop();
+            play.Visibility = Visibility.Visible;
+            pause.Visibility = Visibility.Collapsed;
         }
 
         private void MediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
@@ -303,5 +310,7 @@ namespace NuSysApp
             rectangleGeometry.Rect = rect;
             this.Clip = rectangleGeometry;
         }
+
+
     }
 }

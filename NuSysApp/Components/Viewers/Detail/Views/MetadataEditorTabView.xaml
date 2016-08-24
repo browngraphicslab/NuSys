@@ -89,7 +89,7 @@
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="nusysIntermediate:MetadataEntry">
-                        <Grid  HorizontalAlignment="Stretch" Background="{x:Bind Mutability, Converter={StaticResource brushConverter}}" Height="30" VerticalAlignment="Center" PointerPressed ="XListViewItemGrid_OnPointerPressed">
+                        <Grid  HorizontalAlignment="Stretch" Background="{x:Bind Mutability, Converter={StaticResource brushConverter}}" Height="30" VerticalAlignment="Center" PointerPressed ="XListViewItemGrid_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -103,7 +103,7 @@
 
                                 </StackPanel>
 
-                                <TextBox  Name="EditableKeyBox" Text="{x:Bind Key}" PlaceholderText="None"    Background="{Binding Mutability, Converter={StaticResource brushConverter}}"  RelativePanel.AlignHorizontalCenterWithPanel="True" BorderThickness="0" IsHitTestVisible="False" TextChanged="EditableKeyBox_OnTextChanged" ></TextBox>
+                                <TextBlock Name="ImmutableKeyBox" Text="{x:Bind Key}" RelativePanel.AlignHorizontalCenterWithPanel="True"  IsHitTestVisible="False" ></TextBlock>
 
                             </RelativePanel>
 

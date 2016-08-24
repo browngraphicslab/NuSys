@@ -43,7 +43,7 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            //ResetTables(true);
+            //ResetTables();
             //SetUpTables();
 
 
@@ -128,6 +128,11 @@ namespace NusysServer
                 NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " float, " +
                 NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(4096));");
 
+            var inkTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Ink) + " (" +
+                NusysConstants.INK_TABLE_STROKE_ID + " varchar(128), " +
+                NusysConstants.INK_TABLE_CONTENT_ID + " varchar(128), " +
+                NusysConstants.INK_TABLE_POINTS + " varchar(MAX));");
+
             usersTable.ExecuteNonQuery();
             analysisModelsTable.ExecuteNonQuery();
             presentationLinksTable.ExecuteNonQuery();
@@ -136,6 +141,7 @@ namespace NusysServer
             metadataTable.ExecuteNonQuery();
             propertiesTable.ExecuteNonQuery();
             contentTable.ExecuteNonQuery();
+            inkTable.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -156,6 +162,8 @@ namespace NusysServer
                 var dropContent = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Content) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
                 var dropAnalysisModels = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.AnalysisModels) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
                 var dropUsers = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Users) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
+                var dropInk = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Ink) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Ink));
+
 
                 dropPresentationLinks.ExecuteNonQuery();
                 dropAliases.ExecuteNonQuery();
@@ -165,6 +173,7 @@ namespace NusysServer
                 dropContent.ExecuteNonQuery();
                 dropAnalysisModels.ExecuteNonQuery();
                 dropUsers.ExecuteNonQuery();
+                dropInk.ExecuteNonQuery();
             }
             else
             {
@@ -176,6 +185,7 @@ namespace NusysServer
                 var clearContent = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
                 var clearAnalysisModels = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
                 var clearUsers = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
+                var clearInk = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Ink));
 
                 clearPresentationLinks.ExecuteNonQuery();
                 clearAliases.ExecuteNonQuery();
@@ -185,6 +195,7 @@ namespace NusysServer
                 clearContent.ExecuteNonQuery();
                 clearAnalysisModels.ExecuteNonQuery();
                 clearUsers.ExecuteNonQuery();
+                clearInk.ExecuteNonQuery();
             }
 
             if (File.Exists(Constants.FILE_FOLDER + "docsave.txt"))//delete a dictionary json saving Junsu' comparisons
@@ -321,12 +332,11 @@ namespace NusysServer
             var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, metadataMessage, Constants.Operator.And);
             cmdToDeleteRelatedMetadata.ExecuteCommand();
 
-
-
+            
             return cmdToDeleteFromLibraryElementTable.ExecuteCommand();
         }
 
-        /// <summary>
+        /// <summary> 
         /// To remove a single alias from the server, the passed in message should contain the ALIAS_ID_KEY. This also deletes
         /// all the properties associated with the alias
         /// </summary>

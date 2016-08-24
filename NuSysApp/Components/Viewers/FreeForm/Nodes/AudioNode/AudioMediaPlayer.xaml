@@ -39,13 +39,13 @@
         <StackPanel Grid.Row="2"  Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
 
             <Button x:Name="Play" Tapped="Play_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/node icons/icon_play.png" Height="20"></Image>
+                    <Image Source="ms-appx:///Assets/node icons/icon_play_dark.png" Height="20"></Image>
             </Button>
-            <Button x:Name="Pause" Tapped ="Pause_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/node icons/icon_pause.png" Height="20"/>
+            <Button x:Name="Pause" Visibility="Collapsed"  Tapped ="Pause_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/node icons/icon_pause_dark.png" Height="20"/>
             </Button>
             <Button  x:Name="Stop" Tapped="Stop_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="20"></Image>
+                <Image Source="ms-appx:///Assets/node icons/icon_stop_dark.png" Height="20"></Image>
             </Button>
 
         </StackPanel>

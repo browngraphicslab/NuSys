@@ -8,8 +8,15 @@ using System.Diagnostics;
 
 namespace NuSysApp
 {
-    class CreateNewLinkLibraryElementRequestArgs : CreateNewLibraryElementRequestArgs
+    public class CreateNewLinkLibraryElementRequestArgs : CreateNewLibraryElementRequestArgs
     {
+        /// <summary>
+        /// Constructor just sets the library element type of the base element
+        /// </summary>
+        public CreateNewLinkLibraryElementRequestArgs()
+        {
+            base.LibraryElementType = NusysConstants.ElementType.Link;
+        }
         /// <summary>
         /// This is the in library element model id of the link that is being created
         /// </summary>
@@ -43,7 +50,7 @@ namespace NuSysApp
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY] = LibraryElementModelOutId;
             }
-            
+
             // set access level to the lower of the two end points
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = GetLowerAccessOfEndPoints().ToString();
 

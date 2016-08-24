@@ -4,15 +4,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using NusysIntermediate;
 
 namespace NuSysApp
 {
     /// <summary>
-    /// can be used to update properties for both LibraryElements and Nodes
+    /// Debouncing Dictionary are a convenient way to make server calls to update properties of objects without spamming the server.  
+    /// Debouncing dictionaries take arbitrary key value pairs for properties and then will occasionally make calls to update the server with the LATEST value for every key added.
+    /// The idea is that when some things are added to this dictionary many times per millisecond, we still won't spam the server with that many calls.
+    /// Instead, we will update the server with the most recent values of each property.  
+    /// To add things that you want to update to this dictioary, use the "Add" method.  
+    /// The keys in the add method will be the keys used in the Sql Table for the given object;
     /// </summary>
-    public class DebouncingDictionary
+    public abstract class DebouncingDictionary
     {
         /// <summary>
         /// this dictionary will store properties that need to be updated not but necessarily stored on the server.  
@@ -67,14 +73,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updateLibraryElement"></param>
-        public DebouncingDictionary(string id, bool updateLibraryElement = false)
+        public DebouncingDictionary(string id)
         {
             _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
             _serverSaveTimer = new Timer(SendMessage, true, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, object>();
             _serverDict = new ConcurrentDictionary<string, object>();
             _id = id;
-            _updateLibraryElement = updateLibraryElement;
         }
 
         /// <summary>
@@ -83,7 +88,7 @@ namespace NuSysApp
         /// <param name="id"></param>
         /// <param name="milliSecondDebounce"></param>
         /// <param name="updateLibraryElement"></param>
-        public DebouncingDictionary(string id, int milliSecondDebounce, bool updateLibraryElement = false)
+        public DebouncingDictionary(string id, int milliSecondDebounce)
         {
             _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
             _serverSaveTimer = new Timer(SendMessage, true, Timeout.Infinite, Timeout.Infinite);
@@ -91,7 +96,6 @@ namespace NuSysApp
             _serverDict = new ConcurrentDictionary<string, object>();
             _milliSecondDebounce = _milliSecondDebounce;
             _id = id;
-            _updateLibraryElement = updateLibraryElement;
         }
 
 
@@ -153,43 +157,42 @@ namespace NuSysApp
         private async void SendMessage(object state)
         {
             bool saveToServer = (bool) state;
-            _timer.Change(Timeout.Infinite, Timeout.Infinite);
-            Dictionary<string, object> d;
-            if (saveToServer)
+
+            Message messageToSend;
+            if (!saveToServer)
             {
-                d = _serverDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                _serverDict.Clear();
-                _serverSaveTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                messageToSend = new Message(_dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                _dict.Clear();
             }
             else
             {
-                d = _dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                messageToSend = new Message(_serverDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+                _serverSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _serverDict.Clear();
             }
-            if (!_updateLibraryElement && d.ContainsKey(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY))
-            {
-                Debug.WriteLine("Debounce dictionary had a previous 'id' value.  It was overritten with the original ID");
-            }
-            if(_updateLibraryElement && d.ContainsKey("contentId"))
-            {
-                Debug.WriteLine("Debounce dictionary had a previous 'contentId' value.  It was overritten with the original ID");
-            }
-            d[_updateLibraryElement ? NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID:NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY] = _id;
-            var message = new Message(d);
-            if (d.Count > 1)
-            {
-                Request request;
-                if (_updateLibraryElement)
-                {
-                    request = new UpdateLibraryElementModelRequest(message);
-                }
-                else
-                {
-                    request = new ElementUpdateRequest(message, saveToServer);
-                }
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            }
+
+            SendToServer(messageToSend, saveToServer, _id);//call the virtual method that should actually send the update request for each sub classs
+
             _timing = false;
-            _dict.Clear();
         }
+
+        /// <summary>
+        /// this virtual method is called whenever the timer expires for this object's debouncing.
+        /// The parameters will tell you what properties to update, whether to save them, and the id of the object that should be updated. 
+        /// Every subclass of debouncing dictionary should override this method.
+        /// </summary>
+        /// <param name="message">
+        /// The message that should be updated to the server for this object.
+        /// </param>
+        /// <param name="shouldSave">
+        /// a boolean representing whether this message should be saved or just forwarded to other clients
+        /// </param>
+        /// <param name="objectId">
+        /// The id of the object used to instantiate this debouncing dictionary. 
+        /// The exact type of id this is will depend on the sub class of the abstract debouncing dictinary you are using.  
+        /// </param>
+        /// <returns></returns>
+        protected virtual async Task SendToServer(Message message, bool shouldSave, string objectId){}
     }
 }

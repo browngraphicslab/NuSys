@@ -273,6 +273,7 @@ namespace NuSysApp
         {
             var oneParentCollectionId = one.GetParentCollectionId();
             var twoParentCollectionId = two.GetParentCollectionId();
+
             if (oneParentCollectionId != twoParentCollectionId || oneParentCollectionId == null)
             {
                 return;
@@ -286,29 +287,19 @@ namespace NuSysApp
             model.OutAtomId = two.Id;
             var controller = new LinkController(model, linkLibElemController);
 
-            UITask.Run(async delegate
+            var vm = new LinkViewModel(controller);
+            var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
+            var collectionViewModel = allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
+            if (collectionViewModel != null)
             {
-                var vm = new LinkViewModel(controller);
-                var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-
-
-                BezierLinkView view = new BezierLinkView(vm, true);
-
-                var collectionViewModel =
-                    allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
-                if (collectionViewModel != null)
-                {
-                    UITask.Run(async delegate {
-                        collectionViewModel.AtomViewList.Add(view);
-                    });
-                }
-                else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
-                {
-                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
-                }
-                //TODO Change ElementCollectionViewModel child added and removed code to take link controllers or element controllers
-                Canvas.SetZIndex(view, -2);
-            });
+                collectionViewModel.Links.Add(vm);
+            }
+            else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
+            {
+                NuSysRenderer.Instance.CurrentCollection.AddLink(vm);
+            }
+            controller.OutElement.UpdateCircleLinks();
+            controller.InElement.UpdateCircleLinks();
         }
 
 
@@ -328,12 +319,27 @@ namespace NuSysApp
                  {
                      foreach (var visualId2 in _contentIdToLinkableIds[contentId2])
                      {
-                         CreateBezierLinkBetween(visualId1, visualId2);
+                        CreateBezierLinkBetween(visualId1, visualId2);
                      }
                  }
  
              }
-         }
+            if (_contentIdToLinkableIds.ContainsKey(contentId1)) {
+                foreach (var visualId in _contentIdToLinkableIds[contentId1])
+                {
+                    // We add the circle links even so that even if one of them is not on the current workspace we can still see that a link exists
+                    GetLinkable(visualId).UpdateCircleLinks();
+                }
+            }
+            if (_contentIdToLinkableIds.ContainsKey(contentId2)){
+                foreach (var visualId in _contentIdToLinkableIds[contentId2])
+                {
+                    // We add the circle links even so that even if one of them id not on the current workspace we can still see that a link exists
+                    GetLinkable(visualId).UpdateCircleLinks();
+                }
+            }
+
+        }
 
 
 
@@ -575,22 +581,34 @@ namespace NuSysApp
             }
 
             var isSuccess = false;
-            await UITask.Run(async delegate
-            {
-                Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
-                // create a new presentation link view model
-                var vm = new PresentationLinkViewModel(model);
-                // create a new presentation link view
-                var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
-                //TODO use this collectionController stuff, check if the collection exists
-                //var collectionController = SessionController.Instance.IdToControllers[model.ParentCollectionId] as ElementCollectionController;
-                // Debug.Assert(collectionController != null, "the collectionController is not an element collection controller, check that parent collection id is being set correctly for presentation link models");
-                //collectionController.AddChild(view);
+  
+            Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
 
-                // Add the model to the list of models
-                PresentationLinkViewModel.Models.Add(vm.Model);
-                isSuccess = true;
-            });
+
+            // create a new presentation link view
+            //   var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
+            //TODO use this collectionController stuff, check if the collection exists
+            //var collectionController = SessionController.Instance.IdToControllers[model.ParentCollectionId] as ElementCollectionController;
+            // Debug.Assert(collectionController != null, "the collectionController is not an element collection controller, check that parent collection id is being set correctly for presentation link models");
+            //collectionController.AddChild(view);
+
+            // Add the model to the list of models
+            // create a new presentation link view model
+            var vm = new PresentationLinkViewModel(model);
+            PresentationLinkViewModel.Models.Add(vm.Model);
+
+            var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
+            var collectionViewModel = allContent.FirstOrDefault(item => (item.LibraryElementId == vm.Model.ParentCollectionId)) as GroupNodeViewModel;
+            if (collectionViewModel != null)
+            {
+                collectionViewModel.Trails.Add(vm);
+            }
+            else
+            {
+                NuSysRenderer.Instance.CurrentCollection.ViewModel.Trails.Add(vm);
+            }
+            isSuccess = true;
+
             return isSuccess;
         }
     }

@@ -28,7 +28,7 @@ namespace NusysServer
                     case "miranda":
                         return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "C:/Users/miran_000/Documents/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "sahil":
-                        return Directory.Exists("C:/Users/nusys/Documents/Sahil6/NusysServer/") ? "C:/Users/nusys/Documents/Sahil6/NusysServer/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil7/NusysServer/") ? "C:/Users/nusys/Documents/Sahil7/NusysServer/" : "D:/home/site/wwwroot/";
                     case "zach":
                         return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "book":
@@ -71,7 +71,7 @@ namespace NusysServer
                             ? "C:/Users/miran_000/Documents/NuSys/NusysServer/"
                             : "D:/home/site/wwwroot/files/";
                     case "sahil":
-                        return Directory.Exists("C:/Users/nusys/Documents/Sahil6/NusysServer/") ? "C:/Users/nusys/Documents/Sahil6/NusysServer/" : "D:/home/site/wwwroot/files/";
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil7/NusysServer/") ? "C:/Users/nusys/Documents/Sahil7/NusysServer/" : "D:/home/site/wwwroot/files/";
                     case "zach":
                         return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/files/";
                     case "book":
@@ -107,7 +107,7 @@ namespace NusysServer
                     case "miranda":
                         return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
                     case "sahil":
-                        return Directory.Exists("C:/Users/nusys/Documents/Sahil6/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil7/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
                     case "zach":
                         return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : "D:/home/site/wwwroot/";
                     case "book":
@@ -163,7 +163,8 @@ namespace NusysServer
             Content,
             PresentationLink,
             Users,
-            AnalysisModels
+            AnalysisModels,
+            Ink
         }
 
         /// <summary>
@@ -221,6 +222,9 @@ namespace NusysServer
                     break;
                 case SQLTableType.Users:
                     keys = NusysConstants.ACCEPTED_USERS_TABLE_KEYS;
+                    break;
+                case SQLTableType.Ink:
+                    keys = NusysConstants.ACCEPTED_INK_TABLE_KEYS;
                     break;
                 default:
                     return new List<string>();
@@ -336,6 +340,9 @@ namespace NusysServer
                     break;
                 case Constants.SQLTableType.Users:
                     name = NusysConstants.USERS_SQL_TABLE_NAME;
+                    break;
+                case Constants.SQLTableType.Ink:
+                    name = NusysConstants.INK_SQL_TABLE_NAME;
                     break;
                 default:
                     throw new Exception("type not supported yet for getting the table name");
