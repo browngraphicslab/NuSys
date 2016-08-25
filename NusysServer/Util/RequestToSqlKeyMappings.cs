@@ -43,6 +43,10 @@ namespace NusysServer
             //links start
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY },//link in id
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY },//link out id
+
+            //collections start
+            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_COLLECTION_FINITE_BOOLEAN_KEY, NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY },//finite collection
+            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY, NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY },//shaped collection points
         };
 
 

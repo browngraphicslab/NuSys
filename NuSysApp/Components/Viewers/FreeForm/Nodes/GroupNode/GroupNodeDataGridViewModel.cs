@@ -27,14 +27,23 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             // We need to dispose of the title changed handler for all of the list items
-            foreach (var item in AtomDataList)
+            if (AtomDataList != null)
             {
-                item.Dispose();
+                foreach (var item in AtomDataList)
+                {
+                    item?.Dispose();
+                }
             }
-            AtomDataList.Clear();
+            AtomDataList?.Clear();
             _infoDict = null;
-            AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
-            Controller.Disposed -= ControllerOnDisposed;
+            if (AtomViewList != null)
+            {
+                AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
+            }
+            if (Controller != null)
+            {
+                Controller.Disposed -= ControllerOnDisposed;
+            }
         }
 
         private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

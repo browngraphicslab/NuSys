@@ -227,8 +227,14 @@ namespace NuSysApp
 
 
             var vm = (FreeFormViewerViewModel) DataContext;
-            vm.SelectionChanged -= VmOnSelectionChanged;
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            if (vm != null)
+            {
+                vm.SelectionChanged -= VmOnSelectionChanged;
+                if (vm.Controller != null)
+                {
+                    vm.Controller.Disposed -= ControllerOnDisposed;
+                }
+            }
             _mode = null;
 
             _inqCanvas = null;

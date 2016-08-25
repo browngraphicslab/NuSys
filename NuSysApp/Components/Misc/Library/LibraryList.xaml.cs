@@ -147,17 +147,17 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
+            LibraryElementModel libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
 
 
-            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == libraryElementModel.LibraryElementId) || (libraryElementModel.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
             }
             
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SetIcon(element);
+            view.LibraryDraggingRectangle.SetIcon(libraryElementModel);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);
@@ -169,11 +169,22 @@ namespace NuSysApp
             t.TranslateX += _x;
             t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(libraryElementModel.ContentDataModelId))
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
+                    if (libraryElementModel.Type == NusysConstants.ElementType.Collection)
+                    {
+                        var request = new GetEntireWorkspaceRequest(libraryElementModel.LibraryElementId);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                        Debug.Assert(request.WasSuccessful() == true);
+                        await request.AddReturnedDataToSessionAsync();
+                        await request.MakeCollectionFromReturnedElementsAsync();
+                    }
+                    else
+                    {
+                        SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(libraryElementModel.ContentDataModelId);
+                    }
                 });
             }
         }
@@ -200,7 +211,7 @@ namespace NuSysApp
             }
             
 
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -235,7 +246,7 @@ namespace NuSysApp
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;

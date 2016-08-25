@@ -33,7 +33,7 @@ namespace NuSysApp
     {
         public FreeFormViewer _freeFormViewer;
 
-        public static string InitialWorkspaceId { get; set; }
+        public static string InitialWorkspaceId { get; private set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }
         //public static string Password { get; private set; }
@@ -276,15 +276,11 @@ namespace NuSysApp
             if (_selectedCollection != null)
             {
                 var id = _selectedCollection.LibraryElementId;
+
+                Debug.Assert(!string.IsNullOrEmpty(id));
+
                 var m = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
                 
-                var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
-                foreach (var content in collectionRequest.GetReturnedContentDataModels())
-                {
-                    SessionController.Instance.ContentController.AddContentDataModel(content);
-                }
-                _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
 
                 if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserName))

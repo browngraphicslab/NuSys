@@ -21,25 +21,39 @@ namespace NuSysApp
     public abstract class DebouncingDictionary
     {
         /// <summary>
+        /// the one timer that all debouncing dictionaries will use.  This will be running whenever any debouncing dictionaries are timing.
+        /// </summary>
+        private static Timer _debouncingTimer = new Timer(DebouncingTimerTick, null, Timeout.Infinite, Timeout.Infinite);
+
+        /// <summary>
+        /// the list of all the debouncing dictionaries currently waiting for the timer to send the signal to save their waiting dictionaries;
+        /// </summary>
+        private static List<DebouncingDictionary> _debouncingDictionariesToSave = new List<DebouncingDictionary>();
+
+        /// <summary>
+        /// a queue of dictionaries waiting to be updated
+        /// </summary>
+        private static Queue<DebouncingDictionary> _debouncingDictionariesToUpdate = new Queue<DebouncingDictionary>();
+
+        /// <summary>
+        /// the delay that the debouncing dicitonary must be left alone before a saving update 
+        /// </summary>
+        private static int _milliSecondServerSaveDelay = 800;
+
+        /// <summary>
+        /// the static boolean indicating if the debouncing timer is currently timing.  
+        /// </summary>
+        private static bool _timing = false;
+
+        /// <summary>
         /// this dictionary will store properties that need to be updated not but necessarily stored on the server.  
-        /// 
         /// </summary>
         private ConcurrentDictionary<string, object> _dict; 
 
         /// <summary>
-        /// tells us whether we are in the middle of an update session of properties for this object
-        /// </summary>
-        private bool _timing = false;
-
-        /// <summary>
-        /// The timer which will keep track of the next time to send a non-saving request
-        /// </summary>
-        private Timer _timer;
-
-        /// <summary>
         /// the time between each non-saving message sent to the server
         /// </summary>
-        private int _milliSecondDebounce = 30;
+        private static int _milliSecondDebounce = 30;
 
         /// <summary>
         /// the id of the object this debouncing dictionary updates
@@ -51,21 +65,16 @@ namespace NuSysApp
         /// </summary>
         private bool _updateLibraryElement = false;
 
+        /// <summary>
+        /// the ticks when the last item to be added to this dictionary was added. 
+        /// This will increase whenever a new item is added to the dictionary
+        /// </summary>
+        public long TicksWhenSaveTimerStarted { get; private set; }
 
         /// <summary>
         /// the dictionary of proprties that will be saved after the save delay timer expires
         /// </summary>
         private ConcurrentDictionary<string, object> _serverDict;
-
-        /// <summary>
-        /// the delay that the debouncing dicitonary must be left alone before a saving update 
-        /// </summary>
-        private int _milliSecondServerSaveDelay = 800;
-
-        /// <summary>
-        /// the time that will send out a saving request every time it expires
-        /// </summary>
-        private Timer _serverSaveTimer;
 
         /// <summary>
         /// this constructor takes in the id of the alias or library element we are updating.  
@@ -75,8 +84,6 @@ namespace NuSysApp
         /// <param name="updateLibraryElement"></param>
         public DebouncingDictionary(string id)
         {
-            _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
-            _serverSaveTimer = new Timer(SendMessage, true, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, object>();
             _serverDict = new ConcurrentDictionary<string, object>();
             _id = id;
@@ -90,8 +97,6 @@ namespace NuSysApp
         /// <param name="updateLibraryElement"></param>
         public DebouncingDictionary(string id, int milliSecondDebounce)
         {
-            _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
-            _serverSaveTimer = new Timer(SendMessage, true, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, object>();
             _serverDict = new ConcurrentDictionary<string, object>();
             _milliSecondDebounce = _milliSecondDebounce;
@@ -112,41 +117,25 @@ namespace NuSysApp
         /// <param name="value"></param>
         public void Add(string databaseKey, object value)
         {
-            //if we are not already timing
+            _dict[databaseKey] = value; //add to the dictionary and server dictionary the latest values
+            _serverDict[databaseKey] = value;
+
             if (!_timing)
             {
-                //start timeing
-                _timing = true;
-                _dict.TryAdd(databaseKey, value);
-                //add to the dictionary and server dictionary the latest values
-                if (_serverDict.ContainsKey(databaseKey))
-                {
-                    _serverDict[databaseKey] = value;
-                }
-                else
-                {
-                    _serverDict.TryAdd(databaseKey, value);
-                }
-                //update the timers to start timing
-                _timer?.Change(_milliSecondDebounce, _milliSecondDebounce);
-                _serverSaveTimer?.Change(_milliSecondServerSaveDelay, _milliSecondServerSaveDelay);
+                _debouncingTimer.Change(_milliSecondDebounce, _milliSecondDebounce); //set the timer to the correct time
+                _timing = true; 
             }
-            else
+
+            //if we are not already timing
+            if (!_debouncingDictionariesToUpdate.Contains(this))
             {
-                //add the values to the dictionary
-                if (_dict.ContainsKey(databaseKey))
-                {
-                    _dict[databaseKey] = value;
-                    _serverDict[databaseKey] = value;
-                }
-                else
-                {
-                    _dict.TryAdd(databaseKey, value);
-                    _serverDict.TryAdd(databaseKey, value);
-                }
-                //only update the save timer to reset its timeout
-                _serverSaveTimer?.Change(_milliSecondServerSaveDelay, _milliSecondServerSaveDelay);
+                _debouncingDictionariesToUpdate.Enqueue(this);//add itself
             }
+            if (!_debouncingDictionariesToSave.Contains(this))
+            {
+                _debouncingDictionariesToSave.Add(this);
+            }
+            TicksWhenSaveTimerStarted = DateTime.Now.Ticks;
         }
 
         /// <summary>
@@ -154,28 +143,58 @@ namespace NuSysApp
         /// the state is a boolean representing whether the request should save
         /// </summary>
         /// <param name="state"></param>
-        private async void SendMessage(object state)
+        private async void SendMessage(bool saveToServer)
         {
-            bool saveToServer = (bool) state;
-
             Message messageToSend;
             if (!saveToServer)
             {
                 messageToSend = new Message(_dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
                 _dict.Clear();
             }
             else
             {
                 messageToSend = new Message(_serverDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
-                _serverSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 _serverDict.Clear();
             }
 
             SendToServer(messageToSend, saveToServer, _id);//call the virtual method that should actually send the update request for each sub classs
-
-            _timing = false;
         }
+
+        /// <summary>
+        /// this method is called by the static Timer, DebouncingTimer.
+        /// This should be called whenever a save time or an update timer is waiting to be sent.  
+        /// this method will check the dictionaries waiting to update or save and will check if they have expired. 
+        /// </summary>
+        /// <param name="state"></param>
+        private static void DebouncingTimerTick(object state)
+        {
+            while (_debouncingDictionariesToUpdate.Count > 0)//send message for every update timer
+            {
+                _debouncingDictionariesToUpdate.Dequeue()?.SendMessage(false);
+            }
+
+            foreach (var dict in _debouncingDictionariesToSave.ToList())//check every waiting save timer
+            {
+                if (dict?.TicksWhenSaveTimerStarted == null)
+                {
+                    _debouncingDictionariesToSave.Remove(dict);
+                }
+                else
+                {
+                    if (DateTime.Now.Ticks - dict.TicksWhenSaveTimerStarted > TimeSpan.TicksPerMillisecond * _milliSecondServerSaveDelay)
+                    {
+                        dict.SendMessage(true);
+                        _debouncingDictionariesToSave.Remove(dict);
+                    }
+                }
+            }
+            if (_debouncingDictionariesToSave.Count == 0)//if theres nothing waiting, set the timeout to be infinite
+            {
+                _debouncingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _timing = false;
+            }
+        }
+
 
         /// <summary>
         /// this virtual method is called whenever the timer expires for this object's debouncing.

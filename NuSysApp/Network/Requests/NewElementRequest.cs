@@ -129,7 +129,8 @@ namespace NuSysApp
             {//send a request to fetch the entire workspace
                 var workspaceRequest = new GetEntireWorkspaceRequest(libraryElementController.LibraryElementModel.ContentDataModelId);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(workspaceRequest);
-                await workspaceRequest.AddReturnedElementsToSessionAsync();
+                await workspaceRequest.AddReturnedDataToSessionAsync();
+                await workspaceRequest.MakeCollectionFromReturnedElementsAsync();
             }
 
             var success = await SessionController.Instance.AddElementAsync(model);

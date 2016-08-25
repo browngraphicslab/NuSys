@@ -20,11 +20,13 @@ namespace NuSysApp
 
         /// <summary>
         /// Prefered constructor When creating new request to send to the server. To use, create new UpdatePresentationLinkRequestArgs class and 
-        /// pass in the corresponding data to it. To use this request, await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request) then call UpdatePresentationLinkInLibrary
+        /// pass in the corresponding data to it. To use this request, await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request) then call UpdatePresentationLinkInLibrary. If you do not wish
+        /// to save the update to the server, set save to server = false. By default, it is set to true.
         /// </summary>
         /// <param name="requestArgs"></param>
-        public UpdatePresentationLinkRequest(UpdatePresentationLinkRequestArgs requestArgs) : base(requestArgs, NusysConstants.RequestType.UpdatePresentationLinkRequest)
+        public UpdatePresentationLinkRequest(UpdatePresentationLinkRequestArgs requestArgs, bool saveToServer = true) : base(requestArgs, NusysConstants.RequestType.UpdatePresentationLinkRequest)
         {
+            _message[NusysConstants.UPDATE_PRESENTATION_LINK_REQUEST_SAVE_TO_SERVER_BOOLEAN] = saveToServer;
         }
 
         /// <summary>

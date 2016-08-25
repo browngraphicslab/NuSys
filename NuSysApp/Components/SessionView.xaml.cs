@@ -163,9 +163,18 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
             SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
 
-            var l = WaitingRoomView.GetFirstLoadList();
-            var firstId = WaitingRoomView.InitialWorkspaceId;
-            await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
+            var collectionId = WaitingRoomView.InitialWorkspaceId;
+
+            var request = new GetEntireWorkspaceRequest(collectionId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            Debug.Assert(request.WasSuccessful() == true);
+
+            await request.AddReturnedDataToSessionAsync();
+
+            var elements = request.GetReturnedElementModels();
+
+            await LoadWorkspaceFromServer(collectionId, elements);
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
@@ -566,17 +575,9 @@ namespace NuSysApp
 
 
 
-        public async Task LoadWorkspaceFromServer(IEnumerable<ElementModel> elements, string collectionId)
+        public async Task LoadWorkspaceFromServer(string collectionId, IEnumerable<ElementModel> elements)
         {
-            WaitingRoomView.InitialWorkspaceId = collectionId;
-
             xLoadingGrid.Visibility = Visibility.Visible;
-
-
-
-            //await
-            // SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
-            //new SubscribeToCollectionRequest(collectionId));
 
             foreach (var controller in SessionController.Instance.IdToControllers.Values)
             {
@@ -604,11 +605,7 @@ namespace NuSysApp
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            var dict = new Dictionary<string, ElementModel>();
-            foreach (var element in elements)
-            {
-                dict[element.Id] = element;
-            }
+            var dict = elements.ToDictionary(e => e.Id, e => e); //convert the elements to the form needed for the make collection method
 
             await Task.Run(async delegate
             {
@@ -630,8 +627,16 @@ namespace NuSysApp
             }
         }
 
-
-        public async Task MakeElement(HashSet<string> made, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
+        /// <summary>
+        /// recursive method to create an element.  
+        /// You need to pass in a list of Ids that have  already been made, as well as a dictionary of Id to elements that remain to be made.  
+        /// you also have to pass in the current elment being made.  
+        /// </summary>
+        /// <param name="madeElementIds"></param>
+        /// <param name="elementsLeft"></param>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        private async Task MakeElement(HashSet<string> madeElementIds, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
         {
             Debug.WriteLine("making element: " + element.Id);
             var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(element.LibraryId);
@@ -645,7 +650,7 @@ namespace NuSysApp
 
             ///add element
             elementsLeft.Remove(element.Id);
-            made.Add(element.Id);
+            madeElementIds.Add(element.Id);
         }
 
         public async Task OpenCollection(ElementCollectionController collectionController)
@@ -658,7 +663,6 @@ namespace NuSysApp
             }
 
 
-
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
             // Add the adornment if this collection has a shape
             /*
@@ -668,7 +672,6 @@ namespace NuSysApp
                    new AdornmentView(freeFormViewerViewModel.Model.ShapePoints));
             }
             */
-
 
 
             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
