@@ -39,8 +39,8 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Grid Height="45" Grid.Row="0" Background="{StaticResource color1}">
-                            <ComboBox x:Name="xFilterComboBox" FontSize="20" SelectionChanged="XFilterComboBox_OnSelectionChanged" VerticalAlignment="Stretch" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Background="Transparent" BorderThickness="0" HorizontalAlignment="Stretch"  ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" ManipulationCompleted="XFilterComboBox_OnManipulationCompleted">
+                        <Grid Height="45" Grid.Row="0" Tapped="XFilterComboBox_OnTapped" Background="{StaticResource color1}"  ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" ManipulationCompleted="XFilterComboBox_OnManipulationCompleted">
+                            <ComboBox x:Name="xFilterComboBox" FontSize="20" SelectionChanged="XFilterComboBox_OnSelectionChanged" VerticalAlignment="Stretch" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Background="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" >
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid HorizontalAlignment="Center">
