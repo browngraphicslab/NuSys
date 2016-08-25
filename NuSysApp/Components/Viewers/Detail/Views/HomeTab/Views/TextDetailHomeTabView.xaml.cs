@@ -49,51 +49,43 @@ namespace NuSysApp
           
             List<Uri> AllowedUris = new List<Uri>();
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
-           
-            Loaded += async delegate (object sender, RoutedEventArgs args)
-            {
-                await SessionController.Instance.InitializeRecog();
-                SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
-            };
-            
-            SizeChanged += delegate(object sender, SizeChangedEventArgs args)
-            {
-                SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
-                SetDimension(SessionController.Instance.SessionView.DetailViewerView.ActualWidth);
-            };
+
+            Loaded += TextDetailHomeTabView_Loaded;
+
+            SizeChanged += TextDetailHomeTabView_SizeChanged;
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
             MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
             vm.TextChanged += VmOnTextBindingChanged;
             MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            vm.LibraryElementController.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += DetailViewerView_Disposed;
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
+            createCount++;
+        }
 
+        private async void TextDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
+        {
+            await SessionController.Instance.InitializeRecog();
+            SetHeight(SessionController.Instance.SessionView.ActualHeight / 2);
+        }
+
+        private void TextDetailHomeTabView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetHeight(SessionController.Instance.SessionView.ActualHeight / 2);
+            SetDimension(SessionController.Instance.SessionView.DetailViewerView.ActualWidth);
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
-            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
-            detailViewerView.Disposed -= DetailViewerView_Disposed;
             Dispose();
         }
 
         public void SetHeight(double parentHeight)
         {
             MyWebView.Height = parentHeight;
-        }
-
-        private void ControllerOnDisposed(object source, object args)
-        {
-            var vm = (TextDetailHomeTabViewModel)DataContext;
-            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
-            vm.TextChanged -= VmOnTextBindingChanged;
-            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
-            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
-            DataContext = null;
         }
 
         private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
@@ -146,11 +138,7 @@ namespace NuSysApp
             MyWebView.Width = parentWidth * 0.9;
         }
 
-        private void WebView_OnNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
-        {
-            string url = sender.Source.AbsoluteUri;
 
-        }
 
         /*
         Updates text in editor when necessary
@@ -179,11 +167,6 @@ namespace NuSysApp
             }
 
         }
-
-
-
-
-
 
         /*
         Opens up link from Text Detail View in new web node, in the network 
@@ -235,130 +218,26 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            //UpdateModelText(_modelText);
-        }
-
-        private async void OnRecordClick(object sender, RoutedEventArgs e)
-        {
-            //if (!_isRecording)
-
-            var session = SessionController.Instance;
-            if (!session.IsRecording)
-            {
-                //var oldColor = this.RecordVoice.Background;
-                Color c = new Color();
-                c.A = 255;
-                c.R = 199;
-                c.G = 84;
-                c.B = 82;
-                //     this.RecordVoice.Background = new SolidColorBrush(c);
-                //await TranscribeVoice();
-                await session.TranscribeVoice();
-                //     this.RecordVoice.Background = oldColor;
-                var vm = (TextDetailHomeTabViewModel)DataContext;
-                vm.LibraryElementController.ContentDataController.SetData(session.SpeechString);
-            }
-            else
-            {
-                var vm = this.DataContext as TextDetailHomeTabViewModel;
-                //   this.RecordVoice.Background = vm.Color;
-            }
-        }
-
-        //private async Task TranscribeVoice()
-        //{
-        //    string spokenString = "";
-        //    // Create an instance of SpeechRecognizer. 
-        //    // Start recognition. 
-
-        //    try
-        //    {
-        //       // this.RecordVoice.Click += stopTranscribing;
-        //        _isRecording = true;
-        //        SpeechRecognitionResult speechRecognitionResult = await _recognizer.RecognizeAsync();
-        //        _isRecording = false;
-        //      //  this.RecordVoice.Click -= stopTranscribing;
-        //        // If successful, display the recognition result. 
-        //        if (speechRecognitionResult.Status == SpeechRecognitionResultStatus.Success)
-        //        {
-        //            spokenString = speechRecognitionResult.Text;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        const int privacyPolicyHResult = unchecked((int)0x80045509);
-        //        const int networkNotAvailable = unchecked((int)0x80045504);
-
-        //        if (ex.HResult == privacyPolicyHResult)
-        //        {
-        //            // User has not accepted the speech privacy policy
-        //            string error = "In order to use dictation features, we need you to agree to Microsoft's speech privacy policy. To do this, go to your Windows 10 Settings and go to Privacy - Speech, inking, & typing, and enable data collection.";
-        //            var messageDialog = new Windows.UI.Popups.MessageDialog(error);
-        //            messageDialog.ShowAsync();
-
-        //        }
-        //        else if (ex.HResult == networkNotAvailable)
-        //        {
-        //            string error = "In order to use dictation features, NuSys requires an internet connection";
-        //            var messageDialog = new Windows.UI.Popups.MessageDialog(error);
-        //            messageDialog.ShowAsync();
-        //        }
-        //    }
-        //    //_recognizer.Dispose();
-        //   // this.mdTextBox.Text = spokenString;
-
-        //    Debug.WriteLine(spokenString);
-
-        //    var vm = (TextNodeViewModel)DataContext;
-        //    (vm.Model as TextNodeModel).Text = spokenString;
-        //}
-
-        //private async void stopTranscribing(object o, RoutedEventArgs e)
-        //{
-        //    _recognizer.StopRecognitionAsync();
-        //    _isRecording = false;
-        //   // this.RecordVoice.Click -= stopTranscribing;
-        //}
-        private async void OnGoToSource(object sender, RoutedEventArgs e)
-        {
-            /*
-            var model = (TextElementModel)((TextNodeViewModel)DataContext).Model;
-            string token = model.GetMetaData("Token")?.ToString();
-
-            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            disposeCount++;
+            var vm = DataContext as TextDetailHomeTabViewModel;
+            if (vm == null)
             {
                 return;
             }
+            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
+            vm.TextChanged -= VmOnTextBindingChanged;
+            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
 
-            string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
-            StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
+            vm.LibraryElementController.Disposed -= DetailViewerView_Disposed;
 
-            if (Constants.WordFileTypes.Contains(ext))
-            {
-                string bookmarkId = model.GetMetaData("BookmarkId").ToString();
-                StorageFile writeBookmarkFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, token);
-
-                using (StreamWriter writer = new StreamWriter(await writeBookmarkFile.OpenStreamForWriteAsync()))
-                {
-                    writer.WriteLineAsync(bookmarkId);
-                }
-
-                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimeWord.OpenStreamForWriteAsync()))
-                {
-                    writer.WriteLineAsync(token);
-                }
-            }
-            else if (Constants.PowerpointFileTypes.Contains(ext))
-            {
-                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimePowerpoint.OpenStreamForWriteAsync()))
-                {
-                    writer.WriteLineAsync(token);
-                }
-            }
-            
-            await AccessList.OpenFile(token);
-            */
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            vm.TextChanged -= VmOnTextBindingChanged;
+            vm.Dispose();
+            MyWebView = null;//This is essential because without it the webview does not dispose on time so it continues to keep taking up memory
+            //UpdateModelText(_modelText);
         }
-
+        public static int createCount = 0;
+        public static int disposeCount = 0;
     }
 }
