@@ -220,7 +220,7 @@ namespace NuSysApp
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
-            if (selectedTag != null)
+            if (selectedTag != null && !(SessionController.Instance.SessionView.ModeInstance is ExplorationMode))
             {
                 MetadataToolModel model = new MetadataToolModel();
                 MetadataToolController controller = new MetadataToolController(model);

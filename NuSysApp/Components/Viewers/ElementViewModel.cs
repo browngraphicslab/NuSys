@@ -219,7 +219,7 @@ namespace NuSysApp
         {
             var button = sender as Button;
             var text = button.Content.ToString();
-            SessionController.Instance.SessionView.ShowRelatedElements(text); 
+            SessionController.Instance.SessionView.ShowRelatedElements(text);
         }
 
       
