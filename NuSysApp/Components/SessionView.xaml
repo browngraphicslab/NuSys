@@ -80,11 +80,21 @@
             <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
             <local:SpeechToTextBox x:Name="xSpeechToTextBox"></local:SpeechToTextBox>
             <local:FileAddedAclsPopup x:Name="xFileAddedAclesPopup"></local:FileAddedAclsPopup>
-            <local:AccessInvalidPopup x:Name="xAccessInvalidPopup"></local:AccessInvalidPopup>
         </Canvas>
         <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="White" ButtonStroke="#113D40"  BubbleTop="False"  LeftJustified="False" HorizontalAlignment="Right" VerticalAlignment="Top"  Width="{Binding ElementName=Properties, Path=Width}" Height="45" MinWidth="300"  MaxWidth="300"></local:TextInputBlock>
-        <Button x:Name="xCurrentCollectionDVButton" Click="CurrentCollectionDV_OnClick" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,300,0">
+        <Button x:Name="xCurrentCollectionDVButton"  Click="CurrentCollectionDV_OnClick" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,300,0">
             <Image Source="ms-appx:///Assets/info.png" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Button>
+        <Button x:Name="xSettingsButton" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,330,0">
+            <Image Source="ms-appx:///Assets/settings icon.png" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            <Button.Flyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem Click="ToggleVisualLinks">Toggle Visual Links</MenuFlyoutItem>
+                </MenuFlyout>
+            </Button.Flyout>
+        </Button>
+        <Button Background="Transparent" Height="50" Width="50" Margin="20"  Click="GoBackToWaitingRoom_OnClick">
+            <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
         </Button>
         <local:DetailViewerView x:Name="xDetailViewer" HorizontalAlignment="Right"></local:DetailViewerView>
         <local:SearchView x:Name="xSearchViewer" HorizontalAlignment="Left" Visibility="Collapsed"></local:SearchView>
