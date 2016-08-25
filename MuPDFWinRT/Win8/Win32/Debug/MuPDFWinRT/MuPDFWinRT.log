@@ -1,16 +1,16 @@
 ﻿  Document.cpp
-c1xx : fatal error C1083: Cannot open source file: '..\Src\Document.cpp': No such file or directory
   LinkInfoInternal.cpp
   LinkInfoRemote.cpp
-c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoInternal.cpp': No such file or directory
   LinkInfoURI.cpp
   LinkInfoVisitor.cpp
-c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoRemote.cpp': No such file or directory
   MuPDFDoc.cpp
-c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoURI.cpp': No such file or directory
-c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoVisitor.cpp': No such file or directory
-c1xx : fatal error C1083: Cannot open source file: '..\Src\MuPDFDoc.cpp': No such file or directory
   OutlineItem.cpp
-c1xx : fatal error C1083: Cannot open source file: '..\Src\OutlineItem.cpp': No such file or directory
   Utilities.cpp
-c1xx : fatal error C1083: Cannot open source file: '..\Src\Utilities.cpp': No such file or directory
+  libmupdf.lib(doc_document.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+Document.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
+     Creating library Win32\Debug\MuPDFWinRT.lib and object Win32\Debug\MuPDFWinRT.exp
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  Finished generating code
+  MuPDFWinRT.vcxproj -> C:\Users\graphics_lab\Documents\Trent_Nusys\nusys4\nusys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll
