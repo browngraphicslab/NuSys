@@ -448,6 +448,7 @@ namespace NuSysApp
             await UITask.Run(delegate
             {
                 foreach (var item in new HashSet<object>(xClippingCanvas.Items))
+
                 {
                     var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                     Debug.Assert(regionVM != null);
@@ -461,6 +462,7 @@ namespace NuSysApp
                     }
                 }
             });
+
 
         }
         

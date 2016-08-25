@@ -18,16 +18,17 @@ namespace NusysServer.Util.SQLQuery
         /// <param name="conditional"></param>
         public SQLUpdateRowQuery(ITableRepresentable tableToUpdate, List<SqlQueryEquals> propertiesToUpdate, SqlQueryConditional conditional = null)
         {
+            _tableToUpdate = tableToUpdate;
             if (conditional != null)
             {
                 CommandString = "UPDATE " + tableToUpdate.GetSqlQueryRepresentation() + " SET " +
-                                string.Join(",", propertiesToUpdate.Select(q => q.GetQueryString())) + " WHERE " +
-                                conditional.GetQueryString();
+                                string.Join(",", CleanPropertiesToUpdate(propertiesToUpdate).Select(q => q.GetQueryString())) + " WHERE " +
+                                CleanConditional(conditional).GetQueryString();
             }
             else
             {
                 CommandString = "UPDATE " + tableToUpdate.GetSqlQueryRepresentation() + " SET " +
-                                string.Join(",", propertiesToUpdate.Select(q => q.GetQueryString()));
+                                string.Join(",", CleanPropertiesToUpdate(propertiesToUpdate).Select(q => q.GetQueryString()));
             }
         }
 
