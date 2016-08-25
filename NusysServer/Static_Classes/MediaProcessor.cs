@@ -69,12 +69,31 @@ namespace NusysServer
                                 var i = 0;
                                 foreach (var pageUrl in pageUrls)
                                 {
-                                    RunPageOcr(i, OCRModels, pageUrl,senderHandler);
+                                    Task.Run(async delegate {
+                                        await RunPageOcr(i, OCRModels, pageUrl, senderHandler);
+                                    });
                                     i++;
                                 }
+
+                                var millisecondDelay = 200;
+                                var maxSecondsToRetrieve = 90;
+                                var totalDelay = 0;
                                 while (OCRModels.Any(model => model == null))
                                 {
-                                    await Task.Delay(400); //wait until all the pages return
+                                    totalDelay += millisecondDelay;
+                                    await Task.Delay(millisecondDelay); //wait until all the pages return
+                                    if (totalDelay >= maxSecondsToRetrieve * 1000)
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                for (int k = 0; k < OCRModels.Length; k++) //for every index, if its null just create an empty model
+                                {
+                                    if (OCRModels[k] == null)
+                                    {
+                                        OCRModels[k] = new NuSysOcrAnalysisModel();
+                                    }
                                 }
 
                                 var topics = await GetTopicsOfText(string.Join(" ", pdfText ?? new List<string>()), title ?? "") ?? new List<string>(); //get the topics of this pdf
@@ -83,7 +102,7 @@ namespace NusysServer
                                 {
                                     DocumentAnalysisModel = pdfDocModel,
                                     PageImageAnalysisModels = new List<NuSysOcrAnalysisModel>(OCRModels),
-                                    SuggestedTopics = topics?.Where(t => !string.IsNullOrEmpty(t)).ToList() ?? new List<string>()
+                                    SuggestedTopics = topics?.Where(t => !string.IsNullOrEmpty(t))?.ToList() ?? new List<string>()
                                 };
                                 analysisModel = pdfModel; //set the analysis model
 
@@ -158,7 +177,6 @@ namespace NusysServer
         {
             try
             {
-                senderHandler.SendError(new Exception("starting async fetch"));
                 var image = Image.FromFile(FileHelper.FilePathFromUrl(pageUrl));
                 var ocrModel = await ImageProcessor.GetNusysOcrAnalysisModelFromUrlAsync(pageUrl, image.Width, image.Height);
                 foreach (var r in ocrModel?.Regions ?? new List<CognitiveApiRegionModel>())
@@ -169,7 +187,6 @@ namespace NusysServer
                     }
                 }
                 array[pageNumber] = ocrModel;
-                senderHandler.SendError(new Exception("ending async fetch"));
             }
             catch (Exception e)
             {

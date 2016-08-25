@@ -239,7 +239,7 @@ namespace NuSysApp
         {
             // clear the current suggested tags
             SuggestedTags.Clear();
-            Task.Run(async delegate
+            var task = async delegate
             { 
                 if (CurrentElementController != null)
                 {

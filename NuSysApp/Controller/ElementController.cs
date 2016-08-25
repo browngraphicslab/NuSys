@@ -183,9 +183,12 @@ namespace NuSysApp
             //create and execute the request
             var request = new DeleteElementRequest(Model.Id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-            //delete it locally (may need to check if it was succesful first)
-            return request.RemoveNodeLocally();
+            if (request.WasSuccessful() == true)
+            {
+                //delete it locally (may need to check if it was succesful first)
+                return request.RemoveNodeLocally();
+            }
+            return false;
         }
 
         /// <summary>
