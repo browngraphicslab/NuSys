@@ -124,11 +124,10 @@ namespace NuSysApp
         /// Most times you use this request, you should call this method
         /// </summary>
         /// <returns></returns>
-        public async Task AddReturnedElementsToSessionAsync()
+        public async Task AddReturnedDataToSessionAsync()
         {
             //get the contents and elements
             var contentDataModels = GetReturnedContentDataModels();
-            var elements = GetReturnedElementModels();
             var presentationLinks = GetReturnedPresentationLinkModels();
 
             //for each contentDataModel, add it to the contentController if it doesn't exist
@@ -140,15 +139,21 @@ namespace NuSysApp
                 }
             }
 
-            //make the collection
-            await SessionController.Instance.SessionView.MakeCollection(
-                elements.Select(element => new KeyValuePair<string, ElementModel>(element.Id, element))
-                    .ToDictionary(k => k.Key, v => v.Value));
-
             foreach (var presentationLink in presentationLinks)//add the presentation links
             {
                 await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
             }
+        }
+
+        /// <summary>
+        /// this method will make a collection out of the returned elements.  
+        /// This can be called in conjunction with the AddReturnedDataToSessionAsync() method
+        /// </summary>
+        /// <returns></returns>
+        public async Task MakeCollectionFromReturnedElementsAsync()
+        {
+            var elements = GetReturnedElementModels();
+            await SessionController.Instance.SessionView.MakeCollection(elements.ToDictionary(e => e.Id, e => e));
         }
     }
 }

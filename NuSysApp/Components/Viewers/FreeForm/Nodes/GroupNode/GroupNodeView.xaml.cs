@@ -274,11 +274,14 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (GroupNodeViewModel) DataContext;
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            if (vm?.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
             dataGridView = null;
             timelineView = null;
             freeFormView = null;
-            nodeTpl.Dispose();
+            nodeTpl?.Dispose();
             DataContext = null;
           
         }

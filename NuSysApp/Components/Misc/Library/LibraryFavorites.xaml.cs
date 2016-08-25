@@ -128,7 +128,7 @@ namespace NuSysApp
         {
 
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -165,7 +165,7 @@ namespace NuSysApp
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;

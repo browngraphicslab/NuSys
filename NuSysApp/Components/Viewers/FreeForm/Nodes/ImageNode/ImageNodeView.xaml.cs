@@ -48,7 +48,10 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source, object args)
         {
-            _vm.Controller.Disposed -= ControllerOnDisposed;
+            if (_vm?.Controller != null)
+            {
+                _vm.Controller.Disposed -= ControllerOnDisposed;
+            }
             nodeTpl.Dispose();
             DataContext = null;
         }

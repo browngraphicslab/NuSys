@@ -438,27 +438,32 @@ namespace NuSysApp
                 } 
             }
         }
-        
-        public void RemoveRegionView(string regionLibraryElementId)
+        /// <summary>
+        /// Whenever we remove a region from the library and we need to get rid of it's visual copies we
+        /// call this method to remove it from the current rectangle wrapper
+        /// </summary>
+        /// <param name="regionLibraryElementId"></param>
+        public async void RemoveRegionView(string regionLibraryElementId)
         {
-            var toDelete = new HashSet<FrameworkElement>();
-                foreach (var item in xClippingCanvas.Items)
+            await UITask.Run(delegate
+            {
+                foreach (var item in new HashSet<object>(xClippingCanvas.Items))
+
                 {
                     var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                     Debug.Assert(regionVM != null);
 
 
                     if (regionVM.Model.LibraryElementId == regionLibraryElementId)
-                   {
-                    regionVM.Dispose(null, EventArgs.Empty);
-                       toDelete.Add(item as FrameworkElement);
+                    {
+                        regionVM.Dispose(null, EventArgs.Empty);
+                        xClippingCanvas.Items.Remove(item);
                         return;
                     }
                 }
-            foreach (var item in toDelete)
-            {
-                xClippingCanvas.Items.Remove(item);
-            }
+            });
+
+
         }
         
         public double GetWidth()

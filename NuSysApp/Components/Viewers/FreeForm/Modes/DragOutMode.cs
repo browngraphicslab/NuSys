@@ -126,7 +126,7 @@ namespace NuSysApp
 
                 
 
-                await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
+                await controller.RequestMoveToCollection(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId, newPos.X, newPos.Y);
             }
 
             _dragItem = null;

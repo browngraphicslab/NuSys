@@ -266,15 +266,22 @@ namespace NuSysApp
             var deleteElementRequest = new DeleteElementRequest(Model.Id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(deleteElementRequest);
 
-            //remove locally (may want to check if it was successful)
-            deleteElementRequest.RemoveNodeLocally();
+            if (deleteElementRequest.WasSuccessful() == true)
+            {
+                //remove locally (may want to check if it was successful)
+                deleteElementRequest.RemoveNodeLocally();
 
-            //create the new element
-            var request = new NewElementRequest(newElementArgs);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                //create the new element
+                var request = new NewElementRequest(newElementArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
-            //add the new element locally
-            request.AddReturnedElementToSession();
+                //add the new element locally
+                request.AddReturnedElementToSession();
+            }
+            else
+            {
+                //alert the user it failed
+            }
         }
 
         public ElementModel Model

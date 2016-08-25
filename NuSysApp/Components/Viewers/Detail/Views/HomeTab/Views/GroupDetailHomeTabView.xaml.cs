@@ -354,7 +354,7 @@ namespace NuSysApp
         private void AddToCollection_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -388,7 +388,7 @@ namespace NuSysApp
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
