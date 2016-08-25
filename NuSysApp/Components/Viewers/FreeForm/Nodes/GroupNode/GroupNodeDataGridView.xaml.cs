@@ -51,10 +51,13 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (ElementViewModel) DataContext;
-            SessionController.Instance.SessionView.MainCanvas.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            SessionController.Instance.SessionView?.MainCanvas?.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
+            if(vm.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
             DataContext = null;
-            vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
         private Image _drag;
@@ -95,7 +98,7 @@ namespace NuSysApp
                 SessionController.Instance.IdToControllers.TryGetValue(_id ?? "", out controller);
                 if (controller != null)
                 {
-                    await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
+                    await controller.RequestMoveToCollection(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId, newPos.X, newPos.Y);
                 }
             }
 

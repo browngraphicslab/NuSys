@@ -562,6 +562,8 @@ namespace NuSysApp
             if (vm.CurrentElementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
             {
                 xPublicRadioButton.IsChecked = true;
+                xPrivateRadioButton.Visibility = Visibility.Collapsed;
+                xReadOnlyRadioButton.Visibility = Visibility.Collapsed;
             }
         }
 

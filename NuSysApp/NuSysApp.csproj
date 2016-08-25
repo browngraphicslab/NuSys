@@ -304,6 +304,9 @@
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\AccessInvalidPopup.xaml.cs">
+      <DependentUpon>AccessInvalidPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
       <DependentUpon>ChatBoxView.xaml</DependentUpon>
     </Compile>
@@ -712,6 +715,7 @@
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewPresentationLinkRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\DeleteMetadataRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewCollectionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewPDFRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />
@@ -999,6 +1003,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\LoadingScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\AccessInvalidPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

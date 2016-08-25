@@ -31,11 +31,6 @@ namespace NuSysApp
             Canvas.SetZIndex(xButtonStack, 20);
         }
 
-        private void AddRegionButtonClicked(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         private async void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;

@@ -28,7 +28,7 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" x:Name="xButtonStack" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <Button x:Name="xAddRegion" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}" Click="AddRegionButtonClicked">
+            <Button x:Name="xAddRegion" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Button.Content>
                     <Image x:Name="icon" Width="20" Height="20" Margin="0,0,0,0" VerticalAlignment="Stretch" Stretch="Uniform" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/icon_plus.png"></Image>
                 </Button.Content>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using NusysIntermediate;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 { 
@@ -39,6 +40,11 @@ namespace NuSysApp
             Debug.Fail("we shouldnt ever really fail to find ilinkable for a certain id");
             return null;
         }
+        /// <summary>
+        /// When set to true we render all of the visual links that connect the nodes in the current workspace
+        /// When set to false we only render the circle links that exist between contents and not the bezier links
+        /// </summary>
+        public bool AreBezierLinksVisible = true;
 
         /// <summary>
         /// Adds the linkable to the appropriate linkables dictionaries
@@ -120,7 +126,30 @@ namespace NuSysApp
                 }
             }
         }
-        
+        /// <summary>
+        /// When the global function that changes the visibility of the bezier links is changed in a global setting this fucntion changes the value and also redraws the 
+        /// visual links so that the settings are applied in real time.
+        /// </summary>
+        /// <param name="visibility"></param>
+        public void ChangeVisualLinkVisibility(bool visibility)
+        {
+            AreBezierLinksVisible = visibility;
+            if (visibility)
+            {
+                foreach (var linkId in SessionController.Instance.ContentController.IdList.Where(e => SessionController.Instance.ContentController.GetLibraryElementModel(e) is LinkLibraryElementModel))
+                {
+                    var linkController = GetLinkLibraryElementControllerFromLibraryElementId(linkId);
+                    CreateVisualLinks(linkController);
+                }
+            }
+            else
+            {
+                foreach(var linkAtom in new HashSet<FrameworkElement>(SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(e => e is BezierLinkView)))
+                {
+                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(linkAtom);
+                }
+            }
+        }
 
         /// <summary>
         /// Add the link library element controller's library ContentId to the hashset for both endpoint ids' keys
@@ -271,6 +300,10 @@ namespace NuSysApp
         /// <param name="two"></param>
         private void CreateBezierLinkBetween(ILinkable one, ILinkable two)
         {
+            if (!AreBezierLinksVisible)
+            {
+                return; // if we do not want to see the visual links then this should stop the links from being created
+            }
             var oneParentCollectionId = one.GetParentCollectionId();
             var twoParentCollectionId = two.GetParentCollectionId();
 
@@ -313,7 +346,7 @@ namespace NuSysApp
              var contentId2 = linkController?.LinkLibraryElementModel?.OutAtomId;
              Debug.Assert(contentId1 != null);
              Debug.Assert(contentId2 != null);
-             if (_contentIdToLinkableIds.ContainsKey(contentId1) && _contentIdToLinkableIds.ContainsKey(contentId2))
+             if (_contentIdToLinkableIds.ContainsKey(contentId1) && _contentIdToLinkableIds.ContainsKey(contentId2) && AreBezierLinksVisible) // the AreBezierLinksVisible is just to clean up runtime
              {
                  foreach (var visualId1 in _contentIdToLinkableIds[contentId1])
                  {

@@ -54,7 +54,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This is called when the server sends a message to the client (except the client who initially created the request). It should create a new presentation link client side.
+        /// This is called when the server sends a message to the client (except the client who initially created the request). It should create a new presentation link client side only if you have
+        /// access to the controllers of the elements that are being linked.
         /// </summary>
         /// <returns></returns>
         public override async Task ExecuteRequestFunction()
@@ -66,7 +67,10 @@ namespace NuSysApp
             PresentationLinkModel model = JsonConvert.DeserializeObject<PresentationLinkModel>( _message.GetString(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
 
             // since we always create presentation links client side the same way, just call AddPresenationLinkToLibrary
-            await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(model);
+            if (SessionController.Instance.IdToControllers.ContainsKey(model.InElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId))
+            {
+                await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(model);
+            }
         }
 
         /// <summary>

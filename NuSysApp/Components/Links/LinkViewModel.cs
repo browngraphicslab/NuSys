@@ -69,6 +69,12 @@ namespace NuSysApp
             IsSelected = false;
             controller.AnchorChanged += ChangeAnchor;
             RaisePropertyChanged("Anchor");
+            controller.Disposed += Controller_Disposed;
+        }
+
+        private void Controller_Disposed(object sender, EventArgs e)
+        {
+            Dispose();
         }
 
         private void ChangeAnchor(object sender, Point2d e)
@@ -85,6 +91,8 @@ namespace NuSysApp
         public void Dispose()
         {
             Controller.TitleChanged -= TitleChanged;
+            Controller.AnchorChanged -= ChangeAnchor;
+            Controller.Disposed -= Controller_Disposed;
         }
 
 

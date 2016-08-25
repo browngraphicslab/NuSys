@@ -31,29 +31,21 @@ namespace NuSysApp
             Controller.SetSize(Model.Width, Model.Height);
         }
 
-        
+        /// <summary>
+        /// This is the function that recieves a set size event from the element controller and appropriately 
+        /// resizes the node that is attached to the controller according to the aspect ratio
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public override void SetSize(double width, double height)
         {
-         //   Debug.WriteLine("setting size");
-            base.SetSize(width, height);
-            return;
-            var model = (VideoNodeModel)Model;
-            if (model.ResolutionX < 1)
+            if (width * GetRatio() < Constants.MinNodeSize)
             {
-                Debug.WriteLine(model.ResolutionX);
-                return;
+                return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour
             }
-            if (width > height)
-            {
-                var r = model.ResolutionY / (double)model.ResolutionX;
-                base.SetSize(width, width * r + 150);
-            }
-            else
-            {
 
-                var r = model.ResolutionX / (double)model.ResolutionY;
-                base.SetSize(height * r, height + 150);
-            }
+            base.SetSize(width, width * GetRatio());
+        
         }
         
 

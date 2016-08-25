@@ -77,6 +77,13 @@ namespace NuSysApp
             return (double)Image.PixelHeight / (double)Image.PixelWidth;
             
         }
+        /// <summary>
+        /// This is the function that recieves a set size event from the element controller and appropriately 
+        /// resizes the node that is attached to the controller according to the aspect ratio
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         protected override void OnSizeChanged(object source, double width, double height)
         {
             SetSize(width,width * GetRatio());

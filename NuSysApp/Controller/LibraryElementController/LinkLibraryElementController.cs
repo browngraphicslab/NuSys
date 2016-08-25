@@ -32,17 +32,7 @@ namespace NuSysApp
                 LinkLibraryElementModel.OutAtomId = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY] as string;
                 Debug.Assert(LinkLibraryElementModel.OutAtomId != null);
             }
-            if (message.ContainsKey("color"))
-            {
-
-                string hexColor = message.GetString("color");
-                byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
-                byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
-                byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
-                byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
-                //LinkLibraryElementModel.Color = Color.FromArgb(a, r, g, b);  TODO put back in the color
-                //Color = Color.FromArgb(message.GetString("color"));
-            }
+            
             base.UnPack(message);
         }
 

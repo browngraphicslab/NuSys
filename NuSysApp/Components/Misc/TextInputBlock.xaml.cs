@@ -116,7 +116,7 @@ namespace NuSysApp
                 {
                     Grid.SetColumn(ButtonMenu, 0);
                     Grid.SetColumn(Input, 1);
-                    MainGrid.ColumnDefinitions[0].Width = new GridLength(85);
+                    MainGrid.ColumnDefinitions[0].Width = new GridLength(25);
 
                 }
             }

@@ -103,6 +103,12 @@ namespace NuSysApp
 
         #endregion Required
 
+        /// <summary>
+        /// this method is required by the request args interface.
+        /// It packs a message with all the properties being used to create this new library element.  
+        /// The keys for every property will be the request key, not the database key.
+        /// </summary>
+        /// <returns></returns>
         public virtual Message PackToRequestKeys()
         {
             var message = new Message();
