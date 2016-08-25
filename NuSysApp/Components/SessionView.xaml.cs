@@ -627,6 +627,18 @@ namespace NuSysApp
             }
         }
 
+        public void ToggleVisualLinks(object sender, RoutedEventArgs e)
+        {
+            if (SessionController.Instance.LinksController.AreBezierLinksVisible)
+            {
+                SessionController.Instance.LinksController.ChangeVisualLinkVisibility(false);
+            }
+            else
+            {
+                SessionController.Instance.LinksController.ChangeVisualLinkVisibility(true);
+            }
+        }
+
         /// <summary>
         /// recursive method to create an element.  
         /// You need to pass in a list of Ids that have  already been made, as well as a dictionary of Id to elements that remain to be made.  

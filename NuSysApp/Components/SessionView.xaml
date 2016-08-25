@@ -85,6 +85,14 @@
         <Button x:Name="xCurrentCollectionDVButton"  Click="CurrentCollectionDV_OnClick" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,300,0">
             <Image Source="ms-appx:///Assets/info.png" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
+        <Button x:Name="xSettingsButton" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,330,0">
+            <Image Source="ms-appx:///Assets/settings icon.png" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            <Button.Flyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem Click="ToggleVisualLinks">Toggle Visual Links</MenuFlyoutItem>
+                </MenuFlyout>
+            </Button.Flyout>
+        </Button>
         <Button Background="Transparent" Height="50" Width="50" Margin="20"  Click="GoBackToWaitingRoom_OnClick">
             <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
         </Button>
