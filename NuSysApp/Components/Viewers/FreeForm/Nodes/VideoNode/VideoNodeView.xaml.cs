@@ -55,9 +55,12 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (VideoNodeViewModel) DataContext;
-            vm.Controller.Disposed -= ControllerOnDisposed;
             nodeTpl.Dispose();
             DataContext = null;
+            if (vm.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
         }
 
         private void LoadVideo(object sender)
