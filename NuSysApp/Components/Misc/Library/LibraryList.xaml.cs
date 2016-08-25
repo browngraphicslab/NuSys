@@ -200,7 +200,7 @@ namespace NuSysApp
             }
             
 
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -235,7 +235,7 @@ namespace NuSysApp
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;

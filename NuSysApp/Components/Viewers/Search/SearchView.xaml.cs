@@ -280,7 +280,7 @@ namespace NuSysApp
 
             SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
             LibraryElementModel element = result?.Model;
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -327,7 +327,7 @@ namespace NuSysApp
         {
             SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
             LibraryElementModel element = result?.Model;
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;

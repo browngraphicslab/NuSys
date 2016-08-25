@@ -53,9 +53,12 @@ namespace NuSysApp
 
         private void Controller_Disposed(object sender, EventArgs e)
         {
-            Controller.SizeChanged -= Controller_SizeChanged;
-            Controller.PositionChanged -= Controller_PositionChanged;
-            Controller.Disposed -= Controller_Disposed;
+            if (Controller != null)
+            {
+                Controller.SizeChanged -= Controller_SizeChanged;
+                Controller.PositionChanged -= Controller_PositionChanged;
+                Controller.Disposed -= Controller_Disposed;
+            }
         }
 
         /// <summary>

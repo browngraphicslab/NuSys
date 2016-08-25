@@ -91,5 +91,39 @@ namespace NuSysApp
             (LibraryElementModel as CollectionLibraryElementModel)?.Children?.Clear();
             base.OnSessionControllerEnterNewCollectionStarting(sender, newCollectionLibraryId);
         }
+
+        /// <summary>
+        /// this method is used to set the CollectionLibraryElementModel's ShapePoints property.
+        /// This method will set the model, send a server call with the update, and also will eventually fire an event.
+        /// </summary>
+        /// <param name="newPoints"></param>
+        public void SetCollectionPoints(List<PointModel> newPoints)
+        {
+            //tODO add in the event firing
+            Debug.Assert(newPoints != null);
+            Debug.Assert(CollectionModel != null);//check the state of values being used
+
+            CollectionModel.ShapePoints = newPoints;
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY, newPoints);
+            }
+        }
+
+        /// <summary>
+        /// this method is used to update the collection library element model's IsFinite boolean.
+        /// This will set the model's property, update the server, and eventually will fire an event for this change
+        /// </summary>
+        /// <param name="isFiniteValue"></param>
+        public void SetFiniteBoolean(bool isFiniteValue)
+        {
+            //tODO add in the event firing
+            Debug.Assert(CollectionModel != null);
+            CollectionModel.IsFinite = isFiniteValue;
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY, isFiniteValue);
+            }
+        }
     }
 }

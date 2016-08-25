@@ -1,1 +1,16 @@
-﻿  MuPDFWinRT.vcxproj -> C:\Users\graphics_lab\Documents\Trent_Nusys\nusys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll
+﻿  Document.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Src\Document.cpp': No such file or directory
+  LinkInfoInternal.cpp
+  LinkInfoRemote.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoInternal.cpp': No such file or directory
+  LinkInfoURI.cpp
+  LinkInfoVisitor.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoRemote.cpp': No such file or directory
+  MuPDFDoc.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoURI.cpp': No such file or directory
+c1xx : fatal error C1083: Cannot open source file: '..\Src\LinkInfoVisitor.cpp': No such file or directory
+c1xx : fatal error C1083: Cannot open source file: '..\Src\MuPDFDoc.cpp': No such file or directory
+  OutlineItem.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Src\OutlineItem.cpp': No such file or directory
+  Utilities.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Src\Utilities.cpp': No such file or directory

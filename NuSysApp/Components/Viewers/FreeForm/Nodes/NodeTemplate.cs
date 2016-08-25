@@ -99,7 +99,7 @@ namespace NuSysApp
             var vm = (ElementViewModel)this.DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
 
-            if (vm.Controller.LibraryElementController != null)
+            if (vm?.Controller?.LibraryElementController != null)
             {
                 vm.Controller.LibraryElementController.UserChanged -= ControllerOnUserChanged;
                 vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
