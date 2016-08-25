@@ -293,6 +293,8 @@ namespace NuSysApp
         {
             Width = width;
             Height = height;
+            Controller.Model.Height = height;
+            Controller.Model.Width = width;
         }
 
         #endregion
