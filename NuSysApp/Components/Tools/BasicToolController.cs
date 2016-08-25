@@ -69,9 +69,9 @@ namespace NuSysApp
                 case ToolModel.ToolFilterTypeTitle.Date:
                     return BasicToolModel.Selection.Contains(GetDate(libraryElementModel));
                     break;
-                case ToolModel.ToolFilterTypeTitle.MetadataKeys:
-                    return libraryElementModel.Metadata?.Keys?.Any(item => BasicToolModel.Selection.Contains(item)) ?? false;
-                    break;
+                //case ToolModel.ToolFilterTypeTitle.MetadataKeys:
+                //    return libraryElementModel.Metadata?.Keys?.Any(item => BasicToolModel.Selection.Contains(item)) ?? false;
+                //    break;
                 case ToolModel.ToolFilterTypeTitle.LastEditedDate:
                     return BasicToolModel.Selection.Contains(GetLastEditedDate(libraryElementModel));
                     break;
@@ -133,8 +133,8 @@ namespace NuSysApp
                     return allMetadata.ContainsKey("Date") ? allMetadata["Date"] : new List<string>();
                 case ToolModel.ToolFilterTypeTitle.LastEditedDate:
                     return allMetadata.ContainsKey("LastEditedDate") ? allMetadata["LastEditedDate"] : new List<string>();
-                case ToolModel.ToolFilterTypeTitle.MetadataKeys:
-                    return allMetadata.Keys.ToList();
+                //case ToolModel.ToolFilterTypeTitle.MetadataKeys:
+                //    return allMetadata.Keys.ToList();
                 //case ToolModel.ToolFilterTypeTitle.MetadataValues:
                 //    var ret = new List<string>();
                 //    foreach (var values in allMetadata.Values)

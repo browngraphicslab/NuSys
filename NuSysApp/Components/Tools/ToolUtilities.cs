@@ -21,7 +21,7 @@ namespace NuSysApp
                         return dt.Hour + ":00";
                     }
                 case ToolModel.ToolFilterTypeTitle.Creator:
-                case ToolModel.ToolFilterTypeTitle.MetadataKeys:
+                //case ToolModel.ToolFilterTypeTitle.MetadataKeys:
                 case ToolModel.ToolFilterTypeTitle.Title:
                     return "";
                 default:

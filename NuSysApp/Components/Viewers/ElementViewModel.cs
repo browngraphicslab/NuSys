@@ -219,7 +219,7 @@ namespace NuSysApp
         {
             var button = sender as Button;
             var text = button.Content.ToString();
-            SessionController.Instance.SessionView.ShowRelatedElements(text); 
+            SessionController.Instance.SessionView.ShowRelatedElements(text);
         }
 
       
@@ -285,8 +285,6 @@ namespace NuSysApp
 
             Tags = null;
             _transform = null;
-            _controller = null;
-            
         }
 
         public virtual void SetSize(double width, double height)

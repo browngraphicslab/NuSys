@@ -317,17 +317,17 @@ namespace NuSysApp
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
             var send = (FrameworkElement)sender;
-            if (_currentDragMode == DragMode.Collection)
+            var vm = DataContext as ToolViewModel;
+            if (vm != null)
             {
-                var vm = DataContext as ToolViewModel;
-                if (vm != null)
+                if (sender == xCollectionElement)
                 {
                     vm.CreateCollection(r.X, r.Y);
                 }
-            }
-            else
-            {
-                (DataContext as ToolViewModel)?.CreateStack(r.X, r.Y);
+                else if(sender == xStackElement)
+                {
+                    vm.CreateStack(r.X, r.Y);
+                }
             }
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta));
@@ -653,6 +653,11 @@ namespace NuSysApp
                 (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
                 this.Dispose();
             }
+        }
+
+        private void XFilterComboBox_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            xFilterComboBox.IsEnabled = true;
         }
     }
 }
