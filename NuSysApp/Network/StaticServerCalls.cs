@@ -137,7 +137,7 @@ namespace NuSysApp
                 var newContentRequestArgs = new CreateNewContentRequestArgs()
                 {
                     ContentId = newContentId,
-                    DataBytes = originalController.ContentDataModel.Data,
+                    DataBytes = originalController.ContentDataController.ContentDataModel.Data,
                     LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
                     {
                         Title = originalController.Title + " copy",

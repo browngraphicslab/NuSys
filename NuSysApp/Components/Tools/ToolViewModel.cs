@@ -276,7 +276,10 @@ namespace NuSysApp
                     // execute the request
                     var request = new NewElementRequest(newElementRequestArgs);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    await request.AddReturnedElementToSessionAsync();
+                    if (request.WasSuccessful() == true)
+                    {
+                        await request.AddReturnedElementToSessionAsync();
+                    }
 
                     // increment to finish loop and perform offset
                     i++;

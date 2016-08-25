@@ -62,8 +62,11 @@ namespace NuSysApp
             var vm = (AudioNodeViewModel)DataContext;
             // relic from wave forms still might be added back though
             //(DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement; 
-            nodeTpl.Dispose();
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            nodeTpl?.Dispose();
+            if (vm?.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)

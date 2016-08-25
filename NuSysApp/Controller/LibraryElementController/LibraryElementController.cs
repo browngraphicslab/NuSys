@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using MyToolkit.Utilities;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -75,18 +78,6 @@ namespace NuSysApp
 
         #endregion Events
 
-        /// <summary>
-        /// returns the contentDataModel for this LibraryElementController's LibraryElementModel's ContentDataModelId.  
-        /// Will return null if it doesn't exist LOCALLY.  
-        /// </summary>
-        public ContentDataModel ContentDataModel
-        {
-            get
-            {
-                Debug.Assert(LibraryElementModel.ContentDataModelId != null);
-                return SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
-            }
-        }
 
         /// <summary>
         ///  returns the Content Data controllerfor the content data model for this library element controller's library elent model;
@@ -798,5 +789,40 @@ namespace NuSysApp
             return false;
         }
 
+        /// <summary>
+        /// This virtual method can be used to get the suggested tags of this library element.  
+        /// It will call upon the information available to it, which included analysis models in the overrides of this method.
+        /// It will return a dictionary of string to int, with the string being the lowercased, suggested tag and the int being the weight it is given.
+        /// A higher weight is more suggested.
+        /// 
+        /// This method takes in a bool that will indicate whether this method should also concatenate itself with the suggested tags of the content data controller.
+        /// If this boolean is true and it does include those keywords, this method will load an entire content data model (and analysis model) for a content.
+        /// To make this method faster but less helpful, pass in false.
+        /// 
+        /// To Merge two of these dictionaries together via adding their values for each key, use the linq statement:
+        /// 
+        /// merge a INTO b:
+        /// 
+        ///  a.ForEach(kvp => b[kvp.Key] = (b.ContainsKey(kvp.Key) ? b[kvp.Key] : 0) + kvp.Value);
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool includeContent = true)
+        {
+            var dict = FullMetadata.SelectMany(kvp => kvp.Value.Values).ToImmutableHashSet().ToDictionary(s => s, s=> 1);//so far all we know for suggested tags is the metadata values
+            if (!includeContent)
+            {
+                return dict;
+            }
+
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(LibraryElementModel.ContentDataModelId))
+            {
+                await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(LibraryElementModel.ContentDataModelId);//this await call will be constant time if it exists locally already
+            }
+
+            var contentDict = await ContentDataController.GetSuggestedTagsAsync(includeContent);
+            contentDict.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
+
+            return dict;
+        }
     }
 }
