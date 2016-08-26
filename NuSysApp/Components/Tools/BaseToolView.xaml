@@ -57,10 +57,10 @@
                                 <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
                                     <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="30" Width="30"></Image>
                                 </Button>
-                                <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                                    <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="30" Width="30"></Image>
-                                </Button>
                                 <Button x:Name="xBarChartButton" Click="XBarChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
+                                    <Image Source="ms-appx:///Assets/bar chart icon.png" Height="30" Width="30"></Image>
+                                </Button>
+                                <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
                                     <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="30" Width="30"></Image>
                                 </Button>
                             </StackPanel>
