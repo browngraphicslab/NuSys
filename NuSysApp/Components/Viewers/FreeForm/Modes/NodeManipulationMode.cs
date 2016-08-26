@@ -88,27 +88,18 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
-<<<<<<< HEAD
 
-            ActiveNodes.Remove((UserControl) sender);
+            ActiveNodes.Remove((UserControl)sender);
 
             //Disposes of pointer released event needed for move undo button
             var userControl = (UserControl)sender;
             userControl.PointerReleased -= UserControl_PointerReleased;
 
             manipulationCompletedRoutedEventArgs.Handled = true;
-=======
-            //Get elements controller
-            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
-            if (vm != null) { 
-            var elementController = vm.Controller;
-            if (!vm.IsEditing)
-            { 
-            }
-            ActiveNodes.Remove((UserControl) sender);
-}
->>>>>>> origin/dev
+
         }
+
+        
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
@@ -226,7 +217,7 @@ namespace NuSysApp
                 return;
             }
 
-
+            
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
@@ -295,9 +286,7 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
-<<<<<<< HEAD
 
-=======
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
             if (vm != null)
@@ -328,7 +317,6 @@ namespace NuSysApp
 
                 }
             }
->>>>>>> origin/dev
         }
 
         public bool CheckInBounds(Point p)
@@ -343,3 +331,6 @@ namespace NuSysApp
         }
     }
 }
+
+
+
