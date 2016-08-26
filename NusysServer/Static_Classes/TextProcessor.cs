@@ -343,6 +343,8 @@ namespace NusysServer
                 foreach (var document in phraseModel.documents)
                 {
                     idToSegmentMapping[int.Parse(document.id)].KeyPhrases = document.keyPhrases;
+
+                   
                 }
             }
 

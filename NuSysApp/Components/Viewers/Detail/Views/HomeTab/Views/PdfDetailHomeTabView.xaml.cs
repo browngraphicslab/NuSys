@@ -94,20 +94,28 @@ namespace NuSysApp
                     xSentimentBox.Text = "None found";
                 }
 
-
-
-                //get tag list and order them in order of confidence
-                var segmentList = _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber);
-                //add to items control of suggested tags
-                foreach (var segment in segmentList)
-                {
-                    foreach (var keyphrase in segment.KeyPhrases)
+                //Clear all tags already in the key phrase list
+                UITask.Run(async delegate {
+                    foreach(var tag in xTags.Items)
                     {
-                        var tag = MakeSuggestedTag(keyphrase);
-                        xTags?.Items?.Add(tag);
+                        xTags.Items.Remove(tag);
                     }
+                    //xTags.Items.Clear();
 
-                }
+                    //get tag list and order them in order of confidence
+                    var segmentList = _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber);
+                    //add to items control of suggested tags
+                    foreach (var segment in segmentList)
+                    {
+                        foreach (var keyphrase in segment.KeyPhrases)
+                        {
+                            var tag = MakeSuggestedTag(keyphrase);
+                            xTags?.Items?.Add(tag);
+                        }
+
+                    }
+                });
+
 
                 //xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
             }
@@ -149,6 +157,18 @@ namespace NuSysApp
                 {
                     xTags?.Items?.Remove(i);
                 }
+            }
+        }
+
+        /// <summary>
+        /// dispose suggestedtag_ontapped method
+        /// </summary>
+        private void DisposeTags()
+        {
+            foreach (var i in xTags?.Items)
+            {
+                var currTag = (HyperlinkButton)i;
+                currTag.Tapped -= SuggestedTag_OnTapped;
             }
         }
 
@@ -309,6 +329,7 @@ namespace NuSysApp
             }
 
             xClippingWrapper.Dispose();
+            DisposeTags();
         }
 
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)

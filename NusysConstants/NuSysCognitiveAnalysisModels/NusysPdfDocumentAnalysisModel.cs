@@ -14,6 +14,7 @@ namespace NusysIntermediate
         /// </summary>
         public List<NusysPdfSegmentAnalysisModel> Segments;
 
+        
         /// <summary>
         /// The average of all the sentiments for all the segments in the pdf
         /// </summary>

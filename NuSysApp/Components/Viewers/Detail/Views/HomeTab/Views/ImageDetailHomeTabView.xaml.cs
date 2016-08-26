@@ -84,9 +84,9 @@ namespace NuSysApp
                 //get tag list and order them in order of confidence
                 var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
                 //add to items control of suggested tags
-                foreach (var i in taglist)
+                foreach (var t in taglist)
                 {
-                    var tag = MakeSuggestedTag(i.Name);
+                    var tag = MakeSuggestedTag(t.Name);
                     xTags?.Items?.Add(tag);
                 }
             }
