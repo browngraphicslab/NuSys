@@ -73,7 +73,10 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel) DataContext;
             nodeTpl.Dispose();
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            if(vm.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
         }
 
         private async void OnPageLeftClick(object sender, TappedRoutedEventArgs e)

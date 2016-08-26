@@ -118,7 +118,10 @@ namespace NuSysApp
             TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify -= wvBrowser_ScriptNotify;
             nodeTpl.Dispose();
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            if(vm.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
             DataContext = null;
         }
 

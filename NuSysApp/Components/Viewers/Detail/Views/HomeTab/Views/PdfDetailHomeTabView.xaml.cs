@@ -93,12 +93,62 @@ namespace NuSysApp
                 {
                     xSentimentBox.Text = "None found";
                 }
-                xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
+
+
+
+                //get tag list and order them in order of confidence
+                var segmentList = _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber);
+                //add to items control of suggested tags
+                foreach (var segment in segmentList)
+                {
+                    foreach (var keyphrase in segment.KeyPhrases)
+                    {
+                        var tag = MakeSuggestedTag(keyphrase);
+                        xTags?.Items?.Add(tag);
+                    }
+
+                }
+
+                //xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
             }
             else
             {
                 xSentimentBox.Text = "...";
-                xKeyPhrasesBox.Text = "...";
+                //xKeyPhrasesBox.Text = "...";
+            }
+
+
+
+        }
+
+        private FrameworkElement MakeSuggestedTag(string keyphrase)
+        {
+            HyperlinkButton tag;
+            tag = new HyperlinkButton();
+            tag.Margin = new Thickness(3);
+            tag.Content = keyphrase;
+            tag.FontStyle = Windows.UI.Text.FontStyle.Italic;
+            tag.Foreground = new SolidColorBrush(Constants.color3);
+            tag.Tapped += SuggestedTag_OnTapped;
+
+            return tag;
+        }
+
+        private void SuggestedTag_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var tag = (HyperlinkButton)sender;
+            var keyword = new Keyword((string)tag.Content, Keyword.KeywordSource.UserInput);
+            var vm = (PdfDetailHomeTabViewModel)DataContext;
+            vm.LibraryElementController?.AddKeyword(keyword);
+
+            //remove from suggested tag list
+            foreach (var i in xTags?.Items)
+            {
+                var currTag = (HyperlinkButton)i;
+                if (currTag.Content == tag.Content)
+                {
+                    xTags?.Items?.Remove(i);
+                }
             }
         }
 

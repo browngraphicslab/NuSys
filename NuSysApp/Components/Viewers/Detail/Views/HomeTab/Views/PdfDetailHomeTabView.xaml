@@ -77,7 +77,15 @@
                             <TextBlock Foreground="{StaticResource color3}" Margin="3">Key Phrases:</TextBlock>
                         </Grid>
                         <ScrollViewer MaxHeight="100">
-                            <TextBlock Name="xKeyPhrasesBox" Margin="3" TextWrapping="WrapWholeWords"></TextBlock>
+                            <!--<TextBlock Name="xKeyPhrasesBox" Margin="3" TextWrapping="WrapWholeWords"></TextBlock>-->
+                            <ItemsControl x:Name="xTags" Margin="3">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <local:WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+
                         </ScrollViewer>
                     </StackPanel>
                 </StackPanel>
