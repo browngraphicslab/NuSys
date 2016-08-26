@@ -56,8 +56,10 @@
                 <StackPanel>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
                         <TextBlock Foreground="{StaticResource color3}" FontSize="20">Document Analysis by Page</TextBlock>
+                        <Image x:Name="CollapseIcon" HorizontalAlignment="Right" Source="ms-appx:///Assets/collapse down.png" Width="20" Margin="10" Tapped="CollapseIcon_OnTapped"></Image>
                     </Grid>
-                    <Grid>
+                    
+                    <Grid x:Name="ContentGrid" Visibility="Visible">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
@@ -72,7 +74,7 @@
                         <TextBlock Grid.Row="0" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xPageNumberBox">Page No.</TextBlock>
                         <TextBlock Grid.Row="1" Grid.Column="1" Margin="3" HorizontalAlignment="Right" Foreground="{StaticResource color3}" Name="xSentimentBox">Sentiment Rating</TextBlock>
                     </Grid>
-                    <StackPanel>
+                    <StackPanel x:Name="KeyPhrases">
                         <Grid>
                             <TextBlock Foreground="{StaticResource color3}" Margin="3">Key Phrases:</TextBlock>
                         </Grid>

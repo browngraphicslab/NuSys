@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Text;
+using Windows.UI.Xaml.Media.Imaging;
 using NusysIntermediate;
 
 
@@ -164,6 +165,25 @@ namespace NuSysApp
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;
             xClippingWrapper.Dispose();
             DataContext = null;
+        }
+
+        /// <summary>
+        /// collapse image analysis for more space if necessary
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CollapseIcon_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (ContentScrollViewer.Visibility == Visibility.Visible)
+            {
+                ContentScrollViewer.Visibility = Visibility.Collapsed;
+                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/open up.png"));
+            }
+            else
+            {
+                ContentScrollViewer.Visibility = Visibility.Visible;
+                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/collapse down.png"));
+            }
         }
 
         /// <summary>
