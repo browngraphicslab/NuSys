@@ -53,14 +53,18 @@ namespace NuSysApp
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             foreach (var userControl in vm.AtomViewList)
             {
+
+
                 userControl.ManipulationMode = ManipulationModes.All;
-                userControl.ManipulationStarted += ManipulationStarting;
+
                 userControl.ManipulationDelta += OnManipulationDelta;
                 userControl.ManipulationCompleted += OnManipulationCompleted;
-                if (!(userControl is UndoButton))
-                {
-                    userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
-                }
+                userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
+                userControl.ManipulationStarted += ManipulationStarting;
+
+                
+
+
             }
 
             vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
@@ -84,19 +88,25 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
-            //Get elements controller
-            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
-            if (vm != null) { 
-            var elementController = vm.Controller;
-            if (!vm.IsEditing)
-            { 
-            }
-            ActiveNodes.Remove((UserControl) sender);
-}
+
+            ActiveNodes.Remove((UserControl)sender);
+
+            //Disposes of pointer released event needed for move undo button
+            var userControl = (UserControl)sender;
+            userControl.PointerReleased -= UserControl_PointerReleased;
+
+            manipulationCompletedRoutedEventArgs.Handled = true;
+
         }
+
+        
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
+            if(sender is UndoButton)
+            {
+                return;
+            }
             var userControl = (UserControl)sender;
             if (userControl.DataContext is ElementViewModel && !(userControl.DataContext is LinkViewModel))
             {
@@ -105,6 +115,22 @@ namespace NuSysApp
 
             _originalPosition.X = manipulationStartingRoutedEventArgs.Position.X;
             _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
+
+            if (_moveNodeUndoButton != null)
+            {
+                if (_moveNodeUndoButton.State == UndoButtonState.Active)
+                {
+                    var ffvm = (FreeFormViewerViewModel)_view.DataContext;
+                    _moveNodeUndoButton.Deactivate();
+                    if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                    {
+                        ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                    }
+                }
+            }
+
+
+            userControl.PointerReleased += UserControl_PointerReleased;
 
             ActiveNodes.Add((UserControl)sender);
 
@@ -116,6 +142,28 @@ namespace NuSysApp
                     _moveNodeUndoButton.ActionExecuted = false; // This prevents the node from being immovable right agter being undo'd
                 }
             }
+        }
+
+        private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+
+            var ffvm = (FreeFormViewerViewModel)_view.DataContext;
+
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            var elementController = vm.Controller;
+            if (!vm.IsEditing)
+            {
+                //Instantiates MoveElementAction
+                var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+
+                _moveNodeUndoButton = new UndoButton();
+                //Activates undo button makes it appear in the old position.
+                ffvm.AtomViewList.Add(_moveNodeUndoButton);
+                _moveNodeUndoButton.MoveTo(_originalPosition);
+                _moveNodeUndoButton.Activate(moveElementAction);
+            }
+     
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -169,7 +217,7 @@ namespace NuSysApp
                 return;
             }
 
-
+            
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
@@ -238,6 +286,7 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
+
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
             if (vm != null)
@@ -282,3 +331,6 @@ namespace NuSysApp
         }
     }
 }
+
+
+

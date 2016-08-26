@@ -43,7 +43,11 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
+<<<<<<< HEAD
+            //ResetTables(true);
+=======
             //ResetTables();
+>>>>>>> origin/dev
             //SetUpTables();
 
 

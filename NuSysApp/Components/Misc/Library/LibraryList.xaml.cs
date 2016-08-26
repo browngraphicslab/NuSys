@@ -284,6 +284,27 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.GetLibraryElementController(id)
                     .LibraryElementModel.AccessType;
             libraryElementController.AddElementAtPosition(r.X, r.Y);
+            
+
+
+            /*
+            //Undo button for adding element to collection:
+
+
+            //Position of button = position of node + some offset
+            var model = controller.Model;
+            var buttonPosition = new Windows.Foundation.Point(model.X - 60, model.Y - 80);
+            //Creates a DeleteElementAction
+            var addElementAction = new CreateElementAction(controller, new Windows.Foundation.Point(model.X, model.Y));
+
+            //Creates an undo button and places it in the correct position.
+
+            var workspace = SessionController.Instance.ActiveFreeFormViewer;
+            var undoButton = new UndoButton();
+            workspace.AtomViewList.Add(undoButton);
+            undoButton.MoveTo(buttonPosition);
+            undoButton.Activate(addElementAction);
+            */
         }
 
 
@@ -455,6 +476,7 @@ namespace NuSysApp
                 request.DeleteLocally();
             });
 
+            //Create NewLibraryElementRequestArgs with information from the libraryelementmodel that was deleted
 
             var args = new CreateNewLibraryElementRequestArgs();
             args.LibraryElementId = model.LibraryElementId;
@@ -466,8 +488,10 @@ namespace NuSysApp
             args.LibraryElementType = model.Type;
             args.ContentId = model.ContentDataModelId;
           
-
+            //Creates action with CreateNewLibraryElementArgs
             var action = new DeleteLibraryElementAction(args);
+
+            //Invokes event listened to by LibraryView, which activates undo button
             DeleteClicked?.Invoke(this, action);
         }
         

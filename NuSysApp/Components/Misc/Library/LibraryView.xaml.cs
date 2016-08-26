@@ -35,8 +35,8 @@ namespace NuSysApp
         private LibraryElementPropertiesWindow _propertiesWindow;
         private LibraryPageViewModel _pageViewModel;
         private LibraryFavoritesViewModel _favoritesViewModel;
-        private Point2d _searchExportPos; 
-        
+        private Point2d _searchExportPos;
+
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
@@ -60,7 +60,7 @@ namespace NuSysApp
                     properties.Visibility = Visibility.Collapsed;
                 });
             };
-            _searchExportPos = new Point2d(0,0);
+            _searchExportPos = new Point2d(0, 0);
         }
 
 
@@ -169,7 +169,7 @@ namespace NuSysApp
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.Word;
-                    
+
                     byte[] fileBytes = null;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {
@@ -204,8 +204,8 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes)); 
-                    
+                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
+
                     // convert each page of the pdf into an image file, and store it in the pdfPages list
                     for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
                     {
@@ -266,7 +266,7 @@ namespace NuSysApp
                     }
 
                     data = Convert.ToBase64String(fileBytes);
-                    thumbnails=await MediaUtil.GetThumbnailDictionary(storageFile);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.AudioFileTypes.Contains(fileType))
                 {
@@ -342,7 +342,7 @@ namespace NuSysApp
 
                     //update listview so item is added to top of list
                     var listvm = (LibraryPageViewModel)_libraryList.DataContext;
-                    
+
                     vm.ClearSelection();
                 }
                 else
@@ -350,7 +350,70 @@ namespace NuSysApp
                     Debug.WriteLine("tried to import invalid filetype");
                 }
             }
-        }     
+        }
+
+        private Task Goto(int v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ThumbnailTest(string b64)
+        {
+            //ShellFile file =new ShellFile();
+
+
+        }
+
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
+        {
+            Task.Run(async delegate
+            {
+                if (elementType != NusysConstants.ElementType.Collection)
+                {
+                    var dict = new Message();
+                    Dictionary<string, object> metadata;
+
+                    metadata = new Dictionary<string, object>();
+                    metadata["node_creation_date"] = DateTime.Now;
+                    metadata["node_type"] = elementType + "Node";
+                    dict["metadata"] = metadata;
+
+                    var elementRequestArgs = new NewElementRequestArgs();
+                    elementRequestArgs.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                    elementRequestArgs.LibraryElementId = libraryId;
+                    elementRequestArgs.Width = size.Width;
+                    elementRequestArgs.Height = size.Height;
+                    elementRequestArgs.X = pos.X;
+                    elementRequestArgs.Y = pos.Y;
+
+                    var request = new NewElementRequest(elementRequestArgs);
+
+                    var contentDataModelId = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId)?.ContentDataModelId;
+                    Debug.Assert(contentDataModelId != null);
+
+                    if (!SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(contentDataModelId);
+                    }
+
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    await request.AddReturnedElementToSessionAsync();
+
+                    //TODO, add undo button here 820
+                }
+                else
+                {
+                    var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
+                    await
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
+                            new List<Point>(collection?.ShapePoints?.Select(p => new Point(p.X, p.Y)) ?? new List<Point>()), size.Width, size.Height);
+                }
+            });
+
+
+
+        }
+
 
         private void Folder_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -407,7 +470,7 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newContentRequest);
                 newContentRequest.AddReturnedLibraryElementToLibrary();
             }
-                
+
             //else if (ListContainer.Children[0] == _libraryFavorites)
             //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
 
@@ -424,7 +487,7 @@ namespace NuSysApp
             var elementRequest = new NewElementRequest(newElementRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
             await elementRequest.AddReturnedElementToSessionAsync();
-            
+
             // We then populate this new collection with instances of the all the search results
             if (ListContainer.Children[0] == _libraryList) // if there are search results
             {
@@ -451,7 +514,7 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(embeddedElementRequest);
                         embeddedElementRequest.AddReturnedElementToSession();
                     }
-                    
+
                 }
             }
         }
@@ -463,7 +526,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-          
+
             // Since we are adding a collection, we should make the dragging rectangle reflect this
             var view = SessionController.Instance.SessionView;
             view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
@@ -519,7 +582,7 @@ namespace NuSysApp
             var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
             await ExportSearchResultsToCollection(dropPoint);
             e.Handled = true;
-           
+
         }
 
         /// <summary>

@@ -81,6 +81,7 @@ namespace NuSysApp
                 return;
             }
             controller.Deleted += OnChildDeleted;
+
         }
         
         private void OnChildDeleted(object source)
