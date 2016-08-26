@@ -322,8 +322,11 @@ namespace NuSysApp
             else if (e.Marker.Time == EndMarker.Time)
             {
                 //Goes back to start of region
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
                 MediaElement.Pause();
                 Audio_OnJump(StartMarker.Time);
+
 
             }
             //*** To avoid rounding issues, denormalized time of marker, as well as total duration, must both be

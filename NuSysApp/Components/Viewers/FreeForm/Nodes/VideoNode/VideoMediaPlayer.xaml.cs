@@ -198,11 +198,7 @@ namespace NuSysApp
             pause.Visibility = Visibility.Collapsed;
             // e.Handled = true;
         }
-        private void MediaEnded(object sender, RoutedEventArgs e)
-        {
-            VideoNodeView_OnJump(new TimeSpan(0));
 
-        }
 
 
         public void VideoNodeView_OnJump(TimeSpan time)
@@ -294,6 +290,8 @@ namespace NuSysApp
                 //Goes back to start of region
                 MediaElement.Pause();
                 VideoNodeView_OnJump(StartMarker.Time);
+                play.Visibility = Visibility.Visible;
+                pause.Visibility = Visibility.Collapsed;
 
             }
             //*** To avoid rounding issues, denormalized time of marker, as well as total duration, must both be
