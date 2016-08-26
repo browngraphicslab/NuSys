@@ -101,7 +101,7 @@ namespace NuSysApp
         private void LibraryElementController_LinkRemoved(object sender, string e)
         {
             Disposed?.Invoke(this, EventArgs.Empty);
-            foreach (var elementController in SessionController.Instance.LinksController.GetInstancesOfLibraryElement(LibraryId)
+            foreach (var elementController in SessionController.Instance.LinksController.GetInstancesOfLibraryElement(LibraryId))
             {
                 elementController.UpdateCircleLinks();
             }

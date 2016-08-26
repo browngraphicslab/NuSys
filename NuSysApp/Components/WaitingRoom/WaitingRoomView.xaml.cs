@@ -181,6 +181,8 @@ namespace NuSysApp
                 var obj = e.Parameter;
                 if (obj.GetType() == typeof(SessionView))
                 {
+                    var sessionview = obj as SessionView;
+                    
                     _collectionList = new List<LibraryElementModel>();
                     Init();
                     NewWorkspaceButton.IsEnabled = true;
