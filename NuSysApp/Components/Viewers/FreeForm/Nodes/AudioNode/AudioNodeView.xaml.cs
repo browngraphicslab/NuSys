@@ -67,16 +67,12 @@ namespace NuSysApp
             }
             // relic from wave forms still might be added back though
             //(DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement; 
-<<<<<<< HEAD
 
             nodeTpl?.Dispose();
             if (vm?.Controller != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
             }
-=======
-            
->>>>>>> origin/linkweirdfix
             DataContext = null;
         }
 

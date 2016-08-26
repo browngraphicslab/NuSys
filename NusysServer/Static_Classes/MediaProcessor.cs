@@ -159,6 +159,7 @@ namespace NusysServer
                     //serialze the model and add the json to the sql tables
                     var json = JsonConvert.SerializeObject(analysisModel);
                     ContentController.Instance.SqlConnector.AddAnalysisModel(contentDataModelId, json);
+                    senderHandler?.Notify(new AnalysisModelMadeNotification(new AnalysisModelMadeNotificationArgs() {ContentId = contentDataModelId})); //notify the sender of the new analysis model
                 }
             });
         }

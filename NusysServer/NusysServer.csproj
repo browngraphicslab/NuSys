@@ -242,8 +242,10 @@
     <Compile Include="Lda\Parser.cs" />
     <Compile Include="Misc\SqlJoinOperationArgs.cs" />
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
+    <Compile Include="Notifications\AnalysisModelMadeNotification.cs" />
     <Compile Include="Notifications\DropUserNotification.cs" />
     <Compile Include="Notifications\NewUserNotification.cs" />
+    <Compile Include="Notifications\NotificationArgs\AnalysisModelMadeNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\NewUserNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

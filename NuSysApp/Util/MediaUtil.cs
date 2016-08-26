@@ -139,7 +139,11 @@ public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
         /// <returns></returns>
         public static Color GetHashColorFromString(string stringToGetColorFrom)
         {
-            Color color;
+            Color color = Colors.Black;
+            if (stringToGetColorFrom == null)
+            {
+                return color;
+            }
             try
             {
                 var idHash = WaitingRoomView.Encrypt(stringToGetColorFrom);

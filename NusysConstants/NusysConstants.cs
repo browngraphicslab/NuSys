@@ -662,12 +662,12 @@ namespace NusysIntermediate
 
         #region NotificationKeys
 
-        #region AddNetworkUserNotification
+            #region AddNetworkUserNotification
 
-        /// <summary>
-        /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
-        /// </summary>
-        public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
+            /// <summary>
+            /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
+            /// </summary>
+            public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
 
             #endregion AddNetworkUserNotification
 
@@ -680,7 +680,16 @@ namespace NusysIntermediate
 
             #endregion DropNetworkUserNotification
 
-            #endregion NotificationKeys
+            #region AnalysisModelMade
+
+            /// <summary>
+            /// key used in the analysis model made notification that represents the content id of the analysis model that has been made
+            /// </summary>
+            public static readonly string ANALYSIS_MODEL_MADE_NOTIFICATION_CONTENT_ID_KEY = "content_id_of_analysis_model";
+
+            #endregion AnalysisModelMade
+
+        #endregion NotificationKeys
 
         #region NotificationManagementKeys
 
@@ -1480,8 +1489,20 @@ namespace NusysIntermediate
         /// </summary>
         public enum NotificationType
         {
+            /// <summary>
+            /// to notify of a new user on the system
+            /// </summary>
             AddUser,
+
+            /// <summary>
+            /// to notify when a user has disconnected or left the network
+            /// </summary>
             RemoveUser,
+
+            /// <summary>
+            /// to notify that an analysis model for an uploaded content has finished being made
+            /// </summary>
+            AnalysisModelMade
         }
 
         /// <summary>

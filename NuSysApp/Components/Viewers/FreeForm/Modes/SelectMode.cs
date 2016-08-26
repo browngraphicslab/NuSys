@@ -48,6 +48,7 @@ namespace NuSysApp
             typeof(GroupNodeView),
             typeof(AudioNodeView),
             typeof(VideoNodeView),
+            typeof(TextNodeView)
         };
 
         public SelectMode(FreeFormViewer view):base(view)
@@ -293,7 +294,7 @@ namespace NuSysApp
                         }
                         count = keywordsToCompare?.Count() ?? 0;
                     }
-
+                    /*
                     if (contentDataModel.ContentType == NusysConstants.ContentType.PDF && false)
                     {
                         var relatedRequest = new GetRelatedDocumentsRequest(contentDataModel.ContentId);
@@ -309,7 +310,7 @@ namespace NuSysApp
                                 }
                             }
                         }
-                    }
+                    }*/
                 });
 
                 foreach (var content in lineDict.Keys)
