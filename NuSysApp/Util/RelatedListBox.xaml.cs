@@ -61,7 +61,7 @@ namespace NuSysApp
 
             // relatedContent has all of the library element models with the keywords
             var allContent = SessionController.Instance.ContentController.ContentValues;
-            var relatedContent = allContent.Where(item => item.Keywords.Select(keyword => keyword.Text).Contains(tag));
+            var relatedContent = allContent.Where(item => item.Keywords != null && item.Keywords.Select(keyword => keyword.Text).Contains(tag));
 
             // the atomViewList has all of the framework elements in the collection
             var atomViewList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList;
@@ -93,8 +93,8 @@ namespace NuSysApp
             var model = block?.DataContext as LibraryElementModel;
 
             // Gets element view models that match the model's library element id. 
-            // Had to include !(item.DataContext is LinkViewModel) since LinkViewModels cannot be casted as ElementViewModels re: the new changes
-            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => !(item.DataContext is LinkViewModel)&&((ElementViewModel)item.DataContext)?.Controller?.LibraryElementModel?.LibraryElementId == model?.LibraryElementId);
+            // Had to include !(item.DataContext is LinkViewModel) since LinkViewModels cannot be casted as ElementViewModels re: the new changes. Same thing for tools.
+            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => !(item.DataContext is ToolViewModel) && !(item.DataContext is LinkViewModel)&&((ElementViewModel)item.DataContext)?.Controller?.LibraryElementModel?.LibraryElementId == model?.LibraryElementId);
             var foo = vms?.ToList();
             var element = foo[0]?.DataContext as ElementViewModel;
             Debug.Assert(element != null);

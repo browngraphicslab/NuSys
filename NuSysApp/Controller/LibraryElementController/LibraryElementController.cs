@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using MyToolkit.Utilities;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -75,18 +78,6 @@ namespace NuSysApp
 
         #endregion Events
 
-        /// <summary>
-        /// returns the contentDataModel for this LibraryElementController's LibraryElementModel's ContentDataModelId.  
-        /// Will return null if it doesn't exist LOCALLY.  
-        /// </summary>
-        public ContentDataModel ContentDataModel
-        {
-            get
-            {
-                Debug.Assert(LibraryElementModel.ContentDataModelId != null);
-                return SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
-            }
-        }
 
         /// <summary>
         ///  returns the Content Data controllerfor the content data model for this library element controller's library elent model;
@@ -152,9 +143,9 @@ namespace NuSysApp
         /// 
         public LibraryElementController(LibraryElementModel libraryElementModel)
         {
-            Debug.Assert(libraryElementModel != null);
+            Debug.Assert(libraryElementModel?.LibraryElementId != null);
             _libraryElementModel = libraryElementModel;
-            _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
+            _debouncingDictionary = new LibraryElementDebouncingDictionary(libraryElementModel.LibraryElementId);
             Title = libraryElementModel.Title;
             SessionController.Instance.EnterNewCollectionStarting += OnSessionControllerEnterNewCollectionStarting;
         }
@@ -346,6 +337,10 @@ namespace NuSysApp
         /// <returns></returns>
         public bool UpdateMetadata(MetadataEntry original, string key, List<string> values)
         {
+            if (_libraryElementModel.Metadata == null)
+            {
+                _libraryElementModel.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
+            }
             // Error checking for the passed in parameters
             if (original == null || string.IsNullOrEmpty(key) || string.IsNullOrWhiteSpace(key) || values == null || !_libraryElementModel.Metadata.ContainsKey(original.Key))
             {
@@ -568,9 +563,11 @@ namespace NuSysApp
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
+                    case NusysConstants.ElementType.PdfRegion:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
                     case NusysConstants.ElementType.Audio:
+                    case NusysConstants.ElementType.AudioRegion:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
                     case NusysConstants.ElementType.Text:
@@ -584,6 +581,12 @@ namespace NuSysApp
                         break;
                     case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
+                    case NusysConstants.ElementType.ImageRegion:
+                        return new Uri("ms-appx:///Assets/image icon.png");
+                        break;
+                    case NusysConstants.ElementType.VideoRegion:
+                        return new Uri("ms-appx:///Assets/video icon.png");
                         break;
                     default:
                         return new Uri("ms-appx:///Assets/icon_chat.png");
@@ -748,9 +751,15 @@ namespace NuSysApp
                 var collectionLibraryElementModel = LibraryElementModel as CollectionLibraryElementModel;
                 Debug.Assert(collectionLibraryElementModel != null);
 
+                var args  = new NewElementRequestArgs();//create new args class for the putting on an element collection on the main instance
+                args.X = x;
+                args.Y = y;
+                args.LibraryElementId = LibraryElementModel.LibraryElementId;
+                args.Height = Constants.DefaultNodeSize;
+                args.Width = Constants.DefaultNodeSize;
+
                 // try to add the collection to the collection
-                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(x, y, collectionId,
-                    collectionLibraryElementModel.IsFinite, collectionLibraryElementModel.ShapePoints?.Select(pointModel => new Point(pointModel.X, pointModel.Y)).ToList() ?? new List<Point>());
+                var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
 
                 // return whether the method succeeded
                 return success != null;
@@ -780,5 +789,40 @@ namespace NuSysApp
             return false;
         }
 
+        /// <summary>
+        /// This virtual method can be used to get the suggested tags of this library element.  
+        /// It will call upon the information available to it, which included analysis models in the overrides of this method.
+        /// It will return a dictionary of string to int, with the string being the lowercased, suggested tag and the int being the weight it is given.
+        /// A higher weight is more suggested.
+        /// 
+        /// This method takes in a bool that will indicate whether this method should also concatenate itself with the suggested tags of the content data controller.
+        /// If this boolean is true and it does include those keywords, this method will load an entire content data model (and analysis model) for a content.
+        /// To make this method faster but less helpful, pass in false.
+        /// 
+        /// To Merge two of these dictionaries together via adding their values for each key, use the linq statement:
+        /// 
+        /// merge a INTO b:
+        /// 
+        ///  a.ForEach(kvp => b[kvp.Key] = (b.ContainsKey(kvp.Key) ? b[kvp.Key] : 0) + kvp.Value);
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool includeContent = true)
+        {
+            var dict = FullMetadata.SelectMany(kvp => kvp.Value.Values).ToImmutableHashSet().ToDictionary(s => s, s=> 1);//so far all we know for suggested tags is the metadata values
+            if (!includeContent)
+            {
+                return dict;
+            }
+
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(LibraryElementModel.ContentDataModelId))
+            {
+                await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(LibraryElementModel.ContentDataModelId);//this await call will be constant time if it exists locally already
+            }
+
+            var contentDict = await ContentDataController.GetSuggestedTagsAsync(includeContent);
+            contentDict.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
+
+            return dict;
+        }
     }
 }

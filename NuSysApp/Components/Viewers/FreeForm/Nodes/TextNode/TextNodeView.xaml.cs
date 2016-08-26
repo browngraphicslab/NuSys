@@ -117,8 +117,11 @@ namespace NuSysApp
             vm.TextBindingChanged -= TextChanged;
             TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify -= wvBrowser_ScriptNotify;
-            nodeTpl.Dispose();
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            nodeTpl?.Dispose();
+            if (vm.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
             DataContext = null;
         }
 

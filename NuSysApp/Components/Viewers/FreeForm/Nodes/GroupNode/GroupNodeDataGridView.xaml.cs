@@ -51,10 +51,13 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (ElementViewModel) DataContext;
-            SessionController.Instance.SessionView.MainCanvas.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            SessionController.Instance.SessionView?.MainCanvas?.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
+            if(vm.Controller != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+                vm.Controller.Disposed -= ControllerOnDisposed;
+            }
             DataContext = null;
-            vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
         private Image _drag;
@@ -62,12 +65,13 @@ namespace NuSysApp
         private void OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
             var src = args.OriginalSource as FrameworkElement;
-            var gridInfo = src?.DataContext as GroupNodeDataGridViewModel;
+            var gridInfo = src?.DataContext as GroupNodeDataGridInfo;
             if (gridInfo != null)
             {
                 src.ManipulationMode = ManipulationModes.All; // for dragging out via touch
                 _drag = new Image();//TODO temporary
-                BitmapImage textimage = new BitmapImage(new Uri("ms-appx:///Assets/icon_new_workspace.png", UriKind.Absolute));
+                var itemController = SessionController.Instance.IdToControllers[gridInfo?.Id].LibraryElementController;
+                BitmapImage textimage = new BitmapImage(itemController.SmallIconUri);
                 _drag.Source = textimage;
 
                 var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
@@ -94,7 +98,7 @@ namespace NuSysApp
                 SessionController.Instance.IdToControllers.TryGetValue(_id ?? "", out controller);
                 if (controller != null)
                 {
-                    await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
+                    await controller.RequestMoveToCollection(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId, newPos.X, newPos.Y);
                 }
             }
 

@@ -333,7 +333,6 @@ namespace NuSysApp
         private void XFilterComboBox_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             xFilterComboBox.IsEnabled = true;
-
         }
 
         /// <summary>
@@ -341,6 +340,7 @@ namespace NuSysApp
         /// </summary>
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            
             if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
@@ -423,7 +423,7 @@ namespace NuSysApp
             var t = (CompositeTransform)_dragFilterItem.RenderTransform;
             t.TranslateX = _x;
             t.TranslateY = _y;
-            _dragFilterItem.Visibility = Visibility.Visible;
+            _dragFilterItem.Visibility = Visibility.Collapsed;
             _draggedOutside = false;
             //not a great way of doing this. find out if there is a way to STOP all manipulation events once a new manipulation event has started.
             currentManipultaionSender = sender;
@@ -531,7 +531,16 @@ namespace NuSysApp
             }
         }
 
-        
+        /// <summary>
+        /// This is the handler for when the filter combo box is tapped. All this is meant to do is set the 
+        /// combo box to enabled if it isn't.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            xFilterComboBox.IsEnabled = true;
+        }
     }
 
 }

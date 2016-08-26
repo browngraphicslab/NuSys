@@ -8,13 +8,21 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-
-    <Border x:Name="xRootBorder" BorderThickness="1" BorderBrush="Black" Width="{Binding Width}" Height="{Binding Height}" 
-            ManipulationDelta="XRootBorder_OnManipulationDelta" ManipulationMode="TranslateX, TranslateY">
-        <Border.RenderTransform>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RenderTransform>
             <CompositeTransform TranslateX="{Binding X}" TranslateY="{Binding Y}"/>
-        </Border.RenderTransform>
-        <local:MediaRecorderView x:Name="xMediaRecorder"  Width="{Binding Width}" Height="{Binding Height}"/>
-    </Border>
+        </Grid.RenderTransform>
+        <Button Margin="0,2,5,2" x:Name="btnDelete" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}" Tapped="btnDelete_Tapped" Visibility="Visible" VerticalAlignment="Top" >
 
+            <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+        </Button>
+        <Border x:Name="xRootBorder" BorderThickness="1" BorderBrush="Black" Width="{Binding Width}" Height="{Binding Height}" 
+              ManipulationDelta="XRootBorder_OnManipulationDelta" ManipulationMode="TranslateX, TranslateY" Grid.Column="1">
+            <local:MediaRecorderView x:Name="xMediaRecorder"  Width="{Binding Width}" Height="{Binding Height}"/>
+         </Border>
+    </Grid>
 </local:AnimatableUserControl>

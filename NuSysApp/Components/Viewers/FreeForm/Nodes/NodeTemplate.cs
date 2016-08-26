@@ -99,7 +99,7 @@ namespace NuSysApp
             var vm = (ElementViewModel)this.DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
 
-            if (vm.Controller.LibraryElementController != null)
+            if (vm?.Controller?.LibraryElementController != null)
             {
                 vm.Controller.LibraryElementController.UserChanged -= ControllerOnUserChanged;
                 vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
@@ -220,22 +220,35 @@ namespace NuSysApp
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
-            if (selectedTag != null)
+            if (selectedTag != null && !(SessionController.Instance.SessionView.ModeInstance is ExplorationMode))
             {
-                MetadataToolModel model = new MetadataToolModel();
-                MetadataToolController controller = new MetadataToolController(model);
-                MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
-
-                viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
-
-                controller.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() { }));
-
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
-                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
-                MetadataToolView view = new MetadataToolView(viewmodel, centerpoint.X, centerpoint.Y);
-                wvm.AtomViewList.Add(view);
+                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(e.GetPosition(SessionController.Instance.SessionView));
+
+                MetadataToolModel metadataModel = new MetadataToolModel();
+                MetadataToolController metadataToolController = new MetadataToolController(metadataModel);
+                MetadataToolViewModel metadataToolViewModel = new MetadataToolViewModel(metadataToolController);
+                metadataToolViewModel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+                metadataToolController.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() {selectedTag }));
+                MetadataToolView metadataToolView = new MetadataToolView(metadataToolViewModel, centerpoint.X, centerpoint.Y);
+                wvm.AtomViewList.Add(metadataToolView);
+
+                BasicToolModel basicToolModel = new BasicToolModel();
+                BasicToolController basicToolController = new BasicToolController(basicToolModel);
+                BasicToolViewModel basicToolViewModel = new BasicToolViewModel(basicToolController);
+                basicToolViewModel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+                BaseToolView baseToolView = new BaseToolView(basicToolViewModel, centerpoint.X + metadataToolView.Width * 1.25, centerpoint.Y);
+                basicToolController.AddParent(metadataToolController);
+
+                var linkviewmodel = new ToolLinkViewModel(metadataToolViewModel, basicToolViewModel);
+                var link = new ToolLinkView(linkviewmodel);
+                Canvas.SetZIndex(link, Canvas.GetZIndex(metadataToolView) - 1);
+
+                wvm.AtomViewList.Add(link);
+                wvm.AtomViewList.Add(baseToolView);
+
             }
         }
 
@@ -361,6 +374,20 @@ namespace NuSysApp
                         first = (FrameworkElement)hitsStartElements.First();
                         var dc = (ElementViewModel)first.DataContext;
 
+                        // Diable linking to links and tools
+                        // TODO: Enable linking to links 
+                        if (dc.ElementType == NusysConstants.ElementType.Link || dc.ElementType == NusysConstants.ElementType.Tools)
+                        {
+                            break;
+                        }
+
+                        // Disable linking to the current collection
+                        var currentCollectionId = SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId;
+                        if (dc.LibraryElementId == currentCollectionId)
+                        {
+                            break;
+                        }
+
                         createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
                         createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
                     }
@@ -370,7 +397,8 @@ namespace NuSysApp
                         break;
                     }
                     // if the link is between two different libary element models then execute the create link request
-                    if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId != createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId)
+                    if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId != createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId && 
+                        SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(createNewLinkLibraryElementRequestArgs.LibraryElementModelInId,createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
                     {
                         var contentRequestArgs = new CreateNewContentRequestArgs();
                         contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
@@ -397,6 +425,12 @@ namespace NuSysApp
                     {
                         first = (FrameworkElement) hitsStartElements.First();
                         var dc1 = (ElementViewModel) first.DataContext;
+
+                        // If trying to create a presentation link to collection, do nothing.
+                        if (dc1.Model.ElementType == NusysConstants.ElementType.Collection)
+                        {
+                            break;
+                        }
                         createNewPresentationLinkRequestArgs.ElementViewModelOutId = dc1.Id;
                     }
                     else
@@ -558,7 +592,7 @@ namespace NuSysApp
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var resizeX = vm.Model.Width + e.Delta.Translation.X/zoom;
             var resizeY = vm.Model.Height + e.Delta.Translation.Y/zoom;
-            if (resizeY > 0 && resizeX > 0)
+            if (resizeY > Constants.MinNodeSize && resizeX > Constants.MinNodeSize)
             {
                 vm.Controller.SetSize(resizeX, resizeY);
             }

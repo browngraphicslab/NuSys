@@ -268,14 +268,15 @@
             <Image x:Name="resizerImage" Source="/Assets/openclose icon.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
 
-        <Popup VerticalOffset="100"  x:Name="AccessPopup" >
+        <Popup VerticalOffset="100"  x:Name="AccessPopup">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="400" Background="White" BorderThickness="2" BorderBrush="{StaticResource color2}">
                 <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Center">
                     <TextBlock Text="change access controls" HorizontalAlignment="Center"  Foreground="{StaticResource color3}" FontSize="25" Margin="0,30,0,30" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"></TextBlock>
                     <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xPrivateRadioButton" Checked="XPrivateRadioButton_OnChecked" >Private</RadioButton>
                     <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xPublicRadioButton" Checked="XPublicRadioButton_OnChecked">Public</RadioButton>
                     <RadioButton Visibility="Collapsed"  Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center" Name="xReadOnlyRadioButton" Checked ="XReadOnlyRadioButton_OnChecked">Read-Only</RadioButton>
-                    <Button Margin="0,30,0,30" Background="{StaticResource color2}" Foreground="White"  Width="80" Height="40" HorizontalAlignment="Center" FontSize="20"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Click="OnSaveAccessClick">save</Button>
+                    <TextBlock Width="200"  Margin="0,10,0,20" TextAlignment="Center" FontSize="12" Foreground="{StaticResource color3}"  TextWrapping="WrapWholeWords">NOTE: You can not make an element more private. If you have a public element, it can only remain public.</TextBlock>
+                    <Button Margin="0,0,0,30" Background="{StaticResource color2}" Foreground="White"  Width="80" Height="40" HorizontalAlignment="Center" FontSize="20"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Click="OnSaveAccessClick">save</Button>
                 </StackPanel>
             </Grid>
         </Popup>

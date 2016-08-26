@@ -52,10 +52,9 @@ namespace NuSysApp
         {
             var composite = IntervalRectangle.RenderTransform as CompositeTransform;
             var vm = DataContext as VideoRegionViewModel;
-            Selected = false;
             if (composite != null &&  vm != null)
             {
-                var newStart = composite.TranslateX + e.Delta.Translation.X;
+                var newStart = composite.TranslateX + e.Delta.Translation.X * Bound1Transform.ScaleX;
                 if (newStart < 0)
                 {
                     newStart = 0;
@@ -74,7 +73,7 @@ namespace NuSysApp
             var vm = DataContext as VideoRegionViewModel;
             if (composite != null &&  vm != null)
             {
-                var newEnd = composite.TranslateX + IntervalRectangle.Width + e.Delta.Translation.X;
+                var newEnd = composite.TranslateX + IntervalRectangle.Width + e.Delta.Translation.X * Bound2Transform.ScaleX;
                 if (newEnd > vm.AudioWrapper.GetWidth())
                 {
                     newEnd = vm.AudioWrapper.GetWidth();

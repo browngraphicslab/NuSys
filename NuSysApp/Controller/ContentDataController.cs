@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -36,12 +37,20 @@ namespace NuSysApp
         public ContentDataModel ContentDataModel { get; private set; }
 
         /// <summary>
+        /// the protected debouncing dictionary that will be used to update the properties and content data string for this content data model;
+        /// As of 8/23/16 should only be used to update the data string for the text node contents
+        /// </summary>
+        protected ContentDebouncingDictionary _debouncingDictionary;
+
+        /// <summary>
         /// The constructor of the controller only takes in a Content Data Model.  
         /// </summary>
         /// <param name="contentDataModel"></param>
         public ContentDataController(ContentDataModel contentDataModel)
         {
             ContentDataModel = contentDataModel;
+            Debug.Assert(contentDataModel?.ContentId != null);
+            _debouncingDictionary = new ContentDebouncingDictionary(contentDataModel.ContentId, contentDataModel.ContentType);//instantiate the deboucning dictionary
         }
 
         /// <summary>
@@ -56,19 +65,7 @@ namespace NuSysApp
             //if we are not already updating from the server
             if (!_blockServerInteraction)
             {
-                //update the server
-                Task.Run(async delegate
-                {
-                    var args = new UpdateContentRequestArgs();
-                    args.ContentId = ContentDataModel.ContentId;
-                    args.ContentType = ContentDataModel.ContentType = ContentDataModel.ContentType;
-                    args.UpdatedContent = data;
-
-                    //create the update request
-                    var updateRequest =  new UpdateContentRequest(args);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(updateRequest);
-                    Debug.Assert(updateRequest.WasSuccessful() == true);
-                });
+                _debouncingDictionary.AddLatestContent(data);
             }
         }
 
@@ -83,6 +80,43 @@ namespace NuSysApp
             _blockServerInteraction = true;
             SetData(newData);
             _blockServerInteraction = false;
+        }
+
+        /// <summary>
+        /// This virtual method can be used to get the suggested tags of this content data controller's model.  
+        /// It will return a dictionary of string to int, with the string being the lowercased, suggested tag and the int being the weight it is given.
+        /// A higher weight is more suggested.
+        /// 
+        /// This method takes in a bool that will indicate whether this method should also concatenate itself with the suggested tags of the analysisModel.
+        /// To make this method faster but MUCH MUCH less helpful, pass in false.
+        /// 
+        /// To Merge two of these dictionaries together via adding their values for each key, use the linq statement:
+        /// 
+        /// To merge a INTO dict
+        ///  a.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool includeAnalysisModel = true)
+        {
+            var dict = new Dictionary<string, int>() { { ContentDataModel.ContentType.ToString(), 1}}; //add the content data type string
+            if (!includeAnalysisModel)
+            {
+                return dict;
+            }
+
+            if (ContentDataModel.ContentType == NusysConstants.ContentType.PDF)//switch on the type.  Later, this should be put into inheritted controllers, not type switches
+            {
+                var analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(ContentDataModel.ContentId) as NusysPdfAnalysisModel;
+                analysisModel?.SuggestedTopics?.Select(s => s.ToLower())?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 3); //add the suggested topics with triple weight
+                analysisModel?.DocumentAnalysisModel?.Segments?.SelectMany(s => s?.KeyPhrases?.Select(kp => kp?.ToLower()))?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 2); // add key phrases with double weight
+            }
+            else if (ContentDataModel.ContentType == NusysConstants.ContentType.Image)
+            {
+                var analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(ContentDataModel.ContentId) as NusysImageAnalysisModel;
+                analysisModel?.Categories?.Select(s => s?.Name?.ToLower())?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 3);//add the categories
+                analysisModel?.Tags?.Select(s => s?.Name?.ToLower())?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 3);//add the tags
+            }
+            return dict;
         }
     }
 }

@@ -75,10 +75,13 @@
             </Path.Data>
         </Path>
         <!--<StackPanel x:Name="TitleAndDirContainer" Orientation="Horizontal">-->
-
+        
         <StackPanel x:Name="TitleContainer" Orientation="Vertical">
             <Grid>
-                <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
+                <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left" Visibility="Collapsed"/>
+                <Button Background="{StaticResource color2}" Margin="0,2,0,2" x:Name="DeleteButton" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="DeleteButton_OnClick" Style="{StaticResource NodeSubMenuItem}" HorizontalAlignment="Stretch">
+                    <Image Name ="DeleteImg" Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25"></Image>
+                </Button>
                 <StackPanel Orientation="Horizontal" Visibility ="Collapsed">
                     <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
                         <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center" GotFocus="Title_GotFocus" LostFocus="Title_LostFocus"/>

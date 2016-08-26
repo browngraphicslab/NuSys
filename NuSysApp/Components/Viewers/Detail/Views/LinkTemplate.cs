@@ -10,7 +10,10 @@ namespace NuSysApp
     public class LinkTemplate : BaseINPC
     {
         private string _title;
+        // This stores the title of the element the link goes to
         public string LinkedTo { get; private set; }
+        // The ID of the element the link goes to
+        public string IDLinkedTo { get; private set; }
 
         public string Title
         {
@@ -39,15 +42,15 @@ namespace NuSysApp
                 var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkModel.OutAtomId);
                 Debug.Assert(libraryElementModel != null);
                 LinkedTo = libraryElementModel.Title;
-                
+                IDLinkedTo = libraryElementModel.LibraryElementId;
+
             }
             else
             {
                 var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkModel.InAtomId);
                 Debug.Assert(libraryElementModel != null);
                 LinkedTo = libraryElementModel.Title;
-                
-                
+                IDLinkedTo = libraryElementModel.LibraryElementId;
             }
             ID = controller.LinkLibraryElementModel.LibraryElementId;
         }

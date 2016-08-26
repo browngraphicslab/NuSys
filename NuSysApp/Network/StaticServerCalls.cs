@@ -50,40 +50,29 @@ namespace NuSysApp
 
         /// <summary>
         /// this static method will add a collection element to your current collection.  
+        /// This takes in a NewElementRequestArgs class. 
+        /// The args will automatically be set to put an element on the current collection, so don't worry about setting it. 
+        /// The library element Id for this new collction element must be set to a valid, existing library element.
+        /// The m
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="collectionLibraryElementId"></param>
-        /// <param name="finite"></param>
-        /// <param name="shapepoints"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="id"></param>
-        /// <param name="collectionView"></param>
+        /// <param name="requestArgs"></param>
         /// <returns></returns>
-        public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(double x, double y, string collectionLibraryElementId, bool finite, List<Point> shapepoints, double width = 400, double height = 400, string id = null, CollectionElementModel.CollectionViewType collectionView = CollectionElementModel.CollectionViewType.List)
+
+        public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(NewElementRequestArgs requestArgs)
         {
             return await Task.Run(async delegate
             {
+                requestArgs.ParentCollectionId =SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId; //set the parent collection to be this one
+                requestArgs.Id = requestArgs.Id ?? SessionController.Instance.GenerateId(); //make sure the request args has a defined new element Id
+
                 //make sure the collection id isn't bogus
-                var collectionController = SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryElementId) as CollectionLibraryElementModel;
+                var collectionController = SessionController.Instance.ContentController.GetLibraryElementModel(requestArgs.LibraryElementId) as CollectionLibraryElementModel;
                 Debug.Assert(collectionController != null);
 
-                var newId = id ?? SessionController.Instance.GenerateId();
-                
                 //TODO override the args class and make a CreateNewCollectionElementArgs and apply the settings of collections there
-                //create the element args
-                var args  = new NewElementRequestArgs();
-                args.LibraryElementId = collectionLibraryElementId;
-                args.Height = height;
-                args.Width = width;
-                args.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-                args.X = x;
-                args.Y = y;
-                args.Id = newId;
 
                 //create the request for the new element
-                var elementRequest = new NewElementRequest(args);
+                var elementRequest = new NewElementRequest(requestArgs);
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
 
@@ -94,14 +83,15 @@ namespace NuSysApp
                 if (!SessionController.Instance.ContentController.ContainsContentDataModel( collectionController.ContentDataModelId))
                 {
                     //create a request to get the elements on the new collection
-                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(collectionLibraryElementId);
+                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(requestArgs.ParentCollectionId);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(getWorkspaceRequest);
-                    await getWorkspaceRequest.AddReturnedElementsToSessionAsync();
+                    await getWorkspaceRequest.AddReturnedDataToSessionAsync();
+                    await getWorkspaceRequest.MakeCollectionFromReturnedElementsAsync();
                 }
                 //get and return the element collection controller
-                if (SessionController.Instance.IdToControllers.ContainsKey(newId))
+                if (SessionController.Instance.IdToControllers.ContainsKey(requestArgs.Id))
                 {
-                    return (ElementCollectionController)SessionController.Instance.IdToControllers[newId];
+                    return (ElementCollectionController)SessionController.Instance.IdToControllers[requestArgs.Id];
                 }
                 return null;
             });
@@ -147,7 +137,7 @@ namespace NuSysApp
                 var newContentRequestArgs = new CreateNewContentRequestArgs()
                 {
                     ContentId = newContentId,
-                    DataBytes = originalController.ContentDataModel.Data,
+                    DataBytes = originalController.ContentDataController.ContentDataModel.Data,
                     LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
                     {
                         Title = originalController.Title + " copy",

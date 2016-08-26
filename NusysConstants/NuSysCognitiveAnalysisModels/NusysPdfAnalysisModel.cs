@@ -29,5 +29,11 @@ namespace NusysIntermediate
         /// There should be as many of these as there are pages in the pdf.
         /// </summary>
         public List<NuSysOcrAnalysisModel> PageImageAnalysisModels { get; set; }
+
+        /// <summary>
+        /// The list of topic-modelling suggested topics for this entire pdf. 
+        /// As of 8/25/16 this does not run a trained lda on this pdf, just a topic modelling based off of solely this pdf.
+        /// </summary>
+        public List<string> SuggestedTopics { get; set; }
     }
 }

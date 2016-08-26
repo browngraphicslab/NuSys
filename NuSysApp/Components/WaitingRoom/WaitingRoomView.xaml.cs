@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 using Newtonsoft.Json.Linq;
 using NusysIntermediate;
 
@@ -32,7 +33,7 @@ namespace NuSysApp
     {
         public FreeFormViewer _freeFormViewer;
 
-        public static string InitialWorkspaceId { get; set; }
+        public static string InitialWorkspaceId { get; private set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }
         //public static string Password { get; private set; }
@@ -40,7 +41,7 @@ namespace NuSysApp
 
 
 
-        public static bool IS_HUB = false;
+        public static bool IS_HUB = true;
 
         private static IEnumerable<ElementModel> _firstLoadList;
         private bool _loggedIn = false;
@@ -123,6 +124,7 @@ namespace NuSysApp
             }
         }
 
+
         /// <summary>
         /// initializes collection listview
         /// </summary>
@@ -166,6 +168,59 @@ namespace NuSysApp
                 // TODO: fix this
             }
             SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewLibraryElememt; //re-add the handler so we start listening for new contents again
+        }
+
+        /// <summary>
+        /// called when page is navigated to
+        /// </summary>
+        /// <param name="e"></param>
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter != null)
+            {
+                var obj = e.Parameter;
+                if (obj.GetType() == typeof(SessionView))
+                {
+                    _collectionList = new List<LibraryElementModel>();
+                    Init();
+                    NewWorkspaceButton.IsEnabled = true;
+                    _loggedIn = true;
+
+                    UITask.Run(delegate
+                    {
+                        JoinWorkspaceButton.Content = "Enter";
+                        JoinWorkspaceButton.IsEnabled = true;
+                        JoinWorkspaceButton.Visibility = Visibility.Visible;
+                    });
+
+                    login.Visibility = Visibility.Collapsed;
+                    NewUser.Visibility = Visibility.Collapsed;
+                    NuSysTitle.Visibility = Visibility.Collapsed;
+                    workspace.Visibility = Visibility.Visible;
+
+                    var userID = SessionController.Instance.LocalUserID;
+                    if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" && userID.ToLower() != "gfxadmin")
+                    {
+
+                        foreach (var box in List.Items)
+                        {
+                            if ((box as CollectionListBox).MadeByRosemary)
+                            {
+                                List.Items.Remove(box);
+                            }
+                        }
+                    }
+
+                    SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+                    SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
+
+                    foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
+                    {
+                        NewNetworkUser(user);
+                    }
+                }
+
+            }
         }
 
         /// <summary>
@@ -221,15 +276,11 @@ namespace NuSysApp
             if (_selectedCollection != null)
             {
                 var id = _selectedCollection.LibraryElementId;
+
+                Debug.Assert(!string.IsNullOrEmpty(id));
+
                 var m = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
                 
-                var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
-                foreach (var content in collectionRequest.GetReturnedContentDataModels())
-                {
-                    SessionController.Instance.ContentController.AddContentDataModel(content);
-                }
-                _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
 
                 if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserName))
@@ -312,6 +363,10 @@ namespace NuSysApp
 
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
+            if (_isLoggingIn)
+            {
+                return;
+            }
             bool valid = true;
             if (NewUsername.Text == "")
             {
@@ -333,7 +388,9 @@ namespace NuSysApp
             }
             if (valid == true)
             {
-
+                // to prevent multiple logins we must block logins, the call to allow more logins is after the server sends back and says that 
+                // the login was incorrect
+                _isLoggingIn = true;
                 var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
                 var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
                 var displayName = NewDisplayName.Text;

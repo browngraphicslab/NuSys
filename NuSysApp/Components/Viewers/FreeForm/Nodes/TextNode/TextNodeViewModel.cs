@@ -42,9 +42,12 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source, object args)
         {
-            ((TextNodeController)Controller).TextChanged -= TextChanged;
-            ((TextNodeController)Controller).SelectionChanged -= SelectionChanged;
-            Controller.Disposed -= ControllerOnDisposed;
+            if (Controller != null)
+            {
+                ((TextNodeController) Controller).TextChanged -= TextChanged;
+                ((TextNodeController) Controller).SelectionChanged -= SelectionChanged;
+                Controller.Disposed -= ControllerOnDisposed;
+            }
         }
 
         private void TextChanged (object sender, string text)

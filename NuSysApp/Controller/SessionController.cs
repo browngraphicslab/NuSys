@@ -146,23 +146,20 @@ namespace NuSysApp
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
             FileIO.WriteBytesAsync(file, byteArray);
         }
-        public async Task SaveWorkspace()
-        {
-            //TODO: refactor
-            /*
-            await _contentController.Save();
 
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
-            var lineTasks = IdToSendables.ContentValues.Select(async s => await s.Stringify());
-            var lines = await Task.WhenAll(lineTasks);
-            await FileIO.WriteLinesAsync(file, lines);
-            */
-        }
         //private int _id = 0;
         public string GenerateId()
         {
             //return _id++.ToString();
             return NusysConstants.GenerateId();
+        }
+
+        /// <summary>
+        /// returns the library element model of the current collection that is in full screen mode;
+        /// </summary>
+        public LibraryElementModel CurrentCollectionLibraryElementModel
+        {
+            get { return ContentController.GetLibraryElementModel(ActiveFreeFormViewer.LibraryElementId); }
         }
 
         /// <summary>
@@ -343,11 +340,11 @@ namespace NuSysApp
             SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Clear();
             SessionController.Instance.IdToControllers.Clear();//TODO actually unload all three of these.  very important
 
-            //for each returned contentDataMofdel, add it
+            //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
             //TODO put back in for collction entering
-            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(elementModels, collectionLibraryId);
+            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels);
         }
 
         #endregion

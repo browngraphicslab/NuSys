@@ -16,11 +16,13 @@ namespace NuSysApp
 
         /// <summary>
         /// Prefered constructor When creating new request to send to the server. To use, create new UpdateContentRequestArgs class and 
-        /// pass in the corresponding data to it. To use this request, await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request) then call UpdateContentLocally
+        /// pass in the corresponding data to it. To use this request, await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request) then call UpdateContentLocally.
+        ///  If you do not want to save the update to server, set savetoserver = false. By default its set to true
         /// </summary>
         /// <param name="requestArgs"></param>
-        public UpdateContentRequest(UpdateContentRequestArgs requestArgs) : base(requestArgs, NusysConstants.RequestType.UpdateContentRequest)
+        public UpdateContentRequest(UpdateContentRequestArgs requestArgs, bool saveUpdateToServer = true) : base(requestArgs, NusysConstants.RequestType.UpdateContentRequest)
         {
+            _message[NusysConstants.UPDATE_CONTENT_REQUEST_SAVE_TO_SERVER_BOOLEAN] = saveUpdateToServer;
         }
 
         /// <summary>

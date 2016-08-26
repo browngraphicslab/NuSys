@@ -88,8 +88,7 @@ namespace NuSysApp
             metadata["node_creation_date"] = DateTime.Now;
 
             // TODO: add the graph/chart
-            var contentId = SessionController.Instance.GenerateId();
-            var newCollectionId = SessionController.Instance.GenerateId();
+            var newLibraryElementId = SessionController.Instance.GenerateId();
 
             var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             // Removes the ink from the canvas
@@ -123,51 +122,20 @@ namespace NuSysApp
                 Points.Clear();
             }
 
-            var m = new Message();
-            m["id"] = contentId;
-            m["data"] = "";
-            m["type"] = NusysConstants.ElementType.Collection.ToString();
-            m["title"] = "new collection, " + Finite.ToString() + ", " + Points.Count;
-            m["finite"] = Finite;
-            m["shape_points"] = Points;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
+            var m = new CreateNewLibraryElementRequestArgs();
+            m.LibraryElementId = newLibraryElementId;
+            m.LibraryElementType = NusysConstants.ElementType.Collection;
+            m.Title = "new collection, " + Finite.ToString() + ", " + Points.Count;
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewContentRequest(new CreateNewContentRequestArgs() {LibraryElementArgs = m}));
 
             //here, settings should also be passed in as parameters
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(bb.X, bb.Y, contentId, Finite, Points, bb.Width, bb.Height, newCollectionId, CollectionElementModel.CollectionViewType.FreeForm);
-            
-            foreach (var vm in selections.ToArray())
-            {
-                if (vm is ElementViewModel)
-                {
-                    var elementViewModel = vm as ElementViewModel;
-
-                    var libraryElementModel = elementViewModel.Controller.LibraryElementModel;
-                    var dict = new Message();
-                    dict["title"] = libraryElementModel?.Title;
-                    dict["width"] = elementViewModel.Width;
-                    dict["height"] = elementViewModel.Height;
-                    dict["type"] = libraryElementModel.Type.ToString();
-                    dict["x"] = elementViewModel.Transform.TranslateX - bb.X + Constants.MaxCanvasSize / 2.0;
-                    dict["y"] = elementViewModel.Transform.TranslateY - bb.Y + Constants.MaxCanvasSize / 2.0;
-                    dict["contentId"] = libraryElementModel.LibraryElementId;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.LibraryElementId;
-
-                    if (elementViewModel is PdfNodeViewModel)
-                    {
-                        dict["page"] = (elementViewModel as PdfNodeViewModel).CurrentPageNumber;
-                    }
-
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    elementViewModel.Controller.RequestDelete();
-                }
-                // do something with links here
-                
-            }
+            var args = new NewElementRequestArgs();
+            args.Height = bb.Height;
+            args.X = bb.X;
+            args.Width = bb.Width;
+            args.Y = bb.Y;
+            args.LibraryElementId = newLibraryElementId;
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
 
             Visibility = Visibility.Collapsed;
         }

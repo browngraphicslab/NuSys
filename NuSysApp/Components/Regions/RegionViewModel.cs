@@ -30,8 +30,6 @@ namespace NuSysApp
             }
         }
 
-        public delegate void SizeChangedEventHandler(object sender, double width, double height);
-        public event SizeChangedEventHandler ContainerSizeChanged;
 
         #endregion Public variables
         public RegionLibraryElementController RegionLibraryElementController;
@@ -40,11 +38,6 @@ namespace NuSysApp
         {
             Model = model;
             RegionLibraryElementController = regionLibraryElementController;
-        }
-
-        public void ChangeSize(object sender, double width, double height)
-        {
-            ContainerSizeChanged?.Invoke(sender,width,height);
         }
 
         public abstract void Dispose(object sender, EventArgs e);

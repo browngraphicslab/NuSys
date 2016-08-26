@@ -86,14 +86,19 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
 
-            #endregion GetEntireWorkspaceRequest
+        /// <summary>
+        /// The key used to hold the levels of recursion deep. (Collections within collections within..)
+        /// </summary>
+        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_LEVELS_OF_RECURSION = "levels_of_recursion";
 
-            #region CreateNewContentRequest
+        #endregion GetEntireWorkspaceRequest
 
-            /// <summary>
-            /// The key used to hold the type of content being added
-            /// </summary>
-            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
+        #region CreateNewContentRequest
+
+        /// <summary>
+        /// The key used to hold the type of content being added
+        /// </summary>
+        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
 
             /// <summary>
             /// The key used to hold the content id.
@@ -239,13 +244,18 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID = "library_element_id_to_update";
 
-            #endregion UpdateLibraryElementRequest
+        /// <summary>
+        /// In the UpdateLibraryElementRequest this is the key that will be used to hold the bool on whether on not to save the update to the server
+        /// </summary>
+        public static readonly string UPDATE_LIBRARY_ELEMENT_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_changes_to_server";
 
-            #region NewLibraryElementRequest
-                /// <summary>
-                /// key in message for sending element type when creating new library element request
-                /// </summary>
-                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
+        #endregion UpdateLibraryElementRequest
+
+        #region NewLibraryElementRequest
+        /// <summary>
+        /// key in message for sending element type when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
 
                 /// <summary>
                 /// key in message for sending library id when creating new library element request
@@ -328,46 +338,55 @@ namespace NusysIntermediate
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID = "clipping_parent_id";
+
                 /// <summary>
                 /// the key that will hold the PointModel of the top left point of the requested region  
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT = "rectangle_top_left_point"; 
+
                 /// <summary>
                 /// the key that will hold the width of the requested region  
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH = "rectangle_region_width";
+
                 /// <summary>
                 /// the key that will hold the height of the requested region  
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT = "rectangle_region_height";
+
                 /// <summary>
                 /// the key that will hold the page location of the requested region  
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
+
                /// <summary>
                /// the key that will hold the start of the interval of the requested region  
                /// Used during a region libraryElementRequest.  
                /// </summary>
-               public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";    
+               public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";   
+         
                /// <summary>
                /// the key that will hold the end of the interval of the requested region  
                /// Used during a region libraryElementRequest.  
                /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";
+
                 /// <summary>
                 /// key in message for when the request returns with the fully populated libraryelementModel.
                 /// When the library element model request returns, it will pass a library element model as a json using this key
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+
                 /// <summary>
                 /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
                 /// Used during a link libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY = "link_library_element_model_id_in";
+
                 /// <summary>
                 /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
                 /// Used during a link libraryElementRequest.  
@@ -378,6 +397,17 @@ namespace NusysIntermediate
                 /// the key that will hold the serialized dictionary from string to metadataentry when creating a new library element
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY = "metadata";
+
+                /// <summary>
+                /// the key that will hold the boolean representing if a new collection is finite or not
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_COLLECTION_FINITE_BOOLEAN_KEY = "finite_collection_bool";
+
+                /// <summary>
+                /// the key that will hold the josn-serialized list of point models used to represent the outer bounds of shaped collection
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY = "shaped_points_key";
+
         #endregion NewLibraryElementRequest
 
         #region CreateNewMetadataRequest
@@ -525,9 +555,14 @@ namespace NusysIntermediate
             public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
 
             /// <summary>
-            /// The key for sending the annotation for the update presentation link request
+            /// The key for sending the bool on whether or not to save the changes to the server
             /// </summary>
-            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+            public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_changes_to_server";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
             #endregion UpdatePresentationLinkRequest
 
             #region UpdateContentRequest
@@ -547,13 +582,18 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY = "content_id_key";
 
+        /// <summary>
+        /// The key for sending the bool on whether or not to save the request to the server.
+        /// </summary>
+        public static readonly string UPDATE_CONTENT_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_to_server";
+
         #endregion UpdateContentRequest
 
-            #region GetRelatedDocumentsRequest
-            /// <summary>
-            /// The key for sending contentDataModel id of the document you wish to get related items for
-            /// </summary>
-            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
+        #region GetRelatedDocumentsRequest
+        /// <summary>
+        /// The key for sending contentDataModel id of the document you wish to get related items for
+        /// </summary>
+        public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
 
             /// <summary>
             /// The key for sending a list of contentDataModel ids of which the original document is related to
@@ -586,7 +626,37 @@ namespace NusysIntermediate
                 /// Key in message for sending chat messages in chat requests
                 /// </summary>
                 public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
-            #endregion
+        #endregion
+
+        #region CreateInkStrokeRequest
+        /// <summary>
+        /// Key in message for ink stroke unique id for the create ink stroke request
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
+
+        /// <summary>
+        /// Key in message for the content id for the content where the ink stroke was placed. Used for the create ink stroke request
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// Key in message for sending the json serialized list of points that compose the stroke. Used for the create ink stroke request
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "content_id";
+
+        /// <summary>
+        /// Key in message used by the server to send the InkModel back to clients. 
+        /// </summary>
+        public static readonly string CREATE_INK_STROKE_REQUEST_RETURNED_INK_MODEL_KEY = "returned_ink_model";
+        #endregion CreateInkStrokeRequest
+
+        #region DeleteInkStrokeRequest
+        /// <summary>
+        /// Key in message for ink stroke unique id for the delete ink stroke request
+        /// </summary>
+        public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
+        
+        #endregion DeleteInkStrokeRequest
 
         #endregion RequestKeys
 
@@ -610,7 +680,16 @@ namespace NusysIntermediate
 
             #endregion DropNetworkUserNotification
 
-            #endregion NotificationKeys
+            #region AnalysisModelMade
+
+            /// <summary>
+            /// key used in the analysis model made notification that represents the content id of the analysis model that has been made
+            /// </summary>
+            public static readonly string ANALYSIS_MODEL_MADE_NOTIFICATION_CONTENT_ID_KEY = "content_id_of_analysis_model";
+
+            #endregion AnalysisModelMade
+
+        #endregion NotificationKeys
 
         #region NotificationManagementKeys
 
@@ -1044,9 +1123,38 @@ namespace NusysIntermediate
 
         #endregion AnalysisModels
 
+        #region Ink
+        /// <summary>
+        /// the unique id of the ink stroke
+        /// </summary>
+        public static readonly string INK_TABLE_STROKE_ID = "stroke_id";
+
+        /// <summary>
+        /// the id of the content of which the ink stroke is on
+        /// </summary>
+        public static readonly string INK_TABLE_CONTENT_ID = "content_id";
+
+        /// <summary>
+        /// This stores the JSON serialized list of points that compose the ink stroke
+        /// </summary>
+        public static readonly string INK_TABLE_POINTS = "points";
+
+        /// <summary>
+        /// the list of keys that will safely be entered into the INK table.  
+        /// Use this to make sure that you're entering correct keys into the database
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_INK_TABLE_KEYS = new HashSet<string>()
+        {
+            INK_TABLE_CONTENT_ID,
+            INK_TABLE_STROKE_ID,
+            INK_TABLE_POINTS
+        };
+        #endregion Ink
 
 
-    #endregion SQLColumnNames
+
+
+        #endregion SQLColumnNames
 
         #region SQLTableNames
 
@@ -1089,6 +1197,11 @@ namespace NusysIntermediate
         /// The string name of the presentation links SQL table in our database
         /// </summary>
         public static readonly string USERS_SQL_TABLE_NAME = "users";
+
+        /// <summary>
+        /// The string name of the ink stroke SQL table in our database
+        /// </summary>
+        public static readonly string INK_SQL_TABLE_NAME = "ink";
 
         #endregion SQLTableNames
 
@@ -1153,11 +1266,17 @@ namespace NusysIntermediate
             #endregion PdfRegion 
 
             #region Collection
+
             /// <summary>
-            /// This key is used to hold the list of children library element id strings.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// this key is used to hold the boolean property which represents whether a collection library element model is finite or not. 
             /// </summary>
-            public static readonly string COLLECTION_CHILDREN_KEY = "children";
+            public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY = "finite_bool";
+
+            /// <summary>
+            /// this key is used to hold the json-stringified list of points used to mark a shaped collection
+            /// </summary>
+            public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY = "shape_points";
+
             #endregion Collection 
 
             #region LinkLibraryElementModel
@@ -1167,12 +1286,12 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
 
-                /// <summary>
-                /// The key that will hold the LibraryElementId for the OUT libary element
-                /// </summary>
-                public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+                        /// <summary>
+                        /// The key that will hold the LibraryElementId for the OUT libary element
+                        /// </summary>
+                        public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
 
-            #endregion LinkLibraryElementModel
+                    #endregion LinkLibraryElementModel
 
             #endregion LibraryElementModel
 
@@ -1327,6 +1446,8 @@ namespace NusysIntermediate
             UpdateMetadataEntryRequest,
             CreateSnapshotOfCollectionRequest,
             GetRelatedDocumentsRequest,
+            CreateInkStrokeRequest,
+            DeleteInkStrokeRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
@@ -1368,8 +1489,20 @@ namespace NusysIntermediate
         /// </summary>
         public enum NotificationType
         {
+            /// <summary>
+            /// to notify of a new user on the system
+            /// </summary>
             AddUser,
+
+            /// <summary>
+            /// to notify when a user has disconnected or left the network
+            /// </summary>
             RemoveUser,
+
+            /// <summary>
+            /// to notify that an analysis model for an uploaded content has finished being made
+            /// </summary>
+            AnalysisModelMade
         }
 
         /// <summary>

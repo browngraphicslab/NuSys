@@ -28,6 +28,7 @@ namespace NuSysApp
         //content id the link is linked to
         public string LibraryId;
         private LibraryElementController _linkLibraryElementController;
+        private LibraryElementController _libraryElementController;
         private bool _pinned;
 
         protected bool Pinned
@@ -67,15 +68,19 @@ namespace NuSysApp
             border.BorderThickness = _collapsedThickness;
             //thumbnail is not pinned to begin with
             Pinned = false;
-            var libraryElementController =
+
+            // The controller of the element the link goes to
+            _libraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
+            // The controller of the link itself
             _linkLibraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
-            if (libraryElementController != null)
+            _linkLibraryElementController.Disposed += Controller_Disposed;
+            if (_libraryElementController != null)
             {
-                _bmp = new BitmapImage(libraryElementController?.SmallIconUri);
+                _bmp = new BitmapImage(_libraryElementController?.SmallIconUri);
 
-                libraryElementController.LinkRemoved += LibraryElementController_LinkRemoved;
+                _libraryElementController.LinkRemoved += LibraryElementController_LinkRemoved;
 
                 thumbnail.ImageOpened += Thumbnail_ImageOpened;
 
@@ -85,14 +90,21 @@ namespace NuSysApp
                 //this is sort of a bandaid rather than a fix
                 Canvas.SetZIndex(thumbnail, 50);
             }
-            linkButton.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libraryElementController.LibraryElementModel.LibraryElementId));
-            //xPinHighlight.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libraryElementController.LibraryElementModel.LibraryElementId));
+            linkButton.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(_libraryElementController?.LibraryElementModel?.LibraryElementId));
+        }
+
+        private void Controller_Disposed(object sender, EventArgs e)
+        {
+            Dispose();
         }
 
         private void LibraryElementController_LinkRemoved(object sender, string e)
         {
-            //_linkLibraryElementController.LinkRemoved -= LibraryElementController_LinkRemoved;
             Disposed?.Invoke(this, EventArgs.Empty);
+            foreach (var elementController in SessionController.Instance.LinksController.GetInstancesOfLibraryElement(LibraryId))
+            {
+                elementController.UpdateCircleLinks();
+            }
         }
 
         private void Thumbnail_ImageOpened(object sender, RoutedEventArgs e)
@@ -164,7 +176,7 @@ namespace NuSysApp
             var regionController = SessionController.Instance.ContentController.GetLibraryElementController(LinkLibraryElementId) as RegionLibraryElementController;
             if (regionController != null)
             {
-                regionController.Select();
+             //   regionController.Select();
             }
         }
 
@@ -186,6 +198,15 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.ShowDetailView(libraryElementController);
             }
             e.Handled = true;
+        }
+
+        private void Dispose()
+        {
+            _libraryElementController.LinkRemoved -= LibraryElementController_LinkRemoved;
+            thumbnail.ImageOpened -= Thumbnail_ImageOpened;
+            _linkLibraryElementController.Disposed -= Controller_Disposed;
+            _linkLibraryElementController = null;
+            _libraryElementController = null;
         }
     }
 }

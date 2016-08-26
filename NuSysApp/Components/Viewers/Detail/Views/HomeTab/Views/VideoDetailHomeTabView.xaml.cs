@@ -76,8 +76,8 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source, object args)
         {
-            var vm = (VideoNodeViewModel)DataContext;
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            var vm = (VideoDetailHomeTabViewModel)DataContext;
+      //      vm.Controller.Disposed -= ControllerOnDisposed;
         }
     }
 }

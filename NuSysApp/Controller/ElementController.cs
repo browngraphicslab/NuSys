@@ -67,7 +67,7 @@ namespace NuSysApp
 
             if (_model != null)
             {
-                _debouncingDictionary = new DebouncingDictionary(model.Id);
+                _debouncingDictionary = new ElementDebouncingDictionary(model.Id);
             }
             if (LibraryElementController != null)
             {
@@ -107,7 +107,7 @@ namespace NuSysApp
 
         public virtual void SetSize(double width, double height)
         {
-            if (width < 20 || height < 20)
+            if (width < Constants.MinNodeSize || height < Constants.MinNodeSize)
             {
                 return;
             }
@@ -183,9 +183,12 @@ namespace NuSysApp
             //create and execute the request
             var request = new DeleteElementRequest(Model.Id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-            //delete it locally (may need to check if it was succesful first)
-            return request.RemoveNodeLocally();
+            if (request.WasSuccessful() == true)
+            {
+                //delete it locally (may need to check if it was succesful first)
+                return request.RemoveNodeLocally();
+            }
+            return false;
         }
 
         /// <summary>
@@ -266,15 +269,22 @@ namespace NuSysApp
             var deleteElementRequest = new DeleteElementRequest(Model.Id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(deleteElementRequest);
 
-            //remove locally (may want to check if it was successful)
-            deleteElementRequest.RemoveNodeLocally();
+            if (deleteElementRequest.WasSuccessful() == true)
+            {
+                //remove locally (may want to check if it was successful)
+                deleteElementRequest.RemoveNodeLocally();
 
-            //create the new element
-            var request = new NewElementRequest(newElementArgs);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                //create the new element
+                var request = new NewElementRequest(newElementArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
-            //add the new element locally
-            request.AddReturnedElementToSession();
+                //add the new element locally
+                request.AddReturnedElementToSession();
+            }
+            else
+            {
+                //alert the user it failed
+            }
         }
 
         public ElementModel Model

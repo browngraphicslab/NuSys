@@ -64,6 +64,10 @@ namespace NuSysApp
 
             //get the library element controller to update
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString(NusysConstants.UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY));
+            if (controller == null)
+            {
+                return;
+            }
             controller.UpdateMetadataLocally(key, value);
             
         }

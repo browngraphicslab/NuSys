@@ -18,7 +18,10 @@ namespace NuSysApp
             LibraryElementController = controller;
             controller.ContentDataController.ContentDataUpdated += ContentChanged;
         }
-
+        public void Dispose()
+        {
+            LibraryElementController.ContentDataController.ContentDataUpdated -= ContentChanged;
+        }
         private void ContentChanged(object source, string data)
         {
             TextChanged?.Invoke(source,data);
@@ -28,5 +31,6 @@ namespace NuSysApp
         {
             throw new NotImplementedException();
         }
+        
     }
 }

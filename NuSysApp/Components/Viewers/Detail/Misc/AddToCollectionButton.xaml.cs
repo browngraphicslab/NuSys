@@ -76,7 +76,7 @@ namespace NuSysApp
         private void AddToCollection_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -110,13 +110,22 @@ namespace NuSysApp
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == controller.LibraryElementModel.LibraryElementId) || (controller.LibraryElementModel.Type == NusysConstants.ElementType.Link))
+            var workspaceModelAccessType =
+                SessionController.Instance.ContentController.GetLibraryElementModel(
+                    SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId).AccessType;
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+
+            if ((WaitingRoomView.InitialWorkspaceId == controller.LibraryElementModel.LibraryElementId) || (controller.LibraryElementModel.Type == NusysConstants.ElementType.Link) ||
+                (controller.LibraryElementModel.AccessType == NusysConstants.AccessType.Private &&
+                workspaceModelAccessType != NusysConstants.AccessType.Private) ||
+                (controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly &&
+                workspaceModelAccessType != NusysConstants.AccessType.Public))
             {
                 e.Handled = true;
+                rect.Hide();
                 return;
             }
 
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
 
 
             if (rect.Visibility == Visibility.Collapsed)

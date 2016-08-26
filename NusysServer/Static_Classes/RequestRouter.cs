@@ -100,7 +100,13 @@ namespace NusysServer
                         case NusysConstants.RequestType.GetRelatedDocumentsRequest:
                             requestHandler = new GetRelatedDocumentsRequestHandler();
                             break;
-                        default:
+                        case NusysConstants.RequestType.CreateInkStrokeRequest:
+                            requestHandler = new CreateInkStrokeRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.DeleteInkStrokeRequest:
+                            requestHandler = new DeleteInkStrokeRequestHandler();
+                            break;
+                        default: 
                             requestHandler = null;
                             return false;
                     }

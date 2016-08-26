@@ -19,12 +19,14 @@ namespace NuSysApp
         private List<PresentationLinkModel> _returnedPresentationLinkModels;
 
         /// <summary>
-        /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch.  
+        /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch, and the levels of recursion you want.
+        /// The default levels of recursion is 2.
         /// </summary>
         /// <param name="collectionId"></param>
-        public GetEntireWorkspaceRequest(string collectionId) : base(NusysConstants.RequestType.GetEntireWorkspaceRequest)
+        public GetEntireWorkspaceRequest(string collectionId, int levelsOfRecursion = 2) : base(NusysConstants.RequestType.GetEntireWorkspaceRequest)
         {
             _message[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY] = collectionId;
+            _message[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_LEVELS_OF_RECURSION] = levelsOfRecursion;
         }
 
 
@@ -122,11 +124,10 @@ namespace NuSysApp
         /// Most times you use this request, you should call this method
         /// </summary>
         /// <returns></returns>
-        public async Task AddReturnedElementsToSessionAsync()
+        public async Task AddReturnedDataToSessionAsync()
         {
             //get the contents and elements
             var contentDataModels = GetReturnedContentDataModels();
-            var elements = GetReturnedElementModels();
             var presentationLinks = GetReturnedPresentationLinkModels();
 
             //for each contentDataModel, add it to the contentController if it doesn't exist
@@ -138,15 +139,21 @@ namespace NuSysApp
                 }
             }
 
-            //make the collection
-            await SessionController.Instance.SessionView.MakeCollection(
-                elements.Select(element => new KeyValuePair<string, ElementModel>(element.Id, element))
-                    .ToDictionary(k => k.Key, v => v.Value));
-
             foreach (var presentationLink in presentationLinks)//add the presentation links
             {
                 await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
             }
+        }
+
+        /// <summary>
+        /// this method will make a collection out of the returned elements.  
+        /// This can be called in conjunction with the AddReturnedDataToSessionAsync() method
+        /// </summary>
+        /// <returns></returns>
+        public async Task MakeCollectionFromReturnedElementsAsync()
+        {
+            var elements = GetReturnedElementModels();
+            await SessionController.Instance.SessionView.MakeCollection(elements.ToDictionary(e => e.Id, e => e));
         }
     }
 }

@@ -40,7 +40,36 @@ namespace NuSysApp
             xAudioWrapper.OnRegionSeeked += onSeekedTo;
             xAudioWrapper.OnIntervalChanged += XAudioWrapper_OnIntervalChanged;
             positionBinding = new Binding();
+            DataContextChanged += AudioMediaPlayer_DataContextChanged;
 
+        }
+
+
+        /// <summary>
+        /// Called when the DataContext changes, sets the Visualization Image on the media player
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void AudioMediaPlayer_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            if (DataContext is AudioNodeViewModel)
+            {
+                VisualizationImage.Source = new BitmapImage((DataContext as AudioNodeViewModel)?.Controller.LibraryElementController.LargeIconUri);
+            }
+            else if (DataContext is AudioDetailHomeTabViewModel)
+            {
+                VisualizationImage.Source =
+                    new BitmapImage(
+                        (DataContext as AudioDetailHomeTabViewModel)?.LibraryElementController.LargeIconUri);
+            }
+            else if (DataContext == null)
+            {
+                // do nothing this is generic for when the DataContext isn't set
+            }
+            else
+            {
+                Debug.Fail($"Add Support for Visualization of audio datacontext {DataContext} here");
+            }
         }
 
         private void XAudioWrapper_OnIntervalChanged(object sender, double start, double end)
@@ -103,7 +132,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Stopped)
             {
                 MediaElement.Stop();
-
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -112,7 +142,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Paused)
             {
                 MediaElement.Pause();
-
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -122,7 +153,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
                 MediaElement.Play();
-
+                Play.Visibility = Visibility.Collapsed;
+                Pause.Visibility = Visibility.Visible;
             }
         }
 
@@ -265,27 +297,6 @@ namespace NuSysApp
 
         }
 
-
-        public async Task RenderImageSource(Grid RenderedGrid)
-        {
-
-            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
-            double x = Grid.Height;
-            Grid.Width = RenderedGrid.Width * 2;
-            try
-            {
-                await renderTargetBitmap.RenderAsync(RenderedGrid, 1000, 100);
-            }
-            catch (Exception e)
-            {
-                return;
-            }
-            Grid.Width = x;
-            VisualizationImage.Source = renderTargetBitmap;
-            Grid.Children.Remove(RenderedGrid);
-
-        }
-
         public Uri AudioSource
         {
             get { return MediaElement.Source; }
@@ -337,6 +348,7 @@ namespace NuSysApp
             MediaElement.Stop();
             xAudioWrapper.OnRegionsUpdated -= XAudioWrapper_OnRegionsUpdated;
             xAudioWrapper.OnRegionSeeked -= onSeekedTo;
+            DataContextChanged -= AudioMediaPlayer_DataContextChanged;
             xAudioWrapper.Dispose();
         }
     }

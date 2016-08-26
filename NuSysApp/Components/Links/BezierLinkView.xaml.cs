@@ -48,6 +48,7 @@ namespace NuSysApp
                 UpdateControlPoints();
                 Title.TextChanged += TitleOnTextChanged;
             };
+            
 
         }
         /*
@@ -146,6 +147,8 @@ namespace NuSysApp
 
             Canvas.SetLeft(TitleContainer, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
             Canvas.SetTop(TitleContainer, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);
+            Canvas.SetLeft(DeleteButton, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
+            Canvas.SetTop(DeleteButton, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);
 
         }
 
@@ -204,5 +207,17 @@ namespace NuSysApp
             vm?.DirectionButtonClicked();
         }
 
+        /// <summary>
+        /// Deletes the link
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void DeleteButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as LinkViewModel;
+
+            // delete the link using the SessionController
+            var success = await SessionController.Instance.LinksController.RemoveLink(vm?.LinkModel.LibraryId);
+        }
     }
 }

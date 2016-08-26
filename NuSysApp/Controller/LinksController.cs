@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using NusysIntermediate;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 { 
     public class LinksController
     {
-        //Just to map a linkable id to the linkable itself
+        /// <summary>
+        /// Just to map a linkable id to the linkable itself
+        /// </summary>
         private ConcurrentDictionary<string,ILinkable> _linkableIdToLinkableController = new ConcurrentDictionary<string, ILinkable>();
 
         //A content ID to a list of the ids of linkables that are instances of that id
@@ -39,6 +42,11 @@ namespace NuSysApp
             Debug.Fail("we shouldnt ever really fail to find ilinkable for a certain id");
             return null;
         }
+        /// <summary>
+        /// When set to true we render all of the visual links that connect the nodes in the current workspace
+        /// When set to false we only render the circle links that exist between contents and not the bezier links
+        /// </summary>
+        public bool AreBezierLinksVisible = true;
 
         /// <summary>
         /// Adds the linkable to the appropriate linkables dictionaries
@@ -120,7 +128,30 @@ namespace NuSysApp
                 }
             }
         }
-        
+        /// <summary>
+        /// When the global function that changes the visibility of the bezier links is changed in a global setting this fucntion changes the value and also redraws the 
+        /// visual links so that the settings are applied in real time.
+        /// </summary>
+        /// <param name="visibility"></param>
+        public void ChangeVisualLinkVisibility(bool visibility)
+        {
+            AreBezierLinksVisible = visibility;
+            if (visibility)
+            {
+                foreach (var linkId in SessionController.Instance.ContentController.IdList.Where(e => SessionController.Instance.ContentController.GetLibraryElementModel(e) is LinkLibraryElementModel))
+                {
+                    var linkController = GetLinkLibraryElementControllerFromLibraryElementId(linkId);
+                    CreateVisualLinks(linkController);
+                }
+            }
+            else
+            {
+                foreach(var linkAtom in new HashSet<FrameworkElement>(SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(e => e is BezierLinkView)))
+                {
+                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(linkAtom);
+                }
+            }
+        }
 
         /// <summary>
         /// Add the link library element controller's library ContentId to the hashset for both endpoint ids' keys
@@ -215,17 +246,47 @@ namespace NuSysApp
             {
                 Debug.Assert(libraryElementController.LibraryElementModel is LinkLibraryElementModel);
                 var linkLibraryElementModel = libraryElementController.LibraryElementModel as LinkLibraryElementModel;
-                
+
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
                 //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Contains(libraryElementId));
                 //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Contains(libraryElementId));
-
-                _contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Remove(libraryElementId);
-                _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
+                if (_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId))
+                {
+                    _contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Remove(libraryElementId);
+                }
+                if (_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId))
+                {
+                    _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
+                }
             }
 
+            var linkedIds = GetLinkedIds(libraryElementController.LibraryElementModel.LibraryElementId);
             DisposeLibraryElement(libraryElementController.LibraryElementModel.LibraryElementId);
+            foreach (var linkId in linkedIds)
+            {
+                var linkController = GetLinkLibraryElementControllerFromLibraryElementId(linkId);
+                var inelementid = linkController.LinkLibraryElementModel.InAtomId;
+                var outelementid = linkController.LinkLibraryElementModel.OutAtomId;
+
+
+                if (_contentIdToLinkableIds.ContainsKey(inelementid))
+                {
+                    foreach (var visualId in _contentIdToLinkableIds[inelementid])
+                    {
+                        // We add the circle links even so that even if one of them is not on the current workspace we can still see that a link exists
+                        GetLinkable(visualId).UpdateCircleLinks();
+                    }
+                }
+                if (_contentIdToLinkableIds.ContainsKey(outelementid))
+                {
+                    foreach (var visualId in _contentIdToLinkableIds[outelementid])
+                    {
+                        // We add the circle links even so that even if one of them id not on the current workspace we can still see that a link exists
+                        GetLinkable(visualId).UpdateCircleLinks();
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -271,8 +332,13 @@ namespace NuSysApp
         /// <param name="two"></param>
         private void CreateBezierLinkBetween(ILinkable one, ILinkable two)
         {
+            if (!AreBezierLinksVisible)
+            {
+                return; // if we do not want to see the visual links then this should stop the links from being created
+            }
             var oneParentCollectionId = one.GetParentCollectionId();
             var twoParentCollectionId = two.GetParentCollectionId();
+
             if (oneParentCollectionId != twoParentCollectionId || oneParentCollectionId == null)
             {
                 return;
@@ -306,6 +372,8 @@ namespace NuSysApp
                 {
                     SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
                 }
+                controller.OutElement.UpdateCircleLinks();
+                controller.InElement.UpdateCircleLinks();
                 //TODO Change ElementCollectionViewModel child added and removed code to take link controllers or element controllers
                 Canvas.SetZIndex(view, -2);
             });
@@ -322,18 +390,33 @@ namespace NuSysApp
              var contentId2 = linkController?.LinkLibraryElementModel?.OutAtomId;
              Debug.Assert(contentId1 != null);
              Debug.Assert(contentId2 != null);
-             if (_contentIdToLinkableIds.ContainsKey(contentId1) && _contentIdToLinkableIds.ContainsKey(contentId2))
+             if (_contentIdToLinkableIds.ContainsKey(contentId1) && _contentIdToLinkableIds.ContainsKey(contentId2) && AreBezierLinksVisible) // the AreBezierLinksVisible is just to clean up runtime
              {
                  foreach (var visualId1 in _contentIdToLinkableIds[contentId1])
                  {
                      foreach (var visualId2 in _contentIdToLinkableIds[contentId2])
                      {
-                         CreateBezierLinkBetween(visualId1, visualId2);
+                        CreateBezierLinkBetween(visualId1, visualId2);
                      }
                  }
  
              }
-         }
+            if (_contentIdToLinkableIds.ContainsKey(contentId1)) {
+                foreach (var visualId in _contentIdToLinkableIds[contentId1])
+                {
+                    // We add the circle links even so that even if one of them is not on the current workspace we can still see that a link exists
+                    GetLinkable(visualId).UpdateCircleLinks();
+                }
+            }
+            if (_contentIdToLinkableIds.ContainsKey(contentId2)){
+                foreach (var visualId in _contentIdToLinkableIds[contentId2])
+                {
+                    // We add the circle links even so that even if one of them id not on the current workspace we can still see that a link exists
+                    GetLinkable(visualId).UpdateCircleLinks();
+                }
+            }
+
+        }
 
 
 
@@ -453,7 +536,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
-        private IEnumerable<ILinkable> GetInstancesOfLibraryElement(string contentId)
+        public IEnumerable<ILinkable> GetInstancesOfLibraryElement(string contentId)
         {
             Debug.Assert(contentId != null);
             if (_contentIdToLinkableIds.ContainsKey(contentId))
@@ -521,6 +604,13 @@ namespace NuSysApp
         private void DisposeLibraryElement(string libraryElementId)
         {
             HashSet<string> outObj;
+            if (_contentIdToLinkContentIds.ContainsKey(libraryElementId))
+            {
+                foreach (var linkId in _contentIdToLinkContentIds[libraryElementId])
+                {
+                    RemoveLink(linkId);
+                }
+            }
             _contentIdToLinkableIds.TryRemove(libraryElementId, out outObj);
             _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);
         }
@@ -544,12 +634,16 @@ namespace NuSysApp
                 var inLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.InAtomId;
                 var inLibElemController =
                     SessionController.Instance.ContentController.GetLibraryElementController(inLibraryElementId);
-                inLibElemController.InvokeLinkRemoved(linkLibraryElementId);
-
+                if (inLibElemController != null) {
+                    inLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                }
                 var outLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.OutAtomId;
                 var outLibElemController =
                     SessionController.Instance.ContentController.GetLibraryElementController(outLibraryElementId);
-                outLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                if (outLibElemController != null)
+                {
+                    outLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                }
 
                 // return true because request was performed succesfully
                 return true;
@@ -580,6 +674,7 @@ namespace NuSysApp
                 Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
                 // create a new presentation link view model
                 var vm = new PresentationLinkViewModel(model);
+
                 // create a new presentation link view
                 var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
                 //TODO use this collectionController stuff, check if the collection exists

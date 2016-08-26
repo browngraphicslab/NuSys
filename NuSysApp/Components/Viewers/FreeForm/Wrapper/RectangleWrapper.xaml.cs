@@ -438,22 +438,32 @@ namespace NuSysApp
                 } 
             }
         }
-        
-        public void RemoveRegionView(string regionLibraryElementId)
+        /// <summary>
+        /// Whenever we remove a region from the library and we need to get rid of it's visual copies we
+        /// call this method to remove it from the current rectangle wrapper
+        /// </summary>
+        /// <param name="regionLibraryElementId"></param>
+        public async void RemoveRegionView(string regionLibraryElementId)
         {
-                foreach (var item in xClippingCanvas.Items)
+            await UITask.Run(delegate
+            {
+                foreach (var item in new HashSet<object>(xClippingCanvas.Items))
+
                 {
                     var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                     Debug.Assert(regionVM != null);
 
 
                     if (regionVM.Model.LibraryElementId == regionLibraryElementId)
-                   {
-                    regionVM.Dispose(null, EventArgs.Empty);
-                    xClippingCanvas.Items.Remove(item);
+                    {
+                        regionVM.Dispose(null, EventArgs.Empty);
+                        xClippingCanvas.Items.Remove(item);
                         return;
                     }
                 }
+            });
+
+
         }
         
         public double GetWidth()
@@ -555,18 +565,24 @@ namespace NuSysApp
         /// <summary>
         /// Makes every single region in the wrapper visible
         /// </summary>
-        public void ShowAllRegions()
+        public void ShowAllRegions() //todo update this when page changes for pdfs
         {
             foreach (var item in xClippingCanvas.Items)
             {
                 var regionView = item as FrameworkElement;
                 regionView.Visibility = Visibility.Visible;
             }
+
+            // if we are on a Pdf update the page location so that only regions for the current page are shown
+            if (DataContext is PdfDetailHomeTabViewModel)
+            {
+                (DataContext as PdfDetailHomeTabViewModel).InvokePageLocationChanged();
+            }
         }
         /// <summary>
         /// Makes every region in this wrapper invisible
         /// </summary>
-        public void HideAllRegions()
+        public void HideAllRegions() //todo update this when page changes for pdfs
         {
             foreach (var item in xClippingCanvas.Items)
             {
@@ -577,7 +593,7 @@ namespace NuSysApp
         /// <summary>
         /// Shows only direct descendants of the currently displayed LEM
         /// </summary>
-        public void ShowOnlyChildrenRegions()
+        public async void ShowOnlyChildrenRegions() //todo update this when page changes for pdfs
         {
             foreach (var item in xClippingCanvas.Items)
             {
@@ -593,8 +609,14 @@ namespace NuSysApp
                 {
                     region.Visibility = Visibility.Collapsed;
                 }
-
             }
+
+            // if we are on a Pdf update the page location so that only regions for the current page are shown
+            if (DataContext is PdfDetailHomeTabViewModel)
+            {
+                (DataContext as PdfDetailHomeTabViewModel).InvokePageLocationChanged();
+            }
+
         }
 
 

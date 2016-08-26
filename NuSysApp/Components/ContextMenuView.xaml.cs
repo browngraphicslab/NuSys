@@ -21,7 +21,7 @@ namespace NuSysApp
     {
         public ContextMenuView()
         {
-            this.InitializeComponent();
+            this. InitializeComponent();
         }
     }
 }

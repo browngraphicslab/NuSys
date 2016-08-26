@@ -222,14 +222,18 @@ namespace NuSysApp
                         break;
 
                 }
-
-                // set editable based on the parent data context
-                vm.Editable = false;
-                if (ParentDC != null)
+                // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
+                view.Loaded += delegate
                 {
-                    vm.Editable = ParentDC.Editable;
-                }
+                    var ParentDetailDC = DataContext as DetailHomeTabViewModel;
 
+                    // set editable based on the parent data context
+                    vm.Editable = false;
+                    if (ParentDetailDC != null)
+                    {
+                        vm.Editable = ParentDetailDC.Editable;
+                    }
+                };
                 // add the region to thew view
                 xClippingCanvas.Items.Add(view);
 
@@ -310,23 +314,26 @@ namespace NuSysApp
         }
 
         
-        public void RemoveRegionView(string regionLibraryElementId)
+        public async void RemoveRegionView(string regionLibraryElementId)
         {
-
-            foreach (var item in xClippingCanvas.Items)
+            await UITask.Run(delegate
             {
-                var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
-                Debug.Assert(regionVM != null);
-                if (regionVM.Model.LibraryElementId == regionLibraryElementId)
+                foreach (var item in new HashSet<object>(xClippingCanvas.Items))
                 {
-                    xClippingCanvas.Items.Remove(item);
-                    //Fires ONRegionsUpdated event so that the parent AudioMediaPlayer's MediaElement will have a correct list
-                    //of TimelineMarkers.
-                    FireRegionsUpdated();
-                    regionVM.Dispose(null, EventArgs.Empty);
-                    return;
+                    var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
+                    Debug.Assert(regionVM != null);
+                    if (regionVM.Model.LibraryElementId == regionLibraryElementId)
+                    {
+                        xClippingCanvas.Items.Remove(item);
+                        //Fires ONRegionsUpdated event so that the parent AudioMediaPlayer's MediaElement will have a correct list
+                        //of TimelineMarkers.
+                        FireRegionsUpdated();
+                        regionVM.Dispose(null, EventArgs.Empty);
+                        return;
+                    }
                 }
-            }
+            });
+
         }
 
         /// <summary>

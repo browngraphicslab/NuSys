@@ -88,6 +88,7 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
+<<<<<<< HEAD
 
             ActiveNodes.Remove((UserControl) sender);
 
@@ -96,6 +97,17 @@ namespace NuSysApp
             userControl.PointerReleased -= UserControl_PointerReleased;
 
             manipulationCompletedRoutedEventArgs.Handled = true;
+=======
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            if (vm != null) { 
+            var elementController = vm.Controller;
+            if (!vm.IsEditing)
+            { 
+            }
+            ActiveNodes.Remove((UserControl) sender);
+}
+>>>>>>> origin/dev
         }
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
@@ -130,6 +142,15 @@ namespace NuSysApp
             userControl.PointerReleased += UserControl_PointerReleased;
 
             ActiveNodes.Add((UserControl)sender);
+
+            //If an action had been done and a new manipulation has started then we want to then make sure that it doesn't interfere with our current manipulation
+            if (_moveNodeUndoButton != null)
+            {
+                if (_moveNodeUndoButton.ActionExecuted == true)
+                {
+                    _moveNodeUndoButton.ActionExecuted = false; // This prevents the node from being immovable right agter being undo'd
+                }
+            }
         }
 
         private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
@@ -274,7 +295,40 @@ namespace NuSysApp
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
 
+<<<<<<< HEAD
 
+=======
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            if (vm != null)
+            {
+                var elementController = vm.Controller;
+
+                if (!vm.IsEditing)
+                {
+                    //Instantiates MoveElementAction
+                    var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+                    if (_moveNodeUndoButton != null)
+                    {
+                        if (_moveNodeUndoButton.State == UndoButtonState.Active)
+                        {
+                            _moveNodeUndoButton.Deactivate();
+                            if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                            {
+                                ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+                            }
+                        }
+                    }
+
+                    _moveNodeUndoButton = new UndoButton();
+                    //Activates undo button makes it appear in the old position.
+                    ffvm.AtomViewList.Add(_moveNodeUndoButton);
+                    _moveNodeUndoButton.MoveTo(_originalPosition);
+                    _moveNodeUndoButton.Activate(moveElementAction);
+
+                }
+            }
+>>>>>>> origin/dev
         }
 
         public bool CheckInBounds(Point p)

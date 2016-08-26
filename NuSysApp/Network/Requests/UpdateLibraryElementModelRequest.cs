@@ -19,12 +19,16 @@ namespace NuSysApp
     {
         /// <summary>
         /// preferred constuctor.  
-        /// Takes in a Key with all the Database keys for the properties being updated. 
+        /// Takes in a Message with all the Database keys for the properties being updated. 
         /// Must contain in the message the Id of the LibraryElementModel to update with the NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID key; 
-        /// The Check Outgoing Request will catch you if you dont include that Id.
+        /// The Check Outgoing Request will catch you if you dont include that Id. If you do not want to save the update to server, set savetoserver = false. By default its set to true
         /// </summary>
         /// <param name="m"></param>
-        public UpdateLibraryElementModelRequest(Message m) : base(NusysConstants.RequestType.UpdateLibraryElementModelRequest, m){ }
+        public UpdateLibraryElementModelRequest(Message m, bool saveToServer = true)
+            : base(NusysConstants.RequestType.UpdateLibraryElementModelRequest, m)
+        {
+            _message[NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_SAVE_TO_SERVER_BOOLEAN] = saveToServer;
+        }
 
         /// <summary>
         /// this check outgoing request just adds a timestamp to last edited, and debug asserts that the message contains the correct ID key
@@ -48,36 +52,7 @@ namespace NuSysApp
 
             //get the library element controller to update
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString(NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID));
-            if (controller == null)
-            {
-                return;
-            }
-            controller.UnPack(_message);
-            if (_message.ContainsKey("favorited"))
-            {
-                controller.SetFavorited(bool.Parse(_message["favorited"].ToString()));
-            }
-            //TODO fix collection inking
-            if (_message.ContainsKey("inklines"))
-            {
-
-                var inkIds = _message.GetList<string>("inklines");
-                var collectionController = (CollectionLibraryElementController)controller;
-                var oldInkLines = collectionController.InkLines;
-                var added = inkIds.Except(oldInkLines).ToArray();
-                var removed = oldInkLines.Except(inkIds).ToArray();
-
-                foreach (var idremoved in removed)
-                {
-                    collectionController.RemoveInk(idremoved);
-                }
-
-                foreach (var idadded in added)
-                {
-                    collectionController.AddInk(idadded);
-                }
-
-            }
+            controller?.UnPack(_message);
         }
     }
 }

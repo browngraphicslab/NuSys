@@ -65,7 +65,7 @@ namespace NuSysApp
 
         public async Task Goto(int pageNumber, Region region = null)
         {
-            var content = LibraryElementController.ContentDataModel as PdfContentDataModel;
+            var content = LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
             if (content == null || pageNumber == -1)
             {
                 return;
@@ -116,6 +116,14 @@ namespace NuSysApp
             }
 
             return args;
+        }
+
+        /// <summary>
+        /// Call this when you need to update region visiblity to reflect the current page
+        /// </summary>
+        public void InvokePageLocationChanged()
+        {
+            PageLocationChanged?.Invoke(this, CurrentPageNumber);
         }
     }
 }

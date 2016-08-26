@@ -8,7 +8,6 @@ namespace NusysIntermediate
 {
     public class ContentDataModel
     {
-        // the id is a reference to an object
         public delegate Task RegionAddedEventHandler(string regionLibraryElementModelId);
 
         public event RegionAddedEventHandler OnRegionAdded;
