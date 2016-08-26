@@ -139,6 +139,7 @@ namespace NuSysApp
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
             MediaElement.Stop();
+            xAudioWrapper.CheckTimeForRegions(xAudioWrapper.AudioStart);
             play.Visibility = Visibility.Visible;
             pause.Visibility = Visibility.Collapsed;
         }

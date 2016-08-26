@@ -129,12 +129,10 @@ namespace NuSysApp
 
         private void Stop_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            if (MediaElement.CurrentState != MediaElementState.Stopped)
-            {
                 MediaElement.Stop();
+                xAudioWrapper.CheckTimeForRegions(xAudioWrapper.AudioStart);
                 Play.Visibility = Visibility.Visible;
                 Pause.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void Pause_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -287,15 +285,11 @@ namespace NuSysApp
 
         private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e)
         {
-            Audio_OnJump(new TimeSpan(0));
+            MediaElement.Position = new TimeSpan(0);
 
         }
 
-        public void Audio_OnJump(TimeSpan time)
-        {
-            MediaElement.Position = time;
 
-        }
 
         public Uri AudioSource
         {
@@ -325,8 +319,8 @@ namespace NuSysApp
                 Play.Visibility = Visibility.Visible;
                 Pause.Visibility = Visibility.Collapsed;
                 MediaElement.Pause();
-                Audio_OnJump(StartMarker.Time);
 
+                MediaElement.Position = StartMarker.Time;
 
             }
             //*** To avoid rounding issues, denormalized time of marker, as well as total duration, must both be
