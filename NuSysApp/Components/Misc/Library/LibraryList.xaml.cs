@@ -263,6 +263,27 @@ namespace NuSysApp
             var libraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
             libraryElementController.AddElementAtPosition(r.X, r.Y);
+            
+
+
+            /*
+            //Undo button for adding element to collection:
+
+
+            //Position of button = position of node + some offset
+            var model = controller.Model;
+            var buttonPosition = new Windows.Foundation.Point(model.X - 60, model.Y - 80);
+            //Creates a DeleteElementAction
+            var addElementAction = new CreateElementAction(controller, new Windows.Foundation.Point(model.X, model.Y));
+
+            //Creates an undo button and places it in the correct position.
+
+            var workspace = SessionController.Instance.ActiveFreeFormViewer;
+            var undoButton = new UndoButton();
+            workspace.AtomViewList.Add(undoButton);
+            undoButton.MoveTo(buttonPosition);
+            undoButton.Activate(addElementAction);
+            */
         }
 
 
