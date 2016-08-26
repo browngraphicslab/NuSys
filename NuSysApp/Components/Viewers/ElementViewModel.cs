@@ -171,12 +171,15 @@ namespace NuSysApp
             }
         }
 
-        private void Circlelink_Disposed(object sender, EventArgs e)
+        private async void Circlelink_Disposed(object sender, EventArgs e)
         {
             Debug.Assert(sender is LinkCircle);
             var circleLink = sender as LinkCircle;
             circleLink.Disposed -= Circlelink_Disposed;
-            CircleLinks.Remove(sender as LinkCircle);
+            await UITask.Run(delegate
+            {
+                CircleLinks.Remove(sender as LinkCircle);
+            });
         }
 
         private void CreateTags()

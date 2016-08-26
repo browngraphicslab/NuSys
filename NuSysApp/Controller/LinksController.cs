@@ -244,17 +244,47 @@ namespace NuSysApp
             {
                 Debug.Assert(libraryElementController.LibraryElementModel is LinkLibraryElementModel);
                 var linkLibraryElementModel = libraryElementController.LibraryElementModel as LinkLibraryElementModel;
-                
+
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
                 //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
                 //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Contains(libraryElementId));
                 //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Contains(libraryElementId));
-
-                _contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Remove(libraryElementId);
-                _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
+                if (_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId))
+                {
+                    _contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Remove(libraryElementId);
+                }
+                if (_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId))
+                {
+                    _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
+                }
             }
 
+            var linkedIds = GetLinkedIds(libraryElementController.LibraryElementModel.LibraryElementId);
             DisposeLibraryElement(libraryElementController.LibraryElementModel.LibraryElementId);
+            foreach (var linkId in linkedIds)
+            {
+                var linkController = GetLinkLibraryElementControllerFromLibraryElementId(linkId);
+                var inelementid = linkController.LinkLibraryElementModel.InAtomId;
+                var outelementid = linkController.LinkLibraryElementModel.OutAtomId;
+
+
+                if (_contentIdToLinkableIds.ContainsKey(inelementid))
+                {
+                    foreach (var visualId in _contentIdToLinkableIds[inelementid])
+                    {
+                        // We add the circle links even so that even if one of them is not on the current workspace we can still see that a link exists
+                        GetLinkable(visualId).UpdateCircleLinks();
+                    }
+                }
+                if (_contentIdToLinkableIds.ContainsKey(outelementid))
+                {
+                    foreach (var visualId in _contentIdToLinkableIds[outelementid])
+                    {
+                        // We add the circle links even so that even if one of them id not on the current workspace we can still see that a link exists
+                        GetLinkable(visualId).UpdateCircleLinks();
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -504,7 +534,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
-        private IEnumerable<ILinkable> GetInstancesOfLibraryElement(string contentId)
+        public IEnumerable<ILinkable> GetInstancesOfLibraryElement(string contentId)
         {
             Debug.Assert(contentId != null);
             if (_contentIdToLinkableIds.ContainsKey(contentId))
@@ -572,6 +602,13 @@ namespace NuSysApp
         private void DisposeLibraryElement(string libraryElementId)
         {
             HashSet<string> outObj;
+            if (_contentIdToLinkContentIds.ContainsKey(libraryElementId))
+            {
+                foreach (var linkId in _contentIdToLinkContentIds[libraryElementId])
+                {
+                    RemoveLink(linkId);
+                }
+            }
             _contentIdToLinkableIds.TryRemove(libraryElementId, out outObj);
             _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);
         }
@@ -595,12 +632,16 @@ namespace NuSysApp
                 var inLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.InAtomId;
                 var inLibElemController =
                     SessionController.Instance.ContentController.GetLibraryElementController(inLibraryElementId);
-                inLibElemController.InvokeLinkRemoved(linkLibraryElementId);
-
+                if (inLibElemController != null) {
+                    inLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                }
                 var outLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.OutAtomId;
                 var outLibElemController =
                     SessionController.Instance.ContentController.GetLibraryElementController(outLibraryElementId);
-                outLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                if (outLibElemController != null)
+                {
+                    outLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                }
 
                 // return true because request was performed succesfully
                 return true;

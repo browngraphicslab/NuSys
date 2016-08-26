@@ -333,6 +333,8 @@ namespace NuSysApp
             }
             if (valid == true)
             {
+                // to prevent multiple logins we must block logins, the call to allow more logins is after the server sends back and says that 
+                // the login was incorrect
                 _isLoggingIn = true;
                 var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
                 var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
