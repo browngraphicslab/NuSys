@@ -329,7 +329,7 @@ namespace NuSysApp
             }
             else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
             {
-                NuSysRenderer.Instance.CurrentCollection.AddLink(vm);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.AddLink(vm);
             }
             controller.OutElement.UpdateCircleLinks();
             controller.InElement.UpdateCircleLinks();
@@ -638,7 +638,7 @@ namespace NuSysApp
             }
             else
             {
-                NuSysRenderer.Instance.CurrentCollection.ViewModel.Trails.Add(vm);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Trails.Add(vm);
             }
             isSuccess = true;
 

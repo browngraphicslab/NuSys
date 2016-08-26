@@ -21,17 +21,17 @@ namespace NuSysApp
         private Rect _rect;
         private Rect _bb;
         private CanvasRenderTarget _renderTarget;
-        private ElementCollectionViewModel _collection;
+        private CollectionRenderItem _collection;
 
-        public MinimapRenderItem(ElementCollectionViewModel collection, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             _collection = collection;
-            collection.Elements.CollectionChanged += ElementsOnCollectionChanged;
+            collection.ViewModel.Elements.CollectionChanged += ElementsOnCollectionChanged;
         }
 
         public override void Dispose()
         {
-            _collection.Elements.CollectionChanged -= ElementsOnCollectionChanged;
+            _collection.ViewModel.Elements.CollectionChanged -= ElementsOnCollectionChanged;
             _collection = null;
             base.Dispose();
         }
@@ -74,7 +74,7 @@ namespace NuSysApp
                 _renderTarget.Dispose();
             }
 
-            float rh = (float)NuSysRenderer.Instance.CurrentCollection.ViewModel.Height / (float)NuSysRenderer.Instance.CurrentCollection.ViewModel.Width;
+            float rh = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
             float newW;
             float newH;
             if (rh < 1)
@@ -88,7 +88,7 @@ namespace NuSysApp
                 newH = 170;
             }
             _renderTarget = new CanvasRenderTarget(ResourceCreator, new Size(newW, newH));
-            _rect = new Rect(NuSysRenderer.Instance.CurrentCollection.ViewModel.Width - newW, NuSysRenderer.Instance.CurrentCollection.ViewModel.Height - newH, newW, newH);
+            _rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
 
         }
 
@@ -97,12 +97,12 @@ namespace NuSysApp
             if (!IsDirty)
                 return;
 
-            if (_collection.Elements.Count == 0)
+            if (_collection.ViewModel.Elements.Count == 0)
                 return;
 
             CreateResources();
 
-            float rh = (float)NuSysRenderer.Instance.CurrentCollection.ViewModel.Height/(float)NuSysRenderer.Instance.CurrentCollection.ViewModel.Width;
+            float rh = (float)_collection.ViewModel.Height/(float)_collection.ViewModel.Width;
             float newW;
             float newH;
             if (rh < 1)
@@ -115,27 +115,26 @@ namespace NuSysApp
                 newW = 1/rh*170;
                 newH = 170;
             }
-            _rect = new Rect(NuSysRenderer.Instance.CurrentCollection.ViewModel.Width - newW, NuSysRenderer.Instance.CurrentCollection.ViewModel.Height - newH, newW, newH);
+            _rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {
 
-                var currentColl = NuSysRenderer.Instance.CurrentCollection;
+                var currentColl = _collection;
 
                 dss.Clear(Color.FromArgb(220, 0, 0, 0));
-                var nr = NuSysRenderer.Instance;
-                var collectionRectOrg = new Rect(NuSysRenderer.Instance.CurrentCollection.ViewModel.X,
-                    NuSysRenderer.Instance.CurrentCollection.ViewModel.Y,
-                    NuSysRenderer.Instance.CurrentCollection.ViewModel.Width,
-                    NuSysRenderer.Instance.CurrentCollection.ViewModel.Height);
+                var collectionRectOrg = new Rect(_collection.ViewModel.X,
+                    _collection.ViewModel.Y,
+                    _collection.ViewModel.Width,
+                    _collection.ViewModel.Height);
 
-               var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, NuSysRenderer.Instance.GetTransformUntil(nr.CurrentCollection));
+               var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, NuSysRenderer.Instance.GetTransformUntil(_collection));
 
                 //if (currentColl == NuSysRenderer.Instance.InitialCollection)
-                var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(nr.CurrentCollection)));
+                var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(_collection)));
 
                var rects = new List<Rect>();
-                foreach (var vm in currentColl.ViewModel.Elements.ToArray())
+                foreach (var vm in _collection.ViewModel.Elements.ToArray())
                 {
                     try
                     {
@@ -184,7 +183,7 @@ namespace NuSysApp
                 dss.Transform = cp * s;
                 
               // 
-                foreach (var vm in currentColl.ViewModel.Elements.ToArray())
+                foreach (var vm in _collection.ViewModel.Elements.ToArray())
                 {
                     Color color;
                     if (vm.IsSelected)
@@ -210,7 +209,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (_renderTarget == null || _collection.Elements.Count == 0)
+            if (_renderTarget == null || _collection.ViewModel.Elements.Count == 0)
                 return;
 
             var old = ds.Transform;

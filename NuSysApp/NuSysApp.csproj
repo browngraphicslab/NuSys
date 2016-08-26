@@ -346,6 +346,8 @@
     <Compile Include="Components\NuSysRenderer\AdornmentRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\AudioElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\BaseRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\CanvasInteractionManager.cs" />
+    <Compile Include="Components\NuSysRenderer\CanvasPointer.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />

@@ -235,7 +235,7 @@ namespace NuSysApp
 
             // Add the element at the dropped location
             var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(_exportPos);
-            var dropPoint = NuSysRenderer.Instance.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
+            var dropPoint = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
 
             await AddElementToCollection(new Point(dropPoint.X, dropPoint.Y));
 

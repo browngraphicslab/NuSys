@@ -64,11 +64,11 @@ namespace NuSysApp
 
             var oldTransform = ds.Transform;
             var sp = Matrix3x2.Identity;
-            Matrix3x2.Invert(NuSysRenderer.Instance.InitialCollection.Camera.S, out sp);
+            Matrix3x2.Invert(SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.Camera.S, out sp);
             var tt = Matrix3x2.CreateTranslation(0, -30);
             var newTransform = tt * top * sp * to * ds.Transform;
 
-            if (Parent == NuSysRenderer.Instance.InitialCollection)
+            if (Parent == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
                 ds.Transform = newTransform;
 
             ds.DrawTextLayout(_textLayout, new Vector2((float)_vm.X, (float)(_vm.Y - 20)), Colors.Black);

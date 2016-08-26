@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -259,8 +260,8 @@ namespace NuSysApp
                 return;
 
             rect.Hide();
-            var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
-
+            // var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
+            var r = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)_x, (float)_y));
             //Make sure that the element isn't within the library list
             var el = (FrameworkElement)sender;
             var sp = el.TransformToVisual(this).TransformPoint(e.Position);

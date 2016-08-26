@@ -35,8 +35,7 @@ namespace NuSysApp
         public virtual void Draw(CanvasDrawingSession ds) {}
 
         public virtual void CreateResources()
-        {
-            
+        {            
         }
 
         public virtual Matrix3x2 GetTransform()

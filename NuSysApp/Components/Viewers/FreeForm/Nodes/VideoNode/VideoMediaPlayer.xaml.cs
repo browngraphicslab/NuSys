@@ -78,8 +78,8 @@ namespace NuSysApp
             else
             {
                 // Debug.Fail("We should always be in a node or the detail view, if not we must add functionality here");
-                DataContext = NuSysRenderer.Instance.ActiveVideoRenderItem.ViewModel;
-                xAudioWrapper.Controller = NuSysRenderer.Instance.ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController;
+               // DataContext = NuSysRenderer.Instance.ActiveVideoRenderItem.ViewModel;
+             //   xAudioWrapper.Controller = NuSysRenderer.Instance.ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController;
             }
             xAudioWrapper.ProcessLibraryElementController();
 

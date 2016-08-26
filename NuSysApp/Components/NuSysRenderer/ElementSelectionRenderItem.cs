@@ -26,13 +26,13 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnPresent;
 
 
-        public ElementSelectionRenderItem(FreeFormViewerViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public ElementSelectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             BtnDelete = new NodeMenuButtonRenderItem(parent, resourceCreator);
             BtnPresent = new NodeMenuButtonRenderItem(parent, resourceCreator);
 
 
-            NuSysRenderer.Instance.Selections.CollectionChanged += SelectionsOnCollectionChanged;
+            SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
 
         }
 

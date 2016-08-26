@@ -93,7 +93,7 @@ namespace NuSysApp
             Color borderColor;
             float borderWidth = 4f;
 
-            if (NuSysRenderer.Instance.CurrentCollection == this)
+            if (SessionController.Instance.SessionView.FreeFormViewer.InitialCollection == this)
             {
                 borderColor = Color.FromArgb(255, 0, 102, 255);
                 borderWidth = 6f;
@@ -104,7 +104,7 @@ namespace NuSysApp
                 borderWidth = 4f;
             }
 
-            if (this != NuSysRenderer.Instance.InitialCollection)
+            if (this != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
                 ds.DrawRectangle(boundaries, borderColor, borderWidth);
 
             var boundariesGeom = CanvasGeometry.CreateRectangle(ds, boundaries);

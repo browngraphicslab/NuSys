@@ -8,7 +8,9 @@ using System.Diagnostics;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Input.Inking;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Numerics;
 using Windows.Devices.Input;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
@@ -25,47 +27,47 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class FreeFormViewer
     {
-        private AbstractWorkspaceViewMode _mode;
-        private NodeManipulationMode _nodeManipulationMode;
-        private CreateGroupMode _createGroupMode;
-        private DuplicateNodeMode _duplicateMode;
-        private PanZoomMode _panZoomMode;
-        private SelectMode _selectMode;
-        private TagNodeMode _tagMode;
-        private LinkMode _linkMode;
-        private GestureMode _gestureMode;
-        private FloatingMenuMode _floatingMenuMode;
-        private MultiMode _mainMode;
-        private MultiMode _simpleEditMode;
-        private MultiMode _simpleEditGroupMode;
-        private GlobalInkMode _globalInkMode;
-        private AbstractWorkspaceViewMode _prevMode;
-        private NuSysInqCanvas _inqCanvas;
-        private ExploreMode _exploreMode;
-        private PresentMode _presentMode;
-        private MultiMode _explorationMode;
-        private MultiMode _presentationMode;
-
+        private CanvasInteractionManager _canvasInteractionManager;
+        private CollectionInteractionManager _collectionInteractionManager;
         private FreeFormViewerViewModel _vm;
-        private List<uint> _activePointers = new List<uint>();
+        private ElementSelectionRenderItem _elementSelectionRenderItem;
+        private MinimapRenderItem _minimap;
+        private Dictionary<ElementViewModel, Transformable> _transformables = new Dictionary<ElementViewModel, Transformable>();
+
+        public CollectionRenderItem CurrentCollection { get; private set; }
+
+        public CollectionRenderItem InitialCollection { get; private set; }
+        public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
+
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
         public VideoMediaPlayer VideoPlayer => xVideoPlayer;
         public AudioMediaPlayer AudioPlayer => xAudioPlayer;
 
+        private Matrix3x2 _transform = Matrix3x2.Identity;
+
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();
             
-            vm.SelectionChanged += VmOnSelectionChanged;
             vm.Controller.Disposed += ControllerOnDisposed;
             _vm = vm;
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                await NuSysRenderer.Instance.Init(xRenderCanvas);
-                xRenderCanvas.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(XRenderCanvasOnPointerPressed), true);
-                xRenderCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(XRenderCanvasOnPointerReleased), true);
+                InitialCollection = new CollectionRenderItem(vm, null, xRenderCanvas, true);
+                await NuSysRenderer.Instance.Init(xRenderCanvas, InitialCollection);
+
+                vm.X = 0;
+                vm.Y = 0;
+                vm.Width = xRenderCanvas.Width;
+                vm.Height = xRenderCanvas.Height;
+                _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, InitialCollection, xRenderCanvas);
+                _minimap = new MinimapRenderItem(InitialCollection, InitialCollection, xRenderCanvas);
+
+                _canvasInteractionManager = new CanvasInteractionManager(xRenderCanvas);
+
+                SwitchCollection(InitialCollection);
 
                 if (vm.Controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
                 {
@@ -88,137 +90,266 @@ namespace NuSysApp
             };
         }
 
-        private void XRenderCanvasOnPointerReleased(object sender, PointerRoutedEventArgs args)
+
+        private void SwitchCollection(CollectionRenderItem collection)
         {
-            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
-                _activePointers.Remove(args.Pointer.PointerId);
+            if (collection != CurrentCollection && collection != null)
+            {
+                if (CurrentCollection != null)
+                {
+                    _collectionInteractionManager.Dispose();
+                }
+
+                CurrentCollection = collection;
+                _collectionInteractionManager = new CollectionInteractionManager(_canvasInteractionManager, collection);
+                _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
+                _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
+                _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
+                _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
+                _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
+                _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
+                _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
+                _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
+            }
         }
 
-        private void XRenderCanvasOnPointerPressed(object sender, PointerRoutedEventArgs args)
+        private void CollectionInteractionManagerOnDuplicateCreated(ElementRenderItem element, Vector2 point)
         {
-            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
-                _activePointers.Add(args.Pointer.PointerId);
+            var targetPoint = Vector2.Transform(point, Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(element)));
+            element.ViewModel.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);
         }
 
-        private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
+        private void CollectionInteractionManagerOnItemMoved(CanvasPointer pointer, ElementRenderItem element, Vector2 delta)
         {
-            var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "adornment"));
-            if (request == null)
+            var elem = element;
+            var collection = element.Parent;
+
+            var newX = elem.ViewModel.X + delta.X / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
+            var newY = elem.ViewModel.Y + delta.Y / (_transform.M22 * collection.S.M22 * collection.Camera.S.M22);
+
+            if (!Selections.Contains(elem))
+            {
+                elem.ViewModel.Controller.SetPosition(newX, newY);
+            }
+            else
+            {
+                foreach (var selectable in Selections)
+                {
+                    var e = selectable.ViewModel;
+                    var newXe = e.X + delta.X / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
+                    var newYe = e.Y + delta.Y / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
+                    e.Controller.SetPosition(newXe, newYe);
+                }
+            }
+        }
+
+        private void CanvasInteractionManagerOnPointerPressed(CanvasPointer pointer)
+        {
+            var until = NuSysRenderer.Instance.GetTransformUntil(CurrentCollection);
+            _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
+        }
+
+        private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
+        {
+            if (Selections.Count > 0)
+            {
+                foreach (var selection in Selections)
+                {
+                    var elem = (ElementViewModel)selection.ViewModel;
+                    var imgCenter = new Vector2((float)(elem.X + elem.Width / 2), (float)(elem.Y + elem.Height / 2));
+                    var newCenter = InitialCollection.ObjectPointToScreenPoint(imgCenter);
+
+                    Transformable t;
+                    if (_transformables.ContainsKey(elem))
+                        t = _transformables[elem];
+                    else
+                    {
+                        t = new Transformable();
+                        t.Position = new Point(elem.X, elem.Y);
+                        t.Size = new Size(elem.Width, elem.Height);
+                        if (elem is ElementCollectionViewModel)
+                        {
+                            var elemc = elem as ElementCollectionViewModel;
+                            t.CameraTranslation = elemc.CameraTranslation;
+                            t.CameraCenter = elemc.CameraCenter;
+                            t.CameraScale = elemc.CameraScale;
+                            _transformables.Add(elem, t);
+                        }
+                    }
+
+                    PanZoom2(t, _transform, newCenter, deltaTranslation.X, deltaTranslation.Y, deltaZoom);
+
+                    elem.Controller.SetSize(t.Size.Width * t.S.M11, t.Size.Height * t.S.M22);
+                    var dtx = (float)(t.Size.Width * t.S.M11 - t.Size.Width) / 2f;
+                    var dty = (float)(t.Size.Height * t.S.M22 - t.Size.Height) / 2f;
+                    var nx = t.Position.X - dtx;
+                    var ny = t.Position.Y - dty;
+                    elem.Controller.SetPosition(nx, ny);
+
+                    if (elem is ElementCollectionViewModel)
+                    {
+                        var elemc = elem as ElementCollectionViewModel;
+                        var ct = Matrix3x2.CreateTranslation(t.CameraTranslation);
+                        var cc = Matrix3x2.CreateTranslation(t.CameraCenter);
+                        var cs = Matrix3x2.CreateScale(t.CameraScale);
+
+                        var et = Matrix3x2.CreateTranslation(new Vector2((float)elem.X, (float)elem.Y));
+
+                        var tran = Win2dUtil.Invert(cc) * cs * cc * ct * et;
+                        var tranInv = Win2dUtil.Invert(tran);
+
+                        var controller = elemc.Controller as ElementCollectionController;
+                        controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
+                        controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
+                    }
+                }
+            }
+            else
+            {
+                PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X, deltaTranslation.Y, deltaZoom);
+            }
+        }
+
+        private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
+        {
+            PanZoom2(CurrentCollection.Camera, _transform, point, delta.X, delta.Y, 1);
+        }
+
+        private void CollectionInteractionManagerOnSelectionsCleared()
+        {
+            ClearSelections();
+        }
+
+        private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
+        {
+            var targetPoint = Vector2.Transform(point, Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(element)));
+            element.ViewModel.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);
+        }
+
+
+        private void OnItemDoubleTapped(ElementRenderItem element)
+        {
+            var libraryElementModelId = element.ViewModel.Controller.LibraryElementModel.LibraryElementId;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+            SessionController.Instance.SessionView.ShowDetailView(controller);
+        }
+
+        private void OnItemLongTapped(BaseRenderItem element, PointerRoutedEventArgs args)
+        {
+            return;
+            /*
+            if (element is VideoElementRenderItem)
+            {
+                ActiveVideoRenderItem = (VideoElementRenderItem)element;
+                var t = ActiveVideoRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(NuSysRenderer.Instance.ActiveVideoRenderItem);
+                var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.RenderTransform;
+                ct.TranslateX = t.M31;
+                ct.TranslateY = t.M32;
+                ct.ScaleX = t.M11;
+                ct.ScaleY = t.M22;
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source = new Uri(ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController.Data);
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Visible;
                 return;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request.Item1);
-
-            var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
-            collectionController.InkLines.Remove(request.Item2);
-            m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
-
-        }
-
-        private async void AdormnentAdded(WetDryInkCanvas canvas, InkStroke inkStroke)
-        {
-            var id = SessionController.Instance.GenerateId();
-            InkStorage._inkStrokes.Add(id, new InkWrapper(inkStroke, "adornment"));//"adornment", inkStroke));
-
-            var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", MultiSelectMenuView.SelectedColor);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-            var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
-            collectionController.InkLines.Add(id);
-            m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
-        }
-
-        private async void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
-        {
-            var id = SessionController.Instance.GenerateId();
-            InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink"));
-
-            var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-            var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
-            collectionController.InkLines.Add(id);
-            m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
-        }
-
-        private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
-        {
-            var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "ink"));
-            if (request == null)
+            }
+            if (element is AudioElementRenderItem)
+            {
+                ActiveAudioRenderItem = (AudioElementRenderItem)element;
+                var t = ActiveAudioRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(NuSysRenderer.Instance.ActiveAudioRenderItem);
+                var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.RenderTransform;
+                ct.TranslateX = t.M31;
+                ct.TranslateY = t.M32;
+                ct.ScaleX = t.M11;
+                ct.ScaleY = t.M22;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource = new Uri(ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController.Data); ;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
                 return;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request.Item1);
+            }
 
-            var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
-            collectionController.InkLines.Remove(request.Item2);
-            m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
+
+
+
+            //     var collection = element as CollectionRenderItem;
+            //     SwitchCollection(collection);
+            */
         }
+
+        private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
+        {
+            element.ViewModel.IsSelected = true;
+            Selections.Add(element);
+
+        }
+
+        private void ClearSelections()
+        {
+            // SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Collapsed;
+            foreach (var selection in Selections)
+            {
+                selection.ViewModel.IsSelected = false;
+            }
+            Selections.Clear();
+        }
+
+
+
+
+        protected void PanZoom2(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
+        {
+            var cInv = Win2dUtil.Invert(target.C);
+            var inverse = Win2dUtil.Invert(cInv * target.S * target.C * target.T * transform);
+
+            var center = Vector2.Transform(new Vector2(centerPoint.X, centerPoint.Y), inverse);
+            var tmpTranslate = Matrix3x2.CreateTranslation(target.C.M31, target.C.M32);
+            Matrix3x2 tmpTranslateInv;
+            Matrix3x2.Invert(tmpTranslate, out tmpTranslateInv);
+
+            var localPoint = Vector2.Transform(center, tmpTranslateInv);
+
+            //Now scale the point in local space
+            localPoint.X *= target.S.M11;
+            localPoint.Y *= target.S.M22;
+
+            //Transform local space into world space again
+            var worldPoint = Vector2.Transform(localPoint, tmpTranslate);
+
+            //Take the actual scaling...
+            var distance = new Vector2(worldPoint.X - center.X, worldPoint.Y - center.Y);
+
+            //...and balance the jump of the changed scaling origin by changing the translation            
+
+            var ntx = target.T.M31 + distance.X + dx;
+            var nty = target.T.M32 + distance.Y + dy;
+
+            var nsx = target.S.M11 * ds;
+            var nsy = target.S.M22 * ds;
+
+            var ncx = center.X;
+            var ncy = center.Y;
+
+            target.T = Matrix3x2.CreateTranslation((float)ntx, (float)nty);
+            target.C = Matrix3x2.CreateTranslation(ncx, ncy);
+            target.S = Matrix3x2.CreateScale((float)nsx, (float)nsy);
+            target.Update();
+        }
+
+
+
+
+
+
+
 
         private void ControllerOnDisposed(object source, object args)
         {
-            _nodeManipulationMode?.Deactivate();
-            _createGroupMode?.Deactivate();
-            _duplicateMode?.Deactivate();
-            _panZoomMode?.Deactivate();
-            _gestureMode?.Deactivate();
-            _selectMode?.Deactivate();
-            _floatingMenuMode?.Deactivate();
-
-            _tagMode?.Deactivate();
-            _linkMode?.Deactivate();
-            _mainMode?.Deactivate();
-            _simpleEditMode?.Deactivate();
-
-            _presentMode?.Deactivate();
-            _exploreMode?.Deactivate();
-            _presentationMode?.Deactivate();
-            _explorationMode?.Deactivate();
-
-
-
             var vm = (FreeFormViewerViewModel) DataContext;
             if (vm != null)
             {
-                vm.SelectionChanged -= VmOnSelectionChanged;
                 if (vm.Controller != null)
                 {
                     vm.Controller.Disposed -= ControllerOnDisposed;
                 }
             }
-            _mode = null;
 
-            _inqCanvas = null;
-        }
-
-
-
-        private void VmOnSelectionChanged(object source)
-        {
-            var vm = (FreeFormViewerViewModel) DataContext;
-            if (vm.Selections.Count == 0)
-            {
-                SetViewMode(_mainMode);
-            }
-            else if (vm.Selections.Count == 1)
-            {
-                if ((vm.Selections[0] as ElementViewModel)?.ElementType == NusysConstants.ElementType.Collection)
-                    SetViewMode(_simpleEditGroupMode);
-                else
-                    SetViewMode(_simpleEditMode);
-            }
-            else
-            {
-                SetViewMode(_mainMode);
-            }
         }
 
         public void Dispose()
@@ -248,61 +379,28 @@ namespace NuSysApp
 
         public NuSysInqCanvas InqCanvas
         {
-            get { return _inqCanvas; }
+            get { return null; }
         }
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
         {
             return;
-            _prevMode = _mode;
-            if (mode == _mode)
-                return;
-
-            var deactivate = _mode?.Deactivate();
-            if (deactivate != null) await deactivate;
-            _mode = mode;
-            await _mode.Activate();
         }
 
         private async void SwitchMode(Options mode)
         {
             return;
-            switch (mode)
-            {
-                case Options.Idle:
-                    SetViewMode(new MultiMode(this));
-                    break;
-                case Options.SelectNode:
-                    await
-                        SetViewMode(_mainMode);
-                    break;
-                case Options.PenGlobalInk:
-                  //  await SetViewMode(_globalInkMode);
-                    break;
-                case Options.Exploration:
-                    SessionController.Instance.SessionView.EnterExplorationMode();
-                    SetViewMode(_explorationMode);
-                    break;
-                case Options.PanZoomOnly:
-                    this.SetViewMode(_panZoomMode);
-                    break;
-                case Options.Presentation:
-                    SetViewMode(_presentationMode);
-                    break;
-                default:
-                    Debug.Fail($"You must add support for ${mode} before you can switch to it.");
-                    break;
-            }
+            
         }
 
 
         public PanZoomMode PanZoom
         {
-            get { return _panZoomMode; }
+            get { return null; }
         }
 
 
-        public SelectMode SelectMode { get { return _selectMode; } }
+        public SelectMode SelectMode { get { return null; } }
 
         public void ChangeMode(object source, Options mode)
         {
@@ -311,11 +409,7 @@ namespace NuSysApp
 
         public void LimitManipulation()
         {
-            if (_nodeManipulationMode != null)
-            {
-                _nodeManipulationMode.Limited = true;
-                _nodeManipulationMode.SetViewer(this);
-            }
+
         }
 
         public FrameworkElement GetAdornment()
