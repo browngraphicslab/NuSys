@@ -42,7 +42,7 @@ namespace NuSysApp
 
             ElementModel = model;
 
-            Creator = model.CreatorId;
+            Creator = SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model?.CreatorId);
         }
 
         private void Controller_TitleChanged(object sender, string title)

@@ -227,8 +227,9 @@ namespace NuSysApp
                 linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
 
                 // Update the list of links in the Link Editor
+                // ^^ does it really??  -Trent
                 var aliasTabViewModel = xAliasTabView.DataContext as AliasTabViewModel;
-                aliasTabViewModel?.ChangeAliasTemplates(controller.LibraryElementModel.LibraryElementId);
+                //aliasTabViewModel?.ChangeAliasTemplates(controller.LibraryElementModel.LibraryElementId);
 
                 //Update the metadata tab.
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
@@ -512,6 +513,8 @@ namespace NuSysApp
                         break;
                     case 3:
                         vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Aliases;
+                        Debug.Assert(_currentDetailViewable?.LibraryElementModel?.LibraryElementId != null);
+                        xAliasTabView.LoadLibraryElementAsync(_currentDetailViewable.LibraryElementModel.LibraryElementId);
                         break;
                     case 4:
                         vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Regions;
@@ -521,7 +524,7 @@ namespace NuSysApp
                 }
 
             }
-            else
+            else // WHY DO WE NEED THIS IF-ELSE STATEMENT? SHOULDN'T THE CODE IN THE IF STATEMENT COVER BOTH CASES? -Trent
             {
                 switch (index.Value)
                 {
@@ -538,6 +541,8 @@ namespace NuSysApp
                         break;
                     case 3:
                         vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Aliases);
+                        Debug.Assert(_currentDetailViewable?.LibraryElementModel?.LibraryElementId != null);
+                        xAliasTabView.LoadLibraryElementAsync(_currentDetailViewable.LibraryElementModel.LibraryElementId);
                         break;
                     case 4:
                         vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Regions);

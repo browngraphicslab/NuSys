@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Animation;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -28,7 +30,7 @@ namespace NuSysApp
         /// <param name="model"></param>
         private void ContentControllerOnAliasDelete(ElementModel model)
         {
-            
+            //harsh is this an actual event handler?
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace NuSysApp
         /// <param name="model"></param>
         private void ContentController_OnNewAlias(ElementModel model)
         {
-            
+            //does this correspond to an actual event?
         }
 
         /// <summary>
@@ -57,65 +59,46 @@ namespace NuSysApp
             
             
         }
-        
+
         /// <summary>
-        /// This methods sorts the collection of alias templates by the Collection title
+        /// Method to set all the element models.  
+        /// Should be called after a server request has returned with all the element models for this tab.
+        /// Will create a new alias template for each element model given, after clearing the already-existing alias templates.
+        /// Will check that the ienumerable is not null, but will not null-check each entry;
         /// </summary>
-        public void SortByTitle()
+        /// <param name="elementModels"></param>
+        public void SetElementModels(IEnumerable<ElementModel> elementModels)
         {
-            if (AliasTemplates.Count < 1)
-            {
-                return;
-            }
-
-            List<AliasTemplate> list = new List<AliasTemplate>(AliasTemplates.OrderBy(template => template.CollectionTitle));
-
+            Debug.Assert(elementModels != null);
             AliasTemplates.Clear();
-            foreach (var aliasTemplate in list)
-            {
-                AliasTemplates.Add(aliasTemplate);
-            }
-
+            elementModels.ForEach(element => AliasTemplates.Add(new AliasTemplate(element)));//for each element model, add it to the alias templates
         }
 
         /// <summary>
-        /// This methods sorts the collection of alias templates by the Collection creator
+        /// Generic sort function.  
+        /// Allows you to sort the list of alias templates by whatever sorting function you pass in. 
+        /// The sorting function simply needs to take in an AliasTemplate, and return a string from it. 
+        /// 
+        /// Usage: 
+        ///     SortBy(aliasTemplate => aliasTemplate?.CollectionTitle ?? "");
+        /// 
+        /// That usage example would safely sort by the collection title. 
         /// </summary>
-        public void SortByCreator()
+        /// <param name="sortFunction"></param>
+        public void SortBy(Func<AliasTemplate, string> sortFunction)
         {
-            if (AliasTemplates.Count < 1)
+            if (AliasTemplates.Count <= 1) //don't really need to sort anything with 0 or 1 items
             {
                 return;
             }
 
-            List<AliasTemplate> list = new List<AliasTemplate>(AliasTemplates.OrderBy(template => template.Creator));
+            var list = new List<AliasTemplate>(AliasTemplates.OrderBy(sortFunction)); //create a list of the sorted elements
 
             AliasTemplates.Clear();
             foreach (var aliasTemplate in list)
             {
-                AliasTemplates.Add(aliasTemplate);
+                AliasTemplates.Add(aliasTemplate);//add the sorted elements in order to the template
             }
-
-        }
-
-        /// <summary>
-        /// This methods sorts the collection of alias templates by the timestamp the collection was last edited
-        /// </summary>
-        public void SortByTimestamp()
-        {
-            if (AliasTemplates.Count < 1)
-            {
-                return;
-            }
-
-            List<AliasTemplate> list = new List<AliasTemplate>(AliasTemplates.OrderBy(template => template.Timestamp));
-
-            AliasTemplates.Clear();
-            foreach (var aliasTemplate in list)
-            {
-                AliasTemplates.Add(aliasTemplate);
-            }
-
         }
 
 
