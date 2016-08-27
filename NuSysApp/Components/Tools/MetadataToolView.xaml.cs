@@ -441,10 +441,7 @@ namespace NuSysApp
         {
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
-            if (_currentDragMode == DragMode.Collection)
-            {
-                _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
-            }
+             _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)_dragItem.RenderTransform;
