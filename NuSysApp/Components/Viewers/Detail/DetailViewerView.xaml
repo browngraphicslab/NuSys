@@ -220,6 +220,9 @@
                 <PivotItem Header="Links">
                     <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" />
                 </PivotItem>
+                <PivotItem Header="Aliases">
+                    <local:AliasTabView x:Name="xAliasTabView"  Grid.Row="0" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"></local:AliasTabView>
+                </PivotItem>
                 <PivotItem Header="Regions">
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>

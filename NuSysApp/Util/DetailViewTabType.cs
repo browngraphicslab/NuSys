@@ -8,6 +8,6 @@ namespace NuSysApp
 {
     public enum DetailViewTabType
     {
-         Home, Metadata, Links, Regions
+         Home, Metadata, Links, Regions, Aliases
     }
 }

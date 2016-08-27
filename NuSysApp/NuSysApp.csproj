@@ -424,10 +424,15 @@
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\ILinkable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\AliasTabView.xaml.cs">
+      <DependentUpon>AliasTabView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
       <DependentUpon>LinkEditorTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\AliasTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\AliasTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
@@ -1102,6 +1107,10 @@
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\AliasTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml">
       <SubType>Designer</SubType>
