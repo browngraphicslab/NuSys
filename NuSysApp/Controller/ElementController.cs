@@ -255,8 +255,8 @@ namespace NuSysApp
 
             var newElementArgs = new NewElementRequestArgs();
             newElementArgs.LibraryElementId = Model.LibraryId;
-            newElementArgs.Height = 200;//TODO not hard code this shit
-            newElementArgs.Width = 200;//TODO not hard code this shit
+            newElementArgs.Height = Model.Width;
+            newElementArgs.Width = Model.Height;
             newElementArgs.X = x;
             newElementArgs.Y = y;
             newElementArgs.ParentCollectionId = newCollectionLibraryID;

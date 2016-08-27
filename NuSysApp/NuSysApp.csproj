@@ -1412,7 +1412,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Components\Keywords\" />
     <Folder Include="Icons\" />
     <Folder Include="Models\Regions\" />
     <Folder Include="Util\Regions\" />

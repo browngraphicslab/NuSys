@@ -76,17 +76,10 @@ namespace NuSysApp
             Size = sizeChangedEventArgs.NewSize;
         }
 
-        public BaseRenderItem GetRenderItemAt(Vector2 sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
+        public Vector2 ScreenPointerToCollectionPoint(Vector2 sp, CollectionRenderItem collection)
         {
-            collection = collection ?? Root;
-            var mat = GetTransformUntil(collection);
-            return _GetRenderItemAt(collection, sp, mat, 0, maxLevel);
-        }
-
-        public BaseRenderItem GetRenderItemAt(Point sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
-        {
-            var result = GetRenderItemAt(new Vector2((float)sp.X, (float)sp.Y), collection, maxLevel);
-            return result;
+            var t = Win2dUtil.Invert(GetCollectionTransform(collection));
+            return Vector2.Transform(sp, t);
         }
 
         public Matrix3x2 GetCollectionTransform(CollectionRenderItem collection)
@@ -120,10 +113,30 @@ namespace NuSysApp
             return transforms.Select(t1 => t1 as CollectionRenderItem).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
         }
 
+        public BaseRenderItem GetRenderItemAt(Vector2 sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
+        {
+            collection = collection ?? Root;
+            var mat = GetTransformUntil(collection);
+            return _GetRenderItemAt(collection, sp, mat, 0, maxLevel);
+        }
+
+        public List<BaseRenderItem> GetRenderItemsAt(Vector2 sp,  CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
+        {
+            var output = new List<BaseRenderItem>();
+            collection = collection ?? Root;
+            var mat = GetTransformUntil(collection);
+            _GetRenderItemsAt(collection, sp, mat, output, 0, maxLevel);
+            return output;
+        }
+
+        public BaseRenderItem GetRenderItemAt(Point sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
+        {
+            var result = GetRenderItemAt(new Vector2((float)sp.X, (float)sp.Y), collection, maxLevel);
+            return result;
+        }
+
         private BaseRenderItem _GetRenderItemAt(CollectionRenderItem collection, Vector2 sp, Matrix3x2 transform, int currentLevel, int maxLevel)
         {
-
-
             if (currentLevel < maxLevel)
             {
                 var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T *
@@ -159,13 +172,41 @@ namespace NuSysApp
                 }
             }
 
-            var poo2 = transform;
-            var collectionTranform = Win2dUtil.Invert(poo2);
-
-            if (collection.HitTest(Vector2.Transform(sp, collectionTranform)))
+            if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))))
                 return collection;
 
             return null;
+        }
+
+        private void _GetRenderItemsAt(CollectionRenderItem collection, Vector2 sp, Matrix3x2 transform, List<BaseRenderItem> output,  int currentLevel, int maxLevel)
+        {
+            if (currentLevel < maxLevel)
+            {
+
+
+                if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))))
+                    output.Add(collection);
+
+                var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T *
+Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * transform;
+                var childTransform = Win2dUtil.Invert(poo);
+
+                foreach (var renderItem in collection.GetRenderItems())
+                {
+                    var coll = renderItem as CollectionRenderItem;
+                    if (coll != null)
+                    {
+
+                        if (currentLevel + 1 < maxLevel)
+                        {
+                             _GetRenderItemsAt(coll, sp, poo, output, currentLevel + 1, maxLevel);
+                        }
+                    } else if (renderItem.HitTest(Vector2.Transform(sp, childTransform)))
+                    {
+                        output.Add(renderItem);
+                    }
+                }
+            } 
         }
 
         private void CanvasOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)

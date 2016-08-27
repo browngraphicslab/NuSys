@@ -66,27 +66,18 @@ namespace NuSysApp
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
         {
-            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
-            {
-                OnPointerTouchReleased(sender, args);
-            }
+            OnPointerTouchReleased(sender, args);
      
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
         {
-            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
-            {
-                OnPointerTouchPressed(sender, args);
-            }
+            OnPointerTouchPressed(sender, args);
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
         {
-            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
-            {
-                OnPointerTouchMoved(sender, args);
-            }
+            OnPointerTouchMoved(sender, args);
         }
         
         public void Dispose()

@@ -97,6 +97,16 @@ namespace NuSysApp
             {
                 if (CurrentCollection != null)
                 {
+                    _collectionInteractionManager.ItemSelected -= CollectionInteractionManagerOnItemTapped;
+                    _collectionInteractionManager.DoubleTapped -= OnItemDoubleTapped;
+                    _collectionInteractionManager.SelectionsCleared -= CollectionInteractionManagerOnSelectionsCleared;
+                    _collectionInteractionManager.Panned -= CollectionInteractionManagerOnPanned;
+                    _collectionInteractionManager.PanZoomed -= CollectionInteractionManagerOnPanZoomed;
+                    _collectionInteractionManager.ItemMoved -= CollectionInteractionManagerOnItemMoved;
+                    _collectionInteractionManager.DuplicateCreated -= CollectionInteractionManagerOnDuplicateCreated;
+                    _collectionInteractionManager.CollectionSwitched -= CollectionInteractionManagerOnCollectionSwitched;
+                    _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
+                    _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
                     _collectionInteractionManager.Dispose();
                 }
 
@@ -109,8 +119,46 @@ namespace NuSysApp
                 _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
                 _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
+                _collectionInteractionManager.CollectionSwitched += CollectionInteractionManagerOnCollectionSwitched;
+                _collectionInteractionManager.InkStarted += CollectionInteractionManagerOnInkStarted;
+                _collectionInteractionManager.InkDrawing += CollectionInteractionManagerOnInkDrawing;
+                _collectionInteractionManager.InkStopped += CollectionInteractionManagerOnInkStopped;
+                _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
+                _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
             }
+        }
+
+        private void CanvasInteractionManagerOnAllPointersReleased()
+        {
+            _transformables.Clear();
+        }
+
+        private async void CollectionInteractionManagerOnElementAddedToCollection(ElementRenderItem element, CollectionRenderItem collection, CanvasPointer pointer)
+        {
+            var targetPoint = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
+            var target = new Vector2(targetPoint.X - (float)element.ViewModel.Width/2f, targetPoint.Y - (float)element.ViewModel.Height/2f);
+            await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
+        }
+
+        private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
+        {
+            CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
+        }
+
+        private void CollectionInteractionManagerOnInkDrawing(CanvasPointer pointer)
+        {
+            CurrentCollection.InkRenderItem.UpdateInkByEvent(pointer);
+        }
+
+        private void CollectionInteractionManagerOnInkStarted(CanvasPointer pointer)
+        {
+            CurrentCollection.InkRenderItem.StartInkByEvent(pointer);
+        }
+
+        private void CollectionInteractionManagerOnCollectionSwitched(CollectionRenderItem collection)
+        {
+            SwitchCollection(collection);
         }
 
         private void CollectionInteractionManagerOnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -147,6 +195,7 @@ namespace NuSysApp
         {
             var until = NuSysRenderer.Instance.GetTransformUntil(CurrentCollection);
             _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
+
         }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
@@ -206,13 +255,13 @@ namespace NuSysApp
             }
             else
             {
-                PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X, deltaTranslation.Y, deltaZoom);
+                PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X / _transform.M11, deltaTranslation.Y / _transform.M11, deltaZoom);
             }
         }
 
         private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
         {
-            PanZoom2(CurrentCollection.Camera, _transform, point, delta.X, delta.Y, 1);
+            PanZoom2(CurrentCollection.Camera, _transform, point, delta.X /_transform.M11, delta.Y / _transform.M11, 1);
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()

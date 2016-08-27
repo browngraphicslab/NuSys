@@ -28,6 +28,7 @@ namespace NuSysApp
             StartTime = DateTime.Now;
             LastUpdated = DateTime.Now;
             Pointer = pointerpoint;
+            DeviceType = pointerpoint.PointerDevice.PointerDeviceType;
         }
 
         public Vector2 StartPoint

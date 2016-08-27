@@ -148,6 +148,8 @@ namespace NuSysApp
             var maxH = double.NegativeInfinity;
             foreach (var rect in rects)
             {
+                if (double.IsNaN(rect.X) || double.IsNaN(rect.Y) || double.IsNaN(rect.Width) || double.IsNaN(rect.Height) )
+                    return new Rect(0,0,0,0);
                 minX = rect.X < minX ? rect.X : minX;
                 minY = rect.Y < minY ? rect.Y : minY;
                 maxW = rect.X + rect.Width > maxW ? rect.X + rect.Width : maxW;

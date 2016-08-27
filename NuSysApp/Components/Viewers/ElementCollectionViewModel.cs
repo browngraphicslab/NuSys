@@ -44,6 +44,8 @@ namespace NuSysApp
         {
             controller.ChildAdded += OnChildAdded;
             controller.ChildRemoved += OnChildRemoved;
+            controller.CameraPositionChanged += ControllerOnCameraPositionChanged;
+            controller.CameraCenterChanged += ControllerOnCameraCenterChanged;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
 
@@ -51,8 +53,18 @@ namespace NuSysApp
             AtomViewList = new ObservableCollection<FrameworkElement>();
             _toolStartableId = SessionController.Instance.GenerateId();
             ToolController.ToolControllers.Add(_toolStartableId, this);
-            
-            
+        }
+
+        private void ControllerOnCameraCenterChanged(float f, float f1)
+        {
+         //   Debug.WriteLine("center chagnes");
+            CameraCenter = new Vector2(f, f1);
+        }
+
+        private void ControllerOnCameraPositionChanged(float f, float f1)
+        {
+            CameraTranslation = new Vector2(f, f1);
+
         }
 
         public async Task CreateChildren()
@@ -101,10 +113,11 @@ namespace NuSysApp
         private void OnChildRemoved(object source, ElementController elementController)
         {
             //FuckYouSahilRemoveAllVisualLinks(elementController);
-            var soughtChildren = AtomViewList.Where(a => a.DataContext is ElementViewModel && ((ElementViewModel) a.DataContext).Id == elementController.Model.Id);
+            var soughtChildren = Elements.Where(a => a.Id == elementController.Model.Id);
             if (soughtChildren.Any())
             {
-                AtomViewList.Remove( soughtChildren.First());
+              //  AtomViewList.Remove( soughtChildren.First());
+                Elements.Remove(soughtChildren.First());
             }
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }
