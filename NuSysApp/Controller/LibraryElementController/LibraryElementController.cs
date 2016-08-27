@@ -737,7 +737,7 @@ namespace NuSysApp
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null)
+        public async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null, double width = Constants.DefaultNodeSize, double height = Constants.DefaultNodeSize)
         {
             //the workspace id we are using is the passes in one, or the session's current workspace Id if it is null
             collectionId = collectionId ?? SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
@@ -755,8 +755,8 @@ namespace NuSysApp
                 args.X = x;
                 args.Y = y;
                 args.LibraryElementId = LibraryElementModel.LibraryElementId;
-                args.Height = Constants.DefaultNodeSize;
-                args.Width = Constants.DefaultNodeSize;
+                args.Height = height;
+                args.Width = width;
 
                 // try to add the collection to the collection
                 var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);

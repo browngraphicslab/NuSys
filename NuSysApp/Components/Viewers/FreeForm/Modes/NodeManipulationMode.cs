@@ -48,17 +48,18 @@ namespace NuSysApp
             _viewer = viewer;
         }
         public override async Task Activate()
-        {
+        {   
             ActiveNodes = new List<UserControl>();
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             foreach (var userControl in vm.AtomViewList)
             {
-                userControl.ManipulationMode = ManipulationModes.All;
-                userControl.ManipulationStarted += ManipulationStarting;
-                userControl.ManipulationDelta += OnManipulationDelta;
-                userControl.ManipulationCompleted += OnManipulationCompleted;
+
                 if (!(userControl is UndoButton))
                 {
+                    userControl.ManipulationMode = ManipulationModes.All;
+                    userControl.ManipulationStarted += ManipulationStarting;
+                    userControl.ManipulationDelta += OnManipulationDelta;
+                    userControl.ManipulationCompleted += OnManipulationCompleted;
                     userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
                 }
             }
@@ -83,20 +84,23 @@ namespace NuSysApp
                 _newPosition);
             _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _originalPosition);
-
-            //Get elements controller
-            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
-            if (vm != null) { 
-            var elementController = vm.Controller;
-            if (!vm.IsEditing)
-            { 
-            }
-            ActiveNodes.Remove((UserControl) sender);
-}
+            
+             ActiveNodes.Remove((UserControl)sender);
+            
+            //Disposes of pointer released event needed for move undo button
+            var userControl = (UserControl)sender;
+            //userControl.PointerReleased -= UserControl_PointerReleased;
+           
+            manipulationCompletedRoutedEventArgs.Handled = true;
+        
         }
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
+            if(sender is UndoButton)
+            {
+                return;
+            }
             var userControl = (UserControl)sender;
             if (userControl.DataContext is ElementViewModel && !(userControl.DataContext is LinkViewModel))
             {
@@ -114,6 +118,14 @@ namespace NuSysApp
                 if (_moveNodeUndoButton.ActionExecuted == true)
                 {
                     _moveNodeUndoButton.ActionExecuted = false; // This prevents the node from being immovable right agter being undo'd
+                }
+
+                var ffvm = (FreeFormViewerViewModel)_view.DataContext;
+                _moveNodeUndoButton.Deactivate();
+                if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
+                {
+                    ffvm.AtomViewList.Remove(_moveNodeUndoButton);
+
                 }
             }
         }
@@ -246,25 +258,27 @@ namespace NuSysApp
 
                 if (!vm.IsEditing)
                 {
-                    //Instantiates MoveElementAction
-                    var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
-                    if (_moveNodeUndoButton != null)
+
+
+                    var linearVelocity = e.Velocities.Linear;
+                    var magnitude = Math.Sqrt(linearVelocity.X * linearVelocity.X + linearVelocity.Y * linearVelocity.Y);
+                    var arbitraryThreshold = 2;
+                    //If the speed of node is higher than arbitrary threshold, create undo button
+                    if(magnitude > arbitraryThreshold)
                     {
-                        if (_moveNodeUndoButton.State == UndoButtonState.Active)
-                        {
-                            _moveNodeUndoButton.Deactivate();
-                            if (ffvm.AtomViewList.Contains(_moveNodeUndoButton))
-                            {
-                                ffvm.AtomViewList.Remove(_moveNodeUndoButton);
-                            }
-                        }
+                        //Instantiates MoveElementAction
+                        var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+
+                        _moveNodeUndoButton = new UndoButton();
+                        //Activates undo button makes it appear in the old position.
+                        ffvm.AtomViewList.Add(_moveNodeUndoButton);
+                        _moveNodeUndoButton.MoveTo(_originalPosition);
+                        _moveNodeUndoButton.Activate(moveElementAction);
+                        
+
                     }
 
-                    _moveNodeUndoButton = new UndoButton();
-                    //Activates undo button makes it appear in the old position.
-                    ffvm.AtomViewList.Add(_moveNodeUndoButton);
-                    _moveNodeUndoButton.MoveTo(_originalPosition);
-                    _moveNodeUndoButton.Activate(moveElementAction);
+
 
                 }
             }
