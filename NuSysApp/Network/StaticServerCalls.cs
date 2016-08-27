@@ -83,7 +83,7 @@ namespace NuSysApp
                 if (!SessionController.Instance.ContentController.ContainsContentDataModel( collectionController.ContentDataModelId))
                 {
                     //create a request to get the elements on the new collection
-                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(requestArgs.ParentCollectionId);
+                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(requestArgs.ParentCollectionId,1);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(getWorkspaceRequest);
                     await getWorkspaceRequest.AddReturnedDataToSessionAsync();
                     await getWorkspaceRequest.MakeCollectionFromReturnedElementsAsync();

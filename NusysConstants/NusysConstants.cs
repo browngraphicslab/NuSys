@@ -47,6 +47,20 @@ namespace NusysIntermediate
 
         #endregion AllRequests
 
+            #region GetAliasesOfLibraryElementRequest
+
+            /// <summary>
+            /// In the get aliases of library element request this key will be used to hold the id of the library element you arae seeking aliases of.
+            /// </summary>
+            public static readonly string GET_ALIASES_OF_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY = "library_element_id";
+
+            /// <summary>
+            /// In the return message of the get aliases of library element request this key will hold the json- serialized list of element models.
+            /// </summary>
+            public static readonly string GET_ALIASES_OF_LIBRARY_ELEMENT_REQUEST_RETURNED_ELEMENTS_MODELS_KEY = "returned_element_models";
+
+            #endregion GetAliasesOfLibraryElementRequest
+
             #region DeleteElementRequest
 
             /// <summary>
@@ -54,12 +68,12 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string DELETE_ELEMENT_REQUEST_ELEMENT_ID = "element_id_to_delete";
 
-            /// <summary>
-            /// The ID of the element Model that you wish to delete using this DeleteElementRequest
-            /// </summary>
-            public static readonly string DELETE_ELEMENT_REQUEST_RETURNED_DELETED_ELEMENT_ID = "element_id_deleted";
+                    /// <summary>
+                    /// The ID of the element Model that you wish to delete using this DeleteElementRequest
+                    /// </summary>
+                    public static readonly string DELETE_ELEMENT_REQUEST_RETURNED_DELETED_ELEMENT_ID = "element_id_deleted";
 
-            #endregion DeleteElementRequest
+                    #endregion DeleteElementRequest
 
             #region GetContentDataModelRequest
 
@@ -93,7 +107,7 @@ namespace NusysIntermediate
 
         #endregion GetEntireWorkspaceRequest
 
-        #region CreateNewContentRequest
+            #region CreateNewContentRequest
 
         /// <summary>
         /// The key used to hold the type of content being added
@@ -251,7 +265,7 @@ namespace NusysIntermediate
 
         #endregion UpdateLibraryElementRequest
 
-        #region NewLibraryElementRequest
+            #region NewLibraryElementRequest
         /// <summary>
         /// key in message for sending element type when creating new library element request
         /// </summary>
@@ -410,7 +424,7 @@ namespace NusysIntermediate
 
         #endregion NewLibraryElementRequest
 
-        #region CreateNewMetadataRequest
+            #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
@@ -589,31 +603,30 @@ namespace NusysIntermediate
 
         #endregion UpdateContentRequest
 
-        #region GetRelatedDocumentsRequest
-        /// <summary>
-        /// The key for sending contentDataModel id of the document you wish to get related items for
-        /// </summary>
-        public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
+            #region GetRelatedDocumentsRequest
+            /// <summary>
+            /// The key for sending contentDataModel id of the document you wish to get related items for
+            /// </summary>
+            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY = "content_id";
+
+                /// <summary>
+                /// The key for sending a list of contentDataModel ids of which the original document is related to
+                /// back to the client from the server
+                /// </summary>
+                public static readonly string GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_CONTENT_IDS_KEY = "related_document_ids";
+                #endregion GetReleatedDocumentsRequest
+
+            #region CreateSnapshotOfCollectionRequest
+            /// <summary>
+            /// The key for sending the id of the collection you wish to take a snapshot of
+            /// </summary>
+            public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_COLLECTION_ID = "collection_id";
 
             /// <summary>
-            /// The key for sending a list of contentDataModel ids of which the original document is related to
-            /// back to the client from the server
+            /// The key used by the server to send to clients the library element model of the newly created collection
             /// </summary>
-            public static readonly string GET_RELATED_DOCUMENTS_REQUEST_RETURNED_RELATED_DOCUMENT_CONTENT_IDS_KEY = "related_document_ids";
-            #endregion GetReleatedDocumentsRequest
-
-        #region CreateSnapshotOfCollectionRequest
-        /// <summary>
-        /// The key for sending the id of the collection you wish to take a snapshot of
-        /// </summary>
-        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_COLLECTION_ID = "collection_id";
-
-        /// <summary>
-        /// The key used by the server to send to clients the library element model of the newly created collection
-        /// </summary>
-        public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_RETURNED_COLLECTION_LIBRARY_ELEMENT_MODEL = "returned_collection_library_element_model";
-        #endregion CreateShapshotOfCollectionRequest
-
+            public static readonly string CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_RETURNED_COLLECTION_LIBRARY_ELEMENT_MODEL = "returned_collection_library_element_model";
+            #endregion CreateShapshotOfCollectionRequest
 
             #region ChatRequest
 
@@ -628,35 +641,35 @@ namespace NusysIntermediate
                 public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
         #endregion
 
-        #region CreateInkStrokeRequest
-        /// <summary>
-        /// Key in message for ink stroke unique id for the create ink stroke request
-        /// </summary>
-        public static readonly string CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
+            #region CreateInkStrokeRequest
+            /// <summary>
+            /// Key in message for ink stroke unique id for the create ink stroke request
+            /// </summary>
+            public static readonly string CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
 
-        /// <summary>
-        /// Key in message for the content id for the content where the ink stroke was placed. Used for the create ink stroke request
-        /// </summary>
-        public static readonly string CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY = "content_id";
+            /// <summary>
+            /// Key in message for the content id for the content where the ink stroke was placed. Used for the create ink stroke request
+            /// </summary>
+            public static readonly string CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY = "content_id";
 
-        /// <summary>
-        /// Key in message for sending the json serialized list of points that compose the stroke. Used for the create ink stroke request
-        /// </summary>
-        public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "content_id";
+            /// <summary>
+            /// Key in message for sending the json serialized list of points that compose the stroke. Used for the create ink stroke request
+            /// </summary>
+            public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "content_id";
 
-        /// <summary>
-        /// Key in message used by the server to send the InkModel back to clients. 
-        /// </summary>
-        public static readonly string CREATE_INK_STROKE_REQUEST_RETURNED_INK_MODEL_KEY = "returned_ink_model";
-        #endregion CreateInkStrokeRequest
+            /// <summary>
+            /// Key in message used by the server to send the InkModel back to clients. 
+            /// </summary>
+            public static readonly string CREATE_INK_STROKE_REQUEST_RETURNED_INK_MODEL_KEY = "returned_ink_model";
+            #endregion CreateInkStrokeRequest
 
-        #region DeleteInkStrokeRequest
-        /// <summary>
-        /// Key in message for ink stroke unique id for the delete ink stroke request
-        /// </summary>
-        public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
+            #region DeleteInkStrokeRequest
+            /// <summary>
+            /// Key in message for ink stroke unique id for the delete ink stroke request
+            /// </summary>
+            public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
         
-        #endregion DeleteInkStrokeRequest
+            #endregion DeleteInkStrokeRequest
 
         #endregion RequestKeys
 
@@ -1448,6 +1461,11 @@ namespace NusysIntermediate
             GetRelatedDocumentsRequest,
             CreateInkStrokeRequest,
             DeleteInkStrokeRequest,
+
+            /// <summary>
+            /// request used to get all the aliases of a library element.  This should return all of the element models
+            /// </summary>
+            GetAliasesOfLibraryElementRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
