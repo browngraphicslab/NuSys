@@ -50,7 +50,7 @@ namespace NuSysApp
             var vm = DataContext as AliasTabViewModel;
             Debug.Assert(vm != null, "this really shouldn't ever be null or fail the cast");
 
-            vm?.SortBy(aliasTemplate => aliasTemplate.Creator);
+            vm?.SortBy(aliasTemplate => aliasTemplate?.Creator?.ToLower());
         }
 
         private void SortTitle_OnClick(object sender, RoutedEventArgs e)
@@ -58,7 +58,7 @@ namespace NuSysApp
             var vm = DataContext as AliasTabViewModel;
             Debug.Assert(vm != null, "this really shouldn't ever be null or fail the cast");
 
-            vm?.SortBy(aliasTemplate => aliasTemplate.CollectionTitle);
+            vm?.SortBy(aliasTemplate => aliasTemplate?.CollectionTitle?.ToLower());
         }
 
         private void SortTimestamp_OnClick(object sender, RoutedEventArgs e)
@@ -66,7 +66,7 @@ namespace NuSysApp
             var vm = DataContext as AliasTabViewModel;
             Debug.Assert(vm != null, "this really shouldn't ever be null or fail the cast");
 
-            vm?.SortBy(aliasTemplate => aliasTemplate.Timestamp);
+            vm?.SortBy(aliasTemplate => aliasTemplate?.Timestamp?.ToLower());
         }
 
         /// <summary>
