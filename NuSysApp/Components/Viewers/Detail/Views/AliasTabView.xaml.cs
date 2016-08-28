@@ -113,11 +113,11 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// 
+        /// This opens the detail view of the collection the alias is in
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CollectionTitle_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void LinkedTo_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var textBlock = sender as TextBlock;
             var aliasTemplate = textBlock?.DataContext as AliasTemplate;
@@ -126,16 +126,13 @@ namespace NuSysApp
             {
                 return;
             }
-
-            
+            // We get the controller of the end point of the link and use it to open the detail view
+            var collectionId = aliasTemplate?.CollectionID;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(collectionId);
+            SessionController.Instance.SessionView.DetailViewerView.ShowElement(controller);
         }
 
-        /// <summary>
-        /// This opens the detail view of the collection the alias is in
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void LinkedTo_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void CollectionTitle_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var textBlock = sender as TextBlock;
             var aliasTemplate = textBlock?.DataContext as AliasTemplate;

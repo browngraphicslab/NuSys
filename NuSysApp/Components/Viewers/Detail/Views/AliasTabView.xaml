@@ -73,24 +73,15 @@
     </UserControl.Resources>
     
     
-    <Grid x:Name="rootGrid" VerticalAlignment="Top">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-      
-        <Grid Padding="10,10,10,10" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <Grid x:Name="rootGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid Padding="10,20,10,20" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <ListView x:Name="linkList" ItemsSource="{Binding AliasTemplates}" HorizontalAlignment="Stretch" Background="LightSteelBlue"   BorderBrush="Black" BorderThickness="1.0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" MinHeight="400">
                 <ListView.Header>
                     <Grid VerticalAlignment="Center" Background="{StaticResource color6}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="3*" />
                         </Grid.ColumnDefinitions>
 
@@ -120,18 +111,17 @@
                         <Grid x:Name="LibraryListItem" Tapped="LibraryListItem_OnTapped" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" MinHeight="5" >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="15" />
                                 <ColumnDefinition Width="3*" />
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="15" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="3*" />
                             </Grid.ColumnDefinitions>
 
-                            <!--<Image Source="ms-appx:///Assets/icon_node_x.png" Grid.Column="0" Grid.Row="0" Height="22" Width="22" Tapped="X_OnTapped" DataContext="{Binding ID}"></Image>-->
-                            <!--<Image Source="ms-appx:///Assets/icon_node_ink.png" Grid.Column="0"></Image>-->
-                            <TextBlock  Grid.Column="1" Text="{Binding CollectionTitle}" FontSize="14" />
-                            <TextBlock  Grid.Column="3" Text="{Binding Creator}"  DoubleTapped="LinkedTo_OnDoubleTapped" FontSize="14"/>
-                            <TextBlock  Grid.Column="3" Text="{Binding Timestamp}"  DoubleTapped="LinkedTo_OnDoubleTapped" FontSize="14"/>
+                            <TextBlock  Grid.Column="2" Text="{Binding CollectionTitle}" FontSize="14" DoubleTapped="CollectionTitle_OnDoubleTapped" />
+                            <TextBlock  Grid.Column="4" Text="{Binding Creator}"  FontSize="14"/>
+                            <TextBlock  Grid.Column="6" Text="{Binding Timestamp}"  FontSize="14"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
