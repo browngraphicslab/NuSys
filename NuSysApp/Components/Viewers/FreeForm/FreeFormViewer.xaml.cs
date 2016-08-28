@@ -48,6 +48,7 @@ namespace NuSysApp
         public AudioMediaPlayer AudioPlayer => xAudioPlayer;
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
+        private bool _inkPressed;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
@@ -111,6 +112,7 @@ namespace NuSysApp
                     _collectionInteractionManager.InkStarted -= CollectionInteractionManagerOnInkStarted;
                     _collectionInteractionManager.InkDrawing -= CollectionInteractionManagerOnInkDrawing;
                     _collectionInteractionManager.InkStopped -= CollectionInteractionManagerOnInkStopped;
+                    _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
                     _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
                     _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
                     _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
@@ -131,6 +133,7 @@ namespace NuSysApp
                 _collectionInteractionManager.InkStarted += CollectionInteractionManagerOnInkStarted;
                 _collectionInteractionManager.InkDrawing += CollectionInteractionManagerOnInkDrawing;
                 _collectionInteractionManager.InkStopped += CollectionInteractionManagerOnInkStopped;
+                _collectionInteractionManager.ResizerDragged += CollectionInteractionManagerOnResizerDragged;
                 _collectionInteractionManager.SelectionInkPressed += CollectionInteractionManagerOnSelectionInkPressed;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
@@ -140,10 +143,22 @@ namespace NuSysApp
             }
         }
 
+        private void CollectionInteractionManagerOnResizerDragged(CanvasPointer pointer, Vector2 point, Vector2 delta)
+        {
+            foreach (var item in Selections)
+            {
+                var elem = item;
+                var collection = item.Parent;
+                var nw = elem.ViewModel.Width + delta.X / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
+                var nh = elem.ViewModel.Height + delta.Y / (_transform.M22 * collection.S.M22 * collection.Camera.S.M22);
+                item.ViewModel.Controller.SetSize(nw, nh);
+            }
+        }
+
         private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
         {
             var transform = NuSysRenderer.Instance.GetTransformUntil(Selections.First());
-
+            var shapeStroke = CurrentCollection.InkRenderItem.LatestStroke;
             var createNewContentRequestArgs = new CreateNewContentRequestArgs
             {
                 LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
@@ -153,9 +168,10 @@ namespace NuSysApp
                     LibraryElementType = NusysConstants.ElementType.Collection,
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
-                    IsFiniteCollection = finite,
-                 //   ShapePoints = CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints().Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList()
-                },
+                    IsFiniteCollection = finite, 
+                    ShapePoints = shapeStroke != null ? CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints().Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList() : null
+
+                   },
                 ContentId = SessionController.Instance.GenerateId()
             };
 
@@ -186,6 +202,14 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
 
             await elementRequest.AddReturnedElementToSessionAsync();
+
+
+            foreach (var element in Selections)
+            {
+                var target = new Vector2(50000 - (float)element.ViewModel.Width / 2f, 50000 - (float)element.ViewModel.Height / 2f);
+                await element.ViewModel.Controller.RequestMoveToCollection(createNewContentRequestArgs.LibraryElementArgs.LibraryElementId, target.X, target.Y);
+            }
+
         }
 
         private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
@@ -198,33 +222,30 @@ namespace NuSysApp
                     elementRenderItem.ViewModel.Controller?.RequestDelete();
                 }
             }
-            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPresent)
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnGroup)
             {
                 multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y);
             }
         }
 
-        private void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer, IEnumerable<Vector2> ink)
+        private async void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer, IEnumerable<Vector2> ink)
         {
+            _inkPressed = true;
             ClearSelections();
             var multipoint = new MultiPoint(ink.Select(p => new NetTopologySuite.Geometries.Point(p.X, p.Y)).ToArray());
             var ch = multipoint.ConvexHull();
             foreach (var renderItem in CurrentCollection.GetRenderItems().OfType<ElementRenderItem>())
             {
                 var vm = renderItem.ViewModel;
-                var tl = new NetTopologySuite.Geometries.Point(vm.X, vm.Y);
-                var tr = new NetTopologySuite.Geometries.Point(vm.X, vm.Y + vm.Width);
-                var bl = new NetTopologySuite.Geometries.Point(vm.X + vm.Height, vm.Y);
-                var br = new NetTopologySuite.Geometries.Point(vm.X + vm.Height, vm.Y + vm.Width);
-                var mp = new MultiPoint(new IPoint[] {tl, tr, bl, br});
-                var containsPoint = ch.Contains(mp);
-                if (containsPoint)
+                var anchor = new NetTopologySuite.Geometries.Point(vm.Anchor.X, vm.Anchor.Y);
+                if (ch.Contains(anchor))
                 {
                     AddToSelections(renderItem);
-                }
-                
+                }                
             }
-         //   multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y - 50);
+
+            await Task.Delay(500);
+            _inkPressed = false;
         }
 
         private void CanvasInteractionManagerOnAllPointersReleased()
@@ -296,7 +317,10 @@ namespace NuSysApp
             _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
 
             var item = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint);
-            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnDelete)
+
+            return;
+
+                if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnDelete)
             {
                 foreach (var elementRenderItem in Selections)
                 {
@@ -372,12 +396,13 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
         {
-            PanZoom2(CurrentCollection.Camera, _transform, point, delta.X /_transform.M11, delta.Y / _transform.M11, 1);
+            PanZoom2(CurrentCollection.Camera, _transform, point, delta.X/_transform.M11, delta.Y/_transform.M11, 1);
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()
         {
-            ClearSelections();
+            if (!_inkPressed)
+                ClearSelections();
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -497,9 +522,7 @@ namespace NuSysApp
             target.S = Matrix3x2.CreateScale((float)nsx, (float)nsy);
             target.Update();
         }
-
-
-
+        
 
 
 

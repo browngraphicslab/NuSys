@@ -56,6 +56,8 @@ namespace NuSysApp
 
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
+            ElementSelectionRenderItem = new ElementSelectionRenderItem(Root.ViewModel, null, _canvas);
+            ElementSelectionRenderItem.Load();
         }
 
         public async Task Init(CanvasAnimatedControl canvas, CollectionRenderItem topCollection)
@@ -68,7 +70,7 @@ namespace NuSysApp
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
 
-            ElementSelectionRenderItem = new ElementSelectionRenderItem(Root.ViewModel, null, _canvas);
+
         }
 
         private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -115,14 +117,15 @@ namespace NuSysApp
 
         public BaseRenderItem GetRenderItemAt(Vector2 sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
         {
-            if (ElementSelectionRenderItem.BtnDelete.HitTest(sp))
-            {
-                return ElementSelectionRenderItem.BtnDelete;
-            }
+            if (ElementSelectionRenderItem.Resizer.HitTest(sp))
+                return ElementSelectionRenderItem.Resizer;
 
-            if (ElementSelectionRenderItem.BtnPresent.HitTest(sp))
+            foreach (var btn in ElementSelectionRenderItem.Buttons)
             {
-                return ElementSelectionRenderItem.BtnPresent;
+                if (btn.HitTest(sp))
+                {
+                    return btn;
+                }
             }
 
             collection = collection ?? Root;

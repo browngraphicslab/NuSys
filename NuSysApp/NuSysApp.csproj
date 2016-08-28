@@ -231,6 +231,7 @@
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
     <Content Include="Assets\node icons\search_icon.png" />
+    <Content Include="Assets\node icons\settings-icon-white.png" />
     <Content Include="Assets\node icons\text.png" />
     <Content Include="Assets\logos\icon_pano.png" />
     <Content Include="Assets\logos\icon_upload.png" />
@@ -360,6 +361,7 @@
     <Compile Include="Components\NuSysRenderer\LinkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\MinimapRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\NodeMenuButtonRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\NodeResizerRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\NuSysRenderer.cs" />
     <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TempLinkRenderItem.cs" />

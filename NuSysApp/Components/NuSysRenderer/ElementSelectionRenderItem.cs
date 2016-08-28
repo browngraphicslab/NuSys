@@ -24,16 +24,33 @@ namespace NuSysApp
         private Matrix3x2 _transform;
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
+        public NodeMenuButtonRenderItem BtnGroup;
+        public NodeMenuButtonRenderItem BtnOptions;
+        public NodeResizerRenderItem Resizer;
+        public List<NodeMenuButtonRenderItem> Buttons = new List<NodeMenuButtonRenderItem>(); 
 
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
-            BtnDelete = new NodeMenuButtonRenderItem(parent, resourceCreator);
-            BtnPresent = new NodeMenuButtonRenderItem(parent, resourceCreator);
+            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
+            BtnOptions = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
+            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
+            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
 
+            Buttons = new List<NodeMenuButtonRenderItem> {BtnDelete, BtnOptions, BtnGroup, BtnPresent };
+            Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
 
+        }
+
+        public override async Task Load()
+        {
+            foreach (var btn in Buttons)
+            {
+                await btn.Load();
+            }
+            await Resizer.Load();
         }
 
         private void SelectionsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -89,6 +106,8 @@ namespace NuSysApp
 
             BtnDelete.Update();
             BtnPresent.Update();
+            BtnGroup.Update();
+            Resizer.Update();
 
             if (_selectedItems.Count == 0)
             {
@@ -130,10 +149,28 @@ namespace NuSysApp
 
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
 
-            BtnDelete.Postion = new Vector2((float)_screenRect.X - 40, (float)_screenRect.Y + 15);
-            BtnPresent.Postion = new Vector2((float)_screenRect.X - 40, (float)_screenRect.Y + 15 + 40);
-            BtnDelete.Draw(ds);
-            BtnPresent.Draw(ds);
+            /*
+            var triangle = CanvasGeometry.CreatePolygon(ResourceCreator,new System.Numerics.Vector2[4]{new Vector2(0, 30),
+                new Vector2(30, 30),
+                new Vector2(30, 0),
+                new Vector2(0, 30)
+            });
+
+            ds.FillGeometry(triangle,new Vector2((float)(_screenRect.X + _screenRect.Width - 30), (float)(_screenRect.Y + _screenRect.Height - 30)), Colors.Black);
+            */
+            Resizer.T = Matrix3x2.CreateTranslation(new Vector2((float)(_screenRect.X + _screenRect.Width - 30), (float)(_screenRect.Y + _screenRect.Height - 30)));
+
+            Resizer.Draw(ds);
+
+            for (int index = 0; index < Buttons.Count; index++)
+            {
+                var btn = Buttons[index];
+                btn.IsVisible = true;
+                if (!btn.IsVisible)
+                    continue;
+                btn.T = Matrix3x2.CreateTranslation((float)_screenRect.X - 40, (float)_screenRect.Y + 40 + index * 35);
+                btn.Draw(ds);
+            }
 
             ds.Transform = old;
         }

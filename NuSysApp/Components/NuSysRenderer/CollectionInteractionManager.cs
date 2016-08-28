@@ -70,6 +70,7 @@ namespace NuSysApp
         public event PanZoomHandler PanZoomed;
         public event TranslateHandler Panned;
         public event CollectionSwitchedHandler CollectionSwitched;
+        public event TranslateHandler ResizerDragged;
 
         private enum Mode
         {
@@ -93,6 +94,7 @@ namespace NuSysApp
         private Matrix3x2 _transform = Matrix3x2.Identity;
         private CanvasInteractionManager _canvasInteractionManager;
         private CanvasPointer _finalInkPointer;
+        private bool _resizerHit;
 
         public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
 
@@ -152,7 +154,14 @@ namespace NuSysApp
             _transform = Win2dUtil.Invert(_collection.C) * _collection.S * _collection.C * _collection.T * until;
 
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
-                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1) as ElementRenderItem;
+            {
+                var hit = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                if (hit == NuSysRenderer.Instance.ElementSelectionRenderItem.Resizer)
+                {
+                    _resizerHit = true;
+                }
+                _selectedRenderItem = hit as ElementRenderItem;
+            }
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 2)
             {
 
@@ -268,6 +277,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
+            _resizerHit = false;
             _selectedRenderItem = null;
             _secondSelectedRenderItem = null;
         }
@@ -332,6 +342,10 @@ namespace NuSysApp
                 Panned?.Invoke(pointer, point, delta);
             else if (_selectedRenderItem is ElementRenderItem)
                 ItemMoved?.Invoke(pointer, (ElementRenderItem)_selectedRenderItem, delta);
+            else if (_resizerHit)
+            {
+                ResizerDragged?.Invoke(pointer, point, delta);
+            }
         }
 
         private void OnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
