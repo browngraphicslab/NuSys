@@ -52,8 +52,10 @@ namespace NuSysApp
         public delegate void PanZoomHandler(Vector2 center, Vector2 deltaTranslation, float deltaZoom);
         public delegate void CollectionSwitchedHandler(CollectionRenderItem collection);
         public delegate void ElementDropHandler(ElementRenderItem element, CollectionRenderItem collection, CanvasPointer pointer);
+        public delegate void SelectionInkPressedHandler(CanvasPointer pointer, IEnumerable<Vector2> ink);
 
         public event ElementDropHandler ElementAddedToCollection;
+        public event SelectionInkPressedHandler SelectionInkPressed;
         public event RenderItemSelectedHandler ItemSelected;
         public event RenderItemSelectedHandler DoubleTapped;
         public event MovedHandler ItemMoved;
@@ -90,6 +92,7 @@ namespace NuSysApp
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
         private CanvasInteractionManager _canvasInteractionManager;
+        private CanvasPointer _finalInkPointer;
 
         public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
 
@@ -133,6 +136,18 @@ namespace NuSysApp
 
         private void OnTouchPointerPressed(CanvasPointer pointer)
         {
+            if (_finalInkPointer != null && (pointer.LastUpdated - _finalInkPointer.LastUpdated).TotalMilliseconds < 2000)
+            {
+                var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+                var latestStroke = currentCollection.InkRenderItem.LatestStroke;
+                var t = Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(currentCollection));
+                if (InkUtil.IsPointCloseToStroke(Vector2.Transform(pointer.CurrentPoint, t), latestStroke))
+                {
+                    Debug.WriteLine("show menu!");
+                    SelectionInkPressed?.Invoke(pointer, latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)));
+                }
+            }
+
             var until = NuSysRenderer.Instance.GetTransformUntil(_collection);
             _transform = Win2dUtil.Invert(_collection.C) * _collection.S * _collection.C * _collection.T * until;
 
@@ -223,7 +238,10 @@ namespace NuSysApp
                 var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.A);
 
                 if (keyState.HasFlag(CoreVirtualKeyStates.Down))
+                {
+                    _finalInkPointer = pointer;
                     InkStopped?.Invoke(pointer);
+                }
                 _mode = Mode.None;
             }
 
@@ -270,6 +288,10 @@ namespace NuSysApp
                 return;
 
             var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+
+            if (element is NodeMenuButtonRenderItem)
+                return;
+
             var elementRenderItem = element as ElementRenderItem;
             var initialCollection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
             var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;

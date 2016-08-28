@@ -26,6 +26,10 @@ namespace NuSysApp
 {
     public sealed partial class MultiSelectMenuView : UserControl
     {
+        public delegate void CreateCollectionHandler(bool finite, bool shaped);
+
+        public event CreateCollectionHandler CreateCollection;
+
         public InkStroke Stroke {
             get;
             set; }
@@ -47,12 +51,14 @@ namespace NuSysApp
             Points = new List<Windows.Foundation.Point>();
         }
 
-        public void Show()
+        public void Show(double x = 100, double y= 100)
         {
+            Canvas.SetLeft(this, x);
+            Canvas.SetTop(this, y);
             ColorPicker.Visibility = Visibility.Collapsed;
             Visibility = Visibility.Visible;
-            GroupSettings.Visibility = Visibility.Collapsed;
-            Buttons.Visibility = Visibility.Visible;
+            GroupSettings.Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Collapsed;
         }
         
 
@@ -65,7 +71,7 @@ namespace NuSysApp
         private void GroupSettingsXOnClick(object sender, RoutedEventArgs e)
         {
             GroupSettings.Visibility = Visibility.Collapsed;
-            Buttons.Visibility = Visibility.Visible;
+            Visibility = Visibility.Visible;
         }
 
         private async void CreateGroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
@@ -76,11 +82,55 @@ namespace NuSysApp
         /// <param name="sender"></param>
         /// <param name="routedEventArgs"></param>
         {
-            var selections = SessionController.Instance.ActiveFreeFormViewer.Selections;
+            var selections = SessionController.Instance.SessionView.FreeFormViewer.Selections;
             if (selections.Count == 0) {
                 Visibility = Visibility.Collapsed;
                 return;
             }
+
+            CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn);
+            return;
+            var transform = NuSysRenderer.Instance.GetTransformUntil(selections.First());
+            
+            var createNewContentRequestArgs = new CreateNewContentRequestArgs
+            {
+                LibraryElementArgs = new CreateNewLibraryElementRequestArgs
+                {
+                    AccessType =
+                       SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
+                    LibraryElementType = NusysConstants.ElementType.Collection,
+                    Title = "Unnamed Collection",
+                    LibraryElementId = SessionController.Instance.GenerateId()
+                },
+                ContentId = SessionController.Instance.GenerateId()
+            };
+
+            // execute the content request
+            var contentRequest = new CreateNewContentRequest(createNewContentRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
+            contentRequest.AddReturnedLibraryElementToLibrary();
+
+            // create a new add element to collection request
+            var newElementRequestArgs = new NewElementRequestArgs
+            {
+                LibraryElementId = createNewContentRequestArgs.LibraryElementArgs.LibraryElementId,
+                ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                Height = Constants.DefaultNodeSize,
+                Width = Constants.DefaultNodeSize,
+                X = 50000,
+                Y = 50000
+            };
+
+            // execute the add element to collection request
+            var elementRequest = new NewElementRequest(newElementRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(createNewContentRequestArgs.ContentId);
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+
+            await elementRequest.AddReturnedElementToSessionAsync();
+
+
+            return;
             //var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
             var bb = Stroke.BoundingRect;
 
@@ -121,7 +171,7 @@ namespace NuSysApp
             {
                 Points.Clear();
             }
-
+            /*
             var m = new CreateNewLibraryElementRequestArgs();
             m.LibraryElementId = newLibraryElementId;
             m.LibraryElementType = NusysConstants.ElementType.Collection;
@@ -135,8 +185,13 @@ namespace NuSysApp
             args.Width = bb.Width;
             args.Y = bb.Y;
             args.LibraryElementId = newLibraryElementId;
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
+            args.ParentCollectionId
+            var request = new NewElementRequest(args);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedElementToSessionAsync()
 
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
+            */
             Visibility = Visibility.Collapsed;
         }
 

@@ -16,8 +16,8 @@ namespace NuSysApp
 {
     public class ElementSelectionRenderItem : BaseRenderItem
     {
-        private Rect _rect;
-        private Rect _screenRect;
+        public Rect Rect;
+        public Rect _screenRect;
         private FreeFormViewerViewModel _vm;
         private bool _isVisible;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
@@ -97,9 +97,7 @@ namespace NuSysApp
             }
 
             var bbs = _selectedItems.Select(elem => new Rect(elem.ViewModel.X, elem.ViewModel.Y, elem.ViewModel.Width, elem.ViewModel.Height)).ToList();
-            _rect = GetBoundingRect(bbs);
-
-
+            Rect = GetBoundingRect(bbs);
 
             IsDirty = false;
             _isVisible = true;
@@ -118,8 +116,8 @@ namespace NuSysApp
             if (_selectedItems.Count > 0)
                 _transform = NuSysRenderer.Instance.GetTransformUntil(_selectedItems.First());
 
-            var tl = Vector2.Transform(new Vector2((float)_rect.X, (float)_rect.Y), _transform);
-            var tr = Vector2.Transform(new Vector2((float)(_rect.X+_rect.Width), (float)(_rect.Y + _rect.Height)), _transform);
+            var tl = Vector2.Transform(new Vector2((float)Rect.X, (float)Rect.Y), _transform);
+            var tr = Vector2.Transform(new Vector2((float)(Rect.X+Rect.Width), (float)(Rect.Y + Rect.Height)), _transform);
            
             _screenRect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
             ds.Transform = Matrix3x2.Identity;
@@ -157,6 +155,14 @@ namespace NuSysApp
             }
             return new Rect(minX, minY, maxW-minX, maxH-minY);
 
+        }
+
+        public override bool HitTest(Vector2 point)
+        {
+            if (base.HitTest(point))
+                return true;
+
+            return false;
         }
     }
 }

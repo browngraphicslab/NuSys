@@ -39,7 +39,7 @@ namespace NuSysApp
 
         private CanvasAnimatedControl _canvas;
         private MinimapRenderItem _minimap;
-        private ElementSelectionRenderItem _elementSelectionRenderItem;
+        public ElementSelectionRenderItem ElementSelectionRenderItem;
 
         public CollectionRenderItem Root { get; set; }
 
@@ -68,7 +68,7 @@ namespace NuSysApp
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
 
-            _elementSelectionRenderItem = new ElementSelectionRenderItem(Root.ViewModel, null, _canvas);
+            ElementSelectionRenderItem = new ElementSelectionRenderItem(Root.ViewModel, null, _canvas);
         }
 
         private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -115,6 +115,16 @@ namespace NuSysApp
 
         public BaseRenderItem GetRenderItemAt(Vector2 sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
         {
+            if (ElementSelectionRenderItem.BtnDelete.HitTest(sp))
+            {
+                return ElementSelectionRenderItem.BtnDelete;
+            }
+
+            if (ElementSelectionRenderItem.BtnPresent.HitTest(sp))
+            {
+                return ElementSelectionRenderItem.BtnPresent;
+            }
+
             collection = collection ?? Root;
             var mat = GetTransformUntil(collection);
             return _GetRenderItemAt(collection, sp, mat, 0, maxLevel);
@@ -214,7 +224,7 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
             Root.Update();
          //   _minimap.IsDirty = true;
          //   _minimap.Update();
-            _elementSelectionRenderItem.Update();
+            ElementSelectionRenderItem.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
@@ -225,7 +235,7 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 Root.Draw(ds);
                 ds.Transform = Matrix3x2.Identity;
             //    _minimap.Draw(ds);
-                _elementSelectionRenderItem.Draw(ds);
+                ElementSelectionRenderItem.Draw(ds);
             }
         }
 

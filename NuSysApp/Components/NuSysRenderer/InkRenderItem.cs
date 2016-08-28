@@ -27,6 +27,7 @@ namespace NuSysApp
         private InkManager _inkManager = new InkManager();
         private Matrix3x2 _transform = Matrix3x2.Identity;
         private InkStrokeBuilder _builder;
+        public InkStroke LatestStroke { get; set; }
 
 
         public InkRenderItem(CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
@@ -90,8 +91,8 @@ namespace NuSysApp
             }
 
             var builder = new InkStrokeBuilder();
-            var stroke = builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
-            stroke.DrawingAttributes = GetDrawingAttributes();
+            LatestStroke = builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
+            LatestStroke.DrawingAttributes = GetDrawingAttributes();
 
 
             if (_isEraser)
@@ -99,7 +100,6 @@ namespace NuSysApp
                 var allStrokes = _inkManager.GetStrokes().ToArray();
                 var thisStroke = _currentStroke.Select(p => p.Position);
                 var thisLineString = thisStroke.GetLineString();
-                ;
 
                 foreach (var otherStroke in allStrokes)
                 {
@@ -132,8 +132,8 @@ namespace NuSysApp
             }
             else
             {
-                _inkManager.AddStroke(stroke);
-                _inkStrokes.Enqueue(stroke);
+                _inkManager.AddStroke(LatestStroke);
+                _inkStrokes.Enqueue(LatestStroke);
                 //  InkStrokeAdded?.Invoke(this, stroke);
             }
             _inkStrokes =  new ConcurrentQueue<InkStroke>(_inkManager.GetStrokes());

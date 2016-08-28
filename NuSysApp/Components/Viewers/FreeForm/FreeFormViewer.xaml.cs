@@ -13,9 +13,13 @@ using System.Linq;
 using System.Numerics;
 using Windows.Devices.Input;
 using Windows.UI;
+using GeoAPI.Geometries;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using PathGeometry = SharpDX.Direct2D1.PathGeometry;
+using Point = Windows.Foundation.Point;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -30,8 +34,7 @@ namespace NuSysApp
         private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
         private FreeFormViewerViewModel _vm;
-        private ElementSelectionRenderItem _elementSelectionRenderItem;
-        private MinimapRenderItem _minimap;
+
         private Dictionary<ElementViewModel, Transformable> _transformables = new Dictionary<ElementViewModel, Transformable>();
 
         public CollectionRenderItem CurrentCollection { get; private set; }
@@ -62,9 +65,7 @@ namespace NuSysApp
                 vm.Y = 0;
                 vm.Width = xRenderCanvas.Width;
                 vm.Height = xRenderCanvas.Height;
-                _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, InitialCollection, xRenderCanvas);
-                _minimap = new MinimapRenderItem(InitialCollection, InitialCollection, xRenderCanvas);
-
+                
                 _canvasInteractionManager = new CanvasInteractionManager(xRenderCanvas);
 
                 SwitchCollection(InitialCollection);
@@ -105,8 +106,15 @@ namespace NuSysApp
                     _collectionInteractionManager.ItemMoved -= CollectionInteractionManagerOnItemMoved;
                     _collectionInteractionManager.DuplicateCreated -= CollectionInteractionManagerOnDuplicateCreated;
                     _collectionInteractionManager.CollectionSwitched -= CollectionInteractionManagerOnCollectionSwitched;
+                    _collectionInteractionManager.SelectionInkPressed -= CollectionInteractionManagerOnSelectionInkPressed;
                     _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
+                    _collectionInteractionManager.InkStarted -= CollectionInteractionManagerOnInkStarted;
+                    _collectionInteractionManager.InkDrawing -= CollectionInteractionManagerOnInkDrawing;
+                    _collectionInteractionManager.InkStopped -= CollectionInteractionManagerOnInkStopped;
                     _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
+                    _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
+                    _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
+                    multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
                     _collectionInteractionManager.Dispose();
                 }
 
@@ -123,10 +131,100 @@ namespace NuSysApp
                 _collectionInteractionManager.InkStarted += CollectionInteractionManagerOnInkStarted;
                 _collectionInteractionManager.InkDrawing += CollectionInteractionManagerOnInkDrawing;
                 _collectionInteractionManager.InkStopped += CollectionInteractionManagerOnInkStopped;
+                _collectionInteractionManager.SelectionInkPressed += CollectionInteractionManagerOnSelectionInkPressed;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
                 _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
+                multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+                _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
             }
+        }
+
+        private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
+        {
+            var transform = NuSysRenderer.Instance.GetTransformUntil(Selections.First());
+
+            var createNewContentRequestArgs = new CreateNewContentRequestArgs
+            {
+                LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
+                {
+                    AccessType =
+                       SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
+                    LibraryElementType = NusysConstants.ElementType.Collection,
+                    Title = "Unnamed Collection",
+                    LibraryElementId = SessionController.Instance.GenerateId(),
+                    IsFiniteCollection = finite,
+                 //   ShapePoints = CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints().Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList()
+                },
+                ContentId = SessionController.Instance.GenerateId()
+            };
+
+            // execute the content request
+            var contentRequest = new CreateNewContentRequest(createNewContentRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
+            contentRequest.AddReturnedLibraryElementToLibrary();
+
+            var targetScreenRect = NuSysRenderer.Instance.ElementSelectionRenderItem._screenRect;
+            var targetPointTl = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)targetScreenRect.X, (float)targetScreenRect.Y), CurrentCollection);
+            var targetPointBr = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)(targetScreenRect.X + targetScreenRect.Width), (float)(targetScreenRect.Y + targetScreenRect.Height)), CurrentCollection);
+
+            // create a new add element to collection request
+            var newElementRequestArgs = new NewElementRequestArgs
+            {
+                LibraryElementId = createNewContentRequestArgs.LibraryElementArgs.LibraryElementId,
+                ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                Height = targetPointBr.Y - targetPointTl.Y,
+                Width = targetPointBr.X - targetPointTl.X,
+                X = targetPointTl.X,
+                Y = targetPointTl.Y
+            };
+
+            // execute the add element to collection request
+            var elementRequest = new NewElementRequest(newElementRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(createNewContentRequestArgs.ContentId);
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+
+            await elementRequest.AddReturnedElementToSessionAsync();
+        }
+
+        private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
+        {
+            var item = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint);
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnDelete)
+            {
+                foreach (var elementRenderItem in Selections)
+                {
+                    elementRenderItem.ViewModel.Controller?.RequestDelete();
+                }
+            }
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPresent)
+            {
+                multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y);
+            }
+        }
+
+        private void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer, IEnumerable<Vector2> ink)
+        {
+            ClearSelections();
+            var multipoint = new MultiPoint(ink.Select(p => new NetTopologySuite.Geometries.Point(p.X, p.Y)).ToArray());
+            var ch = multipoint.ConvexHull();
+            foreach (var renderItem in CurrentCollection.GetRenderItems().OfType<ElementRenderItem>())
+            {
+                var vm = renderItem.ViewModel;
+                var tl = new NetTopologySuite.Geometries.Point(vm.X, vm.Y);
+                var tr = new NetTopologySuite.Geometries.Point(vm.X, vm.Y + vm.Width);
+                var bl = new NetTopologySuite.Geometries.Point(vm.X + vm.Height, vm.Y);
+                var br = new NetTopologySuite.Geometries.Point(vm.X + vm.Height, vm.Y + vm.Width);
+                var mp = new MultiPoint(new IPoint[] {tl, tr, bl, br});
+                var containsPoint = ch.Contains(mp);
+                if (containsPoint)
+                {
+                    AddToSelections(renderItem);
+                }
+                
+            }
+         //   multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y - 50);
         }
 
         private void CanvasInteractionManagerOnAllPointersReleased()
@@ -144,6 +242,7 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
             CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
+
         }
 
         private void CollectionInteractionManagerOnInkDrawing(CanvasPointer pointer)
@@ -196,6 +295,18 @@ namespace NuSysApp
             var until = NuSysRenderer.Instance.GetTransformUntil(CurrentCollection);
             _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
 
+            var item = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint);
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnDelete)
+            {
+                foreach (var elementRenderItem in Selections)
+                {
+                    elementRenderItem.ViewModel.Controller.RequestDelete();
+                }
+            }
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPresent)
+            {
+                Debug.WriteLine("BTUN PRESEENT");
+            }
         }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
@@ -324,9 +435,15 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
         {
+            AddToSelections(element);
+        }
+
+        public void AddToSelections(ElementRenderItem element)
+        {
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
-
+            var elementSelectionRenderItem = NuSysRenderer.Instance.ElementSelectionRenderItem;
+            //multiMenu.Show(elementSelectionRenderItem._screenRect.X, elementSelectionRenderItem._screenRect.Y);
         }
 
         private void ClearSelections()

@@ -773,6 +773,7 @@
     <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\InkUtil.cs" />
     <Compile Include="Util\INusysDisposable.cs" />
     <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\IModable.cs" />
