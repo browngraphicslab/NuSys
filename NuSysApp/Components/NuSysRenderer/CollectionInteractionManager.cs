@@ -57,6 +57,7 @@ namespace NuSysApp
         public event ElementDropHandler ElementAddedToCollection;
         public event SelectionInkPressedHandler SelectionInkPressed;
         public event RenderItemSelectedHandler ItemSelected;
+        public event RenderItemSelectedHandler MultimediaElementActivated;
         public event RenderItemSelectedHandler DoubleTapped;
         public event MovedHandler ItemMoved;
         public event MarkingMenuPointerReleasedHandler SelectionsCleared;
@@ -71,6 +72,8 @@ namespace NuSysApp
         public event TranslateHandler Panned;
         public event CollectionSwitchedHandler CollectionSwitched;
         public event TranslateHandler ResizerDragged;
+        public event MarkingMenuPointerReleasedHandler ResizerStarted;
+        public event MarkingMenuPointerReleasedHandler ResizerStopped;
 
         private enum Mode
         {
@@ -159,6 +162,11 @@ namespace NuSysApp
                 if (hit == NuSysRenderer.Instance.ElementSelectionRenderItem.Resizer)
                 {
                     _resizerHit = true;
+                    if (_resizerHit)
+                    {
+                        ResizerStarted?.Invoke();
+                    }
+
                 }
                 _selectedRenderItem = hit as ElementRenderItem;
             }
@@ -268,16 +276,24 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnItemLongTapped(CanvasPointer pointer)
         {
             var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-            var elementRenderItem = element as CollectionRenderItem;
-            if (elementRenderItem == null)
-                return;
-            CollectionSwitched?.Invoke(element as CollectionRenderItem);
+
+            if (element is CollectionRenderItem)
+                CollectionSwitched?.Invoke(element as CollectionRenderItem);
+            if (element is VideoElementRenderItem)
+                MultimediaElementActivated?.Invoke(element as VideoElementRenderItem);
+            if (element is AudioElementRenderItem)
+                MultimediaElementActivated?.Invoke(element as AudioElementRenderItem);
         }
 
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
+            if (_resizerHit)
+            {
+                ResizerStopped?.Invoke();
+            }
             _resizerHit = false;
+
             _selectedRenderItem = null;
             _secondSelectedRenderItem = null;
         }

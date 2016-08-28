@@ -86,6 +86,8 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            base.Draw(ds);
+
             var orgTransform = ds.Transform;
             ds.Transform = GetTransform() * ds.Transform;
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);

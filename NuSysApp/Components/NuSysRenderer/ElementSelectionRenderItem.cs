@@ -99,7 +99,7 @@ namespace NuSysApp
 
         public override void Update()
         {
-            if (!IsDirty)
+            if (!IsDirty && !_isVisible)
                 return;
 
             base.Update();
@@ -115,7 +115,9 @@ namespace NuSysApp
                 return;
             }
 
-            var bbs = _selectedItems.Select(elem => new Rect(elem.ViewModel.X, elem.ViewModel.Y, elem.ViewModel.Width, elem.ViewModel.Height)).ToList();
+          //  var bbs = _selectedItems.Select(elem => new Rect(elem.ViewModel.X, elem.ViewModel.Y, elem.ViewModel.Width, elem.ViewModel.Height)).ToList();
+            var bbs = _selectedItems.Select(elem => elem.GetScreenBoundingRect()).ToList();
+
             Rect = GetBoundingRect(bbs);
 
             IsDirty = false;
@@ -135,8 +137,8 @@ namespace NuSysApp
             if (_selectedItems.Count > 0)
                 _transform = NuSysRenderer.Instance.GetTransformUntil(_selectedItems.First());
 
-            var tl = Vector2.Transform(new Vector2((float)Rect.X, (float)Rect.Y), _transform);
-            var tr = Vector2.Transform(new Vector2((float)(Rect.X+Rect.Width), (float)(Rect.Y + Rect.Height)), _transform);
+            var tl = new Vector2((float)Rect.X, (float)Rect.Y);
+            var tr = new Vector2((float)(Rect.X+Rect.Width), (float)(Rect.Y + Rect.Height));
            
             _screenRect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
             ds.Transform = Matrix3x2.Identity;

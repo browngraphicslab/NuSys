@@ -29,6 +29,12 @@ namespace NuSysApp
             _vm = vm;
             T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
             _vm.Controller.PositionChanged += ControllerOnPositionChanged;
+            _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
+        }
+
+        private void LibraryElementControllerOnTitleChanged(object sender, string s)
+        {
+            IsDirty = true;
         }
 
         private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
@@ -39,6 +45,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             base.Dispose();
+            _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
             _vm = null;
         }
 
@@ -46,9 +53,9 @@ namespace NuSysApp
         {
             if (!IsDirty)
                 return;
-            var format = new CanvasTextFormat { FontSize = 12f, WordWrapping = CanvasWordWrapping.NoWrap };
-            _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, format, 0.0f, 0.0f);
-            _transform = NuSysRenderer.Instance.GetTransformUntil(this);
+            var format = new CanvasTextFormat { FontSize = 12f, WordWrapping = CanvasWordWrapping.Wrap, HorizontalAlignment = CanvasHorizontalAlignment.Center};
+            _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, format, 200, 0.0f);
+            
 
             IsDirty = false;
         }
@@ -58,21 +65,31 @@ namespace NuSysApp
             if (_textLayout == null)
                 return;
 
-            var to = Matrix3x2.CreateTranslation(new Vector2((float)_vm.X, (float)(_vm.Y - 30)));
-            var top = Matrix3x2.Identity;
-            Matrix3x2.Invert(to, out top);
-
+            _transform = NuSysRenderer.Instance.GetTransformUntil(this);
             var oldTransform = ds.Transform;
-            var sp = Matrix3x2.Identity;
-            Matrix3x2.Invert(SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.Camera.S, out sp);
-            var tt = Matrix3x2.CreateTranslation(0, -30);
-            var newTransform = tt * top * sp * to * ds.Transform;
-
-            if (Parent == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
-                ds.Transform = newTransform;
-
-            ds.DrawTextLayout(_textLayout, new Vector2((float)_vm.X, (float)(_vm.Y - 20)), Colors.Black);
+            var t = Win2dUtil.Invert(_transform);
+            var sp = Vector2.Transform(new Vector2((float) _vm.X, (float) (_vm.Y)), _transform);
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
+            
+            ds.Transform = Matrix3x2.Identity;
+            ds.DrawTextLayout(_textLayout, new Vector2(sp.X + (spr.X-sp.X - 200f)/2f, sp.Y - (float)_textLayout.DrawBounds.Height-10), Colors.Black);
             ds.Transform = oldTransform;
+        }
+
+        public Rect GetScreenBoundingRect()
+        {
+            _transform = NuSysRenderer.Instance.GetTransformUntil(this);
+            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
+            var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
+            var rect = new Rect
+            {
+                X = Math.Min(sp.X, titlePos.X),
+                Y = Math.Min(sp.Y, titlePos.Y),
+                Width = Math.Max(_textLayout.DrawBounds.Width, spr.X - sp.X),
+                Height = spr.Y- titlePos.Y
+            };
+            return rect;
         }
 
         public override bool HitTest(Vector2 point)

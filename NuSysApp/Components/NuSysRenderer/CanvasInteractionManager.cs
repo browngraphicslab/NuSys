@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Input;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
@@ -44,11 +45,11 @@ namespace NuSysApp
         private Vector2 _centerPoint;
         private double _twoFingerDist;
         private List<CanvasPointer> _pointers = new List<CanvasPointer>();
-        private CanvasAnimatedControl _canvas;
+        private FrameworkElement _canvas;
 
         public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
         
-        public CanvasInteractionManager(CanvasAnimatedControl canvas)
+        public CanvasInteractionManager(FrameworkElement canvas)
         {
             _canvas = canvas;
             _canvas.PointerPressed += OnPointerPressed;
