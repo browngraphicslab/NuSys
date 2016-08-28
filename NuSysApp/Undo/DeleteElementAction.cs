@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,12 @@ namespace NuSysApp
         /// </summary>
         public void ExecuteAction()
         {
-            _elementController.RequestDelete();
+            Debug.Assert(_elementController != null);
+            if (_elementController != null)
+            {
+                _elementController.RequestDelete();
+
+            }
         }
 
         /// <summary>

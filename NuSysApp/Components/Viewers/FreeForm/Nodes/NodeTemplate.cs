@@ -373,7 +373,7 @@ namespace NuSysApp
                         // if it hits an element then pass in information about that element to createNewLinkLibraryElementRequestArgs
                         first = (FrameworkElement)hitsStartElements.First();
                         var dc = (ElementViewModel)first.DataContext;
-
+                        
                         // Diable linking to links and tools
                         // TODO: Enable linking to links 
                         if (dc.ElementType == NusysConstants.ElementType.Link || dc.ElementType == NusysConstants.ElementType.Tools)

@@ -465,12 +465,12 @@ namespace NuSysApp
             args.Favorited = model.Favorited;
             args.Keywords = model.Keywords;
             args.Title = model.Title;
-            //args.Creator
             args.LibraryElementType = model.Type;
             args.ContentId = model.ContentDataModelId;
           
-
+            //Creates action with CreateNewLibraryElementArgs -- this may seem weird, but it's becausse we need the args to undo the deletion
             var action = new DeleteLibraryElementAction(args);
+            //Invokes event listened to by the LibraryView, which activates the undo button
             DeleteClicked?.Invoke(this, action);
         }
         

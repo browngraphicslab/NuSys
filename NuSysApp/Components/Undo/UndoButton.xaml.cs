@@ -146,6 +146,7 @@ namespace NuSysApp
                     {
                         wvm.AtomViewList.Remove(this);
                         Loaded -= UndoButton_Loaded;
+                        UndoCircle.Tapped -= UndoButton_OnTapped;
                     }
                     else
                     {
