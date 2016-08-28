@@ -262,7 +262,7 @@ namespace NuSysApp
 
                     var linearVelocity = e.Velocities.Linear;
                     var magnitude = Math.Sqrt(linearVelocity.X * linearVelocity.X + linearVelocity.Y * linearVelocity.Y);
-                    var arbitraryThreshold = 2;
+                    var arbitraryThreshold = 1.3;
                     //If the speed of node is higher than arbitrary threshold, create undo button
                     if(magnitude > arbitraryThreshold)
                     {

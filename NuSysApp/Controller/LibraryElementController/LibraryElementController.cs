@@ -768,8 +768,8 @@ namespace NuSysApp
             //create the request args 
             var elementArgs = new NewElementRequestArgs();
             elementArgs.LibraryElementId = LibraryElementModel.LibraryElementId;
-            elementArgs.Height = Constants.DefaultNodeSize;
-            elementArgs.Width = Constants.DefaultNodeSize;
+            elementArgs.Height = height;
+            elementArgs.Width = width;
             elementArgs.ParentCollectionId = collectionId;
             elementArgs.X = x;
             elementArgs.Y = y;
