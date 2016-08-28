@@ -106,6 +106,7 @@
     <Content Include="Assets\back icon triangle.png" />
     <Content Include="Assets\back icon.png" />
     <Content Include="Assets\bar chart icon.png" />
+    <Content Include="Assets\collapse down.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
@@ -234,6 +235,7 @@
     <Content Include="Assets\node icons\text.png" />
     <Content Include="Assets\logos\icon_pano.png" />
     <Content Include="Assets\logos\icon_upload.png" />
+    <Content Include="Assets\open up.png" />
     <Content Include="Assets\openclose icon.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <Content Include="Assets\fonts\FiraSans-Book.ttf">

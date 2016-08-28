@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -450,6 +451,7 @@ namespace NuSysApp
             {
                 return;
             }
+
             DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
             if (vm.TabDictionary.ContainsKey(controllerId))
             {
@@ -457,7 +459,7 @@ namespace NuSysApp
             }
             ShowElement(controller, tabToOpenTo);
 
-
+            
             e.Handled = true;
         }
 
