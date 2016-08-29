@@ -60,11 +60,18 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
             _vm = vm;
 
-            Loaded += async delegate(object sender, RoutedEventArgs args)
+            xRenderCanvas.CreateResources += async delegate
             {
-                InitialCollection = new UnshapedCollectionRenderItem(vm, null, xRenderCanvas, true);
-                await NuSysRenderer.Instance.Init(xRenderCanvas, InitialCollection);
+                var coll = (CollectionLibraryElementModel)vm.Controller.LibraryElementModel;
+                if (coll.ShapePoints == null || coll.ShapePoints.Count <= 4) {  
+                    InitialCollection = new UnshapedCollectionRenderItem(vm, null, xRenderCanvas, true);
+                }
+                else if (coll.ShapePoints != null && coll.ShapePoints.Count > 4)
+                {
+                    InitialCollection = new ShapedCollectionRenderItem(vm, null, xRenderCanvas, true);
+                }
 
+                await NuSysRenderer.Instance.Init(xRenderCanvas, InitialCollection);
                 vm.X = 0;
                 vm.Y = 0;
                 vm.Width = xRenderCanvas.Width;
@@ -131,8 +138,11 @@ namespace NuSysApp
                 _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
                 _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
                 _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
-                _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
-                _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
+                if (!collection.ViewModel.IsFinite || collection == InitialCollection)
+                {
+                    _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
+                    _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
+                }
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
                 _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
                 _collectionInteractionManager.CollectionSwitched += CollectionInteractionManagerOnCollectionSwitched;
@@ -214,12 +224,11 @@ namespace NuSysApp
 
         private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
         {
-            var shapeStroke = CurrentCollection.InkRenderItem.LatestStroke;
-            var shapePoints = shapeStroke != null ? CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints() .Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList() : null;
+            var shapePoints = shaped ? CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints() .Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList() : null;
             Rect boundingBox;
             double offsetX = 0;
             double offsetY = 0;
-            if (shapePoints != null)
+            if (shaped)
             {
                 boundingBox = Geometry.PointCollecionToBoundingRect(shapePoints);
                 offsetX = boundingBox.X - 50000;
@@ -284,8 +293,8 @@ namespace NuSysApp
 
             await elementRequest.AddReturnedElementToSessionAsync();
 
-            offsetX = boundingBox.X - 50000;
-            offsetY = boundingBox.Y - 50000;
+            offsetX = targetPointTl.X - 50000;
+            offsetY = targetPointTl.Y - 50000;
             foreach (var element in Selections)
             {
                 var target = new Vector2((float)(element.ViewModel.X - offsetX), (float)(element.ViewModel.Y - offsetY));
@@ -469,18 +478,20 @@ namespace NuSysApp
                     if (elem is ElementCollectionViewModel)
                     {
                         var elemc = elem as ElementCollectionViewModel;
-                        var ct = Matrix3x2.CreateTranslation(t.CameraTranslation);
-                        var cc = Matrix3x2.CreateTranslation(t.CameraCenter);
-                        var cs = Matrix3x2.CreateScale(t.CameraScale);
+                        if (!elemc.IsFinite || CurrentCollection.ViewModel == elemc) {  
+                            var ct = Matrix3x2.CreateTranslation(t.CameraTranslation);
+                            var cc = Matrix3x2.CreateTranslation(t.CameraCenter);
+                            var cs = Matrix3x2.CreateScale(t.CameraScale);
 
-                        var et = Matrix3x2.CreateTranslation(new Vector2((float)elem.X, (float)elem.Y));
+                            var et = Matrix3x2.CreateTranslation(new Vector2((float)elem.X, (float)elem.Y));
 
-                        var tran = Win2dUtil.Invert(cc) * cs * cc * ct * et;
-                        var tranInv = Win2dUtil.Invert(tran);
+                            var tran = Win2dUtil.Invert(cc) * cs * cc * ct * et;
+                            var tranInv = Win2dUtil.Invert(tran);
 
-                        var controller = elemc.Controller as ElementCollectionController;
-                        controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
-                        controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
+                            var controller = elemc.Controller as ElementCollectionController;
+                            controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
+                            controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
+                        }
                     }
                 }
             }

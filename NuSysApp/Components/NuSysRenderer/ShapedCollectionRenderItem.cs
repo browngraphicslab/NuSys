@@ -8,8 +8,9 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using NusysIntermediate;
+
 using Windows.Foundation;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -34,9 +35,12 @@ namespace NuSysApp
 
         public override void Update()
         {
+            base.Update();
+
             if (!IsDirty)
                 return;
-            base.Update();
+          
+
             if (_recomputeShape) { 
                 var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
                 var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y));
@@ -47,6 +51,7 @@ namespace NuSysApp
 
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
             _rect = CanvasGeometry.CreateRectangle(ResourceCreator, boundaries);
+            IsDirty = false;
         }
 
         public override void Draw(CanvasDrawingSession ds)

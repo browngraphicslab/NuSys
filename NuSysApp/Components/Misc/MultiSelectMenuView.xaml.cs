@@ -89,6 +89,7 @@ namespace NuSysApp
             }
 
             CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn);
+            Visibility = Visibility.Collapsed;
             return;
             var transform = NuSysRenderer.Instance.GetTransformUntil(selections.First());
             

@@ -22,7 +22,7 @@ namespace NuSysApp
         private ConcurrentQueue<InkStroke> _inkStrokes = new ConcurrentQueue<InkStroke>();
         private bool _isEraser;
         private Color _drawingColor = Colors.Black;
-        private ConcurrentQueue<InkPoint> _currentStroke = new ConcurrentQueue<InkPoint>();
+        private Queue<InkPoint> _currentStroke = new Queue<InkPoint>();
         private InkStroke _currentInkStroke;
         private InkManager _inkManager = new InkManager();
         private Matrix3x2 _transform = Matrix3x2.Identity;
@@ -62,7 +62,7 @@ namespace NuSysApp
             else
                 _drawingColor = Colors.Black;
 
-            _currentStroke = new ConcurrentQueue<InkPoint>();
+            _currentStroke = new Queue<InkPoint>();
 
             foreach (var p in PointerPoint.GetIntermediatePoints(e.Pointer.PointerId).Reverse())
             {
@@ -74,13 +74,15 @@ namespace NuSysApp
 
         public void UpdateInkByEvent(CanvasPointer e)
         {
-
             foreach (var p in PointerPoint.GetIntermediatePoints(e.Pointer.PointerId).Reverse())
             {
                 var np = Vector2.Transform(new Vector2((float) p.RawPosition.X, (float) p.RawPosition.Y), _transform);
                 _currentStroke.Enqueue(new InkPoint(new Point(np.X, np.Y), p.Properties.Pressure));
             }
-            
+           
+
+         
+
         }
 
         public void StopInkByEvent(CanvasPointer e)
@@ -142,7 +144,7 @@ namespace NuSysApp
                 //  InkStrokeAdded?.Invoke(this, stroke);
             }
             _inkStrokes =  new ConcurrentQueue<InkStroke>(_inkManager.GetStrokes());          
-            _currentStroke = new ConcurrentQueue<InkPoint>();
+            _currentStroke = new Queue<InkPoint>();
 
             _strokesToDraw = _inkManager.GetStrokes().ToList();
         }
@@ -154,39 +156,36 @@ namespace NuSysApp
 
         public void RemoveLatestStroke()
         {
-            LatestStroke.Selected = true;
-            _inkManager.DeleteSelected();
-            LatestStroke = null;
+            if (LatestStroke != null) { 
+                LatestStroke.Selected = true;
+                _inkManager.DeleteSelected();
+                LatestStroke = null;
+            }
             _strokesToDraw = _inkManager.GetStrokes().ToList();
         }
 
         public override void Update()
         {
-            
+        }
+
+        public override void Draw(CanvasDrawingSession ds)
+        {
             if (_builder == null)
             {
                 _builder = new InkStrokeBuilder();
             }
 
-            
 
+            var strokes = _strokesToDraw.ToList();
             if (_currentStroke.Count > 2)
             {
                 _currentInkStroke = _builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
                 _currentInkStroke.DrawingAttributes = GetDrawingAttributes();
                 if (_isEraser)
                     _currentInkStroke.DrawingAttributes = new InkDrawingAttributes { Color = Colors.DarkRed };
-            }
-            
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            var strokes = _strokesToDraw.ToList();
-            if (_currentStroke.Count > 2)
-            {
                 strokes.Add(_currentInkStroke);
             }
+
             ds.DrawInk(strokes);
         }
 

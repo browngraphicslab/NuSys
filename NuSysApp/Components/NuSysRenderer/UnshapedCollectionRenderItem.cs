@@ -13,9 +13,18 @@ namespace NuSysApp
 {
     public class UnshapedCollectionRenderItem : CollectionRenderItem
     {
-
+        
         public UnshapedCollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas, interactionEnabled)
         {
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (!IsDirty)
+                return;
+           
+            IsDirty = false;
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -42,6 +51,8 @@ namespace NuSysApp
                 ds.DrawRectangle(boundaries, borderColor, borderWidth);
 
             var boundariesGeom = CanvasGeometry.CreateRectangle(ds, boundaries);
+
+           
             using (ds.CreateLayer(1, boundariesGeom))
             {
                 ds.Transform = GetCameraTransform() * ds.Transform;

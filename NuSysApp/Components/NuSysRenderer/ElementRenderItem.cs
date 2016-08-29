@@ -23,6 +23,7 @@ namespace NuSysApp
         private Matrix3x2 _transform;
 
         public ElementViewModel ViewModel => _vm;
+        private bool _needsTitleUpdate = true;
 
         public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
         {
@@ -34,7 +35,7 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnTitleChanged(object sender, string s)
         {
-            IsDirty = true;
+            _needsTitleUpdate = true;
         }
 
         private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
@@ -51,19 +52,21 @@ namespace NuSysApp
 
         public override void Update()
         {
-            if (!IsDirty)
+            if (!_needsTitleUpdate)
                 return;
             var format = new CanvasTextFormat { FontSize = 12f, WordWrapping = CanvasWordWrapping.Wrap, HorizontalAlignment = CanvasHorizontalAlignment.Center};
             _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, format, 200, 0.0f);
-            
-
-            IsDirty = false;
+            _needsTitleUpdate = false;
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
             if (_textLayout == null)
+            {
+                IsDirty = true;
                 return;
+            }
+               
 
             _transform = NuSysRenderer.Instance.GetTransformUntil(this);
             var oldTransform = ds.Transform;
@@ -78,6 +81,9 @@ namespace NuSysApp
 
         public Rect GetScreenBoundingRect()
         {
+            if (_textLayout == null)
+                return new Rect();
+
             _transform = NuSysRenderer.Instance.GetTransformUntil(this);
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);

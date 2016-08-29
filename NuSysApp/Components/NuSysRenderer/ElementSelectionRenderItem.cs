@@ -46,6 +46,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
+
             foreach (var btn in Buttons)
             {
                 await btn.Load();
