@@ -116,7 +116,6 @@ namespace NuSysApp
             }
         }
 
-        //Trent, this needs to be filled in in order for the importing to the library to work.
         private async void AddFile()
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
