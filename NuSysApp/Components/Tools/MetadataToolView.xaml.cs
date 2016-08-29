@@ -94,6 +94,7 @@ namespace NuSysApp
                 xMetadataKeysList.SelectedItem = null;
             }
         }
+        
 
         /// <summary>
         ///Set the values list visual selection
@@ -656,5 +657,15 @@ namespace NuSysApp
         {
             xFilterComboBox.IsEnabled = true;
         }
+
+        /// <summary>
+        /// This is just so that when you set the selection programatically before even creating the metadatatool, 
+        /// such as when clicking on a tag of an image, the metadata values list will scroll to the selection.
+        /// </summary>
+        private void xMetadataValuesList_Loaded(object sender, RoutedEventArgs e)
+        {
+            xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
+        }
+        
     }
 }

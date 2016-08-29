@@ -98,7 +98,7 @@
                                 <Border Grid.Row="1"  BorderThickness="0,0,0,1" BorderBrush="{StaticResource color2}">
                                     <TextBox Name="xSearchBox" TextChanged="XSearchBox_OnTextChanged"/>
                                 </Border>
-                                <ListView Grid.Row="2"  x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="1,1,0,0" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="{StaticResource color1}" SelectionMode="Multiple" >
+                                <ListView Grid.Row="2" Loaded="xMetadataValuesList_Loaded" x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="1,1,0,0" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="{StaticResource color1}" SelectionMode="Multiple" >
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
