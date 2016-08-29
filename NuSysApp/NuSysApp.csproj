@@ -106,6 +106,7 @@
     <Content Include="Assets\back icon triangle.png" />
     <Content Include="Assets\back icon.png" />
     <Content Include="Assets\bar chart icon.png" />
+    <Content Include="Assets\collapse down.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
@@ -207,6 +208,7 @@
     <Content Include="Assets\menububble2.png" />
     <Content Include="Assets\menububblebtm.png" />
     <Content Include="Assets\menu_bubble.png" />
+    <Content Include="Assets\node icons\collection icon bluegreen.png" />
     <Content Include="Assets\node icons\delete.png" />
     <Content Include="Assets\node icons\icon_exploration.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
@@ -229,12 +231,15 @@
     <Content Include="Assets\node icons\icon_stop_dark.png" />
     <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
+    <Content Include="Assets\node icons\presentation-mode-dark.png" />
     <Content Include="Assets\node icons\record.png" />
     <Content Include="Assets\node icons\search_icon.png" />
+    <Content Include="Assets\node icons\settings icon white.png" />
     <Content Include="Assets\node icons\settings-icon-white.png" />
     <Content Include="Assets\node icons\text.png" />
     <Content Include="Assets\logos\icon_pano.png" />
     <Content Include="Assets\logos\icon_upload.png" />
+    <Content Include="Assets\open up.png" />
     <Content Include="Assets\openclose icon.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <Content Include="Assets\fonts\FiraSans-Book.ttf">
@@ -305,9 +310,6 @@
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Misc\AccessInvalidPopup.xaml.cs">
-      <DependentUpon>AccessInvalidPopup.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
       <DependentUpon>ChatBoxView.xaml</DependentUpon>
     </Compile>
@@ -364,9 +366,11 @@
     <Compile Include="Components\NuSysRenderer\NodeResizerRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\NuSysRenderer.cs" />
     <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\ShapedCollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TempLinkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TextElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UnshapedCollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
     <Compile Include="Components\Regions\TemporaryImageRegionView.xaml.cs">
@@ -453,10 +457,15 @@
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\ILinkable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\AliasTabView.xaml.cs">
+      <DependentUpon>AliasTabView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
       <DependentUpon>LinkEditorTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\AliasTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\AliasTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
@@ -704,6 +713,7 @@
     <Compile Include="Network\Requests\DeleteInkStrokeRequest.cs" />
     <Compile Include="Network\Requests\DeletePresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\DeleteMetadataRequest.cs" />
+    <Compile Include="Network\Requests\GetAliasesOfLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\GetAllLibraryElementsRequest.cs" />
     <Compile Include="Network\Requests\GetAnalysisModelRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
@@ -711,6 +721,7 @@
     <Compile Include="Network\Requests\GetRelatedDocumentsRequest.cs" />
     <Compile Include="Network\Requests\GetUserIdToDisplayNameDictionaryRequest.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\AnalysisModelMadeNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
@@ -1011,10 +1022,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Misc\AccessInvalidPopup.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Misc\ChatBoxView.xaml">
     </Page>
     <Page Include="Components\Misc\AdornmentView.xaml">
@@ -1136,6 +1143,10 @@
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\AliasTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml">
       <SubType>Designer</SubType>

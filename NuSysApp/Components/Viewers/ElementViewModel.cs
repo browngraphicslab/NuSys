@@ -173,12 +173,15 @@ namespace NuSysApp
             }
         }
 
-        private void Circlelink_Disposed(object sender, EventArgs e)
+        private async void Circlelink_Disposed(object sender, EventArgs e)
         {
             Debug.Assert(sender is LinkCircle);
             var circleLink = sender as LinkCircle;
             circleLink.Disposed -= Circlelink_Disposed;
-            CircleLinks.Remove(sender as LinkCircle);
+            await UITask.Run(delegate
+            {
+                CircleLinks.Remove(sender as LinkCircle);
+            });
         }
 
         private void CreateTags()
@@ -221,7 +224,7 @@ namespace NuSysApp
         {
             var button = sender as Button;
             var text = button.Content.ToString();
-            SessionController.Instance.SessionView.ShowRelatedElements(text); 
+            SessionController.Instance.SessionView.ShowRelatedElements(text);
         }
 
       
@@ -289,8 +292,6 @@ namespace NuSysApp
 
             Tags = null;
             _transform = null;
-            _controller = null;
-            
         }
 
         public double X { get; set; }
@@ -300,6 +301,8 @@ namespace NuSysApp
         {
             Width = width;
             Height = height;
+            Controller.Model.Height = height;
+            Controller.Model.Width = width;
         }
 
         #endregion

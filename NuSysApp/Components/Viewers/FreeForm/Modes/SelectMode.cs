@@ -48,6 +48,7 @@ namespace NuSysApp
             typeof(GroupNodeView),
             typeof(AudioNodeView),
             typeof(VideoNodeView),
+            typeof(TextNodeView)
         };
 
         public SelectMode(FreeFormViewer view):base(view)
@@ -247,29 +248,29 @@ namespace NuSysApp
 
             foreach (var kvp in dict)
             {
-                if (kvp.Key.Controller.LibraryElementController?.ContentDataModel == null)
+                if (kvp.Key.Controller?.LibraryElementController?.ContentDataController?.ContentDataModel == null)
                 {
                     continue;
                 }
                 var line = new RelevanceLineView(controller.Model, kvp.Key.Controller.Model, kvp.Value);
                 SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(line);
-                if (!lineDict.ContainsKey(kvp.Key.Controller.LibraryElementController.ContentDataModel))
+                if (!lineDict.ContainsKey(kvp.Key.Controller.LibraryElementController.ContentDataController.ContentDataModel))
                 {
-                    lineDict.Add(kvp.Key.Controller.LibraryElementController.ContentDataModel, new List<RelevanceLineView>());
+                    lineDict.Add(kvp.Key.Controller.LibraryElementController.ContentDataController.ContentDataModel, new List<RelevanceLineView>());
                 }
-                (lineDict[kvp.Key.Controller.LibraryElementController.ContentDataModel] as List<RelevanceLineView>).Add(line);
+                (lineDict[kvp.Key.Controller.LibraryElementController.ContentDataController.ContentDataModel] as List<RelevanceLineView>).Add(line);
             }
             Task.Run(async delegate
             {
                 await Task.Run(async delegate
                 {
-                    if (controller.LibraryElementController.ContentDataModel.ContentType ==
-                        NusysConstants.ContentType.Image ||
-                        controller.LibraryElementController.ContentDataModel.ContentType ==
-                        NusysConstants.ContentType.PDF)
+                    var contentDataModel = controller.LibraryElementController.ContentDataController.ContentDataModel;
+
+                    if (contentDataModel.ContentType == NusysConstants.ContentType.Image ||
+                        contentDataModel.ContentType == NusysConstants.ContentType.PDF)
                     {
-                        var model = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(controller.LibraryElementController.ContentDataModel.ContentId);
-                        if (controller.LibraryElementController.ContentDataModel.ContentType == NusysConstants.ContentType.Image) //type switch
+                        var model = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(contentDataModel.ContentId);
+                        if (contentDataModel.ContentType == NusysConstants.ContentType.Image) //type switch
                         {
                             var imageModel = model as NusysImageAnalysisModel;
                             keywordsToCompare =
@@ -293,12 +294,10 @@ namespace NuSysApp
                         }
                         count = keywordsToCompare?.Count() ?? 0;
                     }
-
-                    if (controller.LibraryElementController.ContentDataModel.ContentType == NusysConstants.ContentType.PDF && false)
+                    /*
+                    if (contentDataModel.ContentType == NusysConstants.ContentType.PDF && false)
                     {
-                        var relatedRequest =
-                            new GetRelatedDocumentsRequest(
-                                controller.LibraryElementController.ContentDataModel.ContentId);
+                        var relatedRequest = new GetRelatedDocumentsRequest(contentDataModel.ContentId);
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(relatedRequest);
                         if (relatedRequest.WasSuccessful() == true)
                         {
@@ -311,7 +310,7 @@ namespace NuSysApp
                                 }
                             }
                         }
-                    }
+                    }*/
                 });
 
                 foreach (var content in lineDict.Keys)

@@ -34,8 +34,8 @@ namespace NuSysApp
         {
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
             BtnOptions = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
-            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
-            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
+            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
+            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
 
             Buttons = new List<NodeMenuButtonRenderItem> {BtnDelete, BtnOptions, BtnGroup, BtnPresent };
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);

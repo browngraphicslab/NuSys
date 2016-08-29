@@ -47,9 +47,10 @@
                 <StackPanel>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">
                         <TextBlock Foreground="{StaticResource color3}" FontSize="20">Image Analysis</TextBlock>
+                        <Image x:Name="CollapseIcon" HorizontalAlignment="Right" Source="ms-appx:///Assets/collapse down.png" Width="20" Margin="10" Tapped="CollapseIcon_OnTapped"></Image>
                     </Grid>
 
-                    <ScrollViewer MaxHeight="200" MinHeight="200"  HorizontalAlignment="Stretch">
+                    <ScrollViewer x:Name="ContentScrollViewer" MaxHeight="200" MinHeight="200"  HorizontalAlignment="Stretch">
                         <StackPanel>
                             <Grid>
                                 <TextBlock Foreground="{StaticResource color3}" Margin="3">Description:</TextBlock>

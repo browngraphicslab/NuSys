@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -198,6 +199,38 @@ namespace NuSysApp
             }
 
             return PointCollecionToBoundingRect(points);
+        }
+
+        public static Rect PointCollecionToBoundingRect(IEnumerable<PointModel> pc)
+        {
+            var minX = double.MaxValue;
+            var minY = double.MaxValue;
+            var maxX = double.MinValue;
+            var maxY = double.MinValue;
+            foreach (var point in pc)
+            {
+                minX = point.X < minX ? point.X : minX;
+                minY = point.Y < minY ? point.Y : minY;
+                maxX = point.X > maxX ? point.X : maxX;
+                maxY = point.Y > maxY ? point.Y : maxY;
+            }
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
+        }
+
+        public static Rect PointCollecionToBoundingRect(IEnumerable<Vector2> pc)
+        {
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var maxX = float.MinValue;
+            var maxY = float.MinValue;
+            foreach (var point in pc)
+            {
+                minX = point.X < minX ? point.X : minX;
+                minY = point.Y < minY ? point.Y : minY;
+                maxX = point.X > maxX ? point.X : maxX;
+                maxY = point.Y > maxY ? point.Y : maxY;
+            }
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
 
         public static Rect PointCollecionToBoundingRect(List<Point2d> pc)

@@ -40,12 +40,18 @@ namespace NuSysApp
         public Vector2 CameraCenter { get; set; } = new Vector2(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
         public float CameraScale { get; set; } = 1f;
 
+        public bool IsFinite { get; set; }
+
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
             controller.ChildAdded += OnChildAdded;
             controller.ChildRemoved += OnChildRemoved;
             controller.CameraPositionChanged += ControllerOnCameraPositionChanged;
             controller.CameraCenterChanged += ControllerOnCameraCenterChanged;
+
+            var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
+            IsFinite = model.IsFinite;
+            
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
 

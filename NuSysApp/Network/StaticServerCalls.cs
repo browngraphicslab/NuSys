@@ -83,7 +83,7 @@ namespace NuSysApp
                 if (!SessionController.Instance.ContentController.ContainsContentDataModel( collectionController.ContentDataModelId))
                 {
                     //create a request to get the elements on the new collection
-                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(requestArgs.ParentCollectionId);
+                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(requestArgs.ParentCollectionId,1);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(getWorkspaceRequest);
                     await getWorkspaceRequest.AddReturnedDataToSessionAsync();
                     await getWorkspaceRequest.MakeCollectionFromReturnedElementsAsync();
@@ -137,7 +137,7 @@ namespace NuSysApp
                 var newContentRequestArgs = new CreateNewContentRequestArgs()
                 {
                     ContentId = newContentId,
-                    DataBytes = originalController.ContentDataModel.Data,
+                    DataBytes = originalController.ContentDataController.ContentDataModel.Data,
                     LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
                     {
                         Title = originalController.Title + " copy",

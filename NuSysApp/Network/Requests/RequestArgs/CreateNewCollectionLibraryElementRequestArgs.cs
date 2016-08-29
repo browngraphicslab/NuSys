@@ -49,7 +49,7 @@ namespace NuSysApp
             }
             if (ShapePoints != null)
             {
-                message[NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY] = ShapePoints;
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY] = ShapePoints;
             }
             return message;
         }

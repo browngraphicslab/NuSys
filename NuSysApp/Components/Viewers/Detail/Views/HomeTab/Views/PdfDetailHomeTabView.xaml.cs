@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using NusysIntermediate;
 
@@ -271,7 +272,7 @@ namespace NuSysApp
 
             if (_analysisModel != null)
             {
-                var suggestedRegions = _analysisModel.PageImageAnalysisModels.SelectMany(item => item?.Regions ?? new List<CognitiveApiRegionModel>()).Where(i => i.MarkedImportant);
+                var suggestedRegions = _analysisModel.PageImageAnalysisModels.SelectMany(item => item?.Regions ?? new List<CognitiveApiRegionModel>());//.Where(i => i.MarkedImportant);
 
                 foreach (var region in suggestedRegions)
                 {
@@ -333,5 +334,26 @@ namespace NuSysApp
             });
         */
         }
-}
+
+        /// <summary>
+        /// collapse pdf analysis for more space if necessary
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CollapseIcon_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (ContentGrid.Visibility == Visibility.Visible)
+            {
+                ContentGrid.Visibility = Visibility.Collapsed;
+                KeyPhrases.Visibility = Visibility.Collapsed;
+                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/open up.png"));
+            }
+            else
+            {
+                ContentGrid.Visibility = Visibility.Visible;
+                KeyPhrases.Visibility = Visibility.Visible;
+                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/collapse down.png"));
+            }
+        }
+    }
 }

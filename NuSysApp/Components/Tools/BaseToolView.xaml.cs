@@ -333,7 +333,6 @@ namespace NuSysApp
         private void XFilterComboBox_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             xFilterComboBox.IsEnabled = true;
-
         }
 
         /// <summary>
@@ -341,6 +340,7 @@ namespace NuSysApp
         /// </summary>
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            
             if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
@@ -531,7 +531,16 @@ namespace NuSysApp
             }
         }
 
-        
+        /// <summary>
+        /// This is the handler for when the filter combo box is tapped. All this is meant to do is set the 
+        /// combo box to enabled if it isn't.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            xFilterComboBox.IsEnabled = true;
+        }
     }
 
 }

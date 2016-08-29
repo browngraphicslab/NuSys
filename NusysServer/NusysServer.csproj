@@ -242,8 +242,10 @@
     <Compile Include="Lda\Parser.cs" />
     <Compile Include="Misc\SqlJoinOperationArgs.cs" />
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
+    <Compile Include="Notifications\AnalysisModelMadeNotification.cs" />
     <Compile Include="Notifications\DropUserNotification.cs" />
     <Compile Include="Notifications\NewUserNotification.cs" />
+    <Compile Include="Notifications\NotificationArgs\AnalysisModelMadeNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\NewUserNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -256,6 +258,7 @@
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateSnapshotOfCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteInkStrokeRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetAliasesOfLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />

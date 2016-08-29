@@ -239,113 +239,49 @@ namespace NuSysApp
         {
             // clear the current suggested tags
             SuggestedTags.Clear();
-            if (CurrentElementController != null)
-            {
-                //TODO remove debug asserts, if statements are ugly but needed because otherwise produced async crash on key not found
+            Task.Run(async delegate
+            { 
+                if (CurrentElementController != null)
+                {
+                    // count the number of times each tag appears in the suggested tags using a <tag, count> dictionary
+                    var tagCountDictionary = await CurrentElementController.GetSuggestedTagsAsync();
 
-                // get the metaDataDictionary for the currentelementController
-                var metaDataDict = CurrentElementController?.LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>();
-                var suggestedTags = new List<string>();
-                // get a list of the suggested tags from the metadataentry for system suggested names
-                if (metaDataDict.ContainsKey("system_suggested_names"))
-                {
-                    suggestedTags = metaDataDict["system_suggested_names"].Values;
-                }
-                if (metaDataDict.ContainsKey("system_suggested_topics"))
-                {
-                    suggestedTags.AddRange(metaDataDict["system_suggested_topics"].Values);
-                }
-                //HACKY solution to add suggested tags to all types, can remove later --Trent
 
-                suggestedTags.AddRange(suggestedTags);//doubles the importance of all system suggested tags added so far
-
-                if (metaDataDict.ContainsKey("system_suggested_dates"))
-                {
-                    suggestedTags.AddRange(metaDataDict["system_suggested_dates"].Values);
-                }
-
-                foreach (var kvp in CurrentElementController.FullMetadata ?? new Dictionary<string, MetadataEntry>())
-                {
-                    suggestedTags.AddRange(new HashSet<string>(kvp.Value.Values));
-                }
-                var linksController = SessionController.Instance.LinksController;
-                foreach (var linkId in linksController.GetLinkedIds(CurrentElementController?.LibraryElementModel?.LibraryElementId))
-                {
-                    var linkController = linksController.GetLinkLibraryElementControllerFromLibraryElementId(linkId);
-                    if (linkController == null)
+                    // remove the tags from the <tag, count> dictionary which are already set as keywords
+                    var currentTags = CurrentElementController?.LibraryElementModel.Keywords ?? new HashSet<Keyword>();
+                    foreach (var currentTag in currentTags)
                     {
-                        continue;
-                    }
-                    var opposite = linksController.GetOppositeLibraryElementModel(CurrentElementController?.LibraryElementModel?.LibraryElementId, linkController);
-                    if (opposite?.LibraryElementModel == null)
-                    {
-                        continue;
-                    }
-                    if(opposite?.LibraryElementModel?.Keywords != null)
-                    {
-                        suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
-                    }
-                    foreach (var kvp in opposite.FullMetadata ?? new Dictionary<string, MetadataEntry>())
-                    {
-                        if (kvp.Key != "system_suggested_dates")
+                        var lowerTag = currentTag.Text.ToLower();
+                        if (tagCountDictionary.ContainsKey(lowerTag))
                         {
-                            suggestedTags.AddRange(kvp.Value.Values);
+                            tagCountDictionary.Remove(lowerTag);
                         }
                     }
+
+                    // now use the tagCountDictionary to order the tags by their importance
+                    var suggestions = from entry in tagCountDictionary
+                        orderby entry.Value descending
+                        select entry.Key;
+
+                    // create a limited number of tag blocks
+                    int numSuggestions = 0;
+                    UITask.Run(delegate //switch back to UI task for adding suggested tags
+                    {
+                        foreach (var suggestion in suggestions)
+                        {
+                            // this is the limiter
+                            if (numSuggestions == 50)
+                            {
+                                break;
+                            }
+                            var suggestedTagBlock = MakeSuggestedTagBlock(suggestion);
+                            SuggestedTags.Add(suggestedTagBlock);
+                            numSuggestions++;
+                        }
+                        RaisePropertyChanged("SuggestedTags");
+                    });
                 }
-                //END HACKY REGION
-
-
-                // count the number of times each tag appears in the suggested tags using a <tag, count> dictionary
-                var tagCountDictionary = new Dictionary<string, int>();
-                foreach (var suggestedTag in suggestedTags)
-                {
-                    if (suggestedTag == null)
-                    {
-                        continue;
-                    }
-                    var lowerTag = suggestedTag.ToLower();
-                    if (tagCountDictionary.ContainsKey(lowerTag))
-                    {
-                        tagCountDictionary[lowerTag] += 1;
-                    }
-                    else
-                    {
-                        tagCountDictionary.Add(lowerTag, 1);
-                    }                  
-                }
-
-                // remove the tags from the <tag, count> dictionary which are already set as keywords
-                var currentTags = CurrentElementController?.LibraryElementModel.Keywords ?? new HashSet<Keyword>();
-                foreach (var currentTag in currentTags)
-                {
-                    var lowerTag = currentTag.Text.ToLower();
-                    if (tagCountDictionary.ContainsKey(lowerTag))
-                    {
-                        tagCountDictionary.Remove(lowerTag);
-                    }
-                }
-
-                // now use the tagCountDictionary to order the tags by their importance
-                var suggestions = from entry in tagCountDictionary
-                                orderby entry.Value descending
-                                select entry.Key;
-
-                // create a limited number of tag blocks
-                int numSuggestions = 0;
-                foreach (var suggestion in suggestions)
-                {
-                    // this is the limiter
-                    if (numSuggestions == 50)
-                    {
-                        break;
-                    }
-                    var suggestedTagBlock = MakeSuggestedTagBlock(suggestion);
-                    SuggestedTags.Add(suggestedTagBlock);
-                    numSuggestions++;                   
-                }
-            }
-            RaisePropertyChanged("SuggestedTags");
+            });
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel

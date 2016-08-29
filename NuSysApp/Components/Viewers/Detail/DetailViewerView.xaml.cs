@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -226,6 +227,11 @@ namespace NuSysApp
                 var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
                 linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
 
+                // Update the list of links in the Link Editor
+                // ^^ does it really??  -Trent
+                var aliasTabViewModel = xAliasTabView.DataContext as AliasTabViewModel;
+                //aliasTabViewModel?.ChangeAliasTemplates(controller.LibraryElementModel.LibraryElementId);
+
                 //Update the metadata tab.
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
                 xMetadataEditorView.Update();
@@ -242,10 +248,10 @@ namespace NuSysApp
                     controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection ||
                     controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
                 {
-                    if (xRootPivot?.Items?.Count == 4)
+                    if (xRootPivot?.Items?.Count == 5)
                     {
-                        _regionEditorPivotItem = xRootPivot.Items[3];
-                        xRootPivot.Items.RemoveAt(3);
+                        _regionEditorPivotItem = xRootPivot.Items[4];
+                        xRootPivot.Items.RemoveAt(4);
                     }
                 }
 
@@ -258,6 +264,9 @@ namespace NuSysApp
                         xRootPivot.SelectedIndex = 2;
                         break;
                     case DetailViewTabType.Regions:
+                        xRootPivot.SelectedIndex = 4;
+                        break;
+                    case DetailViewTabType.Aliases:
                         xRootPivot.SelectedIndex = 3;
                         break;
                     default:
@@ -442,6 +451,7 @@ namespace NuSysApp
             {
                 return;
             }
+
             DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
             if (vm.TabDictionary.ContainsKey(controllerId))
             {
@@ -449,7 +459,7 @@ namespace NuSysApp
             }
             ShowElement(controller, tabToOpenTo);
 
-
+            
             e.Handled = true;
         }
 
@@ -504,15 +514,19 @@ namespace NuSysApp
                         vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Links;
                         break;
                     case 3:
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Aliases;
+                        Debug.Assert(_currentDetailViewable?.LibraryElementModel?.LibraryElementId != null);
+                        xAliasTabView.LoadLibraryElementAsync(_currentDetailViewable.LibraryElementModel.LibraryElementId);
+                        break;
+                    case 4:
                         vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Regions;
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
-                      //  region.SetExistingRegions();
                         break;
 
                 }
 
             }
-            else
+            else // WHY DO WE NEED THIS IF-ELSE STATEMENT? SHOULDN'T THE CODE IN THE IF STATEMENT COVER BOTH CASES? -Trent
             {
                 switch (index.Value)
                 {
@@ -528,6 +542,11 @@ namespace NuSysApp
                         vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Links);
                         break;
                     case 3:
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Aliases);
+                        Debug.Assert(_currentDetailViewable?.LibraryElementModel?.LibraryElementId != null);
+                        xAliasTabView.LoadLibraryElementAsync(_currentDetailViewable.LibraryElementModel.LibraryElementId);
+                        break;
+                    case 4:
                         vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Regions);
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                     //    region.SetExistingRegions();

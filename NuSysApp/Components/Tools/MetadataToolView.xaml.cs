@@ -317,17 +317,17 @@ namespace NuSysApp
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
             var send = (FrameworkElement)sender;
-            if (_currentDragMode == DragMode.Collection)
+            var vm = DataContext as ToolViewModel;
+            if (vm != null)
             {
-                var vm = DataContext as ToolViewModel;
-                if (vm != null)
+                if (sender == xCollectionElement)
                 {
                     vm.CreateCollection(r.X, r.Y);
                 }
-            }
-            else
-            {
-                (DataContext as ToolViewModel)?.CreateStack(r.X, r.Y);
+                else if(sender == xStackElement)
+                {
+                    vm.CreateStack(r.X, r.Y);
+                }
             }
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta));
@@ -441,10 +441,7 @@ namespace NuSysApp
         {
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
-            if (_currentDragMode == DragMode.Collection)
-            {
-                _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
-            }
+             _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)_dragItem.RenderTransform;
@@ -653,6 +650,11 @@ namespace NuSysApp
                 (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
                 this.Dispose();
             }
+        }
+
+        private void XFilterComboBox_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            xFilterComboBox.IsEnabled = true;
         }
     }
 }

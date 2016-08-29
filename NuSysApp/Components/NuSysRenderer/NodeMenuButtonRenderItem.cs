@@ -45,7 +45,7 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
-            ds.FillCircle(new Vector2(0,0), 15, Colors.Chartreuse);
+            ds.FillCircle(new Vector2(0,0), 15, Color.FromArgb(0xFF, 0x6B,0x93,0x97));
 
             // ds.FillCircle(new Rect { X = Postion.X, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
             if (_bmp != null)

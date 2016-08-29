@@ -136,6 +136,9 @@ namespace NuSysApp
                 case NusysConstants.NotificationType.RemoveUser:
                     handler = new DropUserNotificationHandler();
                     break;
+                case NusysConstants.NotificationType.AnalysisModelMade:
+                    handler = new AnalysisModelMadeNotificationHandler();
+                    break;
                 default:
                     throw new Exception("we don't handle that notification type yet");
             }
@@ -254,28 +257,34 @@ namespace NuSysApp
         /// <summary>
         /// This method will send off a GetContentDataModelRequest for the passed in ContentDataModel Id;
         /// It will also add the returned contentDataModel to the contentController for you.
-        /// returns whether it was successfully added
+        /// Will return the local content data model of it already exists locally.
+        /// returns the content data model from either the server call or the content controller;
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<bool> FetchContentDataModelAsync(string contentDataModelId)
+        public async Task<ContentDataModel> FetchContentDataModelAsync(string contentDataModelId)
         {
             //if the content data model is present, then it's loaded
             if (SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
             {
-                return true;
+                return SessionController.Instance.ContentController.GetContentDataModel(contentDataModelId);//return the already loaded content data model
             }
-            var request = new GetContentDataModelRequest(contentDataModelId);
+            var request = new GetContentDataModelRequest(contentDataModelId);//otherwise create a request to fetch the content data model
             await ExecuteRequestAsync(request);
             var model = request.GetReturnedContentDataModel();
-            return SessionController.Instance.ContentController.AddContentDataModel(model);
+            var succesfullAdd = SessionController.Instance.ContentController.AddContentDataModel(model);//add the returned content data model to the session's content
+            if (succesfullAdd)
+            {
+                return model;
+            }
+            return null;
         }
 
         /// <summary>
         /// async method used to fetch an anlysis model asynchronously.  
         /// The content data model id is the id of the content data model whose analysis model you wish to fetch.  
         /// Will return null if it doesn't exist on the server.  
-        /// As of 8/19/16, anything buy image and pdfs will return null;
+        /// As of 8/19/16, anything but image and pdfs will return null;
         /// </summary>
         /// <param name="contentDataModelId"></param>
         /// <returns></returns>

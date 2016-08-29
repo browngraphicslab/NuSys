@@ -17,16 +17,17 @@ using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class CollectionRenderItem : ElementRenderItem, I2dTransformable
     {
 
-        private HashSet<BaseRenderItem> _renderItems0 = new HashSet<BaseRenderItem>();
-        private HashSet<BaseRenderItem> _renderItems1 = new HashSet<BaseRenderItem>();
-        private HashSet<BaseRenderItem> _renderItems2 = new HashSet<BaseRenderItem>();
-        private HashSet<BaseRenderItem> _renderItems3 = new HashSet<BaseRenderItem>();
+        protected HashSet<BaseRenderItem> _renderItems0 = new HashSet<BaseRenderItem>();
+        protected HashSet<BaseRenderItem> _renderItems1 = new HashSet<BaseRenderItem>();
+        protected HashSet<BaseRenderItem> _renderItems2 = new HashSet<BaseRenderItem>();
+        protected HashSet<BaseRenderItem> _renderItems3 = new HashSet<BaseRenderItem>();
 
         public InkRenderItem InkRenderItem { get; set; }
         public CollectionInteractionManager InteractionManager;
@@ -37,8 +38,9 @@ namespace NuSysApp
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {            
             ViewModel = vm;
-            (vm.Controller as ElementCollectionController).CameraPositionChanged += OnCameraPositionChanged;
-            (vm.Controller as ElementCollectionController).CameraCenterChanged += OnCameraCenterChanged;
+            var collectionController = (ElementCollectionController)vm.Controller;
+            collectionController.CameraPositionChanged += OnCameraPositionChanged;
+            collectionController.CameraCenterChanged += OnCameraCenterChanged;
 
             if (!interactionEnabled)
                 T = Matrix3x2.CreateTranslation((float)vm.X, (float)vm.Y);
@@ -87,7 +89,7 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             base.Draw(ds);
-
+            /*
             var orgTransform = ds.Transform;
             ds.Transform = GetTransform() * ds.Transform;
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
@@ -95,7 +97,7 @@ namespace NuSysApp
             Color borderColor;
             float borderWidth = 4f;
 
-            if (SessionController.Instance.SessionView.FreeFormViewer.InitialCollection == this)
+            if (SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection == this)
             {
                 borderColor = Color.FromArgb(255, 0, 102, 255);
                 borderWidth = 6f;
@@ -130,6 +132,7 @@ namespace NuSysApp
 
                 ds.Transform = orgTransform;
             }
+            */
         }
 
         private async void OnElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -172,7 +175,12 @@ namespace NuSysApp
                     }
                     else if (vm is ElementCollectionViewModel)
                     {
-                        item = new CollectionRenderItem((ElementCollectionViewModel) vm, this, ResourceCreator);
+                        var collectionVm = (ElementCollectionViewModel) vm;
+                        var collectionLibaryElementModel = (CollectionLibraryElementModel)collectionVm.Controller.LibraryElementModel;
+                        if (collectionLibaryElementModel.ShapePoints == null)
+                            item = new UnshapedCollectionRenderItem((ElementCollectionViewModel) vm, this, ResourceCreator);
+                        else
+                            item = new ShapedCollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
                         await item.Load();
                         _renderItems2.Add(item);
                     }

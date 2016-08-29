@@ -220,22 +220,35 @@ namespace NuSysApp
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
-            if (selectedTag != null)
+            if (selectedTag != null && !(SessionController.Instance.SessionView.ModeInstance is ExplorationMode))
             {
-                MetadataToolModel model = new MetadataToolModel();
-                MetadataToolController controller = new MetadataToolController(model);
-                MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
-
-                viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
-
-                controller.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() { }));
-
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
-                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
-                MetadataToolView view = new MetadataToolView(viewmodel, centerpoint.X, centerpoint.Y);
-                wvm.AtomViewList.Add(view);
+                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(e.GetPosition(SessionController.Instance.SessionView));
+
+                MetadataToolModel metadataModel = new MetadataToolModel();
+                MetadataToolController metadataToolController = new MetadataToolController(metadataModel);
+                MetadataToolViewModel metadataToolViewModel = new MetadataToolViewModel(metadataToolController);
+                metadataToolViewModel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+                metadataToolController.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() {selectedTag }));
+                MetadataToolView metadataToolView = new MetadataToolView(metadataToolViewModel, centerpoint.X, centerpoint.Y);
+                wvm.AtomViewList.Add(metadataToolView);
+
+                BasicToolModel basicToolModel = new BasicToolModel();
+                BasicToolController basicToolController = new BasicToolController(basicToolModel);
+                BasicToolViewModel basicToolViewModel = new BasicToolViewModel(basicToolController);
+                basicToolViewModel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+                BaseToolView baseToolView = new BaseToolView(basicToolViewModel, centerpoint.X + metadataToolView.Width * 1.25, centerpoint.Y);
+                basicToolController.AddParent(metadataToolController);
+
+                var linkviewmodel = new ToolLinkViewModel(metadataToolViewModel, basicToolViewModel);
+                var link = new ToolLinkView(linkviewmodel);
+                Canvas.SetZIndex(link, Canvas.GetZIndex(metadataToolView) - 1);
+
+                wvm.AtomViewList.Add(link);
+                wvm.AtomViewList.Add(baseToolView);
+
             }
         }
 
@@ -360,10 +373,17 @@ namespace NuSysApp
                         // if it hits an element then pass in information about that element to createNewLinkLibraryElementRequestArgs
                         first = (FrameworkElement)hitsStartElements.First();
                         var dc = (ElementViewModel)first.DataContext;
-
-                        // Diable linking to links, tools and collections
+                        
+                        // Diable linking to links and tools
                         // TODO: Enable linking to links 
-                        if (dc.ElementType == NusysConstants.ElementType.Link || dc.ElementType == NusysConstants.ElementType.Tools  || dc.ElementType == NusysConstants.ElementType.Collection)
+                        if (dc.ElementType == NusysConstants.ElementType.Link || dc.ElementType == NusysConstants.ElementType.Tools)
+                        {
+                            break;
+                        }
+
+                        // Disable linking to the current collection
+                        var currentCollectionId = SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId;
+                        if (dc.LibraryElementId == currentCollectionId)
                         {
                             break;
                         }

@@ -16,7 +16,7 @@ namespace NuSysApp
             Date,
             LastEditedDate,
             AllMetadata,
-            MetadataKeys
+            //MetadataKeys
         }
 
         public enum ParentOperatorType

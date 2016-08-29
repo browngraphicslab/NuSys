@@ -106,6 +106,9 @@ namespace NusysServer
                         case NusysConstants.RequestType.DeleteInkStrokeRequest:
                             requestHandler = new DeleteInkStrokeRequestHandler();
                             break;
+                        case NusysConstants.RequestType.GetAliasesOfLibraryElementRequest:
+                            requestHandler = new GetAliasesOfLibraryElementRequestHandler();
+                            break;
                         default: 
                             requestHandler = null;
                             return false;

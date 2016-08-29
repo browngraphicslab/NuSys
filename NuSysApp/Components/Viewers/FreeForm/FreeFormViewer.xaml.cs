@@ -62,7 +62,7 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                InitialCollection = new CollectionRenderItem(vm, null, xRenderCanvas, true);
+                InitialCollection = new UnshapedCollectionRenderItem(vm, null, xRenderCanvas, true);
                 await NuSysRenderer.Instance.Init(xRenderCanvas, InitialCollection);
 
                 vm.X = 0;
@@ -214,8 +214,22 @@ namespace NuSysApp
 
         private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
         {
-            var transform = NuSysRenderer.Instance.GetTransformUntil(Selections.First());
             var shapeStroke = CurrentCollection.InkRenderItem.LatestStroke;
+            var shapePoints = shapeStroke != null ? CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints() .Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList() : null;
+            Rect boundingBox;
+            double offsetX = 0;
+            double offsetY = 0;
+            if (shapePoints != null)
+            {
+                boundingBox = Geometry.PointCollecionToBoundingRect(shapePoints);
+                offsetX = boundingBox.X - 50000;
+                offsetY = boundingBox.Y - 50000;
+                foreach (var p in shapePoints)
+                {
+                    p.X -= offsetX;
+                    p.Y -= offsetY;
+                }                
+            }
             var createNewContentRequestArgs = new CreateNewContentRequestArgs
             {
                 LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
@@ -226,7 +240,7 @@ namespace NuSysApp
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
                     IsFiniteCollection = finite, 
-                    ShapePoints = shapeStroke != null ? CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints().Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList() : null
+                    ShapePoints = shapePoints
 
                    },
                 ContentId = SessionController.Instance.GenerateId()
@@ -237,7 +251,17 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
             contentRequest.AddReturnedLibraryElementToLibrary();
 
-            var targetScreenRect = NuSysRenderer.Instance.ElementSelectionRenderItem._screenRect;
+            Rect targetScreenRect;
+            var collectionTransform = NuSysRenderer.Instance.GetCollectionTransform(CurrentCollection);
+            if (shaped)
+            {
+                targetScreenRect = Win2dUtil.TransformRect(boundingBox, collectionTransform);
+            }
+            else
+            {
+                targetScreenRect = NuSysRenderer.Instance.ElementSelectionRenderItem._screenRect;
+            }
+
             var targetPointTl = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)targetScreenRect.X, (float)targetScreenRect.Y), CurrentCollection);
             var targetPointBr = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)(targetScreenRect.X + targetScreenRect.Width), (float)(targetScreenRect.Y + targetScreenRect.Height)), CurrentCollection);
 
@@ -260,13 +284,16 @@ namespace NuSysApp
 
             await elementRequest.AddReturnedElementToSessionAsync();
 
-
+            offsetX = boundingBox.X - 50000;
+            offsetY = boundingBox.Y - 50000;
             foreach (var element in Selections)
             {
-                var target = new Vector2(50000 - (float)element.ViewModel.Width / 2f, 50000 - (float)element.ViewModel.Height / 2f);
-                await element.ViewModel.Controller.RequestMoveToCollection(createNewContentRequestArgs.LibraryElementArgs.LibraryElementId, target.X, target.Y);
+                var target = new Vector2((float)(element.ViewModel.X - offsetX), (float)(element.ViewModel.Y - offsetY));
+                await element.ViewModel.Controller.RequestMoveToCollection(createNewContentRequestArgs.LibraryElementArgs.LibraryElementId, target.X, target.Y, element.ViewModel.Width * collectionTransform.M11, element.ViewModel.Height * collectionTransform.M11);
             }
 
+            CurrentCollection.InkRenderItem.RemoveLatestStroke();
+            ClearSelections();
         }
 
         private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
@@ -320,9 +347,11 @@ namespace NuSysApp
             {
                 xVideoPlayer.Visibility = Visibility.Collapsed;
             }
+            
             var targetPoint = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
             var target = new Vector2(targetPoint.X - (float)element.ViewModel.Width/2f, targetPoint.Y - (float)element.ViewModel.Height/2f);
             await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
+            
         }
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
@@ -357,8 +386,8 @@ namespace NuSysApp
             var elem = element;
             var collection = element.Parent;
 
-            var newX = elem.ViewModel.X + delta.X / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
-            var newY = elem.ViewModel.Y + delta.Y / (_transform.M22 * collection.S.M22 * collection.Camera.S.M22);
+            var newX = elem.ViewModel.X + delta.X / (_transform.M11 * collection.Camera.S.M11);
+            var newY = elem.ViewModel.Y + delta.Y / (_transform.M22 * collection.Camera.S.M22);
 
             if (!Selections.Contains(elem))
             {

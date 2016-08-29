@@ -309,5 +309,17 @@ namespace NuSysApp
             Debug.Assert(HasAnalysisModel(contentDataModelId));
             return _analysisModels[contentDataModelId];
         }
+
+        /// <summary>
+        /// method to remove an analysis model locally.  
+        /// Returns a bool indicating whether it was present;
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public bool RemoveAnalysisModel(string contentDataModelId)
+        {
+            AnalysisModel outAnalysisModel;
+            return _analysisModels.TryRemove(contentDataModelId, out outAnalysisModel);
+        }
     }
 }

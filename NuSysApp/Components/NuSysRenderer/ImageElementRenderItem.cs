@@ -34,7 +34,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            var url = _vm.Controller.LibraryElementController.ContentDataModel.Data;
+            var url = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel.Data;
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(url), ResourceCreator.Dpi);
             _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
         }

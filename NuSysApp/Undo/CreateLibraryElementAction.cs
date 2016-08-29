@@ -14,7 +14,7 @@ namespace NuSysApp
         private CreateNewLibraryElementRequestArgs _args;
 
         /// <summary>
-        ///  Message must contain fields for id, data, small_thumbnail, medium_thumbnail, large_thumbnail,
+        ///  Args must contain fields for id, data, small_thumbnail, medium_thumbnail, large_thumbnail,
         ///  type, title, server_url, creation_timestamp, last_edited_timestamp
         /// </summary>
         /// <param name="m"></param>
@@ -25,7 +25,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Executes a CreateLibraryElementRequest based on the message contained in the CreateLibraryElementAction
+        /// Executes a CreateLibraryElementRequest based on the args contained in the CreateLibraryElementAction
         /// </summary>
         public async void ExecuteAction()
         {

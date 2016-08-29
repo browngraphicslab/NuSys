@@ -130,7 +130,7 @@ namespace NuSysApp
 
         public async Task Goto(int pageNumber)
         {
-            var content = Controller.LibraryElementController.ContentDataModel as PdfContentDataModel;
+            var content = Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
             if (content == null || pageNumber == -1)
             {
                 return;

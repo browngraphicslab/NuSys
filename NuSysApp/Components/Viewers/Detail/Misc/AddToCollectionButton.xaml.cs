@@ -110,18 +110,22 @@ namespace NuSysApp
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(_libraryElementId);
+            var workspaceModelAccessType =
+                SessionController.Instance.ContentController.GetLibraryElementModel(
+                    SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId).AccessType;
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
 
             if ((WaitingRoomView.InitialWorkspaceId == controller.LibraryElementModel.LibraryElementId) || (controller.LibraryElementModel.Type == NusysConstants.ElementType.Link) ||
                 (controller.LibraryElementModel.AccessType == NusysConstants.AccessType.Private &&
-                SessionController.Instance.ActiveFreeFormViewer.Model.AccessType != NusysConstants.AccessType.Private) ||
+                workspaceModelAccessType != NusysConstants.AccessType.Private) ||
                 (controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly &&
-                SessionController.Instance.ActiveFreeFormViewer.Model.AccessType != NusysConstants.AccessType.Public))
+                workspaceModelAccessType != NusysConstants.AccessType.Public))
             {
                 e.Handled = true;
+                rect.Hide();
                 return;
             }
 
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
 
 
             if (rect.Visibility == Visibility.Collapsed)

@@ -40,7 +40,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            var content = _vm.Controller.LibraryElementController.ContentDataModel as PdfContentDataModel;
+            var content = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(content.PageUrls[0]), ResourceCreator.Dpi);
             _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
         }

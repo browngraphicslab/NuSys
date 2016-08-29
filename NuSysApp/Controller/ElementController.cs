@@ -183,9 +183,12 @@ namespace NuSysApp
             //create and execute the request
             var request = new DeleteElementRequest(Model.Id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-            //delete it locally (may need to check if it was succesful first)
-            return request.RemoveNodeLocally();
+            if (request.WasSuccessful() == true)
+            {
+                //delete it locally (may need to check if it was succesful first)
+                return request.RemoveNodeLocally();
+            }
+            return false;
         }
 
         /// <summary>
@@ -250,13 +253,13 @@ namespace NuSysApp
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000)
+        public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000, double width = Double.NaN, double height =Double.NaN)
         {
 
             var newElementArgs = new NewElementRequestArgs();
             newElementArgs.LibraryElementId = Model.LibraryId;
-            newElementArgs.Height = Model.Width;
-            newElementArgs.Width = Model.Height;
+            newElementArgs.Width = double.IsNaN(width) ? Model.Width : width;
+            newElementArgs.Height = double.IsNaN(height) ? Model.Height : height;
             newElementArgs.X = x;
             newElementArgs.Y = y;
             newElementArgs.ParentCollectionId = newCollectionLibraryID;
