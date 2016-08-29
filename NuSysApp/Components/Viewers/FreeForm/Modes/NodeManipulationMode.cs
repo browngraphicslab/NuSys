@@ -91,7 +91,7 @@ namespace NuSysApp
             var userControl = (UserControl)sender;
             //userControl.PointerReleased -= UserControl_PointerReleased;
            
-            manipulationCompletedRoutedEventArgs.Handled = true;
+           // manipulationCompletedRoutedEventArgs.Handled = true;
         
         }
 

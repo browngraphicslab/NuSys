@@ -74,7 +74,7 @@ namespace NuSysApp
 
         private async Task CreateChild(ElementController controller)
         {
-            if (controller is ElementCollectionController ) {
+            if (controller is ElementCollectionController && this is AreaNodeViewModel) {
                 Debug.WriteLine($"Depth of Recursion {(controller as ElementCollectionController).Depth}");
                 if ((controller as ElementCollectionController).Depth >= Constants.GroupViewRecursionDepth)
                 {

@@ -46,7 +46,7 @@ namespace NuSysApp
         public const double RegionBorderSelectedThickness = 6;
         public const double RegionBorderSmallestThickness = 0.25;
 
-        public static int GroupViewRecursionDepth = 2;
+        public static int GroupViewRecursionDepth = 1;
         #endregion Node Dimensions
 
         #region Font 
