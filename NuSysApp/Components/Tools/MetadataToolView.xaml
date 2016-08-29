@@ -99,7 +99,8 @@
                                 <Border Grid.Row="1" Visibility="Collapsed">
                                     <TextBox Name="xSearchBox" TextChanged="XSearchBox_OnTextChanged"/>
                                 </Border>
-                                <ListView Grid.Row="2"  x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1,2,0,0"  Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="White" SelectionMode="Multiple" >
+                                <ListView Grid.Row="2" Loaded="xMetadataValuesList_Loaded" x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1,2,0,0"  Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="White" SelectionMode="Multiple" >
+
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>

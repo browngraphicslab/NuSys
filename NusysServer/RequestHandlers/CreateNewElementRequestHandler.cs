@@ -23,22 +23,9 @@ namespace NusysServer
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY));
-
             //set the creator of the element as the sender
             message[NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY] = NusysClient.IDtoUsers[senderHandler].UserID;
-
-            //TESTING STUFF DELETE AFTER FINISHED TESTING***************************
-            //ContentController.Instance.SqlConnector.AddStringProperty(
-            //    message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY), "test key 1",
-            //    "test value 1");
-            //ContentController.Instance.SqlConnector.AddStringProperty(
-            //    message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY), "test key 2",
-            //    "test value 2");
-            //ContentController.Instance.SqlConnector.AddStringProperty(
-            //    message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY), "test key 3",
-            //    "test value 3");
-            //****************************************************************    
-
+            
             //Check to make sure your not adding a collection onto itself.
             if (message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY).Equals(message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY)))
             {
@@ -76,6 +63,8 @@ namespace NusysServer
                 return new Message(new Dictionary<string, object>() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false } });
             }
             var model = JsonConvert.SerializeObject(ElementModelFactory.CreateFromMessage(addAliasMessage));
+            //Update the collections last edited time stamp
+            UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY));
 
             //if the new element isn't a private alias. 
             //TODO: Check if collection element is part of is private or public

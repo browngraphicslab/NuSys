@@ -28,6 +28,7 @@ namespace NusysServer
                 throw new Exception("An elementUpdateRequest must have an element ID to update");
             }
             ForwardMessage(message, senderHandler);
+<<<<<<< HEAD
 
             try
             {
@@ -38,10 +39,19 @@ namespace NusysServer
                 }
             }
             catch (Exception e)
+=======
+            var parentCollectionId = GetParentCollectionIdOfAlias(message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY));
+            //if the client asked to save the update
+            if (message.GetBool(NusysConstants.ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN))
+>>>>>>> origin/leandro_testing
             {
                 throw new Exception(e.Message);
             }
+<<<<<<< HEAD
 
+=======
+            UpdateLibraryElementLastEditedTimeStamp(parentCollectionId);
+>>>>>>> origin/leandro_testing
             var returnMessage = new Message();
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
 

@@ -34,7 +34,7 @@ namespace NusysServer
            
             //delete the metadata entry from the appropriate library element
             var success = ContentController.Instance.SqlConnector.DeleteMetadataEntry(deleteMetadataEntryMessage);
-
+            UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY));
             ForwardMessage(message, senderHandler);
 
             var returnMessage = new Message(message);

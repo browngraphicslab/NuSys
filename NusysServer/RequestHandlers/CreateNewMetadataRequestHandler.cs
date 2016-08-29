@@ -37,6 +37,8 @@ namespace NusysServer
             {
                 return new Message(new Dictionary<string, object>() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false } });
             }
+            //Update the library element's last edited timestamp
+            UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.CREATE_NEW_METADATA_REQUEST_LIBRARY_ID_KEY));
 
             var entry = CreateMetadataEntry(messageToPassIntoQuery);
             var modelJson = JsonConvert.SerializeObject(entry);

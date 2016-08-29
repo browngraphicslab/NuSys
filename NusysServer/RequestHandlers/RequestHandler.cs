@@ -47,6 +47,7 @@ namespace NusysServer
         }
 
         /// <summary>
+<<<<<<< HEAD
         /// This is a protected method that will get you the server args of a certain request.
         /// This method first casts the requeest to the type you specified, then gets the args from it.
         /// 
@@ -65,6 +66,42 @@ namespace NusysServer
                 throw new Exception("Request was of unexpected type.  Expected a ServerArgsRequest of argsClass type : "+typeof(T).ToString());
             }
             return castRequest.GetArgsClassFromMessage();
+=======
+        /// a protected method used to update a library element's last edited time stamp to the current time.
+        /// </summary>
+        /// <param name="libraryElementId"></param>
+        /// <returns></returns>
+        protected bool UpdateLibraryElementLastEditedTimeStamp(string libraryElementId)
+        {
+            Debug.Assert(libraryElementId != null);
+            if(libraryElementId == null)
+            {
+                return false;
+            }
+            List<SqlQueryEquals> updateTimeStamp = new List<SqlQueryEquals>();
+            updateTimeStamp.Add(new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, DateTime.UtcNow.ToString()));
+            var conditional = new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY, libraryElementId);
+            SQLUpdateRowQuery updateLastEditedTimeStampQuery = new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.LibraryElement), updateTimeStamp, conditional);
+            return updateLastEditedTimeStampQuery.ExecuteCommand();
+        }
+
+        /// <summary>
+        /// This makes a request to the sql table that returns the parent collection of a specific alias.
+        /// </summary>
+        /// <param name="aliasId"></param>
+        /// <returns></returns>
+        protected string GetParentCollectionIdOfAlias(string aliasId)
+        {
+            //Get the id of the collection that the element belongs to.
+            //This is used to update the last edited time stamp of the collection.
+            if(aliasId == null)
+            {
+                throw new Exception("alias id is null when trying to get the parent collection of an alias in the request handler super class");
+            }
+            var listColumnsToSelect = Constants.GetFullColumnTitle(Constants.SQLTableType.Alias,  NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY);
+            var selectParentCollectionIdQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Alias, listColumnsToSelect), new SqlQueryEquals(Constants.SQLTableType.Alias, NusysConstants.ALIAS_ID_KEY, aliasId));
+            return selectParentCollectionIdQuery.ExecuteCommand().First().GetString(NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY);
+>>>>>>> origin/leandro_testing
         }
     }
 }

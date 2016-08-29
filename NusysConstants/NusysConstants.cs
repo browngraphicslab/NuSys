@@ -677,6 +677,30 @@ namespace NusysIntermediate
         
             #endregion DeleteInkStrokeRequest
 
+        #region MoveElementToCollectionRequest
+        /// <summary>
+        /// Key in message for sending the id of the element to move
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_ELEMENT_ID_KEY = "element_id";
+
+        /// <summary>
+        /// Key in message for sending the id the new parent collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_NEW_PARENT_COLLECTION_ID_KEY = "new_parent_collection_id";
+
+        /// <summary>
+        /// Key in message for sending the new x coordinate of the element in the new parent
+        /// collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_X_KEY = "x";
+
+        /// <summary>
+        /// Key in message for sending the new y coordinate of the element in the new parent
+        /// collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY = "y";
+        #endregion MoveElementToCollectionRequest
+
         #endregion RequestKeys
 
         #region NotificationKeys
@@ -1467,6 +1491,7 @@ namespace NusysIntermediate
             GetRelatedDocumentsRequest,
             CreateInkStrokeRequest,
             DeleteInkStrokeRequest,
+            MoveElementToCollectionRequest,
 
             /// <summary>
             /// this request type is used to create a new collection content and default library element with a pre-populated collection.
