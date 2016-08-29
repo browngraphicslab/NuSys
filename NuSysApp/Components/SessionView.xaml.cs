@@ -596,6 +596,7 @@ namespace NuSysApp
 
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
+            SessionController.Instance.CollectionIdsInUse.Add(collectionId);
 
             await OpenCollection(elementCollectionInstanceController);
 

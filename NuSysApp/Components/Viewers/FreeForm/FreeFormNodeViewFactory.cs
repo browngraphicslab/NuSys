@@ -27,6 +27,7 @@ namespace NuSysApp
                     view = new TextNodeView(new TextNodeViewModel(controller));
                     break;
                 case NusysConstants.ElementType.Collection:
+
                     view = new GroupNodeView(new GroupNodeViewModel((ElementCollectionController)controller));
                     break;
                 case NusysConstants.ElementType.Tag:

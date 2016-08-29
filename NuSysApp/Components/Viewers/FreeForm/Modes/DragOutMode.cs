@@ -36,7 +36,7 @@ namespace NuSysApp
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
             SessionController.Instance.SessionView.AddHandler(UIElement.PointerReleasedEvent, _releasedHandler, true);
 
-            foreach (var n in wvm.AtomViewList.Where(s => s.DataContext is ElementViewModel))
+            foreach (var n in wvm.AtomViewList.Where(s => s?.DataContext is ElementViewModel))
             {
                 var userControl = (UserControl)n;
                 if (userControl.DataContext is ElementViewModel)
@@ -162,7 +162,7 @@ namespace NuSysApp
             foreach (var n in newNodes)
             {
                 var userControl = (FrameworkElement)n;
-                if (userControl.DataContext is ElementViewModel)
+                if (userControl != null && userControl.DataContext is ElementViewModel)
                 {
                     userControl.ManipulationDelta += OnManipulationDelta;
                     userControl.ManipulationStarting += UserControlOnManipulationStarting;
