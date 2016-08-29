@@ -28,12 +28,20 @@ namespace NusysServer
                 throw new Exception("An elementUpdateRequest must have an element ID to update");
             }
             ForwardMessage(message, senderHandler);
-            
-            //if the client asked to save the update
-            if (message.GetBool(NusysConstants.ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN))
+
+            try
             {
-                SaveUpdateToServer(message);
+                //if the client asked to save the update
+                if (message.GetBool(NusysConstants.ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN))
+                {
+                    SaveUpdateToServer(message);
+                }
             }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
             var returnMessage = new Message();
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
 

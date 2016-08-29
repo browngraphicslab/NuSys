@@ -14,7 +14,8 @@ namespace NusysServer
         /// <summary>
         /// this class will take in a message from a request and route it to the  correct request handler.
         /// All requests should go through this router.
-        /// This class also checks to see if the client is awaiting a response.  If so, it ALWAYS returns a message back indicating a succesful (or not) request from that client.
+        /// This class also checks to see if the client is awaiting a response.  
+        /// If so, it ALWAYS returns a message back indicating a succesful (or not) request from that client.
         /// </summary>
         /// <param name="originalMessage"></param>
         /// <param name="webSocketHandler"></param>
@@ -108,6 +109,9 @@ namespace NusysServer
                             break;
                         case NusysConstants.RequestType.GetAliasesOfLibraryElementRequest:
                             requestHandler = new GetAliasesOfLibraryElementRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.CreateNewCollectionRequest:
+                            requestHandler = new CreateNewCollectionRequestHandler();
                             break;
                         default: 
                             requestHandler = null;

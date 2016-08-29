@@ -37,11 +37,12 @@ namespace NusysServer
                 try
                 {
                     Directory.CreateDirectory(Constants.FILE_FOLDER);
-                    File.Create(_filepath);
+                    var s = File.Create(_filepath);
                     if (!secondAttempt)
                     {
                         AddErrorString(error, true);
                     }
+                    s.Close();
                 }
                 catch (Exception f)
                 {

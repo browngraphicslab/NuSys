@@ -674,6 +674,7 @@
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChatRequest.cs" />
     <Compile Include="Network\Requests\CreateInkStrokeRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewCollectionRequest.cs" />
     <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
     <Compile Include="Network\Requests\CreateNewMetadataRequest.cs" />
     <Compile Include="Network\Requests\CreateNewPresentationLinkRequest.cs" />

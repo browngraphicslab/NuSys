@@ -29,6 +29,12 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string REQUEST_TYPE_STRING_KEY = "request_type";
 
+        /// <summary>
+        /// this constant will be the key with which all server args requests store their args classes. 
+        /// the associated value for this key should be deserializable into a server args base class. 
+        /// </summary>
+        public static readonly string SERVER_ARGS_REQUEST_ARGS_CLASS_KEY = "args_class_key";
+
         #endregion RequestManagementKeys
 
         #region RequestKeys
@@ -1461,6 +1467,12 @@ namespace NusysIntermediate
             GetRelatedDocumentsRequest,
             CreateInkStrokeRequest,
             DeleteInkStrokeRequest,
+
+            /// <summary>
+            /// this request type is used to create a new collection content and default library element with a pre-populated collection.
+            /// you are able to add elements to the request be default. 
+            /// </summary>
+            CreateNewCollectionRequest,
 
             /// <summary>
             /// request used to get all the aliases of a library element.  This should return all of the element models

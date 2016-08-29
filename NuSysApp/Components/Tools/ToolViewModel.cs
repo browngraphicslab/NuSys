@@ -187,10 +187,17 @@ namespace NuSysApp
                     LibraryElementArgs = createNewLibraryElementRequestArgs
                 };
 
+
+                var args = new CreateNewCollectionServerRequestArgs();
+                args.CreateNewContentRequestDictionary = createNewContentRequestArgs.PackToRequestKeys().ToDictionary(k => k.Key, v => v.Value);
+                args.NewElementRequestDictionaries = new List<Dictionary<string, object>>();
+
+                /*
                 // create the content request, and execute it, adding the collection to the library
                 var request = new CreateNewContentRequest(createNewContentRequestArgs);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 request.AddReturnedLibraryElementToLibrary();
+                */
 
                // Add all the elements to the newly created collection
                 foreach (var id in Controller.Model.OutputLibraryIds)
@@ -222,15 +229,22 @@ namespace NuSysApp
                         LibraryElementId = lem.LibraryElementId
                     };
 
+                    args.NewElementRequestDictionaries.Add( newElementRequestArgs.PackToRequestKeys().ToDictionary(k => k.Key, v => v.Value));
+
+                    /*
                     // create and execute the request
                     var requestElemToCollection = new NewElementRequest(newElementRequestArgs);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(requestElemToCollection);
                     await requestElemToCollection.AddReturnedElementToSessionAsync();
+                    */
                 }
 
+                var request = new CreateNewCollectionRequest(args);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.AddReturnedLibraryElementToLibrary();
+
                 // add the collection to the current session
-                var collectionLEM =
-                    SessionController.Instance.ContentController.GetLibraryElementController(collectionLibElemId);
+                var collectionLEM =  SessionController.Instance.ContentController.GetLibraryElementController(collectionLibElemId);
                 collectionLEM.AddElementAtPosition(x, y);
 
             });

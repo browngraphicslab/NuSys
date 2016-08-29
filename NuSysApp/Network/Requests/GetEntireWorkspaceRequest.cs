@@ -153,7 +153,10 @@ namespace NuSysApp
         public async Task MakeCollectionFromReturnedElementsAsync()
         {
             var elements = GetReturnedElementModels();
-            await SessionController.Instance.SessionView.MakeCollection(elements.ToDictionary(e => e.Id, e => e));
+            if (SessionController.Instance.SessionView != null)
+            {
+                await SessionController.Instance.SessionView.MakeCollection(elements.ToDictionary(e => e.Id, e => e));
+            }
         }
     }
 }

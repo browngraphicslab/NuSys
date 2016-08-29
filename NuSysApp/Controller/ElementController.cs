@@ -167,7 +167,7 @@ namespace NuSysApp
         public void Delete(object sender)
         {
             Deleted?.Invoke(this);
-            SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
+            SessionController.Instance.ActiveFreeFormViewer?.DeselectAll();
 
             Dispose();
         }

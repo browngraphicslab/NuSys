@@ -264,7 +264,7 @@ namespace NuSysApp
         /// </summary>
         protected string GetDate(LibraryElementModel libraryElementModel)
         {
-            if (libraryElementModel.Timestamp == null)
+            if (string.IsNullOrEmpty(libraryElementModel?.Timestamp))
             {
                 return DateTime.UtcNow.ToStartOfDay().ToString();
             }
@@ -278,7 +278,7 @@ namespace NuSysApp
         /// </summary>
         protected string GetLastEditedDate(LibraryElementModel libraryElementModel)
         {
-            if (libraryElementModel.LastEditedTimestamp == null)
+            if (string.IsNullOrEmpty(libraryElementModel?.LastEditedTimestamp))
             {
                 return DateTime.UtcNow.ToStartOfDay().ToString();
             }

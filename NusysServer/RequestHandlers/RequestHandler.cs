@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -43,6 +44,27 @@ namespace NusysServer
             var forwardMessage = new Message(messageToForward);
             forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
             NuWebSocketHandler.BroadcastToSubset(forwardMessage, new HashSet<NuWebSocketHandler>() { senderHandlerToIgnore });
+        }
+
+        /// <summary>
+        /// This is a protected method that will get you the server args of a certain request.
+        /// This method first casts the requeest to the type you specified, then gets the args from it.
+        /// 
+        /// It will throw an exception if the cast fails.
+        /// 
+        /// It can also return null if the args class was null or the key for the args class wans't found in the request message
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected T GetRequestArgs<T>(Request request) where T : ServerRequestArgsBase
+        {
+            var castRequest = new ServerArgsRequest<T>(request); //cast the request essentially
+            if (castRequest == null)
+            {
+                throw new Exception("Request was of unexpected type.  Expected a ServerArgsRequest of argsClass type : "+typeof(T).ToString());
+            }
+            return castRequest.GetArgsClassFromMessage();
         }
     }
 }

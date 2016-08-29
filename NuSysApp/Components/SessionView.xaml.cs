@@ -170,11 +170,7 @@ namespace NuSysApp
 
             Debug.Assert(request.WasSuccessful() == true);
 
-            await request.AddReturnedDataToSessionAsync();
-
-            var elements = request.GetReturnedElementModels();
-
-            await LoadWorkspaceFromServer(collectionId, elements);
+            await SessionController.Instance.EnterCollection(collectionId);
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
@@ -940,6 +936,7 @@ namespace NuSysApp
 
         private void GoBackToWaitingRoom_OnClick(object sender, RoutedEventArgs e)
         {
+            SessionController.Instance.ClearControllersForCollectionExit();
             Frame.Navigate(typeof (WaitingRoomView), this);
         }
     }

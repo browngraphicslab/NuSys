@@ -334,16 +334,25 @@ namespace NuSysApp
                 controller.Dispose();
             }
 
-            //unload all the content data models by deleting them, and clear the element controllers
-            SessionController.Instance.ContentController.ClearAllContentDataModels();
-            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Clear();
-            SessionController.Instance.IdToControllers.Clear();//TODO actually unload all three of these.  very important
+            ClearControllersForCollectionExit();
 
             //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
             //TODO put back in for collction entering
             await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels);
+        }
+
+        /// <summary>
+        /// method that will clear and unload all the controllers and list when exiting a collection.  
+        /// Call this to clear all necessary lists and such.
+        /// </summary>
+        public void ClearControllersForCollectionExit()
+        {
+            //unload all the content data models by deleting them, and clear the element controllers
+            SessionController.Instance?.ContentController?.ClearAllContentDataModels();
+            SessionController.Instance?.ActiveFreeFormViewer?.AtomViewList?.Clear();
+            SessionController.Instance?.IdToControllers?.Clear();//TODO actually unload all three of these.  very important
         }
 
         #endregion
