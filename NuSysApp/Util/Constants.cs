@@ -45,6 +45,8 @@ namespace NuSysApp
         public const double RegionBorderNormalThickness = 4;
         public const double RegionBorderSelectedThickness = 6;
         public const double RegionBorderSmallestThickness = 0.25;
+
+        public static int GroupViewRecursionDepth = 2;
         #endregion Node Dimensions
 
         #region Font 
@@ -213,6 +215,7 @@ namespace NuSysApp
 
         public static string RecordingNodeAudioFileType = ".mp3";
         public static string RecordingNodeVideoFileType = ".mp4";
+
 
         #endregion RecordingNode
     }
