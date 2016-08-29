@@ -23,15 +23,20 @@ namespace NuSysApp
     /// also accounts for whether the collection is made by rosemary so we can hide it and not mess it up while testing 
     public sealed partial class CollectionListBox : UserControl
     {
+        private WaitingRoomView _waitingRoom;
+        private LibraryElementModel _m;
         public string ID { set; get; }
         public string Title { set; get; }
         public string Date { set; get; }
         public string Access { set; get; }
         public bool MadeByRosemary = false;
 
-        public CollectionListBox(LibraryElementModel m)
+        public CollectionListBox(LibraryElementModel m, WaitingRoomView w)
         {
             this.InitializeComponent();
+
+            _waitingRoom = w;
+            _m = m;
 
             ID = m.LibraryElementId;
             Title = m.Title;
@@ -47,6 +52,15 @@ namespace NuSysApp
             }
             AccessBox.Text = m.AccessType.ToString();
             Access = m.AccessType.ToString();
+        }
+
+        private void Collection_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (_waitingRoom != null)
+            {
+                _waitingRoom.SetSelectedCollection(_m);
+                _waitingRoom.Join_Workspace_Click(sender, e);
+            }
         }
     }
 }

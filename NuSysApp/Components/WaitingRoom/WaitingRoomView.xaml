@@ -145,14 +145,14 @@
                 <CompositeTransform/>
             </Grid.RenderTransform>
             <Grid.RowDefinitions>
-                <RowDefinition Height="100"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="140"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Button Visibility="Collapsed"  Grid.Row="1"  HorizontalAlignment="Left" Margin="0,30,0,0" Height="50" Width="50" VerticalAlignment="Center"  Background="Transparent" Click="BackToLoginFromList">
                 <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
             </Button>
-            <Grid Grid.Row="0" Margin="60,0,60,10">
+            <Grid Grid.Row="0" Margin="60,60,60,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
@@ -176,7 +176,7 @@
             <Grid Grid.Row="1" Margin="60,0,60,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="300"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <ListView x:Name="List" Grid.Column="0" BorderThickness="0"  Background="White" Margin="0,0,0,0" SelectionChanged="ListItemSelected">
                     <ListView.Header>
