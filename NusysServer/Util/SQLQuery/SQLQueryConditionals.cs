@@ -115,7 +115,8 @@ namespace NusysServer
         }
 
         /// <summary>
-        /// This is used to create a select query conditional that checks if the property = the value selected from the selectQuery
+        /// This is used to create a select query conditional that checks if the property = the value selected from the selectQuery.
+        /// The more often used constructor is the other one that takes in a required value instead of the selectquery
         /// </summary>
         /// <param name="tableType"></param>
         /// <param name="property"></param>

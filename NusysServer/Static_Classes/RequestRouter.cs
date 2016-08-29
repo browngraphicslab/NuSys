@@ -108,6 +108,8 @@ namespace NusysServer
                             break;
                         case NusysConstants.RequestType.GetAliasesOfLibraryElementRequest:
                             requestHandler = new GetAliasesOfLibraryElementRequestHandler();
+                        case NusysConstants.RequestType.MoveElementToCollectionRequest:
+                            requestHandler = new MoveElementToCollectionRequestHandler();
                             break;
                         default: 
                             requestHandler = null;
