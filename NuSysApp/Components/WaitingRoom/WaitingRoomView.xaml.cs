@@ -47,7 +47,6 @@ namespace NuSysApp
         private bool _loggedIn = false;
         private bool _isLoaded = false;
         private bool _isLoggingIn = false;
-
         //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
 
@@ -145,7 +144,7 @@ namespace NuSysApp
                     //if the libraryelement is of type collection, make a collectionlistbox for it and also add to the collectionlist
                     if (libraryElement.Type == NusysConstants.ElementType.Collection)
                     {
-                        var i = new CollectionListBox(libraryElement);
+                        var i = new CollectionListBox(libraryElement, this);
                         all.Add(i);
                         _collectionList.Add(libraryElement);
                     }
@@ -273,7 +272,7 @@ namespace NuSysApp
             NewWorkspacePopup.IsOpen = false;
         }
 
-        private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
+        public async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
             if (_selectedCollection != null)
             {
@@ -822,7 +821,7 @@ namespace NuSysApp
             {
                 if (i.Creator == UserName)
                 {
-                    var listbox = new CollectionListBox(i);
+                    var listbox = new CollectionListBox(i, this);
                     mycollections.Add(listbox);
                 }
             }
@@ -845,7 +844,7 @@ namespace NuSysApp
             {
                 if (i.Creator != UserName)
                 {
-                    var listbox = new CollectionListBox(i);
+                    var listbox = new CollectionListBox(i, this);
                     othercollections.Add(listbox);
                 }
             }
@@ -865,7 +864,7 @@ namespace NuSysApp
             var othercollections = new List<CollectionListBox>();
             foreach (var i in _collectionList)
             {
-                var listbox = new CollectionListBox(i);
+                var listbox = new CollectionListBox(i, this);
                 othercollections.Add(listbox);
             }
             //set items in collectionlist alphabetically
@@ -878,6 +877,11 @@ namespace NuSysApp
             _collectionAdded = true;
             //next time title is clicked, it will reverse the list
             _titleReverse = true;
+        }
+
+        public void SetSelectedCollection(LibraryElementModel m)
+        {
+            _selectedCollection = m;
         }
     }
 }

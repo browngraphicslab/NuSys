@@ -69,12 +69,13 @@
                                 <Border Grid.Row="0" BorderBrush="{StaticResource color2}" BorderThickness="0">
                                     <TextBlock Text="KEYS" TextAlignment="Center" Padding="2" Foreground="{StaticResource color3}"/>
                                 </Border>
-                                <ListView Grid.Row="1" x:Name="xMetadataKeysList" BorderBrush="{StaticResource color2}" ManipulationMode="All" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationStarted="XList_OnManipulationStarted" Width="200"  Background="{StaticResource color1}" SelectionMode="Single" >
+                                <ListView Grid.Row="1" x:Name="xMetadataKeysList" BorderBrush="{StaticResource color2}" BorderThickness="0,2,0,0"  ManipulationMode="All" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationStarted="XList_OnManipulationStarted" Width="200"  Background="White" SelectionMode="Single" >
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                             <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
                                             <Setter Property="Padding" Value="0"/>
+                                            <Setter Property="Margin" Value="15,5,15,5"/>
                                         </Style>
                                     </ListView.ItemContainerStyle>
                                     <ListView.ItemTemplate>
@@ -95,22 +96,23 @@
                                 <Border Grid.Row="0"  BorderBrush="{StaticResource color2}" BorderThickness="0">
                                     <TextBlock Text="VALUES" TextAlignment="Center" Padding="2" Foreground="{StaticResource color3}" />
                                 </Border>
-                                <Border Grid.Row="1"  BorderThickness="0,0,0,1" BorderBrush="{StaticResource color2}">
+                                <Border Grid.Row="1" Visibility="Collapsed">
                                     <TextBox Name="xSearchBox" TextChanged="XSearchBox_OnTextChanged"/>
                                 </Border>
-                                <ListView Grid.Row="2"  x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="1,1,0,0" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="{StaticResource color1}" SelectionMode="Multiple" >
+                                <ListView Grid.Row="2"  x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1,2,0,0"  Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="White" SelectionMode="Multiple" >
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                             <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
                                             <Setter Property="Padding" Value="0"/>
+                                            <Setter Property="Margin" Value="15"/>
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ListViewItem">
                                                         <ListViewItemPresenter
           ContentTransitions="{TemplateBinding ContentTransitions}"
           SelectionCheckMarkVisualEnabled="False"
-          CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
+          CheckBrush="Transparent"
           CheckBoxBrush="Transparent"
           DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
           DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
