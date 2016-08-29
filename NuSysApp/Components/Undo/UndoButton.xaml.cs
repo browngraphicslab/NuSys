@@ -109,7 +109,7 @@ namespace NuSysApp
         {
             _state=UndoButtonState.Inactive;
             this.Opacity = 0;
-            _timer.Dispose();
+            _timer?.Dispose();
         }
        
         /// <summary>

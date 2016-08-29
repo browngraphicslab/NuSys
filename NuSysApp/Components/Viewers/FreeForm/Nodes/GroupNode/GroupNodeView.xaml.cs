@@ -55,7 +55,7 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                if (vm.ActiveCollectionViewType == CollectionElementModel.CollectionViewType.Timeline)
+               // if (vm.ActiveCollectionViewType == CollectionElementModel.CollectionViewType.Timeline)
                     vm.ActiveCollectionViewType = CollectionElementModel.CollectionViewType.FreeForm;
                 SwitchView(vm.ActiveCollectionViewType);
                 PositionResizer();
