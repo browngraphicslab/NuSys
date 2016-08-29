@@ -655,8 +655,32 @@ namespace NusysIntermediate
         /// Key in message for ink stroke unique id for the delete ink stroke request
         /// </summary>
         public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
-        
+
         #endregion DeleteInkStrokeRequest
+
+        #region MoveElementToCollectionRequest
+        /// <summary>
+        /// Key in message for sending the id of the element to move
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_ELEMENT_ID_KEY = "element_id";
+
+        /// <summary>
+        /// Key in message for sending the id the new parent collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_NEW_PARENT_COLLECTION_ID_KEY = "new_parent_collection_id";
+
+        /// <summary>
+        /// Key in message for sending the new x coordinate of the element in the new parent
+        /// collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_X_KEY = "x";
+
+        /// <summary>
+        /// Key in message for sending the new y coordinate of the element in the new parent
+        /// collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY = "y";
+        #endregion MoveElementToCollectionRequest
 
         #endregion RequestKeys
 
@@ -1439,6 +1463,7 @@ namespace NusysIntermediate
             GetRelatedDocumentsRequest,
             CreateInkStrokeRequest,
             DeleteInkStrokeRequest,
+            MoveElementToCollectionRequest,
 
             /// <summary>
             /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
