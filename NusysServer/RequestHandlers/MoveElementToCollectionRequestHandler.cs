@@ -38,6 +38,7 @@ namespace NusysServer
             {
                 return returnMessage;
             }
+            UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.MOVE_ELEMENT_TO_COLLECTION_REQUEST_NEW_PARENT_COLLECTION_ID_KEY));
             ForwardMessage(message, senderHandler);
             return returnMessage;
         }
