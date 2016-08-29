@@ -237,7 +237,7 @@ namespace NuSysApp
                 xMetadataEditorView.Update();
 
                 //If a region was previously loaded in the detail view, the region viewer should be added back.
-                if (xRootPivot.Items.Count == 3)
+                if (xRootPivot.Items.Count == 4)
                 {
                     var pivotItem = _regionEditorPivotItem as PivotItem;
                     xRootPivot.Items.Add(pivotItem);
