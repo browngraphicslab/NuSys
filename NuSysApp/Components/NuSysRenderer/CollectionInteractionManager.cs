@@ -99,6 +99,7 @@ namespace NuSysApp
         private CanvasPointer _finalInkPointer;
         private bool _resizerHit;
 
+
         public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
 
         public CollectionInteractionManager(CanvasInteractionManager canvasInteractionManager, CollectionRenderItem collection)
@@ -148,7 +149,6 @@ namespace NuSysApp
                 var t = Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(currentCollection));
                 if (InkUtil.IsPointCloseToStroke(Vector2.Transform(pointer.CurrentPoint, t), latestStroke))
                 {
-                    Debug.WriteLine("show menu!");
                     SelectionInkPressed?.Invoke(pointer, latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)));
                 }
             }
@@ -242,7 +242,17 @@ namespace NuSysApp
                 _mode = Mode.Ink;
                 InkStarted?.Invoke(pointer);
                 _canvasInteractionManager.PointerMoved += OnPointerMoved;
+                return;
             }
+
+            var keyStateL = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.L);
+            if (keyStateL.HasFlag(CoreVirtualKeyStates.Down))
+            {
+                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                _mode = Mode.Link;
+                return;
+            }
+
 
             OnTouchPointerPressed(pointer);
         }
@@ -260,6 +270,26 @@ namespace NuSysApp
                     _canvasInteractionManager.PointerMoved -= OnPointerMoved;
                 }
                 _mode = Mode.None;
+                return;
+            }
+
+            if (_mode == Mode.Link)
+            {
+                var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.L);
+
+                if (keyState.HasFlag(CoreVirtualKeyStates.Down))
+                {
+                    _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+
+                    if (_selectedRenderItem != null && _selectedRenderItem != _collection &&
+                        _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection)
+                    {
+                        LinkCreated?.Invoke((ElementRenderItem) _selectedRenderItem, (ElementRenderItem) _secondSelectedRenderItem);
+                    }
+                }
+                _mode = Mode.None;
+
+                return;
             }
 
             OnTouchPointerReleased(pointer);
@@ -278,6 +308,9 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnItemLongTapped(CanvasPointer pointer)
         {
             var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+
+            if (element == SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection)
+                return;
 
             if (element is CollectionRenderItem)
                 CollectionSwitched?.Invoke(element as CollectionRenderItem);
@@ -341,7 +374,6 @@ namespace NuSysApp
                 }
                 ItemSelected?.Invoke(elementRenderItem);
             }
-
         }
 
         private void OnTranslated(CanvasPointer pointer, Vector2 point, Vector2 delta)

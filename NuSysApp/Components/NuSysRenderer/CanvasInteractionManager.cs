@@ -46,8 +46,9 @@ namespace NuSysApp
         private double _twoFingerDist;
         private List<CanvasPointer> _pointers = new List<CanvasPointer>();
         private FrameworkElement _canvas;
+       private bool _cancelLongTapped;
 
-        public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
+       public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
         
         public CanvasInteractionManager(FrameworkElement canvas)
         {
@@ -55,9 +56,15 @@ namespace NuSysApp
             _canvas.PointerPressed += OnPointerPressed;
             _canvas.PointerReleased += OnPointerReleased;
             _canvas.PointerWheelChanged += ResourceCreatorOnPointerWheelChanged;
+            AllPointersReleased += OnAllPointersReleased;
         }
 
-        private void ResourceCreatorOnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
+       private void OnAllPointersReleased()
+       {
+           _cancelLongTapped = false;
+       }
+
+       private void ResourceCreatorOnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
         {
             var p = args.GetCurrentPoint(null).Position;
             var newCenter = new Vector2((float)p.X, (float)p.Y);
@@ -123,6 +130,7 @@ namespace NuSysApp
                
                 if (_pointers[0].MillisecondsActive > 300)
                 {
+                    _cancelLongTapped = true;
                     TwoPointerPressed?.Invoke(_pointers[0], _pointers[1]);
                 } 
             }            
@@ -161,7 +169,9 @@ namespace NuSysApp
                     }
                     else if (releasedPointer.MillisecondsActive > 250)
                     {
-                        ItemLongTapped?.Invoke(releasedPointer);
+                        if (!_cancelLongTapped) { 
+                            ItemLongTapped?.Invoke(releasedPointer);
+                        }
                     }
                 }
                 else if ((releasedPointer.DistanceTraveled < 20 && releasedPointer.StartTimeDelta(_lastTappedPointer) < 300))

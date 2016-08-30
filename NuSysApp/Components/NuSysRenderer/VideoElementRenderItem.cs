@@ -24,6 +24,13 @@ namespace NuSysApp
             _vm = vm;
         }
 
+        public override async Task Load()
+        {
+            var url = _vm.Controller.LibraryElementController.LargeIconUri;
+            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, url, ResourceCreator.Dpi);
+            _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -38,8 +45,11 @@ namespace NuSysApp
             base.Draw(ds);
 
             var orgTransform = ds.Transform;
-            ds.Transform = GetTransform() * ds.Transform;
-            ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Green);
+            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+            ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
+
+            if (_bmp != null)
+                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height });
 
             ds.Transform = orgTransform;
         }

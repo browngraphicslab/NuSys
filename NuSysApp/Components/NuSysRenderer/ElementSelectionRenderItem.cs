@@ -161,7 +161,7 @@ namespace NuSysApp
 
             ds.FillGeometry(triangle,new Vector2((float)(_screenRect.X + _screenRect.Width - 30), (float)(_screenRect.Y + _screenRect.Height - 30)), Colors.Black);
             */
-            Resizer.T = Matrix3x2.CreateTranslation(new Vector2((float)(_screenRect.X + _screenRect.Width - 30), (float)(_screenRect.Y + _screenRect.Height - 30)));
+            Resizer.T = Matrix3x2.CreateTranslation(new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f)));
 
             Resizer.Draw(ds);
 

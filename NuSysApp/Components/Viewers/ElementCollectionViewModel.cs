@@ -65,7 +65,6 @@ namespace NuSysApp
 
         private void ControllerOnCameraCenterChanged(float f, float f1)
         {
-         //   Debug.WriteLine("center chagnes");
             CameraCenter = new Vector2(f, f1);
         }
 

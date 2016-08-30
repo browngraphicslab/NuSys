@@ -60,6 +60,8 @@ namespace NuSysApp
             Debug.Assert(regionModel != null);
             var clippingParentId = regionModel.ClippingParentId;
             var contentId = regionModel.ContentDataModelId;
+            if (clippingParentId == null)
+                return;
             Debug.Assert(clippingParentId != null && contentId != null, "This should never be null");
 
             // create hashsets in the concurrent dictionaries if they don't exist

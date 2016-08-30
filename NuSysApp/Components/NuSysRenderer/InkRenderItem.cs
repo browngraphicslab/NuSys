@@ -180,7 +180,7 @@ namespace NuSysApp
             if (_currentStroke.Count > 2)
             {
                 _currentInkStroke = _builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
-                _currentInkStroke.DrawingAttributes = GetDrawingAttributes();
+              //  _currentInkStroke.DrawingAttributes = GetDrawingAttributes();
                 if (_isEraser)
                     _currentInkStroke.DrawingAttributes = new InkDrawingAttributes { Color = Colors.DarkRed };
                 strokes.Add(_currentInkStroke);

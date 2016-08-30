@@ -51,7 +51,7 @@ namespace NuSysApp
             Points = new List<Windows.Foundation.Point>();
         }
 
-        public void Show(double x = 100, double y= 100)
+        public void Show(double x = 100, double y= 100, bool showShapeOptions = false)
         {
             Canvas.SetLeft(this, x);
             Canvas.SetTop(this, y);
@@ -59,6 +59,18 @@ namespace NuSysApp
             Visibility = Visibility.Visible;
             GroupSettings.Visibility = Visibility.Visible;
             Buttons.Visibility = Visibility.Collapsed;
+
+            if (showShapeOptions)
+            {
+                ShapeCheck.IsEnabled = true;
+                ShapeCheck.Opacity = 1;
+            }
+            else
+            {
+                ShapeCheck.IsEnabled = false;
+                ShapeCheck.Opacity = 0.5;
+            }
+            
         }
         
 

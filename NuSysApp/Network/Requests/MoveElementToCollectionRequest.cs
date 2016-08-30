@@ -89,10 +89,6 @@ namespace NuSysApp
         /// <returns></returns>
         private async Task<bool> MoveElementToCollection(string elementId, string newParentCollectionId, double x, double y)
         {
-            Debug.Assert(!string.IsNullOrEmpty(elementId));
-            Debug.Assert(!string.IsNullOrEmpty(newParentCollectionId));
-            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId));//debug assert assumptions
-
             if (string.IsNullOrEmpty(elementId) || string.IsNullOrEmpty(newParentCollectionId) ||
                 !SessionController.Instance.IdToControllers.ContainsKey(elementId)) //if it fails those debugs, return false.
             {
@@ -106,6 +102,14 @@ namespace NuSysApp
 
             Debug.Assert(model != null);
 
+
+            var parent = SessionController.Instance.ContentController.GetLibraryElementModel(model.ParentCollectionId) as CollectionLibraryElementModel;
+
+            Debug.Assert(parent != null);
+
+            parent.Children?.Remove(elementId);
+
+            elementController.Delete(this);
             elementController.Dispose();
 
             if (!SessionController.Instance.CollectionIdsInUse.Contains(newParentCollectionId))//if the new collection is not one of the ones we care about

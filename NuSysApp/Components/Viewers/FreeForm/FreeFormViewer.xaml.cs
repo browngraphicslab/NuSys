@@ -54,6 +54,7 @@ namespace NuSysApp
         private Matrix3x2 _transform = Matrix3x2.Identity;
         private bool _inkPressed;
 
+
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();
@@ -118,6 +119,7 @@ namespace NuSysApp
                     _collectionInteractionManager.ResizerStarted -= CollectionInteractionManagerOnResizerStarted;
                     _collectionInteractionManager.ResizerStopped -= CollectionInteractionManagerOnResizerStopped;
                     _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
+                    _collectionInteractionManager.LinkCreated -= CollectionInteractionManagerOnLinkCreated;
                     _collectionInteractionManager.MultimediaElementActivated -= CollectionInteractionManagerOnMultimediaElementActivated;
                     _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
                     _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
@@ -146,12 +148,37 @@ namespace NuSysApp
                 _collectionInteractionManager.SelectionInkPressed += CollectionInteractionManagerOnSelectionInkPressed;
                 _collectionInteractionManager.ResizerStarted += CollectionInteractionManagerOnResizerStarted;
                 _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
+                _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
                 _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
                 _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
                 _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
+            }
+        }
+
+        private async void CollectionInteractionManagerOnLinkCreated(ElementRenderItem element1, ElementRenderItem element2)
+        {
+            // Diable linking to links and tools
+            // TODO: Enable linking to links 
+            if (element1.ViewModel.ElementType == NusysConstants.ElementType.Link || element2.ViewModel.ElementType == NusysConstants.ElementType.Tools)
+            {
+                return;
+            }
+            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
+            createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = element1.ViewModel.LibraryElementId;
+            createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
+            createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = element2.ViewModel.LibraryElementId;
+            createNewLinkLibraryElementRequestArgs.Title = $"Link from {element1.ViewModel.Model.Title} to {element2.ViewModel.Model.Title}";
+            if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId != createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId &&
+                    SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(createNewLinkLibraryElementRequestArgs.LibraryElementModelInId, createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
+            {
+                var contentRequestArgs = new CreateNewContentRequestArgs();
+                contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                var request = new CreateNewContentRequest(contentRequestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.AddReturnedLibraryElementToLibrary();
             }
         }
 
@@ -238,7 +265,7 @@ namespace NuSysApp
                 shapePoints = _latestStroke;
                 targetScreenRect = Win2dUtil.TransformRect(strokeBoundingBox, collectionTransform);
             }
-            else if (_latestStroke == null)
+            else
             {
                 targetScreenRect = NuSysRenderer.Instance.ElementSelectionRenderItem._screenRect;
                 
@@ -331,7 +358,7 @@ namespace NuSysApp
             }
             if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnGroup)
             {
-                multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y);
+                multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
             }
         }
 
@@ -397,6 +424,7 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnCollectionSwitched(CollectionRenderItem collection)
         {
+            ClearSelections();
             SwitchCollection(collection);
         }
 
