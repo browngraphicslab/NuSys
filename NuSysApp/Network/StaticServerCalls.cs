@@ -114,9 +114,10 @@ namespace NuSysApp
 
             if (originalController.LibraryElementModel.Type != NusysConstants.ElementType.Text)
             {
-                CreateNewLibraryElementRequestArgs args = new CreateNewLibraryElementRequestArgs();
+                dynamic args = new CreateNewLibraryElementRequestArgs();
+                dynamic model = null;
                 //Create and execute the new Library element request
-                //Harsh,
+                //Dear Harsh,
                 ///    This is how you do create deep copies.
                 //
                 //Love,
@@ -132,24 +133,34 @@ namespace NuSysApp
                     case NusysConstants.ElementType.VideoRegion:
                     case NusysConstants.ElementType.AudioRegion:
                         args = new CreateNewTimeSpanRegionRequestArgs();
-                        (args as CreateNewTimeSpanRegionRequestArgs).RegionStart = (originalController.LibraryElementModel as AudioRegionModel).Start;
-                        (args as CreateNewTimeSpanRegionRequestArgs).RegionEnd = (originalController.LibraryElementModel as AudioRegionModel).End;
-                        (args as CreateNewTimeSpanRegionRequestArgs).ClippingParentLibraryId = (originalController.LibraryElementModel as AudioRegionModel).ClippingParentId;
+                        model = originalController.LibraryElementModel as AudioRegionModel;
+
+                        args.RegionStart = model.Start;
+                        args.RegionEnd = model.End;
+                        args.ClippingParentLibraryId = model.ClippingParentId;
                         break;
                     case NusysConstants.ElementType.ImageRegion:
                         args = new CreateNewRectangleRegionLibraryElementRequestArgs();
-                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).RegionHeight = (originalController.LibraryElementModel as RectangleRegion).Height;
-                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).RegionWidth = (originalController.LibraryElementModel as RectangleRegion).Width;
-                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).TopLeftPoint = (originalController.LibraryElementModel as RectangleRegion).TopLeftPoint;
-                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).ClippingParentLibraryId = (originalController.LibraryElementModel as RectangleRegion).ClippingParentId;
+                        model = originalController.LibraryElementModel as RectangleRegion;
+
+                        args.RegionHeight = model.Height;
+                        args.RegionWidth = model.Width;
+                        args.TopLeftPoint = model.TopLeftPoint;
+                        args.ClippingParentLibraryId = model.ClippingParentId;
                         break;
                     case NusysConstants.ElementType.PdfRegion:
                         args = new CreateNewPDFRegionLibraryElementRequestArgs();
-                        (args as CreateNewPDFRegionLibraryElementRequestArgs).RegionHeight = (originalController.LibraryElementModel as PdfRegionModel).Height;
-                        (args as CreateNewPDFRegionLibraryElementRequestArgs).RegionWidth = (originalController.LibraryElementModel as PdfRegionModel).Width;
-                        (args as CreateNewPDFRegionLibraryElementRequestArgs).TopLeftPoint = (originalController.LibraryElementModel as PdfRegionModel).TopLeftPoint;
-                        (args as CreateNewPDFRegionLibraryElementRequestArgs).PageLocation = (originalController.LibraryElementModel as PdfRegionModel).PageLocation;
-                        (args as CreateNewPDFRegionLibraryElementRequestArgs).ClippingParentLibraryId = (originalController.LibraryElementModel as PdfRegionModel).ClippingParentId;
+                        model = originalController.LibraryElementModel as PdfRegionModel;
+
+                        args.RegionHeight = model.Height;
+                        args.RegionWidth = model.Width;
+                        args.TopLeftPoint = model.TopLeftPoint;
+                        args.PageLocation = model.PageLocation;
+                        args.ClippingParentLibraryId = model.ClippingParentId;
+                        break;
+                    case NusysConstants.ElementType.Link:
+                   //     Debug.Fail("this should never even be hit because links are not copyable");
+                        return "";
                         break;
                 }
                 args.Title = originalController.Title + " copy";
@@ -160,7 +171,8 @@ namespace NuSysApp
                 args.Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri;
                 args.Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri;
                 args.Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri;
-                
+                args.Metadata = new List<NusysIntermediate.MetadataEntry>(originalController.FullMetadata.Values);
+
                 var newLibraryElementRequest = new CreateNewLibraryElementRequest(args);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);
                 newLibraryElementRequest.AddReturnedLibraryElementToLibrary();
