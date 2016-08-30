@@ -125,7 +125,7 @@ namespace NuSysApp
         /// <param name="saveToServer"></param>
         public virtual void SetSize(double width, double height, bool saveToServer = true)
         {
-            if (width < Constants.MinNodeSize || height < Constants.MinNodeSize)
+            if (width < Constants.MinNodeSize || height < Constants.MinNodeSize || width * Model.Height / Model.Width < Constants.MinNodeSize)
             {
                 return;
             }
