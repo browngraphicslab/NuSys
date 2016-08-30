@@ -14,6 +14,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -34,6 +35,13 @@ namespace NuSysApp
         /// Be careful adding to this event, check that the handlers you want to take care can't be taken care of in a mode instance in the free form viewer
         /// </summary>
         public event ModeChangedEventHandler OnModeChanged;
+
+        /// <summary>
+        /// the public hashset of all the collections (full screen and nested) that we areusing currently in the session.
+        /// This should be used to determine what elements are needed and what collections to keep track of.
+        /// The Ids are the Library element model Ids.
+        /// </summary>
+        public HashSet<string> CollectionIdsInUse { get; private set; }  = new HashSet<string>();
 
         private static readonly object _syncRoot = new Object();
         private static SessionController _instance = new SessionController();
@@ -200,6 +208,11 @@ namespace NuSysApp
 
             var controller = ElementControllerFactory.CreateFromModel(model);
 
+            //if the element is a collection element
+            if (controller.LibraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+            {
+                CollectionIdsInUse.Add(controller.LibraryElementController.LibraryElementModel.LibraryElementId);
+            }
 
             SessionController.Instance.IdToControllers[model.Id] = controller;
 
@@ -329,21 +342,27 @@ namespace NuSysApp
             //gets the element mdoels from the returned requst
             var elementModels = request.GetReturnedElementModels();
 
-            foreach (var controller in SessionController.Instance.IdToControllers.Values)
-            {
-                controller.Dispose();
-            }
-
-            //unload all the content data models by deleting them, and clear the element controllers
-            SessionController.Instance.ContentController.ClearAllContentDataModels();
-            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Clear();
-            SessionController.Instance.IdToControllers.Clear();//TODO actually unload all three of these.  very important
+            ClearControllersForCollectionExit();
 
             //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
             //TODO put back in for collction entering
             await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels);
+        }
+
+        /// <summary>
+        /// method that will clear and unload all the controllers and list when exiting a collection.  
+        /// Call this to clear all necessary lists and such.
+        /// </summary>
+        public void ClearControllersForCollectionExit()
+        {
+            //unload all the content data models by deleting them, and clear the element controllers
+            Instance?.ContentController?.ClearAllContentDataModels();
+            Instance?.ActiveFreeFormViewer?.AtomViewList?.Clear();
+            Instance?.IdToControllers?.ForEach(kvp => kvp.Value?.Dispose());
+            Instance?.IdToControllers?.Clear();//TODO actually unload all of these.  very important
+            Instance?.CollectionIdsInUse?.Clear();
         }
 
         #endregion

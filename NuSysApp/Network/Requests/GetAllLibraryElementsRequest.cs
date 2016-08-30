@@ -17,7 +17,10 @@ namespace NuSysApp
     /// </summary>
     public class GetAllLibraryElementsRequest : Request
     {
-        public GetAllLibraryElementsRequest(Message m) : base(NusysConstants.RequestType.GetAllLibraryElementsRequest, m) {}
+        /// <summary>
+        /// preferred constructor.
+        /// Use this constructor for all uses.
+        /// </summary>
         public GetAllLibraryElementsRequest() : base(NusysConstants.RequestType.GetAllLibraryElementsRequest) {}
 
         /// <summary>

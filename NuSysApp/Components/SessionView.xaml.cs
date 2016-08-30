@@ -170,11 +170,7 @@ namespace NuSysApp
 
             Debug.Assert(request.WasSuccessful() == true);
 
-            await request.AddReturnedDataToSessionAsync();
-
-            var elements = request.GetReturnedElementModels();
-
-            await LoadWorkspaceFromServer(collectionId, elements);
+            await SessionController.Instance.EnterCollection(collectionId);
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
@@ -600,6 +596,7 @@ namespace NuSysApp
 
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
+            SessionController.Instance.CollectionIdsInUse.Add(collectionId);
 
             await OpenCollection(elementCollectionInstanceController);
 
@@ -751,15 +748,9 @@ namespace NuSysApp
 
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
-            if (viewable is RegionLibraryElementController)
-            {
-                await xDetailViewer.ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
 
-            }
-            else if (viewable is LibraryElementController)
-            {
-                await xDetailViewer.ShowElement(viewable as LibraryElementController, tabToOpenTo);
-            }
+            await xDetailViewer.ShowElement(viewable, tabToOpenTo);
+            
         }
 
         public async void OpenFile(ElementViewModel vm)
@@ -940,6 +931,7 @@ namespace NuSysApp
 
         private void GoBackToWaitingRoom_OnClick(object sender, RoutedEventArgs e)
         {
+            SessionController.Instance.ClearControllersForCollectionExit();
             Frame.Navigate(typeof (WaitingRoomView), this);
         }
     }

@@ -236,16 +236,15 @@ namespace NuSysApp
 
         private void OnMousePointerPressed(CanvasPointer pointer)
         {
-
-            var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.A);
-
-            if (keyState.HasFlag(CoreVirtualKeyStates.Down))
+            var keyStateA = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.A);
+            if (keyStateA.HasFlag(CoreVirtualKeyStates.Down))
             {
                 _mode = Mode.Ink;
                 InkStarted?.Invoke(pointer);
+                _canvasInteractionManager.PointerMoved += OnPointerMoved;
             }
 
-            _canvasInteractionManager.PointerMoved += OnPointerMoved;
+            OnTouchPointerPressed(pointer);
         }
 
         private void OnMousePointerReleased(CanvasPointer pointer)
@@ -258,11 +257,13 @@ namespace NuSysApp
                 {
                     _finalInkPointer = pointer;
                     InkStopped?.Invoke(pointer);
+                    _canvasInteractionManager.PointerMoved -= OnPointerMoved;
                 }
                 _mode = Mode.None;
             }
 
-            _canvasInteractionManager.PointerMoved -= OnPointerMoved;
+            OnTouchPointerReleased(pointer);
+           
         }
 
         private void OnMousePointerMoved(CanvasPointer pointer)
@@ -270,6 +271,7 @@ namespace NuSysApp
             if (_mode == Mode.Ink)
             {
                 InkDrawing?.Invoke(pointer);
+                return;
             }
         }
 
@@ -310,9 +312,6 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
         {
-            if (_mode != Mode.None)
-                return;
-
             var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
             if (element is NodeMenuButtonRenderItem)
@@ -336,15 +335,11 @@ namespace NuSysApp
             }
             else {
 
-
-                if (pointer.DeviceType == PointerDeviceType.Touch)
+                if (_canvasInteractionManager.ActiveCanvasPointers.Count == 0 && pointer.MillisecondsActive < 150)
                 {
-                    if (_canvasInteractionManager.ActiveCanvasPointers.Count == 0 && pointer.MillisecondsActive < 150)
-                    {
-                        SelectionsCleared?.Invoke();
-                    }
-                    ItemSelected?.Invoke(elementRenderItem);
+                    SelectionsCleared?.Invoke();
                 }
+                ItemSelected?.Invoke(elementRenderItem);
             }
 
         }

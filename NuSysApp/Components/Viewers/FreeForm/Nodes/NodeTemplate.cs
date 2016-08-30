@@ -333,17 +333,8 @@ namespace NuSysApp
                     var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null).ToList();
                     hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
 
-                    // if we have dragged the duplicate into a groupNodeView, we just create the duplicate anyway, so this might be useless
-                    if (hitsStart.Any())
-                    {
-                        first = (FrameworkElement)hitsStart.First();
-                        var groupnode = (GroupNodeView)first;
-                        var canvas = groupnode.FreeFormView.AtomContainer;
-                        var targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(p);
-                        vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);
-                    }
                     // if we have not dragged the duplicate into a groupNodeView then we request a duplicate using the rectangle of the drag release coordinates r
-                    else
+                    if (!hitsStart.Any())
                     {
                         vm.Controller.RequestDuplicate(r.X, r.Y);
                     }

@@ -78,6 +78,7 @@ namespace NuSysApp
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
         {
+
             OnPointerTouchMoved(sender, args);
         }
         

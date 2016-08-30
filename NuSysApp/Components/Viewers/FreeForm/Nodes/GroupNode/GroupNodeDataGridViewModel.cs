@@ -55,6 +55,10 @@ namespace NuSysApp
                     
 
                     var atomTest = (FrameworkElement)atom;
+                    if (atomTest == null)
+                    {
+                        return;
+                    }
                     var vm = (ElementViewModel)atomTest.DataContext; //access viewmodel
                     if (vm is LinkViewModel)
                         continue;

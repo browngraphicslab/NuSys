@@ -104,8 +104,24 @@ namespace NuSysApp
 
         private async Task CreateChild(ElementController controller)
         {
+
+            if (controller is ElementCollectionController && this is AreaNodeViewModel) {
+                Debug.WriteLine($"Depth of Recursion {(controller as ElementCollectionController).Depth}");
+                if ((controller as ElementCollectionController).Depth >= Constants.GroupViewRecursionDepth)
+                {
+                    return;
+                }
+            (controller as ElementCollectionController).Depth++;
+            }
+            var view = await _nodeViewFactory.CreateFromSendable(controller);
+
             var vm = await _elementVmFactory.CreateFromSendable(controller);
             Elements.Add(vm);
+            if (controller is LinkController)
+            {
+                return;
+            }
+
             controller.Deleted += OnChildDeleted;
         }
         
@@ -121,6 +137,7 @@ namespace NuSysApp
         private void OnChildRemoved(object source, ElementController elementController)
         {
             //FuckYouSahilRemoveAllVisualLinks(elementController);
+
             var soughtChildren = Elements.Where(a => a.Id == elementController.Model.Id);
             if (soughtChildren.Any())
             {
