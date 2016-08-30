@@ -252,12 +252,16 @@ namespace NuSysApp
                 shapePoints = _latestStroke;
             } else if ((shaped || finite) && _latestStroke == null)
             {
-                shapePoints = new List<PointModel> {
-                    new PointModel(targetPointTl.X, targetPointTl.Y),
-                    new PointModel(targetPointBr.X, targetPointTl.Y),
-                    new PointModel(targetPointBr.X, targetPointBr.Y),
-                    new PointModel(targetPointTl.X, targetPointBr.Y),
-                    new PointModel(targetPointTl.X, targetPointTl.Y)};
+                var w = targetPointBr.X - targetPointTl.X;
+                var h = targetPointBr.Y - targetPointTl.Y;
+                shapePoints = new List<PointModel>
+                {
+                    new PointModel(50000, 50000),
+                    new PointModel(50000 + w, 50000),
+                    new PointModel(50000 + w, 50000 + h),
+                    new PointModel(50000, 50000 + h),
+                    new PointModel(50000, 50000)
+                };
             }
 
 

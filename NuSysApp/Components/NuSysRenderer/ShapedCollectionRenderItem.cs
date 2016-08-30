@@ -73,25 +73,32 @@ namespace NuSysApp
             // ds.Transform = GetCameraTransform() * GetTransform() * ds.Transform;
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
 
-            if (this != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
-            {
-                if (!_vm.IsFinite) {
-                    Color borderColor;
-                    float borderWidth = 4f;
 
-                    if (SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection == this)
-                    {
-                        borderColor = Color.FromArgb(255, 0, 102, 255);
-                        borderWidth = 6f;
-                    }
-                    else
-                    {
-                        borderColor = Colors.Black;
-                        borderWidth = 4f;
-                    }
-                   // ds.Transform = Matrix3x2.Identity;
-                    ds.DrawRectangle(boundaries, borderColor, borderWidth);
+            if ((!_vm.IsFinite && this != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection) ||
+                (!_vm.IsShaped && _vm.IsFinite))
+            {
+                Color borderColor;
+                float borderWidth = 4f;
+
+                if (SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection == this)
+                {
+                    borderColor = Color.FromArgb(255, 0, 102, 255);
+                    borderWidth = 6f;
                 }
+                else
+                {
+                    borderColor = Colors.Black;
+                    borderWidth = 4f;
+                }
+
+                if ((!_vm.IsShaped && _vm.IsFinite))
+                {
+                    ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
+                    ds.DrawRectangle(_shapeBounds,borderColor, borderWidth);
+                    ds.Transform = GetTransform() * orgTransform;
+                }
+                else
+                    ds.DrawRectangle(boundaries, borderColor, borderWidth);
             }
 
             CanvasGeometry mask;
@@ -111,7 +118,7 @@ namespace NuSysApp
             using (ds.CreateLayer(1, mask))
             {
                 ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
-                if (_vm.IsShaped)
+                if (_vm.IsShaped || (_vm.IsFinite && !_vm.IsShaped))
                     ds.FillGeometry(_shape, Colors.DarkRed);
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
