@@ -38,6 +38,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ServerArgsRequest.cs" />
     <Compile Include="BaseClient.cs" />
     <Compile Include="INotificationArgumentable.cs" />
     <Compile Include="IRequestArgumentable.cs" />
@@ -91,6 +92,8 @@
     <Compile Include="Request.cs" />
     <Compile Include="NusysConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestArgs\CreateNewCollectionServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\ServerRequestArgsBase.cs" />
     <Compile Include="ServerArguments\GetEntireWorkspaceRequestReturnArgs.cs" />
     <Compile Include="ServerSearch\QueryArgs.cs" />
     <Compile Include="ServerSearch\QueryArgsBuilder.cs" />

@@ -10,6 +10,13 @@ namespace NuSysApp
 {
     public class ElementCollectionController : ElementController
     {
+        /// <summary>
+        /// This is the number of groups that this is contained in, so if we have an infinite loop of groups
+        /// then we can look at this variable and cut off the rendering of new groups 
+        /// 
+        /// this is session only, not saved to the server
+        /// </summary>
+        public int Depth { get; set; }
 
         public delegate void ChildChangedHandler(object source, ElementController child);
         public event ChildChangedHandler ChildAdded;
@@ -20,6 +27,7 @@ namespace NuSysApp
 
         public ElementCollectionController(ElementModel model) : base(model)
         {
+            Depth = 0;
             var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId) as CollectionLibraryElementController;
             if (collectionController != null)
             {

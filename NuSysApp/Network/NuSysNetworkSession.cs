@@ -91,6 +91,7 @@ namespace NuSysApp
             {
                 //if CheckOutgoingRequest created a valid thing
                 await request.CheckOutgoingRequest();
+                Debug.WriteLine("SENDING REQUEST: "+request.GetRequestType().ToString());
                 Message message = request.GetFinalMessage();
                 var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
                 request.SetReturnMessage(returnMessage);
@@ -225,6 +226,9 @@ namespace NuSysApp
                 case NusysConstants.RequestType.UpdateMetadataEntryRequest:
                     request = new UpdateMetadataEntryRequest(message);
                     break;
+                case NusysConstants.RequestType.MoveElementToCollectionRequest:
+                    request = new MoveElementToCollectionRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }
@@ -298,7 +302,7 @@ namespace NuSysApp
             var request = new GetAnalysisModelRequest(contentDataModelId);//otherwise make a reuqest
             await ExecuteRequestAsync(request);
 
-            var returnedAnalysisModel = request.GetReturnedAnalysisModel();//get the returned analysis model
+            var returnedAnalysisModel = request.GetReturnedAnalysisModel().First();//get the returned analysis model
 
             SessionController.Instance.ContentController.AddAnalysisModel(returnedAnalysisModel, contentDataModelId);//add the new model to the session controller
 

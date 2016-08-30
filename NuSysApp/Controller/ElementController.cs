@@ -15,6 +15,12 @@ namespace NuSysApp
         private ElementModel _model;
         protected DebouncingDictionary _debouncingDictionary;
 
+        /// <summary>
+        /// bool to indicate when we are blocking server calls from being produced by the controller.
+        /// Should only be used when updating from the server. 
+        /// </summary>
+        private bool _blockServerInteraction;
+
         public delegate void AlphaChangedEventHandler(object source, double alpha);
 
         public delegate void DeleteEventHandler(object source);
@@ -96,8 +102,11 @@ namespace NuSysApp
 
             ScaleChanged?.Invoke(this, sx, sy);
 
-            _debouncingDictionary.Add("scaleX", sx);
-            _debouncingDictionary.Add("scaleY", sy);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("scaleX", sx);
+                _debouncingDictionary.Add("scaleY", sy);
+            }
         }
 
         public void Selected(bool selected)
@@ -105,9 +114,18 @@ namespace NuSysApp
             SelectionChanged?.Invoke(this, selected);
         }
 
-        public virtual void SetSize(double width, double height)
+        /// <summary>
+        /// sets the width and height of the element.  
+        /// Will fire an event notiftying all listeners of the size change.
+        /// Will update the element model.
+        /// The save to server boolean will block server updates from being sent if 'false' is passed in.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="saveToServer"></param>
+        public virtual void SetSize(double width, double height, bool saveToServer = true)
         {
-            if (width < Constants.MinNodeSize || height < Constants.MinNodeSize)
+            if (width < Constants.MinNodeSize || height < Constants.MinNodeSize || width * Model.Height / Model.Width < Constants.MinNodeSize)
             {
                 return;
             }
@@ -116,8 +134,11 @@ namespace NuSysApp
             Model.Height = height;
             SizeChanged?.Invoke(this, width, height);
             FireAnchorChanged();
-            _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_WIDTH_KEY, width);
-            _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, height);
+            if (saveToServer && !_blockServerInteraction)
+            {
+                _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_WIDTH_KEY, width);
+                _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, height);
+            }
         }
 
         private void FireAnchorChanged()
@@ -135,8 +156,11 @@ namespace NuSysApp
             PositionChanged?.Invoke(this, x, y, x - px, y - py);
             FireAnchorChanged();
 
-            _debouncingDictionary.Add(NusysConstants.ALIAS_LOCATION_X_KEY, x);
-            _debouncingDictionary.Add(NusysConstants.ALIAS_LOCATION_Y_KEY, y);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add(NusysConstants.ALIAS_LOCATION_X_KEY, x);
+                _debouncingDictionary.Add(NusysConstants.ALIAS_LOCATION_Y_KEY, y);
+            }
         }
 
         public void SetAlpha(double alpha)
@@ -145,7 +169,10 @@ namespace NuSysApp
 
             AlphaChanged?.Invoke(this, alpha);
 
-            _debouncingDictionary.Add("alpha", alpha);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("alpha", alpha);
+            }
         }
 
         /// <summary>
@@ -167,7 +194,7 @@ namespace NuSysApp
         public void Delete(object sender)
         {
             Deleted?.Invoke(this);
-            SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
+            SessionController.Instance.ActiveFreeFormViewer?.DeselectAll();
 
             Dispose();
         }
@@ -215,34 +242,6 @@ namespace NuSysApp
 
         }
 
-        public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
-        {
-            Dictionary<string, object> dic = new Dictionary<string, object>();
-            dic.Add("x", x);
-            dic.Add("y", x);
-            dic.Add("height", x);
-            dic.Add("width", x);
-            return dic;
-        }
-
-        public Dictionary<string, object> CreateMediaDictionary(TimeSpan start, TimeSpan end)
-        {
-            Dictionary<string, object> dic = new Dictionary<string, object>();
-            dic.Add("start", start);
-            dic.Add("end", end);
-            return dic;
-        }
-
-        public Dictionary<string, object> CreateTextDictionary(double x, double y, double height, double width)
-        {
-            Dictionary<string, object> dic = new Dictionary<string, object>();
-            dic.Add("x", x);
-            dic.Add("y", x);
-            dic.Add("height", x);
-            dic.Add("width", x);
-            return dic;
-        }
-
 
         /// <summary>
         /// This method will move this alias to a different collection.  
@@ -255,34 +254,23 @@ namespace NuSysApp
         /// <returns></returns>
         public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000)
         {
+            var args = new MoveElementToCollectionRequestArgs();
+            args.ElementId = Id;
+            args.NewParentCollectionId = newCollectionLibraryID;
+            args.XCoordinate = x;
+            args.YCoordinate = y;
 
-            var newElementArgs = new NewElementRequestArgs();
-            newElementArgs.LibraryElementId = Model.LibraryId;
-            newElementArgs.Height = 200;//TODO not hard code this shit
-            newElementArgs.Width = 200;//TODO not hard code this shit
-            newElementArgs.X = x;
-            newElementArgs.Y = y;
-            newElementArgs.ParentCollectionId = newCollectionLibraryID;
-            newElementArgs.Id = Model.Id;
+            var request = new MoveElementToCollectionRequest(args);
 
-            //delete the old node
-            var deleteElementRequest = new DeleteElementRequest(Model.Id);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(deleteElementRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
-            if (deleteElementRequest.WasSuccessful() == true)
+            if (request.WasSuccessful() == true)
             {
-                //remove locally (may want to check if it was successful)
-                deleteElementRequest.RemoveNodeLocally();
-
-                //create the new element
-                var request = new NewElementRequest(newElementArgs);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-                //add the new element locally
-                request.AddReturnedElementToSession();
+                await request.UpdateContentLocally();
             }
             else
             {
+                Debug.Fail("request failed");
                 //alert the user it failed
             }
         }
@@ -328,24 +316,21 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
+            _blockServerInteraction = true;
             if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_X_KEY) || props.ContainsKey(NusysConstants.ALIAS_LOCATION_Y_KEY))
             {
                 //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y
                 var x = props.GetDouble(NusysConstants.ALIAS_LOCATION_X_KEY, this.Model.X);
                 var y = props.GetDouble(NusysConstants.ALIAS_LOCATION_Y_KEY, this.Model.Y);
-                Model.X = x;
-                Model.Y = y;
-
-                PositionChanged?.Invoke(this, x, y);
-                FireAnchorChanged();
+                SetPosition(x,y);
             }
             if (props.ContainsKey(NusysConstants.ALIAS_SIZE_WIDTH_KEY) || props.ContainsKey(NusysConstants.ALIAS_SIZE_HEIGHT_KEY))
             {
                 var width = props.GetDouble(NusysConstants.ALIAS_SIZE_WIDTH_KEY, this.Model.Width);
                 var height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, this.Model.Height);
-                SizeChanged?.Invoke(this,width,height);
-                FireAnchorChanged();
+                SetSize(width,height);
             }
+            _blockServerInteraction = false;
         }
 
         public void UpdateCircleLinks()

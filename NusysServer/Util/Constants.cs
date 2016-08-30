@@ -11,7 +11,7 @@ namespace NusysServer
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
-        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
+        public static readonly string user = "sahil"; //TODO: CHANGE TO PRIVATE LATER
 
 
         public static string WWW_ROOT {
@@ -20,7 +20,7 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/NuSys/NusysServer/") ? "C:/Users/Leandro Bengzon/Documents/NuSys Server/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/NuSys/NusysServer/") ? "C:/Users/leandro/Downloads/NuSys/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "trent":
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/Trent_Nusys/nusys4/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "harsh":
@@ -61,7 +61,7 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "C:/Users/Leandro Bengzon/Documents/NuSys Server/" : "D:/home/site/wwwroot/files/";
+                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "C:/Users/leandro/Downloads/NuSys/" : "D:/home/site/wwwroot/files/";
                     case "trent":
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/files/";
                     case "harsh":
@@ -99,7 +99,7 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
                     case "trent":
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
                     case "harsh":

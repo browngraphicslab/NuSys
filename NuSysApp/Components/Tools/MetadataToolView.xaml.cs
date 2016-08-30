@@ -94,6 +94,7 @@ namespace NuSysApp
                 xMetadataKeysList.SelectedItem = null;
             }
         }
+        
 
         /// <summary>
         ///Set the values list visual selection
@@ -440,8 +441,15 @@ namespace NuSysApp
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (xCanvas.Children.Contains(_dragItem))
+            {
                 xCanvas.Children.Remove(_dragItem);
-             _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
+
+            }
+            if (_currentDragMode == DragMode.Collection)
+            {
+                _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
+            }
+            _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)_dragItem.RenderTransform;
@@ -656,5 +664,15 @@ namespace NuSysApp
         {
             xFilterComboBox.IsEnabled = true;
         }
+
+        /// <summary>
+        /// This is just so that when you set the selection programatically before even creating the metadatatool, 
+        /// such as when clicking on a tag of an image, the metadata values list will scroll to the selection.
+        /// </summary>
+        private void xMetadataValuesList_Loaded(object sender, RoutedEventArgs e)
+        {
+            xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
+        }
+        
     }
 }

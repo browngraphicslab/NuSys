@@ -60,7 +60,7 @@ namespace NuSysApp
         private void UpdateSizeFromModel(object sender, object args)
         {
             var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
-            Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
+            Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio, false);
         }
 
         public override double GetRatio()

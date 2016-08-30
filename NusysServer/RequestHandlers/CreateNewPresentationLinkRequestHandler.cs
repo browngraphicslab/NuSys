@@ -31,6 +31,9 @@ namespace NusysServer
                 return new Message(new Dictionary<string, object>() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false } });
             }
 
+            //Update the collection's last edited time stamp
+            UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY));
+
             var presentationLink = CreatePresentationLinkModel(messageToPassIntoQuery);
             var modelJson = JsonConvert.SerializeObject(presentationLink);
 

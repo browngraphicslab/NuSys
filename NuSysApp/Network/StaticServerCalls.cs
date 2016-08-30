@@ -76,18 +76,20 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
 
-                //add the collection element after the sucessful request
-                await elementRequest.AddReturnedElementToSessionAsync();
 
                 //if we haven't loaded this collection before
-                if (!SessionController.Instance.ContentController.ContainsContentDataModel( collectionController.ContentDataModelId))
+                if (!SessionController.Instance.ContentController.ContainsContentDataModel(collectionController.ContentDataModelId))
                 {
                     //create a request to get the elements on the new collection
-                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(requestArgs.ParentCollectionId,1);
+                    var getWorkspaceRequest = new GetEntireWorkspaceRequest(collectionController.LibraryElementId, 1);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(getWorkspaceRequest);
                     await getWorkspaceRequest.AddReturnedDataToSessionAsync();
                     await getWorkspaceRequest.MakeCollectionFromReturnedElementsAsync();
                 }
+
+                //add the collection element after the sucessful request
+                await elementRequest.AddReturnedElementToSessionAsync();
+
                 //get and return the element collection controller
                 if (SessionController.Instance.IdToControllers.ContainsKey(requestArgs.Id))
                 {
@@ -112,19 +114,72 @@ namespace NuSysApp
 
             if (originalController.LibraryElementModel.Type != NusysConstants.ElementType.Text)
             {
+                dynamic args = new CreateNewLibraryElementRequestArgs();
+                dynamic model = null;
                 //Create and execute the new Library element request
-                var newLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs()
+                //Dear Harsh,
+                ///    This is how you do create deep copies.
+                //
+                //Love,
+                //    Sahil
+                //
+                //P.S.
+                //    If this breaks then good luck
+                //
+                // P.P.S.
+                //    Change the type from dynamic if this breaks, it'll make it easier
+                switch (originalController.LibraryElementModel.Type)
                 {
-                    Title = originalController.Title + " copy",
-                    ContentId = originalController.LibraryElementModel.ContentDataModelId,
-                    AccessType = originalController.LibraryElementModel.AccessType,
-                    LibraryElementType = originalController.LibraryElementModel.Type,
-                    LibraryElementId = newLibraryId,
-                    Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri,
-                    Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri,
-                    Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri
-                };
-                var newLibraryElementRequest = new CreateNewLibraryElementRequest(newLibraryElementRequestArgs);
+                    case NusysConstants.ElementType.Audio:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.PDF:
+                    case NusysConstants.ElementType.Video:
+                        args = new CreateNewLibraryElementRequestArgs();
+                        break;
+                    case NusysConstants.ElementType.VideoRegion:
+                    case NusysConstants.ElementType.AudioRegion:
+                        args = new CreateNewTimeSpanRegionRequestArgs();
+                        model = originalController.LibraryElementModel as AudioRegionModel;
+
+                        args.RegionStart = model.Start;
+                        args.RegionEnd = model.End;
+                        args.ClippingParentLibraryId = model.ClippingParentId;
+                        break;
+                    case NusysConstants.ElementType.ImageRegion:
+                        args = new CreateNewRectangleRegionLibraryElementRequestArgs();
+                        model = originalController.LibraryElementModel as RectangleRegion;
+
+                        args.RegionHeight = model.Height;
+                        args.RegionWidth = model.Width;
+                        args.TopLeftPoint = model.TopLeftPoint;
+                        args.ClippingParentLibraryId = model.ClippingParentId;
+                        break;
+                    case NusysConstants.ElementType.PdfRegion:
+                        args = new CreateNewPDFRegionLibraryElementRequestArgs();
+                        model = originalController.LibraryElementModel as PdfRegionModel;
+
+                        args.RegionHeight = model.Height;
+                        args.RegionWidth = model.Width;
+                        args.TopLeftPoint = model.TopLeftPoint;
+                        args.PageLocation = model.PageLocation;
+                        args.ClippingParentLibraryId = model.ClippingParentId;
+                        break;
+                    case NusysConstants.ElementType.Link:
+                   //     Debug.Fail("this should never even be hit because links are not copyable");
+                        return "";
+                        break;
+                }
+                args.Title = originalController.Title + " copy";
+                args.ContentId = originalController.LibraryElementModel.ContentDataModelId;
+                args.AccessType = originalController.LibraryElementModel.AccessType;
+                args.LibraryElementType = originalController.LibraryElementModel.Type;
+                args.LibraryElementId = newLibraryId;
+                args.Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri;
+                args.Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri;
+                args.Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri;
+                args.Metadata = new List<NusysIntermediate.MetadataEntry>(originalController.FullMetadata.Values);
+
+                var newLibraryElementRequest = new CreateNewLibraryElementRequest(args);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);
                 newLibraryElementRequest.AddReturnedLibraryElementToLibrary();
                 return newLibraryId;

@@ -29,6 +29,12 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string REQUEST_TYPE_STRING_KEY = "request_type";
 
+        /// <summary>
+        /// this constant will be the key with which all server args requests store their args classes. 
+        /// the associated value for this key should be deserializable into a server args base class. 
+        /// </summary>
+        public static readonly string SERVER_ARGS_REQUEST_ARGS_CLASS_KEY = "args_class_key";
+
         #endregion RequestManagementKeys
 
         #region RequestKeys
@@ -491,14 +497,16 @@ namespace NusysIntermediate
 
             #region GetAnalysisModelRequest
             /// <summary>
-            ///  This is the key that represent the ContentDataModel Id of the analysis model you wish to fetch when making the request.  
+            ///  This is the key that represent the ContentDataModel Ids of the analysis models you wish to fetch when making the request. Should
+            ///  hold list of strings.
             /// </summary>
-            public static readonly string GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID = "content_data_model_id";
+            public static readonly string GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS = "content_data_model_ids";
         
             /// <summary>
-            /// The key that represents the AnalysisModel Json that is returned to the sender after the request has been executed.
+            /// The key that represents the AnalysisModel Json list that is returned to the sender after the request has been executed.
+            /// Should hold list of JSONserialized analysis models
             /// </summary>
-            public static readonly string GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON = "returned_analysis_model";
+            public static readonly string GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS = "returned_analysis_models";
 
             #endregion GetAnalysisModelRequest
 
@@ -670,6 +678,30 @@ namespace NusysIntermediate
             public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
         
             #endregion DeleteInkStrokeRequest
+
+        #region MoveElementToCollectionRequest
+        /// <summary>
+        /// Key in message for sending the id of the element to move
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_ELEMENT_ID_KEY = "element_id";
+
+        /// <summary>
+        /// Key in message for sending the id the new parent collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_NEW_PARENT_COLLECTION_ID_KEY = "new_parent_collection_id";
+
+        /// <summary>
+        /// Key in message for sending the new x coordinate of the element in the new parent
+        /// collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_X_KEY = "x";
+
+        /// <summary>
+        /// Key in message for sending the new y coordinate of the element in the new parent
+        /// collection
+        /// </summary>
+        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY = "y";
+        #endregion MoveElementToCollectionRequest
 
         #endregion RequestKeys
 
@@ -1461,6 +1493,13 @@ namespace NusysIntermediate
             GetRelatedDocumentsRequest,
             CreateInkStrokeRequest,
             DeleteInkStrokeRequest,
+            MoveElementToCollectionRequest,
+
+            /// <summary>
+            /// this request type is used to create a new collection content and default library element with a pre-populated collection.
+            /// you are able to add elements to the request be default. 
+            /// </summary>
+            CreateNewCollectionRequest,
 
             /// <summary>
             /// request used to get all the aliases of a library element.  This should return all of the element models

@@ -32,7 +32,8 @@ namespace NusysServer
 
             //Update the metadata entry from the appropriate library element
             var success = UpdateMetadataSQLTable(updateMetadataEntryMessage);
-
+            //Update the last edited time stamp of the library element 
+            UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY));
             ForwardMessage(message, senderHandler);
 
             var returnMessage = new Message(message);

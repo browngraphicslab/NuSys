@@ -100,33 +100,41 @@ namespace NuSysApp
                     {
                         StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
                     };
-                    var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
-                    string id = null;
-                    if (dict.ContainsKey(NusysConstants.NOTIFICATION_TYPE_STRING_KEY)) //if this is a notification
+                    Task.Run(async delegate
                     {
-                        OnNewNotification?.Invoke(new Message(dict));
-                    }
-                    else if (dict.ContainsKey(NusysConstants.REQUEST_ERROR_MESSAGE_KEY))//if this is an error notification
-                    {
-                        Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
-                        Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
-                        Debug.WriteLine("  *******************  END SERVER ERROR MESSAGE  *******************  ");
-                        if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING)) //if we can untangle a waiting request
+                        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
+                        string id = null;
+                        if (dict.ContainsKey(NusysConstants.NOTIFICATION_TYPE_STRING_KEY)) //if this is a notification
                         {
-                            ManualResetEvent outMre;
-                            _requestEventDictionary.TryRemove(
-                                dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING).ToString(),out outMre);
+                            OnNewNotification?.Invoke(new Message(dict));
                         }
-                    }
-                    else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING)) //if we are getting the return of an awaiting request
-                    {
-                        await ReturnRequestAsync(new Message(dict));
-                    }
-                    else //else it must be a regular mesage from another client
-                    {
-                        OnMessageRecieved?.Invoke(new Message(dict));
-                    }
-                    
+                        else if (dict.ContainsKey(NusysConstants.REQUEST_ERROR_MESSAGE_KEY))
+                            //if this is an error notification
+                        {
+                            Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
+                            Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
+                            Debug.WriteLine("  *******************  END SERVER ERROR MESSAGE  *******************  ");
+                            if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+                                //if we can untangle a waiting request
+                            {
+                                ManualResetEvent outMre;
+                                _requestEventDictionary.TryRemove(
+                                    dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING).ToString(),
+                                    out outMre);
+                                outMre?.Set();
+                            }
+                        }
+                        else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+                            //if we are getting the return of an awaiting request
+                        {
+                            await ReturnRequestAsync(new Message(dict));
+                        }
+                        else //else it must be a regular mesage from another client
+                        {
+                            OnMessageRecieved?.Invoke(new Message(dict));
+                        }
+                    });
+
                 }
             }
             catch (Exception e)
@@ -194,7 +202,10 @@ namespace NuSysApp
                 SendMessageToServer(message);
             });
             mre.WaitOne();
-            Debug.Assert(_returnMessages.ContainsKey(mreId));
+            if (!_returnMessages.ContainsKey(mreId))
+            {
+                return null;//only does this if the request failed
+            }
             Message outMessage;
             _returnMessages.TryRemove(mreId, out outMessage);
             Debug.Assert(outMessage != null);

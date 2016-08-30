@@ -9,7 +9,7 @@
     d:DesignHeight="40"
     d:DesignWidth="820">
 
-    <Grid Height="40">
+    <Grid Height="40" DoubleTapped="Collection_OnDoubleTapped">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="320"></ColumnDefinition>
             <ColumnDefinition Width="100"></ColumnDefinition>
