@@ -159,6 +159,13 @@ namespace NuSysApp
             var yDiff = curve.Point3.Y - pathfigure.StartPoint.Y;
             var angle = Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
             var tranformGroup = new TransformGroup();
+            if (double.IsNaN(curve.Point1.X) || double.IsNaN(curve.Point1.Y) ||
+                double.IsNaN(curve.Point2.X) || double.IsNaN(curve.Point2.Y) ||
+                double.IsNaN(curve.Point3.X) || double.IsNaN(curve.Point3.Y))
+            {
+                Debug.WriteLine("One of the points in the bezier link had a NaN value");
+                return;
+            }
             tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 20, CenterY = 20 });
             tranformGroup.Children.Add(new TranslateTransform { X = center.X - 20, Y = center.Y - 20 });
 

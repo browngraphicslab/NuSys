@@ -43,7 +43,7 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            //ResetTables();
+            //ResetTables(true);
             //SetUpTables();
 
 
@@ -126,7 +126,7 @@ namespace NusysServer
                 NusysConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar(1028), " +
                 NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY + " datetime, " +
                 NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " float, " +
-                NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(4096));");
+                NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(MAX));");
 
             var inkTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Ink) + " (" +
                 NusysConstants.INK_TABLE_STROKE_ID + " varchar(128), " +

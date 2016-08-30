@@ -10,7 +10,7 @@ namespace NusysIntermediate
     /// a super class for all the analysis models.  
     /// This abstract class simply requires the Analysis model to have a Content Data Model Id that points back to the content that this model will be the analysis of.
     /// </summary>
-    public abstract class AnalysisModel
+    public class AnalysisModel
     {
         /// <summary>
         /// the Content Data Model ID of the content that his Analysis models analyzes. 

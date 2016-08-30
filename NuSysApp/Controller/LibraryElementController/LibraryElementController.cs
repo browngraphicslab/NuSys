@@ -737,7 +737,7 @@ namespace NuSysApp
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null, double width = Constants.DefaultNodeSize, double height = Constants.DefaultNodeSize)
+        public virtual async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null, double width = Constants.DefaultNodeSize, double height = Constants.DefaultNodeSize)
         {
             //the workspace id we are using is the passes in one, or the session's current workspace Id if it is null
             collectionId = collectionId ?? SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
@@ -806,10 +806,10 @@ namespace NuSysApp
         ///  a.ForEach(kvp => b[kvp.Key] = (b.ContainsKey(kvp.Key) ? b[kvp.Key] : 0) + kvp.Value);
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool includeContent = true)
+        public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool makeServerCallsIfNeeded = true)
         {
             var dict = FullMetadata.SelectMany(kvp => kvp.Value.Values).ToImmutableHashSet().ToDictionary(s => s, s=> 1);//so far all we know for suggested tags is the metadata values
-            if (!includeContent)
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(LibraryElementModel.ContentDataModelId) && !makeServerCallsIfNeeded)
             {
                 return dict;
             }
@@ -819,7 +819,7 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(LibraryElementModel.ContentDataModelId);//this await call will be constant time if it exists locally already
             }
 
-            var contentDict = await ContentDataController.GetSuggestedTagsAsync(includeContent);
+            var contentDict = await ContentDataController.GetSuggestedTagsAsync(makeServerCallsIfNeeded);
             contentDict.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
 
             return dict;

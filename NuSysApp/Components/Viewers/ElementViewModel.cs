@@ -106,6 +106,10 @@ namespace NuSysApp
 
         protected virtual void OnSizeChanged(object source, double width, double height)
         {
+            if (width < Constants.MinNodeSize || height < Constants.MinNodeSize)
+            {
+                return;
+            }
             _width = width;
             _height = height;
             

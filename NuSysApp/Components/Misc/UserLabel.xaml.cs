@@ -43,7 +43,8 @@ namespace NuSysApp
                     }
                     else
                     {
-                        _userName = content.Substring(0, 1).ToUpper();
+                        
+                        _userName = content.TrimStart().Substring(0, 1).ToUpper();
                     }
                 }
                 else

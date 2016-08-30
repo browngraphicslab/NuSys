@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -16,6 +17,17 @@ namespace NuSysApp
     public class GetAnalysisModelRequest : Request
     {
         /// <summary>
+        /// preferred constructor.  Takes in the ContentDataModel Ids of the ContentDataModels we are fetching this AnalysisModels of.
+        /// After calling this constructor, await the execution of ths request and then call GetReturnedAnalysisModel.
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        public GetAnalysisModelRequest(List<string> contentDataModelIds) : base(NusysConstants.RequestType.GetAnalysisModelRequest)
+        {
+            Debug.Assert(contentDataModelIds != null && contentDataModelIds.Any());
+            _message[NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS] = JsonConvert.SerializeObject(contentDataModelIds);
+        }
+
+        /// <summary>
         /// preferred constructor.  Takes in the ContentDataModel Id of the ContentDataModel we are fetching this AnalysisModel of.
         /// After calling this constructor, await the execution of ths request and then call GetReturnedAnalysisModel.
         /// </summary>
@@ -23,7 +35,7 @@ namespace NuSysApp
         public GetAnalysisModelRequest(string contentDataModelId) : base(NusysConstants.RequestType.GetAnalysisModelRequest)
         {
             Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
-            _message[NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID] = contentDataModelId;
+            _message[NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS] = JsonConvert.SerializeObject(new List<string>() { contentDataModelId });
         }
 
         /// <summary>
@@ -32,7 +44,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task CheckOutgoingRequest()
         {
-            Debug.Assert(_message.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID));
+            Debug.Assert(_message.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS));
         }
 
         /// <summary>
@@ -48,30 +60,42 @@ namespace NuSysApp
         /// 
         /// </summary>
         /// <returns></returns>
-        public AnalysisModel GetReturnedAnalysisModel()
+        public List<AnalysisModel> GetReturnedAnalysisModel()
         {
             CheckWasSuccessfull();
-            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON));
+            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS));
 
             //get the json
-            var analysisJson = _returnMessage.GetString(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON);
-
+            List<string> analysisJsonList;
+            if (_returnMessage.Get(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS) == null)
+            {
+                analysisJsonList = new List<string>();
+            }
+            else
+            {
+                analysisJsonList = _returnMessage.GetList<string>(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS);
+            }
+            var analysisModelsList = new List<AnalysisModel>();
             //returns null if the json is null, aka no mdel was found on the server
-            if (analysisJson == null)
+            if (analysisJsonList == null)
             {
                 return null;
             }
 
-
-            //get the contentDataModel
-            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(_message.GetString(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID));
-            if (contentDataModel == null)
+            foreach(var analysisJson in analysisJsonList)
             {
-                throw new Exception("The contentDataModel for the requested Analysis Model was null locally.");
-            }
+                var analysisModel = JsonConvert.DeserializeObject<AnalysisModel>(analysisJson);
+                //get the contentDataModel
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(analysisModel?.ContentDataModelId);
+                if (contentDataModel == null)
+                {
+                    throw new Exception("The contentDataModel for the requested Analysis Model was null locally.");
+                }
 
-            //return the analysis model deserialized to the correct type
-            return AnalysisModelFactory.DeserializeFromString(analysisJson, contentDataModel.ContentType);
+                //return the analysis model deserialized to the correct type
+                analysisModelsList.Add(AnalysisModelFactory.DeserializeFromString(analysisJson, contentDataModel.ContentType));
+            }
+            return analysisModelsList;
         }
     }
 }

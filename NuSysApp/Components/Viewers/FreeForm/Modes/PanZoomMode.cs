@@ -88,6 +88,13 @@ namespace NuSysApp
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             var sv = SessionController.Instance.SessionView.FreeFormViewer;
+
+            if (sv == null)
+            {
+                Debug.WriteLine("cannot cull screen because sessionview.freeformviewer is null");
+                return;
+            }
+
             var rect = vm.CompositeTransform.Inverse.TransformBounds(new Rect(-200, -200, sv.Width + 400, sv.Height + 400));
             var atoms = vm.AtomViewList.ToArray();
             foreach (var frameworkElement in atoms)

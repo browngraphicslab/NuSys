@@ -374,10 +374,10 @@ namespace NuSysApp
 
                
             //xMainRectangle.StrokeThickness = Constants.RegionBorderNormalThickness/ scaleX;
-            xMainRectangleBorder.BorderThickness = new Thickness(Math.Max(Constants.RegionBorderNormalThickness/scaleX,Constants.RegionBorderSmallestThickness),
-                Math.Max(Constants.RegionBorderNormalThickness / scaleY, Constants.RegionBorderSmallestThickness),
-                Math.Max(Constants.RegionBorderNormalThickness / scaleX, Constants.RegionBorderSmallestThickness),
-                Math.Max(Constants.RegionBorderNormalThickness / scaleY, Constants.RegionBorderSmallestThickness));
+            xMainRectangleBorder.BorderThickness = new Thickness(Constants.RegionBorderNormalThickness/ scaleY,
+                Constants.RegionBorderNormalThickness / scaleY,
+                Constants.RegionBorderNormalThickness / scaleY,
+                Constants.RegionBorderNormalThickness / scaleY);
         }
 
         public void Dispose(object sender, EventArgs e)

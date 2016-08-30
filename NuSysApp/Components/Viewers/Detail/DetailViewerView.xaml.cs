@@ -237,7 +237,7 @@ namespace NuSysApp
                 xMetadataEditorView.Update();
 
                 //If a region was previously loaded in the detail view, the region viewer should be added back.
-                if (xRootPivot.Items.Count == 3)
+                if (xRootPivot.Items.Count == 4)
                 {
                     var pivotItem = _regionEditorPivotItem as PivotItem;
                     xRootPivot.Items.Add(pivotItem);
@@ -614,6 +614,10 @@ namespace NuSysApp
             {
                 var libraryId = vm?.CurrentElementController.LibraryElementModel.LibraryElementId;
                 var idOfCopy = await StaticServerCalls.CreateDeepCopy(libraryId);
+                if (idOfCopy == "")
+                {
+                    return;
+                }
                 var copyController = SessionController.Instance.ContentController.GetLibraryElementController(idOfCopy);
                 SessionController.Instance.SessionView.DetailViewerView.ShowElement(copyController);
             });

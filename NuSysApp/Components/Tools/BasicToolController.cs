@@ -112,13 +112,16 @@ namespace NuSysApp
             var allMetadata = new Dictionary<string, List<string>>();
             foreach (var controller in libraryElementControllers)
             {
-                foreach (var kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
+                if(controller != null)
                 {
-                    if (!allMetadata.ContainsKey(kvp.Key))
+                    foreach (var kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
                     {
-                        allMetadata.Add(kvp.Key, new List<string>());
+                        if (!allMetadata.ContainsKey(kvp.Key))
+                        {
+                            allMetadata.Add(kvp.Key, new List<string>());
+                        }
+                        allMetadata[kvp.Key].AddRange(kvp.Value);
                     }
-                    allMetadata[kvp.Key].AddRange(kvp.Value);
                 }
             }
             switch (BasicToolModel.Filter)

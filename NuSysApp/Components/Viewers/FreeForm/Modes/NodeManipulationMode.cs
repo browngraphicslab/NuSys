@@ -54,7 +54,7 @@ namespace NuSysApp
             foreach (var userControl in vm.AtomViewList)
             {
 
-                if (!(userControl is UndoButton))
+                if (!(userControl is UndoButton) && userControl != null)
                 {
                     userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationStarted += ManipulationStarting;
@@ -91,7 +91,7 @@ namespace NuSysApp
             var userControl = (UserControl)sender;
             //userControl.PointerReleased -= UserControl_PointerReleased;
            
-            manipulationCompletedRoutedEventArgs.Handled = true;
+           // manipulationCompletedRoutedEventArgs.Handled = true;
         
         }
 
@@ -140,7 +140,8 @@ namespace NuSysApp
             foreach (var n in newNodes)
             {
                 var userControl = (FrameworkElement) n;
-                if (userControl.DataContext is ElementViewModel) { 
+                
+                if (userControl != null && userControl.DataContext is ElementViewModel) { 
                     userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationDelta += OnManipulationDelta;
                     userControl.ManipulationStarted += ManipulationStarting;

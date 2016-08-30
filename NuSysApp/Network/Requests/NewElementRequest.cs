@@ -123,11 +123,15 @@ namespace NuSysApp
             }
             Debug.Assert(libraryElementController != null); //make sure the controller exists
 
+            if (!SessionController.Instance.CollectionIdsInUse.Contains(model.ParentCollectionId)) //if we don't need the collection that this element lives in
+            {
+                return;
+            }
 
             if (libraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.Collection && //if we have a collection
-                !SessionController.Instance.ContentController.ContainsContentDataModel(libraryElementController.LibraryElementModel.ContentDataModelId))//and the content isn't loaded
+                !SessionController.Instance.CollectionIdsInUse.Contains(libraryElementController.LibraryElementModel.LibraryElementId))//and the content isn't loaded
             {//send a request to fetch the entire workspace
-                var workspaceRequest = new GetEntireWorkspaceRequest(libraryElementController.LibraryElementModel.ContentDataModelId);
+                var workspaceRequest = new GetEntireWorkspaceRequest(libraryElementController.LibraryElementModel.LibraryElementId);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(workspaceRequest);
                 await workspaceRequest.AddReturnedDataToSessionAsync();
                 await workspaceRequest.MakeCollectionFromReturnedElementsAsync();

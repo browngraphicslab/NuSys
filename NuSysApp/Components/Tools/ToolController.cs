@@ -264,7 +264,7 @@ namespace NuSysApp
         /// </summary>
         protected string GetDate(LibraryElementModel libraryElementModel)
         {
-            if (libraryElementModel.Timestamp == null)
+            if (string.IsNullOrEmpty(libraryElementModel?.Timestamp))
             {
                 return DateTime.UtcNow.ToStartOfDay().ToString();
             }
@@ -278,7 +278,7 @@ namespace NuSysApp
         /// </summary>
         protected string GetLastEditedDate(LibraryElementModel libraryElementModel)
         {
-            if (libraryElementModel.LastEditedTimestamp == null)
+            if (string.IsNullOrEmpty(libraryElementModel?.LastEditedTimestamp))
             {
                 return DateTime.UtcNow.ToStartOfDay().ToString();
             }
@@ -294,6 +294,8 @@ namespace NuSysApp
             if (controller != null)
             {
                 var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
+
+                metadata.Add("Suggested_Keywords", controller.GetSuggestedTagsAsync(false).Result.Keys.ToList());
 
                 var element = controller.LibraryElementModel;
                 Debug.Assert(element != null);
