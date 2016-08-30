@@ -96,10 +96,10 @@ namespace NuSysApp
         ///  a.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool includeAnalysisModel = true)
+        public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool makeServerCallsIfNeeded = true)
         {
             var dict = new Dictionary<string, int>() { { ContentDataModel.ContentType.ToString(), 1}}; //add the content data type string
-            if (!includeAnalysisModel)
+            if (!SessionController.Instance.ContentController.HasAnalysisModel(ContentDataModel.ContentId) && !makeServerCallsIfNeeded)
             {
                 return dict;
             }
