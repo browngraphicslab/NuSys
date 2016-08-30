@@ -122,6 +122,12 @@ namespace NuSysApp
                 //
                 //Love,
                 //    Sahil
+                //
+                //P.S.
+                //    If this breaks then good luck
+                //
+                // P.P.S.
+                //    Change the type from dynamic if this breaks, it'll make it easier
                 switch (originalController.LibraryElementModel.Type)
                 {
                     case NusysConstants.ElementType.Audio:
