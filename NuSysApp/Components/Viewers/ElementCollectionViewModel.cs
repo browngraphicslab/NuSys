@@ -41,6 +41,7 @@ namespace NuSysApp
         public float CameraScale { get; set; } = 1f;
 
         public bool IsFinite { get; set; }
+        public bool IsShaped { get; set; }
 
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
@@ -51,6 +52,7 @@ namespace NuSysApp
 
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
+            IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;
             
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;

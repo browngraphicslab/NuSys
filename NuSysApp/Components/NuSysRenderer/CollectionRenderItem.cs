@@ -176,11 +176,7 @@ namespace NuSysApp
                     else if (vm is ElementCollectionViewModel)
                     {
                         var collectionVm = (ElementCollectionViewModel) vm;
-                        var collectionLibaryElementModel = (CollectionLibraryElementModel)collectionVm.Controller.LibraryElementModel;
-                        if (collectionLibaryElementModel.ShapePoints == null)
-                            item = new UnshapedCollectionRenderItem((ElementCollectionViewModel) vm, this, ResourceCreator);
-                        else
-                            item = new ShapedCollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
+                        item = new ShapedCollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
                         await item.Load();
                         _renderItems2.Add(item);
                     }

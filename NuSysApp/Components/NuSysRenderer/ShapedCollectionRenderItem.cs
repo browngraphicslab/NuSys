@@ -10,6 +10,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
 using Windows.Foundation;
+using Windows.UI.Input.Inking;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -40,11 +41,19 @@ namespace NuSysApp
             if (!IsDirty)
                 return;
           
-
-            if (_recomputeShape) { 
+            if ((_vm.IsFinite || _vm.IsShaped) && _recomputeShape) { 
                 var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
-                var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y));
-                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts.ToArray());
+                var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
+                if (pts.Count() == 5)
+                {
+                    _shape = CanvasGeometry.CreateRectangle(ResourceCreator, pts[0].X, pts[0].Y, pts[2].X - pts[0].X,
+                        pts[2].Y - pts[0].Y);
+                }
+                else
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
+                
                 _shapeBounds = _shape.ComputeBounds();
                 _recomputeShape = false;
             }
@@ -56,7 +65,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (_shape == null || _rect == null)
+            if (_rect == null)
                 return;
 
             var orgTransform = ds.Transform;
@@ -86,7 +95,7 @@ namespace NuSysApp
             }
 
             CanvasGeometry mask;
-            if (_vm.IsFinite)
+            if (_vm.IsFinite && _shape != null)
             {
                 var scaleFactor = (float)boundaries.Width / (float)_shapeBounds.Width;;
                 S = Matrix3x2.CreateScale(scaleFactor);
@@ -97,12 +106,13 @@ namespace NuSysApp
             {
                 ds.Transform = GetTransform() * orgTransform;
                 mask = _rect;
-            }        
-
+            }     
+            
             using (ds.CreateLayer(1, mask))
             {
                 ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
-                ds.FillGeometry(_shape, Colors.DarkRed);
+                if (_vm.IsShaped)
+                    ds.FillGeometry(_shape, Colors.DarkRed);
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 

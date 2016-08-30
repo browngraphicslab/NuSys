@@ -31,6 +31,7 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class FreeFormViewer
     {
+        private List<PointModel> _latestStroke;
         private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
         private FreeFormViewerViewModel _vm;
@@ -62,15 +63,7 @@ namespace NuSysApp
 
             xRenderCanvas.CreateResources += async delegate
             {
-                var coll = (CollectionLibraryElementModel)vm.Controller.LibraryElementModel;
-                if (coll.ShapePoints == null || coll.ShapePoints.Count <= 4) {  
-                    InitialCollection = new UnshapedCollectionRenderItem(vm, null, xRenderCanvas, true);
-                }
-                else if (coll.ShapePoints != null && coll.ShapePoints.Count > 4)
-                {
-                    InitialCollection = new ShapedCollectionRenderItem(vm, null, xRenderCanvas, true);
-                }
-
+                InitialCollection = new ShapedCollectionRenderItem(vm, null, xRenderCanvas, true);
                 await NuSysRenderer.Instance.Init(xRenderCanvas, InitialCollection);
                 vm.X = 0;
                 vm.Y = 0;
@@ -224,21 +217,50 @@ namespace NuSysApp
 
         private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
         {
-            var shapePoints = shaped ? CurrentCollection.InkRenderItem.LatestStroke.GetInkPoints() .Select(p => new PointModel(p.Position.X, p.Position.Y)).ToList() : null;
-            Rect boundingBox;
+            List<PointModel> shapePoints = null;
+            Rect strokeBoundingBox;
             double offsetX = 0;
             double offsetY = 0;
-            if (shaped)
+
+            Rect targetScreenRect;
+            var collectionTransform = NuSysRenderer.Instance.GetCollectionTransform(CurrentCollection);
+            if (shaped && _latestStroke != null)
             {
-                boundingBox = Geometry.PointCollecionToBoundingRect(shapePoints);
-                offsetX = boundingBox.X - 50000;
-                offsetY = boundingBox.Y - 50000;
-                foreach (var p in shapePoints)
+                strokeBoundingBox = Geometry.PointCollecionToBoundingRect(_latestStroke);
+                offsetX = strokeBoundingBox.X - 50000;
+                offsetY = strokeBoundingBox.Y - 50000;
+                foreach (var p in _latestStroke)
                 {
                     p.X -= offsetX;
                     p.Y -= offsetY;
-                }                
+                }
+
+                shapePoints = _latestStroke;
+                targetScreenRect = Win2dUtil.TransformRect(strokeBoundingBox, collectionTransform);
             }
+            else if (_latestStroke == null)
+            {
+                targetScreenRect = NuSysRenderer.Instance.ElementSelectionRenderItem._screenRect;
+                
+            }
+
+            var targetPointTl = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)targetScreenRect.X, (float)targetScreenRect.Y), CurrentCollection);
+            var targetPointBr = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)(targetScreenRect.X + targetScreenRect.Width), (float)(targetScreenRect.Y + targetScreenRect.Height)), CurrentCollection);
+
+            if (shaped && _latestStroke != null)
+            {
+                shapePoints = _latestStroke;
+            } else if ((shaped || finite) && _latestStroke == null)
+            {
+                shapePoints = new List<PointModel> {
+                    new PointModel(targetPointTl.X, targetPointTl.Y),
+                    new PointModel(targetPointBr.X, targetPointTl.Y),
+                    new PointModel(targetPointBr.X, targetPointBr.Y),
+                    new PointModel(targetPointTl.X, targetPointBr.Y),
+                    new PointModel(targetPointTl.X, targetPointTl.Y)};
+            }
+
+
             var createNewContentRequestArgs = new CreateNewContentRequestArgs
             {
                 LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
@@ -251,7 +273,7 @@ namespace NuSysApp
                     IsFiniteCollection = finite, 
                     ShapePoints = shapePoints
 
-                   },
+                },
                 ContentId = SessionController.Instance.GenerateId()
             };
 
@@ -260,19 +282,6 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
             contentRequest.AddReturnedLibraryElementToLibrary();
 
-            Rect targetScreenRect;
-            var collectionTransform = NuSysRenderer.Instance.GetCollectionTransform(CurrentCollection);
-            if (shaped)
-            {
-                targetScreenRect = Win2dUtil.TransformRect(boundingBox, collectionTransform);
-            }
-            else
-            {
-                targetScreenRect = NuSysRenderer.Instance.ElementSelectionRenderItem._screenRect;
-            }
-
-            var targetPointTl = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)targetScreenRect.X, (float)targetScreenRect.Y), CurrentCollection);
-            var targetPointBr = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)(targetScreenRect.X + targetScreenRect.Width), (float)(targetScreenRect.Y + targetScreenRect.Height)), CurrentCollection);
 
             // create a new add element to collection request
             var newElementRequestArgs = new NewElementRequestArgs
@@ -314,6 +323,7 @@ namespace NuSysApp
                 {
                     elementRenderItem.ViewModel.Controller?.RequestDelete();
                 }
+                ClearSelections();
             }
             if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnGroup)
             {
@@ -327,6 +337,8 @@ namespace NuSysApp
             ClearSelections();
             var multipoint = new MultiPoint(ink.Select(p => new NetTopologySuite.Geometries.Point(p.X, p.Y)).ToArray());
             var ch = multipoint.ConvexHull();
+            _latestStroke = ch.Coordinates.Select(p => new PointModel(p.X, p.Y)).ToList();
+
             foreach (var renderItem in CurrentCollection.GetRenderItems().OfType<ElementRenderItem>())
             {
                 var vm = renderItem.ViewModel;
@@ -549,6 +561,7 @@ namespace NuSysApp
                 selection.ViewModel.IsSelected = false;
             }
             Selections.Clear();
+            _latestStroke = null;
         }
 
         private void UpdateNonWin2dElements()

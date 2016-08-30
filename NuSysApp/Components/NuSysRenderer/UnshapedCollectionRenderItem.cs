@@ -8,22 +8,49 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
+using System.Numerics;
 
 namespace NuSysApp
 {
     public class UnshapedCollectionRenderItem : CollectionRenderItem
     {
-        
+        private CanvasGeometry _shape;
+        private CanvasGeometry _rect;
+        private ElementCollectionViewModel _vm;
+        private bool _recomputeShape = true;
+        private Rect _shapeBounds;
+
         public UnshapedCollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas, interactionEnabled)
         {
+            _vm = vm;
+            _vm.Controller.SizeChanged += ControllerOnSizeChanged;
         }
+
+        private void ControllerOnSizeChanged(object source, double width, double height)
+        {
+            IsDirty = true;
+        }
+
 
         public override void Update()
         {
             base.Update();
+
             if (!IsDirty)
                 return;
-           
+
+            if (_recomputeShape)
+            {
+                var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
+                var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y));
+                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts.ToArray());
+                _shapeBounds = _shape.ComputeBounds();
+                _recomputeShape = false;
+            }
+
+            var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
+            _rect = CanvasGeometry.CreateRectangle(ResourceCreator, boundaries);
             IsDirty = false;
         }
 
