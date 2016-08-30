@@ -116,6 +116,11 @@ namespace NuSysApp
             {
                 CreateNewLibraryElementRequestArgs args = new CreateNewLibraryElementRequestArgs();
                 //Create and execute the new Library element request
+                //Harsh,
+                ///    This is how you do create deep copies.
+                //
+                //Love,
+                //    Sahil
                 switch (originalController.LibraryElementModel.Type)
                 {
                     case NusysConstants.ElementType.Audio:
