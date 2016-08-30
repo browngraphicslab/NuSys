@@ -302,7 +302,7 @@ namespace NuSysApp
             var request = new GetAnalysisModelRequest(contentDataModelId);//otherwise make a reuqest
             await ExecuteRequestAsync(request);
 
-            var returnedAnalysisModel = request.GetReturnedAnalysisModel();//get the returned analysis model
+            var returnedAnalysisModel = request.GetReturnedAnalysisModel().First();//get the returned analysis model
 
             SessionController.Instance.ContentController.AddAnalysisModel(returnedAnalysisModel, contentDataModelId);//add the new model to the session controller
 
