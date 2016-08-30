@@ -295,7 +295,7 @@ namespace NuSysApp
             {
                 var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
 
-                metadata.Add("Suggested_Keywords", controller.GetSuggestedTagsAsync(false).Result.Keys.ToList());
+                metadata.Add("Suggested_Keywords", controller.ContentDataController?.GetSuggestedTagsAsync(false)?.Result?.Keys?.ToList() ?? new List<string>());
 
                 var element = controller.LibraryElementModel;
                 Debug.Assert(element != null);
