@@ -121,7 +121,15 @@ namespace NuSysApp
                 var byteArray = await MediaUtil.IRandomAcessStreamToByteArray(source);
                 thumbnails[thumbSizes[i]] = Convert.ToBase64String(byteArray);
             }
-
+            if (storageFile.FileType == ".mp4")
+            {
+                var thumbnail = new BitmapImage();
+                var videoprops = await storageFile.Properties.GetVideoPropertiesAsync();
+                
+                var source = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem,videoprops.Width);
+                var byteArray = await MediaUtil.IRandomAcessStreamToByteArray(source);
+                thumbnails[NusysConstants.ThumbnailSize.Large] = Convert.ToBase64String(byteArray);
+            }
             // Return the completed dictionary
             return thumbnails;
         }
