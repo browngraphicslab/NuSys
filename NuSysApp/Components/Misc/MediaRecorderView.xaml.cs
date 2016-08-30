@@ -199,15 +199,19 @@ namespace NuSysApp
                     fileExtension = Constants.RecordingNodeVideoFileType;
 
                     //TODO: make thumbnail for video
-                    //Save file temporarily so we can create a thumbnail.
+                    //Create temporary storagefile.
                     var tempFileName = "recordedvideo" + fileExtension;
                     var storageFile = await NuSysStorages.SaveFolder.CreateFileAsync(tempFileName, CreationCollisionOption.ReplaceExisting);
+                    //Write data byte array to storagefile.
                     await Windows.Storage.FileIO.WriteBytesAsync(storageFile, data);
+                    //Create thumbnails and set as args
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                     createNewLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
                     createNewLibraryElementRequestArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
                     createNewLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
 
+                    // delete the video file that we saved
+                    await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Recording nodes do not support the given type yet");
