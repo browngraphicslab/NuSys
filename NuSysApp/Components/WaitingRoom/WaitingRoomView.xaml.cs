@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Windows.Data.Xml.Dom;
 using Windows.Storage;
+using Windows.System;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
