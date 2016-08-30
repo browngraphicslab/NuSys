@@ -213,23 +213,23 @@
                             Title</TextBlock>
                         <Grid x:Name="Details" VerticalAlignment="Center" Margin="50,20,50,0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="30"></RowDefinition>
-                                <RowDefinition Height="30"></RowDefinition>
-                                <RowDefinition Height="30"></RowDefinition>
-                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{StaticResource color3}">Creator:</TextBlock>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{StaticResource color3}">Last Edited By:</TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{StaticResource color3}">Date Created:</TextBlock>
-                            <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{StaticResource color3}">Tags:</TextBlock>
-                            <TextBlock x:Name="CreatorText" Grid.Row="0" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
-                            <TextBlock x:Name="LastEditedText"  Grid.Row="2" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
-                            <TextBlock x:Name="CreateDateText" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
-                            <TextBlock x:Name="TagsText" Grid.Row="3" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,2,0,2"  Foreground="{StaticResource color3}">Creator:</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,2,0,2" Foreground="{StaticResource color3}">Last Edited By:</TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,2,0,2" Foreground="{StaticResource color3}">Date Created:</TextBlock>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,2,0,2" Foreground="{StaticResource color3}">Tags:</TextBlock>
+                            <TextBlock x:Name="CreatorText" Margin="0,2,0,2" TextWrapping="Wrap"  Grid.Row="0" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                            <TextBlock x:Name="LastEditedText" Margin="0,2,0,2" TextWrapping="Wrap"  Grid.Row="2" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                            <TextBlock x:Name="CreateDateText" Margin="0,2,0,2" TextWrapping="Wrap"  Grid.Row="1" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
+                            <TextBlock x:Name="TagsText" Margin="0,2,0,2" TextWrapping="Wrap"  Grid.Row="3" Grid.Column="1" Foreground="{StaticResource color3}" TextAlignment="Right">:)</TextBlock>
                         </Grid>
                     </Grid>
                     <Grid x:Name="PreviewPanel" Visibility="Visible">

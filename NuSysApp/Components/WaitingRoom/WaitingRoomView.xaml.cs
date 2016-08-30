@@ -457,6 +457,28 @@ namespace NuSysApp
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
 
+                //set tags in window if it has any
+                if (_selectedCollection.Keywords != null)
+                {
+                    TagsText.Text = "";
+                    foreach (var tag in _selectedCollection.Keywords)
+                    {
+                        if (TagsText.Text == "")
+                        {
+                            TagsText.Text = TagsText.Text + tag.Text;
+                        }
+                        else
+                        {
+                            TagsText.Text = TagsText.Text + ", " + tag.Text;
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    TagsText.Text = "None";
+                }
+
                 SearchBox.Text = "";
 
                 PreviewPanel.Visibility = Visibility.Collapsed;
