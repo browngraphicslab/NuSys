@@ -66,7 +66,15 @@ namespace NuSysApp
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS));
 
             //get the json
-            var analysisJsonList = _returnMessage.GetList<string>(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS);
+            List<string> analysisJsonList;
+            if (_returnMessage.Get(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS) == null)
+            {
+                analysisJsonList = new List<string>();
+            }
+            else
+            {
+                analysisJsonList = _returnMessage.GetList<string>(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS);
+            }
             var analysisModelsList = new List<AnalysisModel>();
             //returns null if the json is null, aka no mdel was found on the server
             if (analysisJsonList == null)
