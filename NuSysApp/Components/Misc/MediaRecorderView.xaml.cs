@@ -199,8 +199,14 @@ namespace NuSysApp
                     fileExtension = Constants.RecordingNodeVideoFileType;
 
                     //TODO: make thumbnail for video
-
-                    //thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
+                    //Save file temporarily so we can create a thumbnail.
+                    var tempFileName = "recordedvideo" + fileExtension;
+                    var storageFile = await NuSysStorages.SaveFolder.CreateFileAsync(tempFileName, CreationCollisionOption.ReplaceExisting);
+                    await Windows.Storage.FileIO.WriteBytesAsync(storageFile, data);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
+                    createNewLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+                    createNewLibraryElementRequestArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+                    createNewLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
 
                     break;
                 default:
