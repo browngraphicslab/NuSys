@@ -47,7 +47,6 @@ namespace NusysServer
         }
 
         /// <summary>
-<<<<<<< HEAD
         /// This is a protected method that will get you the server args of a certain request.
         /// This method first casts the requeest to the type you specified, then gets the args from it.
         /// 
@@ -63,10 +62,13 @@ namespace NusysServer
             var castRequest = new ServerArgsRequest<T>(request); //cast the request essentially
             if (castRequest == null)
             {
-                throw new Exception("Request was of unexpected type.  Expected a ServerArgsRequest of argsClass type : "+typeof(T).ToString());
+                throw new Exception(
+                    "Request was of unexpected type.  Expected a ServerArgsRequest of argsClass type : " +
+                    typeof(T).ToString());
             }
             return castRequest.GetArgsClassFromMessage();
-=======
+        }
+
         /// a protected method used to update a library element's last edited time stamp to the current time.
         /// </summary>
         /// <param name="libraryElementId"></param>
@@ -101,7 +103,6 @@ namespace NusysServer
             var listColumnsToSelect = Constants.GetFullColumnTitle(Constants.SQLTableType.Alias,  NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY);
             var selectParentCollectionIdQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Alias, listColumnsToSelect), new SqlQueryEquals(Constants.SQLTableType.Alias, NusysConstants.ALIAS_ID_KEY, aliasId));
             return selectParentCollectionIdQuery.ExecuteCommand().First().GetString(NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY);
->>>>>>> origin/leandro_testing
         }
     }
 }

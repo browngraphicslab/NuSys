@@ -255,33 +255,25 @@ namespace NuSysApp
         public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000)
         {
 
-            var newElementArgs = new NewElementRequestArgs();
-            newElementArgs.LibraryElementId = Model.LibraryId;
-            newElementArgs.Height = 200;//TODO not hard code this shit
-            newElementArgs.Width = 200;//TODO not hard code this shit
-            newElementArgs.X = x;
-            newElementArgs.Y = y;
-            newElementArgs.ParentCollectionId = newCollectionLibraryID;
-            newElementArgs.Id = Model.Id;
+            
 
-            //delete the old node
-            var deleteElementRequest = new DeleteElementRequest(Model.Id);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(deleteElementRequest);
+            var args = new MoveElementToCollectionRequestArgs();
+            args.ElementId = Id;
+            args.NewParentCollectionId = newCollectionLibraryID;
+            args.XCoordinate = x;
+            args.YCoordinate = y;
 
-            if (deleteElementRequest.WasSuccessful() == true)
+            var request = new MoveElementToCollectionRequest(args);
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            if (request.WasSuccessful() == true)
             {
-                //remove locally (may want to check if it was successful)
-                deleteElementRequest.RemoveNodeLocally();
-
-                //create the new element
-                var request = new NewElementRequest(newElementArgs);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-                //add the new element locally
-                request.AddReturnedElementToSession();
+                await request.UpdateContentLocally();
             }
             else
             {
+                Debug.Fail("request failed");
                 //alert the user it failed
             }
         }

@@ -110,13 +110,11 @@ namespace NusysServer
                         case NusysConstants.RequestType.GetAliasesOfLibraryElementRequest:
                             requestHandler = new GetAliasesOfLibraryElementRequestHandler();
                             break;
-<<<<<<< HEAD
                         case NusysConstants.RequestType.CreateNewCollectionRequest:
                             requestHandler = new CreateNewCollectionRequestHandler();
-=======
+                            break;
                         case NusysConstants.RequestType.MoveElementToCollectionRequest:
                             requestHandler = new MoveElementToCollectionRequestHandler();
->>>>>>> origin/leandro_testing
                             break;
                         default: 
                             requestHandler = null;
