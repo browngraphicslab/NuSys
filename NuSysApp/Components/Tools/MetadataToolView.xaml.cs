@@ -673,6 +673,11 @@ namespace NuSysApp
         {
             xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
         }
-        
+
+        private void xFetchAnalysisModelsButton_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO:FETCH ANALYSIS MODELS
+            throw new NotImplementedException();
+        }
     }
 }
