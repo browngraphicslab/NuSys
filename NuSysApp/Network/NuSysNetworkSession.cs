@@ -91,7 +91,7 @@ namespace NuSysApp
             {
                 //if CheckOutgoingRequest created a valid thing
                 await request.CheckOutgoingRequest();
-                Debug.WriteLine("SENDING REQUEST: "+request.GetRequestType().ToString());
+                //Debug.WriteLine("SENDING REQUEST: "+request.GetRequestType().ToString());
                 Message message = request.GetFinalMessage();
                 var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
                 request.SetReturnMessage(returnMessage);
@@ -225,6 +225,9 @@ namespace NuSysApp
                     break;
                 case NusysConstants.RequestType.UpdateMetadataEntryRequest:
                     request = new UpdateMetadataEntryRequest(message);
+                    break;
+                case NusysConstants.RequestType.MoveElementToCollectionRequest:
+                    request = new MoveElementToCollectionRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");

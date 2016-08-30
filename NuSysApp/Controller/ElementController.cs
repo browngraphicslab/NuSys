@@ -254,9 +254,6 @@ namespace NuSysApp
         /// <returns></returns>
         public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000)
         {
-
-            
-
             var args = new MoveElementToCollectionRequestArgs();
             args.ElementId = Id;
             args.NewParentCollectionId = newCollectionLibraryID;
