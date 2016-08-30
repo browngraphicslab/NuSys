@@ -114,19 +114,49 @@ namespace NuSysApp
 
             if (originalController.LibraryElementModel.Type != NusysConstants.ElementType.Text)
             {
+                CreateNewLibraryElementRequestArgs args = new CreateNewLibraryElementRequestArgs();
                 //Create and execute the new Library element request
-                var newLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs()
+                switch (originalController.LibraryElementModel.Type)
                 {
-                    Title = originalController.Title + " copy",
-                    ContentId = originalController.LibraryElementModel.ContentDataModelId,
-                    AccessType = originalController.LibraryElementModel.AccessType,
-                    LibraryElementType = originalController.LibraryElementModel.Type,
-                    LibraryElementId = newLibraryId,
-                    Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri,
-                    Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri,
-                    Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri
-                };
-                var newLibraryElementRequest = new CreateNewLibraryElementRequest(newLibraryElementRequestArgs);
+                    case NusysConstants.ElementType.Audio:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.PDF:
+                    case NusysConstants.ElementType.Video:
+                        args = new CreateNewLibraryElementRequestArgs();
+                        break;
+                    case NusysConstants.ElementType.VideoRegion:
+                    case NusysConstants.ElementType.AudioRegion:
+                        args = new CreateNewTimeSpanRegionRequestArgs();
+                        (args as CreateNewTimeSpanRegionRequestArgs).RegionStart = (originalController.LibraryElementModel as AudioRegionModel).Start;
+                        (args as CreateNewTimeSpanRegionRequestArgs).RegionEnd = (originalController.LibraryElementModel as AudioRegionModel).End;
+                        (args as CreateNewTimeSpanRegionRequestArgs).ClippingParentLibraryId = (originalController.LibraryElementModel as AudioRegionModel).ClippingParentId;
+                        break;
+                    case NusysConstants.ElementType.ImageRegion:
+                        args = new CreateNewRectangleRegionLibraryElementRequestArgs();
+                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).RegionHeight = (originalController.LibraryElementModel as RectangleRegion).Height;
+                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).RegionWidth = (originalController.LibraryElementModel as RectangleRegion).Width;
+                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).TopLeftPoint = (originalController.LibraryElementModel as RectangleRegion).TopLeftPoint;
+                        (args as CreateNewRectangleRegionLibraryElementRequestArgs).ClippingParentLibraryId = (originalController.LibraryElementModel as RectangleRegion).ClippingParentId;
+                        break;
+                    case NusysConstants.ElementType.PdfRegion:
+                        args = new CreateNewPDFRegionLibraryElementRequestArgs();
+                        (args as CreateNewPDFRegionLibraryElementRequestArgs).RegionHeight = (originalController.LibraryElementModel as PdfRegionModel).Height;
+                        (args as CreateNewPDFRegionLibraryElementRequestArgs).RegionWidth = (originalController.LibraryElementModel as PdfRegionModel).Width;
+                        (args as CreateNewPDFRegionLibraryElementRequestArgs).TopLeftPoint = (originalController.LibraryElementModel as PdfRegionModel).TopLeftPoint;
+                        (args as CreateNewPDFRegionLibraryElementRequestArgs).PageLocation = (originalController.LibraryElementModel as PdfRegionModel).PageLocation;
+                        (args as CreateNewPDFRegionLibraryElementRequestArgs).ClippingParentLibraryId = (originalController.LibraryElementModel as PdfRegionModel).ClippingParentId;
+                        break;
+                }
+                args.Title = originalController.Title + " copy";
+                args.ContentId = originalController.LibraryElementModel.ContentDataModelId;
+                args.AccessType = originalController.LibraryElementModel.AccessType;
+                args.LibraryElementType = originalController.LibraryElementModel.Type;
+                args.LibraryElementId = newLibraryId;
+                args.Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri;
+                args.Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri;
+                args.Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri;
+                
+                var newLibraryElementRequest = new CreateNewLibraryElementRequest(args);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);
                 newLibraryElementRequest.AddReturnedLibraryElementToLibrary();
                 return newLibraryId;
