@@ -11,7 +11,7 @@ namespace NusysServer
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
-        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
+        public static readonly string user = "leandro"; //TODO: CHANGE TO PRIVATE LATER
 
 
         public static string WWW_ROOT {
