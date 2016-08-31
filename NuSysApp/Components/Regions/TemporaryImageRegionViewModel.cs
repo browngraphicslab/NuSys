@@ -91,7 +91,9 @@ namespace NuSysApp
         /// actual library element model
         /// </summary>
         public DetailHomeTabViewModel HomeTabViewModel { get; set; }
-
+        /// <summary>
+        /// This is the parent image's accesstype so that the temporary image can then inheret it's accesstype
+        /// </summary>
         public NusysConstants.AccessType AccessType { get; set; }
 
 
