@@ -230,7 +230,7 @@ namespace NuSysApp
                                 continue;
                             }
                             //create a temp region for every face
-                            var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel);
+                            var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,null,vm.LibraryElementController.LibraryElementModel.AccessType);
                             var tempview = new TemporaryImageRegionView(tempvm);
                             tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
                             xClippingWrapper.AddTemporaryRegion(tempview);

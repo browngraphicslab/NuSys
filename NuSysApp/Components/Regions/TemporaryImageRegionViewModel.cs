@@ -91,6 +91,10 @@ namespace NuSysApp
         /// actual library element model
         /// </summary>
         public DetailHomeTabViewModel HomeTabViewModel { get; set; }
+
+        public NusysConstants.AccessType AccessType { get; set; }
+
+
         /// <summary>
         /// when the size changes we want to tell the view that the location on the actual node has changed 
         /// </summary>
@@ -105,7 +109,7 @@ namespace NuSysApp
         /// </summary>
         public List<MetadataEntry> MetadataToAddUponBeingFullRegion { get; set; }
 
-        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel, int? pageLocation = null)
+        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel, int? pageLocation = null, NusysConstants.AccessType access = NusysConstants.AccessType.Private)
         {
             NormalizedTopLeftPoint = topLeftPoint;
             NormalizedWidth = width;
@@ -116,6 +120,7 @@ namespace NuSysApp
             RectangleWrapper = rectangleWrapper;
             HomeTabViewModel = hometabViewModel;
 
+            AccessType = access;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
             RectangleWrapper.Disposed += Dispose;
         }
