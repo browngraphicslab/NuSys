@@ -87,7 +87,7 @@ namespace NuSysApp
         /// It will return a dictionary of string to int, with the string being the lowercased, suggested tag and the int being the weight it is given.
         /// A higher weight is more suggested.
         /// 
-        /// This method takes in a bool that will indicate whether this method should also concatenate itself with the suggested tags of the analysisModel.
+        /// This method takes in a bool that will indicate whether this method can also mkae servre calls to get the most information possible.
         /// To make this method faster but MUCH MUCH less helpful, pass in false.
         /// 
         /// To Merge two of these dictionaries together via adding their values for each key, use the linq statement:
@@ -99,23 +99,13 @@ namespace NuSysApp
         public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool makeServerCallsIfNeeded = true)
         {
             var dict = new Dictionary<string, int>() { { ContentDataModel.ContentType.ToString(), 1}}; //add the content data type string
-            if (!SessionController.Instance.ContentController.HasAnalysisModel(ContentDataModel.ContentId) && !makeServerCallsIfNeeded)
-            {
-                return dict;
-            }
 
-            if (ContentDataModel.ContentType == NusysConstants.ContentType.PDF)//switch on the type.  Later, this should be put into inheritted controllers, not type switches
+            if (SessionController.Instance.ContentController.HasAnalysisModel(ContentDataModel.ContentId) || makeServerCallsIfNeeded)
             {
-                var analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(ContentDataModel.ContentId) as NusysPdfAnalysisModel;
-                analysisModel?.SuggestedTopics?.Select(s => s.ToLower())?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 3); //add the suggested topics with triple weight
-                analysisModel?.DocumentAnalysisModel?.Segments?.SelectMany(s => s?.KeyPhrases?.Select(kp => kp?.ToLower()))?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 2); // add key phrases with double weight
+                var analysisDict = await SessionController.Instance.ContentController.GetAnalysisModel(ContentDataModel.ContentId).GetSuggestedTagsAsync(makeServerCallsIfNeeded);
+                analysisDict.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
             }
-            else if (ContentDataModel.ContentType == NusysConstants.ContentType.Image)
-            {
-                var analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(ContentDataModel.ContentId) as NusysImageAnalysisModel;
-                analysisModel?.Categories?.Select(s => s?.Name?.ToLower())?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 3);//add the categories
-                analysisModel?.Tags?.Select(s => s?.Name?.ToLower())?.Where(s => !string.IsNullOrEmpty(s))?.ForEach(s => dict[s] = (dict.ContainsKey(s) ? dict[s] : 0) + 3);//add the tags
-            }
+            
             return dict;
         }
     }

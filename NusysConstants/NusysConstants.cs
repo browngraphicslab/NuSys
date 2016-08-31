@@ -1683,7 +1683,6 @@ namespace NusysIntermediate
             return input;
 
         }
-
         #endregion staticMethods
     }
 }

@@ -16,7 +16,7 @@ namespace NusysIntermediate
         /// the constrctor just takes in the ContentDataModelId of the contentDAtaModel this analysis model is analyzing
         /// </summary>
         /// <param name="contentDataModelId"></param>
-        public NusysPdfAnalysisModel(string contentDataModelId) : base(contentDataModelId) { }
+        public NusysPdfAnalysisModel(string contentDataModelId) : base(contentDataModelId, NusysConstants.ContentType.PDF) { }
 
         /// <summary>
         /// the Document analysis that has analyzed this entire pdf.

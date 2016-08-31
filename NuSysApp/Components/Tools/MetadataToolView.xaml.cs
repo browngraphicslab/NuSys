@@ -9,6 +9,7 @@ using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -676,8 +677,57 @@ namespace NuSysApp
 
         private void xFetchAnalysisModelsButton_Click(object sender, RoutedEventArgs e)
         {
-            //TODO:FETCH ANALYSIS MODELS
-            throw new NotImplementedException();
+            var libraryElementIds = (DataContext as MetadataToolViewModel)?.Controller?.GetUpdatedDataList();
+
+            Debug.Assert(libraryElementIds != null);
+            if (libraryElementIds == null)
+            {
+                return;
+            }
+            int returned = 0;
+            int needed = libraryElementIds.Count();
+
+            var button = (Button) sender;
+
+            button.Background = new SolidColorBrush(Colors.Orange);
+            button.Content = "0 %";
+            button.HorizontalContentAlignment = HorizontalAlignment.Center;
+            button.VerticalContentAlignment = VerticalAlignment.Center;
+
+            Task.Run(async delegate
+            {
+
+                foreach (var id in libraryElementIds)
+                {
+                    var libraryController = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                    if (libraryController == null)
+                    {
+                        returned ++;
+                        continue;
+                    }
+                    await Task.Delay(5);
+                    Task.Run(async delegate
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(libraryController.LibraryElementModel.ContentDataModelId);
+                        returned++;
+                        if (returned == needed)
+                        {
+                            UITask.Run(delegate
+                            {
+                                button.Background = new SolidColorBrush(Colors.Green);
+                                button.Content = null;
+                            });
+                        }
+                        else
+                        {
+                            UITask.Run(delegate
+                            {
+                                button.Content = Math.Round((double) 100*((double) returned/(double) needed), 0) + " %";
+                            });
+                        }
+                    });
+                }
+            });
         }
     }
 }
