@@ -614,6 +614,10 @@ namespace NuSysApp
             {
                 var libraryId = vm?.CurrentElementController.LibraryElementModel.LibraryElementId;
                 var idOfCopy = await StaticServerCalls.CreateDeepCopy(libraryId);
+                if (idOfCopy == "")
+                {
+                    return;
+                }
                 var copyController = SessionController.Instance.ContentController.GetLibraryElementController(idOfCopy);
                 SessionController.Instance.SessionView.DetailViewerView.ShowElement(copyController);
             });

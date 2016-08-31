@@ -104,7 +104,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns the list of elements that have the specified filter (e.g. TYPE)
+        /// Returns the list of elements that have the specified filter (e.g. TYPE).
         /// </summary>
         public List<string> GetAllProperties()
         {

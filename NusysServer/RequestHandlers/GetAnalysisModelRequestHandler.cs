@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using NusysIntermediate;
+using Newtonsoft.Json;
 
 namespace NusysServer
 {
@@ -26,14 +27,13 @@ namespace NusysServer
             var message = GetRequestMessage(request);
 
             //making sure the id exists in the requst message
-            if (!message.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID))
+            if (!message.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS))
             {
                 throw new Exception("No id was found for the getAnalysisModel request.");
             }
-            var id = message.GetString(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID);
-
+            var ids = message.GetList<string>(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS);
             //construct the select query
-            var query = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.AnalysisModels),new SqlQueryEquals(Constants.SQLTableType.AnalysisModels, NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY,id));
+            var query = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.AnalysisModels),new SqlQueryContains(Constants.SQLTableType.AnalysisModels, NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY, ids));
 
             var returnedMessages = query.ExecuteCommand();
 
@@ -41,10 +41,10 @@ namespace NusysServer
             if (!returnedMessages.Any())
             {
                 //return it as null
-                return new Message() { {NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON, null} };
+                return new Message() { {NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS, null} };
             }
-
-            return new Message() { {NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON, returnedMessages.First().GetString(NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY)}};
+            var listOfJsonSerializedModels = returnedMessages.Select(q => q.GetString(NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY));
+            return new Message() { {NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS, JsonConvert.SerializeObject(listOfJsonSerializedModels)}};
         }
     }
 }

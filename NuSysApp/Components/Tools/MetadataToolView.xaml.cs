@@ -9,6 +9,7 @@ using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -199,7 +200,7 @@ namespace NuSysApp
             var filteredValuesList = new List<string>();
             var vm = (DataContext as MetadataToolViewModel);
             return
-                vm.AllMetadataDictionary[vm.Selection.Item1].Where(
+                vm.AllMetadataDictionary[vm.Selection.Item1].Keys.Where(
                     item => item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0]))
                     .ThenBy(key => key).ToList();
         }
@@ -673,6 +674,70 @@ namespace NuSysApp
         {
             xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
         }
-        
+
+        private void xFetchAnalysisModelsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var libraryElementIds = (DataContext as MetadataToolViewModel)?.Controller?.GetUpdatedDataList();
+
+            Debug.Assert(libraryElementIds != null);
+            if (libraryElementIds == null)
+            {
+                return;
+            }
+            int returned = 0;
+            int needed = libraryElementIds.Count();
+
+            var button = (Button) sender;
+
+            button.Background = new SolidColorBrush(Colors.Orange);
+            button.Content = "0 %";
+            button.HorizontalContentAlignment = HorizontalAlignment.Center;
+            button.VerticalContentAlignment = VerticalAlignment.Center;
+
+            Task.Run(async delegate
+            {
+
+                foreach (var id in libraryElementIds)
+                {
+                    var libraryController = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                    if (libraryController == null)
+                    {
+                        returned ++;
+                        continue;
+                    }
+                    await Task.Delay(5);
+                    Task.Run(async delegate
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(libraryController.LibraryElementModel.ContentDataModelId);
+                        returned++;
+                        if (returned == needed)
+                        {
+                            UITask.Run(delegate
+                            {
+                                button.Background = new SolidColorBrush(Colors.Green);
+                                button.Content = null;
+                            });
+                        }
+                        else
+                        {
+                            UITask.Run(delegate
+                            {
+                                button.Content = Math.Round((double) 100*((double) returned/(double) needed), 0) + " %";
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        /// <summary>
+        /// This is the method called when the refresh button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void xRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as ToolViewModel).Controller.RefreshFromTopOfChain();
+        }
     }
 }

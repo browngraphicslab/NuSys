@@ -91,7 +91,7 @@ namespace NuSysApp
             {
                 //if CheckOutgoingRequest created a valid thing
                 await request.CheckOutgoingRequest();
-                //Debug.WriteLine("SENDING REQUEST: "+request.GetRequestType().ToString());
+                Debug.WriteLine("SENDING REQUEST: "+request.GetRequestType().ToString());
                 Message message = request.GetFinalMessage();
                 var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
                 request.SetReturnMessage(returnMessage);
@@ -296,12 +296,12 @@ namespace NuSysApp
             Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
             if (SessionController.Instance.ContentController.HasAnalysisModel(contentDataModelId))//if it is already present locally
             {
-                return SessionController.Instance.ContentController.GetAnalysisModel(contentDataModelId);//return it
+                return SessionController.Instance.ContentController.GetAnalysisModel(contentDataModelId)?.Model;//return it
             }
             var request = new GetAnalysisModelRequest(contentDataModelId);//otherwise make a reuqest
             await ExecuteRequestAsync(request);
 
-            var returnedAnalysisModel = request.GetReturnedAnalysisModel();//get the returned analysis model
+            var returnedAnalysisModel = request.GetReturnedAnalysisModel().FirstOrDefault();//get the returned analysis model
 
             SessionController.Instance.ContentController.AddAnalysisModel(returnedAnalysisModel, contentDataModelId);//add the new model to the session controller
 

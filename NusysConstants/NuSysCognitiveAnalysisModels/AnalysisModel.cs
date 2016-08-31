@@ -10,7 +10,7 @@ namespace NusysIntermediate
     /// a super class for all the analysis models.  
     /// This abstract class simply requires the Analysis model to have a Content Data Model Id that points back to the content that this model will be the analysis of.
     /// </summary>
-    public abstract class AnalysisModel
+    public class AnalysisModel
     {
         /// <summary>
         /// the Content Data Model ID of the content that his Analysis models analyzes. 
@@ -18,14 +18,19 @@ namespace NusysIntermediate
         public string ContentDataModelId { get; private set; }
 
         /// <summary>
+        /// the type of analysis model this is
+        /// </summary>
+        public NusysConstants.ContentType Type { get; set; }
+
+        /// <summary>
         /// the constructor for the abstract class.  
-        /// Just sets content Data Model ID of the analysis model. 
+        /// Just sets content Data Model ID of the analysis model and the type of content data model this is an analysis model of
         /// </summary>
         /// <param name="contentDataModelId"></param>
-        public AnalysisModel(string contentDataModelId)
+        public AnalysisModel(string contentDataModelId, NusysConstants.ContentType type)
         {
             ContentDataModelId = contentDataModelId;
-
+            Type = type;
             //if we have been given a null or empty Id
             if (string.IsNullOrEmpty(ContentDataModelId))
             {

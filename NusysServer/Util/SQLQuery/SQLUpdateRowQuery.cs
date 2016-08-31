@@ -92,13 +92,20 @@ namespace NusysServer
         /// <returns></returns>
         public bool ExecuteCommand()
         {
-            if (CommandString == null || CommandString.Equals(""))
+            try
             {
-                throw new Exception("trying to execute update row but the command string is empty");
+                if (CommandString == null || CommandString.Equals(""))
+                {
+                    throw new Exception("trying to execute update row but the command string is empty");
+                }
+                var cmd = ContentController.Instance.SqlConnector.MakeCommand(CommandString);
+                var success = cmd.ExecuteNonQuery();
+                return success > 0;
             }
-            var cmd = ContentController.Instance.SqlConnector.MakeCommand(CommandString);
-            var success = cmd.ExecuteNonQuery();
-            return success > 0;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message + "  ROW QUERY String: "+CommandString);
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Web;
 using Newtonsoft.Json;
 using NusysIntermediate;
 
-namespace NusysServer.Util
+namespace NusysServer
 {
     public class PropertiesAndMetadataParser
     {

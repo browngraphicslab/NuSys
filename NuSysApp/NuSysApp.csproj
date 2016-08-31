@@ -491,6 +491,7 @@
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
     <Compile Include="Controller\ContentDataController.cs" />

@@ -342,7 +342,12 @@ namespace NuSysApp
             // get the translation point of the halfway location we are going to
             var halfTransX = (translateX + currentTranslateX) /2.0;
             var halfTransY = (translateY + currentTranslateY) / 2.0;
-            
+
+            if (double.IsNaN(halfScale))
+            {
+                return;
+            }
+
             // create the flyout animation elements
             var outScaleAnimationX = MakeAnimationElement(halfScale, "ScaleX", outDuration, easeMode: EasingMode.EaseOut);
             var outScaleAnimationY = MakeAnimationElement(halfScale, "ScaleY", outDuration, easeMode: EasingMode.EaseOut);

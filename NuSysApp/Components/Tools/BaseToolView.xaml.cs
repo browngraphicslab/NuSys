@@ -541,6 +541,16 @@ namespace NuSysApp
         {
             xFilterComboBox.IsEnabled = true;
         }
+
+        /// <summary>
+        /// When the refresh button is clicked, refresh the entire filter chain.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void xRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as ToolViewModel).Controller.RefreshFromTopOfChain();
+        }
     }
 
 }

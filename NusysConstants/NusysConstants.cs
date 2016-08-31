@@ -497,14 +497,16 @@ namespace NusysIntermediate
 
             #region GetAnalysisModelRequest
             /// <summary>
-            ///  This is the key that represent the ContentDataModel Id of the analysis model you wish to fetch when making the request.  
+            ///  This is the key that represent the ContentDataModel Ids of the analysis models you wish to fetch when making the request. Should
+            ///  hold list of strings.
             /// </summary>
-            public static readonly string GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID = "content_data_model_id";
+            public static readonly string GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS = "content_data_model_ids";
         
             /// <summary>
-            /// The key that represents the AnalysisModel Json that is returned to the sender after the request has been executed.
+            /// The key that represents the AnalysisModel Json list that is returned to the sender after the request has been executed.
+            /// Should hold list of JSONserialized analysis models
             /// </summary>
-            public static readonly string GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON = "returned_analysis_model";
+            public static readonly string GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS = "returned_analysis_models";
 
             #endregion GetAnalysisModelRequest
 
@@ -1681,7 +1683,6 @@ namespace NusysIntermediate
             return input;
 
         }
-
         #endregion staticMethods
     }
 }
