@@ -575,7 +575,7 @@ namespace NuSysApp
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode)
+            if (SessionController.Instance.SessionView.IsPenMode || SessionController.Instance.SessionView.IsReadonly)
                 return;
 
             var vm = (ElementViewModel) this.DataContext;
