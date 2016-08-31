@@ -13,11 +13,11 @@ namespace NuSysApp
         /// <summary>
         ///This is the dictionary of items to display
         /// </summary>
-        public Dictionary<string, HashSet<string>> AllMetadataDictionary { get; set; }
+        public Dictionary<string, Dictionary<string, int>> AllMetadataDictionary { get; set; }
 
         public MetadataToolViewModel(ToolController toolController) : base(toolController)
         {
-            AllMetadataDictionary = new Dictionary<string, HashSet<string>>();
+            AllMetadataDictionary = new Dictionary<string, Dictionary<string, int>>();
 
         }
 
@@ -34,15 +34,15 @@ namespace NuSysApp
                 {
                     (_controller as MetadataToolController).UnSelect();
                 }
-                else if (Selection.Item2 != null && !Enumerable.Intersect(AllMetadataDictionary[Selection.Item1], Selection.Item2).Any() || Selection.Item2 == null)
+                else if (Selection.Item2 != null && !Enumerable.Intersect(AllMetadataDictionary[Selection.Item1].Keys, Selection.Item2).Any() || Selection.Item2 == null)
                 {
                     Selection = new Tuple<string, HashSet<string>>(Selection.Item1, new HashSet<string>());
                 }
-                else if (Selection.Item2 != null && Enumerable.Intersect(AllMetadataDictionary[Selection.Item1], Selection.Item2).Any())
+                else if (Selection.Item2 != null && Enumerable.Intersect(AllMetadataDictionary[Selection.Item1].Keys, Selection.Item2).Any())
                 {
                     foreach (var item in new List<string>(Selection.Item2))
                     {
-                        if (!AllMetadataDictionary[Selection.Item1].Contains(item))
+                        if (!AllMetadataDictionary[Selection.Item1].Keys.Contains(item))
                         {
                             Selection.Item2.Remove(item);
                         }

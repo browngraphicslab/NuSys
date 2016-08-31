@@ -28,9 +28,14 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0"  x:Name="xDeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,45,5,0"  Click ="Delete_Click" VerticalAlignment="Top">
-                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
-                </Button>
+                <StackPanel>
+                    <Button Grid.Column="0"  x:Name="xDeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,45,5,0"  Click ="Delete_Click" VerticalAlignment="Top">
+                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
+                    </Button>
+                    <Button Grid.Column="0"  x:Name="xRefreshButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,15,5,0"  Click="xRefreshButton_Click"  VerticalAlignment="Top">
+                    </Button>
+                </StackPanel>
+                
                 <Grid Grid.Column="1" Width="{Binding Width}" VerticalAlignment="Stretch" Margin="0">
 
                     <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White"  VerticalAlignment="Stretch" Margin="0">

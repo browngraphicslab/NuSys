@@ -541,6 +541,11 @@ namespace NuSysApp
         {
             xFilterComboBox.IsEnabled = true;
         }
+
+        private void xRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as BasicToolViewModel).ReloadPropertiesToDisplay();
+        }
     }
 
 }

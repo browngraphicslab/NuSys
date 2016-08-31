@@ -36,6 +36,8 @@
                     </Button>
                     <Button Grid.Column="0" x:Name="xFetchAnalysisModelsButton" Click="xFetchAnalysisModelsButton_Click"  Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,15,5,0">
                     </Button>
+                    <Button Grid.Column="0" x:Name="xRefreshButton" Click="xRefreshButton_Click"  Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,15,5,0">
+                    </Button>
                 </StackPanel>
                 <Grid Grid.Column="1"  Width="{Binding Width}" MinHeight="100" Margin="0" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>

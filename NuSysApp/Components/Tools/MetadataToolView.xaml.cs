@@ -200,7 +200,7 @@ namespace NuSysApp
             var filteredValuesList = new List<string>();
             var vm = (DataContext as MetadataToolViewModel);
             return
-                vm.AllMetadataDictionary[vm.Selection.Item1].Where(
+                vm.AllMetadataDictionary[vm.Selection.Item1].Keys.Where(
                     item => item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0]))
                     .ThenBy(key => key).ToList();
         }
@@ -728,6 +728,16 @@ namespace NuSysApp
                     });
                 }
             });
+        }
+
+        /// <summary>
+        /// This is the method called when the refresh button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void xRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as MetadataToolViewModel).ReloadPropertiesToDisplay();
         }
     }
 }
