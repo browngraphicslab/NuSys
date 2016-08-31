@@ -13,11 +13,11 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class GroupNodeViewModel : ElementCollectionViewModel, ToolStartable, ToolLinkable
+    public class GroupNodeViewModel : ElementCollectionViewModel, ToolLinkable
     {
 
         private Point2d _anchor;
-        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+        //public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
         
         private ElementCollectionController _controller;
 
