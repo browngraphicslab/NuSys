@@ -258,12 +258,22 @@ namespace NuSysApp
             if (rect.Visibility == Visibility.Collapsed)
                 return;
 
+            var el = (FrameworkElement)sender;
+            var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            var upperLeftPoint = xGrid.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
+
+            // if the pointer point is in the library dont create the element
+            //This is the final check
+            if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
+                pointerPoint.Y > upperLeftPoint.Y && pointerPoint.Y < upperLeftPoint.Y + this.ActualHeight)
+            {
+                return;
+            }
+
             rect.Hide();
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
 
-            //Make sure that the element isn't within the library list
-            var el = (FrameworkElement)sender;
-            var sp = el.TransformToVisual(this).TransformPoint(e.Position);
+            
 
             //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
             // If they are different we siply return 
