@@ -98,19 +98,23 @@ namespace NuSysApp
         /// <summary>
         /// Returns the dictionary (from key to set of values) to display
         /// </summary>
-        public Dictionary<string, HashSet<string>> GetAllMetadata()
+        public Dictionary<string, Dictionary<string, int>> GetAllMetadata()
         {
             var libraryElementControllers = GetUpdatedDataList().Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id));
-            var allMetadata = new Dictionary<string, HashSet<string>>();
+            var allMetadata = new Dictionary<string, Dictionary<string, int>>();
             foreach (var controller in libraryElementControllers)
             {
                 foreach (var kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
                 {
                     if (!allMetadata.ContainsKey(kvp.Key))
                     {
-                        allMetadata.Add(kvp.Key, new HashSet<string>());
+                        allMetadata.Add(kvp.Key, new Dictionary<string, int>());
                     }
-                    allMetadata[kvp.Key] = new HashSet<string>(allMetadata[kvp.Key].Concat(kvp.Value));
+                    foreach(var metadataValue in kvp.Value)
+                    {
+                        allMetadata[kvp.Key][metadataValue] += 1;
+                    }
+                    //allMetadata[kvp.Key] = new HashSet<string>(allMetadata[kvp.Key].Concat(kvp.Value));
                 }
             }
             return allMetadata;
