@@ -115,7 +115,7 @@ namespace NuSysApp
                     _propertiesWindow.Visibility = Visibility.Collapsed;
             }
         }
-
+        private Dictionary<string, NusysConstants.AccessType> fileIdToAccessMap = new Dictionary<string, NusysConstants.AccessType>();
         //Trent, this needs to be filled in in order for the importing to the library to work.
         private async void AddFile()
         {
@@ -133,8 +133,9 @@ namespace NuSysApp
             // get the fileAddedAclsPopup from the session view
             var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;
             // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
-            var fileIdToAccessMap = await fileAddedAclsPopup.GetAcls(storageFiles);
-
+            var tempfileIdToAccessMaps = await fileAddedAclsPopup.GetAcls(storageFiles);
+            foreach (var fileAccess in tempfileIdToAccessMaps)
+                fileIdToAccessMap.Add(fileAccess.Key, fileAccess.Value);
             // check if the user has canceled the upload
             if (fileIdToAccessMap == null)
             {
@@ -349,6 +350,8 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("tried to import invalid filetype");
                 }
+
+                fileIdToAccessMap.Remove(storageFile.FolderRelativeId);
             }
         }     
 
