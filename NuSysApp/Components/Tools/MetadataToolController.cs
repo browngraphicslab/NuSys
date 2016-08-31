@@ -112,7 +112,14 @@ namespace NuSysApp
                     }
                     foreach(var metadataValue in kvp.Value)
                     {
-                        allMetadata[kvp.Key][metadataValue] += 1;
+                        if (allMetadata[kvp.Key].ContainsKey(metadataValue))
+                        {
+                            allMetadata[kvp.Key][metadataValue] += 1;
+                        }
+                        else
+                        {
+                            allMetadata[kvp.Key].Add(metadataValue, 1);
+                        }
                     }
                     //allMetadata[kvp.Key] = new HashSet<string>(allMetadata[kvp.Key].Concat(kvp.Value));
                 }
