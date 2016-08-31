@@ -60,7 +60,7 @@ namespace NuSysApp
                         {
                             return true;
                         }
-                        else if (metadata[MetadataToolModel.Selection.Item1].Intersect(
+                        else if (metadata[MetadataToolModel.Selection.Item1].Keys.Intersect(
                            MetadataToolModel.Selection.Item2).Any())
                         {
                             return true;
@@ -113,13 +113,13 @@ namespace NuSysApp
                     }
                     foreach(var metadataValue in kvp.Value)
                     {
-                        if (allMetadata[kvp.Key].ContainsKey(metadataValue))
+                        if (allMetadata[kvp.Key].ContainsKey(metadataValue.Key))
                         {
-                            allMetadata[kvp.Key][metadataValue] += 1;
+                            allMetadata[kvp.Key][metadataValue.Key] += metadataValue.Value;
                         }
                         else
                         {
-                            allMetadata[kvp.Key].Add(metadataValue, 1);
+                            allMetadata[kvp.Key].Add(metadataValue.Key, metadataValue.Value);
                         }
                     }
                     //allMetadata[kvp.Key] = new HashSet<string>(allMetadata[kvp.Key].Concat(kvp.Value));

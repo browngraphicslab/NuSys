@@ -114,13 +114,13 @@ namespace NuSysApp
             {
                 if(controller != null)
                 {
-                    foreach (var kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
+                    foreach (KeyValuePair<string, Dictionary<string, int>> kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
                     {
                         if (!allMetadata.ContainsKey(kvp.Key))
                         {
                             allMetadata.Add(kvp.Key, new List<string>());
                         }
-                        allMetadata[kvp.Key].AddRange(kvp.Value);
+                        allMetadata[kvp.Key].AddRange(kvp.Value.Keys);
                     }
                 }
             }

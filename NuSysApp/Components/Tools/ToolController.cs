@@ -213,31 +213,31 @@ namespace NuSysApp
         /// <summary>
         ///Retuns a dictionary of the basic metadata for a libraryelementmodel
         /// </summary>
-        public Dictionary<string, List<string>> GetMetadata(string libraryId)
+        public Dictionary<string, Dictionary<string,int>> GetMetadata(string libraryId)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
             if (controller != null)
             {
-                var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
+                var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=> v.Value.Values.ToDictionary( k => k, j => 1)) ?? new Dictionary<string, Dictionary<string,int>>());
 
                 if (SessionController.Instance.ContentController.HasAnalysisModel(controller.LibraryElementModel.ContentDataModelId)) { 
                     var analysisController = SessionController.Instance.ContentController.GetAnalysisModel(controller.LibraryElementModel.ContentDataModelId);
-                    metadata.Add("Suggested_Keywords", analysisController?.GetSuggestedTagsAsync(false)?.Result?.Keys?.ToList() ?? new List<string>());
+                    metadata.Add("Suggested_Keywords", analysisController?.GetSuggestedTagsAsync(false)?.Result);
                 }
                 var element = controller.LibraryElementModel;
                 Debug.Assert(element != null);
-                metadata["Title"] = new List<string>(){ element.Title};
-                metadata["Type"] = new List<string>() { element.Type.ToString()};
-                metadata["Date"] = new List<string>() { GetDate(element)};
-                metadata["LastEditedDate"] = new List<string>() { GetLastEditedDate(element) };
-                metadata["Creator"] = new List<string>()
+                metadata["Title"] = new Dictionary<string,int>(){ { element.Title,1 } };
+                metadata["Type"] = new Dictionary<string, int>() { { element.Type.ToString(), 1 }};
+                metadata["Date"] = new Dictionary<string, int>() { { GetDate(element), 1 } };
+                metadata["LastEditedDate"] = new Dictionary<string, int>() { { GetLastEditedDate(element), 1} };
+                metadata["Creator"] = new Dictionary<string, int>()
                 {//map from the UserID hash to the User Dissplay Name
-                    SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(element.Creator ?? "") ?
-                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[element.Creator] : element.Creator
+                    { SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(element.Creator ?? "") ?
+                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[element.Creator] : element.Creator, 1 }
                 };
                 return metadata;
             }
-            return new Dictionary<string, List<string>>();
+            return new Dictionary<string, Dictionary<string, int>>();
         }
 
         /// <summary>
@@ -291,6 +291,7 @@ namespace NuSysApp
             {
                 Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
                 FireOutputLibraryIdsChanged();
+                IdsToDisplayChanged?.Invoke();
             }
             foreach (var parentController in Model.ParentIds.Select(parentId => ToolController.ToolControllers[parentId]))
             {

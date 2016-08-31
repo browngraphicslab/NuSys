@@ -6,6 +6,9 @@ namespace NuSysApp
 {
     public class MetadataToolViewModel : ToolViewModel
     {
+        private const double _minBarWidth = 5;
+        private const double _maxBarWidth = 30;
+
         public Tuple<string, HashSet<string>> Selection { get { return (_controller as MetadataToolController).MetadataToolModel.Selection; } set { (_controller as MetadataToolController).SetSelection(value); } }
 
         public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as MetadataToolController).MetadataToolModel.Filter; } set { (_controller as MetadataToolController).SetFilter(value); } }
@@ -13,11 +16,11 @@ namespace NuSysApp
         /// <summary>
         ///This is the dictionary of items to display
         /// </summary>
-        public Dictionary<string, Dictionary<string, int>> AllMetadataDictionary { get; set; }
+        public Dictionary<string, Dictionary<string, double>> AllMetadataDictionary { get; set; }
 
         public MetadataToolViewModel(ToolController toolController) : base(toolController)
         {
-            AllMetadataDictionary = new Dictionary<string, Dictionary<string, int>>();
+            AllMetadataDictionary = new Dictionary<string, Dictionary<string, double>>();
 
         }
 
@@ -26,7 +29,9 @@ namespace NuSysApp
         /// </summary>
         public override void ReloadPropertiesToDisplay()
         {
-            AllMetadataDictionary = (_controller as MetadataToolController).GetAllMetadata();
+            var dictionaryWithWeight = (_controller as MetadataToolController).GetAllMetadata();
+            //var maxWeight = dictionaryWithWeight.Max(q => q.Value.Val).First().Value;
+            AllMetadataDictionary = dictionaryWithWeight.ToDictionary(kvp => kvp.Key, v => v.Value.ToDictionary(k => k.Key, kvp =>  CalculateBarWidth(kvp.Value, v.Value.Max(q => q.Value))));
             InvokePropertiesToDisplayChanged();
             if ((_controller as MetadataToolController).MetadataToolModel.Selection != null && (_controller as MetadataToolController).MetadataToolModel.Selected == true)
             {
@@ -49,6 +54,19 @@ namespace NuSysApp
                     }
                     Selection = Selection;
                 }
+            }
+        }
+
+        private double CalculateBarWidth(int weight, int max)
+        {
+            var width = (double)(Math.Log10(weight) / (double)Math.Log10(max) * _maxBarWidth);
+            if(double.IsNaN(width) || width == 0)
+            {
+                return _minBarWidth;
+            }
+            else
+            {
+                return width;
             }
         }
 
