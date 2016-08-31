@@ -11,6 +11,12 @@ namespace NuSysApp.Tools
         /// </summary>
         HashSet<string> GetOutputLibraryIds();
 
+        /// <summary>
+        /// the list of all the library ids from all of the startable's parents, if any.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> GetUpdatedDataList(bool recursiveRefresh = false);
+
         event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         event EventHandler<string> Disposed;
         event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;

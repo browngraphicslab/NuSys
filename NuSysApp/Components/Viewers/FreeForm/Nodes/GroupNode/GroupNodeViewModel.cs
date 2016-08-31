@@ -161,5 +161,16 @@ namespace NuSysApp
                 
             }
         }
+
+        /// <summary>
+        /// returns the updated list of library ids merged from all this collctions parents.  
+        /// since collections have no parents, this just returns GetOutputLibraryIds();
+        /// </summary>
+        /// <param name="recursiveRefresh"></param>
+        /// <returns></returns>
+        public IEnumerable<string> GetUpdatedDataList(bool recursiveRefresh = false)
+        {
+            return GetOutputLibraryIds();
+        }
     }
 }

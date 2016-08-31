@@ -46,73 +46,6 @@ namespace NuSysApp
             Model = model;
             ToolControllers.Add(model.Id, this);
             Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-
-            //CODE TO DELETE Non RMS STUFF
-            /*
-             foreach (var id in new HashSet<string>(SessionController.Instance.ContentController.IdList))
-             {
-                 var s = SessionController.Instance.ContentController.GetContent(id);
-                 if(s.Creator.ToLower() != "rms" && s.Creator.ToLower() != "rosemary"){
-                     Task.Run(async delegate
-                     {
-                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(id));
-                     });
-                }
-             }
-             */
-             
-            
-
-            //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
-            /*
-            Task.Run(async delegate
-            {
-                int i = 0;
-                foreach (var id in LibraryElementModel.PDFStrings)
-                {
-                    Debug.WriteLine((double)i++ / (double)LibraryElementModel.PDFStrings.Count);
-                    if (SessionController.Instance.ContentController.GetContent(id) != null &&
-                        SessionController.Instance.ContentController.GetContent(id).Type == ElementType.PDF)
-                    {
-                        await Task.Run(async delegate
-                        {
-                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementDataAsync(id);
-                            try
-                            {
-                                var lem = SessionController.Instance.ContentController.GetContent(id);
-                                var document = await MediaUtil.DataToPDF(lem.Data);
-                                lem.Data = null;
-                                string data = "";
-                                int numPages = document.PageCount;
-                                int currPage = 0;
-                                while (currPage < numPages)
-                                {
-                                    data = data + document.GetAllTexts(currPage);
-                                    currPage++;
-                                }
-
-                                using (
-                                    var stream =
-                                        new FileStream(
-                                            @"C:\Users\graphics_lab\Documents\junsu_pdfs\" + lem.Title + ".txt",
-                                            FileMode.OpenOrCreate,
-                                            FileAccess.Write))
-                                {
-                                    using (var writer = new StreamWriter(stream))
-                                    {
-                                        writer.Write(data);
-                                    }
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                return;
-                            }
-                        });
-
-                    }
-                }
-            });*/
         }
 
         /// <summary>
@@ -221,21 +154,13 @@ namespace NuSysApp
         /// <summary>
         /// Filters a hashset of ids to only include items based on the GetFunc() function defined in sub class controllers.
         /// </summary>
-        public HashSet<string> Filter(HashSet<string> ids)
+        public IEnumerable<string> Filter(IEnumerable<string> ids)
         {
             if (!Model.Selected)
             {
                 return ids;
             }
-            var ret = new HashSet<string>();
-            foreach (string id in ids)
-            {
-                if (GetFunc()(id))
-                {
-                    ret.Add(id);
-                }
-            }
-            return ret;
+            return ids.Where(id => GetFunc()(id));
         }
 
         /// <summary>
@@ -326,17 +251,21 @@ namespace NuSysApp
         }
 
         /// <summary>
-        ///Gets all the output library ids of each of the parents and creates a hashset of those ids based on the parent operator (AND/OR)
+        ///Gets all the output library ids of each of the parents and creates a hashset of those ids based on the parent operator (AND/OR).  
+        /// recursive refresh boolean represents whether this controller should take its parents' cached IDs or if all its parents should update entirely.
         /// </summary>
-        public HashSet<string> GetUpdatedDataList()
+        public IEnumerable<string> GetUpdatedDataList(bool recursiveRefresh = false)
         {
             var controllers = Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
-            if (controllers.Count() == 0)
+            if (controllers == null || !controllers.Any())
             {
                 return SessionController.Instance.ContentController.IdList;
             }
-            IEnumerable<string> list = controllers?.First().GetOutputLibraryIds();
-            foreach (var enumerable in controllers.Select(controller => controller.GetOutputLibraryIds()))
+
+            var first = controllers.First();
+
+            IEnumerable<string> list = recursiveRefresh ? first.GetUpdatedDataList(true) : first.GetOutputLibraryIds();//get the first parent's list of elements
+            foreach (var enumerable in controllers.Skip(1).Select(controller => recursiveRefresh ? controller.GetUpdatedDataList(true) : controller.GetOutputLibraryIds()))
             {
                 switch (Model.ParentOperator)
                 {
@@ -348,8 +277,8 @@ namespace NuSysApp
                         break;
                 }
             }
-           
-            return new HashSet<string>(list);
+
+            return list;
         }
 
         public HashSet<string> GetOutputLibraryIds()

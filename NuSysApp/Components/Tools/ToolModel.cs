@@ -47,10 +47,9 @@ namespace NuSysApp
             ParentOperator = parentOperator;
         }
 
-        public void SetOutputLibraryIds(HashSet<string> libraryIds)
+        public void SetOutputLibraryIds(IEnumerable<string> libraryIds)
         {
-            OutputLibraryIds = libraryIds;
-            OutputLibraryIds = OutputLibraryIds ?? new HashSet<string>();
+            OutputLibraryIds = new HashSet<string>(libraryIds ?? new HashSet<string>());
         }
 
         public bool AddOutputLibraryId(string libraryId)
