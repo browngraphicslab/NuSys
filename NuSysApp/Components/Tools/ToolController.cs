@@ -254,7 +254,7 @@ namespace NuSysApp
         ///Gets all the output library ids of each of the parents and creates a hashset of those ids based on the parent operator (AND/OR).  
         /// recursive refresh boolean represents whether this controller should take its parents' cached IDs or if all its parents should update entirely.
         /// </summary>
-        public IEnumerable<string> GetUpdatedDataList(bool recursiveRefresh = false)
+        public IEnumerable<string> GetUpdatedDataList()
         {
             var controllers = Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
             if (controllers == null || !controllers.Any())
@@ -264,8 +264,8 @@ namespace NuSysApp
 
             var first = controllers.First();
 
-            IEnumerable<string> list = recursiveRefresh ? first.GetUpdatedDataList(true) : first.GetOutputLibraryIds();//get the first parent's list of elements
-            foreach (var enumerable in controllers.Skip(1).Select(controller => recursiveRefresh ? controller.GetUpdatedDataList(true) : controller.GetOutputLibraryIds()))
+            IEnumerable<string> list = first.GetOutputLibraryIds();//get the first parent's list of elements
+            foreach (var enumerable in controllers.Skip(1).Select(controller => controller.GetOutputLibraryIds()))
             {
                 switch (Model.ParentOperator)
                 {
@@ -281,6 +281,30 @@ namespace NuSysApp
             return list;
         }
 
+        /// <summary>
+        /// This should refresh the entire tool chain. It recursively finds the orphans, reloads its output library ids and fires the event 
+        /// signaling that the library ids have changed.
+        /// </summary>
+        public void RefreshFromTopOfChain()
+        {
+            if (!Model.ParentIds.Any())
+            {
+                Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+                FireOutputLibraryIdsChanged();
+            }
+            foreach (var parentController in Model.ParentIds.Select(parentId => ToolController.ToolControllers[parentId]))
+            {
+                parentController.RefreshFromTopOfChain();
+            }
+        }
+
+        /// <summary>
+        /// Returns the list of output library ids
+        /// If recursively refresh is true, then we will reload the output library ids starting from the parent.
+        /// If it is false, it just returns the output library ids it had before.
+        /// </summary>
+        /// <param name="recursivelyRefresh"></param>
+        /// <returns></returns>
         public HashSet<string> GetOutputLibraryIds()
         {
             return Model.OutputLibraryIds;

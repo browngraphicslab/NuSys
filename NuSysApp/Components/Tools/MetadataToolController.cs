@@ -96,7 +96,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns the dictionary (from key to set of values) to display
+        /// Returns the dictionary (from key to set of values) to display. If you want to RELOAD ALL LIBRARY ELEMENTS from the start of the filter chain
+        /// set recursivelyRefresh = true. By Default it is false.
         /// </summary>
         public Dictionary<string, Dictionary<string, int>> GetAllMetadata()
         {
