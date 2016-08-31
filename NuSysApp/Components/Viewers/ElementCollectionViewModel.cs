@@ -146,5 +146,15 @@ namespace NuSysApp
         {
             return new HashSet<string>();
         }
+
+        /// <summary>
+        /// since this collection has no parents to merge, this method jsut returns GetOutputLibraryIds().
+        /// </summary>
+        /// <param name="recursiveRefresh"></param>
+        /// <returns></returns>
+        public IEnumerable<string> GetUpdatedDataList(bool recursiveRefresh = false)
+        {
+            return GetOutputLibraryIds();
+        }
     }
 }
