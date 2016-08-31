@@ -28,7 +28,7 @@
                     </Grid.RowDefinitions>
                     <Grid Background="{StaticResource color1}" Height="45">
                         <TextBlock x:Name="xTitle" Text="filter by:" VerticalAlignment="Center" TextAlignment="Center" Width="Auto" Grid.Row="0" 
-                                   ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"
+                                   ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" ManipulationCompleted="Tool_OnManipulationCompleted"
                                    Foreground="{StaticResource color3}" FontSize="22"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
                     </Grid>
                     
@@ -48,7 +48,7 @@
                 </Grid>
                 <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="50" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="50"
-                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
+                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationStarted="Resizer_ManipulationStarted" ManipulationCompleted="Resizer_ManipulationCompleted" ManipulationDelta="Resizer_OnManipulationDelta"/>
 
             </Grid>
         </StackPanel>

@@ -140,7 +140,7 @@ namespace NuSysApp
 
         private async void OnPointerTouchReleased(object sender, PointerRoutedEventArgs e)
         {
-            var exisitingPointer = _pointers.Where(p => p.Pointer.PointerId == e.Pointer.PointerId);
+            var exisitingPointer = _pointers.Where(p => p.PointerId == e.Pointer.PointerId);
             if (!exisitingPointer.Any())
                 return;
 
@@ -186,7 +186,7 @@ namespace NuSysApp
 
         private void OnPointerTouchMoved(object sender, PointerRoutedEventArgs args)
         {
-            var exisitingPointer = _pointers.Where(p => p.Pointer.PointerId == args.Pointer.PointerId);
+            var exisitingPointer = _pointers.Where(p => p.PointerId == args.Pointer.PointerId);
             if (!exisitingPointer.Any())
                 return;
 

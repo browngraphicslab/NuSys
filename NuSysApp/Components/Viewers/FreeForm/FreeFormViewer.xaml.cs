@@ -52,6 +52,7 @@ namespace NuSysApp
         public AudioElementRenderItem ActiveAudioRenderItem;
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
+        public bool ToolsAreBeingInteractedWith { get; set; }
         private bool _inkPressed;
 
 
@@ -111,20 +112,22 @@ namespace NuSysApp
                     _collectionInteractionManager.ItemMoved -= CollectionInteractionManagerOnItemMoved;
                     _collectionInteractionManager.DuplicateCreated -= CollectionInteractionManagerOnDuplicateCreated;
                     _collectionInteractionManager.CollectionSwitched -= CollectionInteractionManagerOnCollectionSwitched;
-                    _collectionInteractionManager.SelectionInkPressed -= CollectionInteractionManagerOnSelectionInkPressed;
-                    _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
                     _collectionInteractionManager.InkStarted -= CollectionInteractionManagerOnInkStarted;
                     _collectionInteractionManager.InkDrawing -= CollectionInteractionManagerOnInkDrawing;
                     _collectionInteractionManager.InkStopped -= CollectionInteractionManagerOnInkStopped;
+                    _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
+                    _collectionInteractionManager.SelectionInkPressed -= CollectionInteractionManagerOnSelectionInkPressed;
                     _collectionInteractionManager.ResizerStarted -= CollectionInteractionManagerOnResizerStarted;
                     _collectionInteractionManager.ResizerStopped -= CollectionInteractionManagerOnResizerStopped;
-                    _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
                     _collectionInteractionManager.LinkCreated -= CollectionInteractionManagerOnLinkCreated;
+                    _collectionInteractionManager.TrailCreated -= CollectionInteractionManagerOnTrailCreated;
+                    _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
                     _collectionInteractionManager.MultimediaElementActivated -= CollectionInteractionManagerOnMultimediaElementActivated;
                     _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
                     _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
-                    _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
                     multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
+                    _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
+
                     _collectionInteractionManager.Dispose();
                 }
 
@@ -381,8 +384,9 @@ namespace NuSysApp
                 multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
             }
             if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPresent)
-            {
+            {               
                 SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                ClearSelections();
             }
         }
 
@@ -559,6 +563,8 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
         {
+            if (ToolsAreBeingInteractedWith)
+                return;
             PanZoom2(CurrentCollection.Camera, _transform, point, delta.X/_transform.M11, delta.Y/_transform.M11, 1);
             CurrentCollection.InkRenderItem.UpdateDryInkTransform();
             UpdateNonWin2dElements();
@@ -634,6 +640,14 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
             }
+
+            var vm = (FreeFormViewerViewModel)InitialCollection.ViewModel;
+            vm.CompositeTransform.TranslateX = InitialCollection.Camera.T.M31;
+            vm.CompositeTransform.TranslateY = InitialCollection.Camera.T.M32;
+            vm.CompositeTransform.CenterX = InitialCollection.Camera.C.M31;
+            vm.CompositeTransform.CenterY = InitialCollection.Camera.C.M32;
+            vm.CompositeTransform.ScaleX = InitialCollection.Camera.S.M11;
+            vm.CompositeTransform.ScaleY = InitialCollection.Camera.S.M22;
         }
 
 

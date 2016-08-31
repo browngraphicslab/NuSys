@@ -389,7 +389,7 @@ namespace NuSysApp
             {
                 return null;
             }
-            var elementViewModels = SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(elementVM => elementVM.Id == elementViewModelId).ToList();
+            var elementViewModels = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Elements.Where(elementVM => elementVM.Id == elementViewModelId).ToList();
             Debug.Assert(elementViewModels != null);
             Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
             return elementViewModels.First();

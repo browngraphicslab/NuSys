@@ -210,7 +210,7 @@ namespace NuSysApp
         /// </summary>
         private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-
+            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = true;
             var x = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var y = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
@@ -218,8 +218,15 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        private void Tool_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = false;
+            e.Handled = true;
+        }
+
         private void xFilterList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            
             //keep this method.
             e.Handled = true;
         }
@@ -231,7 +238,6 @@ namespace NuSysApp
 
         private void xFilterList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-
             e.Handled = true;
         }
 
@@ -333,6 +339,19 @@ namespace NuSysApp
             {
                 SetSize(this.Width, resizeY);
             }
+            e.Handled = true;
+        }
+
+        private void Resizer_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = true;
+            //keep this method.
+            e.Handled = true;
+        }
+
+        private void Resizer_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = false;
             e.Handled = true;
         }
 

@@ -13,11 +13,11 @@ namespace NuSysApp
 {
     public class CanvasPointer
     {
-        public PointerPoint Pointer;
         public DateTime StartTime = DateTime.MinValue;
         public DateTime LastUpdated = DateTime.MinValue;
-        public string PointerId;
+        public uint PointerId;
         public PointerDeviceType DeviceType;
+        public PointerPointProperties Properties;
 
         public CanvasPointer() { }
 
@@ -27,8 +27,9 @@ namespace NuSysApp
             CurrentPoint = new Vector2((float)pointerpoint.Position.X, (float)pointerpoint.Position.Y);
             StartTime = DateTime.Now;
             LastUpdated = DateTime.Now;
-            Pointer = pointerpoint;
             DeviceType = pointerpoint.PointerDevice.PointerDeviceType;
+            PointerId = pointerpoint.PointerId;
+            Properties = pointerpoint.Properties;
         }
 
         public Vector2 StartPoint

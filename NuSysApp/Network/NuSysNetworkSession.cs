@@ -240,10 +240,9 @@ namespace NuSysApp
                 systemDict["system_sender_networkuser"] = NetworkMembers[systemIP];
             }
             request.SetSystemProperties(systemDict);
-            await UITask.Run(async () =>
-            {
-                await request.ExecuteRequestFunction();//switches to UI thread
-            });
+
+             await request.ExecuteRequestFunction();//switches to UI thread
+       
         }
 
         #endregion Requests

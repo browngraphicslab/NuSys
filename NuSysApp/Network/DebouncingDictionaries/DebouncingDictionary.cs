@@ -156,8 +156,11 @@ namespace NuSysApp
                 messageToSend = new Message(_serverDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
                 _serverDict.Clear();
             }
-
-            SendToServer(messageToSend, saveToServer, _id);//call the virtual method that should actually send the update request for each sub classs
+            Task.Run(async delegate
+            {
+                SendToServer(messageToSend, saveToServer, _id);
+                //call the virtual method that should actually send the update request for each sub classs
+            });
         }
 
         /// <summary>

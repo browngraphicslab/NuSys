@@ -46,6 +46,7 @@ namespace NuSysApp
         private bool checkPointerAdded;
         private CompositeTransform floatingTransform;
         private Point _exportPos;
+    
 
         public FloatingMenuView()
         {

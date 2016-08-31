@@ -197,7 +197,7 @@ namespace NuSysApp
             if (pointer.DeviceType == PointerDeviceType.Pen)
             {
                 OnPenPointerReleased(pointer);
-                _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
+                
             }
                 
         }
@@ -214,6 +214,8 @@ namespace NuSysApp
 
         private void OnPenPointerReleased(CanvasPointer pointer)
         {
+            _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
+            _finalInkPointer = pointer;
             InkStopped?.Invoke(pointer);
         }
 
@@ -518,6 +520,9 @@ namespace NuSysApp
             _canvasInteractionManager.ItemLongTapped -= CanvasInteractionManagerOnItemLongTapped;
             _canvasInteractionManager.ItemDoubleTapped -= CanvasInteractionManagerOnItemDoubleTapped;
             _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
+            _canvasInteractionManager.TwoPointerPressed -= CanvasInteractionManagerOnTwoPointerPressed;
+            _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
+            _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
         }
     }
 }

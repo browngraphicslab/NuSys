@@ -101,18 +101,12 @@ namespace NuSysApp
         {
             X = x;
             Y = y;
-            Transform.TranslateX = x;
-            Transform.TranslateY = y;
-            RaisePropertyChanged("Transform");
         }
 
         protected virtual void OnSizeChanged(object source, double width, double height)
         {
             _width = width;
             _height = height;
-            
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
         }
 
         protected virtual void OnScaleChanged(object source, double sx, double sy)
