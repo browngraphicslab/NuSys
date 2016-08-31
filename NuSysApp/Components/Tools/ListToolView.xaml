@@ -16,7 +16,7 @@
                     <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="Padding" Value="0"/>
-                    <Setter Property="Margin" Value="15,5,15,5"/>
+                    <Setter Property="Margin" Value="15,0,15,0"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListViewItem">
