@@ -60,7 +60,7 @@ namespace NuSysApp
         /// 
         /// </summary>
         /// <returns></returns>
-        public List<AnalysisModel> GetReturnedAnalysisModel()
+        public IEnumerable<AnalysisModel> GetReturnedAnalysisModel()
         {
             CheckWasSuccessfull();
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS));
@@ -75,27 +75,8 @@ namespace NuSysApp
             {
                 analysisJsonList = _returnMessage.GetList<string>(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSONS);
             }
-            var analysisModelsList = new List<AnalysisModel>();
-            //returns null if the json is null, aka no mdel was found on the server
-            if (analysisJsonList == null)
-            {
-                return null;
-            }
 
-            foreach(var analysisJson in analysisJsonList)
-            {
-                var analysisModel = JsonConvert.DeserializeObject<AnalysisModel>(analysisJson);
-                //get the contentDataModel
-                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(analysisModel?.ContentDataModelId);
-                if (contentDataModel == null)
-                {
-                    throw new Exception("The contentDataModel for the requested Analysis Model was null locally.");
-                }
-
-                //return the analysis model deserialized to the correct type
-                analysisModelsList.Add(AnalysisModelFactory.DeserializeFromString(analysisJson, contentDataModel.ContentType));
-            }
-            return analysisModelsList;
+            return analysisJsonList?.Select(json => AnalysisModelFactory.DeserializeFromString(json));
         }
     }
 }

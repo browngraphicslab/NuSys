@@ -297,7 +297,7 @@ namespace NuSysApp
             Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
             if (SessionController.Instance.ContentController.HasAnalysisModel(contentDataModelId))//if it is already present locally
             {
-                return SessionController.Instance.ContentController.GetAnalysisModel(contentDataModelId);//return it
+                return SessionController.Instance.ContentController.GetAnalysisModel(contentDataModelId)?.Model;//return it
             }
             var request = new GetAnalysisModelRequest(contentDataModelId);//otherwise make a reuqest
             await ExecuteRequestAsync(request);

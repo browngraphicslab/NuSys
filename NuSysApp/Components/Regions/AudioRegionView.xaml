@@ -25,7 +25,7 @@
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" x:Name="xNameTextBox" IsReadOnly="{Binding IsReadOnly}" Height="15" Text="{Binding Name}" HorizontalAlignment="Center" TextChanged="xNameTextBox_TextChanged" VerticalContentAlignment="Center">
             </TextBox>
-            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png" Margin="0,30,0,0"></Image>
 
 
             <Grid.RenderTransform >

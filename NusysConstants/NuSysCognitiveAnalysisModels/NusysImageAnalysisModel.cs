@@ -13,7 +13,7 @@ namespace NusysIntermediate
         /// Pass in the Id of the content data model that this analysis model analyzes.
         /// </summary>
         /// <param name="contentDataModelId"></param>
-        public NusysImageAnalysisModel(string contentDataModelId) : base(contentDataModelId){ }
+        public NusysImageAnalysisModel(string contentDataModelId) : base(contentDataModelId, NusysConstants.ContentType.Image){ }
 
         /// <summary>
         /// The total height of the image in pixels

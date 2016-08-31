@@ -114,6 +114,8 @@ namespace NuSysApp
 
         /// <summary>
         /// Returns list of elements within the collection as the output library ids
+        /// The bool recursively reload does nothing because the collection can only ever be the
+        /// start of a tool chain.
         /// </summary>
         public HashSet<string> GetOutputLibraryIds()
         {
@@ -133,7 +135,18 @@ namespace NuSysApp
             return libraryElementIds;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void RefreshFromTopOfChain()
+        {
+            OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
+        }
 
+        /// <summary>
+        /// Returns the tool startable id that is used in the dictionary from id to controller.
+        /// </summary>
+        /// <returns></returns>
         public string GetID()
         {
             return _toolStartableId;
@@ -145,6 +158,16 @@ namespace NuSysApp
         public HashSet<string> GetParentIds()
         {
             return new HashSet<string>();
+        }
+
+        /// <summary>
+        /// since this collection has no parents to merge, this method jsut returns GetOutputLibraryIds().
+        /// </summary>
+        /// <param name="recursiveRefresh"></param>
+        /// <returns></returns>
+        public IEnumerable<string> GetUpdatedDataList()
+        {
+            return GetOutputLibraryIds();
         }
     }
 }

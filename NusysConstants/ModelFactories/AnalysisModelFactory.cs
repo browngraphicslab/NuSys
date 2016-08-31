@@ -20,14 +20,14 @@ namespace NusysIntermediate
         /// <param name="analysisModelJson"></param>
         /// <param name="contentType"></param>
         /// <returns></returns>
-        public static AnalysisModel DeserializeFromString(string analysisModelJson, NusysConstants.ContentType contentType)
+        public static AnalysisModel DeserializeFromString(string analysisModelJson)
         {
             Debug.Assert(analysisModelJson != null);
 
-            AnalysisModel model;
+            AnalysisModel model = JsonConvert.DeserializeObject<AnalysisModel>(analysisModelJson);
 
             //switch on the content type
-            switch (contentType)
+            switch (model.Type)
             {
                 case NusysConstants.ContentType.Image:
                     model = JsonConvert.DeserializeObject<NusysImageAnalysisModel>(analysisModelJson);

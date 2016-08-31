@@ -13,11 +13,11 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class GroupNodeViewModel : ElementCollectionViewModel, ToolStartable, ToolLinkable
+    public class GroupNodeViewModel : ElementCollectionViewModel, ToolLinkable
     {
 
         private Point2d _anchor;
-        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+        //public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
         
         private ElementCollectionController _controller;
 
@@ -160,6 +160,17 @@ namespace NuSysApp
                 toolViewModel.Controller.AddParent(this);
                 
             }
+        }
+
+        /// <summary>
+        /// returns the updated list of library ids merged from all this collctions parents.  
+        /// since collections have no parents, this just returns GetOutputLibraryIds();
+        /// </summary>
+        /// <param name="recursiveRefresh"></param>
+        /// <returns></returns>
+        public IEnumerable<string> GetUpdatedDataList(bool recursiveRefresh = false)
+        {
+            return GetOutputLibraryIds();
         }
     }
 }

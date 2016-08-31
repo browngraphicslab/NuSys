@@ -180,6 +180,14 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Method to be called when the application goes into a suspended state or loses internet connection.
+        /// </summary>
+        public void CaptureCurrentState()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// adds an element to the its parentCollection and adds its controller to the ID to controller's list.
         /// This also will create the controller class for that model.
         /// This method will fetch the contentDataModel for the element if it doesn't exist locally;

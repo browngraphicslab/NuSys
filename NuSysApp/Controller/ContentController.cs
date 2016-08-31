@@ -31,7 +31,7 @@ namespace NuSysApp
         /// <summary>
         /// the dictionary of content data mode id to analysis model
         /// </summary>
-        private ConcurrentDictionary<string, AnalysisModel> _analysisModels = new ConcurrentDictionary<string, AnalysisModel>();
+        private ConcurrentDictionary<string, AnalysisModelController> _analysisModels = new ConcurrentDictionary<string, AnalysisModelController>();
 
         /// <summary>
         /// delegate for the OnNewLibraryElement.
@@ -294,7 +294,7 @@ namespace NuSysApp
         public void AddAnalysisModel(AnalysisModel model, string contentDataModelId)
         {
             Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
-            _analysisModels[contentDataModelId] = model;
+            _analysisModels[contentDataModelId] = new AnalysisModelController(model);
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="contentDataModelId"></param>
         /// <returns></returns>
-        public AnalysisModel GetAnalysisModel(string contentDataModelId)
+        public AnalysisModelController GetAnalysisModel(string contentDataModelId)
         {
             Debug.Assert(HasAnalysisModel(contentDataModelId));
             return _analysisModels[contentDataModelId];
@@ -318,7 +318,7 @@ namespace NuSysApp
         /// <returns></returns>
         public bool RemoveAnalysisModel(string contentDataModelId)
         {
-            AnalysisModel outAnalysisModel;
+            AnalysisModelController outAnalysisModel;
             return _analysisModels.TryRemove(contentDataModelId, out outAnalysisModel);
         }
     }

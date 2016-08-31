@@ -35,8 +35,10 @@ namespace NuSysApp
         private LibraryElementPropertiesWindow _propertiesWindow;
         private LibraryPageViewModel _pageViewModel;
         private LibraryFavoritesViewModel _favoritesViewModel;
-        private Point2d _searchExportPos; 
-        
+        private Point2d _searchExportPos;
+
+        private Dictionary<string, NusysConstants.AccessType> _fileIdToAccessMap = new Dictionary<string, NusysConstants.AccessType>();
+
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
@@ -116,7 +118,8 @@ namespace NuSysApp
             }
         }
 
-        //Trent, this needs to be filled in in order for the importing to the library to work.
+
+
         private async void AddFile()
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
@@ -133,10 +136,11 @@ namespace NuSysApp
             // get the fileAddedAclsPopup from the session view
             var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;
             // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
-            var fileIdToAccessMap = await fileAddedAclsPopup.GetAcls(storageFiles);
-
+            var tempfileIdToAccessMaps = await fileAddedAclsPopup.GetAcls(storageFiles);
+            foreach (var fileAccess in tempfileIdToAccessMaps)
+                _fileIdToAccessMap.Add(fileAccess.Key, fileAccess.Value);
             // check if the user has canceled the upload
-            if (fileIdToAccessMap == null)
+            if (_fileIdToAccessMap == null)
             {
                 return;
             }
@@ -324,10 +328,10 @@ namespace NuSysApp
                     args.LibraryElementArgs.LibraryElementType = elementType;
 
                     // add the acls from the map, default to private instead of throwing an error on release
-                    Debug.Assert(fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId), "The mapping from the fileAddedPopup is not being output or set correctly");
-                    if (fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
+                    Debug.Assert(_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId), "The mapping from the fileAddedPopup is not being output or set correctly");
+                    if (_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
                     {
-                        args.LibraryElementArgs.AccessType = fileIdToAccessMap[storageFile.FolderRelativeId];
+                        args.LibraryElementArgs.AccessType = _fileIdToAccessMap[storageFile.FolderRelativeId];
                     }
                     else
                     {
@@ -349,6 +353,8 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("tried to import invalid filetype");
                 }
+
+                _fileIdToAccessMap.Remove(storageFile.FolderRelativeId);
             }
         }     
 

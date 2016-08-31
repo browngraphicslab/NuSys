@@ -448,6 +448,10 @@ namespace NuSysApp
             ReloadPropertiesToDisplay();
         }
 
+        /// <summary>
+        /// Just reloads the properties to display based on the output library ids of the parents
+        /// </summary>
+        /// <param name="recursivelyRefresh"></param>
         public abstract void ReloadPropertiesToDisplay();
 
         public void OnSizeChanged(object sender, double width, double height)

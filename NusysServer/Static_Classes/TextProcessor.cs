@@ -276,32 +276,32 @@ namespace NusysServer
         public static async Task<NusysPdfDocumentAnalysisModel> GetNusysPdfAnalysisModelFromTextAsync(List<string> textByPage)
         {
             // a hash of document ids to page ids
-            var docIdToPageMapping = new Dictionary<int, int>();
+            var docIdToPageMapping = new Dictionary<string, int>();
 
             // list of cognitive api documents to perform requests with
             var combinedRequests = new List<CognitiveApiDocument>();
 
             // variable used to create a unique id for each document
-            var id = 0;
 
             // create requests for each sentene in the entire document
             for (int pageNumber = 0; pageNumber < textByPage.Count; pageNumber++)
             {
                 // the id before we've iterated through all the sentences incrementing id each time
-                var pageStartId = id;
+                var pageStartId = NusysIntermediate.NusysConstants.GenerateId();
 
                 // split the text on the page into sentences using regex
                 var sentences = Regex.Split(textByPage[pageNumber], @"(?<=[\.!\?])\s+");
+
+                //This is the dictionary of sentences mapped to ids that we are going to iterate through to then send off to cognitive services
+                var sentenceIds = sentences.Where(item => !string.IsNullOrEmpty(item)).Select(sentence => sentence).ToDictionary(sentence => sentence,e => NusysConstants.GenerateId());
                 // convert the sentences to cognitive api documents, and add them to the list of requests, while incrementing the id
-                combinedRequests.AddRange(sentences.Where(item => !string.IsNullOrEmpty(item)).Select(sentence => new CognitiveApiDocument(id++.ToString(), sentence)));
+                combinedRequests.AddRange(sentenceIds.Keys.Select(sentence => new CognitiveApiDocument(sentenceIds[sentence],sentence)));
 
-                // the id after we've iterated through all the sentences
-                var pageEndId = id;
-
+                var orderedKeyList = new List<string>(sentenceIds.Keys);
                 // add all the ids we've seen to the mapping
-                for (var tempId = pageStartId; tempId < pageEndId; tempId++)
+                foreach (var sentence in sentenceIds.Keys)
                 {
-                    docIdToPageMapping.Add(tempId, pageNumber);
+                    docIdToPageMapping.Add(sentenceIds[sentence], orderedKeyList.IndexOf(sentence));
                 }
             }
 
@@ -317,7 +317,7 @@ namespace NusysServer
             requestList.Add(combinedRequests.GetRange(combinedRequests.Count - combinedRequests.Count % 1000, combinedRequests.Count % 1000));
 
             // map the document ids to segment models
-            var idToSegmentMapping = new Dictionary<int, NusysPdfSegmentAnalysisModel>();
+            var idToSegmentMapping = new Dictionary<string, NusysPdfSegmentAnalysisModel>();
 
             // for each request, get the phrase and sentiment model, then combine the two to create a segment model, and add to the idToSegmentMapping
             foreach (var request in requestList)
@@ -329,7 +329,7 @@ namespace NusysServer
                 // for each document in the request, create a new segment analysis model with the text and the id, add it to the mapping, and identify the page number
                 foreach (var document in request)
                 {
-                    var documentId = int.Parse(document.id);
+                    var documentId = document.id;
                     idToSegmentMapping.Add(documentId, new NusysPdfSegmentAnalysisModel { Text = document.text });
                     idToSegmentMapping[documentId].pageNumber = docIdToPageMapping[documentId];
                 }
@@ -337,12 +337,12 @@ namespace NusysServer
                 // for each document in the sentiment model add the sentiment rating to the proper mapping
                 foreach (var document in sentimentModel.documents)
                 {
-                    idToSegmentMapping[int.Parse(document.id)].SentimentRating = document.score;
+                    idToSegmentMapping[document.id].SentimentRating = document.score;
                 }
                 // for each document in the key phrases model add the key phrases rating to the proper mapping
                 foreach (var document in phraseModel.documents)
                 {
-                    idToSegmentMapping[int.Parse(document.id)].KeyPhrases = document.keyPhrases;
+                    idToSegmentMapping[document.id].KeyPhrases = document.keyPhrases;
                 }
             }
 
