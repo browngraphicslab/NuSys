@@ -42,7 +42,9 @@ namespace NuSysApp
         {
             var content = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(content.PageUrls[0]), ResourceCreator.Dpi);
-            _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
+            _vm.ImageSize = _bmp.Size;
+            var ratio = (double)_bmp.Size.Width / (double)_bmp.Size.Height;
+            _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Width * ratio, false);
         }
 
         public override void Draw(CanvasDrawingSession ds)

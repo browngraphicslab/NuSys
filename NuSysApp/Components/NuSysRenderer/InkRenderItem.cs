@@ -19,7 +19,7 @@ namespace NuSysApp
     public class InkRenderItem : BaseRenderItem
     {
         private ElementViewModel _vm;
-        private ConcurrentQueue<InkStroke> _inkStrokes = new ConcurrentQueue<InkStroke>();
+      //  private ConcurrentQueue<InkStroke> _inkStrokes = new ConcurrentQueue<InkStroke>();
         private bool _isEraser;
         private Color _drawingColor = Colors.Black;
         private Queue<InkPoint> _currentStroke = new Queue<InkPoint>();
@@ -31,15 +31,19 @@ namespace NuSysApp
         public InkStroke LatestStroke { get; set; }
         public DateTime LatestStrokeAdded { get; set; }
         private List<InkStroke> _strokesToDraw = new List<InkStroke>();
+        private CanvasRenderTarget _dryStrokesTarget;
+        private bool _needsDryStrokesUpdate;
+        private bool _needsWetStrokeUpdate;
 
 
         public InkRenderItem(CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
         {
         }
 
-        public override void CreateResources()
+        public async override Task Load()
         {
-            _builder = new InkStrokeBuilder();
+           
+            _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, new Size(ResourceCreator.Width, ResourceCreator.Height));
             base.CreateResources();
         }
 
@@ -47,7 +51,12 @@ namespace NuSysApp
         {
             base.Dispose();
             _vm = null;
-            _inkStrokes = null;
+        }
+
+        public void UpdateDryInkTransform()
+        {
+            _transform = Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(this));
+            _needsDryStrokesUpdate = true;
         }
 
         public void StartInkByEvent(CanvasPointer e)
@@ -70,6 +79,8 @@ namespace NuSysApp
                 _currentStroke.Enqueue(new InkPoint(new Point(np.X, np.Y), p.Properties.Pressure));
             }
 
+            _needsWetStrokeUpdate = true;
+
         }
 
         public void UpdateInkByEvent(CanvasPointer e)
@@ -79,10 +90,8 @@ namespace NuSysApp
                 var np = Vector2.Transform(new Vector2((float) p.RawPosition.X, (float) p.RawPosition.Y), _transform);
                 _currentStroke.Enqueue(new InkPoint(new Point(np.X, np.Y), p.Properties.Pressure));
             }
-           
 
-         
-
+            _needsWetStrokeUpdate = true;
         }
 
         public void StopInkByEvent(CanvasPointer e)
@@ -139,19 +148,20 @@ namespace NuSysApp
             else
             {
                 _inkManager.AddStroke(LatestStroke);
-                _inkStrokes.Enqueue(LatestStroke);
+
                 LatestStrokeAdded = DateTime.Now;
                 //  InkStrokeAdded?.Invoke(this, stroke);
-            }
-            _inkStrokes =  new ConcurrentQueue<InkStroke>(_inkManager.GetStrokes());          
+            } 
             _currentStroke = new Queue<InkPoint>();
-
             _strokesToDraw = _inkManager.GetStrokes().ToList();
+
+            _needsDryStrokesUpdate = true;
+            _needsWetStrokeUpdate = true;
         }
 
         public void AddStroke(InkStroke stroke)
         {
-            _inkStrokes.Enqueue(stroke);
+           // _inkStrokes.Enqueue(stroke);
         }
 
         public void RemoveLatestStroke()
@@ -170,23 +180,50 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (_builder == null)
+            if (_needsDryStrokesUpdate)
             {
-                _builder = new InkStrokeBuilder();
+                if (_dryStrokesTarget != null) { 
+                    using (var dss = _dryStrokesTarget.CreateDrawingSession())
+                    {
+                        dss.Clear(Colors.Transparent);
+                        var dryStrokes = _strokesToDraw;
+                        var aa = GetDrawingAttributes();
+                        foreach (var s in dryStrokes)
+                        {
+                            var attr = aa;
+                            attr.Color = Colors.Black;
+                            s.DrawingAttributes = attr;
+                        }
+                        dss.Transform = ds.Transform;
+                        dss.DrawInk(dryStrokes);
+
+                        _needsDryStrokesUpdate = false;
+                    }
+                }
             }
 
+            var orgTransform = ds.Transform;
+            ds.Transform = Matrix3x2.Identity;
 
-            var strokes = _strokesToDraw.ToList();
-            if (_currentStroke.Count > 2)
+            if (_dryStrokesTarget != null)
+                ds.DrawImage(_dryStrokesTarget);
+
+            ds.Transform = orgTransform;
+            if (_needsWetStrokeUpdate && _currentStroke.Count > 2)
             {
-                _currentInkStroke = _builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
-              //  _currentInkStroke.DrawingAttributes = GetDrawingAttributes();
+                if (_builder == null)
+                {
+                    _builder = new InkStrokeBuilder();
+                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes());
+                }
+
+                var s = _builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
+                _builder.SetDefaultDrawingAttributes(GetDrawingAttributes());
                 if (_isEraser)
-                    _currentInkStroke.DrawingAttributes = new InkDrawingAttributes { Color = Colors.DarkRed };
-                strokes.Add(_currentInkStroke);
+                    s.DrawingAttributes = new InkDrawingAttributes { Color = Colors.DarkRed };
+                ds.DrawInk(new InkStroke[] { s });
             }
-
-            ds.DrawInk(strokes);
+            
         }
 
         private InkDrawingAttributes GetDrawingAttributes()

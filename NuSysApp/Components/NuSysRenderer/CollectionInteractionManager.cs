@@ -65,6 +65,7 @@ namespace NuSysApp
         public event InkDrawHandler InkDrawing;
         public event InkDrawHandler InkStopped;
         public event LinkCreatedHandler LinkCreated;
+        public event LinkCreatedHandler TrailCreated;
         public event MarkingMenuPointerReleasedHandler MarkingMenuPointerReleased;
         public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
         public event DuplicatedCreated DuplicateCreated;
@@ -82,7 +83,8 @@ namespace NuSysApp
             MoveNode,
             OutOfBounds,
             Link,
-            None
+            None,
+            Trail
         }
 
         private Mode _mode = Mode.None;
@@ -98,6 +100,9 @@ namespace NuSysApp
         private CanvasInteractionManager _canvasInteractionManager;
         private CanvasPointer _finalInkPointer;
         private bool _resizerHit;
+        private bool _isTwoElementsPressed;
+        private CanvasPointer _nodeMarkingMenuPointer;
+        private Tuple<ElementRenderItem, ElementRenderItem> _potentiaLink; 
 
 
         public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
@@ -114,6 +119,51 @@ namespace NuSysApp
             _canvasInteractionManager.ItemLongTapped += CanvasInteractionManagerOnItemLongTapped;
             _canvasInteractionManager.ItemDoubleTapped += CanvasInteractionManagerOnItemDoubleTapped;
             _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
+            _canvasInteractionManager.TwoPointerPressed += CanvasInteractionManagerOnTwoPointerPressed;
+        }
+
+        private void CollectionInteractionManagerOnTwoElementsReleased()
+        {
+            var menu = NuSysRenderer.Instance.NodeMarkingMenu;
+            menu.IsVisible = false;
+            _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
+            if (menu.CurrentIndex == 0)
+                LinkCreated?.Invoke(_potentiaLink.Item1, _potentiaLink.Item2);
+            if (menu.CurrentIndex == 1)
+                TrailCreated?.Invoke(_potentiaLink.Item1, _potentiaLink.Item2);
+        }
+
+        private void CollectionInteractionManagerOnTwoElementsPressed(ElementRenderItem element1, ElementRenderItem element2, CanvasPointer pointer1, CanvasPointer pointer2)
+        {
+            _potentiaLink = new Tuple<ElementRenderItem, ElementRenderItem>(element1, element2);
+            _isTwoElementsPressed = true;
+            _nodeMarkingMenuPointer = pointer2;
+            NuSysRenderer.Instance.NodeMarkingMenu.UpdatePointerLocation(pointer2.CurrentPoint);
+            NuSysRenderer.Instance.NodeMarkingMenu.IsVisible = true;
+            NuSysRenderer.Instance.NodeMarkingMenu.Show(pointer2.CurrentPoint.X, pointer2.CurrentPoint.Y);
+
+            _canvasInteractionManager.PointerMoved += CanvasInteractionManagerOnPointerMoved;
+        }
+
+        private void CanvasInteractionManagerOnPointerMoved(CanvasPointer pointer)
+        {
+            if (pointer == _nodeMarkingMenuPointer)
+            {
+                NuSysRenderer.Instance.NodeMarkingMenu.UpdatePointerLocation(pointer.CurrentPoint);
+            }
+        }
+
+        private void CanvasInteractionManagerOnTwoPointerPressed(CanvasPointer pointer1, CanvasPointer pointer2)
+        {
+            var item1 = NuSysRenderer.Instance.GetRenderItemAt(pointer1.CurrentPoint, _collection, 1);
+            var item2 = NuSysRenderer.Instance.GetRenderItemAt(pointer2.CurrentPoint, _collection, 1);
+            if (!(item1 is ElementRenderItem) || !(item2 is ElementRenderItem))
+                return;
+
+            if (item1 == _collection || item2 == _collection)
+                return;
+
+            CollectionInteractionManagerOnTwoElementsPressed((ElementRenderItem)item1, (ElementRenderItem)item2, pointer1, pointer2);
         }
 
         private void OnPointerPressed(CanvasPointer pointer)
@@ -124,7 +174,12 @@ namespace NuSysApp
             if (pointer.DeviceType == PointerDeviceType.Mouse)
                 OnMousePointerPressed(pointer);
 
+            if (pointer.DeviceType == PointerDeviceType.Pen) { 
+                OnPenPointerPressed(pointer);
+                _canvasInteractionManager.PointerMoved += OnPenPointerMoved;
+            }
         }
+
         private void OnPointerMoved(CanvasPointer pointer)
         {
             if (pointer.DeviceType == PointerDeviceType.Mouse)
@@ -138,6 +193,28 @@ namespace NuSysApp
 
             if (pointer.DeviceType == PointerDeviceType.Mouse)
                 OnMousePointerReleased(pointer);
+
+            if (pointer.DeviceType == PointerDeviceType.Pen)
+            {
+                OnPenPointerReleased(pointer);
+                _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
+            }
+                
+        }
+
+        private void OnPenPointerMoved(CanvasPointer pointer)
+        {
+            InkDrawing?.Invoke(pointer);
+        }
+
+        private void OnPenPointerPressed(CanvasPointer pointer)
+        {
+            InkStarted?.Invoke(pointer);
+        }
+
+        private void OnPenPointerReleased(CanvasPointer pointer)
+        {
+            InkStopped?.Invoke(pointer);
         }
 
         private void OnTouchPointerPressed(CanvasPointer pointer)
@@ -169,6 +246,8 @@ namespace NuSysApp
 
                 }
                 _selectedRenderItem = hit as ElementRenderItem;
+                if (_selectedRenderItem != null && _selectedRenderItem.Parent != null && _selectedRenderItem != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection)
+                    _selectedRenderItem.Parent.BringForward(_selectedRenderItem as ElementRenderItem);
             }
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 2)
             {
@@ -188,6 +267,11 @@ namespace NuSysApp
 
         private void OnTouchPointerReleased(CanvasPointer pointer)
         {
+            if (_isTwoElementsPressed)
+            {
+                _isTwoElementsPressed = false;
+                CollectionInteractionManagerOnTwoElementsReleased();
+            }
 
             if (_selectedRenderItem is CollectionRenderItem)
             {
@@ -236,8 +320,8 @@ namespace NuSysApp
 
         private void OnMousePointerPressed(CanvasPointer pointer)
         {
-            var keyStateA = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.A);
-            if (keyStateA.HasFlag(CoreVirtualKeyStates.Down))
+            var keyStateI = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.I);
+            if (keyStateI.HasFlag(CoreVirtualKeyStates.Down))
             {
                 _mode = Mode.Ink;
                 InkStarted?.Invoke(pointer);
@@ -253,6 +337,14 @@ namespace NuSysApp
                 return;
             }
 
+            var keyStateT = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.T);
+            if (keyStateT.HasFlag(CoreVirtualKeyStates.Down))
+            {
+                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                _mode = Mode.Trail;
+                return;
+            }
+
 
             OnTouchPointerPressed(pointer);
         }
@@ -261,7 +353,7 @@ namespace NuSysApp
         {
             if (_mode == Mode.Ink)
             {
-                var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.A);
+                var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.I);
 
                 if (keyState.HasFlag(CoreVirtualKeyStates.Down))
                 {
@@ -285,6 +377,25 @@ namespace NuSysApp
                         _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection)
                     {
                         LinkCreated?.Invoke((ElementRenderItem) _selectedRenderItem, (ElementRenderItem) _secondSelectedRenderItem);
+                    }
+                }
+                _mode = Mode.None;
+
+                return;
+            }
+
+            if (_mode == Mode.Trail)
+            {
+                var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.T);
+
+                if (keyState.HasFlag(CoreVirtualKeyStates.Down))
+                {
+                    _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+
+                    if (_selectedRenderItem != null && _selectedRenderItem != _collection &&
+                        _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection)
+                    {
+                        TrailCreated?.Invoke((ElementRenderItem)_selectedRenderItem, (ElementRenderItem)_secondSelectedRenderItem);
                     }
                 }
                 _mode = Mode.None;
@@ -393,7 +504,8 @@ namespace NuSysApp
 
         private void OnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {
-            PanZoomed?.Invoke(center, deltaTranslation, deltaZoom);
+            if (!_isTwoElementsPressed)
+                PanZoomed?.Invoke(center, deltaTranslation, deltaZoom);
         }
 
         public void Dispose()

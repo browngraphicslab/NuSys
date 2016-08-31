@@ -149,6 +149,7 @@ namespace NuSysApp
                 _collectionInteractionManager.ResizerStarted += CollectionInteractionManagerOnResizerStarted;
                 _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
                 _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
+                _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
                 _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
@@ -157,6 +158,23 @@ namespace NuSysApp
                 _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
             }
         }
+
+        private async void CollectionInteractionManagerOnTrailCreated(ElementRenderItem element1, ElementRenderItem element2)
+        {
+            // create a new instance of CreateNewPresentationLinkRequestArgs
+            var createNewPresentationLinkRequestArgs = new CreateNewPresentationLinkRequestArgs();
+            // pass in the id of the current element view model as the ElementViewModelInId.
+            createNewPresentationLinkRequestArgs.ElementViewModelOutId = element1.ViewModel.Id;
+            // pass in the parent collection id of the element model as the parent collection id
+            createNewPresentationLinkRequestArgs.ParentCollectionId = element1.ViewModel.Model.ParentCollectionId;
+
+            // if an element exists at the current point
+            createNewPresentationLinkRequestArgs.ElementViewModelInId = element2.ViewModel.Id;
+            var request = new CreateNewPresentationLinkRequest(createNewPresentationLinkRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddPresentationLinkToLibrary();            
+        }
+
 
         private async void CollectionInteractionManagerOnLinkCreated(ElementRenderItem element1, ElementRenderItem element2)
         {
@@ -277,7 +295,7 @@ namespace NuSysApp
             if (shaped && _latestStroke != null)
             {
                 shapePoints = _latestStroke;
-            } else if ((shaped || finite) && _latestStroke == null)
+            } else if ((shaped && _latestStroke == null) || finite)
             {
                 var w = targetPointBr.X - targetPointTl.X;
                 var h = targetPointBr.Y - targetPointTl.Y;
@@ -348,6 +366,8 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
         {
             var item = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint);
+            if (Selections.Count == 0)
+                return;
             if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnDelete)
             {
                 foreach (var elementRenderItem in Selections)
@@ -359,6 +379,10 @@ namespace NuSysApp
             if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnGroup)
             {
                 multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
+            }
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPresent)
+            {
+                SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
             }
         }
 
@@ -464,22 +488,6 @@ namespace NuSysApp
         {
             var until = NuSysRenderer.Instance.GetTransformUntil(CurrentCollection);
             _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
-
-            var item = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint);
-
-            return;
-
-                if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnDelete)
-            {
-                foreach (var elementRenderItem in Selections)
-                {
-                    elementRenderItem.ViewModel.Controller.RequestDelete();
-                }
-            }
-            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPresent)
-            {
-                Debug.WriteLine("BTUN PRESEENT");
-            }
         }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
@@ -543,12 +551,16 @@ namespace NuSysApp
             {
                 PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X / _transform.M11, deltaTranslation.Y / _transform.M11, deltaZoom);
             }
+
+            CurrentCollection.InkRenderItem.UpdateDryInkTransform();
+
             UpdateNonWin2dElements();
         }
 
         private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
         {
             PanZoom2(CurrentCollection.Camera, _transform, point, delta.X/_transform.M11, delta.Y/_transform.M11, 1);
+            CurrentCollection.InkRenderItem.UpdateDryInkTransform();
             UpdateNonWin2dElements();
         }
 

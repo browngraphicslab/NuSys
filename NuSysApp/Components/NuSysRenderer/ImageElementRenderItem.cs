@@ -36,7 +36,9 @@ namespace NuSysApp
         {
             var url = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel.Data;
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(url), ResourceCreator.Dpi);
-            _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
+            _vm.ImageSize = _bmp.Size;
+            var ratio = (double)_bmp.Size.Width / (double)_bmp.Size.Height;
+            _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Width * ratio, false);
         }
 
         public override void Draw(CanvasDrawingSession ds)

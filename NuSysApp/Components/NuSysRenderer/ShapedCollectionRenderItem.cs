@@ -163,7 +163,7 @@ namespace NuSysApp
             {
                 ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
                 if (_vm.IsShaped)
-                    ds.FillGeometry(_shape, Colors.DarkRed);
+                    ds.FillGeometry(_shape, Colors.DarkSeaGreen);
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 
@@ -176,13 +176,8 @@ namespace NuSysApp
                 foreach (var item in _renderItems3.ToArray())
                     item.Draw(ds);
 
-
-
                 ds.Transform = orgTransform;
             }
-
-              
-
 
             ds.Transform = orgTransform;
             base.Draw(ds);

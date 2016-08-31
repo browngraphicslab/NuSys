@@ -66,11 +66,9 @@ namespace NuSysApp
                 IsDirty = true;
                 return;
             }
-               
 
             _transform = NuSysRenderer.Instance.GetTransformUntil(this);
             var oldTransform = ds.Transform;
-            var t = Win2dUtil.Invert(_transform);
             var sp = Vector2.Transform(new Vector2((float) _vm.X, (float) (_vm.Y)), _transform);
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
             

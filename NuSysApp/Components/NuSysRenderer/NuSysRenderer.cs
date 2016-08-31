@@ -40,6 +40,7 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
         private MinimapRenderItem _minimap;
         public ElementSelectionRenderItem ElementSelectionRenderItem;
+        public NodeMarkingMenuRenderItem NodeMarkingMenu;
 
         public CollectionRenderItem Root { get; set; }
 
@@ -58,6 +59,7 @@ namespace NuSysApp
         {
             ElementSelectionRenderItem = new ElementSelectionRenderItem(Root.ViewModel, null, _canvas);
             ElementSelectionRenderItem.Load();
+            NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, _canvas);
         }
 
         public async Task Init(CanvasAnimatedControl canvas, CollectionRenderItem topCollection)
@@ -228,6 +230,7 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
          //   _minimap.IsDirty = true;
          //   _minimap.Update();
             ElementSelectionRenderItem.Update();
+            NodeMarkingMenu.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
@@ -239,6 +242,7 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 ds.Transform = Matrix3x2.Identity;
             //    _minimap.Draw(ds);
                 ElementSelectionRenderItem.Draw(ds);
+                NodeMarkingMenu.Draw(ds);
             }
         }
 

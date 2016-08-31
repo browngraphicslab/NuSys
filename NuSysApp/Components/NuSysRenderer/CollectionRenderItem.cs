@@ -18,16 +18,17 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
+using Wintellect.PowerCollections;
 
 namespace NuSysApp
 {
     public class CollectionRenderItem : ElementRenderItem, I2dTransformable
     {
 
-        protected HashSet<BaseRenderItem> _renderItems0 = new HashSet<BaseRenderItem>();
-        protected HashSet<BaseRenderItem> _renderItems1 = new HashSet<BaseRenderItem>();
-        protected HashSet<BaseRenderItem> _renderItems2 = new HashSet<BaseRenderItem>();
-        protected HashSet<BaseRenderItem> _renderItems3 = new HashSet<BaseRenderItem>();
+        protected List<BaseRenderItem> _renderItems0 = new List<BaseRenderItem>();
+        protected List<BaseRenderItem> _renderItems1 = new List<BaseRenderItem>();
+        protected List<BaseRenderItem> _renderItems2 = new List<BaseRenderItem>();
+        protected List<BaseRenderItem> _renderItems3 = new List<BaseRenderItem>();
 
         public InkRenderItem InkRenderItem { get; set; }
         public CollectionInteractionManager InteractionManager;
@@ -55,6 +56,7 @@ namespace NuSysApp
             vm.Trails.CollectionChanged += OnElementsChanged;
 
             InkRenderItem = new InkRenderItem(this, canvas);
+            InkRenderItem.Load();
             _renderItems0.Add(InkRenderItem);
         }
 
@@ -66,6 +68,12 @@ namespace NuSysApp
         private void OnCameraPositionChanged(float f, float f1)
         {
             Camera.T = Matrix3x2.CreateTranslation(new Vector2(f,f1));
+        }
+
+        public void BringForward(ElementRenderItem item)
+        {
+            _renderItems2.Remove(item);
+            _renderItems2.Insert(_renderItems2.Count,item);
         }
 
         public override void Update()
