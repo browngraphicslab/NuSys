@@ -102,6 +102,10 @@ namespace NuSysApp
 
             if (SessionController.Instance.ContentController.HasAnalysisModel(ContentDataModel.ContentId) || makeServerCallsIfNeeded)
             {
+                if (!SessionController.Instance.ContentController.HasAnalysisModel(ContentDataModel.ContentId))
+                {
+                    await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(ContentDataModel.ContentId);
+                }
                 var analysisDict = await SessionController.Instance.ContentController.GetAnalysisModel(ContentDataModel.ContentId).GetSuggestedTagsAsync(makeServerCallsIfNeeded);
                 analysisDict.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
             }
