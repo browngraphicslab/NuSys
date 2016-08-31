@@ -468,6 +468,15 @@ namespace NuSysApp
             SetModeButtons();
         }
 
+        public void ShowBlockingScreen(bool visible)
+        {
+            xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            xLoadingGrid.Tapped += delegate
+            {
+                SessionController.Instance.LoadCapturedState();
+            };
+        }
+
         /// <summary>
         /// Exits either presentation or exploration mode by modifying the proper UI elements
         /// </summary>
@@ -571,7 +580,7 @@ namespace NuSysApp
 
 
 
-        public async Task LoadWorkspaceFromServer(string collectionId, IEnumerable<ElementModel> elements)
+        public async Task LoadWorkspaceFromServer(string collectionId, IEnumerable<ElementModel> elements, IEnumerable<PresentationLinkModel> presentationLinkModels)
         {
             xLoadingGrid.Visibility = Visibility.Visible;
 
@@ -608,6 +617,12 @@ namespace NuSysApp
             {
                 await MakeCollection(new Dictionary<string, ElementModel>(dict));
             });
+
+
+            foreach (var presentationLink in presentationLinkModels)//add the presentation links
+            {
+                await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
+            }
 
 
             Debug.WriteLine("done joining collection: " + collectionId);

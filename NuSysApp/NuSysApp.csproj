@@ -752,6 +752,7 @@
     <Compile Include="Undo\DeleteLibraryElementAction.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
+    <Compile Include="Util\CapturedStateModel.cs" />
     <Compile Include="Util\DetailViewTabType.cs" />
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\ExplorationMode.cs" />

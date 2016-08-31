@@ -43,6 +43,8 @@ namespace NuSysApp
         /// </summary>
         public HashSet<string> CollectionIdsInUse { get; private set; }  = new HashSet<string>();
 
+        private CapturedStateModel _capturedState;
+
         private static readonly object _syncRoot = new Object();
         private static SessionController _instance = new SessionController();
         private FreeFormViewerViewModel _activeFreeFormViewer;
@@ -184,7 +186,34 @@ namespace NuSysApp
         /// </summary>
         public void CaptureCurrentState()
         {
-            throw new NotImplementedException();
+            UITask.Run(delegate
+            {
+                var currentState = new CapturedStateModel(
+                    ActiveFreeFormViewer.LibraryElementId,
+                    ActiveFreeFormViewer.CompositeTransform.CenterX,
+                    ActiveFreeFormViewer.CompositeTransform.CenterY,
+                    ActiveFreeFormViewer.CompositeTransform.ScaleX,
+                    ActiveFreeFormViewer.CompositeTransform.ScaleY);
+                _capturedState = currentState;
+                SessionView.ShowBlockingScreen(true);
+            });
+        }
+
+        public async Task LoadCapturedState()
+        {
+            if (_capturedState != null)
+            {
+                await NuSysNetworkSession.Init();
+                await EnterCollection(_capturedState.CollectionLibraryElementId);
+                UITask.Run(delegate
+                {
+                    ActiveFreeFormViewer.CompositeTransform.CenterX = _capturedState.XLocation;
+                    ActiveFreeFormViewer.CompositeTransform.CenterY = _capturedState.YLocation;
+                    ActiveFreeFormViewer.CompositeTransform.ScaleX = _capturedState.XZoomLevel;
+                    ActiveFreeFormViewer.CompositeTransform.ScaleY = _capturedState.YZoomLevel;
+                    SessionView.ShowBlockingScreen(false);
+                });
+            }
         }
 
         /// <summary>
@@ -350,13 +379,15 @@ namespace NuSysApp
             //gets the element mdoels from the returned requst
             var elementModels = request.GetReturnedElementModels();
 
+            var presentationLinks = request.GetReturnedPresentationLinkModels();
+
             ClearControllersForCollectionExit();
 
             //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
             //TODO put back in for collction entering
-            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels);
+            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels, presentationLinks);
         }
 
         /// <summary>

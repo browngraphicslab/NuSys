@@ -51,7 +51,14 @@ namespace NuSysApp
             _socket.Control.MessageType = SocketMessageType.Utf8;
             _socket.MessageReceived += MessageRecieved;
             _socket.Closed += SocketClosed;
-            _dataMessageWriter = new DataWriter(_socket.OutputStream);
+        }
+
+        /// <summary>
+        /// method to gracefully close the connection to the server.
+        /// </summary>
+        public void CloseConnection()
+        {
+            _dataMessageWriter.DetachStream();
         }
 
         public async Task Init()
@@ -59,7 +66,20 @@ namespace NuSysApp
             ServerBaseURI = "://" + WaitingRoomView.ServerName + "/api/";
             var credentials = GetUserCredentials();
             var uri = GetUri("nusysconnect/" + credentials, true);
-            await _socket.ConnectAsync(uri);
+            _dataMessageWriter = new DataWriter(_socket.OutputStream);
+
+            try
+            {
+                await _socket.ConnectAsync(uri);
+            }
+            catch (Exception e)
+            {
+                _socket = new MessageWebSocket();
+                _socket.Control.MessageType = SocketMessageType.Utf8;
+                _socket.MessageReceived += MessageRecieved;
+                _socket.Closed += SocketClosed;
+                await _socket.ConnectAsync(uri);
+            }
         }
 
         private string GetUserCredentials()
@@ -139,7 +159,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                //throw new IncomingDataReaderException();
+                SessionController.Instance.CaptureCurrentState();
             }
         }
 
