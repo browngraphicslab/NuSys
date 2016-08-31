@@ -737,7 +737,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            (DataContext as MetadataToolViewModel).ReloadPropertiesToDisplay();
+            (DataContext as ToolViewModel).Controller.RefreshFromTopOfChain();
         }
     }
 }

@@ -96,7 +96,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns the dictionary (from key to set of values) to display
+        /// Returns the dictionary (from key to set of values) to display. If you want to RELOAD ALL LIBRARY ELEMENTS from the start of the filter chain
+        /// set recursivelyRefresh = true. By Default it is false.
         /// </summary>
         public Dictionary<string, Dictionary<string, int>> GetAllMetadata()
         {
@@ -112,7 +113,14 @@ namespace NuSysApp
                     }
                     foreach(var metadataValue in kvp.Value)
                     {
-                        allMetadata[kvp.Key][metadataValue] += 1;
+                        if (allMetadata[kvp.Key].ContainsKey(metadataValue))
+                        {
+                            allMetadata[kvp.Key][metadataValue] += 1;
+                        }
+                        else
+                        {
+                            allMetadata[kvp.Key].Add(metadataValue, 1);
+                        }
                     }
                     //allMetadata[kvp.Key] = new HashSet<string>(allMetadata[kvp.Key].Concat(kvp.Value));
                 }
