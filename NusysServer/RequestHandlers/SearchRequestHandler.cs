@@ -38,9 +38,21 @@ namespace NusysServer
                 return message;
             }
             //todo actually search and return a new search result
-            
 
-            SQLSelectQuery searchQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.LibraryElement), GetFullSearchConditional(query));
+            var libraryElementTable = new SingleTable(Constants.SQLTableType.LibraryElement);
+            var userColumnsToSelect = new List<string>();
+            userColumnsToSelect.Add(NusysConstants.USERS_TABLE_HASHED_USER_ID_KEY);
+            userColumnsToSelect.Add(NusysConstants.USERS_TABLE_USER_DISPLAY_NAME_KEY);
+            var userTable = new SingleTable(Constants.SQLTableType.Users, Constants.GetFullColumnTitles(Constants.SQLTableType.Users, userColumnsToSelect));
+            var args = new SqlJoinOperationArgs();
+            args.LeftTable = libraryElementTable;
+            args.RightTable = userTable;
+            args.JoinOperator = Constants.JoinedType.LeftJoin;
+            args.Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY).First();
+            args.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Users, NusysConstants.USERS_TABLE_HASHED_USER_ID_KEY).First();
+            var libraryElementsJoinUser = new JoinedTable(args);
+
+            SQLSelectQuery searchQuery = new SQLSelectQuery(libraryElementsJoinUser, GetFullSearchConditional(query));
             var returnedSearch = searchQuery.ExecuteCommand(); 
             var searchResults = new List<SearchResult>();
             foreach (var searchResult in returnedSearch)
@@ -145,12 +157,12 @@ namespace NusysServer
                 SqlQueryConditional searchCreatorsConditional;
                 if (query.CreatorUserIds.Count == 1)
                 {
-                    searchCreatorsConditional = new SqlQueryIsSubstring(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY, query.CreatorUserIds.First());
+                    searchCreatorsConditional = new SqlQueryIsSubstring(Constants.SQLTableType.Users, NusysConstants.USERS_TABLE_USER_DISPLAY_NAME_KEY, query.CreatorUserIds.First());
 
                 }
                 else
                 {
-                    searchCreatorsConditional = new SqlQueryContainsSubstring(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY, query.CreatorUserIds);
+                    searchCreatorsConditional = new SqlQueryContainsSubstring(Constants.SQLTableType.Users, NusysConstants.USERS_TABLE_USER_DISPLAY_NAME_KEY, query.CreatorUserIds);
 
                 }
                 completeListOfConditionals.Add(searchCreatorsConditional);
