@@ -320,8 +320,6 @@ namespace NuSysApp
             buttonPanel.Width = listItem.ActualWidth;
             buttonPanel.Visibility = Visibility.Visible;
 
-            await Task.Delay(3000);
-            buttonPanel.Visibility = Visibility.Collapsed;
             /*
             buttonPanel?.RowDefinitions.Clear();
             buttonPanel?.Children.Clear();
