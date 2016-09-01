@@ -94,7 +94,7 @@ namespace NuSysApp
 
             // Gets element view models that match the model's library element id. 
             // Had to include !(item.DataContext is LinkViewModel) since LinkViewModels cannot be casted as ElementViewModels re: the new changes. Same thing for tools.
-            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => !(item.DataContext is ToolViewModel) && !(item.DataContext is LinkViewModel)&&((ElementViewModel)item.DataContext)?.Controller?.LibraryElementModel?.LibraryElementId == model?.LibraryElementId);
+            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => !(item.DataContext is ToolViewModel) && !(item.DataContext is ToolLinkViewModel) && !(item.DataContext is LinkViewModel)&&((ElementViewModel)item.DataContext)?.Controller?.LibraryElementModel?.LibraryElementId == model?.LibraryElementId);
             var foo = vms?.ToList();
             var element = foo[0]?.DataContext as ElementViewModel;
             Debug.Assert(element != null);

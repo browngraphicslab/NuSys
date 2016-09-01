@@ -70,7 +70,6 @@ namespace NuSysApp
         /// </summary>
         private void On_SelectionChanged(object sender)
         {
-            var vm = DataContext as MetadataToolViewModel;
             SetKeyListVisualSelection();
             RefreshValueList();
         }
@@ -80,21 +79,25 @@ namespace NuSysApp
         /// </summary>
         private void SetKeyListVisualSelection()
         {
-            var vm = DataContext as MetadataToolViewModel;
-            if (vm.Selection != null &&
-                (vm.Controller as MetadataToolController).Model.Selected &&
-                vm.Selection.Item1 != null)
+            UITask.Run(delegate
             {
-                if (xMetadataKeysList.SelectedItem != vm.Selection.Item1)
+                var vm = DataContext as MetadataToolViewModel;
+                if (vm.Selection != null &&
+                    (vm.Controller as MetadataToolController).Model.Selected &&
+                    vm.Selection.Item1 != null)
                 {
-                    xMetadataKeysList.SelectedItem = vm.Selection.Item1;
-                    xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+                    if (xMetadataKeysList.SelectedItem != vm.Selection.Item1)
+                    {
+                        xMetadataKeysList.SelectedItem = vm.Selection.Item1;
+                        xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+                    }
                 }
-            }
-            else
-            {
-                xMetadataKeysList.SelectedItem = null;
-            }
+                else
+                {
+                    xMetadataKeysList.SelectedItem = null;
+                }
+            });
+            
         }
         
 
@@ -103,19 +106,22 @@ namespace NuSysApp
         /// </summary>
         private void SetValueListVisualSelection()
         {
-            var vm = DataContext as MetadataToolViewModel;
-            if (vm.Selection.Item1 != null && vm.Selection.Item2 != null)
+            UITask.Run(delegate
             {
-                xMetadataValuesList.SelectedItems.Clear();
-                foreach (var item in vm.Selection.Item2)
+                var vm = DataContext as MetadataToolViewModel;
+                if (vm.Selection.Item1 != null && vm.Selection.Item2 != null)
                 {
-                    xMetadataValuesList.SelectedItems.Add(xMetadataValuesList.Items.Where(kvp => ((KeyValuePair<string,double>)kvp).Key.Equals(item)).First());
+                    xMetadataValuesList.SelectedItems.Clear();
+                    foreach (var item in vm.Selection.Item2)
+                    {
+                        xMetadataValuesList.SelectedItems.Add(xMetadataValuesList.Items.Where(kvp => ((KeyValuePair<string, double>)kvp).Key.Equals(item)).First());
+                    }
                 }
-            }
-            else
-            {
-                xMetadataValuesList.SelectedItems.Clear();
-            }
+                else
+                {
+                    xMetadataValuesList.SelectedItems.Clear();
+                }
+            });
         }
 
         private void XSearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -131,31 +137,33 @@ namespace NuSysApp
         /// </summary>
         public void RefreshValueList()
         {
-            var vm = (DataContext as MetadataToolViewModel);
-            if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
-            {
-                var filteredList = FilterValuesList(xSearchBox.Text);
-                if (!ScrambledEquals(xMetadataValuesList.Items.Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
+            UITask.Run(delegate {
+                var vm = (DataContext as MetadataToolViewModel);
+                if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
                 {
-                    //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
-                    //scroll into view if necessary.
-                    xMetadataValuesList.ItemsSource = filteredList;
-                    SetValueListVisualSelection();
-                    if (xMetadataValuesList.SelectedItems.Count > 0)
+                    var filteredList = FilterValuesList(xSearchBox.Text);
+                    if (!ScrambledEquals(xMetadataValuesList.Items.Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
                     {
-                        xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItems.First());
+                        //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
+                        //scroll into view if necessary.
+                        xMetadataValuesList.ItemsSource = filteredList;
+                        SetValueListVisualSelection();
+                        if (xMetadataValuesList.SelectedItems.Count > 0)
+                        {
+                            xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItems.First());
+                        }
+                    }
+                    else
+                    {
+                        //if new filtered list is the same as old filtered list, just set the visual selection and do not refresh the value list item source
+                        SetValueListVisualSelection();
                     }
                 }
                 else
                 {
-                    //if new filtered list is the same as old filtered list, just set the visual selection and do not refresh the value list item source
-                    SetValueListVisualSelection();
+                    xMetadataValuesList.ItemsSource = null;
                 }
-            }
-            else
-            {
-                xMetadataValuesList.ItemsSource = null;
-            }
+            });
         }
 
         /// <summary>
@@ -198,8 +206,8 @@ namespace NuSysApp
         {
             var filteredValuesList = new List<string>();
             var vm = (DataContext as MetadataToolViewModel);
-            var listOfKvpMetadataValueToNumOfOccurrences = vm.AllMetadataDictionary[vm.Selection.Item1].ToList().Where(
-                    item => item.Key?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            var listOfKvpMetadataValueToNumOfOccurrences = vm.AllMetadataDictionary[vm.Selection.Item1].Where(
+                    item => item.Key?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
             return listOfKvpMetadataValueToNumOfOccurrences.OrderBy(key => !string.IsNullOrEmpty(key.Key) && char.IsNumber(key.Key[0]))
                     .ThenBy(key => key.Key).ToList();
         }
@@ -258,9 +266,12 @@ namespace NuSysApp
         /// </summary>
         private void Vm_PropertiesToDisplayChanged()
         {
-            var vm = DataContext as MetadataToolViewModel;
-            Debug.Assert(vm != null);
-            xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
+            UITask.Run(delegate
+            {
+                var vm = DataContext as MetadataToolViewModel;
+                Debug.Assert(vm != null);
+                xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
+            });
         }
 
         /// <summary>
@@ -692,7 +703,7 @@ namespace NuSysApp
             xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
         }
 
-        private void xFetchAnalysisModelsButton_Click(object sender, RoutedEventArgs e)
+        private async Task FetchAnalysisModels(ToggleButton button)
         {
             var libraryElementIds = (DataContext as MetadataToolViewModel)?.Controller?.GetUpdatedDataList();
 
@@ -702,16 +713,16 @@ namespace NuSysApp
                 return;
             }
             int returned = 0;
-            int needed = libraryElementIds.Count();
+            int needed = libraryElementIds.Count(id => !SessionController.Instance.ContentController.HasAnalysisModel(SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel.ContentDataModelId));
 
-            var button = (Button) sender;
+            //var button = (Button) sender;
 
             button.Background = new SolidColorBrush(Colors.Orange);
             button.Content = "0 %";
             button.HorizontalContentAlignment = HorizontalAlignment.Center;
             button.VerticalContentAlignment = VerticalAlignment.Center;
 
-            Task.Run(async delegate
+            await Task.Run(async delegate
             {
 
                 foreach (var id in libraryElementIds)
@@ -722,28 +733,34 @@ namespace NuSysApp
                         returned ++;
                         continue;
                     }
-                    await Task.Delay(5);
-                    Task.Run(async delegate
+                    if (!SessionController.Instance.ContentController.HasAnalysisModel(libraryController.LibraryElementModel.ContentDataModelId))
                     {
-                        await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(libraryController.LibraryElementModel.ContentDataModelId);
-                        returned++;
-                        if (returned == needed)
+                        await Task.Delay(10);
+                    }
+                    Task.Run(async delegate
                         {
-                            UITask.Run(delegate
+                            await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(libraryController.LibraryElementModel.ContentDataModelId);
+                            returned++;
+                            if (returned == needed)
                             {
-                                button.Background = new SolidColorBrush(Colors.Green);
-                                button.Content = null;
-                            });
-                        }
-                        else
-                        {
-                            UITask.Run(delegate
+                                UITask.Run(delegate
+                                {
+                                    button.Background = new SolidColorBrush(Colors.Green);
+                                    button.Content = null;
+                                });
+                            }
+                            else
                             {
-                                button.Content = Math.Round((double) 100*((double) returned/(double) needed), 0) + " %";
-                            });
-                        }
-                    });
+                                UITask.Run(delegate
+                                {
+                                    button.Content = Math.Round((double)100 * ((double)returned / (double)needed), 0) + " %";
+                                });
+                            }
+                        });
+                    
                 }
+
+
             });
         }
 
@@ -754,7 +771,55 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            (DataContext as ToolViewModel).Controller.RefreshFromTopOfChain();
+             RefreshFomTopOfChain();
+        }
+
+        public void RefreshFomTopOfChain()
+        {
+            var vm = (DataContext as MetadataToolViewModel);
+            if(vm == null)
+            {
+                return;
+            }
+            Task.Run(delegate
+            {
+                vm.Controller.RefreshFromTopOfChain();
+            });
+        }
+
+        /// <summary>
+        /// When the fetch analysis toggle switch is checked. fetch, the analysis models, set the include suggest tags bool, reload from 
+        /// top of filter chain.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void xFetchAnalysisModelsButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var model = ((DataContext as MetadataToolViewModel)?.Controller as MetadataToolController)?.Model as MetadataToolModel;
+            if(model != null)
+            {
+                model.SetIncludeSuggestedTags(true);
+                await FetchAnalysisModels(sender as ToggleButton);
+                
+                    RefreshFomTopOfChain();
+
+            }
+        }
+
+        /// <summary>
+        /// When the fetch analysis toggle switch is unchecked.  set the include suggest tags bool, reload from 
+        /// top of filter chain.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void xFetchAnalysisModelsButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            var model = ((DataContext as MetadataToolViewModel)?.Controller as MetadataToolController)?.Model as MetadataToolModel;
+            if (model != null)
+            {
+                model.SetIncludeSuggestedTags(false);
+                    RefreshFomTopOfChain();
+            }
         }
     }
 }

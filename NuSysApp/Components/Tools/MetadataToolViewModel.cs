@@ -29,19 +29,29 @@ namespace NuSysApp
         /// </summary>
         public override void ReloadPropertiesToDisplay()
         {
+            bool editedSelection = false;
             var dictionaryWithWeight = (_controller as MetadataToolController).GetAllMetadata();
-            //var maxWeight = dictionaryWithWeight.Max(q => q.Value.Val).First().Value;
             AllMetadataDictionary = dictionaryWithWeight.ToDictionary(kvp => kvp.Key, v => v.Value.ToDictionary(k => k.Key, kvp =>  CalculateBarWidth(kvp.Value, v.Value.Max(q => q.Value))));
-            InvokePropertiesToDisplayChanged();
+
             if ((_controller as MetadataToolController).MetadataToolModel.Selection != null && (_controller as MetadataToolController).MetadataToolModel.Selected == true)
             {
                 if (!AllMetadataDictionary.ContainsKey((_controller as MetadataToolController).MetadataToolModel.Selection.Item1))
                 {
-                    (_controller as MetadataToolController).UnSelect();
+                    if (Selection.Item1.Any())
+                    {
+                        editedSelection = true;
+                        (_controller as MetadataToolController).UnSelect();
+                    }
+
                 }
-                else if (Selection.Item2 != null && !Enumerable.Intersect(AllMetadataDictionary[Selection.Item1].Keys, Selection.Item2).Any() || Selection.Item2 == null)
+                else if ((Selection.Item2 != null) && !Enumerable.Intersect(AllMetadataDictionary[Selection.Item1].Keys, Selection.Item2).Any() || Selection.Item2 == null)
                 {
-                    Selection = new Tuple<string, HashSet<string>>(Selection.Item1, new HashSet<string>());
+                    if (Selection.Item2.Any())
+                    {
+                        editedSelection = true;
+                        Selection = new Tuple<string, HashSet<string>>(Selection.Item1, new HashSet<string>());
+
+                    }
                 }
                 else if (Selection.Item2 != null && Enumerable.Intersect(AllMetadataDictionary[Selection.Item1].Keys, Selection.Item2).Any())
                 {
@@ -50,10 +60,19 @@ namespace NuSysApp
                         if (!AllMetadataDictionary[Selection.Item1].Keys.Contains(item))
                         {
                             Selection.Item2.Remove(item);
+                            editedSelection = true;
                         }
                     }
-                    Selection = Selection;
+                    if(editedSelection == true)
+                    {
+                        Selection = Selection;
+                    }
                 }
+            }
+            if(editedSelection == false)
+            {
+                InvokePropertiesToDisplayChanged();
+                (Controller as MetadataToolController).FireSelectionChanged();
             }
         }
 

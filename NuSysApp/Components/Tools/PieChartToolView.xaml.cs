@@ -46,22 +46,25 @@ namespace NuSysApp
         /// </summary>
         public void SetProperties(List<string> propertiesList)
         {
-            PieChartDictionary = new Dictionary<string, int>();
-            foreach (var item in propertiesList)
+            UITask.Run(delegate
             {
-                if (item != null && !item.Equals(""))
+                PieChartDictionary = new Dictionary<string, int>();
+                foreach (var item in propertiesList)
                 {
-                    if (!PieChartDictionary.ContainsKey(item))
+                    if (item != null && !item.Equals(""))
                     {
-                        PieChartDictionary.Add(item, 1);
-                    }
-                    else
-                    {
-                        PieChartDictionary[item] = PieChartDictionary[item] + 1;
+                        if (!PieChartDictionary.ContainsKey(item))
+                        {
+                            PieChartDictionary.Add(item, 1);
+                        }
+                        else
+                        {
+                            PieChartDictionary[item] = PieChartDictionary[item] + 1;
+                        }
                     }
                 }
-            }
-            xPieSeries.ItemsSource = PieChartDictionary;
+                xPieSeries.ItemsSource = PieChartDictionary;
+            });
         }
 
         public void Dispose()
@@ -74,26 +77,30 @@ namespace NuSysApp
         /// </summary>
         public void SetVisualSelection(HashSet<string> selection)
         {
-            var transparent = new SolidColorBrush(Colors.Transparent);
-            if (selection == null)
+            UITask.Run(delegate
             {
+                var transparent = new SolidColorBrush(Colors.Transparent);
+                if (selection == null)
+                {
+                    foreach (LegendItem item in xPieChart.LegendItems)
+                    {
+                        item.Background = transparent;
+                    }
+                    return;
+                }
                 foreach (LegendItem item in xPieChart.LegendItems)
                 {
-                    item.Background = transparent;
+                    if (selection.Contains(item.Content))
+                    {
+                        item.Background = new SolidColorBrush(Colors.LightBlue);
+                    }
+                    else
+                    {
+                        item.Background = transparent;
+                    }
                 }
-                return;
-            }
-            foreach (LegendItem item in xPieChart.LegendItems)
-            {
-                if (selection.Contains(item.Content))
-                {
-                    item.Background = new SolidColorBrush(Colors.LightBlue);
-                }
-                else
-                {
-                    item.Background = transparent;
-                }
-            }
+            });
+            
 
         }
 

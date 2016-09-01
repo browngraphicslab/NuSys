@@ -52,19 +52,23 @@ namespace NuSysApp.Tools
         /// </summary>
         public void SetProperties(List<string> propertiesList)
         {
-            HashSet<string> set = new HashSet<string>();
-            PropertiesToDisplayUnique.Clear();
-            foreach (var item in propertiesList)
+            UITask.Run(delegate
             {
-                if (item != null && !item.Equals(""))
+                HashSet<string> set = new HashSet<string>();
+                PropertiesToDisplayUnique.Clear();
+                foreach (var item in propertiesList)
                 {
-                    if (!set.Contains(item))
+                    if (item != null && !item.Equals(""))
                     {
-                        PropertiesToDisplayUnique.Add(item);
-                        set.Add(item);
+                        if (!set.Contains(item))
+                        {
+                            PropertiesToDisplayUnique.Add(item);
+                            set.Add(item);
+                        }
                     }
                 }
-            }
+            });
+            
         }
 
         public void Dispose()
@@ -77,15 +81,18 @@ namespace NuSysApp.Tools
         /// </summary>
         public void SetVisualSelection(HashSet<string> selections)
         {
-            xPropertiesList.SelectedItems.Clear();
-            foreach (var selection in selections ?? new HashSet<string>())
+            UITask.Run(delegate
             {
-                xPropertiesList.SelectedItems.Add(selection);
-            }
-            if (selections != null && selections.Count > 0)
-            {
-                xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItems.Last());
-            }
+                xPropertiesList.SelectedItems.Clear();
+                foreach (var selection in selections ?? new HashSet<string>())
+                {
+                    xPropertiesList.SelectedItems.Add(selection);
+                }
+                if (selections != null && selections.Count > 0)
+                {
+                    xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItems.Last());
+                }
+            });
         }
 
         /// <summary>

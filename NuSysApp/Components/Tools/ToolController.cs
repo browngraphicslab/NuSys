@@ -220,7 +220,7 @@ namespace NuSysApp
             {
                 var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=> v.Value.Values.ToDictionary( k => k, j => 1)) ?? new Dictionary<string, Dictionary<string,int>>());
 
-                if (SessionController.Instance.ContentController.HasAnalysisModel(controller.LibraryElementModel.ContentDataModelId)) { 
+                if (SessionController.Instance.ContentController.HasAnalysisModel(controller.LibraryElementModel.ContentDataModelId) && ((Model as MetadataToolModel)?.IncludeSuggestedTags ?? false)) { 
                     var analysisController = SessionController.Instance.ContentController.GetAnalysisModel(controller.LibraryElementModel.ContentDataModelId);
                     metadata.Add("Suggested_Keywords", analysisController?.GetSuggestedTagsAsync(false)?.Result);
                 }
