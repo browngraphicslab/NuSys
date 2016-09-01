@@ -164,7 +164,16 @@ namespace NuSysApp
                     },
                     ContentId =  contentId
                 };
-
+                foreach(var preslink in PresentationLinkViewModel.Models.ToList())
+                {
+                    if (draggedId == preslink.InElementId || draggedId == preslink.OutElementId ||
+                        hoveredId == preslink.InElementId || hoveredId == preslink.OutElementId)
+                    {
+                        var request = new DeletePresentationLinkRequest(preslink.LinkId);
+                    //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    //    request.DeletePresentationLinkFromLibrary();
+                    }
+                }
                 var newCollectionRequest = new CreateNewContentRequest(newContentRequestArgs);//create and execute request fro new collection content and libraryElement
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newCollectionRequest);
                 newCollectionRequest.AddReturnedLibraryElementToLibrary();
