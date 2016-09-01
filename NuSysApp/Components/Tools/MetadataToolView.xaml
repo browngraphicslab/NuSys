@@ -102,7 +102,7 @@
                                 <Border Grid.Row="0"  BorderBrush="{StaticResource color2}" BorderThickness="0">
                                     <TextBlock Text="VALUES" TextAlignment="Center" Padding="2" Foreground="{StaticResource color3}" />
                                 </Border>
-                                <Border Grid.Row="1" Visibility="Collapsed">
+                                <Border Grid.Row="1" Visibility="Visible">
                                     <TextBox Name="xSearchBox" TextChanged="XSearchBox_OnTextChanged"/>
                                 </Border>
                                 <ListView Grid.Row="2" Loaded="xMetadataValuesList_Loaded" x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1,2,0,0"  Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="White" SelectionMode="Multiple" >
@@ -112,7 +112,7 @@
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                             <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
                                             <Setter Property="Padding" Value="0"/>
-                                            <Setter Property="Margin" Value="15,0,15,0"/>
+                                            <Setter Property="Margin" Value="5,0,2,0"/>
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ListViewItem">
@@ -148,7 +148,12 @@
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <Grid PointerPressed="xList_PointerPressed" Background="Transparent"  Tapped="ValueListItem_OnTapped" DoubleTapped="ValueListItem_OnDoubleTapped"  ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                                                <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center"/>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="40" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0" Background="Black" Height="10" Margin="0,0,5,0" HorizontalAlignment="Right" Width="{Binding Value}" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Key}" Foreground="{StaticResource color3}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>

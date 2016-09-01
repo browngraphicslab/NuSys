@@ -371,8 +371,6 @@ namespace NuSysApp
         /// </summary>
         public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
         {
-            
-
             var toolFilter = new ToolFilterView(x, y, this);
 
             var linkviewmodel = new ToolLinkViewModel(this, toolFilter);
@@ -471,7 +469,6 @@ namespace NuSysApp
             RaisePropertyChanged("Transform");
             CalculateAnchorPoint();
             ToolAnchorChanged?.Invoke(this, _anchor);
-
         }
 
 
