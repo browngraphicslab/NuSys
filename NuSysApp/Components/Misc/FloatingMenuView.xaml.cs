@@ -226,17 +226,19 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
+        private void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
+            Debug.WriteLine("starting request");
             // Hide the library dragging rect
             var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
             rect.Hide();
 
             // Add the element at the dropped location
             var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_exportPos);
-            await AddElementToCollection(dropPoint);
+            AddElementToCollection(dropPoint);
 
             args.Handled = true;
+            Debug.WriteLine("end request");
 
         }
 
@@ -339,6 +341,7 @@ namespace NuSysApp
                     Debug.Fail($"We do not support adding {_elementType} to the collection yet, please add support for it here");
                     return;
             }
+            Debug.WriteLine("about to create request");
             // Create a new content request
             var createNewContentRequestArgs = new CreateNewContentRequestArgs
             {
@@ -356,7 +359,9 @@ namespace NuSysApp
             // execute the content request
             var contentRequest = new CreateNewContentRequest(createNewContentRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
+            Debug.WriteLine("request executed");
             contentRequest.AddReturnedLibraryElementToLibrary();
+            Debug.WriteLine("library element added to library");
 
             // create a new add element to collection request
             var newElementRequestArgs = new NewElementRequestArgs
@@ -371,11 +376,16 @@ namespace NuSysApp
 
             // execute the add element to collection request
             var elementRequest = new NewElementRequest(newElementRequestArgs);
+            Debug.WriteLine("created new element request");
+
             await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(createNewContentRequestArgs.ContentId);
+            Debug.WriteLine("fetch contentdatamodel");
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+            Debug.WriteLine("request new element");
 
             await elementRequest.AddReturnedElementToSessionAsync();
+            Debug.WriteLine("add returned element to session");
 
             // remove any selections from the activeFreeFormViewer
             vm.ClearSelection();
