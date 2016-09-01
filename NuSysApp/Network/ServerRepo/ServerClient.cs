@@ -152,7 +152,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                //SessionController.Instance.CaptureCurrentState();
+                SessionController.Instance.CaptureCurrentState();
             }
         }
 
