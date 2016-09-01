@@ -92,6 +92,12 @@ namespace NuSysApp
         /// </summary>
         public DetailHomeTabViewModel HomeTabViewModel { get; set; }
         /// <summary>
+        /// This is the parent image's accesstype so that the temporary image can then inheret it's accesstype
+        /// </summary>
+        public NusysConstants.AccessType AccessType { get; set; }
+
+
+        /// <summary>
         /// when the size changes we want to tell the view that the location on the actual node has changed 
         /// </summary>
         /// <param name="sender"></param>
@@ -105,7 +111,7 @@ namespace NuSysApp
         /// </summary>
         public List<MetadataEntry> MetadataToAddUponBeingFullRegion { get; set; }
 
-        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel, int? pageLocation = null)
+        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel, int? pageLocation = null, NusysConstants.AccessType access = NusysConstants.AccessType.Private)
         {
             NormalizedTopLeftPoint = topLeftPoint;
             NormalizedWidth = width;
@@ -116,6 +122,7 @@ namespace NuSysApp
             RectangleWrapper = rectangleWrapper;
             HomeTabViewModel = hometabViewModel;
 
+            AccessType = access;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
             RectangleWrapper.Disposed += Dispose;
         }

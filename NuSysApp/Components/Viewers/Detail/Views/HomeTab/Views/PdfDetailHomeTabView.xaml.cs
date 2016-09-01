@@ -281,7 +281,7 @@ namespace NuSysApp
                     {
                         continue;
                     }
-                    var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel, region.PageNumber);
+                    var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel, region.PageNumber,vm.LibraryElementController.LibraryElementModel.AccessType);
                     var tempview = new TemporaryImageRegionView(tempvm);
                     xClippingWrapper.AddTemporaryRegion(tempview);
                 }

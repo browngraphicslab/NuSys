@@ -70,7 +70,7 @@ namespace NusysIntermediate
                 }
                 else if (ContainsCreatorFuzzyMatch(searchSegment) && i + 1 < splitBySemiColon.Count)
                 {
-                    args.CreatorUserIds.AddRange(BuildArgsList(splitBySemiColon[i + 1]));
+                    args.CreatorUserIds.AddRange(BuildArgsList( splitBySemiColon[i + 1]));
                     categoryText.Add(RemoveFuzzyMatchFromEnd(splitBySemiColon[i + 1]));
                 }
 
