@@ -6,7 +6,7 @@ namespace NuSysApp
 {
     public class MetadataToolViewModel : ToolViewModel
     {
-        private const double _minBarWidth = 5;
+        private const double _minBarWidth = 1;
         private const double _maxBarWidth = 30;
 
         public Tuple<string, HashSet<string>> Selection { get { return (_controller as MetadataToolController).MetadataToolModel.Selection; } set { (_controller as MetadataToolController).SetSelection(value); } }
@@ -59,8 +59,8 @@ namespace NuSysApp
 
         private double CalculateBarWidth(int weight, int max)
         {
-            var width = (double)(Math.Log10(weight) / (double)Math.Log10(max) * _maxBarWidth);
-            if(double.IsNaN(width) || width == 0)
+            var width = (double)(Math.Log(weight) / (double)Math.Log(max) * _maxBarWidth);
+            if(double.IsNaN(width) || width < _minBarWidth)
             {
                 return _minBarWidth;
             }
