@@ -47,10 +47,6 @@ namespace NuSysApp
 
         public ServerClient()
         {
-            _socket = new MessageWebSocket();
-            _socket.Control.MessageType = SocketMessageType.Utf8;
-            _socket.MessageReceived += MessageRecieved;
-            _socket.Closed += SocketClosed;
         }
 
         /// <summary>
@@ -58,28 +54,25 @@ namespace NuSysApp
         /// </summary>
         public void CloseConnection()
         {
-            _dataMessageWriter.DetachStream();
+            _socket.Close(1000,"done");
+
         }
 
         public async Task Init()
         {
+            _socket = new MessageWebSocket();
+
             ServerBaseURI = "://" + WaitingRoomView.ServerName + "/api/";
             var credentials = GetUserCredentials();
             var uri = GetUri("nusysconnect/" + credentials, true);
+
+            _socket.Control.MessageType = SocketMessageType.Utf8;
+            _socket.MessageReceived += MessageRecieved;
+            _socket.Closed += SocketClosed;
+
             _dataMessageWriter = new DataWriter(_socket.OutputStream);
 
-            try
-            {
-                await _socket.ConnectAsync(uri);
-            }
-            catch (Exception e)
-            {
-                _socket = new MessageWebSocket();
-                _socket.Control.MessageType = SocketMessageType.Utf8;
-                _socket.MessageReceived += MessageRecieved;
-                _socket.Closed += SocketClosed;
-                await _socket.ConnectAsync(uri);
-            }
+            await _socket.ConnectAsync(uri);
         }
 
         private string GetUserCredentials()
@@ -98,7 +91,7 @@ namespace NuSysApp
 
         private void SocketClosed(IWebSocket sender, WebSocketClosedEventArgs args)
         {
-            throw new Exception("Server client failed from web socket closing!");
+            //throw new Exception("Server client failed from web socket closing!");
         }
 
         /// <summary>
@@ -159,7 +152,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                SessionController.Instance.CaptureCurrentState();
+                //SessionController.Instance.CaptureCurrentState();
             }
         }
 

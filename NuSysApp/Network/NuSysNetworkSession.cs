@@ -79,8 +79,6 @@ namespace NuSysApp
         /// </summary>
         public void CloseConnection()
         {
-            _serverClient.OnMessageRecieved -= OnMessageRecieved;
-            _serverClient.OnNewNotification -= HandleNotification;
             _serverClient.CloseConnection();
         }
 

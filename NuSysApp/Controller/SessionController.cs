@@ -186,7 +186,7 @@ namespace NuSysApp
         /// </summary>
         public void CaptureCurrentState()
         {
-            UITask.Run(delegate
+            UITask.Run(async delegate
             {
                 var currentState = new CapturedStateModel(
                     ActiveFreeFormViewer.LibraryElementId,
@@ -197,12 +197,15 @@ namespace NuSysApp
                 _capturedState = currentState;
                 SessionView.ShowBlockingScreen(true);
             });
+            NuSysNetworkSession.CloseConnection();
         }
 
         public async Task LoadCapturedState()
         {
             if (_capturedState != null)
             {
+                var tup = await WaitingRoomView.AttemptLogin(WaitingRoomView.UserName, WaitingRoomView.HashedPass, "", false);
+                Debug.Assert(tup.Item1);
                 await NuSysNetworkSession.Init();
                 await EnterCollection(_capturedState.CollectionLibraryElementId);
                 UITask.Run(delegate
