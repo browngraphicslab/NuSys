@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using NetTopologySuite.Utilities;
 using NuSysApp.Tools;
+using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -549,7 +550,14 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            (DataContext as ToolViewModel).Controller.RefreshFromTopOfChain();
+            var vm = DataContext as ToolViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            Task.Run(delegate {
+                vm.Controller?.RefreshFromTopOfChain();
+            });
         }
     }
 

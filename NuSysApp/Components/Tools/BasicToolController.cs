@@ -149,5 +149,13 @@ namespace NuSysApp
             }
             return new List<string>();
         }
+
+        /// <summary>
+        /// This simply fires the selection changed event which the view listens to. This will refresh the visual selection basically.
+        /// </summary>
+        public void FireSelectionChanged()
+        {
+            SelectionChanged?.Invoke(this);
+        }
     }
 }

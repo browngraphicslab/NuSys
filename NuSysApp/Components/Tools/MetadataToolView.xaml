@@ -34,8 +34,9 @@
                     <Button Grid.Column="0"  x:Name="xDeleteButton" Click ="Delete_Click" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,45,5,0">
                         <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
                     </Button>
-                    <Button Grid.Column="0" x:Name="xFetchAnalysisModelsButton" Click="xFetchAnalysisModelsButton_Click"  Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,15,5,0">
-                    </Button>
+
+                    <ToggleButton Grid.Column="0" x:Name="xFetchAnalysisModelsButton" Checked="xFetchAnalysisModelsButton_Checked" Unchecked="xFetchAnalysisModelsButton_Unchecked" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,15,5,0">
+                    </ToggleButton>
                     <Button Grid.Column="0" x:Name="xRefreshButton" Click="xRefreshButton_Click"  Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,15,5,0">
                     </Button>
                 </StackPanel>

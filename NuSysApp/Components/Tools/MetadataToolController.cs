@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NusysIntermediate;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -96,8 +97,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns the dictionary (from key to set of values) to display. If you want to RELOAD ALL LIBRARY ELEMENTS from the start of the filter chain
-        /// set recursivelyRefresh = true. By Default it is false.
+        /// Returns the dictionary (from key to dictionary from value to width of bar) to display. 
         /// </summary>
         public Dictionary<string, Dictionary<string, int>> GetAllMetadata()
         {
@@ -105,6 +105,7 @@ namespace NuSysApp
             var allMetadata = new Dictionary<string, Dictionary<string, int>>();
             foreach (var controller in libraryElementControllers)
             {
+                var metadataForSingleController = GetMetadata(controller.LibraryElementModel.LibraryElementId);
                 foreach (var kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
                 {
                     if (!allMetadata.ContainsKey(kvp.Key))
@@ -122,10 +123,17 @@ namespace NuSysApp
                             allMetadata[kvp.Key].Add(metadataValue.Key, metadataValue.Value);
                         }
                     }
-                    //allMetadata[kvp.Key] = new HashSet<string>(allMetadata[kvp.Key].Concat(kvp.Value));
                 }
             }
             return allMetadata;
+        }
+
+        /// <summary>
+        /// This just fires the selection changed event which the view listens to which will set the visual selection
+        /// </summary>
+        public void FireSelectionChanged()
+        {
+            SelectionChanged?.Invoke(this);
         }
     }
 }

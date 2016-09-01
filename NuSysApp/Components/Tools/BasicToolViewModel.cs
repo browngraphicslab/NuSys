@@ -55,13 +55,18 @@ namespace NuSysApp
         /// </summary>
         public override void ReloadPropertiesToDisplay()
         {
+            bool editedSelection = false;
             PropertiesToDisplay = new List<string>((_controller as BasicToolController).GetAllProperties().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key));
             InvokePropertiesToDisplayChanged();
             if ((_controller as BasicToolController).BasicToolModel.Selection != null &&
                 (_controller as BasicToolController).BasicToolModel.Selected == true &&
                 !PropertiesToDisplay.Intersect((_controller as BasicToolController).BasicToolModel.Selection).Any())
             {
-                (_controller as BasicToolController).UnSelect();
+                if (Selection.Any())
+                {
+                    (_controller as BasicToolController).UnSelect();
+                    editedSelection = true;
+                }
             }
             else if ((_controller as BasicToolController).BasicToolModel.Selected == true)
             {
@@ -70,9 +75,18 @@ namespace NuSysApp
                     if (!PropertiesToDisplay.Contains(item))
                     {
                         Selection.Remove(item);
+                        editedSelection = true;
                     }
                 }
-                Selection = Selection;
+                if (editedSelection)
+                {
+                    Selection = Selection;
+                }
+            }
+            if(editedSelection == false)
+            {
+                InvokePropertiesToDisplayChanged();
+                (Controller as BasicToolController).FireSelectionChanged();
             }
         }
     }
