@@ -206,6 +206,7 @@ namespace NuSysApp
             {
                 var tup = await WaitingRoomView.AttemptLogin(WaitingRoomView.UserName, WaitingRoomView.HashedPass, "", false);
                 Debug.Assert(tup.Item1);
+                SessionView?.ClearUsers();
                 await NuSysNetworkSession.Init();
                 await EnterCollection(_capturedState.CollectionLibraryElementId);
                 UITask.Run(delegate
@@ -404,6 +405,7 @@ namespace NuSysApp
             Instance?.ActiveFreeFormViewer?.AtomViewList?.Clear();
             Instance?.IdToControllers?.ForEach(kvp => kvp.Value?.Dispose());
             Instance?.IdToControllers?.Clear();//TODO actually unload all of these.  very important
+            PresentationLinkViewModel.Models?.Clear();
             Instance?.CollectionIdsInUse?.Clear();
         }
 

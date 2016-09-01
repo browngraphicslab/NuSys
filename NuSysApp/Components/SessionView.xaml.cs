@@ -949,5 +949,13 @@ namespace NuSysApp
             SessionController.Instance.ClearControllersForCollectionExit();
             Frame.Navigate(typeof (WaitingRoomView), this);
         }
+
+        /// <summary>
+        /// method called to clear all the user labels currently on the session view;
+        /// </summary>
+        public void ClearUsers()
+        {
+            Users?.Children?.Clear();
+        }
     }
 }
