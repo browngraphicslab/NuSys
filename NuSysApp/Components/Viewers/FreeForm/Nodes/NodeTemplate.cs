@@ -531,7 +531,7 @@ namespace NuSysApp
 
             //Creates an undo button and places it in the correct position.
 
-            var position = new Point2d(model.X, model.Y);
+            var position = new Point(model.X, model.Y);
             var workspace = SessionController.Instance.ActiveFreeFormViewer;
             var undoButton = new UndoButton();
             workspace.AtomViewList.Add(undoButton);

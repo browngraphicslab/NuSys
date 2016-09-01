@@ -208,7 +208,8 @@ namespace NuSysApp
 
                 var oldCollection = elementToBeAdded.GetParentCollectionId();
                 var newCollection = collection.Model.LibraryId;
-                var oldLocation = new Point2d(elementToBeAdded.Model.X, elementToBeAdded.Model.Y);
+                //Give it the location of the collection + some offset so that the undo button is not hidden by the collection
+                var oldLocation = new Point2d(collection.Model.X - 50, collection.Model.Y);
                 var newLocation = new Point2d(targetPoint.X, targetPoint.Y);
 
                 await elementToBeAdded.RequestMoveToCollection(collection.Model.LibraryId, targetPoint.X, targetPoint.Y);
