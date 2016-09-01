@@ -24,6 +24,8 @@ namespace NuSysApp
         private ElementViewModel _hoveredNode;
         private string _createdGroupId;
 
+        private UndoButton _moveToCollectionUndoButton;
+
         public CreateGroupMode(FrameworkElement view) : base(view)
         {
         }
@@ -202,9 +204,27 @@ namespace NuSysApp
                 else
                 {
                     targetPoint = new Point(50000,50000);
-                } 
+                }
+
+                var oldCollection = elementToBeAdded.GetParentCollectionId();
+                var newCollection = collection.Model.LibraryId;
+                var oldLocation = new Point2d(elementToBeAdded.Model.X, elementToBeAdded.Model.Y);
+                var newLocation = new Point2d(targetPoint.X, targetPoint.Y);
 
                 await elementToBeAdded.RequestMoveToCollection(collection.Model.LibraryId, targetPoint.X, targetPoint.Y);
+
+
+                //Instantiates a MoveToCollectionAction that describes the action that just occurred.
+                var action = new MoveToCollectionAction(elementToBeAdded.Id, oldCollection,
+                    newCollection, oldLocation, newLocation);
+                //Create UndoButton that will reverse the movetocollection action just occured. 
+                _moveToCollectionUndoButton = new UndoButton();
+                //Moves the undobutton to the old position and activates it.
+                parentVm.AtomViewList.Add(_moveToCollectionUndoButton);
+                _moveToCollectionUndoButton.MoveTo(oldLocation);
+                _moveToCollectionUndoButton.Activate(action);
+
+
                 _isHovering = false;
             }
 

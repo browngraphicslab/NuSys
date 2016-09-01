@@ -750,6 +750,7 @@
     <Compile Include="Undo\MoveElementAction.cs" />
     <Compile Include="Undo\DeleteElementAction.cs" />
     <Compile Include="Undo\DeleteLibraryElementAction.cs" />
+    <Compile Include="Undo\MoveToCollectionAction.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Util\CapturedStateModel.cs" />
