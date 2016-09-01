@@ -153,7 +153,7 @@ namespace NusysServer
         public void SendError(Exception e)
         {
             var errorMessage = new Message();
-            errorMessage[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message;
+            errorMessage[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message + "  Stack Trace: "+e.StackTrace;
             if (this.WebSocketContext.IsClientConnected)
             {
                 Send(errorMessage.GetSerialized());

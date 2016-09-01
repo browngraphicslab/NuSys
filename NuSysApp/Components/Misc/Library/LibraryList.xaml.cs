@@ -457,7 +457,13 @@ namespace NuSysApp
                 return;
             }
 
-            var model = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+            var model = SessionController.Instance.ContentController.GetLibraryElementController(id)?.LibraryElementModel;
+
+
+            if (model == null)
+            {
+                return;
+            }
 
             Task.Run(async delegate
             {

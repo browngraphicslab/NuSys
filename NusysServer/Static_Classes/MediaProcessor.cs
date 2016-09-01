@@ -69,9 +69,7 @@ namespace NusysServer
                                 var i = 0;
                                 foreach (var pageUrl in pageUrls)
                                 {
-                                    Task.Run(async delegate {
-                                        await RunPageOcr(i, OCRModels, pageUrl, senderHandler);
-                                    });
+                                    RunPageOcr(i, OCRModels, pageUrl, senderHandler);
                                     i++;
                                 }
 
