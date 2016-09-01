@@ -69,7 +69,9 @@ namespace NusysServer
                                 var i = 0;
                                 foreach (var pageUrl in pageUrls)
                                 {
-                                    RunPageOcr(i, OCRModels, pageUrl, senderHandler);
+                                    Task.Run(async delegate {
+                                        RunPageOcr(i, OCRModels, pageUrl, senderHandler);
+                                    });
                                     i++;
                                 }
 
@@ -104,7 +106,7 @@ namespace NusysServer
                                 };
                                 analysisModel = pdfModel; //set the analysis model
 
-                                var regions = pdfModel.PageImageAnalysisModels.SelectMany(page => page?.Regions ?? new List<CognitiveApiRegionModel>());//get all the ocr regions
+                                var regions = pdfModel?.PageImageAnalysisModels?.SelectMany(page => page?.Regions ?? new List<CognitiveApiRegionModel>());//get all the ocr regions
   
                                 var sortedList = new SortedList<double, CognitiveApiRegionModel>(); //create a sorted list to get the most important topics
 
