@@ -315,6 +315,12 @@ namespace NusysServer
             // for each request, get the phrase and sentiment model, then combine the two to create a segment model, and add to the idToSegmentMapping
             foreach (var request in requestList)
             {
+
+                if (request == null || !request.Any())
+                {
+                    continue;
+                }
+
                 // get the phrase and sentiment model
                 var phraseModel = await GetTextKeyPhrasesAsync(request);
                 var sentimentModel = await GetTextSentimentAsync(request);
