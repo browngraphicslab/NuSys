@@ -82,8 +82,7 @@ namespace NuSysApp
             // Transforms original and new positions from screen to global space
             _newPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _newPosition);
-            _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
-                _originalPosition);
+
             
              ActiveNodes.Remove((UserControl)sender);
             
@@ -102,13 +101,21 @@ namespace NuSysApp
                 return;
             }
             var userControl = (UserControl)sender;
+
             if (userControl.DataContext is ElementViewModel && !(userControl.DataContext is LinkViewModel))
             {
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
             }
 
-            _originalPosition.X = manipulationStartingRoutedEventArgs.Position.X;
-            _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
+            var vm = userControl.DataContext as ElementViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+
+            _originalPosition.X = vm.Model.X;
+            _originalPosition.Y = vm.Model.Y;
 
             ActiveNodes.Add((UserControl)sender);
 
@@ -248,8 +255,7 @@ namespace NuSysApp
             // Transforms original and new positions from screen to global space
             _newPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
                 _newPosition);
-            _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
-                _originalPosition);
+
 
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
