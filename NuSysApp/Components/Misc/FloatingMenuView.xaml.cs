@@ -75,6 +75,18 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnAddRecordingNode);
             AddNodeSubmenuButton(btnAddCollectionNode);
             AddNodeSubmenuButton(btnAddTools);
+
+            Panel.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
+            Panel.ManipulationDelta += OnManipulationDelta;
+        }
+
+        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var compositeTransform = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            e.Handled = true;
         }
 
         private void CheckPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -165,7 +177,7 @@ namespace NuSysApp
         private void AddNodeSubmenuButton(FrameworkElement btn)
         {
             btn.ManipulationMode = ManipulationModes.All;
-            btn.ManipulationStarted += BtnAddNodeOnManipulationStarted;
+            btn.ManipulationStarting += BtnAddNodeOnManipulationStarted;
             btn.ManipulationDelta += BtnAddNodeOnManipulationDelta;
             btn.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
         }
@@ -230,12 +242,16 @@ namespace NuSysApp
         /// <param name="args"></param>
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
+            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = false;
             // Hide the library dragging rect
             var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
             rect.Hide();
 
+            var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(args.Position);
+            //var r = NuSysRenderer.Instance.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
+
             // Add the element at the dropped location
-            var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(_exportPos);
+          //  var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(_exportPos);
             var dropPoint = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
 
             await AddElementToCollection(new Point(dropPoint.X, dropPoint.Y));
@@ -267,9 +283,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
+        private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartingRoutedEventArgs args)
         {
-
+            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = true;
             // set the _elementType based on the sender
             if (sender == btnAddTextNode)
             {

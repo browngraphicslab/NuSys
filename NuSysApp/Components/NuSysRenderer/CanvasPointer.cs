@@ -18,9 +18,10 @@ namespace NuSysApp
         public uint PointerId;
         public PointerDeviceType DeviceType;
         public PointerPointProperties Properties;
+        public Vector2 StartPoint;
+        public Vector2 CurrentPoint;
 
         public CanvasPointer() { }
-
         public CanvasPointer(PointerPoint pointerpoint)
         {
             StartPoint = new Vector2((float)pointerpoint.Position.X, (float)pointerpoint.Position.Y);
@@ -30,24 +31,23 @@ namespace NuSysApp
             DeviceType = pointerpoint.PointerDevice.PointerDeviceType;
             PointerId = pointerpoint.PointerId;
             Properties = pointerpoint.Properties;
+            DistanceTraveled = 0;
+            _prevPoint = new Vector2((float)pointerpoint.Position.X, (float)pointerpoint.Position.Y); ;
+
         }
 
-        public Vector2 StartPoint
+        public override bool Equals(object obj)
         {
-            get
-            {
-                return _startPoint;
-            }
-            set
-            {
-                CurrentPoint = value;
-                _startPoint = value;
-            }
+            var other = (CanvasPointer) obj;
+            return PointerId == other.PointerId;
         }
 
-        public Vector2 CurrentPoint;
+        public override int GetHashCode()
+        {
+            return PointerId.GetHashCode();
+        }
+
         public double DistanceTraveled;
-        private Vector2 _startPoint;
         private Vector2 _prevPoint;
 
 
@@ -82,6 +82,8 @@ namespace NuSysApp
 
         public double StartTimeDelta(CanvasPointer other)
         {
+            if (other == null)
+                return 0;
             return (StartTime - other.StartTime).TotalMilliseconds;
         }
     }

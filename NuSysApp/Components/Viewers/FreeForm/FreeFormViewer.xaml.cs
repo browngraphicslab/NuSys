@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Numerics;
+using Windows.ApplicationModel.Core;
 using Windows.Devices.Input;
 using Windows.UI;
 using GeoAPI.Geometries;
@@ -36,12 +37,15 @@ namespace NuSysApp
         private CollectionInteractionManager _collectionInteractionManager;
         private FreeFormViewerViewModel _vm;
 
-        private Dictionary<ElementViewModel, Transformable> _transformables = new Dictionary<ElementViewModel, Transformable>();
+        private Dictionary<ElementViewModel, Transformable> _transformables =
+            new Dictionary<ElementViewModel, Transformable>();
 
         public CollectionRenderItem CurrentCollection { get; private set; }
 
         public CollectionRenderItem InitialCollection { get; private set; }
-        public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
+
+        public ObservableCollection<ElementRenderItem> Selections { get; set; } =
+            new ObservableCollection<ElementRenderItem>();
 
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
@@ -59,7 +63,6 @@ namespace NuSysApp
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();
-            
             vm.Controller.Disposed += ControllerOnDisposed;
             _vm = vm;
 
@@ -71,7 +74,7 @@ namespace NuSysApp
                 vm.Y = 0;
                 vm.Width = xRenderCanvas.Width;
                 vm.Height = xRenderCanvas.Height;
-                
+
                 _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
 
                 SwitchCollection(InitialCollection);
@@ -82,15 +85,17 @@ namespace NuSysApp
                     {
                         SwitchMode(Options.PanZoomOnly);
                     }
-                   
+
                 }
                 else
                 {
                     SwitchMode(Options.SelectNode);
                 }
-                
+
                 var colElementModel = vm.Controller.Model as CollectionElementModel;
-                if ((SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId)as CollectionLibraryElementModel).IsFinite)
+                if (
+                    (SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId) as
+                        CollectionLibraryElementModel).IsFinite)
                 {
                     LimitManipulation();
                 }
@@ -117,13 +122,16 @@ namespace NuSysApp
                     _collectionInteractionManager.InkDrawing -= CollectionInteractionManagerOnInkDrawing;
                     _collectionInteractionManager.InkStopped -= CollectionInteractionManagerOnInkStopped;
                     _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
-                    _collectionInteractionManager.SelectionInkPressed -= CollectionInteractionManagerOnSelectionInkPressed;
+                    _collectionInteractionManager.SelectionInkPressed -=
+                        CollectionInteractionManagerOnSelectionInkPressed;
                     _collectionInteractionManager.ResizerStarted -= CollectionInteractionManagerOnResizerStarted;
                     _collectionInteractionManager.ResizerStopped -= CollectionInteractionManagerOnResizerStopped;
                     _collectionInteractionManager.LinkCreated -= CollectionInteractionManagerOnLinkCreated;
                     _collectionInteractionManager.TrailCreated -= CollectionInteractionManagerOnTrailCreated;
-                    _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
-                    _collectionInteractionManager.MultimediaElementActivated -= CollectionInteractionManagerOnMultimediaElementActivated;
+                    _collectionInteractionManager.ElementAddedToCollection -=
+                        CollectionInteractionManagerOnElementAddedToCollection;
+                    _collectionInteractionManager.MultimediaElementActivated -=
+                        CollectionInteractionManagerOnMultimediaElementActivated;
                     _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
                     _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
                     multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
@@ -136,13 +144,13 @@ namespace NuSysApp
                 _collectionInteractionManager = new CollectionInteractionManager(_canvasInteractionManager, collection);
                 _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
                 _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
-                _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;                
+                _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
                 if (!collection.ViewModel.IsFinite || collection == InitialCollection)
                 {
                     _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
                     _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
                 }
-                
+
                 _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
                 _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
@@ -156,8 +164,10 @@ namespace NuSysApp
                 _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
                 _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
                 _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
-                _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
-                _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
+                _collectionInteractionManager.ElementAddedToCollection +=
+                    CollectionInteractionManagerOnElementAddedToCollection;
+                _collectionInteractionManager.MultimediaElementActivated +=
+                    CollectionInteractionManagerOnMultimediaElementActivated;
                 _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
                 _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
@@ -165,12 +175,13 @@ namespace NuSysApp
             }
         }
 
-        private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
+        private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,
+            float deltaZoom)
         {
             foreach (var selection in Selections)
             {
-                var elem = (ElementViewModel)selection.ViewModel;
-                var imgCenter = new Vector2((float)(elem.X + elem.Width / 2), (float)(elem.Y + elem.Height / 2));
+                var elem = (ElementViewModel) selection.ViewModel;
+                var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
                 var newCenter = InitialCollection.ObjectPointToScreenPoint(imgCenter);
 
                 Transformable t;
@@ -193,9 +204,9 @@ namespace NuSysApp
 
                 PanZoom2(t, _transform, newCenter, deltaTranslation.X, deltaTranslation.Y, deltaZoom);
 
-                elem.Controller.SetSize(t.Size.Width * t.S.M11, t.Size.Height * t.S.M22);
-                var dtx = (float)(t.Size.Width * t.S.M11 - t.Size.Width) / 2f;
-                var dty = (float)(t.Size.Height * t.S.M22 - t.Size.Height) / 2f;
+                elem.Controller.SetSize(t.Size.Width*t.S.M11, t.Size.Height*t.S.M22);
+                var dtx = (float) (t.Size.Width*t.S.M11 - t.Size.Width)/2f;
+                var dty = (float) (t.Size.Height*t.S.M22 - t.Size.Height)/2f;
                 var nx = t.Position.X - dtx;
                 var ny = t.Position.Y - dty;
                 elem.Controller.SetPosition(nx, ny);
@@ -209,20 +220,21 @@ namespace NuSysApp
                         var cc = Matrix3x2.CreateTranslation(t.CameraCenter);
                         var cs = Matrix3x2.CreateScale(t.CameraScale);
 
-                        var et = Matrix3x2.CreateTranslation(new Vector2((float)elem.X, (float)elem.Y));
+                        var et = Matrix3x2.CreateTranslation(new Vector2((float) elem.X, (float) elem.Y));
 
-                        var tran = Win2dUtil.Invert(cc) * cs * cc * ct * et;
+                        var tran = Win2dUtil.Invert(cc)*cs*cc*ct*et;
                         var tranInv = Win2dUtil.Invert(tran);
 
                         var controller = elemc.Controller as ElementCollectionController;
-                        controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
-                        controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
+                        controller.SetCameraPosition(ct.M31 + dtx*tranInv.M11, ct.M32 + dty*tranInv.M22);
+                        controller.SetCameraCenter(cc.M31 - dtx*tranInv.M11, cc.M32 - dty*tranInv.M22);
                     }
                 }
             }
         }
 
-        private async void CollectionInteractionManagerOnTrailCreated(ElementRenderItem element1, ElementRenderItem element2)
+        private async void CollectionInteractionManagerOnTrailCreated(ElementRenderItem element1,
+            ElementRenderItem element2)
         {
             // create a new instance of CreateNewPresentationLinkRequestArgs
             var createNewPresentationLinkRequestArgs = new CreateNewPresentationLinkRequestArgs();
@@ -235,15 +247,17 @@ namespace NuSysApp
             createNewPresentationLinkRequestArgs.ElementViewModelInId = element2.ViewModel.Id;
             var request = new CreateNewPresentationLinkRequest(createNewPresentationLinkRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            request.AddPresentationLinkToLibrary();            
+            request.AddPresentationLinkToLibrary();
         }
 
 
-        private async void CollectionInteractionManagerOnLinkCreated(ElementRenderItem element1, ElementRenderItem element2)
+        private async void CollectionInteractionManagerOnLinkCreated(ElementRenderItem element1,
+            ElementRenderItem element2)
         {
             // Diable linking to links and tools
             // TODO: Enable linking to links 
-            if (element1.ViewModel.ElementType == NusysConstants.ElementType.Link || element2.ViewModel.ElementType == NusysConstants.ElementType.Tools)
+            if (element1.ViewModel.ElementType == NusysConstants.ElementType.Link ||
+                element2.ViewModel.ElementType == NusysConstants.ElementType.Tools)
             {
                 return;
             }
@@ -251,9 +265,13 @@ namespace NuSysApp
             createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = element1.ViewModel.LibraryElementId;
             createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
             createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = element2.ViewModel.LibraryElementId;
-            createNewLinkLibraryElementRequestArgs.Title = $"Link from {element1.ViewModel.Model.Title} to {element2.ViewModel.Model.Title}";
-            if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId != createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId &&
-                    SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(createNewLinkLibraryElementRequestArgs.LibraryElementModelInId, createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
+            createNewLinkLibraryElementRequestArgs.Title =
+                $"Link from {element1.ViewModel.Model.Title} to {element2.ViewModel.Model.Title}";
+            if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=
+                createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId &&
+                SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelInId,
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
             {
                 var contentRequestArgs = new CreateNewContentRequestArgs();
                 contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
@@ -277,23 +295,28 @@ namespace NuSysApp
         {
             if (element is VideoElementRenderItem)
             {
-                ActiveVideoRenderItem = (VideoElementRenderItem)element;
-                var t = ActiveVideoRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(ActiveVideoRenderItem);
-                var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.RenderTransform;
+                ActiveVideoRenderItem = (VideoElementRenderItem) element;
+                var t = ActiveVideoRenderItem.GetTransform()*
+                        NuSysRenderer.Instance.GetTransformUntil(ActiveVideoRenderItem);
+                var ct =
+                    (CompositeTransform)
+                        SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.RenderTransform;
                 ct.TranslateX = t.M31;
                 ct.TranslateY = t.M32;
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.AudioWrapper.Controller = element.ViewModel.Controller.LibraryElementController;
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.AudioWrapper.Controller =
+                    element.ViewModel.Controller.LibraryElementController;
 
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source = new Uri(ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController.Data);
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source =
+                    new Uri(ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController.Data);
                 SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Visible;
                 return;
             }
             if (element is AudioElementRenderItem)
             {
-                ActiveAudioRenderItem = (AudioElementRenderItem)element;
-                var t = ActiveAudioRenderItem.GetTransform() *
+                ActiveAudioRenderItem = (AudioElementRenderItem) element;
+                var t = ActiveAudioRenderItem.GetTransform()*
                         NuSysRenderer.Instance.GetTransformUntil(ActiveAudioRenderItem);
                 var ct =
                     (CompositeTransform)
@@ -302,8 +325,9 @@ namespace NuSysApp
                 ct.TranslateY = t.M32;
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
-               SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioWrapper.Controller = element.ViewModel.Controller.LibraryElementController;
-               SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource =
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioWrapper.Controller =
+                    element.ViewModel.Controller.LibraryElementController;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource =
                     new Uri(ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController.Data);
                 ;
                 SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
@@ -317,8 +341,8 @@ namespace NuSysApp
             {
                 var elem = item;
                 var collection = item.Parent;
-                var nw = elem.ViewModel.Width + delta.X / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
-                var nh = elem.ViewModel.Height + delta.Y / (_transform.M22 * collection.S.M22 * collection.Camera.S.M22);
+                var nw = elem.ViewModel.Width + delta.X/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
+                var nh = elem.ViewModel.Height + delta.Y/(_transform.M22*collection.S.M22*collection.Camera.S.M22);
                 item.ViewModel.Controller.SetSize(nw, nh);
             }
         }
@@ -349,16 +373,22 @@ namespace NuSysApp
             else
             {
                 targetScreenRect = NuSysRenderer.Instance.ElementSelectionRenderItem._screenRect;
-                
+
             }
 
-            var targetPointTl = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)targetScreenRect.X, (float)targetScreenRect.Y), CurrentCollection);
-            var targetPointBr = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(new Vector2((float)(targetScreenRect.X + targetScreenRect.Width), (float)(targetScreenRect.Y + targetScreenRect.Height)), CurrentCollection);
+            var targetPointTl =
+                NuSysRenderer.Instance.ScreenPointerToCollectionPoint(
+                    new Vector2((float) targetScreenRect.X, (float) targetScreenRect.Y), CurrentCollection);
+            var targetPointBr =
+                NuSysRenderer.Instance.ScreenPointerToCollectionPoint(
+                    new Vector2((float) (targetScreenRect.X + targetScreenRect.Width),
+                        (float) (targetScreenRect.Y + targetScreenRect.Height)), CurrentCollection);
 
             if (shaped && _latestStroke != null)
             {
                 shapePoints = _latestStroke;
-            } else if ((shaped && _latestStroke == null) || finite)
+            }
+            else if ((shaped && _latestStroke == null) || finite)
             {
                 var w = targetPointBr.X - targetPointTl.X;
                 var h = targetPointBr.Y - targetPointTl.Y;
@@ -378,11 +408,11 @@ namespace NuSysApp
                 LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
                 {
                     AccessType =
-                       SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
+                        SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
                     LibraryElementType = NusysConstants.ElementType.Collection,
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
-                    IsFiniteCollection = finite, 
+                    IsFiniteCollection = finite,
                     ShapePoints = shapePoints
 
                 },
@@ -408,7 +438,9 @@ namespace NuSysApp
 
             // execute the add element to collection request
             var elementRequest = new NewElementRequest(newElementRequestArgs);
-            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(createNewContentRequestArgs.ContentId);
+            await
+                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
+                    createNewContentRequestArgs.ContentId);
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
 
@@ -418,8 +450,13 @@ namespace NuSysApp
             offsetY = targetPointTl.Y - 50000;
             foreach (var element in Selections)
             {
-                var target = new Vector2((float)(element.ViewModel.X - offsetX), (float)(element.ViewModel.Y - offsetY));
-                await element.ViewModel.Controller.RequestMoveToCollection(createNewContentRequestArgs.LibraryElementArgs.LibraryElementId, target.X, target.Y, element.ViewModel.Width * collectionTransform.M11, element.ViewModel.Height * collectionTransform.M11);
+                var target = new Vector2((float) (element.ViewModel.X - offsetX),
+                    (float) (element.ViewModel.Y - offsetY));
+                await
+                    element.ViewModel.Controller.RequestMoveToCollection(
+                        createNewContentRequestArgs.LibraryElementArgs.LibraryElementId, target.X, target.Y,
+                        element.ViewModel.Width*collectionTransform.M11,
+                        element.ViewModel.Height*collectionTransform.M11);
             }
 
             CurrentCollection.InkRenderItem.RemoveLatestStroke();
@@ -435,22 +472,27 @@ namespace NuSysApp
             {
                 foreach (var elementRenderItem in Selections)
                 {
+                    if (elementRenderItem is AudioElementRenderItem || elementRenderItem is VideoElementRenderItem)
+                        xMultimediaCanvas.Visibility = Visibility.Collapsed;
+
                     elementRenderItem.ViewModel.Controller?.RequestDelete();
                 }
                 ClearSelections();
+                
             }
             if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnGroup)
             {
                 multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
             }
             if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPresent)
-            {               
+            {
                 SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
         }
 
-        private async void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer, IEnumerable<Vector2> ink)
+        private async void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer,
+            IEnumerable<Vector2> ink)
         {
             _inkPressed = true;
             ClearSelections();
@@ -465,7 +507,7 @@ namespace NuSysApp
                 if (ch.Contains(anchor))
                 {
                     AddToSelections(renderItem);
-                }                
+                }
             }
 
             await Task.Delay(500);
@@ -475,12 +517,14 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
             var until = NuSysRenderer.Instance.GetTransformUntil(CurrentCollection);
-            _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
+            _transform = Win2dUtil.Invert(CurrentCollection.C)*CurrentCollection.S*CurrentCollection.C*
+                         CurrentCollection.T*until;
 
             _transformables.Clear();
         }
 
-        private async void CollectionInteractionManagerOnElementAddedToCollection(ElementRenderItem element, CollectionRenderItem collection, CanvasPointer pointer)
+        private async void CollectionInteractionManagerOnElementAddedToCollection(ElementRenderItem element,
+            CollectionRenderItem collection, CanvasPointer pointer)
         {
             if (element is VideoElementRenderItem)
             {
@@ -490,11 +534,14 @@ namespace NuSysApp
             {
                 xVideoPlayer.Visibility = Visibility.Collapsed;
             }
-            
+
             var targetPoint = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
-            var target = new Vector2(targetPoint.X - (float)element.ViewModel.Width/2f, targetPoint.Y - (float)element.ViewModel.Height/2f);
-            await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
-            
+            var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f,
+                targetPoint.Y - (float) element.ViewModel.Height/2f);
+            await
+                element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X,
+                    target.Y);
+
         }
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
@@ -521,18 +568,20 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnDuplicateCreated(ElementRenderItem element, Vector2 point)
         {
-            var targetPoint = Vector2.Transform(point, Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(element)));
+            var targetPoint = Vector2.Transform(point,
+                Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(element)));
             element.ViewModel.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);
         }
 
-        private void CollectionInteractionManagerOnItemMoved(CanvasPointer pointer, ElementRenderItem elem, Vector2 delta)
+        private void CollectionInteractionManagerOnItemMoved(CanvasPointer pointer, ElementRenderItem elem,
+            Vector2 delta)
         {
             if (elem is PseudoElementRenderItem)
                 return;
             var collection = elem.Parent;
 
-            var newX = elem.ViewModel.X + delta.X / (_transform.M11 * collection.Camera.S.M11);
-            var newY = elem.ViewModel.Y + delta.Y / (_transform.M22 * collection.Camera.S.M22);
+            var newX = elem.ViewModel.X + delta.X/(_transform.M11*collection.Camera.S.M11);
+            var newY = elem.ViewModel.Y + delta.Y/(_transform.M22*collection.Camera.S.M22);
 
             if (!Selections.Contains(elem))
             {
@@ -543,8 +592,8 @@ namespace NuSysApp
                 foreach (var selectable in Selections)
                 {
                     var e = selectable.ViewModel;
-                    var newXe = e.X + delta.X / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
-                    var newYe = e.Y + delta.Y / (_transform.M11 * collection.S.M11 * collection.Camera.S.M11);
+                    var newXe = e.X + delta.X/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
+                    var newYe = e.Y + delta.Y/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
                     e.Controller.SetPosition(newXe, newYe);
                 }
             }
@@ -555,13 +604,15 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnPointerPressed(CanvasPointer pointer)
         {
             var until = NuSysRenderer.Instance.GetTransformUntil(CurrentCollection);
-            _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
+            _transform = Win2dUtil.Invert(CurrentCollection.C)*CurrentCollection.S*CurrentCollection.C*
+                         CurrentCollection.T*until;
         }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {
-            PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X / _transform.M11, deltaTranslation.Y / _transform.M11, deltaZoom);
-         
+            PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X/_transform.M11,
+                deltaTranslation.Y/_transform.M11, deltaZoom);
+
             CurrentCollection.InkRenderItem.UpdateDryInkTransform();
 
             UpdateNonWin2dElements();
@@ -584,13 +635,17 @@ namespace NuSysApp
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
         {
-            var targetPoint = Vector2.Transform(point, Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(element)));
+            var targetPoint = Vector2.Transform(point,
+                Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(element)));
             element.ViewModel.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);
         }
 
 
         private void OnItemDoubleTapped(ElementRenderItem element)
         {
+            if (element == CurrentCollection || element == InitialCollection)
+                return;
+
             var libraryElementModelId = element.ViewModel.Controller.LibraryElementModel.LibraryElementId;
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             SessionController.Instance.SessionView.ShowDetailView(controller);

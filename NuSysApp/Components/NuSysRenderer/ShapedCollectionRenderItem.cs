@@ -22,6 +22,11 @@ namespace NuSysApp
         private ElementCollectionViewModel _vm;
         private bool _recomputeShape = true;
         private Rect _shapeBounds;
+
+        private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
+        {
+            TransformBehavior = CanvasStrokeTransformBehavior.Fixed
+        };
         
         public ShapedCollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas, interactionEnabled)
         {
@@ -115,7 +120,7 @@ namespace NuSysApp
               
                 ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
                 ds.FillGeometry(_shape, bgColor);
-                ds.DrawGeometry(_shape, bgColor, 12f, new CanvasStrokeStyle {TransformBehavior = CanvasStrokeTransformBehavior.Fixed});
+                ds.DrawGeometry(_shape, bgColor, 12f, _strokeStyle);
                // ds.DrawRectangle(_shapeBounds, borderColor, borderWidth);
                 ds.Transform = GetTransform() * orgTransform;
             }

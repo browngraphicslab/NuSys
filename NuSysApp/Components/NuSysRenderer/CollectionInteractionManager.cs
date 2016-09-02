@@ -99,7 +99,8 @@ namespace NuSysApp
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
         private CanvasInteractionManager _canvasInteractionManager;
-        private CanvasPointer _finalInkPointer;
+        private uint _finalInkPointer;
+        private DateTime _finalInkPointerUpdated;
         private bool _resizerHit;
         private bool _isTwoElementsPressed;
         private CanvasPointer _nodeMarkingMenuPointer;
@@ -148,7 +149,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnPointerMoved(CanvasPointer pointer)
         {
-            if (pointer == _nodeMarkingMenuPointer)
+            if (pointer.PointerId == _nodeMarkingMenuPointer.PointerId)
             {
                 NuSysRenderer.Instance.NodeMarkingMenu.UpdatePointerLocation(pointer.CurrentPoint);
             }
@@ -216,13 +217,13 @@ namespace NuSysApp
         private void OnPenPointerReleased(CanvasPointer pointer)
         {
             _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
-            _finalInkPointer = pointer;
+            _finalInkPointer = pointer.PointerId;
             InkStopped?.Invoke(pointer);
         }
 
         private void OnTouchPointerPressed(CanvasPointer pointer)
         {
-            if (_finalInkPointer != null && (pointer.LastUpdated - _finalInkPointer.LastUpdated).TotalMilliseconds < 2000)
+            if ((pointer.LastUpdated - _finalInkPointerUpdated).TotalMilliseconds < 2000)
             {
                 var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
                 var latestStroke = currentCollection.InkRenderItem.LatestStroke;
@@ -360,7 +361,7 @@ namespace NuSysApp
 
                 if (keyState.HasFlag(CoreVirtualKeyStates.Down))
                 {
-                    _finalInkPointer = pointer;
+                    _finalInkPointerUpdated = pointer.LastUpdated;
                     InkStopped?.Invoke(pointer);
                     _canvasInteractionManager.PointerMoved -= OnPointerMoved;
                 }

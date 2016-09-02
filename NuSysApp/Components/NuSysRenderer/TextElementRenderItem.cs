@@ -30,6 +30,7 @@ namespace NuSysApp
         private CanvasTextLayout _textItemLayout;
         private string _textboxtext = string.Empty;
         private ICanvasResourceCreator _resourceCreator;
+        private CanvasGeometry _clippingRect;
 
         public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
         {
@@ -38,6 +39,7 @@ namespace NuSysApp
             _htmlParser = new HTMLParser(resourceCreator);
             (_vm.Controller as TextNodeController).LibraryElementController.ContentDataController.ContentDataUpdated += LibraryElementControllerOnContentChanged;
             _vm.Controller.SizeChanged += Controller_SizeChanged;
+            _clippingRect = CanvasGeometry.CreateRectangle(_resourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
         }
 
         private void Controller_SizeChanged(object source, double width, double height)
@@ -60,6 +62,7 @@ namespace NuSysApp
             if (!IsDirty)
                 return;
             _textItemLayout = _htmlParser.GetParsedText(_textboxtext, _vm.Height, _vm.Width);
+            _clippingRect = CanvasGeometry.CreateRectangle(_resourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
             IsDirty = false;
         }
 
@@ -83,20 +86,14 @@ namespace NuSysApp
                 return;
 
             
-            var clippingRect = CanvasGeometry.CreateRectangle(_resourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
-            using (ds.CreateLayer(1f, clippingRect))
+            
+            using (ds.CreateLayer(1f, _clippingRect))
             {
                 ds.DrawTextLayout(_textItemLayout, 0, 0, Colors.Black);
             }
 
-
             ds.Transform = orgTransform;
 
-        }
-
-        public override bool HitTest(Vector2 point)
-        {
-            return base.HitTest(point);
         }
     }
 }

@@ -143,8 +143,8 @@ namespace NuSysApp
                     _cancelLongTapped = true;
                     TwoPointerPressed?.Invoke(_pointers[0], _pointers[1]);
                 } 
-            }            
-
+            }
+            _canvas.PointerMoved -= OnPointerMoved;
             _canvas.PointerMoved += OnPointerMoved;
         }
 
@@ -196,32 +196,36 @@ namespace NuSysApp
 
         private void OnPointerTouchMoved(object sender, PointerRoutedEventArgs args)
         {
-            var exisitingPointer = _pointers.Where(p => p.PointerId == args.Pointer.PointerId);
-            if (!exisitingPointer.Any())
-                return;
-
-            var pointer = exisitingPointer.First();
-            pointer.Update(args.GetCurrentPoint(null).Position);
-
-            if (_pointers.Count == 1)
+            unsafe
             {
-                if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
-                    Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);
-            }
-            if (_pointers.Count == 2)
-            {
-                var prevCenterPoint = _centerPoint;
-                var prevDist = _twoFingerDist;
-                UpdateCenterPoint();
-                UpdateDist();
-                var dx = _centerPoint.X - prevCenterPoint.X;
-                var dy = _centerPoint.Y - prevCenterPoint.Y;
-                var ds = (float)(_twoFingerDist / prevDist);
-                if (Math.Abs(ds) > 0.9)
-                    PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
-            }
+                var exisitingPointer = _pointers.Where(p => p.PointerId == args.Pointer.PointerId);
+                if (!exisitingPointer.Any())
+                    return;
 
-            PointerMoved?.Invoke(pointer);
+                var pointer = exisitingPointer.First();
+                pointer.Update(args.GetCurrentPoint(null).Position);
+
+                if (_pointers.Count == 1)
+                {
+                    if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
+                        Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);
+                }
+                if (_pointers.Count == 2)
+                {
+                    var prevCenterPoint = _centerPoint;
+                    var prevDist = _twoFingerDist;
+                    UpdateCenterPoint();
+                    UpdateDist();
+                    var dx = _centerPoint.X - prevCenterPoint.X;
+                    var dy = _centerPoint.Y - prevCenterPoint.Y;
+                    var ds = (float)(_twoFingerDist / prevDist);
+                    if (Math.Abs(ds) > 0.9)
+                        PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
+                }
+
+                PointerMoved?.Invoke(pointer);
+            }
+           
         }
     }
 }

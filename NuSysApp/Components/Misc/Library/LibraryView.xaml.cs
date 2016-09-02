@@ -137,6 +137,11 @@ namespace NuSysApp
             var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;
             // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
             var tempfileIdToAccessMaps = await fileAddedAclsPopup.GetAcls(storageFiles);
+
+            // return is file picker is canceled
+            if (tempfileIdToAccessMaps == null)
+                return;
+
             foreach (var fileAccess in tempfileIdToAccessMaps)
                 _fileIdToAccessMap.Add(fileAccess.Key, fileAccess.Value);
             // check if the user has canceled the upload

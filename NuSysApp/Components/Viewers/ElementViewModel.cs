@@ -135,6 +135,7 @@ namespace NuSysApp
 
         private void CreateCircleLinks()
         {
+            return;
             var libraryElementId = this.Controller.LibraryElementModel?.LibraryElementId;
             if (libraryElementId == null)
             {
