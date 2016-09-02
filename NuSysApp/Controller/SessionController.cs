@@ -208,6 +208,18 @@ namespace NuSysApp
                 Debug.Assert(tup.Item1);
                 SessionView?.ClearUsers();
                 await NuSysNetworkSession.Init();
+
+                var request = new GetAllLibraryElementsRequest();
+                await NuSysNetworkSession.ExecuteRequestAsync(request);
+                var elements = request.GetReturnedLibraryElementModels();
+                foreach (var element in elements)
+                {
+                    if (ContentController.GetLibraryElementModel(element.LibraryElementId) == null)
+                    {
+                        ContentController.Add(element);
+                    }
+                }
+
                 await EnterCollection(_capturedState.CollectionLibraryElementId);
                 UITask.Run(delegate
                 {

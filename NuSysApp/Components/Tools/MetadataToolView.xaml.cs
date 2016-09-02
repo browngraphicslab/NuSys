@@ -112,9 +112,16 @@ namespace NuSysApp
                 if (vm.Selection.Item1 != null && vm.Selection.Item2 != null)
                 {
                     xMetadataValuesList.SelectedItems.Clear();
-                    foreach (var item in vm.Selection.Item2)
+                    if (xMetadataValuesList.Items.Any())
                     {
-                        xMetadataValuesList.SelectedItems.Add(xMetadataValuesList.Items.Where(kvp => ((KeyValuePair<string, double>)kvp).Key.Equals(item)).First());
+                        foreach (var item in vm.Selection.Item2)
+                        {
+                            var toAdd = xMetadataValuesList.Items.Where(kvp => ((KeyValuePair<string, double>)kvp).Key.Equals(item)).FirstOrDefault();
+                            if (toAdd != null)
+                            {
+                                xMetadataValuesList.SelectedItems.Add(toAdd);
+                            }
+                        }
                     }
                 }
                 else
@@ -206,6 +213,10 @@ namespace NuSysApp
         {
             var filteredValuesList = new List<string>();
             var vm = (DataContext as MetadataToolViewModel);
+            if (vm == null || !vm.AllMetadataDictionary.ContainsKey(vm.Selection.Item1))
+            {
+                return new List<KeyValuePair<string, double>>();
+            }
             var listOfKvpMetadataValueToNumOfOccurrences = vm.AllMetadataDictionary[vm.Selection.Item1].Where(
                     item => item.Key?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
 

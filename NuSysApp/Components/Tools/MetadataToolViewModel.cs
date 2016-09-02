@@ -76,7 +76,7 @@ namespace NuSysApp
             }
         }
 
-        private double CalculateBarWidth(int weight, int max)
+        private double CalculateBarWidth(double weight, double max)
         {
             var width = (double)(Math.Log((double)weight/3) / (double)Math.Log((double)max/3) * _maxBarWidth);
             if(double.IsNaN(width) || width < _minBarWidth)
