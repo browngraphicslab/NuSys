@@ -71,8 +71,6 @@ namespace NuSysApp
             _canvas.Update += CanvasOnUpdate;
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
-
-
         }
 
         private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)

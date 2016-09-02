@@ -56,6 +56,7 @@ namespace NuSysApp
 
         public override void Update()
         {
+            base.Update();
             if (!IsDirty)
                 return;
             _textItemLayout = _htmlParser.GetParsedText(_textboxtext, _vm.Height, _vm.Width);
@@ -91,6 +92,11 @@ namespace NuSysApp
 
             ds.Transform = orgTransform;
 
+        }
+
+        public override bool HitTest(Vector2 point)
+        {
+            return base.HitTest(point);
         }
     }
 }

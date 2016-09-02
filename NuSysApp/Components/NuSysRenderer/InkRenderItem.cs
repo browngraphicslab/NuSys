@@ -156,7 +156,6 @@ namespace NuSysApp
 
         public void AddStroke(InkStroke stroke)
         {
-           // _inkStrokes.Enqueue(stroke);
         }
 
         public void RemoveLatestStroke()
@@ -167,6 +166,7 @@ namespace NuSysApp
                 LatestStroke = null;
             }
             _strokesToDraw = _inkManager.GetStrokes().ToList();
+            _needsDryStrokesUpdate = true;
         }
 
         public override void Update()
@@ -175,6 +175,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+    
             var orgTransform = ds.Transform;
             if (_needsDryStrokesUpdate)
             {

@@ -28,9 +28,11 @@ namespace NuSysApp
         public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;
-            T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
-            _vm.Controller.PositionChanged += ControllerOnPositionChanged;
-            _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
+            if (_vm != null) { 
+                T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
+                _vm.Controller.PositionChanged += ControllerOnPositionChanged;
+                _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
+            }
         }
 
         private void LibraryElementControllerOnTitleChanged(object sender, string s)
@@ -52,6 +54,8 @@ namespace NuSysApp
 
         public override void Update()
         {
+            base.Update();
+            
             if (!_needsTitleUpdate)
                 return;
             var format = new CanvasTextFormat { FontSize = 12f, WordWrapping = CanvasWordWrapping.Wrap, HorizontalAlignment = CanvasHorizontalAlignment.Center};

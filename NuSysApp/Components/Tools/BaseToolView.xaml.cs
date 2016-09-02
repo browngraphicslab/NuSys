@@ -24,7 +24,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public sealed partial class BaseToolView : AnimatableUserControl
+    public sealed partial class BaseToolView : AnimatableUserControl, ITool
     {
         public BasicToolViewModel Vm;
         private Image _dragItem;
@@ -42,6 +42,8 @@ namespace NuSysApp
         private const int _minWidth = 200;
         private double _x;
         private double _y;
+
+        public event EventHandler<Point2d> ToolAnchorChanged;
 
         public BaseToolView(BasicToolViewModel vm, double x, double y)
         {
@@ -246,6 +248,8 @@ namespace NuSysApp
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(this.Width, height);
             }
+
+            ToolAnchorChanged?.Invoke(this, new Point2d(_x,_y));
         }
 
         /// <summary>
@@ -323,6 +327,8 @@ namespace NuSysApp
             {
                 vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
+
+            ToolAnchorChanged?.Invoke(this, new Point2d(vm.X + x, vm.Y + y));
         }
 
         /// <summary>

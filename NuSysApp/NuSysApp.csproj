@@ -358,6 +358,7 @@
     <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
     <Compile Include="Components\NuSysRenderer\HTMLParser.cs" />
     <Compile Include="Components\NuSysRenderer\I2dTransformable.cs" />
+    <Compile Include="Components\NuSysRenderer\IdleRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ImageElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\InkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\LinkRenderItem.cs" />
@@ -412,6 +413,7 @@
     </Compile>
     <Compile Include="Components\Tools\BasicToolController.cs" />
     <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\ITool.cs" />
     <Compile Include="Components\Tools\ListToolView.xaml.cs">
       <DependentUpon>ListToolView.xaml</DependentUpon>
     </Compile>
@@ -501,6 +503,7 @@
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinksController.cs" />
+    <Compile Include="Components\NuSysRenderer\PseudoElementRenderItem.cs" />
     <Compile Include="Controller\RectangleRegionLibraryElementController.cs" />
     <Compile Include="Controller\PdfRegionLibraryElementController.cs" />
     <Compile Include="Controller\RegionLibraryElementController.cs" />

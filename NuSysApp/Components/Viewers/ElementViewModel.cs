@@ -35,6 +35,9 @@ namespace NuSysApp
        
         public ElementViewModel(ElementController controller)
         {
+            if (controller == null)
+                return;
+
             _controller = controller;
             LinkList = new ObservableCollection<LinkController>();
             controller.MetadataChange += OnMetadataChange;

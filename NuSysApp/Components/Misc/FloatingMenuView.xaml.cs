@@ -239,9 +239,6 @@ namespace NuSysApp
             var dropPoint = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
 
             await AddElementToCollection(new Point(dropPoint.X, dropPoint.Y));
-
-            args.Handled = true;
-
         }
 
         /// <summary>
@@ -263,9 +260,6 @@ namespace NuSysApp
             // Update the position instance variable
             _exportPos.X += e.Delta.Translation.X;
             _exportPos.Y += e.Delta.Translation.Y;
-
-            // Handled!
-            e.Handled = true;
         }
 
         /// <summary>
@@ -310,7 +304,6 @@ namespace NuSysApp
             var t = (CompositeTransform)rect.RenderTransform;
             t.TranslateX += _exportPos.X;
             t.TranslateY = _exportPos.Y;
-            args.Handled = true;
         }
 
         /// <summary>
@@ -406,7 +399,6 @@ namespace NuSysApp
             var view = SessionController.Instance.SessionView;
             _exportPos.X = e.GetCurrentPoint(view).Position.X - 25;
             _exportPos.Y = e.GetCurrentPoint(view).Position.Y - 25;
-            e.Handled = true;
         }
     }
 }

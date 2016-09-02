@@ -109,6 +109,7 @@ namespace NuSysApp
                     _collectionInteractionManager.SelectionsCleared -= CollectionInteractionManagerOnSelectionsCleared;
                     _collectionInteractionManager.Panned -= CollectionInteractionManagerOnPanned;
                     _collectionInteractionManager.PanZoomed -= CollectionInteractionManagerOnPanZoomed;
+                    _collectionInteractionManager.SelectionPanZoomed -= CollectionInteractionManagerOnSelectionPanZoomed;
                     _collectionInteractionManager.ItemMoved -= CollectionInteractionManagerOnItemMoved;
                     _collectionInteractionManager.DuplicateCreated -= CollectionInteractionManagerOnDuplicateCreated;
                     _collectionInteractionManager.CollectionSwitched -= CollectionInteractionManagerOnCollectionSwitched;
@@ -135,12 +136,14 @@ namespace NuSysApp
                 _collectionInteractionManager = new CollectionInteractionManager(_canvasInteractionManager, collection);
                 _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
                 _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
-                _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
+                _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;                
                 if (!collection.ViewModel.IsFinite || collection == InitialCollection)
                 {
                     _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
                     _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
                 }
+                
+                _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
                 _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
                 _collectionInteractionManager.CollectionSwitched += CollectionInteractionManagerOnCollectionSwitched;
@@ -159,6 +162,63 @@ namespace NuSysApp
                 _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
                 _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
+            }
+        }
+
+        private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
+        {
+            foreach (var selection in Selections)
+            {
+                var elem = (ElementViewModel)selection.ViewModel;
+                var imgCenter = new Vector2((float)(elem.X + elem.Width / 2), (float)(elem.Y + elem.Height / 2));
+                var newCenter = InitialCollection.ObjectPointToScreenPoint(imgCenter);
+
+                Transformable t;
+                if (_transformables.ContainsKey(elem))
+                    t = _transformables[elem];
+                else
+                {
+                    t = new Transformable();
+                    t.Position = new Point(elem.X, elem.Y);
+                    t.Size = new Size(elem.Width, elem.Height);
+                    if (elem is ElementCollectionViewModel)
+                    {
+                        var elemc = elem as ElementCollectionViewModel;
+                        t.CameraTranslation = elemc.CameraTranslation;
+                        t.CameraCenter = elemc.CameraCenter;
+                        t.CameraScale = elemc.CameraScale;
+                        _transformables.Add(elem, t);
+                    }
+                }
+
+                PanZoom2(t, _transform, newCenter, deltaTranslation.X, deltaTranslation.Y, deltaZoom);
+
+                elem.Controller.SetSize(t.Size.Width * t.S.M11, t.Size.Height * t.S.M22);
+                var dtx = (float)(t.Size.Width * t.S.M11 - t.Size.Width) / 2f;
+                var dty = (float)(t.Size.Height * t.S.M22 - t.Size.Height) / 2f;
+                var nx = t.Position.X - dtx;
+                var ny = t.Position.Y - dty;
+                elem.Controller.SetPosition(nx, ny);
+
+                if (elem is ElementCollectionViewModel)
+                {
+                    var elemc = elem as ElementCollectionViewModel;
+                    if (!elemc.IsFinite || CurrentCollection.ViewModel == elemc)
+                    {
+                        var ct = Matrix3x2.CreateTranslation(t.CameraTranslation);
+                        var cc = Matrix3x2.CreateTranslation(t.CameraCenter);
+                        var cs = Matrix3x2.CreateScale(t.CameraScale);
+
+                        var et = Matrix3x2.CreateTranslation(new Vector2((float)elem.X, (float)elem.Y));
+
+                        var tran = Win2dUtil.Invert(cc) * cs * cc * ct * et;
+                        var tranInv = Win2dUtil.Invert(tran);
+
+                        var controller = elemc.Controller as ElementCollectionController;
+                        controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
+                        controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
+                    }
+                }
             }
         }
 
@@ -414,6 +474,9 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
+            var until = NuSysRenderer.Instance.GetTransformUntil(CurrentCollection);
+            _transform = Win2dUtil.Invert(CurrentCollection.C) * CurrentCollection.S * CurrentCollection.C * CurrentCollection.T * until;
+
             _transformables.Clear();
         }
 
@@ -462,10 +525,11 @@ namespace NuSysApp
             element.ViewModel.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);
         }
 
-        private void CollectionInteractionManagerOnItemMoved(CanvasPointer pointer, ElementRenderItem element, Vector2 delta)
+        private void CollectionInteractionManagerOnItemMoved(CanvasPointer pointer, ElementRenderItem elem, Vector2 delta)
         {
-            var elem = element;
-            var collection = element.Parent;
+            if (elem is PseudoElementRenderItem)
+                return;
+            var collection = elem.Parent;
 
             var newX = elem.ViewModel.X + delta.X / (_transform.M11 * collection.Camera.S.M11);
             var newY = elem.ViewModel.Y + delta.Y / (_transform.M22 * collection.Camera.S.M22);
@@ -496,66 +560,8 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {
-            if (Selections.Count > 0)
-            {
-                foreach (var selection in Selections)
-                {
-                    var elem = (ElementViewModel)selection.ViewModel;
-                    var imgCenter = new Vector2((float)(elem.X + elem.Width / 2), (float)(elem.Y + elem.Height / 2));
-                    var newCenter = InitialCollection.ObjectPointToScreenPoint(imgCenter);
-
-                    Transformable t;
-                    if (_transformables.ContainsKey(elem))
-                        t = _transformables[elem];
-                    else
-                    {
-                        t = new Transformable();
-                        t.Position = new Point(elem.X, elem.Y);
-                        t.Size = new Size(elem.Width, elem.Height);
-                        if (elem is ElementCollectionViewModel)
-                        {
-                            var elemc = elem as ElementCollectionViewModel;
-                            t.CameraTranslation = elemc.CameraTranslation;
-                            t.CameraCenter = elemc.CameraCenter;
-                            t.CameraScale = elemc.CameraScale;
-                            _transformables.Add(elem, t);
-                        }
-                    }
-
-                    PanZoom2(t, _transform, newCenter, deltaTranslation.X, deltaTranslation.Y, deltaZoom);
-
-                    elem.Controller.SetSize(t.Size.Width * t.S.M11, t.Size.Height * t.S.M22);
-                    var dtx = (float)(t.Size.Width * t.S.M11 - t.Size.Width) / 2f;
-                    var dty = (float)(t.Size.Height * t.S.M22 - t.Size.Height) / 2f;
-                    var nx = t.Position.X - dtx;
-                    var ny = t.Position.Y - dty;
-                    elem.Controller.SetPosition(nx, ny);
-
-                    if (elem is ElementCollectionViewModel)
-                    {
-                        var elemc = elem as ElementCollectionViewModel;
-                        if (!elemc.IsFinite || CurrentCollection.ViewModel == elemc) {  
-                            var ct = Matrix3x2.CreateTranslation(t.CameraTranslation);
-                            var cc = Matrix3x2.CreateTranslation(t.CameraCenter);
-                            var cs = Matrix3x2.CreateScale(t.CameraScale);
-
-                            var et = Matrix3x2.CreateTranslation(new Vector2((float)elem.X, (float)elem.Y));
-
-                            var tran = Win2dUtil.Invert(cc) * cs * cc * ct * et;
-                            var tranInv = Win2dUtil.Invert(tran);
-
-                            var controller = elemc.Controller as ElementCollectionController;
-                            controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
-                            controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X / _transform.M11, deltaTranslation.Y / _transform.M11, deltaZoom);
-            }
-
+            PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X / _transform.M11, deltaTranslation.Y / _transform.M11, deltaZoom);
+         
             CurrentCollection.InkRenderItem.UpdateDryInkTransform();
 
             UpdateNonWin2dElements();

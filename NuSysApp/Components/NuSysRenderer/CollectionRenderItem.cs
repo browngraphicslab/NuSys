@@ -13,6 +13,7 @@ using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
@@ -54,6 +55,7 @@ namespace NuSysApp
             vm.Elements.CollectionChanged += OnElementsChanged;
             vm.Links.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
+            vm.AtomViewList.CollectionChanged += OnElementsChanged;
 
             InkRenderItem = new InkRenderItem(this, canvas);
             InkRenderItem.Load();
@@ -151,7 +153,11 @@ namespace NuSysApp
                 {
                     BaseRenderItem item;
                     var vm = newItem;
-                    if (vm is TextNodeViewModel)
+                    if (vm is ToolFilterView || vm is BaseToolView)
+                    {
+                        _renderItems2.Add(new PseudoElementRenderItem((ITool)vm, this, ResourceCreator));
+                    }
+                    else if (vm is TextNodeViewModel)
                     {
                         item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
                         await item.Load();
@@ -196,12 +202,6 @@ namespace NuSysApp
                     {
                         AddTrail((PresentationLinkViewModel)vm);
                     }
-                    else
-                    {
-                        item = new ElementRenderItem((ElementViewModel)vm, this, ResourceCreator);
-                        await item.Load();
-                        _renderItems2.Add(item);
-                    }
                 }
             }
 
@@ -211,8 +211,22 @@ namespace NuSysApp
             var allItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3);
             foreach (var oldItem in e.OldItems)
             {
-                var renderItem = allItems.OfType<ElementRenderItem>().Where(el => el.ViewModel == oldItem).First();
-                Remove(renderItem);
+                var renderItem = allItems.OfType<ElementRenderItem>().Where(el => el.ViewModel == oldItem);
+                if (renderItem.Any())
+                {
+                    Remove(renderItem.First());
+                }
+                var linkItem = allItems.OfType<LinkRenderItem>().Where(el => el.ViewModel == oldItem);
+                if (linkItem.Any())
+                {
+                    Remove(linkItem.First());
+                }
+
+                var toolItem = allItems.OfType<PseudoElementRenderItem>().Where(el => el.Tool == oldItem);
+                if (toolItem.Any())
+                {
+                    Remove(toolItem.First());
+                }
             }
         }
 

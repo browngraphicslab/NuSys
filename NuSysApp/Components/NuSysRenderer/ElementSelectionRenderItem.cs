@@ -117,7 +117,7 @@ namespace NuSysApp
             }
 
           //  var bbs = _selectedItems.Select(elem => new Rect(elem.ViewModel.X, elem.ViewModel.Y, elem.ViewModel.Width, elem.ViewModel.Height)).ToList();
-            var bbs = _selectedItems.Select(elem => elem.GetScreenBoundingRect()).ToList();
+            var bbs = _selectedItems.ToArray().Select(elem => elem.GetScreenBoundingRect()).ToList();
 
             Rect = GetBoundingRect(bbs);
 

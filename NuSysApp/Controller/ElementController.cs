@@ -61,6 +61,7 @@ namespace NuSysApp
                 return new Point2d(Model.X + Model.Width / 2, Model.Y + Model.Height / 2);
             }
         }
+        public ElementController() { }
 
 
         public ElementController(ElementModel model)

@@ -60,6 +60,7 @@ namespace NuSysApp
         public event RenderItemSelectedHandler MultimediaElementActivated;
         public event RenderItemSelectedHandler DoubleTapped;
         public event MovedHandler ItemMoved;
+        public event PanZoomHandler SelectionPanZoomed;
         public event MarkingMenuPointerReleasedHandler SelectionsCleared;
         public event InkDrawHandler InkStarted;
         public event InkDrawHandler InkDrawing;
@@ -104,9 +105,6 @@ namespace NuSysApp
         private CanvasPointer _nodeMarkingMenuPointer;
         private Tuple<ElementRenderItem, ElementRenderItem> _potentiaLink; 
 
-
-        public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
-
         public CollectionInteractionManager(CanvasInteractionManager canvasInteractionManager, CollectionRenderItem collection)
         {
             _collection = collection;
@@ -135,6 +133,9 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnTwoElementsPressed(ElementRenderItem element1, ElementRenderItem element2, CanvasPointer pointer1, CanvasPointer pointer2)
         {
+            if (element1 == element2)
+                return;
+            
             _potentiaLink = new Tuple<ElementRenderItem, ElementRenderItem>(element1, element2);
             _isTwoElementsPressed = true;
             _nodeMarkingMenuPointer = pointer2;
@@ -373,12 +374,15 @@ namespace NuSysApp
 
                 if (keyState.HasFlag(CoreVirtualKeyStates.Down))
                 {
-                    _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                    _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection,
+                        1);
 
                     if (_selectedRenderItem != null && _selectedRenderItem != _collection &&
-                        _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection)
+                        _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection &&
+                        _selectedRenderItem != _secondSelectedRenderItem)
                     {
-                        LinkCreated?.Invoke((ElementRenderItem) _selectedRenderItem, (ElementRenderItem) _secondSelectedRenderItem);
+                        LinkCreated?.Invoke((ElementRenderItem) _selectedRenderItem,
+                            (ElementRenderItem) _secondSelectedRenderItem);
                     }
                 }
                 _mode = Mode.None;
@@ -460,7 +464,7 @@ namespace NuSysApp
         {
             var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
-            if (element is NodeMenuButtonRenderItem)
+            if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem)
                 return;
 
             var elementRenderItem = element as ElementRenderItem;
@@ -506,8 +510,13 @@ namespace NuSysApp
 
         private void OnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {
-            if (!_isTwoElementsPressed)
+            if (_isTwoElementsPressed)
+                return;
+
+            if (SessionController.Instance.SessionView.FreeFormViewer.Selections.Count == 0)
                 PanZoomed?.Invoke(center, deltaTranslation, deltaZoom);
+            else
+                SelectionPanZoomed?.Invoke(center, deltaTranslation, deltaZoom);
         }
 
         public void Dispose()

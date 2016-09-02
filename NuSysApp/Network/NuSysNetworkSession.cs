@@ -91,7 +91,7 @@ namespace NuSysApp
             {
                 //if CheckOutgoingRequest created a valid thing
                 await request.CheckOutgoingRequest();
-                Debug.WriteLine("SENDING REQUEST: "+request.GetRequestType().ToString());
+              //  Debug.WriteLine("SENDING REQUEST: "+request.GetRequestType().ToString());
                 Message message = request.GetFinalMessage();
                 var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
                 request.SetReturnMessage(returnMessage);

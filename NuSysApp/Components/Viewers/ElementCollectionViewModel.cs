@@ -112,8 +112,7 @@ namespace NuSysApp
                 }
             (controller as ElementCollectionController).Depth++;
             }
-            var view = await _nodeViewFactory.CreateFromSendable(controller);
-
+           
             var vm = await _elementVmFactory.CreateFromSendable(controller);
             Elements.Add(vm);
             if (controller is LinkController)
@@ -128,7 +127,6 @@ namespace NuSysApp
         {
             var c = (ElementCollectionController) Controller;
             c.RemoveChild((ElementController)source);
-            var model = (CollectionElementModel) Model;
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
 
         }
@@ -140,8 +138,18 @@ namespace NuSysApp
             var soughtChildren = Elements.Where(a => a.Id == elementController.Model.Id);
             if (soughtChildren.Any())
             {
-              //  AtomViewList.Remove( soughtChildren.First());
-                Elements.Remove(soughtChildren.First());
+                //  AtomViewList.Remove( soughtChildren.First());
+                var soughtChild = soughtChildren.First();
+                Elements.Remove(soughtChild);
+
+                foreach (var linkViewModel in Links.ToList())
+                {
+                    if (linkViewModel.LinkModel.InAtomId == soughtChild.Id ||
+                        linkViewModel.LinkModel.OutAtomId == soughtChild.Id)
+                    {
+                        Links.Remove(linkViewModel);
+                    }
+                }
             }
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }

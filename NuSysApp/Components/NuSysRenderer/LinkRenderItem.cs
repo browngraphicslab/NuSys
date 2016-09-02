@@ -17,6 +17,7 @@ namespace NuSysApp
     {
         private LinkViewModel _vm;
         private CanvasGeometry _path;
+        public LinkViewModel ViewModel => _vm;
 
         public LinkRenderItem(LinkViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
         {
@@ -45,6 +46,8 @@ namespace NuSysApp
             if (!IsDirty)
                 return;
             var controller = (LinkController)_vm.Controller;
+            if (controller.InElement == null || controller.OutElement == null)
+                return;
             var anchor1 = new Vector2((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
             var anchor2 = new Vector2((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
 

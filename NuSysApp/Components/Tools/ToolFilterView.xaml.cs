@@ -19,7 +19,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public sealed partial class ToolFilterView : AnimatableUserControl, ToolLinkable
+    public sealed partial class ToolFilterView : AnimatableUserControl, ToolLinkable, ITool
     {
 
         /// <summary>
@@ -64,6 +64,8 @@ namespace NuSysApp
                 AddParentTool(parentToolStartable);
             }
             CalculateAnchorPoint();
+
+            Opacity = 0.7;
         }
 
         /// <summary>

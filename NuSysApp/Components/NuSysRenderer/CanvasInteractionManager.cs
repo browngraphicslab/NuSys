@@ -52,12 +52,22 @@ namespace NuSysApp
         
         public CanvasInteractionManager(FrameworkElement canvas)
         {
-            _canvas = canvas;
+            _canvas = SessionController.Instance.SessionView;
             _canvas.PointerPressed += OnPointerPressed;
             _canvas.PointerReleased += OnPointerReleased;
             _canvas.PointerWheelChanged += ResourceCreatorOnPointerWheelChanged;
+            _canvas.PointerCaptureLost += CanvasOnPointerExited;
+            _canvas.PointerCanceled += CanvasOnPointerExited;
+            _canvas.PointerExited += CanvasOnPointerExited;
             AllPointersReleased += OnAllPointersReleased;
         }
+
+       private void CanvasOnPointerExited(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+       {
+          // throw new NotImplementedException();
+          if (pointerRoutedEventArgs.OriginalSource != _canvas)
+                OnPointerReleased(sender, pointerRoutedEventArgs);
+       }
 
        private void OnAllPointersReleased()
        {
@@ -207,7 +217,8 @@ namespace NuSysApp
                 var dx = _centerPoint.X - prevCenterPoint.X;
                 var dy = _centerPoint.Y - prevCenterPoint.Y;
                 var ds = (float)(_twoFingerDist / prevDist);
-                PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
+                if (Math.Abs(ds) > 0.9)
+                    PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
             }
 
             PointerMoved?.Invoke(pointer);
