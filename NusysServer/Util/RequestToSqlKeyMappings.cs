@@ -47,6 +47,13 @@ namespace NusysServer
             //collections start
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_COLLECTION_FINITE_BOOLEAN_KEY, NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY },//finite collection
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY, NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY },//shaped collection points
+
+            //video
+            {NusysConstants.NEW_VIDEO_LIBRARY_ELEMENT_REQUEST_ASPECT_RATIO_KEY, NusysConstants.VIDEO_LIBRARY_ELEMENT_MODEL_RATIO_KEY },//video aspect ratio
+
+            //image
+            {NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_ASPECT_RATIO_KEY, NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY },//image aspect ratio
+
         };
 
 

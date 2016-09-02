@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -130,6 +131,7 @@ namespace NuSysApp
             // a list of strings containing pdf text for each page
             List<string> pdfTextByPage = new List<string>();
             int pdfPageCount = 0;
+            double aspectRatio = 0;
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
 
@@ -160,7 +162,6 @@ namespace NuSysApp
                 if (storageFile == null) return;
 
                 var contentId = SessionController.Instance.GenerateId();
-                string serverURL = null;
 
                 var fileType = storageFile.FileType.ToLower();
                 title = storageFile.DisplayName;
@@ -177,7 +178,10 @@ namespace NuSysApp
                 {
                     elementType = NusysConstants.ElementType.Image;
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
-                    serverURL = contentId + fileType;
+
+                    var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
+                    aspectRatio = ((double)thumb.OriginalWidth)/((double)thumb.OriginalHeight);
+
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.WordFileTypes.Contains(fileType))
@@ -279,8 +283,11 @@ namespace NuSysApp
                         }
                     }
 
+                    var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
+                    aspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+
                     data = Convert.ToBase64String(fileBytes);
-                    thumbnails=await MediaUtil.GetThumbnailDictionary(storageFile);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.AudioFileTypes.Contains(fileType))
                 {
@@ -330,6 +337,27 @@ namespace NuSysApp
                     {
                         args.FileExtension = fileType;
                     }
+
+                    CreateNewLibraryElementRequestArgs libraryElementArgs;
+                    switch (elementType)
+                    {
+                        case NusysConstants.ElementType.Image:
+                            var imageArgs = new CreateNewImageLibraryElementRequestArgs();
+                            imageArgs.AspectRatio = aspectRatio;
+                            libraryElementArgs = imageArgs;
+                            break;
+                        case NusysConstants.ElementType.Video:
+                            var videoArgs = new CreateNewVideoLibraryElementRequestArgs();
+                            videoArgs.AspectRatio = aspectRatio;
+                            libraryElementArgs = videoArgs;
+                            break;
+                        default:
+                            libraryElementArgs = new CreateNewLibraryElementRequestArgs();
+                            break;
+                    }
+
+                    args.LibraryElementArgs = libraryElementArgs;
+
                     //add the three thumbnails
                     args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
                     args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];

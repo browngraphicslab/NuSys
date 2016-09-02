@@ -208,6 +208,9 @@ namespace NuSysApp
             var vm = (DataContext as MetadataToolViewModel);
             var listOfKvpMetadataValueToNumOfOccurrences = vm.AllMetadataDictionary[vm.Selection.Item1].Where(
                     item => item.Key?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+
+            return listOfKvpMetadataValueToNumOfOccurrences.OrderByDescending(item => item.Value).ToList();
+
             return listOfKvpMetadataValueToNumOfOccurrences.OrderBy(key => !string.IsNullOrEmpty(key.Key) && char.IsNumber(key.Key[0]))
                     .ThenBy(key => key.Key).ToList();
         }
@@ -703,9 +706,15 @@ namespace NuSysApp
             xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
         }
 
-        private async Task FetchAnalysisModels(ToggleButton button)
+        private void FetchAnalysisModels(ToggleButton button)
         {
-            var libraryElementIds = (DataContext as MetadataToolViewModel)?.Controller?.GetUpdatedDataList();
+            var libraryElementIds =
+                (DataContext as MetadataToolViewModel)?.Controller?.GetUpdatedDataList()
+                    .Where(
+                        id =>
+                            !SessionController.Instance.ContentController.HasAnalysisModel(
+                                SessionController.Instance.ContentController.GetLibraryElementController(id)
+                                    .LibraryElementModel.ContentDataModelId));
 
             Debug.Assert(libraryElementIds != null);
             if (libraryElementIds == null)
@@ -713,7 +722,7 @@ namespace NuSysApp
                 return;
             }
             int returned = 0;
-            int needed = libraryElementIds.Count(id => !SessionController.Instance.ContentController.HasAnalysisModel(SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel.ContentDataModelId));
+            int needed = libraryElementIds.Count();
 
             //var button = (Button) sender;
 
@@ -722,7 +731,7 @@ namespace NuSysApp
             button.HorizontalContentAlignment = HorizontalAlignment.Center;
             button.VerticalContentAlignment = VerticalAlignment.Center;
 
-            await Task.Run(async delegate
+            Task.Run(async delegate
             {
 
                 foreach (var id in libraryElementIds)
@@ -747,6 +756,7 @@ namespace NuSysApp
                                 {
                                     button.Background = new SolidColorBrush(Colors.Green);
                                     button.Content = null;
+                                    RefreshFomTopOfChain();
                                 });
                             }
                             else
@@ -793,16 +803,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void xFetchAnalysisModelsButton_Checked(object sender, RoutedEventArgs e)
+        private void xFetchAnalysisModelsButton_Checked(object sender, RoutedEventArgs e)
         {
             var model = ((DataContext as MetadataToolViewModel)?.Controller as MetadataToolController)?.Model as MetadataToolModel;
             if(model != null)
             {
                 model.SetIncludeSuggestedTags(true);
-                await FetchAnalysisModels(sender as ToggleButton);
-                
-                    RefreshFomTopOfChain();
-
+                FetchAnalysisModels(sender as ToggleButton);
             }
         }
 

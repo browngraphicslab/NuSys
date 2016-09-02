@@ -697,9 +697,11 @@
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewImageLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewPresentationLinkRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewVideoLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\DeleteMetadataRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewCollectionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\MoveElementToCollectionRequestArgs.cs" />

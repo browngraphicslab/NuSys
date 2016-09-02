@@ -130,10 +130,18 @@ namespace NuSysApp
                 //    Change the type from dynamic if this breaks, it'll make it easier
                 switch (originalController.LibraryElementModel.Type)
                 {
-                    case NusysConstants.ElementType.Audio:
                     case NusysConstants.ElementType.Image:
-                    case NusysConstants.ElementType.PDF:
+                        args = new CreateNewImageLibraryElementRequestArgs();
+                        model = originalController.LibraryElementModel as ImageLibraryElementModel;
+                        args.AspectRatio = model.Ratio;
+                        break;
                     case NusysConstants.ElementType.Video:
+                        args = new CreateNewVideoLibraryElementRequestArgs();
+                        model = originalController.LibraryElementModel as VideoLibraryElementModel;
+                        args.AspectRatio = model.Ratio;
+                        break;
+                    case NusysConstants.ElementType.Audio:
+                    case NusysConstants.ElementType.PDF:
                         args = new CreateNewLibraryElementRequestArgs();
                         break;
                     case NusysConstants.ElementType.VideoRegion:
@@ -165,7 +173,7 @@ namespace NuSysApp
                         args.ClippingParentLibraryId = model.ClippingParentId;
                         break;
                     case NusysConstants.ElementType.Link:
-                   //     Debug.Fail("this should never even be hit because links are not copyable");
+                        Debug.Fail("this should never even be hit because links are not copyable");
                         return "";
                         break;
                 }
