@@ -377,12 +377,6 @@ namespace NuSysApp
                 NewUserLoginText.Text = "Username required. ";
                 valid = false;
             }
-            //If new username has leading or ending white space, don't allow user creation.
-            else if (NewUsername.Text != NewUsername.Text.Trim())
-            {
-                NewUserLoginText.Text = "Username cannot have spaces at start or end. ";
-                valid = false;
-            }
 
             if (NewDisplayName.Text == "")
             {
@@ -396,28 +390,15 @@ namespace NuSysApp
                     valid = false;
                 }
             }
-            //If new username has leading or ending white space, don't allow user creation.
-            else if (NewDisplayName.Text != NewDisplayName.Text.Trim())
-            {
-                if (valid == false)
-                {
-                    NewUserLoginText.Text += "Display cannot have spaces at start or end.";
-                }
-                else
-                {
-                    NewUserLoginText.Text = "Display cannot hav espaces at start or end.";
-                    valid = false;
-                }
-            }
 
             if (valid == true)
             {
                 // to prevent multiple logins we must block logins, the call to allow more logins is after the server sends back and says that 
                 // the login was incorrect
                 _isLoggingIn = true;
-                var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
+                var username = Convert.ToBase64String(Encrypt(NewUsername.Text.Trim()));
                 var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
-                var displayName = NewDisplayName.Text;
+                var displayName = NewDisplayName.Text.Trim();
                 Login(username, password, true, displayName);
             }
 
@@ -432,7 +413,7 @@ namespace NuSysApp
             // to prevent multiple logins we must block logins, the call to allow more logins is after the server sends back and says that 
             // the login was incorrect
             _isLoggingIn = true;
-            var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
+            var username = Convert.ToBase64String(Encrypt(usernameInput.Text.Trim()));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
 
             Login(username, password, false);

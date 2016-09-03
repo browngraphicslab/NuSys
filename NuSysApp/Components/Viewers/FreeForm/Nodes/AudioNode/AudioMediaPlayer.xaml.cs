@@ -134,6 +134,8 @@ namespace NuSysApp
                 MediaElement.Stop();
                 Play.Visibility = Visibility.Visible;
                 Pause.Visibility = Visibility.Collapsed;
+                xAudioWrapper.CheckTimeForRegions(xAudioWrapper.AudioStart);
+
             }
         }
 
@@ -287,13 +289,14 @@ namespace NuSysApp
 
         private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e)
         {
-            Audio_OnJump(new TimeSpan(0));
-
+            Restart(new TimeSpan(0));
         }
 
-        public void Audio_OnJump(TimeSpan time)
+        public void Restart(TimeSpan time)
         {
             MediaElement.Position = time;
+            Play.Visibility = Visibility.Visible;
+            Pause.Visibility = Visibility.Collapsed;
 
         }
 
@@ -323,7 +326,7 @@ namespace NuSysApp
             {
                 //Goes back to start of region
                 MediaElement.Pause();
-                Audio_OnJump(StartMarker.Time);
+                Restart(StartMarker.Time);
 
             }
             //*** To avoid rounding issues, denormalized time of marker, as well as total duration, must both be
