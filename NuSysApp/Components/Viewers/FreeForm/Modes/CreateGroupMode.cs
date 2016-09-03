@@ -24,6 +24,8 @@ namespace NuSysApp
         private ElementViewModel _hoveredNode;
         private string _createdGroupId;
 
+        private UndoButton _moveToCollectionUndoButton;
+
         public CreateGroupMode(FrameworkElement view) : base(view)
         {
         }
@@ -162,7 +164,16 @@ namespace NuSysApp
                     },
                     ContentId =  contentId
                 };
-
+                foreach(var preslink in PresentationLinkViewModel.Models.ToList())
+                {
+                    if (draggedId == preslink.InElementId || draggedId == preslink.OutElementId ||
+                        hoveredId == preslink.InElementId || hoveredId == preslink.OutElementId)
+                    {
+                        var request = new DeletePresentationLinkRequest(preslink.LinkId);
+                    //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    //    request.DeletePresentationLinkFromLibrary();
+                    }
+                }
                 var newCollectionRequest = new CreateNewContentRequest(newContentRequestArgs);//create and execute request fro new collection content and libraryElement
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newCollectionRequest);
                 newCollectionRequest.AddReturnedLibraryElementToLibrary();
@@ -202,9 +213,28 @@ namespace NuSysApp
                 else
                 {
                     targetPoint = new Point(50000,50000);
-                } 
+                }
+
+                var oldCollection = elementToBeAdded.GetParentCollectionId();
+                var newCollection = collection.Model.LibraryId;
+                //Give it the location of the collection + some offset so that the undo button is not hidden by the collection
+                var oldLocation = new Point2d(collection.Model.X - 50, collection.Model.Y);
+                var newLocation = new Point2d(targetPoint.X, targetPoint.Y);
 
                 await elementToBeAdded.RequestMoveToCollection(collection.Model.LibraryId, targetPoint.X, targetPoint.Y);
+
+
+                //Instantiates a MoveToCollectionAction that describes the action that just occurred.
+                var action = new MoveToCollectionAction(elementToBeAdded.Id, oldCollection,
+                    newCollection, oldLocation, newLocation);
+                //Create UndoButton that will reverse the movetocollection action just occured. 
+                _moveToCollectionUndoButton = new UndoButton();
+                //Moves the undobutton to the old position and activates it.
+                parentVm.AtomViewList.Add(_moveToCollectionUndoButton);
+                _moveToCollectionUndoButton.MoveTo(oldLocation);
+                _moveToCollectionUndoButton.Activate(action);
+
+
                 _isHovering = false;
             }
 

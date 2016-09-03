@@ -31,6 +31,13 @@ namespace NuSysApp
             Rect = new Rect(t.TranslateX+60, t.TranslateY, s.Width, s.Height);
         }
 
+        public override void Dispose()
+        {
+            Tool.ToolAnchorChanged -= OnToolAnchorChanged;
+            Tool = null;
+            base.Dispose();
+        }
+
         private void OnToolAnchorChanged(object sender, Point2d point2D)
         {
             var s = (FrameworkElement) sender;
@@ -38,19 +45,14 @@ namespace NuSysApp
             Rect = new Rect(t.TranslateX+60, t.TranslateY, s.ActualWidth, s.ActualHeight);
         }
 
-        public override void Update()
-        {
-        }
-
         public override void Draw(CanvasDrawingSession ds)
         {
-
-            ds.DrawRectangle(Rect, Colors.Red);
+          //  ds.DrawRectangle(Rect, Colors.Red);
         }
 
-        public override bool HitTest(Vector2 point)
+        public override BaseRenderItem HitTest(Vector2 point)
         {
-            return Rect.Contains(new Point(point.X, point.Y));
+            return Rect.Contains(new Point(point.X, point.Y)) ? this : null;
         }
     }
 }

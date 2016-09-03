@@ -40,6 +40,10 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             
+            ManipulationMode = ManipulationModes.All;
+            AddHandler(ManipulationStartingEvent, new ManipulationStartingEventHandler(OnManipulationStarting), true );
+            AddHandler(ManipulationCompletedEvent, new ManipulationCompletedEventHandler(OnManipulationCompleted), true );
+            
             // initialize the detail viewer closed
             Visibility = Visibility.Collapsed;          
 
@@ -82,6 +86,16 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
             };
             
+        }
+
+        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
+        {
+         //   SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
+        }
+
+        private void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
+        {
+           // SessionController.Instance.SessionView.FreeFormViewer.Freeze();
         }
 
         /// <summary>
@@ -437,8 +451,6 @@ namespace NuSysApp
             vm.TabWidth = vm.TabPaneWidth/vm.Tabs.Count;
             
             AccessPopup.HorizontalOffset = this.Width/2 - 200;
-
-            e.Handled = true;
 
         }
 

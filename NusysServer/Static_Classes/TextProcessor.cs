@@ -281,27 +281,20 @@ namespace NusysServer
             // list of cognitive api documents to perform requests with
             var combinedRequests = new List<CognitiveApiDocument>();
 
-            // variable used to create a unique id for each document
-
             // create requests for each sentene in the entire document
             for (int pageNumber = 0; pageNumber < textByPage.Count; pageNumber++)
             {
-                // the id before we've iterated through all the sentences incrementing id each time
-                var pageStartId = NusysIntermediate.NusysConstants.GenerateId();
-
                 // split the text on the page into sentences using regex
                 var sentences = Regex.Split(textByPage[pageNumber], @"(?<=[\.!\?])\s+");
 
-                //This is the dictionary of sentences mapped to ids that we are going to iterate through to then send off to cognitive services
-                var sentenceIds = sentences.Where(item => !string.IsNullOrEmpty(item)).Select(sentence => sentence).ToDictionary(sentence => sentence,e => NusysConstants.GenerateId());
-                // convert the sentences to cognitive api documents, and add them to the list of requests, while incrementing the id
-                combinedRequests.AddRange(sentenceIds.Keys.Select(sentence => new CognitiveApiDocument(sentenceIds[sentence],sentence)));
+                // convert the sentences to cognitive api documents
+                var requestsForThisPage = sentences.Where(item => !string.IsNullOrEmpty(item)).Select(sentence => new CognitiveApiDocument(NusysConstants.GenerateId(), sentence));
 
-                var orderedKeyList = new List<string>(sentenceIds.Keys);
-                // add all the ids we've seen to the mapping
-                foreach (var sentence in sentenceIds.Keys)
+                // add all the ids we've seen to the mapping and the list of total requests
+                foreach (var newRequestDoc in requestsForThisPage)
                 {
-                    docIdToPageMapping.Add(sentenceIds[sentence], orderedKeyList.IndexOf(sentence));
+                    docIdToPageMapping.Add(newRequestDoc.id, pageNumber);
+                    combinedRequests.Add(newRequestDoc);
                 }
             }
 
@@ -322,6 +315,12 @@ namespace NusysServer
             // for each request, get the phrase and sentiment model, then combine the two to create a segment model, and add to the idToSegmentMapping
             foreach (var request in requestList)
             {
+
+                if (request == null || !request.Any())
+                {
+                    continue;
+                }
+
                 // get the phrase and sentiment model
                 var phraseModel = await GetTextKeyPhrasesAsync(request);
                 var sentimentModel = await GetTextSentimentAsync(request);
@@ -339,6 +338,7 @@ namespace NusysServer
                 {
                     idToSegmentMapping[document.id].SentimentRating = document.score;
                 }
+
                 // for each document in the key phrases model add the key phrases rating to the proper mapping
                 foreach (var document in phraseModel.documents)
                 {

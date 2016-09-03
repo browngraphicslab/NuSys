@@ -139,6 +139,10 @@ namespace NuSysApp
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
             var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
+            if (outgoingLink?.InElementId == outgoingLink?.OutElementId)
+            {
+                return null;
+            }
             var nextElemVm = GetElementViewModelFromId(outgoingLink?.OutElementId);
             return nextElemVm;
 
@@ -157,6 +161,10 @@ namespace NuSysApp
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
             var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
+            if (incomingLink?.InElementId == incomingLink?.OutElementId)
+            {
+                return null;
+            }
             var prevElemVm = GetElementViewModelFromId(incomingLink?.InElementId);
             return prevElemVm;
         }

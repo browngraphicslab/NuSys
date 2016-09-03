@@ -26,10 +26,10 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            base.Dispose();
             _vm = null;
             _bmp.Dispose();
             _bmp = null;
+            base.Dispose();
         }
 
         public override async Task Load()

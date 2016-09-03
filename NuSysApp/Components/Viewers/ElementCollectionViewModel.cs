@@ -150,6 +150,15 @@ namespace NuSysApp
                         Links.Remove(linkViewModel);
                     }
                 }
+
+                foreach (var trail in Trails.ToList())
+                {
+                    if (trail.Model.InElementId == soughtChild.Id ||
+                        trail.Model.OutElementId == soughtChild.Id)
+                    {
+                        Trails.Remove(trail);
+                    }
+                }
             }
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }

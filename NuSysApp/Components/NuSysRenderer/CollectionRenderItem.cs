@@ -62,6 +62,31 @@ namespace NuSysApp
             _renderItems0.Add(InkRenderItem);
         }
 
+        public override void Dispose()
+        {
+            _renderItems0.Clear();
+            _renderItems0 = null;
+            _renderItems1.Clear();
+            _renderItems1 = null;
+            _renderItems2.Clear();
+            _renderItems2 = null;
+            _renderItems3.Clear();
+            _renderItems3 = null;
+
+            InkRenderItem.Dispose();
+            InkRenderItem = null;
+
+            InteractionManager.Dispose();
+            InteractionManager = null;
+
+            ViewModel.Dispose();
+            ViewModel = null;
+
+            Camera = null;
+
+            base.Dispose();
+        }
+
         private void OnCameraCenterChanged(float f, float f1)
         {
             Camera.C = Matrix3x2.CreateTranslation(new Vector2(f, f1));
@@ -214,12 +239,24 @@ namespace NuSysApp
                 var renderItem = allItems.OfType<ElementRenderItem>().Where(el => el.ViewModel == oldItem);
                 if (renderItem.Any())
                 {
-                    Remove(renderItem.First());
+                    var element = renderItem.First();
+                    Remove(element);
+                    element.Dispose();
                 }
                 var linkItem = allItems.OfType<LinkRenderItem>().Where(el => el.ViewModel == oldItem);
                 if (linkItem.Any())
                 {
-                    Remove(linkItem.First());
+                    var link = linkItem.First();
+                    Remove(link);
+                    link.Dispose();
+                }
+
+                var trailItems = allItems.OfType<TrailRenderItem>().Where(el => el.ViewModel == oldItem);
+                if (trailItems.Any())
+                {
+                    var trail = trailItems.First();
+                    Remove(trail);
+                    trail.Dispose();
                 }
 
                 var toolItem = allItems.OfType<PseudoElementRenderItem>().Where(el => el.Tool == oldItem);
@@ -228,19 +265,6 @@ namespace NuSysApp
                     Remove(toolItem.First());
                 }
             }
-        }
-
-        public Vector2 ScreenPointToObjectPoint(Vector2 sp)
-        {
-            var transform = Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(this));
-            return Vector2.Transform(sp, transform);
-        }
-
-        public Vector2 ObjectPointToScreenPoint(Vector2 op)
-        {
-            var transform = NuSysRenderer.Instance.GetCollectionTransform(this);
-            return Vector2.Transform(op, transform);
-
         }
 
         public override void CreateResources()
@@ -270,12 +294,6 @@ namespace NuSysApp
                 _renderItems3.Remove(item);
         }
 
-
-        public void AddAdornment(InkStroke stroke)
-        {
-            _renderItems0.Add(new AdornmentRenderItem(stroke, this, ResourceCreator));
-        }
-
         public void AddStroke(InkStroke stroke)
         {
             InkRenderItem.AddStroke(stroke);
@@ -285,12 +303,6 @@ namespace NuSysApp
         {
             _renderItems1.Add(new LinkRenderItem(vm, this, ResourceCreator));
         }
-
-        public void AddTempLink(TempLinkRenderItem tempLink)
-        {
-            _renderItems1.Add(tempLink);
-        }
-
 
         public void AddTrail(PresentationLinkViewModel vm)
         {
@@ -307,11 +319,11 @@ namespace NuSysApp
             return _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
         }
 
-        public override bool HitTest(Vector2 point)
+        public override BaseRenderItem HitTest(Vector2 point)
         {
             if (ViewModel is FreeFormViewerViewModel)
             {
-                return true;
+                return this;
             }
 
             return base.HitTest(point);

@@ -25,5 +25,10 @@ namespace NuSysApp
             return new Rect(tl.X - margin, tl.Y - margin, tr.X-tl.X + margin*2, tr.Y-tl.Y + margin * 2);
         }
 
+        public static Rect AddPadding(Rect rect, double padding)
+        {
+            return new Rect(rect.X, rect.Y, rect.Width + 2*padding, rect.Height + 2*padding);
+        }
+
     }
 }

@@ -19,7 +19,13 @@ namespace NusysIntermediate
         /// </summary>
         public double? AverageSentiment
         {
-            get { return Segments?.Average(segment => segment.SentimentRating); }
+            get {
+                if (!Segments.Any())
+                {
+                    return 0;
+                }
+                return Segments?.Average(segment => segment.SentimentRating);
+            }
         }
 
         /// <summary>

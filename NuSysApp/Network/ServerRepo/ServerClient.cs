@@ -47,18 +47,31 @@ namespace NuSysApp
 
         public ServerClient()
         {
-            _socket = new MessageWebSocket();
-            _socket.Control.MessageType = SocketMessageType.Utf8;
-            _socket.MessageReceived += MessageRecieved;
-            _socket.Closed += SocketClosed;
-            _dataMessageWriter = new DataWriter(_socket.OutputStream);
+        }
+
+        /// <summary>
+        /// method to gracefully close the connection to the server.
+        /// </summary>
+        public void CloseConnection()
+        {
+            _socket.Close(1000,"done");
+
         }
 
         public async Task Init()
         {
+            _socket = new MessageWebSocket();
+
             ServerBaseURI = "://" + WaitingRoomView.ServerName + "/api/";
             var credentials = GetUserCredentials();
             var uri = GetUri("nusysconnect/" + credentials, true);
+
+            _socket.Control.MessageType = SocketMessageType.Utf8;
+            _socket.MessageReceived += MessageRecieved;
+            _socket.Closed += SocketClosed;
+
+            _dataMessageWriter = new DataWriter(_socket.OutputStream);
+
             await _socket.ConnectAsync(uri);
         }
 
@@ -78,7 +91,7 @@ namespace NuSysApp
 
         private void SocketClosed(IWebSocket sender, WebSocketClosedEventArgs args)
         {
-            throw new Exception("Server client failed from web socket closing!");
+            //throw new Exception("Server client failed from web socket closing!");
         }
 
         /// <summary>
@@ -139,7 +152,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                //throw new IncomingDataReaderException();
+                SessionController.Instance.CaptureCurrentState();
             }
         }
 

@@ -34,6 +34,15 @@ namespace NuSysApp
             _vm.Controller.SizeChanged += ControllerOnSizeChanged;
         }
 
+        public override void Dispose()
+        {
+            _shape.Dispose();
+            _shape = null;
+            _vm = null;
+            _strokeStyle = null;
+            base.Dispose();
+        }
+
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
             IsDirty = true;

@@ -46,11 +46,17 @@ namespace NuSysApp
         public virtual void Dispose()
         {
             ResourceCreator = null;
+            Parent = null;
         }
 
-        public virtual bool HitTest(Vector2 point)
+        public virtual BaseRenderItem HitTest(Vector2 point)
         {
-            return false;
+            return null;
+        }
+
+        public virtual Rect GetMeasure()
+        {
+            return new Rect();
         }
     }
 }

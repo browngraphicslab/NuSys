@@ -69,7 +69,7 @@ namespace NuSysApp
                 ds.DrawGeometry(_path, Color, 30);
         }
 
-        public override bool HitTest(Vector2 point)
+        public override BaseRenderItem HitTest(Vector2 point)
         {
             var anchor1 = new Vector2((float)Element1.ViewModel.Anchor.X, (float)Element1.ViewModel.Anchor.Y);
             var anchor2 = new Vector2((float)Element2.ViewModel.Anchor.X, (float)Element2.ViewModel.Anchor.Y);
@@ -88,7 +88,7 @@ namespace NuSysApp
 
             var minDist = pointsOnCurve.Select(p => MathUtil.Dist(p, new Point(point.X, point.Y))).Concat(new[] { double.PositiveInfinity }).Min();
 
-            return minDist < 50;
+            return minDist < 50 ? this : null;
         }
     }
 }

@@ -243,44 +243,11 @@
     <Content Include="Assets\open up.png" />
     <Content Include="Assets\openclose icon.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
-    <Content Include="Assets\fonts\FiraSans-Book.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\fonts\FiraSans-BookItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\FiraSans-Light.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\fonts\FiraSans-LightItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\fonts\FiraSans-Thin.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\fonts\FiraSans-ThinItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\fonts\FiraSans-UltraLight.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\fonts\FiraSans-UltraLightItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\fonts\AlegreyaSansSC-Black.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-BlackItalic.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-Bold.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-BoldItalic.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-ExtraBold.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-ExtraBoldItalic.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-Italic.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-Light.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-LightItalic.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-Medium.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-MediumItalic.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-Regular.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-Thin.ttf" />
-    <Content Include="Assets\fonts\AlegreyaSansSC-ThinItalic.ttf" />
+    <Content Include="Assets\fonts\Frutiger LT 45 Light.ttf" />
+    <Content Include="Assets\fonts\Frutiger LT 56 Italic.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -347,7 +314,6 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
-    <Compile Include="Components\NuSysRenderer\AdornmentRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\AudioElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\BaseRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CanvasInteractionManager.cs" />
@@ -359,7 +325,6 @@
     <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
     <Compile Include="Components\NuSysRenderer\HTMLParser.cs" />
     <Compile Include="Components\NuSysRenderer\I2dTransformable.cs" />
-    <Compile Include="Components\NuSysRenderer\IdleRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ImageElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\InkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\LinkRenderItem.cs" />
@@ -370,12 +335,13 @@
     <Compile Include="Components\NuSysRenderer\NuSysRenderer.cs" />
     <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ShapedCollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\TagRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TempLinkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TextElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\UnshapedCollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
+    <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\TemporaryImageRegionView.xaml.cs">
       <DependentUpon>TemporaryImageRegionView.xaml</DependentUpon>
     </Compile>
@@ -787,8 +753,10 @@
     <Compile Include="Undo\MoveElementAction.cs" />
     <Compile Include="Undo\DeleteElementAction.cs" />
     <Compile Include="Undo\DeleteLibraryElementAction.cs" />
+    <Compile Include="Undo\MoveToCollectionAction.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
+    <Compile Include="Util\CapturedStateModel.cs" />
     <Compile Include="Util\DetailViewTabType.cs" />
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\ExplorationMode.cs" />

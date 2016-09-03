@@ -36,7 +36,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(_iconUrl), ResourceCreator.Dpi);
+            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(_iconUrl));
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -47,17 +47,23 @@ namespace NuSysApp
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
             ds.FillCircle(new Vector2(0,0), 15, Color.FromArgb(0xFF, 0x6B,0x93,0x97));
 
+            var scaleFactor = 15/_bmp.Size.Width;
+
             // ds.FillCircle(new Rect { X = Postion.X, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
             if (_bmp != null)
-                ds.DrawImage(_bmp, new Rect(-15 + (30 - _bmp.Size.Width) / 2f, -15 + (30 - _bmp.Size.Height) / 2f, _bmp.Size.Width, _bmp.Size.Height)); 
+                ds.DrawImage(_bmp, new Rect(-15 + (30 - _bmp.Size.Width * scaleFactor) / 2f, -15 + (30 - _bmp.Size.Height * scaleFactor) / 2f, _bmp.Size.Width * scaleFactor, _bmp.Size.Height * scaleFactor)); 
 
             ds.Transform = orgTransform;
         }
 
-        public override bool HitTest(Vector2 point)
+        public override BaseRenderItem HitTest(Vector2 point)
         {
             var rect = new Rect(T.M31-15, T.M32 - 15, 30,30);
-            return rect.Contains(point.ToPoint());
+            if (rect.Contains(point.ToPoint()))
+            {
+                return this;
+            }
+            return null;
         }
     }
 }

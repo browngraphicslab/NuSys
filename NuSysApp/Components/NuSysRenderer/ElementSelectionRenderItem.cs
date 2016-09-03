@@ -21,14 +21,13 @@ namespace NuSysApp
         private FreeFormViewerViewModel _vm;
         private bool _isVisible;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
-        private Matrix3x2 _transform;
+
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnOptions;
         public NodeResizerRenderItem Resizer;
         public List<NodeMenuButtonRenderItem> Buttons = new List<NodeMenuButtonRenderItem>(); 
-
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
@@ -41,7 +40,6 @@ namespace NuSysApp
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
-
         }
 
         public override async Task Load()
@@ -81,8 +79,6 @@ namespace NuSysApp
                 }
             }
 
-            if (_selectedItems.Count > 0)
-                _transform = NuSysRenderer.Instance.GetTransformUntil(_selectedItems.First());
 
             IsDirty = true;
         }
@@ -135,9 +131,6 @@ namespace NuSysApp
  
             var old = ds.Transform;
 
-            if (_selectedItems.Count > 0)
-                _transform = NuSysRenderer.Instance.GetTransformUntil(_selectedItems.First());
-
             var tl = new Vector2((float)Rect.X, (float)Rect.Y);
             var tr = new Vector2((float)(Rect.X+Rect.Width), (float)(Rect.Y + Rect.Height));
            
@@ -152,15 +145,6 @@ namespace NuSysApp
 
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
 
-            /*
-            var triangle = CanvasGeometry.CreatePolygon(ResourceCreator,new System.Numerics.Vector2[4]{new Vector2(0, 30),
-                new Vector2(30, 30),
-                new Vector2(30, 0),
-                new Vector2(0, 30)
-            });
-
-            ds.FillGeometry(triangle,new Vector2((float)(_screenRect.X + _screenRect.Width - 30), (float)(_screenRect.Y + _screenRect.Height - 30)), Colors.Black);
-            */
             Resizer.T = Matrix3x2.CreateTranslation(new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f)));
 
             Resizer.Draw(ds);
@@ -195,14 +179,6 @@ namespace NuSysApp
             }
             return new Rect(minX, minY, maxW-minX, maxH-minY);
 
-        }
-
-        public override bool HitTest(Vector2 point)
-        {
-            if (base.HitTest(point))
-                return true;
-
-            return false;
         }
     }
 }

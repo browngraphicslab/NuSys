@@ -47,12 +47,13 @@ namespace NuSysApp
         private List<CanvasPointer> _pointers = new List<CanvasPointer>();
         private FrameworkElement _canvas;
        private bool _cancelLongTapped;
+       private bool _isEnabled = true;
 
        public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
         
         public CanvasInteractionManager(FrameworkElement canvas)
         {
-            _canvas = SessionController.Instance.SessionView;
+            _canvas = canvas;
             _canvas.PointerPressed += OnPointerPressed;
             _canvas.PointerReleased += OnPointerReleased;
             _canvas.PointerWheelChanged += ResourceCreatorOnPointerWheelChanged;
@@ -60,7 +61,15 @@ namespace NuSysApp
             _canvas.PointerCanceled += CanvasOnPointerExited;
             _canvas.PointerExited += CanvasOnPointerExited;
             AllPointersReleased += OnAllPointersReleased;
+            SetEnabled(true);
         }
+
+       public void SetEnabled(bool enabled)
+       {
+            if (!enabled)
+                _pointers.Clear();
+            _isEnabled = enabled;
+       }
 
        private void CanvasOnPointerExited(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
        {
@@ -84,18 +93,24 @@ namespace NuSysApp
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
         {
+            if (!_isEnabled)
+                return;
+
             OnPointerTouchReleased(sender, args);
      
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
         {
+            if (!_isEnabled)
+                return;
             OnPointerTouchPressed(sender, args);
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
         {
-
+                        if (!_isEnabled)
+                return;
             OnPointerTouchMoved(sender, args);
         }
         

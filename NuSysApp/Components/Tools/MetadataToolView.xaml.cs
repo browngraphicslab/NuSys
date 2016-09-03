@@ -37,6 +37,7 @@ namespace NuSysApp
 
         private const int _minWidth = 200;
 
+
         private double _x;
 
         private double _y;
@@ -69,7 +70,6 @@ namespace NuSysApp
         /// </summary>
         private void On_SelectionChanged(object sender)
         {
-            var vm = DataContext as MetadataToolViewModel;
             SetKeyListVisualSelection();
             RefreshValueList();
         }
@@ -79,21 +79,25 @@ namespace NuSysApp
         /// </summary>
         private void SetKeyListVisualSelection()
         {
-            var vm = DataContext as MetadataToolViewModel;
-            if (vm.Selection != null &&
-                (vm.Controller as MetadataToolController).Model.Selected &&
-                vm.Selection.Item1 != null)
+            UITask.Run(delegate
             {
-                if (xMetadataKeysList.SelectedItem != vm.Selection.Item1)
+                var vm = DataContext as MetadataToolViewModel;
+                if (vm.Selection != null &&
+                    (vm.Controller as MetadataToolController).Model.Selected &&
+                    vm.Selection.Item1 != null)
                 {
-                    xMetadataKeysList.SelectedItem = vm.Selection.Item1;
-                    xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+                    if (xMetadataKeysList.SelectedItem != vm.Selection.Item1)
+                    {
+                        xMetadataKeysList.SelectedItem = vm.Selection.Item1;
+                        xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+                    }
                 }
-            }
-            else
-            {
-                xMetadataKeysList.SelectedItem = null;
-            }
+                else
+                {
+                    xMetadataKeysList.SelectedItem = null;
+                }
+            });
+            
         }
         
 
@@ -102,19 +106,22 @@ namespace NuSysApp
         /// </summary>
         private void SetValueListVisualSelection()
         {
-            var vm = DataContext as MetadataToolViewModel;
-            if (vm.Selection.Item1 != null && vm.Selection.Item2 != null)
+            UITask.Run(delegate
             {
-                xMetadataValuesList.SelectedItems.Clear();
-                foreach (var item in vm.Selection.Item2)
+                var vm = DataContext as MetadataToolViewModel;
+                if (vm.Selection.Item1 != null && vm.Selection.Item2 != null)
                 {
-                    xMetadataValuesList.SelectedItems.Add(item);
+                    xMetadataValuesList.SelectedItems.Clear();
+                    foreach (var item in vm.Selection.Item2)
+                    {
+                        xMetadataValuesList.SelectedItems.Add(xMetadataValuesList.Items.Where(kvp => ((KeyValuePair<string, double>)kvp).Key.Equals(item)).First());
+                    }
                 }
-            }
-            else
-            {
-                xMetadataValuesList.SelectedItems.Clear();
-            }
+                else
+                {
+                    xMetadataValuesList.SelectedItems.Clear();
+                }
+            });
         }
 
         private void XSearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -130,13 +137,12 @@ namespace NuSysApp
         /// </summary>
         public void RefreshValueList()
         {
-            var vm = (DataContext as MetadataToolViewModel);
-            if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
-            {
-                var filteredList =
-                FilterValuesList(xSearchBox.Text);
-                if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
-                        filteredList))
+            UITask.Run(delegate {
+                var vm = (DataContext as MetadataToolViewModel);
+                if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
+                {
+                    var filteredList = FilterValuesList(xSearchBox.Text);
+                    if (!ScrambledEquals(xMetadataValuesList.Items.Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
                     {
                         //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
                         //scroll into view if necessary.
@@ -149,14 +155,15 @@ namespace NuSysApp
                     }
                     else
                     {
-                    //if new filtered list is the same as old filtered list, just set the visual selection and do not refresh the value list item source
-                    SetValueListVisualSelection();
+                        //if new filtered list is the same as old filtered list, just set the visual selection and do not refresh the value list item source
+                        SetValueListVisualSelection();
                     }
-            }
-            else
-            {
-                xMetadataValuesList.ItemsSource = null;
-            }
+                }
+                else
+                {
+                    xMetadataValuesList.ItemsSource = null;
+                }
+            });
         }
 
         /// <summary>
@@ -195,14 +202,14 @@ namespace NuSysApp
         /// <summary>
         ///  Based on a search string, returns the filtered values list
         /// </summary>
-        private List<string> FilterValuesList(string search)
+        private List<KeyValuePair<string, double>> FilterValuesList(string search)
         {
             var filteredValuesList = new List<string>();
             var vm = (DataContext as MetadataToolViewModel);
-            return
-                vm.AllMetadataDictionary[vm.Selection.Item1].Keys.Where(
-                    item => item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0]))
-                    .ThenBy(key => key).ToList();
+            var listOfKvpMetadataValueToNumOfOccurrences = vm.AllMetadataDictionary[vm.Selection.Item1].Where(
+                    item => item.Key?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+            return listOfKvpMetadataValueToNumOfOccurrences.OrderBy(key => !string.IsNullOrEmpty(key.Key) && char.IsNumber(key.Key[0]))
+                    .ThenBy(key => key.Key).ToList();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -259,9 +266,12 @@ namespace NuSysApp
         /// </summary>
         private void Vm_PropertiesToDisplayChanged()
         {
-            var vm = DataContext as MetadataToolViewModel;
-            Debug.Assert(vm != null);
-            xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
+            UITask.Run(delegate
+            {
+                var vm = DataContext as MetadataToolViewModel;
+                Debug.Assert(vm != null);
+                xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
+            });
         }
 
         /// <summary>
@@ -519,23 +529,40 @@ namespace NuSysApp
                 var vm = (DataContext as MetadataToolViewModel);
                 if (_currentDragMode == DragMode.Key)
                 {
-                    vm.Selection = new Tuple<string, HashSet<string>>((((Grid)sender).Children[0] as TextBlock).Text, new HashSet<string>());
+                    vm.Selection = new Tuple<string, HashSet<string>>(GetTextFromListItemGrid(sender as Grid), new HashSet<string>());
                 }
                 else if (_currentDragMode == DragMode.Value)
                 {
                     if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                     {
-                        vm.Selection.Item2.Add((((Grid)sender).Children[0] as TextBlock).Text);
+                        vm.Selection.Item2.Add(GetTextFromListItemGrid(sender as Grid));
                         vm.Selection = vm.Selection;
                     }
                     else
                     {
                         vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text});
+                            new HashSet<string>() { GetTextFromListItemGrid(sender as Grid) });
                     }
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
                 vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+            }
+        }
+
+        /// <summary>
+        /// This returns the text that is inside the list item grid
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private string GetTextFromListItemGrid(Grid grid)
+        {
+            if(grid.Children[0] as TextBlock != null)
+            {
+                return (grid.Children[0] as TextBlock).Text;
+            }
+            else
+            {
+                return (grid.Children[1] as TextBlock).Text;
             }
         }
 
@@ -562,14 +589,14 @@ namespace NuSysApp
             var vm = (DataContext as MetadataToolViewModel);
             if (vm.Controller.Model.Selected &&
                 vm.Selection.Item1.Equals(
-                    ((sender as Grid).Children[0] as TextBlock).Text))
+                    GetTextFromListItemGrid(sender as Grid)))
             {
                 vm.Controller.UnSelect();
             }
             else
             {
                 Debug.Assert(vm != null);
-                vm.Selection = new Tuple<string, HashSet<string>>(((sender as Grid).Children[0] as TextBlock).Text, new HashSet<string>());
+                vm.Selection = new Tuple<string, HashSet<string>>(GetTextFromListItemGrid(sender as Grid), new HashSet<string>());
             }
         }
 
@@ -581,12 +608,12 @@ namespace NuSysApp
             var vm = (DataContext as MetadataToolViewModel);
             if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
                 vm.Selection.Item2.Contains(
-                    ((sender as Grid).Children[0] as TextBlock).Text))
+                    GetTextFromListItemGrid(sender as Grid)))
             {
                 if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     //if tapped item is already selected and in multiselect mode, remove item from selection
-                    vm.Selection.Item2.Remove(((sender as Grid).Children[0] as TextBlock).Text);
+                    vm.Selection.Item2.Remove(GetTextFromListItemGrid(sender as Grid));
                     vm.Selection = vm.Selection;
                 }
                 else
@@ -606,21 +633,21 @@ namespace NuSysApp
 
                         if (vm.Selection != null)
                         {
-                            var selection = ((sender as Grid).Children[0] as TextBlock).Text;
+                            var selection = GetTextFromListItemGrid(sender as Grid);
                             vm.Selection.Item2.Add(selection);
                             vm.Selection = vm.Selection;
                         }
                         else
                         {
                             vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
+                            new HashSet<string>() { GetTextFromListItemGrid(sender as Grid) });
                         }
                     }
                     else
                     {
                         //if tapped item is not selected and in single mode, set the item as the only selection
                         vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                             new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
+                             new HashSet<string>() { GetTextFromListItemGrid(sender as Grid) });
                     }
                 }
             }
@@ -632,13 +659,14 @@ namespace NuSysApp
         private void ValueListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (!vm.Selection.Item2.Contains(((sender as Grid).Children[0] as TextBlock).Text) && vm.Selection.Item2.Count == 0)
+            var textTapped = GetTextFromListItemGrid(sender as Grid);
+            if (!vm.Selection.Item2.Contains(textTapped) && vm.Selection.Item2.Count == 0)
             {
                 vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
+                            new HashSet<string>() { textTapped });
             }
             if (vm.Selection.Item2.Count == 1 &&
-                vm.Selection.Item2.First().Equals(((sender as Grid).Children[0] as TextBlock).Text))
+                vm.Selection.Item2.First().Equals(textTapped))
             {
                 vm.OpenDetailView();
             }
@@ -675,7 +703,7 @@ namespace NuSysApp
             xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
         }
 
-        private void xFetchAnalysisModelsButton_Click(object sender, RoutedEventArgs e)
+        private async Task FetchAnalysisModels(ToggleButton button)
         {
             var libraryElementIds = (DataContext as MetadataToolViewModel)?.Controller?.GetUpdatedDataList();
 
@@ -685,16 +713,16 @@ namespace NuSysApp
                 return;
             }
             int returned = 0;
-            int needed = libraryElementIds.Count();
+            int needed = libraryElementIds.Count(id => !SessionController.Instance.ContentController.HasAnalysisModel(SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel.ContentDataModelId));
 
-            var button = (Button) sender;
+            //var button = (Button) sender;
 
             button.Background = new SolidColorBrush(Colors.Orange);
             button.Content = "0 %";
             button.HorizontalContentAlignment = HorizontalAlignment.Center;
             button.VerticalContentAlignment = VerticalAlignment.Center;
 
-            Task.Run(async delegate
+            await Task.Run(async delegate
             {
 
                 foreach (var id in libraryElementIds)
@@ -705,28 +733,34 @@ namespace NuSysApp
                         returned ++;
                         continue;
                     }
-                    await Task.Delay(5);
-                    Task.Run(async delegate
+                    if (!SessionController.Instance.ContentController.HasAnalysisModel(libraryController.LibraryElementModel.ContentDataModelId))
                     {
-                        await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(libraryController.LibraryElementModel.ContentDataModelId);
-                        returned++;
-                        if (returned == needed)
+                        await Task.Delay(10);
+                    }
+                    Task.Run(async delegate
                         {
-                            UITask.Run(delegate
+                            await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(libraryController.LibraryElementModel.ContentDataModelId);
+                            returned++;
+                            if (returned == needed)
                             {
-                                button.Background = new SolidColorBrush(Colors.Green);
-                                button.Content = null;
-                            });
-                        }
-                        else
-                        {
-                            UITask.Run(delegate
+                                UITask.Run(delegate
+                                {
+                                    button.Background = new SolidColorBrush(Colors.Green);
+                                    button.Content = null;
+                                });
+                            }
+                            else
                             {
-                                button.Content = Math.Round((double) 100*((double) returned/(double) needed), 0) + " %";
-                            });
-                        }
-                    });
+                                UITask.Run(delegate
+                                {
+                                    button.Content = Math.Round((double)100 * ((double)returned / (double)needed), 0) + " %";
+                                });
+                            }
+                        });
+                    
                 }
+
+
             });
         }
 
@@ -737,7 +771,55 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            (DataContext as ToolViewModel).Controller.RefreshFromTopOfChain();
+             RefreshFomTopOfChain();
+        }
+
+        public void RefreshFomTopOfChain()
+        {
+            var vm = (DataContext as MetadataToolViewModel);
+            if(vm == null)
+            {
+                return;
+            }
+            Task.Run(delegate
+            {
+                vm.Controller.RefreshFromTopOfChain();
+            });
+        }
+
+        /// <summary>
+        /// When the fetch analysis toggle switch is checked. fetch, the analysis models, set the include suggest tags bool, reload from 
+        /// top of filter chain.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void xFetchAnalysisModelsButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var model = ((DataContext as MetadataToolViewModel)?.Controller as MetadataToolController)?.Model as MetadataToolModel;
+            if(model != null)
+            {
+                model.SetIncludeSuggestedTags(true);
+                await FetchAnalysisModels(sender as ToggleButton);
+                
+                    RefreshFomTopOfChain();
+
+            }
+        }
+
+        /// <summary>
+        /// When the fetch analysis toggle switch is unchecked.  set the include suggest tags bool, reload from 
+        /// top of filter chain.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void xFetchAnalysisModelsButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            var model = ((DataContext as MetadataToolViewModel)?.Controller as MetadataToolController)?.Model as MetadataToolModel;
+            if (model != null)
+            {
+                model.SetIncludeSuggestedTags(false);
+                    RefreshFomTopOfChain();
+            }
         }
     }
 }

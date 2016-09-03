@@ -141,24 +141,28 @@ namespace NuSysApp
         // pass in a list of all the properties to show in the graph
         public void SetProperties(List<string> propertiesList)
         {
-            BarChartDictionary = new Dictionary<string, int>();
-            foreach (var item in propertiesList)
+            UITask.Run(delegate
             {
-                if (item != null && !item.Equals(""))
+                BarChartDictionary = new Dictionary<string, int>();
+                foreach (var item in propertiesList)
                 {
-                    if (!BarChartDictionary.ContainsKey(item))
+                    if (item != null && !item.Equals(""))
                     {
-                        BarChartDictionary.Add(item, 1);
-                    }
-                    else
-                    {
-                        BarChartDictionary[item] = BarChartDictionary[item] + 1;
+                        if (!BarChartDictionary.ContainsKey(item))
+                        {
+                            BarChartDictionary.Add(item, 1);
+                        }
+                        else
+                        {
+                            BarChartDictionary[item] = BarChartDictionary[item] + 1;
+                        }
                     }
                 }
-            }
 
-            // populates all the visual elements in the bar chart
-            SetData();
+                // populates all the visual elements in the bar chart
+                SetData();
+            });
+            
         }
 
         /// <summary>
@@ -232,19 +236,21 @@ namespace NuSysApp
         /// </summary>
         public void SetVisualSelection(HashSet<string> selection)
         {
-            foreach (var item in _barChartItemDictionary)
-            {
-                var dataContext = item.Value.DataContext as BarChartItemViewModel;
-                Debug.Assert(dataContext != null);
-                dataContext.IsSelected = false;
-            }
+            UITask.Run(delegate {
+                foreach (var item in _barChartItemDictionary)
+                {
+                    var dataContext = item.Value.DataContext as BarChartItemViewModel;
+                    Debug.Assert(dataContext != null);
+                    dataContext.IsSelected = false;
+                }
 
-            foreach (var key in selection)
-            {
-                var dataContext = _barChartItemDictionary[key].DataContext as BarChartItemViewModel;
-                Debug.Assert(dataContext != null);
-                dataContext.IsSelected = true;
-            }
+                foreach (var key in selection)
+                {
+                    var dataContext = _barChartItemDictionary[key].DataContext as BarChartItemViewModel;
+                    Debug.Assert(dataContext != null);
+                    dataContext.IsSelected = true;
+                }
+            });
         }
 
         /// <summary>

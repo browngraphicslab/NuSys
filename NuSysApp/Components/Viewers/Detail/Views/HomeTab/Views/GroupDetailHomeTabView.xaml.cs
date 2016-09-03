@@ -323,7 +323,6 @@ namespace NuSysApp
             if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element?.LibraryElementId) ||
                 (element?.Type == NusysConstants.ElementType.Link))
             {
-                e.Handled = true;
                 return;
             }
 
@@ -356,7 +355,6 @@ namespace NuSysApp
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
             if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
-                e.Handled = true;
                 return;
             }
 
@@ -390,7 +388,6 @@ namespace NuSysApp
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
             if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
-                e.Handled = true;
                 return;
             }
 

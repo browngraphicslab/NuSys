@@ -19,9 +19,7 @@ namespace NuSysApp
     public class InkRenderItem : BaseRenderItem
     {
         private ElementViewModel _vm;
-      //  private ConcurrentQueue<InkStroke> _inkStrokes = new ConcurrentQueue<InkStroke>();
         private bool _isEraser;
-        private Color _drawingColor = Colors.Black;
         private List<InkPoint> _currentStroke = new List<InkPoint>();
         private InkStroke _currentInkStroke;
         private InkManager _inkManager = new InkManager();
@@ -50,8 +48,19 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            base.Dispose();
             _vm = null;
+            _builder = null;
+            _currentInkStroke = null;
+            _currentStroke.Clear();
+            _currentStroke = null;
+            _dryStrokesTarget.Dispose();;
+            _dryStrokesTarget = null;
+            _inkManager = null;
+            LatestStroke = null;
+            _strokesToDraw.Clear();
+            _strokesToDraw = null;
+            _lock = null;
+            base.Dispose();
         }
 
         public void UpdateDryInkTransform()
@@ -66,11 +75,6 @@ namespace NuSysApp
             _transform = Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(this));
 
             _isEraser = e.Properties.IsEraser || e.Properties.IsRightButtonPressed;
-            if (_isEraser)
-                _drawingColor = Colors.DarkRed;
-            else
-                _drawingColor = Colors.Black;
-
             _currentStroke = new List<InkPoint>();
 
             lock (_lock) {
@@ -94,7 +98,6 @@ namespace NuSysApp
 
         public void StopInkByEvent(CanvasPointer e)
         {
-            _drawingColor = Colors.Black;
             lock (_lock)
             {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);

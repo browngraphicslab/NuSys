@@ -43,10 +43,14 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
-        public override bool HitTest(Vector2 point)
+        public override BaseRenderItem HitTest(Vector2 point)
         {
             var rect = new Rect(T.M31, T.M32, 30, 30);
-            return rect.Contains(point.ToPoint());
+            if (rect.Contains(point.ToPoint()))
+            {
+                return this;
+            }
+            return null;
         }
     }
 

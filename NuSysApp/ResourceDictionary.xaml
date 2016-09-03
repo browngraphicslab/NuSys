@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp">
 
-
+    <FontFamily x:Key="FiraSans">Assets/fonts/FiraSans-Thin.ttf</FontFamily>
+    
     <!--COLORS--> 
     <SolidColorBrush x:Key="color1" Color="#FFC7DEDE"/>   <!-- lightest blue -->
     <SolidColorBrush x:Key="color2" Color="#FF6B9397"/>   <!-- medium blue -->

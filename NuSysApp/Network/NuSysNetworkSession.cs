@@ -59,11 +59,11 @@ namespace NuSysApp
 
         public async Task Init()
         {
-            _serverClient = new ServerClient();
+            _serverClient =  _serverClient ?? new ServerClient();
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnNewNotification += HandleNotification;
-            LockController = new LockController(_serverClient);
+            LockController = LockController ?? new LockController(_serverClient);
 
             //asynchronously run a request that will be loading the user ID to display name dictionary 
             Task.Run(async delegate
@@ -72,6 +72,14 @@ namespace NuSysApp
                 await ExecuteRequestAsync(userIdDictionaryRequest);
                 userIdDictionaryRequest.AddReturnedDictionaryToSession();
             });
+        }
+
+        /// <summary>
+        /// method to call to gracefully disconnect from server
+        /// </summary>
+        public void CloseConnection()
+        {
+            _serverClient.CloseConnection();
         }
 
         #region Requests

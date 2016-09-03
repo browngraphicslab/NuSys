@@ -56,7 +56,7 @@ namespace NuSysApp
             controller.Deleted += ControllerOnDeleted;
             controller.LinksUpdated += ControllerLinksUpdated;
 
-            Tags = new ObservableCollection<Button>();
+            Tags = new ObservableCollection<string>();
             CircleLinks = new ObservableCollection<LinkCircle>();
             ReadFromModel();
         }
@@ -197,19 +197,7 @@ namespace NuSysApp
             }
             foreach (var tag in tagList)
             {
-                //sorry about this - should also be in frontend and not in viewmodel
-                Button tagBlock = new Button();
-                tagBlock.Background = new SolidColorBrush(Constants.color4);
-                tagBlock.Content = tag.Text;
-                tagBlock.Height = 30;
-                tagBlock.Padding = new Thickness(5);
-                tagBlock.BorderThickness = new Thickness(0);
-                tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
-                tagBlock.Margin = new Thickness(2, 2, 2, 2);///
-                tagBlock.FontStyle = FontStyle.Italic;
-                tagBlock.IsHitTestVisible = true;     
-                tagBlock.Tapped += OnTagBlockTapped;
-                Tags.Add(tagBlock);
+                Tags.Add(tag.Text);
             }
             
             RaisePropertyChanged("Tags");
@@ -429,7 +417,7 @@ namespace NuSysApp
             }
         }
         public string Title { get; set; }
-        public ObservableCollection<Button> Tags { get; set; }
+        public ObservableCollection<string> Tags { get; set; }
         public ObservableCollection<LinkCircle> CircleLinks { get; set; }
 
         public ElementController Controller

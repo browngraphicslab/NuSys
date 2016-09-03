@@ -75,7 +75,7 @@ namespace NuSysApp
                 vm.Width = xRenderCanvas.Width;
                 vm.Height = xRenderCanvas.Height;
 
-                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+                _canvasInteractionManager = new CanvasInteractionManager(SessionController.Instance.SessionView.MainCanvas);
 
                 SwitchCollection(InitialCollection);
 
@@ -178,11 +178,13 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,
             float deltaZoom)
         {
+            var transform = NuSysRenderer.Instance.GetCollectionTransform(InitialCollection);
+       
             foreach (var selection in Selections)
             {
-                var elem = (ElementViewModel) selection.ViewModel;
+                var elem = selection.ViewModel;
                 var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
-                var newCenter = InitialCollection.ObjectPointToScreenPoint(imgCenter);
+                var newCenter = Vector2.Transform(imgCenter, transform);
 
                 Transformable t;
                 if (_transformables.ContainsKey(elem))
@@ -752,9 +754,17 @@ namespace NuSysApp
             target.S = Matrix3x2.CreateScale((float)nsx, (float)nsy);
             target.Update();
         }
-        
 
 
+        public void Freeze()
+        {
+            _canvasInteractionManager.SetEnabled(false);
+        }
+
+        public void Unfreeze()
+        {
+            _canvasInteractionManager.SetEnabled(true);
+        }
 
 
 

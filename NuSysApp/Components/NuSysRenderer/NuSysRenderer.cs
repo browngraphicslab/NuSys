@@ -117,12 +117,12 @@ namespace NuSysApp
 
         public BaseRenderItem GetRenderItemAt(Vector2 sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
         {
-            if (ElementSelectionRenderItem.Resizer.HitTest(sp))
+            if (ElementSelectionRenderItem.Resizer.HitTest(sp) != null)
                 return ElementSelectionRenderItem.Resizer;
 
             foreach (var btn in ElementSelectionRenderItem.Buttons)
             {
-                if (btn.HitTest(sp))
+                if (btn.HitTest(sp) != null)
                 {
                     return btn;
                 }
@@ -170,7 +170,7 @@ namespace NuSysApp
                         }
                         else
                         {
-                            if (innerCollection.HitTest(Vector2.Transform(sp, childTransform)))
+                            if (innerCollection.HitTest(Vector2.Transform(sp, childTransform)) != null)
                             {
                                 return innerCollection;
                             }
@@ -178,14 +178,14 @@ namespace NuSysApp
                     }
 
 
-                    if (renderItem.HitTest(Vector2.Transform(sp, childTransform)))
+                    if (renderItem.HitTest(Vector2.Transform(sp, childTransform)) != null)
                     {
                         return renderItem;
                     }
                 }
             }
 
-            if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))))
+            if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))) != null)
                 return collection;
 
             return null;
@@ -197,7 +197,7 @@ namespace NuSysApp
             {
 
 
-                if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))))
+                if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))) != null)
                     output.Add(collection);
 
                 var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T *
@@ -214,7 +214,7 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                         {
                              _GetRenderItemsAt(coll, sp, poo, output, currentLevel + 1, maxLevel);
                         }
-                    } else if (renderItem.HitTest(Vector2.Transform(sp, childTransform)))
+                    } else if (renderItem.HitTest(Vector2.Transform(sp, childTransform)) != null)
                     {
                         output.Add(renderItem);
                     }

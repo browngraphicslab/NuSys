@@ -36,11 +36,13 @@ namespace NuSysApp
 
         public static string InitialWorkspaceId { get; private set; }
         public static string ServerName { get; private set; }
+        public static string UserID { get; private set; }
+
         public static string UserName { get; private set; }
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-
+        public static string HashedPass { get; private set; }
 
         public static bool IS_HUB = true;
 
@@ -285,7 +287,7 @@ namespace NuSysApp
                 
                 InitialWorkspaceId = id;
 
-                if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserName))
+                if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserID))
                 {
                     this.Frame.Navigate(typeof(SessionView), m.AccessType);
                 }
@@ -586,73 +588,83 @@ namespace NuSysApp
             File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
         }
 
+
+        public static async Task<Tuple<bool,string>> AttemptLogin(string username, string password, string displayname, bool createNewUser)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            var cred = new Dictionary<string, string>();
+
+            //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
+
+
+            cred["user"] = username;
+            cred["pass"] = password;
+
+            UserName = username;
+            if (createNewUser)
+            {
+                cred["display_name"] = displayname ?? "MIRANDA PUT THE DISLPAY NAME HEEERRE";
+                cred["new_user"] = "";
+            }
+            var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";
+            var client = new HttpClient(
+             new HttpClientHandler
+             {
+                 ClientCertificateOptions = ClientCertificateOption.Automatic
+             });
+
+            string data;
+            var text = JsonConvert.SerializeObject(cred, settings);
+            var response = await client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
+            using (var content = response.Content)
+            {
+                data = await content.ReadAsStringAsync();
+            }
+            bool validCredentials;
+            string serverSessionId;
+            string userID = "";
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(data);
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
+                validCredentials = bool.Parse(dict["valid"]);
+                if (dict.ContainsKey("user_id"))
+                {
+                    userID = dict["user_id"].ToString();
+                    HashedPass = cred["pass"];
+                    UserID = userID;
+                }
+                serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
+                if (!validCredentials && dict.ContainsKey("error_message"))
+                {
+
+                    return new Tuple<bool, string>(false, dict["error_message"]);
+                }
+            }
+            catch (Exception boolParsException)
+            {
+                Debug.WriteLine("error parsing bool and serverSessionId returned from server");
+                validCredentials = false;
+                serverSessionId = null;
+                return new Tuple<bool, string>(false, "error parsing bool and serverSessionId returned from server");
+            }
+            ServerSessionID = serverSessionId;
+            return new Tuple<bool, string>(true, null);
+        }
+
         private async void Login(string username, string password, bool createNewUser, string displayname = null)
         {
             try
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                var cred = new Dictionary<string, string>();
+                var tuple = await AttemptLogin(username, password, displayname, createNewUser);
 
-                //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
-
-
-                cred["user"] = username;
-                cred["pass"] = password;
-                if (createNewUser)
+                if (tuple.Item1)
                 {
-
-                    cred["display_name"] = displayname ?? "MIRANDA PUT THE DISLPAY NAME HEEERRE";
-                    cred["new_user"] = "";
-                }
-                var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";
-                var client = new HttpClient(
-                 new HttpClientHandler
-                 {
-                     ClientCertificateOptions = ClientCertificateOption.Automatic
-                 });
-
-                string data;
-                var text = JsonConvert.SerializeObject(cred, settings);
-                var response = await client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
-                using (var content = response.Content)
-                {
-                    data = await content.ReadAsStringAsync();
-                }
-                bool validCredentials;
-                string serverSessionId;
-                string userID = "";
-                try
-                {
-                    XmlDocument doc = new XmlDocument();
-                    doc.LoadXml(data);
-                    var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
-                    validCredentials = bool.Parse(dict["valid"]);
-                    if (dict.ContainsKey("user_id"))
-                    {
-                        userID = dict["user_id"].ToString();
-                    }
-                    serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
-                    if (!validCredentials && dict.ContainsKey("error_message"))
-                    {
-                        loggedInText.Text = dict["error_message"];
-                        NewUserLoginText.Text = dict["error_message"];
-                        //We stop blocking the login becausethere is an error in logging in
-                        _isLoggingIn = false;
-                    }
-                }
-                catch (Exception boolParsException)
-                {
-                    Debug.WriteLine("error parsing bool and serverSessionId returned from server");
-                    validCredentials = false;
-                    serverSessionId = null;
-                }
-                if (validCredentials)
-                {
-                    ServerSessionID = serverSessionId;
                     try
                     {
                         await SessionController.Instance.NuSysNetworkSession.Init();
-                        SessionController.Instance.LocalUserID = userID;
+                        SessionController.Instance.LocalUserID = UserID;
 
                         loggedInText.Text = "Logged In!";
                         NewUserLoginText.Text = "Logged In!";
@@ -685,8 +697,9 @@ namespace NuSysApp
                         NewUser.Visibility = Visibility.Collapsed;
                         NuSysTitle.Visibility = Visibility.Collapsed;
 
-                        UserName = userID;
-                        if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" && userID.ToLower() != "gfxadmin")
+
+                        if (UserID.ToLower() != "rosemary" && UserID.ToLower() != "rms" &&
+                            UserID.ToLower() != "gfxadmin")
                         {
 
                             foreach (var box in List.Items)
@@ -712,7 +725,8 @@ namespace NuSysApp
                                 }
                                 catch (NullReferenceException e)
                                 {
-                                    Debug.WriteLine(" this shouldn't ever happen.  trent was too lazy to do error hadnling");
+                                    Debug.WriteLine(
+                                        " this shouldn't ever happen.  trent was too lazy to do error hadnling");
                                 }
                             }
 
@@ -727,15 +741,12 @@ namespace NuSysApp
                             _isLoaded = true;
                             if (_loggedIn)
                             {
-                                UITask.Run(delegate {
+                                UITask.Run(delegate
+                                {
                                     JoinWorkspaceButton.IsEnabled = true;
                                     JoinWorkspaceButton.Content = "Enter";
                                     JoinWorkspaceButton.Visibility = Visibility.Visible;
                                 });
-                                if (!File.Exists(LoginCredentialsFilePath))
-                                {
-                                    this.SaveLoginInfo(cred["user"], cred["pass"]);
-                                }
                             }
                         });
                     }
@@ -745,6 +756,14 @@ namespace NuSysApp
                         NewUserLoginText.Text = "Log in failed!";
                         //     throw new Exception("Your account is probably already logged in");
                     }
+                }
+                else
+                {
+                    loggedInText.Text = tuple.Item2;
+                    NewUserLoginText.Text = tuple.Item2;
+                    //We stop blocking the login becausethere is an error in logging in
+                    _isLoggingIn = false;
+
                 }
 
             }
@@ -862,7 +881,7 @@ namespace NuSysApp
             var mycollections = new List<CollectionListBox>();
             foreach (var i in _collectionList)
             {
-                if (i.Creator == UserName)
+                if (i.Creator == UserID)
                 {
                     var listbox = new CollectionListBox(i, this);
                     mycollections.Add(listbox);
@@ -885,7 +904,7 @@ namespace NuSysApp
             var othercollections = new List<CollectionListBox>();
             foreach (var i in _collectionList)
             {
-                if (i.Creator != UserName)
+                if (i.Creator != UserID)
                 {
                     var listbox = new CollectionListBox(i, this);
                     othercollections.Add(listbox);

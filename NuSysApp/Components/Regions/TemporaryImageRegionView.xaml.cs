@@ -132,6 +132,7 @@ namespace NuSysApp
             regionRequestArgs.LibraryElementType = type;
             regionRequestArgs.Title = "Region " + vm.HomeTabViewModel.LibraryElementController.Title; // TODO factor out this hard-coded string to a constant
             regionRequestArgs.ClippingParentLibraryId = vm.HomeTabViewModel.LibraryElementController.LibraryElementModel.LibraryElementId;
+            regionRequestArgs.AccessType = vm.AccessType; 
             if (vm.MetadataToAddUponBeingFullRegion != null)
             {
                 //add the metadata to the creation request

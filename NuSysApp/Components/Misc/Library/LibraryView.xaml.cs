@@ -135,15 +135,20 @@ namespace NuSysApp
 
             // get the fileAddedAclsPopup from the session view
             var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;
+
             // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
             var tempfileIdToAccessMaps = await fileAddedAclsPopup.GetAcls(storageFiles);
 
-            // return is file picker is canceled
-            if (tempfileIdToAccessMaps == null)
+            if (tempfileIdToAccessMaps == null) //if the user canceled the document import
+            {
                 return;
+            }
 
             foreach (var fileAccess in tempfileIdToAccessMaps)
+            {
                 _fileIdToAccessMap.Add(fileAccess.Key, fileAccess.Value);
+            }
+
             // check if the user has canceled the upload
             if (_fileIdToAccessMap == null)
             {
@@ -311,6 +316,7 @@ namespace NuSysApp
                             PdfText = JsonConvert.SerializeObject(pdfTextByPage),
                             PageCount = pdfPageCount
                         };
+                        pdfTextByPage.Clear();
                     }
                     else
                     {
