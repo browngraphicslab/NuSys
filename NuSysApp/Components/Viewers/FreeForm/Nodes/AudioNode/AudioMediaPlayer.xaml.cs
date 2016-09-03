@@ -134,6 +134,8 @@ namespace NuSysApp
                 MediaElement.Stop();
                 Play.Visibility = Visibility.Visible;
                 Pause.Visibility = Visibility.Collapsed;
+                xAudioWrapper.CheckTimeForRegions(xAudioWrapper.AudioStart);
+
             }
         }
 

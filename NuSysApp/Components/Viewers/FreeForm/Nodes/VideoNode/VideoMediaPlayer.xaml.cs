@@ -141,6 +141,9 @@ namespace NuSysApp
             MediaElement.Stop();
             play.Visibility = Visibility.Visible;
             pause.Visibility = Visibility.Collapsed;
+            //Need to make sure to deselect/select all regions in start
+            xAudioWrapper.CheckTimeForRegions(xAudioWrapper.AudioStart);
+
         }
 
         private void XAudioWrapper_OnIntervalChanged(object sender, double start, double end)
