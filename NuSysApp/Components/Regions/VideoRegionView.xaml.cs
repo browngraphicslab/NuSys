@@ -275,7 +275,7 @@ namespace NuSysApp
 
         }
 
-        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private async void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = this.DataContext as VideoRegionViewModel;
             if (vm == null)
@@ -285,7 +285,13 @@ namespace NuSysApp
            
             // delete all the references to this region from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(removeRequest);
+            if (removeRequest.WasSuccessful() == true)
+            {
+                removeRequest.DeleteLocally();
+            }
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
 
         }
 

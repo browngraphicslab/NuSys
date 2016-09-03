@@ -41,7 +41,7 @@
 
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" x:Name="xNameTextBox" Width="{Binding IntervalRegionWidth}"  Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,25,0,0"></TextBox>
-            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" Margin="0,20,0,0" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15"  PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png" Margin="0,45,0,0"></Image>
 
             <Grid.RenderTransform>
                 <CompositeTransform x:Name="xToolBarTransform" TranslateX="{Binding IntervalStart}" TranslateY="{Binding IntervalRegionTranslateY}"/>
