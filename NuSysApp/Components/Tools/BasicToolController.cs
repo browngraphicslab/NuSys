@@ -114,7 +114,7 @@ namespace NuSysApp
             {
                 if(controller != null)
                 {
-                    foreach (KeyValuePair<string, Dictionary<string, int>> kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
+                    foreach (var kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
                     {
                         if (!allMetadata.ContainsKey(kvp.Key))
                         {

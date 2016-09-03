@@ -428,34 +428,46 @@ namespace NusysIntermediate
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY = "shaped_points_key";
 
+                /// <summary>
+                /// The key that will hold the double aspect ratio for a new image library element request.
+                /// This should not be a column title in any database. 
+                /// </summary>
+                public static readonly string NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_ASPECT_RATIO_KEY = "aspect_ratio_image";
+
+                /// <summary>
+                /// The key that will hold the double aspect ratio for a new video library element request.
+                /// The aspect ratio will be width/height.
+                /// </summary>
+                public static readonly string NEW_VIDEO_LIBRARY_ELEMENT_REQUEST_ASPECT_RATIO_KEY = "aspect_ratio_video";
+
         #endregion NewLibraryElementRequest
 
-            #region CreateNewMetadataRequest
+        #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
         public static readonly string CREATE_NEW_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-        /// <summary>
-        /// key in message for sending the metadata key
-        /// </summary>
-        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_KEY_KEY = "key";
+            /// <summary>
+            /// key in message for sending the metadata key
+            /// </summary>
+            public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_KEY_KEY = "key";
 
-        /// <summary>
-        /// key in message for sending the metadata value
-        /// </summary>
-        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_VALUE_KEY = "value";
+            /// <summary>
+            /// key in message for sending the metadata value
+            /// </summary>
+            public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_VALUE_KEY = "value";
 
-        /// <summary>
-        /// key in message for sending the metadata mutability type
-        /// </summary>
-        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_MUTABILITY_KEY = "mutability";
+            /// <summary>
+            /// key in message for sending the metadata mutability type
+            /// </summary>
+            public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_MUTABILITY_KEY = "mutability";
 
-        /// <summary>
-        /// key in message for forwarding the MetadataEntry class to everyone
-        /// </summary>
-        public static readonly string CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY = "metadata_entry";
-        #endregion CreateNewMetadataRequest
+            /// <summary>
+            /// key in message for forwarding the MetadataEntry class to everyone
+            /// </summary>
+            public static readonly string CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY = "metadata_entry";
+            #endregion CreateNewMetadataRequest
 
             #region DeleteMetadataRequest
             /// <summary>
@@ -1322,21 +1334,44 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY = "shape_points";
 
-            #endregion Collection 
+        #endregion Collection 
 
-            #region LinkLibraryElementModel
+            #region Video
 
             /// <summary>
-            /// The key that will hold the LibraryElementId for the IN libary element
+            /// the key used to store the video ratio double in the properties table.
+            /// /// This ratio will be calculated as width/height.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
+            public static readonly string VIDEO_LIBRARY_ELEMENT_MODEL_RATIO_KEY = "video_ratio";
 
-                        /// <summary>
-                        /// The key that will hold the LibraryElementId for the OUT libary element
-                        /// </summary>
-                        public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+            #endregion Video
 
-                    #endregion LinkLibraryElementModel
+            #region Image
+
+            /// <summary>
+            /// the key used to store the image ratio double in the properties table.
+            /// This ratio will be calculated as width/height.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY = "image_ratio";
+
+            #endregion Image
+
+
+        #region LinkLibraryElementModel
+
+        /// <summary>
+        /// The key that will hold the LibraryElementId for the IN libary element
+        /// </summary>
+        public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
+
+                            /// <summary>
+                            /// The key that will hold the LibraryElementId for the OUT libary element
+                            /// </summary>
+                            public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+
+                        #endregion LinkLibraryElementModel
 
             #endregion LibraryElementModel
 

@@ -152,7 +152,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                SessionController.Instance.CaptureCurrentState();
+                throw new Exception("connection to server failed");
             }
         }
 

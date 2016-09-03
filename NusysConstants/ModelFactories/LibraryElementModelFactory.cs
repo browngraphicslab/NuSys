@@ -41,6 +41,12 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Link:
                     model = new LinkLibraryElementModel(id);
                     break;
+                case NusysConstants.ElementType.Video:
+                    model = new VideoLibraryElementModel(id);
+                    break;
+                case NusysConstants.ElementType.Image:
+                    model = new ImageLibraryElementModel(id);
+                    break;
                 default:
                     model = new LibraryElementModel(id, type);
                     break;

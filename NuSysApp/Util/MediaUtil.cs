@@ -155,9 +155,9 @@ public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
             try
             {
                 var idHash = WaitingRoomView.Encrypt(stringToGetColorFrom);
-                long number = Math.Abs(BitConverter.ToInt64(idHash, 0));
+                long number = Math.Abs(BitConverter.ToInt64(idHash, 3));
                 long r1 = BitConverter.ToInt64(idHash, 1);
-                long r2 = BitConverter.ToInt64(idHash, 3); ;
+                long r2 = BitConverter.ToInt64(idHash, 2); 
 
                 var mod = 255;
 

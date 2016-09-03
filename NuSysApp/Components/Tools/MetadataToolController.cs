@@ -99,10 +99,10 @@ namespace NuSysApp
         /// <summary>
         /// Returns the dictionary (from key to dictionary from value to width of bar) to display. 
         /// </summary>
-        public Dictionary<string, Dictionary<string, int>> GetAllMetadata()
+        public Dictionary<string, Dictionary<string, double>> GetAllMetadata()
         {
             var libraryElementControllers = GetUpdatedDataList().Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id));
-            var allMetadata = new Dictionary<string, Dictionary<string, int>>();
+            var allMetadata = new Dictionary<string, Dictionary<string, double>>();
             foreach (var controller in libraryElementControllers)
             {
                 var metadataForSingleController = GetMetadata(controller.LibraryElementModel.LibraryElementId);
@@ -110,7 +110,7 @@ namespace NuSysApp
                 {
                     if (!allMetadata.ContainsKey(kvp.Key))
                     {
-                        allMetadata.Add(kvp.Key, new Dictionary<string, int>());
+                        allMetadata.Add(kvp.Key, new Dictionary<string, double>());
                     }
                     foreach(var metadataValue in kvp.Value)
                     {
