@@ -131,7 +131,7 @@ namespace NuSysApp
             vm.RegionLibraryElementController.SetTitle(vm.Name);
         }
 
-        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private async void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
             if (vm == null)
@@ -142,6 +142,11 @@ namespace NuSysApp
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
             // If the region is deleted, it needs to dispose of its handlers.
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(removeRequest);
+            if (removeRequest.WasSuccessful() == true)
+            {
+                removeRequest.DeleteLocally();
+            }
             vm.Dispose(this, EventArgs.Empty);
 
 
