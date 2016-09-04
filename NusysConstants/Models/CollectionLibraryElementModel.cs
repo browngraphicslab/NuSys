@@ -42,6 +42,13 @@ namespace NusysIntermediate
         }
 
         /// <summary>
+        /// The double aspect ratio of a shaped collection. 
+        /// This should only be used shapepoints is not null and three or more shapepoints exist.
+        /// Should be calculated as width/height.
+        /// </summary>
+        public double AspectRatio { get; set; }
+
+        /// <summary>
         /// this constructor just takes in the id of the library element.
         /// This also instantiates the list of children to be used locally on each client.
         /// </summary>
@@ -66,6 +73,10 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY))
             {
                 ShapePoints = message.GetList<PointModel>(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_ASPECT_RATIO_KEY))
+            {
+                AspectRatio = message.GetDouble(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_ASPECT_RATIO_KEY);
             }
         }
     }

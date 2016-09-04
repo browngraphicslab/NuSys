@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -427,6 +427,11 @@ namespace NusysIntermediate
                 /// the key that will hold the josn-serialized list of point models used to represent the outer bounds of shaped collection
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY = "shaped_points_key";
+
+                /// <summary>
+                /// the key that will hold the double represention this width/height aspect ratio of the shaped colelction.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_ASPECT_RATIO_KEY = "shaped_points_aspect_ratio";
 
                 /// <summary>
                 /// The key that will hold the double aspect ratio for a new image library element request.
@@ -1334,7 +1339,12 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY = "shape_points";
 
-        #endregion Collection 
+            /// <summary>
+            /// this key is used to hold double aspect ratio of this collection.
+            /// </summary>
+            public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_ASPECT_RATIO_KEY = "aspect_ration";
+
+            #endregion Collection 
 
             #region Video
 
