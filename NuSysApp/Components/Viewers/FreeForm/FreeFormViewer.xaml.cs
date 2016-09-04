@@ -312,6 +312,9 @@ namespace NuSysApp
 
                 SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source =
                     new Uri(ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController.Data);
+
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Grid.Width = element.ViewModel.Width;
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Grid.Height = element.ViewModel.Height;
                 SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Visible;
                 return;
             }
@@ -331,7 +334,7 @@ namespace NuSysApp
                     element.ViewModel.Controller.LibraryElementController;
                 SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource =
                     new Uri(ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController.Data);
-                ;
+                
                 SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
                 return;
             }
@@ -490,6 +493,17 @@ namespace NuSysApp
             {
                 SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
+            }
+
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPdfLeft)
+            {
+                var selection = (PdfElementRenderItem) Selections[0];
+                selection.GotoPage(selection.CurrentPage - 1);
+            }
+            if (item == NuSysRenderer.Instance.ElementSelectionRenderItem.BtnPdfRight)
+            {
+                var selection = (PdfElementRenderItem)Selections[0];
+                selection.GotoPage(selection.CurrentPage + 1);
             }
         }
 
@@ -671,7 +685,8 @@ namespace NuSysApp
             // SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Collapsed;
             foreach (var selection in Selections)
             {
-                selection.ViewModel.IsSelected = false;
+                if (selection.ViewModel != null)
+                    selection.ViewModel.IsSelected = false;
             }
             Selections.Clear();
             _latestStroke = null;

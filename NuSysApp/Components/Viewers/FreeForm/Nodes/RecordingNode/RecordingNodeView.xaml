@@ -21,7 +21,7 @@
             <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
         </Button>
         <Border x:Name="xRootBorder" BorderThickness="1" BorderBrush="Black" Width="{Binding Width}" Height="{Binding Height}" 
-              ManipulationDelta="XRootBorder_OnManipulationDelta" ManipulationMode="TranslateX, TranslateY" Grid.Column="1">
+               ManipulationMode="TranslateX, TranslateY" Grid.Column="1">
             <local:MediaRecorderView x:Name="xMediaRecorder"  Width="{Binding Width}" Height="{Binding Height}"/>
          </Border>
     </Grid>

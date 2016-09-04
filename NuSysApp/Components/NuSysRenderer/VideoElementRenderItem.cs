@@ -11,6 +11,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -28,7 +29,8 @@ namespace NuSysApp
         {
             var url = _vm.Controller.LibraryElementController.LargeIconUri;
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, url, ResourceCreator.Dpi);
-            _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
+            var lem = (VideoLibraryElementModel)_vm.Controller.LibraryElementModel;
+            _vm.Controller.SetSize(_bmp.Size.Width * lem.Ratio, _bmp.Size.Height);
         }
 
         public override void Dispose()
@@ -43,7 +45,6 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             base.Draw(ds);
-
             var orgTransform = ds.Transform;
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
             ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);

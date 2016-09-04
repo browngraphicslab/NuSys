@@ -97,7 +97,6 @@ namespace NuSysApp
         private void OnTitleChanged(object source, string title)
         {
             Title = title;
-            RaisePropertyChanged("Title");
         }
 
         protected virtual void OnPositionChanged(object source, double x, double y, double dx, double dy)
@@ -120,7 +119,6 @@ namespace NuSysApp
         {
             Transform.ScaleX = sx;
             Transform.ScaleY = sy;
-            RaisePropertyChanged("Transform");
         }
         protected virtual void OnAlphaChanged(object source, double alpha)
         {
@@ -199,8 +197,6 @@ namespace NuSysApp
             {
                 Tags.Add(tag.Text);
             }
-            
-            RaisePropertyChanged("Tags");
         }
 
     
@@ -298,7 +294,6 @@ namespace NuSysApp
         #endregion
         public virtual void UpdateAnchor()
         {
-            RaisePropertyChanged("Anchor");
         }
 
         public virtual double GetRatio()
@@ -324,7 +319,6 @@ namespace NuSysApp
                 _isSelected = value;
                 if (_controller != null)
                     _controller.Selected(value);
-                RaisePropertyChanged("IsSelected");
             }
         }
 
@@ -334,7 +328,6 @@ namespace NuSysApp
             set
             {
                 _color = value;
-                RaisePropertyChanged("Color");
             }
         }
 
@@ -354,7 +347,6 @@ namespace NuSysApp
                     return;
                 }
                 _transform = value;
-                RaisePropertyChanged("Transform");
             }
         }
         
@@ -399,7 +391,6 @@ namespace NuSysApp
             set
             {
                 _alpha = value;
-                RaisePropertyChanged("Alpha");
             }
         }
 
@@ -413,7 +404,6 @@ namespace NuSysApp
                     return;
                 }
                 _isVisible = value;
-                RaisePropertyChanged("IsVisible");
             }
         }
         public string Title { get; set; }
@@ -436,21 +426,6 @@ namespace NuSysApp
                 }
 
                 _isEditing = value;
-                RaisePropertyChanged("IsEditing");
-            }
-        }
-
-        public bool IsEditingInk
-        {
-            get { return _isEditingInk; }
-            set
-            {
-                if (_isEditingInk == value)
-                {
-                    return;
-                }
-                _isEditingInk = value;
-                RaisePropertyChanged("IsEditingInk");
             }
         }
 
@@ -464,15 +439,6 @@ namespace NuSysApp
             get { return ((ElementModel) Model).LibraryId; }
         }
 
-        public CompositeTransform InkScale
-        {
-            get { return _inkScale; }
-            set
-            {
-                _inkScale = value;
-                RaisePropertyChanged("InkScale");
-            }
-        }
 
         /// <summary>
         /// returns the reference points to be used in multiselect. the four corners of the node are used. 

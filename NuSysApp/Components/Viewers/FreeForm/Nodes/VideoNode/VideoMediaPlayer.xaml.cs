@@ -22,6 +22,8 @@ namespace NuSysApp
 {
     public sealed partial class VideoMediaPlayer : UserControl
     {
+
+        public Grid Grid => xGrid;
         public VideoMediaPlayer()
         {
             this.InitializeComponent();
@@ -85,7 +87,6 @@ namespace NuSysApp
 
             if (this.DataContext is VideoNodeViewModel)
             {
-                return;
                 var vm = this.DataContext as VideoNodeViewModel;
                 var model = vm.Model as VideoNodeModel;
                 model.ResolutionX = MediaElement.AspectRatioWidth;

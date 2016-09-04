@@ -113,10 +113,11 @@ namespace NuSysApp
         public override void Update()
         {
             base.Update();
-            _tagRenderItem.Update();
+            if (_tagRenderItem != null)
+                _tagRenderItem.Update();
 
 
-            if (!_needsTitleUpdate)
+            if (!_needsTitleUpdate && _vm != null)
                 return;
 
             _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, _format, 200, 0.0f);

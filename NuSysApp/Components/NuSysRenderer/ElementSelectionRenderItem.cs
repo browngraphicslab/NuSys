@@ -26,8 +26,12 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnOptions;
+        public PdfPageButtonRenderItem BtnPdfLeft;
+        public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
-        public List<NodeMenuButtonRenderItem> Buttons = new List<NodeMenuButtonRenderItem>(); 
+        public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
+        private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
+        private bool _isSinglePdfSelected;
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
@@ -36,7 +40,11 @@ namespace NuSysApp
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
 
-            Buttons = new List<NodeMenuButtonRenderItem> {BtnDelete, BtnOptions, BtnGroup, BtnPresent };
+            BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
+            BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
+
+            Buttons = new List<BaseRenderItem> {BtnDelete, BtnOptions, BtnGroup, BtnPresent, BtnPdfLeft, BtnPdfRight };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnOptions, BtnGroup, BtnPresent };
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
@@ -78,6 +86,8 @@ namespace NuSysApp
                     item.ViewModel.Controller.SizeChanged += OnSelectedItemSizeChanged;
                 }
             }
+
+            _isSinglePdfSelected = _selectedItems.Count == 1 && _selectedItems[0] is PdfElementRenderItem;
 
 
             IsDirty = true;
@@ -149,17 +159,28 @@ namespace NuSysApp
 
             Resizer.Draw(ds);
 
-            for (int index = 0; index < Buttons.Count; index++)
+            float leftOffset = 0;
+
+            var menuEnd = _screenRect.Y + 20 + (_menuButtons.Count-1)* 35 + 30;
+            var rectCenterY = (_screenRect.Y + _screenRect.Height/2);
+            var delta = Math.Max(0, menuEnd - rectCenterY);
+            leftOffset = (float)Math.Max(-80, Math.Min(-40 - delta, -40));
+
+            for (int index = 0; index < _menuButtons.Count; index++)
             {
-                var btn = Buttons[index];
-                btn.IsVisible = true;
-                if (!btn.IsVisible)
-                    continue;
-                btn.T = Matrix3x2.CreateTranslation((float)_screenRect.X - 40, (float)_screenRect.Y + 40 + index * 35);
+                var btn = _menuButtons[index];
+                btn.T = Matrix3x2.CreateTranslation((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + index * 35);
                 btn.Draw(ds);
             }
 
-            ds.Transform = old;
+
+            if (_isSinglePdfSelected) { 
+                ds.Transform = Matrix3x2.CreateTranslation((float)_screenRect.X, (float)(_screenRect.Y+ _screenRect.Height/2));
+                BtnPdfLeft.Draw(ds);
+                ds.Transform = Matrix3x2.CreateTranslation((float)(_screenRect.X + _screenRect.Width), (float) (_screenRect.Y + _screenRect.Height/2));
+                BtnPdfRight.Draw(ds);
+                ds.Transform = old;
+            }
         }
 
         private Rect GetBoundingRect(List<Rect> rects )

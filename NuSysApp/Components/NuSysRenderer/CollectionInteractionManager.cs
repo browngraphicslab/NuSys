@@ -465,7 +465,7 @@ namespace NuSysApp
         {
             var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
-            if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem)
+            if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
                 return;
 
             var elementRenderItem = element as ElementRenderItem;

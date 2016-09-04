@@ -86,6 +86,9 @@ namespace NusysIntermediate
                     case NusysConstants.ElementType.Link:
                         model = JsonConvert.DeserializeObject<LinkLibraryElementModel>(libraryElementJSON);
                         break;
+                    case NusysConstants.ElementType.Video:
+                        model = JsonConvert.DeserializeObject<VideoLibraryElementModel>(libraryElementJSON);
+                        break;
                 }
                 //VERY IMPORTANT
                 //TODO put debug.Asserts below all these to check states

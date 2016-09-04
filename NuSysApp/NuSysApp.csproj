@@ -334,6 +334,7 @@
     <Compile Include="Components\NuSysRenderer\NodeResizerRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\NuSysRenderer.cs" />
     <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\PdfPageButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ShapedCollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TagRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TempLinkRenderItem.cs" />

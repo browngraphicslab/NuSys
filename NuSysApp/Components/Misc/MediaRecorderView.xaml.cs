@@ -170,17 +170,19 @@ namespace NuSysApp
         {
             var vm = (RecordingNodeViewModel) DataContext;
 
-            // instantiate the common variables for createNewLibraryElementRequestArgs
-            var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs();
-            createNewLibraryElementRequestArgs.ContentId = SessionController.Instance.GenerateId();
-            // generated because we want to add this element to the collection using this later
-            createNewLibraryElementRequestArgs.LibraryElementId = SessionController.Instance.GenerateId();
+
+            CreateNewLibraryElementRequestArgs args;
             var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
             // instantiate the variables for createNewLibraryElementRequestArgs that depend on the type
             string fileExtension;
             switch (type)
             {
                 case NusysConstants.ElementType.Audio:
+                    // instantiate the common variables for createNewLibraryElementRequestArgs
+                    var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs();
+                    createNewLibraryElementRequestArgs.ContentId = SessionController.Instance.GenerateId();
+                    // generated because we want to add this element to the collection using this later
+                    createNewLibraryElementRequestArgs.LibraryElementId = SessionController.Instance.GenerateId();
                     createNewLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Audio;
                     createNewLibraryElementRequestArgs.Title = "Audio Recording";
                     fileExtension = Constants.RecordingNodeAudioFileType;
@@ -190,12 +192,18 @@ namespace NuSysApp
                     createNewLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
                     createNewLibraryElementRequestArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
                     createNewLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+                    args = createNewLibraryElementRequestArgs;
 
 
                     break;
                 case NusysConstants.ElementType.Video:
-                    createNewLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Video;
-                    createNewLibraryElementRequestArgs.Title = "Video Recording";
+                    // instantiate the common variables for createNewLibraryElementRequestArgs
+                    var createNewVideoLibraryElementRequestArgs = new CreateNewVideoLibraryElementRequestArgs();
+                    createNewVideoLibraryElementRequestArgs.ContentId = SessionController.Instance.GenerateId();
+                    // generated because we want to add this element to the collection using this later
+                    createNewVideoLibraryElementRequestArgs.LibraryElementId = SessionController.Instance.GenerateId();
+                    createNewVideoLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Video;
+                    createNewVideoLibraryElementRequestArgs.Title = "Video Recording";
                     fileExtension = Constants.RecordingNodeVideoFileType;
 
                     //TODO: make thumbnail for video
@@ -206,12 +214,17 @@ namespace NuSysApp
                     await Windows.Storage.FileIO.WriteBytesAsync(storageFile, data);
                     //Create thumbnails and set as args
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
-                    createNewLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
-                    createNewLibraryElementRequestArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
-                    createNewLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+                    createNewVideoLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+                    createNewVideoLibraryElementRequestArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+                    createNewVideoLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+
+                    // set the aspect ratio to the one of QVGA
+                    createNewVideoLibraryElementRequestArgs.AspectRatio = 1;
 
                     // delete the video file that we saved
                     await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
+                    args = createNewVideoLibraryElementRequestArgs;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Recording nodes do not support the given type yet");
@@ -220,7 +233,7 @@ namespace NuSysApp
             // create a new content request args because the recording node creates a new instance of content
 
             var createNewContentRequestArgs = new CreateNewContentRequestArgs();
-            createNewContentRequestArgs.LibraryElementArgs = createNewLibraryElementRequestArgs;
+            createNewContentRequestArgs.LibraryElementArgs = args;
             createNewContentRequestArgs.DataBytes = Convert.ToBase64String(data);
             createNewContentRequestArgs.FileExtension = fileExtension;
 
@@ -235,7 +248,7 @@ namespace NuSysApp
             // try to get the library element controller from the library element id we assigned to it in the createNewLibraryElementRequestArgs
             var libraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(
-                    createNewLibraryElementRequestArgs.LibraryElementId);
+                    args.LibraryElementId);
 
             // if the libraryElementController exists then add it to the workspace at the view models position
             if (libraryElementController != null)

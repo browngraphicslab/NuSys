@@ -156,6 +156,7 @@ namespace NuSysApp
                     if (trail.Model.InElementId == soughtChild.Id ||
                         trail.Model.OutElementId == soughtChild.Id)
                     {
+                        trail.DeletePresentationLink();
                         Trails.Remove(trail);
                     }
                 }
