@@ -32,6 +32,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             DataContext = vm;
+            SizeChanged += OnSizeChanged;
 
             //Show/hide region buttons need access to the audiowrapper for event handlers
             xShowHideRegionButtons.Wrapper = VideoMediaPlayer.AudioWrapper;
@@ -54,6 +55,15 @@ namespace NuSysApp
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed; 
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        {
+            var vm = SessionController.Instance.SessionView.DetailViewerView.DataContext as DetailViewerViewModel;
+            var vlem = (vm.CurrentElementController.LibraryElementModel as VideoLibraryElementModel);
+            VideoMediaPlayer.Grid.Width = sizeChangedEventArgs.NewSize.Width;
+            VideoMediaPlayer.Grid.Height = sizeChangedEventArgs.NewSize.Width/vlem.Ratio;
+            VideoMediaPlayer.SetVideoSize(sizeChangedEventArgs.NewSize.Width, sizeChangedEventArgs.NewSize.Width / vlem.Ratio);
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)

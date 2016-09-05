@@ -34,12 +34,13 @@ namespace NuSysApp
         protected override void OnSizeChanged(object source, double width, double height)
         {
             var ratio = (Controller.LibraryElementModel as VideoLibraryElementModel).Ratio;
-            if (width * ratio < Constants.MinNodeSize)
+            if (height * ratio < Constants.MinNodeSize)
             {
                 return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour
             }
 
-            SetSize(width, width * ratio);
+            SetSize(height*ratio, height);
+            SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.SetVideoSize(Width, Height);
         }
     }
 }

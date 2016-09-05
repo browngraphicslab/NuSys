@@ -99,8 +99,6 @@ namespace NuSysApp
 
                 };
 
-            xWorkspaceTitle.IsActivated = true;
-
             Loaded += OnLoaded;
 
             MainCanvas.SizeChanged += Resize;
@@ -133,7 +131,6 @@ namespace NuSysApp
             // toggle visibility and activity of some ui elements
             xFloatingMenu.Visibility = Visibility.Collapsed;
             xReadonlyFloatingMenu.Visibility = Visibility.Visible;
-            xWorkspaceTitle.IsEnabled = false;
             xCurrentCollectionDVButton.IsEnabled = false;
 
             // only let the user pan and zoom initially
@@ -150,7 +147,6 @@ namespace NuSysApp
             // toggle visibility of some ui elements
             xFloatingMenu.Visibility = Visibility.Visible;
             xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
-            xWorkspaceTitle.IsEnabled = true;
             xCurrentCollectionDVButton.IsEnabled = true;
 
             // give the user more control
@@ -680,57 +676,29 @@ namespace NuSysApp
         public async Task OpenCollection(ElementCollectionController collectionController)
         {
             await DisposeCollectionView(_activeFreeFormViewer);
-            if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
-            {
-                mainCanvas.Children.Remove(_activeFreeFormViewer);
-                SessionController.Instance.OnModeChanged -= _activeFreeFormViewer.ChangeMode;
+
+            if (_activeFreeFormViewer == null) {
+                _activeFreeFormViewer = new FreeFormViewer();
+                _activeFreeFormViewer.Width = ActualWidth;
+                _activeFreeFormViewer.Height = ActualHeight;
+                mainCanvas.Children.Insert(0, _activeFreeFormViewer);
             }
-
-
+            //      var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
-            // Add the adornment if this collection has a shape
-            /*
-            if (freeFormViewerViewModel.Model.ShapePoints != null)
-            {
-                freeFormViewerViewModel.AtomViewList.Add(
-                   new AdornmentView(freeFormViewerViewModel.Model.ShapePoints));
-            }
-            */
-
-
-            _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
-            SessionController.Instance.OnModeChanged += _activeFreeFormViewer.ChangeMode;
-
-            _activeFreeFormViewer.Width = ActualWidth;
-            _activeFreeFormViewer.Height = ActualHeight;
-            mainCanvas.Children.Insert(0, _activeFreeFormViewer);
-
-            _activeFreeFormViewer.DataContext = freeFormViewerViewModel;
-
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
+            _activeFreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
+            
+
             SessionController.Instance.SessionView = this;
-
-            if (collectionController?.LibraryElementModel?.Title != null)
-            {
-                xWorkspaceTitle?.SetText(collectionController.LibraryElementModel.Title);
-            }
-
-            xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
-            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
-
-            xWorkspaceTitle.TextChanged += UpdateTitle;
-            xWorkspaceTitle.DropCompleted += UpdateTitle;
-
-            freeFormViewerViewModel.Controller.LibraryElementController.TitleChanged += TitleChanged;
 
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
         private void Resize(object sender, SizeChangedEventArgs e)
         {
-            Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
+            Users.Height = 50;
             Canvas.SetLeft(Users, 5);
-            Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
+            Canvas.SetTop(Users, 50);
             Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
             Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
@@ -742,24 +710,7 @@ namespace NuSysApp
             //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
             //Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
         }
-        private void UpdateTitle(object sender, object args)
-        {
-            var model = ((FreeFormViewerViewModel)_activeFreeFormViewer.DataContext).Model;
-            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.TitleChanged -= TitleChanged;
-            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.SetTitle(xWorkspaceTitle.Text);
-            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.TitleChanged += TitleChanged;
-            xWorkspaceTitle.TextChanged += TitleChanged;
-            model.Title = xWorkspaceTitle.Text;
-            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
-        }
 
-        private void TitleChanged(object source, string title)
-        {
-            if (xWorkspaceTitle.Text != title)
-            {
-                xWorkspaceTitle.SetText(title);
-            }
-        }
 
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
@@ -842,22 +793,6 @@ namespace NuSysApp
             get { return xDetailViewer; }
         }
 
-        private async void OnRecordClick(object sender, RoutedEventArgs e)
-        {
-            var session = SessionController.Instance;
-            if (!session.IsRecording)
-            {
-                await session.TranscribeVoice();
-
-                //var vm = (WorkspaceViewModel)DataContext;
-                //((TextNodeModel)vm.Model).Text = session.SpeechString;
-                xWorkspaceTitle.Text = session.SpeechString;
-            }
-            else
-            {
-                //var vm = this.DataContext as WorkspaceViewModel;
-            }
-        }
 
         private async Task DisposeCollectionView(FreeFormViewer oldFreeFormViewer)
         {

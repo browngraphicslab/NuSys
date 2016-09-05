@@ -51,13 +51,13 @@ namespace NuSysApp
             _vm = null;
             _builder = null;
             _currentInkStroke = null;
-            _currentStroke.Clear();
+            _currentStroke?.Clear();
             _currentStroke = null;
-            _dryStrokesTarget.Dispose();;
+            _dryStrokesTarget?.Dispose();;
             _dryStrokesTarget = null;
             _inkManager = null;
             LatestStroke = null;
-            _strokesToDraw.Clear();
+            _strokesToDraw?.Clear();
             _strokesToDraw = null;
             _lock = null;
             base.Dispose();

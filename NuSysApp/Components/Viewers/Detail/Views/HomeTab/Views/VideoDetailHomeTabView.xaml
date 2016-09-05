@@ -34,7 +34,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <CaptureElement x:Name="preview"/>
-                <Grid>
+                <Grid Background="Aqua">
                     <local:VideoMediaPlayer x:Name="VideoMediaPlayer"></local:VideoMediaPlayer>
                 </Grid>
                 <GridView Visibility="Collapsed" x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />

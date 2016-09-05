@@ -219,7 +219,7 @@ namespace NuSysApp
                     createNewVideoLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
 
                     // set the aspect ratio to the one of QVGA
-                    createNewVideoLibraryElementRequestArgs.AspectRatio = 1;
+                    createNewVideoLibraryElementRequestArgs.AspectRatio = 320.0/240.0;
 
                     // delete the video file that we saved
                     await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
@@ -255,7 +255,7 @@ namespace NuSysApp
             {
                 UITask.Run(() =>
                 {
-                    libraryElementController.AddElementAtPosition(vm.X, vm.Y);
+                    libraryElementController.AddElementAtPosition(vm.X, vm.Y, null, 200 * 320.0 / 240.0, 200.0);
                 });
             }
 

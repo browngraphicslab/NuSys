@@ -159,12 +159,13 @@ namespace NuSysApp
 
             Resizer.Draw(ds);
 
-            float leftOffset = 0;
-
-            var menuEnd = _screenRect.Y + 20 + (_menuButtons.Count-1)* 35 + 30;
-            var rectCenterY = (_screenRect.Y + _screenRect.Height/2);
-            var delta = Math.Max(0, menuEnd - rectCenterY);
-            leftOffset = (float)Math.Max(-80, Math.Min(-40 - delta, -40));
+            float leftOffset = -40;
+            if (_isSinglePdfSelected) { 
+                var menuEnd = _screenRect.Y + 20 + (_menuButtons.Count-1)* 35 + 30;
+                var rectCenterY = (_screenRect.Y + _screenRect.Height/2);
+                var delta = Math.Max(0, menuEnd - rectCenterY);
+                leftOffset = (float)Math.Max(-80, Math.Min(-40 - delta, -40));
+            }
 
             for (int index = 0; index < _menuButtons.Count; index++)
             {

@@ -215,7 +215,9 @@ namespace NuSysApp
                         }
                     }
 
+                    SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser -= NewNetworkUser;
                     SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+                    SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped -= DropNetworkUser;
                     SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
 
                     foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)

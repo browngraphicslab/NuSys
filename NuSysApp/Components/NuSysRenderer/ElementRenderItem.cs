@@ -120,7 +120,8 @@ namespace NuSysApp
             if (!_needsTitleUpdate && _vm != null)
                 return;
 
-            _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, _format, 200, 0.0f);
+            if (_vm != null)
+                _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, _format, 200, 0.0f);
             _needsTitleUpdate = false;
         }
 
@@ -164,6 +165,12 @@ namespace NuSysApp
                 Height = spr.Y- titlePos.Y + tagsMeasurement.Height + 10
             };
             return rect;
+        }
+
+        public Vector2 GetCenterOnScreen()
+        {
+            var bb = GetScreenBoundingRect();
+            return new Vector2((float)(bb.X + bb.Width/2), (float)(bb.Y + bb.Height/2));
         }
 
         public override BaseRenderItem HitTest(Vector2 point)

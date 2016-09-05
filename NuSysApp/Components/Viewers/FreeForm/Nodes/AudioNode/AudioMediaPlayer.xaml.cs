@@ -40,7 +40,26 @@ namespace NuSysApp
             xAudioWrapper.OnRegionSeeked += onSeekedTo;
             xAudioWrapper.OnIntervalChanged += XAudioWrapper_OnIntervalChanged;
             DataContextChanged += AudioMediaPlayer_DataContextChanged;
+            
+        }
 
+        public void SetAudioSize(double width, double height)
+        {
+            Grid.Width = width;
+            Grid.Height = height;
+
+            ProgressBar.Height = height;
+            
+
+            foreach (var item in AudioWrapper.RegionCanvas.Items)
+            {
+                var region = (item as AudioRegionView);
+
+                region.Area.Height = height;
+                region.RegionBound1.Y2 = height;
+                region.RegionBound2.Y2= height;
+            }
+            
         }
 
 
@@ -116,7 +135,8 @@ namespace NuSysApp
             MediaElement.Markers.Clear();
             //Start and end must be preserved
        //     MediaElement.Markers.Add(StartMarker);
-            MediaElement.Markers.Add(EndMarker);
+            //MediaElement.Markers.Add(EndMarker);
+            //MediaElement.Markers.Add(EndMarker);
             
             foreach (var normalizedTimelineMarkerTime in regionMarkers)
             {
@@ -160,7 +180,7 @@ namespace NuSysApp
         }
 
 
-        private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
+        private async void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
 
             positionBinding = new Binding();
@@ -186,7 +206,7 @@ namespace NuSysApp
                // DataContext = SessionController.Instance.SessionView.FreeFormViewer.ActiveAudioRenderItem.ViewModel;
               //  xAudioWrapper.Controller = NuSysRenderer.Instance.ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController;
             }
-            xAudioWrapper.ProcessLibraryElementController();
+            await xAudioWrapper.ProcessLibraryElementController();
 
             //After updating audiowrapper, set position dyanmically:
             double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
@@ -218,7 +238,14 @@ namespace NuSysApp
             var timeSpan = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
             xRightTimeStampTextBlock.Text = (string)converter.Convert(timeSpan, null, null, null); // this looks weird cause its a xaml converter 
 
+            foreach (var item in AudioWrapper.RegionCanvas.Items)
+            {
+                var region = (item as AudioRegionView);
 
+                region.Area.Height = ProgressBar.Height;
+                region.RegionBound1.Y2 = ProgressBar.Height;
+                region.RegionBound2.Y2 = ProgressBar.Height;
+            }
         }
 
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -342,7 +369,8 @@ namespace NuSysApp
             var rect = new Rect(0, 0,this.ActualWidth,this.ActualHeight);
             var rectangleGeometry = new RectangleGeometry();
             rectangleGeometry.Rect = rect;
-            this.Clip = rectangleGeometry;
+            this.Clip = null;
+           
         }
 
 

@@ -38,19 +38,7 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 
-        public override void SetSize(double width, double height)
-        {
-            var model = Model as AudioNodeModel;
-            if (height < 200)
-            {
-                height = 200;
-            }
-            if (width < 150)
-            {
-                width = 150;
-            }
-            base.SetSize(width, height);
-        }
+   
 
         public override async Task Init()
         {
@@ -58,6 +46,12 @@ namespace NuSysApp
             {
                 await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
+        }
+
+        protected override void OnSizeChanged(object source, double width, double height)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.SetAudioSize(width, height);
+            base.OnSizeChanged(source, width, height);
         }
     }
 }

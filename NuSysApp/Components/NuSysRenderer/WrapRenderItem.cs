@@ -42,8 +42,10 @@ namespace NuSysApp
                 ds.Transform = Matrix3x2.CreateTranslation((float) lineX, (float) lineY)*GetTransform()*orgTransform;
                 baseRenderItem.Draw(ds);
 
-                if (index >= Items.Count - 2)
+                if (index >= Items.Count - 1)
+                {
                     continue;
+                }
 
                 var nextMeasure = items[index + 1].GetMeasure();
 

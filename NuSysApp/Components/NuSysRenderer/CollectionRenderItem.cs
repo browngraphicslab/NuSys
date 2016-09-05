@@ -32,7 +32,6 @@ namespace NuSysApp
         protected List<BaseRenderItem> _renderItems3 = new List<BaseRenderItem>();
 
         public InkRenderItem InkRenderItem { get; set; }
-        public CollectionInteractionManager InteractionManager;
         public ElementCollectionViewModel ViewModel;
 
         public Transformable Camera { get; set; } = new Transformable();
@@ -64,6 +63,27 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            var collectionController = (ElementCollectionController)ViewModel.Controller;
+            collectionController.CameraPositionChanged -= OnCameraPositionChanged;
+            collectionController.CameraCenterChanged -= OnCameraCenterChanged;
+
+            ViewModel.Elements.CollectionChanged -= OnElementsChanged;
+            ViewModel.Links.CollectionChanged -= OnElementsChanged;
+            ViewModel.Trails.CollectionChanged -= OnElementsChanged;
+            ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
+
+            foreach (var item in _renderItems0.ToArray())
+                item.Dispose();
+
+            foreach (var item in _renderItems1.ToArray())
+                item.Dispose();
+
+            foreach (var item in _renderItems2.ToArray())
+                item.Dispose();
+
+            foreach (var item in _renderItems3.ToArray())
+                item.Dispose();
+
             _renderItems0.Clear();
             _renderItems0 = null;
             _renderItems1.Clear();
@@ -75,9 +95,6 @@ namespace NuSysApp
 
             InkRenderItem.Dispose();
             InkRenderItem = null;
-
-            InteractionManager.Dispose();
-            InteractionManager = null;
 
             ViewModel.Dispose();
             ViewModel = null;

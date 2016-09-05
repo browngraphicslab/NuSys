@@ -36,7 +36,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _shape.Dispose();
+            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+            _shape?.Dispose();
             _shape = null;
             _vm = null;
             _strokeStyle = null;

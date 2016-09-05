@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Input.Inking;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
@@ -16,6 +17,7 @@ using Windows.Devices.Input;
 using Windows.UI;
 using GeoAPI.Geometries;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
@@ -55,51 +57,109 @@ namespace NuSysApp
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
 
+        private MinimapRenderItem _minimap;
+
         private Matrix3x2 _transform = Matrix3x2.Identity;
         public bool ToolsAreBeingInteractedWith { get; set; }
         private bool _inkPressed;
+        private bool _renderCanvasInitialized;
+        private bool _minimapInitialized;
 
 
-        public FreeFormViewer(FreeFormViewerViewModel vm)
+        public FreeFormViewer()
         {
             this.InitializeComponent();
-            vm.Controller.Disposed += ControllerOnDisposed;
-            _vm = vm;
+
+            SizeChanged += OnSizeChanged;
+
+            xMinimapCanvas.Width = 300;
+            xMinimapCanvas.Height = 300;
+            xMinimapCanvas.CreateResources+=
+                delegate(CanvasControl sender, CanvasCreateResourcesEventArgs args)
+                {
+                    _minimapInitialized = true;
+                    TryInitialize();
+                };
 
             xRenderCanvas.CreateResources += async delegate
             {
-                InitialCollection = new ShapedCollectionRenderItem(vm, null, xRenderCanvas, true);
-                await NuSysRenderer.Instance.Init(xRenderCanvas, InitialCollection);
-                vm.X = 0;
-                vm.Y = 0;
-                vm.Width = xRenderCanvas.Width;
-                vm.Height = xRenderCanvas.Height;
+                _renderCanvasInitialized = true;
+                TryInitialize();
+            };
+        }
 
+        public void ActivateUndo(IUndoable action, Point2d location)
+        {
+            xUndoButton.MoveTo(location);
+            xUndoButton.Activate(action);
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        {
+            Canvas.SetLeft(xMinimapCanvas, sizeChangedEventArgs.NewSize.Width-xMinimapCanvas.Width);
+            Canvas.SetTop(xMinimapCanvas, sizeChangedEventArgs.NewSize.Height- xMinimapCanvas.Height);
+        }
+
+        public void LoadInitialCollection(FreeFormViewerViewModel vm)
+        {
+
+            if (_vm != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+                vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
+            } 
+            InitialCollection?.Dispose();
+            _canvasInteractionManager?.Dispose();
+            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.Elements.CollectionChanged += ElementsOnCollectionChanged;
+            _vm = vm;
+            DataContext = _vm;
+
+            TryInitialize();
+           
+        }
+
+        private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            _minimap?.Invalidate();
+        }
+
+        private async void TryInitialize()
+        {
+            if (!(_renderCanvasInitialized && _minimapInitialized))
+                return;
+
+            NuSysRenderer.Instance.Stop();
+            InitialCollection = new ShapedCollectionRenderItem(_vm, null, xRenderCanvas, true);
+            await NuSysRenderer.Instance.Init(xRenderCanvas, InitialCollection);
+            _vm.X = 0;
+            _vm.Y = 0;
+            _vm.Width = xRenderCanvas.Width;
+            _vm.Height = xRenderCanvas.Height;
+
+            if (_canvasInteractionManager == null)
                 _canvasInteractionManager = new CanvasInteractionManager(SessionController.Instance.SessionView.MainCanvas);
 
-                SwitchCollection(InitialCollection);
+            SwitchCollection(InitialCollection);
 
-                if (vm.Controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
+            /*
+            if (_vm.Controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
+            {
+                if (_vm.Controller.LibraryElementModel.Creator != SessionController.Instance.LocalUserID)
                 {
-                    if (vm.Controller.LibraryElementModel.Creator != SessionController.Instance.LocalUserID)
-                    {
-                        SwitchMode(Options.PanZoomOnly);
-                    }
-
-                }
-                else
-                {
-                    SwitchMode(Options.SelectNode);
+                    SwitchMode(Options.PanZoomOnly);
                 }
 
-                var colElementModel = vm.Controller.Model as CollectionElementModel;
-                if (
-                    (SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId) as
-                        CollectionLibraryElementModel).IsFinite)
-                {
-                    LimitManipulation();
-                }
-            };
+            }
+            else
+            {
+                SwitchMode(Options.SelectNode);
+            }
+
+             */
+
+
+            _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
 
@@ -172,6 +232,8 @@ namespace NuSysApp
                 _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
                 _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
+
+                _minimap?.SwitchCollection(collection);
             }
         }
 
@@ -233,6 +295,8 @@ namespace NuSysApp
                     }
                 }
             }
+
+            _minimap.Invalidate();
         }
 
         private async void CollectionInteractionManagerOnTrailCreated(ElementRenderItem element1,
@@ -313,8 +377,8 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source =
                     new Uri(ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController.Data);
 
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Grid.Width = element.ViewModel.Width;
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Grid.Height = element.ViewModel.Height;
+                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.SetVideoSize(element.ViewModel.Width, element.ViewModel.Height);
+
                 SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Visible;
                 return;
             }
@@ -330,11 +394,11 @@ namespace NuSysApp
                 ct.TranslateY = t.M32;
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
-                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioWrapper.Controller =
-                    element.ViewModel.Controller.LibraryElementController;
-                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource =
-                    new Uri(ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController.Data);
-                
+               
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioWrapper.Controller = element.ViewModel.Controller.LibraryElementController;
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource = new Uri(ActiveAudioRenderItem.ViewModel.Controller.LibraryElementController.Data);
+                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.SetAudioSize(element.ViewModel.Width, element.ViewModel.Height);
+
                 SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
                 return;
             }
@@ -350,6 +414,8 @@ namespace NuSysApp
                 var nh = elem.ViewModel.Height + delta.Y/(_transform.M22*collection.S.M22*collection.Camera.S.M22);
                 item.ViewModel.Controller.SetSize(nw, nh);
             }
+
+            _minimap.Invalidate();
         }
 
         private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
@@ -480,6 +546,12 @@ namespace NuSysApp
                     if (elementRenderItem is AudioElementRenderItem || elementRenderItem is VideoElementRenderItem)
                         xMultimediaCanvas.Visibility = Visibility.Collapsed;
 
+                    var removeElementAction = new DeleteElementAction(elementRenderItem.ViewModel.Controller);
+
+                    //Creates an undo button and places it in the correct position.
+                    var screenCenter = elementRenderItem.GetCenterOnScreen();
+                    ActivateUndo(removeElementAction, new Point2d(screenCenter.X - xUndoButton.ActualWidth/2, screenCenter.Y - xUndoButton.ActualHeight / 2));
+
                     elementRenderItem.ViewModel.Controller?.RequestDelete();
                 }
                 ClearSelections();
@@ -518,6 +590,8 @@ namespace NuSysApp
 
             foreach (var renderItem in CurrentCollection.GetRenderItems().OfType<ElementRenderItem>())
             {
+                if (renderItem is PseudoElementRenderItem)
+                    continue;
                 var vm = renderItem.ViewModel;
                 var anchor = new NetTopologySuite.Geometries.Point(vm.Anchor.X, vm.Anchor.Y);
                 if (ch.Contains(anchor))
@@ -552,12 +626,21 @@ namespace NuSysApp
             }
 
             var targetPoint = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
-            var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f,
-                targetPoint.Y - (float) element.ViewModel.Height/2f);
-            await
-                element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X,
-                    target.Y);
+            var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f, targetPoint.Y - (float) element.ViewModel.Height/2f);
+            var elementId = element.ViewModel.Id;
+            var parentCollectionId = element.ViewModel.Controller.GetParentCollectionId();
+            await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
 
+            var oldLocationScreen = new Point2d(pointer.StartPoint.X, pointer.StartPoint.Y);
+            var oldLocationCollectionV = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(pointer.StartPoint, collection);
+            var oldLocationCollection = new Point2d(oldLocationCollectionV.X, oldLocationCollectionV.Y);
+            var newLocation = new Point2d(target.X, target.Y);
+            var action = new MoveToCollectionAction(elementId, parentCollectionId, collection.ViewModel.Model.LibraryId, oldLocationCollection, newLocation);
+            
+            ActivateUndo(action, oldLocationScreen);
+
+
+            _minimap.Invalidate();
         }
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
@@ -614,6 +697,7 @@ namespace NuSysApp
                 }
             }
 
+            _minimap.Invalidate();
             UpdateMediaPlayer();
         }
 
@@ -632,6 +716,7 @@ namespace NuSysApp
             CurrentCollection.InkRenderItem.UpdateDryInkTransform();
 
             UpdateNonWin2dElements();
+            _minimap.Invalidate();
         }
 
         private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
@@ -641,12 +726,15 @@ namespace NuSysApp
             PanZoom2(CurrentCollection.Camera, _transform, point, delta.X/_transform.M11, delta.Y/_transform.M11, 1);
             CurrentCollection.InkRenderItem.UpdateDryInkTransform();
             UpdateNonWin2dElements();
+            _minimap.Invalidate();
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()
         {
             if (!_inkPressed)
                 ClearSelections();
+
+            _minimap.Invalidate();
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -676,8 +764,7 @@ namespace NuSysApp
         {
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
-            var elementSelectionRenderItem = NuSysRenderer.Instance.ElementSelectionRenderItem;
-            //multiMenu.Show(elementSelectionRenderItem._screenRect.X, elementSelectionRenderItem._screenRect.Y);
+            _minimap.Invalidate();
         }
 
         private void ClearSelections()
@@ -831,11 +918,7 @@ namespace NuSysApp
             return;
         }
 
-        private async void SwitchMode(Options mode)
-        {
-            return;
-            
-        }
+
 
 
         public PanZoomMode PanZoom
@@ -845,16 +928,6 @@ namespace NuSysApp
 
 
         public SelectMode SelectMode { get { return null; } }
-
-        public void ChangeMode(object source, Options mode)
-        {
-            SwitchMode(mode);
-        }
-
-        public void LimitManipulation()
-        {
-
-        }
 
         public FrameworkElement GetAdornment()
         {

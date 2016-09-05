@@ -62,6 +62,19 @@ namespace NuSysApp
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, _canvas);
         }
 
+        public void Stop()
+        {
+            if (_canvas == null)
+                return;
+            
+            _canvas.Draw -= CanvasOnDraw;
+            _canvas.Update -= CanvasOnUpdate;
+            _canvas.CreateResources -= CanvasOnCreateResources;
+            _canvas.SizeChanged -= CanvasOnSizeChanged;
+            Root.Dispose();
+        }
+
+
         public async Task Init(CanvasAnimatedControl canvas, CollectionRenderItem topCollection)
         {
             Size = new Size(canvas.Width, canvas.Height);

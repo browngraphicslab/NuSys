@@ -10,19 +10,12 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-
-    <Border BorderThickness="4,4,4,4" BorderBrush="Transparent">
-        <Grid x:Name ="Grid" Width="{Binding Width}" SizeChanged="Grid_SizeChanged">
-        <Grid.Resources>
+    <Canvas x:Name ="Grid" SizeChanged="Grid_SizeChanged">
+        <Canvas.Resources>
             <nuSysApp:PositionToStringConverter x:Key="PositionToStringConverter"/>
-        </Grid.Resources>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        </Canvas.Resources>
         <Image x:Name="VisualizationImage" Height ="100"  Stretch="Fill" Grid.Row ="0" Margin="10,10,10,10"></Image>
-        <ProgressBar  x:Name ="ProgressBar" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}"  Grid.Row="0" 
+        <ProgressBar  x:Name ="ProgressBar" Grid.Row="0" 
                      
                      Tapped="ProgressBar_OnTapped" PointerMoved="ProgressBar_OnPointerMoved" PointerReleased="ProgressBar_OnPointerReleased" Opacity="0.3"/>
         <Grid Grid.Row="1" HorizontalAlignment="Left">
@@ -51,6 +44,6 @@
         </StackPanel>
 
 
-    </Grid>
-    </Border>
+    </Canvas>
+
 </UserControl>

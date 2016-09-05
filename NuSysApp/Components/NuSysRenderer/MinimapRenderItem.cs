@@ -16,24 +16,42 @@ using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
-    public class MinimapRenderItem : BaseRenderItem
+    public class MinimapRenderItem
     {
         private Rect _rect;
         private Rect _bb;
         private CanvasRenderTarget _renderTarget;
         private CollectionRenderItem _collection;
+        private CanvasControl _canvasControl;
+        public Size RenderTargetSize => _renderTarget.Size;
 
-        public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasControl resourceCreator)
         {
             _collection = collection;
             collection.ViewModel.Elements.CollectionChanged += ElementsOnCollectionChanged;
+            _canvasControl = resourceCreator;
+            _canvasControl.Draw += CanvasControlOnDraw;
         }
 
-        public override void Dispose()
+        private void CanvasControlOnDraw(CanvasControl sender, CanvasDrawEventArgs args)
+        {
+            using (var ds = args.DrawingSession)
+            {
+                Draw(ds);
+            }
+        }
+
+        public void SwitchCollection(CollectionRenderItem collection)
+        {
+            _collection = collection;
+            _renderTarget = null;
+            Invalidate();
+        }
+
+        public void Dispose()
         {
             _collection.ViewModel.Elements.CollectionChanged -= ElementsOnCollectionChanged;
             _collection = null;
-            base.Dispose();
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -56,17 +74,14 @@ namespace NuSysApp
 
         public void AddElement(ElementViewModel element)
         {
-            element.Controller.SizeChanged += ControllerOnSizeChanged;
-            element.Controller.PositionChanged += ControllerOnPositionChanged;
+
         }
         
         public void RemoveElement(ElementViewModel element)
         {
-            element.Controller.SizeChanged -= ControllerOnSizeChanged;
-            element.Controller.PositionChanged -= ControllerOnPositionChanged;
         }
 
-        public override void CreateResources()
+        public void CreateResources()
         {
 
             if (_renderTarget != null)
@@ -87,32 +102,36 @@ namespace NuSysApp
                 newW = 1 / rh * 170;
                 newH = 170;
             }
-            _renderTarget = new CanvasRenderTarget(ResourceCreator, new Size(newW, newH));
+            _renderTarget = new CanvasRenderTarget(_canvasControl, new Size(newW, newH));
             _rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
 
         }
 
-        public override void Update()
+        public void Invalidate()
         {
-            if (!IsDirty)
-                return;
+            _canvasControl.Invalidate();
+        }
+
+        public void Draw(CanvasDrawingSession ds)
+        {
 
             if (_collection.ViewModel.Elements.Count == 0)
                 return;
 
-            CreateResources();
+            if (_renderTarget == null)
+                CreateResources();
 
-            float rh = (float)_collection.ViewModel.Height/(float)_collection.ViewModel.Width;
+            float rh = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
             float newW;
             float newH;
             if (rh < 1)
             {
-                newH = rh*300f;
+                newH = rh * 300f;
                 newW = 300;
             }
             else
             {
-                newW = 1/rh*170;
+                newW = 1 / rh * 170;
                 newH = 170;
             }
             _rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
@@ -120,20 +139,18 @@ namespace NuSysApp
             using (var dss = _renderTarget.CreateDrawingSession())
             {
 
-                var currentColl = _collection;
-
                 dss.Clear(Color.FromArgb(220, 0, 0, 0));
                 var collectionRectOrg = new Rect(_collection.ViewModel.X,
                     _collection.ViewModel.Y,
                     _collection.ViewModel.Width,
                     _collection.ViewModel.Height);
 
-               var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, NuSysRenderer.Instance.GetTransformUntil(_collection));
+                var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, NuSysRenderer.Instance.GetTransformUntil(_collection));
 
                 //if (currentColl == NuSysRenderer.Instance.InitialCollection)
                 var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(_collection)));
 
-               var rects = new List<Rect>();
+                var rects = new List<Rect>();
                 foreach (var vm in _collection.ViewModel.Elements.ToArray())
                 {
                     try
@@ -154,68 +171,39 @@ namespace NuSysApp
                 var scale = Math.Min(newW / (float)_bb.Width, newH / (float)_bb.Height);
                 var s = Matrix3x2.CreateScale((float)scale);
 
-              //  var currentColl = NuSysRenderer.Instance.CurrentCollection;
-
-                /*
-                if (NuSysRenderer.Instance.CurrentCollection != NuSysRenderer.Instance.InitialCollection)
-                {
-                    //var currentColl = NuSysRenderer.Instance.CurrentCollection;
-                    var scaleFactor = (float)Math.Min(_bb.Width / (float)currentColl.ViewModel.Width, _bb.Height / (float)currentColl.ViewModel.Height);
-                    var s2 = Matrix3x2.CreateScale(scaleFactor);
-                    var targetpoint = Vector2.Transform(new Vector2((float)currentColl.ViewModel.X, (float)currentColl.ViewModel.Y), cp * s);
-
-                    dss.Transform = Win2dUtil.Invert(currentColl.Camera.C) * currentColl.Camera.S * currentColl.Camera.C * currentColl.Camera.T *Win2dUtil.Invert(currentColl.C) * currentColl.S * currentColl.C * currentColl.T * cp * s;
-
-                    foreach (var vm in currentColl.ViewModel.Elements.ToArray())
-                    {
-                        Color color;
-                        if (vm.IsSelected)
-                            color = Color.FromArgb(150, 0, 102, 255);
-                        else
-                            color = Color.FromArgb(150, 255, 255, 255);
-
-                        dss.FillRectangle((float)vm.X, (float)vm.Y, (float)vm.Width, (float)vm.Height, color);
-                    }
-
-                }
-                */
+                
 
                 dss.Transform = cp * s;
-                
-              // 
+
+                // 
                 foreach (var vm in _collection.ViewModel.Elements.ToArray())
                 {
                     Color color;
                     if (vm.IsSelected)
-                        color = Color.FromArgb(150, 0, 102, 255);
+                        color = Color.FromArgb(150, 0xf0, 0xdb, 0x71);
                     else
                         color = Color.FromArgb(150, 255, 255, 255);
 
                     dss.FillRectangle((float)vm.X, (float)vm.Y, (float)vm.Width, (float)vm.Height, color);
                 }
 
-                
-              //  var tlp = Vector2.Transform(tl, dss.Transform);
-              //  var trp = Vector2.Transform(tr, dss.Transform);
+
+                //  var tlp = Vector2.Transform(tl, dss.Transform);
+                //  var trp = Vector2.Transform(tr, dss.Transform);
                 var viewport = Win2dUtil.TransformRect(collectionRect, dss.Transform, 3f);
                 dss.Transform = Matrix3x2.Identity;
                 var strokeWidth = 3f;
-                dss.DrawRectangle(viewport, Colors.DarkRed, 3f );
-            
+                dss.DrawRectangle(viewport, Colors.DarkRed, 3f);
+
             }
 
-            IsDirty = false;
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
             if (_renderTarget == null || _collection.ViewModel.Elements.Count == 0)
                 return;
 
             var old = ds.Transform;
             ds.Transform = Matrix3x2.Identity;
-            var x = NuSysRenderer.Instance.Size.Width - _rect.Width;
-            var y= NuSysRenderer.Instance.Size.Height - _rect.Height;
+            var x = _canvasControl.Width - _rect.Width;
+            var y= _canvasControl.Height - _rect.Height;
             ds.DrawImage(_renderTarget, new Rect(x,y,_rect.Width, _rect.Height));
             ds.Transform = old;
         }
@@ -240,12 +228,12 @@ namespace NuSysApp
 
         private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
         {
-            IsDirty = true;
+            _canvasControl.Invalidate();
         }
 
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
-            IsDirty = true;
+            _canvasControl.Invalidate();
         }
     }
 }

@@ -17,6 +17,7 @@
         <Canvas x:Name="xWrapper" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Background="Transparent">
 
             <xaml:CanvasAnimatedControl x:Name="xRenderCanvas" Visibility="Visible" IsFixedTimeStep="False" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" />
+          
 
             <Canvas x:Name="xAtomCanvas" Width="100000" Height="100000" HorizontalAlignment="Left" RenderTransform="{Binding CompositeTransform}">
                 <ItemsControl x:Name="IC"  ItemsSource="{Binding AtomViewList}" >
@@ -27,6 +28,11 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </Canvas>
+            
+
+            <xaml:CanvasControl x:Name="xMinimapCanvas" Visibility="Visible" />
+            
+            
             <Canvas x:Name="xMultimediaCanvas" HorizontalAlignment="Left">
                 <local:VideoMediaPlayer x:Name="xVideoPlayer" Visibility="Collapsed">
                     <local:VideoMediaPlayer.RenderTransform>
@@ -39,6 +45,8 @@
                     </local:AudioMediaPlayer.RenderTransform>
                 </local:AudioMediaPlayer>
             </Canvas>
+            
+            <local:UndoButton x:Name="xUndoButton"></local:UndoButton>
             
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
 

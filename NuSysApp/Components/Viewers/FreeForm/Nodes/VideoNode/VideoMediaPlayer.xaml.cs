@@ -23,7 +23,9 @@ namespace NuSysApp
     public sealed partial class VideoMediaPlayer : UserControl
     {
 
-        public Grid Grid => xGrid;
+        public Canvas Grid => xGrid;
+        public Canvas VideoControls => xVideoControls;
+
         public VideoMediaPlayer()
         {
             this.InitializeComponent();
@@ -63,6 +65,18 @@ namespace NuSysApp
                 //adds each marker to the mediaelement's markers
                 MediaElement.Markers.Add(marker);
             }
+        }
+
+        public void SetVideoSize(double width, double height)
+        {
+            MediaPlayer.Width = width;
+            MediaPlayer.Height = height;
+
+            ScrubBar.Width = width;
+            xTimeLabels.Width = width;
+            Canvas.SetTop(xVideoControls, height);
+            Canvas.SetTop(xAudioWrapper.RegionCanvas, height);
+
         }
 
         private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
@@ -313,7 +327,7 @@ namespace NuSysApp
             var rect = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
             var rectangleGeometry = new RectangleGeometry();
             rectangleGeometry.Rect = rect;
-            this.Clip = rectangleGeometry;
+            this.Clip = null;
         }
 
 

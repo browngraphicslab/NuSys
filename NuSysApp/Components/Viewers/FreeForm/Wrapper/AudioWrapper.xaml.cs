@@ -89,12 +89,14 @@ namespace NuSysApp
         public delegate void IntervalChangedEventHandler(object sender, double start, double end);
         public event IntervalChangedEventHandler OnIntervalChanged;
 
+        public ItemsControl RegionCanvas => xClippingCanvas ;
+
         public AudioWrapper()
         {
             this.InitializeComponent();
         }
 
-        public void ProcessLibraryElementController()
+        public async Task ProcessLibraryElementController()
         {
             Debug.Assert(Controller != null);
             var type = Controller.LibraryElementModel.Type;
@@ -143,7 +145,7 @@ namespace NuSysApp
             // for each region id create a new view and put it into the canvas
             foreach (var regionId in regionsLibraryElementIds)
             {
-                AddRegionView(regionId);
+                await AddRegionView(regionId);
             }
 
             // Add the OnRegionAdded and OnRegionRemoved events so the view is updated
@@ -177,9 +179,9 @@ namespace NuSysApp
         /// <summary>
         /// Adds a new region view to the wrapper
         /// </summary>
-        public Task AddRegionView(string regionLibraryElementId)
+        public async Task AddRegionView(string regionLibraryElementId)
         {
-            UITask.Run(async delegate
+            await UITask.Run(async delegate
             {
                 // used to check if the wrapper is in an editable detailhometabviewmodel
                 var ParentDC = DataContext as DetailHomeTabViewModel;
@@ -240,7 +242,7 @@ namespace NuSysApp
                 //Fires RegionsUpdated event so that timeline markers of AudioMediaPlayer's MediaElement are accurate.
                 FireRegionsUpdated();
             });
-            return null;
+     
         }
 
         /// <summary>
