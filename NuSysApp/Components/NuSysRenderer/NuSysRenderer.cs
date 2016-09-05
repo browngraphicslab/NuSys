@@ -32,11 +32,8 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class NuSysRenderer
+    public class NuSysRenderer : CanvasRenderEngine
     { 
-        private static volatile NuSysRenderer instance;
-        private static object syncRoot = new Object();
-
         private CanvasAnimatedControl _canvas;
         private MinimapRenderItem _minimap;
         public ElementSelectionRenderItem ElementSelectionRenderItem;
@@ -44,16 +41,9 @@ namespace NuSysApp
 
         public CollectionRenderItem Root { get; set; }
 
-        public CanvasAnimatedControl Canvas
-        {
-            get { return _canvas; }
-        }
 
         public Size Size { get; set; }
 
-        private NuSysRenderer()
-        {
-        }
 
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
@@ -62,7 +52,7 @@ namespace NuSysApp
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, _canvas);
         }
 
-        public void Stop()
+        public override void Stop()
         {
             if (_canvas == null)
                 return;
@@ -75,10 +65,10 @@ namespace NuSysApp
         }
 
 
-        public async Task Init(CanvasAnimatedControl canvas, CollectionRenderItem topCollection)
+        public override void Init(CanvasAnimatedControl canvas, BaseRenderItem root)
         {
             Size = new Size(canvas.Width, canvas.Height);
-            Root = topCollection;
+            Root = root as CollectionRenderItem;
             _canvas = canvas;
             _canvas.Draw += CanvasOnDraw;
             _canvas.Update += CanvasOnUpdate;
@@ -104,7 +94,7 @@ namespace NuSysApp
             var parent = collection.Parent;
             while (parent != null)
             {
-                transforms.Add(parent);
+                transforms.Add(parent as CollectionRenderItem);
                 parent = parent.Parent;
             }
 
@@ -254,23 +244,6 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
             //    _minimap.Draw(ds);
                 ElementSelectionRenderItem.Draw(ds);
                 NodeMarkingMenu.Draw(ds);
-            }
-        }
-
-        public static NuSysRenderer Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (syncRoot)
-                    {
-                        if (instance == null)
-                            instance = new NuSysRenderer();
-                    }
-                }
-
-                return instance;
             }
         }
     }

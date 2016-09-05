@@ -5,6 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -26,14 +27,7 @@
 
         <Border Grid.Row="1" x:Name="xBorder" BorderBrush="{StaticResource color6}"   HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid x:Name="totalStackPanel">
-                <local:RectangleWrapper x:Name="xClippingWrapper">
-                    <local:RectangleWrapper.RenderTransform>
-                        <CompositeTransform x:Name="WrapperTransform"/>
-                    </local:RectangleWrapper.RenderTransform>
-                    <local:RectangleWrapper.Content>
-                        <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" Source="{Binding Image}"/>
-                    </local:RectangleWrapper.Content>
-                </local:RectangleWrapper>
+                <xaml:CanvasControl x:Name="xImgCanvas" Width="500" Height="500"></xaml:CanvasControl>
 
             </Grid>
         </Border>

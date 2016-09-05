@@ -16,7 +16,7 @@ namespace NuSysApp
         public List<BaseRenderItem> Items { get; private set; } = new List<BaseRenderItem>();
         private Rect _measurement = new Rect();
 
-        public WrapRenderItem(double maxWidth, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public WrapRenderItem(double maxWidth, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             MaxWidth = maxWidth;
         }

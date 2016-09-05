@@ -19,7 +19,7 @@ namespace NuSysApp
         private AudioNodeViewModel _vm;
         private CanvasBitmap _bmp;
 
-        public AudioElementRenderItem(AudioNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(vm, parent, resourceCreator)
+        public AudioElementRenderItem(AudioNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
 

@@ -103,7 +103,7 @@ namespace NuSysApp
             CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn);
             Visibility = Visibility.Collapsed;
             return;
-            var transform = NuSysRenderer.Instance.GetTransformUntil(selections.First());
+            var transform = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(selections.First());
             
             var createNewContentRequestArgs = new CreateNewContentRequestArgs
             {

@@ -10,8 +10,7 @@
     d:DesignWidth="400">
 
     <Grid x:Name="Canvas" DoubleTapped="XGrid_OnDoubleTapped" VerticalAlignment="Top">
-        <Grid.RenderTransform>
-        </Grid.RenderTransform>
+
         <Rectangle x:Name="Rect" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding RegionWidth}" Fill="#DB97B3" Height="200"  Opacity=".42" HorizontalAlignment="Left"  ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
             <Rectangle.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}"/>

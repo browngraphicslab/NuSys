@@ -21,7 +21,7 @@ namespace NuSysApp
         public ITool Tool;
 
         public PseudoElementRenderItem(ITool tool, CollectionRenderItem parent,
-            CanvasAnimatedControl resourceCreator) : base(null, parent, resourceCreator)
+            ICanvasResourceCreatorWithDpi resourceCreator) : base(null, parent, resourceCreator)
         {
             Tool = tool;
             Tool.ToolAnchorChanged += OnToolAnchorChanged;

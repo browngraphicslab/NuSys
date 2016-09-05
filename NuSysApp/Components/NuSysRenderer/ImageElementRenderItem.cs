@@ -19,7 +19,7 @@ namespace NuSysApp
         private ImageElementViewModel _vm;
         private CanvasBitmap _bmp;
 
-        public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(vm, parent, resourceCreator)
+        public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
         }

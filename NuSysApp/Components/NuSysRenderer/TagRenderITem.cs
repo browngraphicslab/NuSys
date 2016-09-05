@@ -19,7 +19,7 @@ namespace NuSysApp
         private Rect _measurement;
         public string Text { get; private set; }
 
-        public TagRenderItem(string text, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator)
+        public TagRenderItem(string text, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
             Text = text;

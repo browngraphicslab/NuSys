@@ -20,6 +20,8 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas.UI;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
 
 
@@ -30,18 +32,28 @@ namespace NuSysApp
     public sealed partial class ImageDetailHomeTabView : UserControl
     {
         private NusysImageAnalysisModel _analysisModel;
+
+        private CanvasRenderEngine _renderEngine;
+        private RenderItemInteractionManager _interactionManager;
+
         public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();
 
+            xImgCanvas.CreateResources += XImgCanvasOnCreateResources;
+
+
+            
+
+
             //Show hide region buttons need access to rectangle/audio wrapper for methods to work.
-            xShowHideRegionButtons.Wrapper = xClippingWrapper;
+        //    xShowHideRegionButtons.Wrapper = xClippingWrapper;
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
-            xClippingWrapper.Controller = vm.LibraryElementController;
-            xClippingWrapper.ProcessLibraryElementController();
+       //     xClippingWrapper.Controller = vm.LibraryElementController;
+        //    xClippingWrapper.ProcessLibraryElementController();
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
@@ -53,6 +65,19 @@ namespace NuSysApp
                     SetImageAnalysis();
                 });
             });
+        }
+
+        private void XImgCanvasOnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
+        {
+            _renderEngine = new CanvasRenderEngine();
+            var root = new BaseRenderItem(null, xImgCanvas);
+            var arrow = new PdfPageButtonRenderItem(1, root, xImgCanvas);
+
+
+
+            root.Children.Add(arrow);
+            _renderEngine.Init(xImgCanvas, root);
+            _interactionManager = new RenderItemInteractionManager(_renderEngine, xImgCanvas);
         }
 
         /// <summary>
@@ -155,7 +180,7 @@ namespace NuSysApp
 
         private void Dispose()
         {
-            xClippingWrapper.Dispose();
+       //     xClippingWrapper.Dispose();
             DisposeTags();
         }
         
@@ -163,7 +188,7 @@ namespace NuSysApp
         {
             var vm = (ImageDetailHomeTabViewModel) DataContext;
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;
-            xClippingWrapper.Dispose();
+        //    xClippingWrapper.Dispose();
             DataContext = null;
         }
 
@@ -230,10 +255,10 @@ namespace NuSysApp
                                 continue;
                             }
                             //create a temp region for every face
-                            var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,null,vm.LibraryElementController.LibraryElementModel.AccessType);
-                            var tempview = new TemporaryImageRegionView(tempvm);
-                            tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
-                            xClippingWrapper.AddTemporaryRegion(tempview);
+                         //   var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,null,vm.LibraryElementController.LibraryElementModel.AccessType);
+                       //     var tempview = new TemporaryImageRegionView(tempvm);
+                     //       tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
+                          //  xClippingWrapper.AddTemporaryRegion(tempview);
                         }
                     }
                 });

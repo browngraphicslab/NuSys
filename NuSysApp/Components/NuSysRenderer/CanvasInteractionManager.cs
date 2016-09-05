@@ -51,9 +51,9 @@ namespace NuSysApp
 
        public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
         
-        public CanvasInteractionManager(FrameworkElement canvas)
+        public CanvasInteractionManager(FrameworkElement pointerEventSource)
         {
-            _canvas = canvas;
+            _canvas = pointerEventSource;
             _canvas.PointerPressed += OnPointerPressed;
             _canvas.PointerReleased += OnPointerReleased;
             _canvas.PointerWheelChanged += ResourceCreatorOnPointerWheelChanged;
@@ -62,6 +62,19 @@ namespace NuSysApp
             _canvas.PointerExited += CanvasOnPointerExited;
             AllPointersReleased += OnAllPointersReleased;
             SetEnabled(true);
+        }
+
+
+        public virtual void Dispose()
+       {
+           SetEnabled(false);
+            _canvas.PointerPressed -= OnPointerPressed;
+            _canvas.PointerReleased -= OnPointerReleased;
+            _canvas.PointerWheelChanged -= ResourceCreatorOnPointerWheelChanged;
+            _canvas.PointerCaptureLost -= CanvasOnPointerExited;
+            _canvas.PointerCanceled -= CanvasOnPointerExited;
+            _canvas.PointerExited -= CanvasOnPointerExited;
+            AllPointersReleased -= OnAllPointersReleased;
         }
 
        public void SetEnabled(bool enabled)
@@ -85,7 +98,7 @@ namespace NuSysApp
 
        private void ResourceCreatorOnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
         {
-            var p = args.GetCurrentPoint(null).Position;
+            var p = args.GetCurrentPoint(_canvas).Position;
             var newCenter = new Vector2((float)p.X, (float)p.Y);
             _centerPoint = newCenter;
 
@@ -113,13 +126,6 @@ namespace NuSysApp
                 return;
             OnPointerTouchMoved(sender, args);
         }
-        
-        public void Dispose()
-        {
-            _canvas.PointerPressed -= OnPointerPressed;
-            _canvas.PointerReleased -= OnPointerReleased;
-            _canvas.PointerMoved -= OnPointerMoved;
-        }
 
         private void UpdateCenterPoint()
         {
@@ -143,7 +149,7 @@ namespace NuSysApp
                
         private async void OnPointerTouchPressed(object sender, PointerRoutedEventArgs e)
         {
-            _pointers.Add(new CanvasPointer(e.GetCurrentPoint(null)));
+            _pointers.Add(new CanvasPointer(e.GetCurrentPoint(_canvas)));
 
             UpdateCenterPoint();
 
@@ -170,7 +176,7 @@ namespace NuSysApp
                 return;
 
             var releasedPointer = exisitingPointer.First();
-            releasedPointer.Update(e.GetCurrentPoint(null).Position);
+            releasedPointer.Update(e.GetCurrentPoint(_canvas).Position);
             _pointers.Remove(releasedPointer);
             PointerReleased?.Invoke(releasedPointer);
             if (_pointers.Count == 1)
@@ -218,7 +224,7 @@ namespace NuSysApp
                     return;
 
                 var pointer = exisitingPointer.First();
-                pointer.Update(args.GetCurrentPoint(null).Position);
+                pointer.Update(args.GetCurrentPoint(_canvas).Position);
 
                 if (_pointers.Count == 1)
                 {

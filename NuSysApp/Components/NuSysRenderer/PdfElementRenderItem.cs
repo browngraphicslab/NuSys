@@ -26,7 +26,7 @@ namespace NuSysApp
         public int CurrentPage;
         private bool _isUpdating;
 
-        public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
+        public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
 
