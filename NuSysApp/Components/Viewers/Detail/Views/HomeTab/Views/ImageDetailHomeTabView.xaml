@@ -26,6 +26,7 @@
 
         <Border Grid.Row="1" x:Name="xBorder" BorderBrush="{StaticResource color6}"   HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid x:Name="totalStackPanel">
+                <!--
                 <local:RectangleWrapper x:Name="xClippingWrapper">
                     <local:RectangleWrapper.RenderTransform>
                         <CompositeTransform x:Name="WrapperTransform"/>
@@ -34,12 +35,11 @@
                         <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" Source="{Binding Image}"/>
                     </local:RectangleWrapper.Content>
                 </local:RectangleWrapper>
-
+                -->
             </Grid>
         </Border>
         
         <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
-        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
 
         <StackPanel Grid.Row="2">
             <Button Tapped="Button_Tapped" HorizontalAlignment="Center" Style="{StaticResource DarkButton}">Suggest regions</Button>

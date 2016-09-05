@@ -25,6 +25,14 @@ namespace NusysIntermediate
         public string LargeIconUrl { get; set; }
         public string MediumIconUrl { get; set; }
         public string SmallIconUrl { get; set; }
+
+
+        /// <summary>
+        /// the string library element id of the parent that made this library element.  
+        /// For 'regions' this will replace the clipping parent id.
+        /// </summary>
+        public string ParentId { get; set; }
+
         public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
 
         /// <summary>
@@ -105,6 +113,10 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY))
             {
                 AccessType = message.GetEnum<NusysConstants.AccessType>(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY))
+            {
+                ParentId = message.GetString(NusysConstants.LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY);
             }
         }
 

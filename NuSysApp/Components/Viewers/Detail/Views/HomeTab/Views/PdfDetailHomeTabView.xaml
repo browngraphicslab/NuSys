@@ -27,14 +27,14 @@
             <Border x:Name="xBorder" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid x:Name="xWrapper" Margin="10"  HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                    <local:RectangleWrapper x:Name="xClippingWrapper">
+                    <!--<local:RectangleWrapper x:Name="xClippingWrapper">
                         <local:RectangleWrapper.RenderTransform>
                             <CompositeTransform x:Name="WrapperTransform"/>
                         </local:RectangleWrapper.RenderTransform>
                         <local:RectangleWrapper.Content>
                             <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding ImageSource}"/>
                         </local:RectangleWrapper.Content>
-                    </local:RectangleWrapper>
+                    </local:RectangleWrapper>-->
 
                     <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
                         <Button.Content>
@@ -49,7 +49,6 @@
                 </Grid>
             </Border>
             
-            <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" HorizontalAlignment="Right" SetWidth="200"  Grid.Row="0"></local:ShowHideRegionButtons>
             <local:AddToCollectionButton Grid.Row="0" HorizontalAlignment="Left"/>
             <Button Grid.Row="2" Tapped="Button_Tapped" Style="{StaticResource DarkButton}" HorizontalAlignment="Center">Suggest regions</Button>
             <Grid Grid.Row="3" x:Name="SegmentPanel">

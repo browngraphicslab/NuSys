@@ -11,8 +11,13 @@ namespace NuSysApp
     /// the Request args class that should be used to create a new image library element.
     /// This request args class should only add an aspect ratio property to the request.
     /// </summary>
-    public class CreateNewVideoLibraryElementRequestArgs : CreateNewLibraryElementRequestArgs
+    public class CreateNewVideoLibraryElementRequestArgs : CreateNewAudioLibraryElementRequestArgs
     {
+        public CreateNewVideoLibraryElementRequestArgs() : base()
+        {
+            LibraryElementType =  NusysConstants.ElementType.Video;
+        }
+
         /// <summary>
         /// The nullable double aspect ratio of the video library element you are creating. 
         /// This is not required, but should probably be set if you are using this request args at all.

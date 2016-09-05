@@ -27,7 +27,7 @@ namespace NuSysApp
             ShapePoints = collectionmodel.ShapePoints?.Count ?? 0;
         }
 
-        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
+        public override CreateNewLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();
         }

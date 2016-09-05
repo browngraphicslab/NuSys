@@ -80,8 +80,6 @@ namespace NuSysApp
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
-        public ObservableCollection<Region> RegionCollection { set; get; }
-
         private DetailHomeTabViewModel _regionableRegionTabViewModel;
         private DetailHomeTabViewModel _regionableHomeTabViewModel;
 
@@ -94,7 +92,6 @@ namespace NuSysApp
             Tags = new ObservableCollection<FrameworkElement>();
             SuggestedTags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
-            RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<DetailViewTabTemplate>();
             SessionController.Instance.ContentController.OnLibraryElementDelete += ContentControllerOnLibraryElementDelete;
         }
@@ -130,20 +127,6 @@ namespace NuSysApp
             }
             CurrentElementController = controller;
             CurrentElementController.KeywordsChanged += KeywordsChanged;
-
-            RegionCollection.Clear();
-
-            var regions = SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(CurrentElementController.LibraryElementModel.LibraryElementId);
-
-            if (regions?.Count > 0)
-            {
-                foreach (var regionLibraryId in regions)
-                {
-                    Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) is Region);
-                    RegionCollection.Add(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) as Region);
-                }
-            }
-            RaisePropertyChanged("OrderedRegionCollection");
 
             View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
             if (View == null)

@@ -87,6 +87,12 @@ namespace NuSysApp
         /// </summary>
         public string Large_Thumbnail_Url { get; set; }
 
+        /// <summary>
+        /// the library element id string used for when a new library element was made from another one.
+        /// THis should replace the old regions's clipping parent id.
+        /// </summary>
+        public string ParentLibraryElementId { get; set; }
+
         #region Required
 
         /// <summary>
@@ -186,6 +192,11 @@ namespace NuSysApp
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY] = Large_Thumbnail_Bytes;
             }
             
+            if(ParentLibraryElementId != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_PARENT_ID_KEY] = ParentLibraryElementId;
+            }
+
             //set the default library element's content ID
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = ContentId ?? SessionController.Instance.GenerateId();
 

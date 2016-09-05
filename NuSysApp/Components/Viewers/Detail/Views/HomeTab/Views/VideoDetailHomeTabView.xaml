@@ -35,14 +35,13 @@
                 </Grid.RowDefinitions>
                 <CaptureElement x:Name="preview"/>
                 <Grid Background="Aqua">
-                    <local:VideoMediaPlayer x:Name="VideoMediaPlayer"></local:VideoMediaPlayer>
+
                 </Grid>
                 <GridView Visibility="Collapsed" x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
 
             </Grid>
         </Border>
         <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
-        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
 
     </Grid>
 </UserControl>

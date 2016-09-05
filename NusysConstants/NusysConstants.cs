@@ -357,43 +357,55 @@ namespace NusysIntermediate
                 /// the key that will hold the library ElementId of the clipping parent of a requested region.  
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
-                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID = "clipping_parent_id";
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_PARENT_ID_KEY = "parent_id_key";
 
                 /// <summary>
-                /// the key that will hold the PointModel of the top left point of the requested region  
+                /// the key that will hold the X COORDINATE of the top left point of the requested image library element.   
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
-                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT = "rectangle_top_left_point"; 
+                public static readonly string NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_TOP_LEFT_X = "top_left_x";
 
                 /// <summary>
-                /// the key that will hold the width of the requested region  
+                /// the key that will hold the Y COORDINATE of the top left point of the requested image library element.   
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
-                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH = "rectangle_region_width";
+                public static readonly string NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_TOP_LEFT_Y = "top_left_y";
 
                 /// <summary>
-                /// the key that will hold the height of the requested region  
+                /// the key that will hold the width of the requested image library element model. 
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
-                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT = "rectangle_region_height";
+                public static readonly string NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH = "image_width";
 
                 /// <summary>
-                /// the key that will hold the page location of the requested region  
+                /// the key that will hold the height of the requested image library element model.   
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
-               public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
+                public static readonly string NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT = "image_height";
 
-               /// <summary>
-               /// the key that will hold the start of the interval of the requested region  
-               /// Used during a region libraryElementRequest.  
-               /// </summary>
-               public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";   
-         
-               /// <summary>
-               /// the key that will hold the end of the interval of the requested region  
-               /// Used during a region libraryElementRequest.  
-               /// </summary>
-                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";
+                /// <summary>
+                /// the key that will hold the starting page number of the requested pdf library element model
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+               public static readonly string NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY = "pdf_page_start";
+
+                /// <summary>
+                /// the key that will hold the final page number of the requested pdf library element model
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY = "pdf_page_end";
+
+                /// <summary>
+                /// the key that will hold the start of the interval of the audio library elment model 
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_START = "audio_time_start";
+
+                /// <summary>
+                /// the key that will hold the end of the interval of the requested audio library elment model 
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_END = "audio_time_end";
 
                 /// <summary>
                 /// key in message for when the request returns with the fully populated libraryelementModel.
@@ -1281,50 +1293,54 @@ namespace NusysIntermediate
             /// This key is used to hold the clipping parent's library element Id.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string REGION_CLIPPING_PARENT_ID_KEY = "clipping_parent_id_key";
+            public static readonly string LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY = "parent_id_key";
 
             #region RectangleRegion
-            /// <summary>
-            /// This key is used to hold the top left point of the rectangular region when represented in message form.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-            /// </summary>
-            public static readonly string RECTANGLE_REGION_TOP_LEFT_POINT_KEY = "top_left_point";
 
             /// <summary>
-            /// This key is used to hold the width of the rectangular region when represented in message form.
+            /// This key is used to hold the width of the image library element model when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string RECTANGLE_REGION_WIDTH_KEY = "width";
+            public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY = "width_key";
 
             /// <summary>
-            /// This key is used to hold the height of the rectangular region when represented in message form.
+            /// This key is used to hold the height of the image library element model when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string RECTANGLE_REGION_HEIGHT_KEY = "height";
-            #endregion RectangleRegion
+            public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_HEIGHT_KEY = "height_key";
 
-            #region AudioRegion
+        #endregion RectangleRegion
+
+            #region Audio
             /// <summary>
-            /// This key is used to hold the start time of a audio region when represented in message form.
+            /// This key is used to hold the start time of a audio library elmenet when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string TIMESPAN_REGION_START_KEY = "start";
+            public static readonly string AUDIO_LIBRARY_ELEMENT_START_TIME_KEY = "start_time_key";
 
             /// <summary>
-            /// This key is used to hold the end time of a audio region when represented in message form.
+            /// This key is used to hold the end time of a audio library elmenet when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string TIMESPAN_REGION_END_KEY = "end";
+            public static readonly string AUDIO_LIBRARY_ELEMENT_END_TIME_KEY = "end_time_key";
 
 
-            #endregion AudioRegion
+        #endregion Audio
 
-            #region PdfRegion
+        #region PdfRegion
+
+        /// <summary>
+        /// This key is used to hold the page number of the ending page when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string PDF_PAGE_START_KEY = "page_end_number";
+
             /// <summary>
-            /// This key is used to hold the page of a pdf region when represented in message form.
+            /// This key is used to hold the page number of the starting page when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string PDF_REGION_PAGE_NUMBER_KEY = "page_number";
+            public static readonly string PDF_PAGE_END_KEY = "page_start_number";
+
             #endregion PdfRegion 
 
             #region Collection
@@ -1365,6 +1381,19 @@ namespace NusysIntermediate
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
             public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY = "image_ratio";
+
+
+            /// <summary>
+            /// This key is used to hold the top left point's x coordinate of the rectangular region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_X_KEY = "top_left_point_x";
+
+            /// <summary>
+            /// This key is used to hold the top left point's y coordniate of the rectangular region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_Y_KEY = "top_left_point_y";
 
             #endregion Image
 
@@ -1616,9 +1645,6 @@ namespace NusysIntermediate
             // Basic Types
             Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording,
 
-            // Region Types
-            ImageRegion, PdfRegion, AudioRegion, VideoRegion,
-
             // weird type that possibly shouldn't be here
             Tools
         }
@@ -1650,17 +1676,6 @@ namespace NusysIntermediate
         #region staticMethods
 
         /// <summary>
-        /// returns whether the element Type is a region
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static bool IsRegionType(NusysConstants.ElementType type)
-        {
-            return type == NusysConstants.ElementType.AudioRegion || type == NusysConstants.ElementType.ImageRegion || type == NusysConstants.ElementType.VideoRegion ||
-                   type == NusysConstants.ElementType.PdfRegion;
-        }
-
-        /// <summary>
         /// returns a GUID string.  Should be used when creating ID's on the client or the server side.  
         /// </summary>
         /// <returns></returns>
@@ -1679,16 +1694,12 @@ namespace NusysIntermediate
             switch (type)
             {
                 case ElementType.Image:
-                case ElementType.ImageRegion:
                     return ContentType.Image;
                 case ElementType.Video:
-                case ElementType.VideoRegion:
                     return ContentType.Video;
                 case ElementType.Audio:
-                case ElementType.AudioRegion:
                     return ContentType.Audio;
                 case ElementType.PDF:
-                case ElementType.PdfRegion:
                     return ContentType.PDF;
                 case ElementType.Word:
                     return ContentType.Word;

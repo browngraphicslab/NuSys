@@ -40,7 +40,7 @@ namespace NuSysApp
             }
 
             SetSize(height*ratio, height);
-            SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.SetVideoSize(Width, Height);
+            //SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.SetVideoSize(Width, Height);
         }
     }
 }

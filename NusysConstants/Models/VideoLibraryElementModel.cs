@@ -10,7 +10,7 @@ namespace NusysIntermediate
     /// public class for the video library element Models.
     /// Should only add a ratio property to the library element model.
     /// </summary>
-    public class VideoLibraryElementModel : LibraryElementModel
+    public class VideoLibraryElementModel : AudioLibraryElementModel
     {
         /// <summary>
         /// The double ratio of the video that this is a library element for. 

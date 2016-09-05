@@ -344,22 +344,12 @@ namespace NuSysApp
                     hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null).ToList();
                     // get a list of any ElementViewModels at the current point
                     var hitsStartElements = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
-                    // get a list of any RegionViewModels at the current point
-                    var hitStartRegions = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
                     // create a new instance of LinkLibraryElementRequestArgs, and pass in the id of the current element view model as the ElementViewModelInId.
                     var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
                     createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
                     createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
 
-                    if (hitStartRegions.Any())
-                    {
-                        // If it hits a region then pass in information about that region to createNewLinkLibraryElementRequestArgs
-                        first = (FrameworkElement)hitStartRegions.First();
-                        var dc = (RegionViewModel)first.DataContext;
-                        createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
-                        createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
-                    }
-                    else if (hitsStartElements.Any())
+                    if (hitsStartElements.Any())
                     {
                         // if it hits an element then pass in information about that element to createNewLinkLibraryElementRequestArgs
                         first = (FrameworkElement)hitsStartElements.First();

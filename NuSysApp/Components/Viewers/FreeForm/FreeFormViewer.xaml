@@ -34,7 +34,7 @@
             
             
             <Canvas x:Name="xMultimediaCanvas" HorizontalAlignment="Left">
-                <local:VideoMediaPlayer x:Name="xVideoPlayer" Visibility="Collapsed">
+                <!--<local:VideoMediaPlayer x:Name="xVideoPlayer" Visibility="Collapsed">
                     <local:VideoMediaPlayer.RenderTransform>
                         <CompositeTransform></CompositeTransform>
                     </local:VideoMediaPlayer.RenderTransform>
@@ -43,7 +43,7 @@
                     <local:AudioMediaPlayer.RenderTransform>
                         <CompositeTransform></CompositeTransform>
                     </local:AudioMediaPlayer.RenderTransform>
-                </local:AudioMediaPlayer>
+                </local:AudioMediaPlayer>-->
             </Canvas>
             
             <local:UndoButton x:Name="xUndoButton"></local:UndoButton>

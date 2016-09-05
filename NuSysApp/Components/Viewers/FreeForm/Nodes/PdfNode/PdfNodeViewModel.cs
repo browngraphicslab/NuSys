@@ -40,11 +40,6 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             var model = (PdfNodeModel) controller.Model;
             CurrentPageNumber = model.CurrentPageNumber;
-            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PdfRegion)
-            {
-                var pdfRegionModel = controller.LibraryElementModel as PdfRegionModel;
-                CurrentPageNumber = pdfRegionModel.PageLocation;
-            }
         }           
 
         public async override Task Init()
@@ -96,35 +91,16 @@ namespace NuSysApp
 
         public override void SetSize(double width, double height)
         {
-            if (Controller.LibraryElementModel is PdfRegionModel)
+            if (ImageSize.Width > ImageSize.Height)
             {
-                var rect = Controller.LibraryElementModel as PdfRegionModel;
-
-                if (ImageSize.Width * rect.Width > ImageSize.Height * rect.Height)
-                {
-                    var r = ((double)ImageSize.Height * rect.Height) / ((double)ImageSize.Width * rect.Width);
-                    base.SetSize(width, width * r);
-                }
-                else
-                {
-                    var r = ((double)ImageSize.Width * rect.Width) / ((double)ImageSize.Height * rect.Height);
-                    base.SetSize(height * r, height);
-                }
+                var r = ImageSize.Height / (double)ImageSize.Width;
+                base.SetSize(width, width * r);
             }
             else
             {
-                if (ImageSize.Width > ImageSize.Height)
-                {
-                    var r = ImageSize.Height / (double)ImageSize.Width;
-                    base.SetSize(width, width * r);
-                }
-                else
-                {
-                    var r = ImageSize.Width / (double)ImageSize.Height;
-                    base.SetSize(height * r, height);
-                }
+                var r = ImageSize.Width / (double)ImageSize.Height;
+                base.SetSize(height * r, height);
             }
-
         }
 
         protected override void OnSizeChanged(object source, double width, double height)

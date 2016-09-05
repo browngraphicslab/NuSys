@@ -63,7 +63,7 @@
     <Compile Include="ModelFactories\ElementModelFactory.cs" />
     <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\AudioNodeModel.cs" />
-    <Compile Include="Models\AudioRegionModel.cs" />
+    <Compile Include="Models\AudioLibraryElementModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\ElementModel.cs" />
@@ -73,15 +73,12 @@
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\PdfContentDataModel.cs" />
     <Compile Include="Models\PdfNodeModel.cs" />
-    <Compile Include="Models\PdfRegionModel.cs" />
+    <Compile Include="Models\PdfLibraryElementModel.cs" />
     <Compile Include="Models\PointModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />
-    <Compile Include="Models\RectangleRegion.cs" />
-    <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Sendable.cs" />
     <Compile Include="Models\TextElementModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
-    <Compile Include="Models\VideoRegionModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\AnalysisModel.cs" />
     <Compile Include="Notification.cs" />

@@ -35,13 +35,7 @@ namespace NuSysApp
             DataContext = vm;
             InitializeComponent();
 
-            //Show hide region buttons need access to rectangle/audio wrapper for methods to work.
-            xShowHideRegionButtons.Wrapper = xClippingWrapper;
-
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-
-            xClippingWrapper.Controller = vm.LibraryElementController;
-            xClippingWrapper.ProcessLibraryElementController();
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
@@ -155,7 +149,7 @@ namespace NuSysApp
 
         private void Dispose()
         {
-            xClippingWrapper.Dispose();
+
             DisposeTags();
         }
         
@@ -163,7 +157,6 @@ namespace NuSysApp
         {
             var vm = (ImageDetailHomeTabViewModel) DataContext;
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;
-            xClippingWrapper.Dispose();
             DataContext = null;
         }
 
@@ -230,10 +223,6 @@ namespace NuSysApp
                                 continue;
                             }
                             //create a temp region for every face
-                            var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,null,vm.LibraryElementController.LibraryElementModel.AccessType);
-                            var tempview = new TemporaryImageRegionView(tempvm);
-                            tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
-                            xClippingWrapper.AddTemporaryRegion(tempview);
                         }
                     }
                 });

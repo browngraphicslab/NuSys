@@ -51,8 +51,8 @@ namespace NuSysApp
 
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
-        public VideoMediaPlayer VideoPlayer => xVideoPlayer;
-        public AudioMediaPlayer AudioPlayer => xAudioPlayer;
+        //public VideoMediaPlayer VideoPlayer => xVideoPlayer;
+        //public AudioMediaPlayer AudioPlayer => xAudioPlayer;
 
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
@@ -359,6 +359,7 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element)
         {
+            return;/*
             if (element is VideoElementRenderItem)
             {
                 ActiveVideoRenderItem = (VideoElementRenderItem) element;
@@ -371,6 +372,7 @@ namespace NuSysApp
                 ct.TranslateY = t.M32;
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
+
                 SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.AudioWrapper.Controller =
                     element.ViewModel.Controller.LibraryElementController;
 
@@ -402,6 +404,7 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
                 return;
             }
+            */
         }
 
         private void CollectionInteractionManagerOnResizerDragged(CanvasPointer pointer, Vector2 point, Vector2 delta)
@@ -618,11 +621,11 @@ namespace NuSysApp
         {
             if (element is VideoElementRenderItem)
             {
-                xVideoPlayer.Visibility = Visibility.Collapsed;
+                //xVideoPlayer.Visibility = Visibility.Collapsed; //TODO put back in
             }
             if (element is AudioElementRenderItem)
             {
-                xVideoPlayer.Visibility = Visibility.Collapsed;
+                //xVideoPlayer.Visibility = Visibility.Collapsed; //TODO put back in
             }
 
             var targetPoint = NuSysRenderer.Instance.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
@@ -786,6 +789,7 @@ namespace NuSysApp
 
         private void UpdateMediaPlayer()
         {
+            /*
             if (ActiveVideoRenderItem != null)
             {
                 var t = ActiveVideoRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(ActiveVideoRenderItem);
@@ -813,6 +817,7 @@ namespace NuSysApp
             vm.CompositeTransform.CenterY = InitialCollection.Camera.C.M32;
             vm.CompositeTransform.ScaleX = InitialCollection.Camera.S.M11;
             vm.CompositeTransform.ScaleY = InitialCollection.Camera.S.M22;
+            */
         }
 
 

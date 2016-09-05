@@ -31,7 +31,7 @@ namespace NuSysApp
         public event ContentLoadedEventHandler ContentLoaded;
         public delegate void ContentLoadedEventHandler(object sender);
 
-        public AudioMediaPlayer AudioMediaPlayer { get { return MediaPlayer; } }
+        //public AudioMediaPlayer AudioMediaPlayer { get { return MediaPlayer; } } TODO put back in
 
         
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
@@ -40,10 +40,10 @@ namespace NuSysApp
             this.InitializeComponent();
 
             //Show/hide region buttons need access to the audiowrapper for event handlers
-            xShowHideRegionButtons.Wrapper = AudioMediaPlayer.AudioWrapper;
+            //xShowHideRegionButtons.Wrapper = AudioMediaPlayer.AudioWrapper;
 
-            AudioMediaPlayer.AudioSource = new Uri(vm.LibraryElementController.Data);
-            AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            //AudioMediaPlayer.AudioSource = new Uri(vm.LibraryElementController.Data);
+            //AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
@@ -61,21 +61,21 @@ namespace NuSysApp
         private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as AudioDetailHomeTabViewModel;
-            vm.Duration = AudioMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+            //vm.Duration = AudioMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
             ContentLoaded?.Invoke(this);
         }
 
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (AudioNodeViewModel) DataContext;
-            MediaPlayer.Dispose();
+            //MediaPlayer.Dispose();
             vm.Controller.Disposed -= ControllerOnDisposed;   
         }
 
 
         public void Dispose()
         {
-            MediaPlayer.Dispose();
+            //MediaPlayer.Dispose();
         }
       
     }

@@ -34,23 +34,12 @@ namespace NuSysApp
         {
             InitializeComponent();
             //Show/hide regions buttons need reference to rectangle wrapper for methods to work.
-            xShowHideRegionButtons.Wrapper = xClippingWrapper;
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-
-            // disable page left and page right buttons for pdf regions
-            if (vm.LibraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.PdfRegion)
-            {
-                pageLeft.Visibility = Visibility.Collapsed;
-                pageRight.Visibility = Visibility.Collapsed;
-            }
 
             DataContext = vm;
             vm.PageLocationChanged += Vm_PageLocationChanged;
             Loaded += PdfDetailHomeTabView_Loaded;
-
-            xClippingWrapper.Controller = vm.LibraryElementController;
-            xClippingWrapper.ProcessLibraryElementController();
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
@@ -105,9 +94,7 @@ namespace NuSysApp
 
         private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
         {
-            var vm = DataContext as PdfDetailHomeTabViewModel;
-            xClippingWrapper.Controller = vm.LibraryElementController;
-            await xClippingWrapper.ProcessLibraryElementController();
+
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -138,117 +125,6 @@ namespace NuSysApp
         /// <param name="currentPageNumber"></param>
         private async void UpdateRegionViews(int currentPageNumber)
         {
-            //TODO THIS HSOULD BE A TEMPORARY PDF REGION VIEW
-
-            //Hides all temporary regions, regardless of which page it's on. 
-            foreach (var item in xClippingWrapper.GetTemporaryRegionItems())
-            {
-                if ((item as FrameworkElement).Visibility == Visibility.Visible)
-                {
-                    await UITask.Run(() =>
-                    {
-                        (item as FrameworkElement).Visibility = Visibility.Collapsed;
-
-                    });
-                }
-            }
-
-            //Make a list of temporary region views that have a page location equal to current page number.
-            var temporaryRegions = xClippingWrapper.GetTemporaryRegionItems().Where(item =>
-            ((item as TemporaryImageRegionView).DataContext as TemporaryImageRegionViewModel).PageLocation == currentPageNumber);
-
-            // takes care of visibility of temporary regions on this page
-            foreach (var item in temporaryRegions)
-            {
-                var tempRegion = item as TemporaryImageRegionView;
-                var tempRegionDC = tempRegion.DataContext as TemporaryImageRegionViewModel;
-
-                switch (xShowHideRegionButtons.CurrentRegionsVisibility)
-                {
-                    //Don't do anything, since everything's already been set to collapsed.
-                    case ShowHideRegionButtons.RegionsVisibility.HideAll:
-                        break;
-                    //Show all temporary regions on this page
-                    case ShowHideRegionButtons.RegionsVisibility.ShowAll:
-                        await UITask.Run(() =>
-                        {
-                            tempRegion.Visibility = Visibility.Visible;
-
-                        });
-                        break;
-                    //Show only temporaryregions that are "children" to current libraryelementmodel TODO: ask sahil about desired behavior here
-                    case ShowHideRegionButtons.RegionsVisibility.ShowOnlyChildren:
-                        await UITask.Run(() =>
-                        {
-                            tempRegion.Visibility = Visibility.Visible;
-
-                        });
-                        break;
-                    default:
-                        Debug.Fail("Shouldn't happen, dude");
-                        break;
-
-                }
-
-
-            }
-
-            // takes care of visibility of normal regions
-
-            //sets visibility as collapsed of every pdfregion in the wrapper
-            foreach (var item in xClippingWrapper.GetRegionItems())
-            {
-                if ((item as FrameworkElement).Visibility == Visibility.Visible)
-                {
-                    await UITask.Run(() =>
-                    {
-                        (item as FrameworkElement).Visibility = Visibility.Collapsed;
-
-                    });
-                }
-            }
-            //Make a list of pdfregions region views that have a page location equal to current page number.
-            var pdfRegions = xClippingWrapper.GetRegionItems().Where(item =>
-            (((item as PDFRegionView).DataContext as PdfRegionViewModel).Model as PdfRegionModel).PageLocation == currentPageNumber);
-
-
-            //Sets visibility based on region visibility option
-            foreach (var item in pdfRegions)
-            {
-                var pdfRegion = item as PDFRegionView;
-                var pdfRegionDC = pdfRegion.DataContext as PdfRegionViewModel;
-
-                switch (xShowHideRegionButtons.CurrentRegionsVisibility)
-                {
-                    //Don't do anything, since everything's already been set to collapsed.
-                    case ShowHideRegionButtons.RegionsVisibility.HideAll:
-                        break;
-                    //Show all pdf regions on this page
-                    case ShowHideRegionButtons.RegionsVisibility.ShowAll:
-                        await UITask.Run(() =>
-                        {
-                            pdfRegion.Visibility = Visibility.Visible;
-
-                        });
-                        break;
-                    //Show only pdf regions that are "children" to current libraryelementmodel
-                    case ShowHideRegionButtons.RegionsVisibility.ShowOnlyChildren:
-                        if (pdfRegionDC.Model.ClippingParentId == xClippingWrapper.Controller.LibraryElementModel.LibraryElementId)
-                        {
-                            await UITask.Run(() =>
-                            {
-                                pdfRegion.Visibility = Visibility.Visible;
-
-                            });
-                        }
-                        break;
-                    default:
-                        Debug.Fail("Shouldn't happen, dude");
-                        break;
-
-                }
-
-            }
         }
 
         public void Dispose()
@@ -259,7 +135,7 @@ namespace NuSysApp
                 vm.PageLocationChanged -= Vm_PageLocationChanged;
             }
 
-            xClippingWrapper.Dispose();
+            
         }
 
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)
@@ -281,9 +157,7 @@ namespace NuSysApp
                     {
                         continue;
                     }
-                    var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel, region.PageNumber,vm.LibraryElementController.LibraryElementModel.AccessType);
-                    var tempview = new TemporaryImageRegionView(tempvm);
-                    xClippingWrapper.AddTemporaryRegion(tempview);
+
                 }
                 vm.Goto(vm.CurrentPageNumber);
             }

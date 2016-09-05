@@ -156,12 +156,6 @@ namespace NuSysApp
         /// <param name="model"></param>
         private void AddModelToControllers(LibraryElementModel model)
         {
-
-            if (NusysConstants.IsRegionType(model.Type))
-            {
-                Debug.Assert(model is Region);
-                SessionController.Instance.RegionsController.AddRegion(model as Region);
-            }
             if (model.Type == NusysConstants.ElementType.Link)
             {
                 var linkController =

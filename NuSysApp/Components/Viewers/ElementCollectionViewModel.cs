@@ -33,7 +33,6 @@ namespace NuSysApp
         private string _toolStartableId;
 
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
-        protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
         protected FreeFormElementViewModelFactory _elementVmFactory = new FreeFormElementViewModelFactory();
 
         public Vector2 CameraTranslation { get; set; } = new Vector2(-Constants.MaxCanvasSize / 2f, -Constants.MaxCanvasSize / 2f);

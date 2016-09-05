@@ -34,9 +34,6 @@ namespace NuSysApp
             DataContext = vm;
             SizeChanged += OnSizeChanged;
 
-            //Show/hide region buttons need access to the audiowrapper for event handlers
-            xShowHideRegionButtons.Wrapper = VideoMediaPlayer.AudioWrapper;
-
             if (!vm.LibraryElementController.ContentLoaded)
             {
                 UITask.Run(async delegate
@@ -61,9 +58,9 @@ namespace NuSysApp
         {
             var vm = SessionController.Instance.SessionView.DetailViewerView.DataContext as DetailViewerViewModel;
             var vlem = (vm.CurrentElementController.LibraryElementModel as VideoLibraryElementModel);
-            VideoMediaPlayer.Grid.Width = sizeChangedEventArgs.NewSize.Width;
-            VideoMediaPlayer.Grid.Height = sizeChangedEventArgs.NewSize.Width/vlem.Ratio;
-            VideoMediaPlayer.SetVideoSize(sizeChangedEventArgs.NewSize.Width, sizeChangedEventArgs.NewSize.Width / vlem.Ratio);
+            //VideoMediaPlayer.Grid.Width = sizeChangedEventArgs.NewSize.Width;
+            //VideoMediaPlayer.Grid.Height = sizeChangedEventArgs.NewSize.Width/vlem.Ratio;
+            //VideoMediaPlayer.SetVideoSize(sizeChangedEventArgs.NewSize.Width, sizeChangedEventArgs.NewSize.Width / vlem.Ratio);
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
@@ -76,12 +73,12 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoDetailHomeTabViewModel;
-            VideoMediaPlayer.Source = new Uri(vm.LibraryElementController.Data);
+            //VideoMediaPlayer.Source = new Uri(vm.LibraryElementController.Data);
         }
 
         public void Dispose()
         {
-            VideoMediaPlayer.StopVideo();
+            //VideoMediaPlayer.StopVideo();
         }
 
         private void ControllerOnDisposed(object source, object args)

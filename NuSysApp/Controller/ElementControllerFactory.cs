@@ -18,22 +18,18 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Text:
                     controller = new TextNodeController((TextElementModel)elementModel);
                     break;
-                case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
                     controller = new ImageElementIntanceController(elementModel);
                     break;
                 case NusysConstants.ElementType.Word:
                     controller = new ElementController(elementModel);
                     break;
-                case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
                     controller = new ElementController(elementModel);
                     break;
-                case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
                     controller = new ElementController(elementModel);
                     break;
-                case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
                     controller = new ElementController(elementModel);
                     break;
