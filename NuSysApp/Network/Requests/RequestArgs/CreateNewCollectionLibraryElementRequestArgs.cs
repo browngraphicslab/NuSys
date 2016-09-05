@@ -36,6 +36,14 @@ namespace NuSysApp
         public List<PointModel> ShapePoints { get; set; }
 
         /// <summary>
+        /// the double aspect ratio of the collection if it is shaped.  
+        /// This is not requiresd, but should be used if the ShapePoints list is used.
+        /// will only be included in the request if this nullable double is not null.
+        /// Should be calculated as width/height.
+        /// </summary>
+        public double? AspectRatio { get; set; }
+
+        /// <summary>
         /// this override pack to request keys simply calls the base class's method to get a message.
         /// THen it will add to the message the key value pairs for the finite boolean and the shape points using request keys;
         /// </summary>
@@ -50,6 +58,10 @@ namespace NuSysApp
             if (ShapePoints != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY] = ShapePoints;
+            }
+            if (AspectRatio != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_ASPECT_RATIO_KEY] = AspectRatio.Value;
             }
             return message;
         }
