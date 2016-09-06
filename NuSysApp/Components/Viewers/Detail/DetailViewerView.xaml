@@ -146,7 +146,9 @@
                 </Button>
             </Grid>
 
-            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,0,0,0" Grid.RowSpan="5" SelectionChanged="XRootPivot_OnSelectionChanged">
+            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,0,0,0" Grid.RowSpan="5" SelectionChanged="XRootPivot_OnSelectionChanged" ScrollViewer.IsHorizontalScrollChainingEnabled="False"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                            ScrollViewer.HorizontalScrollMode="Enabled">
                 <PivotItem Header="Home">
                     <!--Pivot content goes here-->
                     <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"></ContentPresenter>

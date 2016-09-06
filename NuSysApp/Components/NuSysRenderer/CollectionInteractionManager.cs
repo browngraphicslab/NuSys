@@ -119,6 +119,13 @@ namespace NuSysApp
             _canvasInteractionManager.ItemDoubleTapped += CanvasInteractionManagerOnItemDoubleTapped;
             _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
             _canvasInteractionManager.TwoPointerPressed += CanvasInteractionManagerOnTwoPointerPressed;
+            _canvasInteractionManager.PointerWheelChanged += CanvasInteractionManagerOnPointerWheelChanged;
+        }
+
+        private void CanvasInteractionManagerOnPointerWheelChanged(CanvasPointer pointer, float delta)
+        {
+            var zoomspeed = delta < 0 ? 0.8f : 1.2f;
+            PanZoomed?.Invoke(pointer.CurrentPoint, Vector2.Zero, zoomspeed);
         }
 
         private void CollectionInteractionManagerOnTwoElementsReleased()
@@ -533,6 +540,7 @@ namespace NuSysApp
             _canvasInteractionManager.TwoPointerPressed -= CanvasInteractionManagerOnTwoPointerPressed;
             _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
             _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
+            _canvasInteractionManager.PointerWheelChanged -= CanvasInteractionManagerOnPointerWheelChanged;
         }
     }
 }

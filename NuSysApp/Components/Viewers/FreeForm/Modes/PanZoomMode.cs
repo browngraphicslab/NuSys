@@ -203,7 +203,7 @@ namespace NuSysApp
             var direction = Math.Sign((double)e.GetCurrentPoint(_view).Properties.MouseWheelDelta);
 
             var zoomspeed = direction < 0 ? 0.95 : 1.05;//0.08 * direction;
-            var translateSpeed = 10;
+
 
             compositeTransform.ScaleX *= zoomspeed;
             compositeTransform.ScaleY *= zoomspeed;

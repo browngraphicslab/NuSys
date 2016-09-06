@@ -27,6 +27,7 @@ namespace NuSysApp
         public delegate void PointerPressedHandler(CanvasPointer pointer);
         public delegate void MarkingMenuPointerReleasedHandler();
         public delegate void MarkingMenuPointerMoveHandler(Vector2 p);
+        public delegate void PointerWheelHandler(CanvasPointer pointer, float delta);
         public delegate void TranslateHandler(CanvasPointer pointer, Vector2 point, Vector2 delta );
         public delegate void PanZoomHandler(Vector2 center, Vector2 deltaTranslation, float deltaZoom);
         public event TranslateHandler Translated;
@@ -38,6 +39,7 @@ namespace NuSysApp
         public event PointerPressedHandler ItemTapped;
         public event PointerPressedHandler ItemLongTapped;
         public event PointerPressedHandler ItemDoubleTapped;
+        public event PointerWheelHandler PointerWheelChanged;
         public event TwoPointerPressedHandler TwoPointerPressed;
         public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
 
@@ -102,6 +104,9 @@ namespace NuSysApp
             var newCenter = new Vector2((float)p.X, (float)p.Y);
             _centerPoint = newCenter;
 
+            var point = args.GetCurrentPoint(_canvas);
+            var delta = Math.Sign((double)args.GetCurrentPoint(_canvas).Properties.MouseWheelDelta);
+            PointerWheelChanged?.Invoke(new CanvasPointer(point), delta);
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
@@ -110,7 +115,6 @@ namespace NuSysApp
                 return;
 
             OnPointerTouchReleased(sender, args);
-     
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
