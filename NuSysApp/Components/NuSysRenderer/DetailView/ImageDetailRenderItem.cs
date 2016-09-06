@@ -76,7 +76,7 @@ namespace NuSysApp
             foreach (var l in others)
             {
                 var rect = new Rect(0,0, l.NormalizedWidth * _targetRect.Width, l.NormalizedHeight*_targetRect.Height );
-                var region = new ImageDetailRegionRenderItem(l, rect, this, ResourceCreator);
+                var region = new ImageDetailRegionRenderItem(l, rect, _targetRect, this, ResourceCreator);
                 region.T = Matrix3x2.CreateTranslation((float)(_targetRect.X + l.NormalizedX * _targetRect.Width), (float)(_targetRect.Y + l.NormalizedY * _targetRect.Height));
                 region.RegionUpdated += RegionOnRegionUpdated;
                 

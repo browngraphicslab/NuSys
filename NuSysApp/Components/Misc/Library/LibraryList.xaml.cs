@@ -273,8 +273,8 @@ namespace NuSysApp
 
             rect.Hide();
 
-            var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
-            
+            var r = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)_x, (float)_y), SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
+
             //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
             // If they are different we siply return 
             var currWorkSpaceAccessType =

@@ -18,20 +18,37 @@ namespace NuSysApp
     public class ImageElementRenderItem : ElementRenderItem
     {
         private ImageElementViewModel _vm;
+        private ImageLibraryElementController _controller;
         private CanvasBitmap _bmp;
-        private CanvasRenderTarget _renderTarget;
+        private Rect _srcRect;
+        private bool _isCropping;
 
         public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
+           _controller = (_vm.Controller.LibraryElementController as ImageLibraryElementController);
+            _controller.LocationChanged += LibOnLocationChanged;
+            _controller.SizeChanged += LibOnSizeChanged;
         }
-
         public override void Dispose()
         {
             _vm = null;
             _bmp.Dispose();
             _bmp = null;
+            _controller.LocationChanged -= LibOnLocationChanged;
+            _controller.SizeChanged -= LibOnSizeChanged;
+            _controller = null;
             base.Dispose();
+        }
+
+        private void LibOnSizeChanged(object sender, double width, double height)
+        {
+            Crop();
+        }
+
+        private void LibOnLocationChanged(object sender, Point topLeft)
+        {
+            Crop();
         }
 
         public override async Task Load()
@@ -40,41 +57,38 @@ namespace NuSysApp
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(url), ResourceCreator.Dpi);
             _vm.ImageSize = _bmp.Size;
 
-            
+          //  var ratio = (double)_bmp.Size.Width / (double)_bmp.Size.Height;
+          //  _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Width * ratio, false);
+            Crop();
+        }
 
-            var ratio = (double)_bmp.Size.Width / (double)_bmp.Size.Height;
-            _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Width * ratio, false);
+        private void Crop()
+        {
+            _isCropping = true;
+               var lib = (_vm.Controller.LibraryElementModel as ImageLibraryElementModel);
+            var nx = lib.NormalizedX * _bmp.Size.Width;
+            var ny = lib.NormalizedY * _bmp.Size.Height;
+            var nw = lib.NormalizedWidth * _bmp.Size.Width;
+            var nh = lib.NormalizedHeight * _bmp.Size.Height;
+            _srcRect = new Rect(nx, ny, nw, nh);
+            _vm.Controller.SetSize(nw, nh, false);
+            _isCropping = false;
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (_bmp != null && _renderTarget == null)
-            {
-
-
-                var lib = (_vm.Controller.LibraryElementModel as ImageLibraryElementModel);
-                var newRatio = lib.Ratio*(lib.NormalizedWidth/lib.NormalizedHeight);
-                var nx = lib.NormalizedX*_bmp.Size.Width;
-                var ny = lib.NormalizedY*_bmp.Size.Height;
-                var nw = lib.NormalizedWidth*_bmp.Size.Width;
-                var nh = lib.NormalizedHeight*_bmp.Size.Height;
-                var dstRect = new Rect(nx, ny, nw, nh);
-                _renderTarget = new CanvasRenderTarget(ResourceCreator, (float)nw, (float)nh);
-                using (var dss = _renderTarget.CreateDrawingSession())
-                {
-                    dss.DrawImage(_bmp,0,0, dstRect);
-                }
-                var ratio = (double)nw / (double)nh;
-                _vm.Controller.SetSize(_vm.Controller.Model.Height * ratio, _vm.Controller.Model.Height, false);
-            }
+            var orgTransform = ds.Transform;
 
             base.Draw(ds);
-            var orgTransform = ds.Transform;
+
+            if (_vm == null )
+                return;
+          
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
             ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
 
-            if (_renderTarget != null)
-                ds.DrawImage(_renderTarget, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height});
+            if (_bmp != null)
+                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height}, _srcRect);
 
             ds.Transform = orgTransform;
         }

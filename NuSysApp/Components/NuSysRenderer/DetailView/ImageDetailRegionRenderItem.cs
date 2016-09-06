@@ -14,7 +14,8 @@ namespace NuSysApp
 {
     public class ImageDetailRegionRenderItem : InteractiveBaseRenderItem
     {
-        private Rect _rect = new Rect();
+        private Rect _regionBounds;
+        private Rect _imageBounds;
 
         public delegate void RegionUpdatedHandler(ImageDetailRegionRenderItem regionRegion);
         public event RegionUpdatedHandler RegionUpdated;
@@ -22,10 +23,11 @@ namespace NuSysApp
 
         public ImageLibraryElementModel LibraryElementModel { get; set; }
         
-        public ImageDetailRegionRenderItem(ImageLibraryElementModel libraryElementModel, Rect rect, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public ImageDetailRegionRenderItem(ImageLibraryElementModel libraryElementModel, Rect regionBounds, Rect imageBounds, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             LibraryElementModel = libraryElementModel;
-            _rect = rect;
+            _regionBounds = regionBounds;
+            _imageBounds = imageBounds;
             _resizer = new ImageDetailRegionResizerRenderItem(this, resourceCreator);
             _resizer.ResizerDragged += ResizerOnResizerDragged;
             Children.Add(_resizer);
@@ -41,8 +43,8 @@ namespace NuSysApp
 
         private void ResizerOnResizerDragged(Vector2 delta)
         {
-            _rect.Width += delta.X;
-            _rect.Height += delta.Y;
+            _regionBounds.Width += delta.X;
+            _regionBounds.Height += delta.Y;
             RegionUpdated?.Invoke(this);
         }
 
@@ -53,24 +55,26 @@ namespace NuSysApp
 
             ds.Transform = GetTransform()*orgTransform;
    
-            ds.DrawRectangle(new Rect(0,0,_rect.Width, _rect.Height), Color.FromArgb(0x33,0,0x55,0), 3);
+            ds.DrawRectangle(new Rect(0,0,_regionBounds.Width, _regionBounds.Height), Color.FromArgb(0x33,0,0x55,0), 3);
 
             ds.Transform = orgTransform;
 
-            _resizer.T = Matrix3x2.CreateTranslation((float)(_rect.X +_rect.Width), (float)(_rect.Y + _rect.Height));
+            _resizer.T = Matrix3x2.CreateTranslation((float)(_regionBounds.X +_regionBounds.Width), (float)(_regionBounds.Y + _regionBounds.Height));
             base.Draw(ds);
         }
 
         public override void OnDragged(CanvasPointer pointer)
         {
             base.OnDragged(pointer);
-            T = Matrix3x2.CreateTranslation(T.M31 + pointer.DeltaSinceLastUpdate.X, T.M32 + pointer.DeltaSinceLastUpdate.Y);
+            var nx = (float)Math.Max(_imageBounds.X, Math.Min(_imageBounds.X + _imageBounds.Width - _regionBounds.Width, T.M31 + pointer.DeltaSinceLastUpdate.X));
+            var ny = (float)Math.Max(_imageBounds.Y, Math.Min(_imageBounds.Y + _imageBounds.Height - _regionBounds.Height, T.M32 + pointer.DeltaSinceLastUpdate.Y));
+            T = Matrix3x2.CreateTranslation(nx, ny);
             RegionUpdated?.Invoke(this);
         }
 
         public override Rect GetMeasure()
         {
-            return _rect;
+            return _regionBounds;
         }
     }
 }

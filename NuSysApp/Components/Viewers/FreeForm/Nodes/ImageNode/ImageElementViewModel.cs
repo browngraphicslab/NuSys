@@ -35,7 +35,9 @@ namespace NuSysApp
 
         public override double GetRatio()
         {
-            return ImageSize.Height / ImageSize.Width;
+            var lib = (Controller.LibraryElementModel as ImageLibraryElementModel);
+            var newRatio = lib.Ratio * (lib.NormalizedWidth / lib.NormalizedHeight);
+            return newRatio;
 
         }
         /// <summary>
@@ -47,12 +49,12 @@ namespace NuSysApp
         /// <param name="height"></param>
         protected override void OnSizeChanged(object source, double width, double height)
         {
-            if (width * GetRatio() < Constants.MinNodeSize)
+            if (height * GetRatio() < Constants.MinNodeSize)
             {
                 return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour
             }
 
-            SetSize(width, width * GetRatio());
+            SetSize(height * GetRatio(), height);
 
         }
     }
