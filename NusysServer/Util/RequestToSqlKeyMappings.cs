@@ -30,15 +30,7 @@ namespace NusysServer
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY, NusysConstants.LIBRARY_ELEMENT_TYPE_KEY }, // type
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY, NusysConstants.LIBRARY_ELEMENT_TITLE_KEY }, // title
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY, NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY }, // access type
-
-            //regions start
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID, NusysConstants.REGION_CLIPPING_PARENT_ID_KEY },//clipping parent id
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION, NusysConstants.PDF_REGION_PAGE_NUMBER_KEY },//pdf page number
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT, NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY },//top left point
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END, NusysConstants.TIMESPAN_REGION_END_KEY }, //time end
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START, NusysConstants.TIMESPAN_REGION_START_KEY },//time start
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT, NusysConstants.RECTANGLE_REGION_HEIGHT_KEY },//rect height 
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH, NusysConstants.RECTANGLE_REGION_WIDTH_KEY },//rect width
+            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_PARENT_ID_KEY, NusysConstants.LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY },//clipping parent id
 
             //links start
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY },//link in id
@@ -54,7 +46,18 @@ namespace NusysServer
 
             //image
             {NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_ASPECT_RATIO_KEY, NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY },//image aspect ratio
+            {NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT, NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_HEIGHT_KEY },//rect height 
+            {NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH, NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY },//rect width
+            {NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_TOP_LEFT_X, NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_X_KEY },//top left point x
+            {NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_TOP_LEFT_Y, NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_Y_KEY },//top left point y
 
+            //audio
+            {NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_END, NusysConstants.AUDIO_LIBRARY_ELEMENT_END_TIME_KEY }, //time end
+            {NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_START, NusysConstants.AUDIO_LIBRARY_ELEMENT_START_TIME_KEY },//time start
+
+            //pdf
+            {NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY, NusysConstants.PDF_PAGE_START_KEY },//pdf page number
+            {NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY, NusysConstants.PDF_PAGE_END_KEY },//pdf page number
         };
 
 

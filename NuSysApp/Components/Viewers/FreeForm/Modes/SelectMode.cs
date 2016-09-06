@@ -43,11 +43,7 @@ namespace NuSysApp
         /// </summary>
         private readonly List<Type> _possibleElements = new List<Type>
         {
-            typeof(ImageNodeView),
-            typeof(PdfNodeView),
             typeof(GroupNodeView),
-            typeof(AudioNodeView),
-            typeof(VideoNodeView),
             typeof(TextNodeView)
         };
 
@@ -398,7 +394,7 @@ namespace NuSysApp
                     else if (vm.ElementType != NusysConstants.ElementType.Link)
                     {
 
-                        if (vm.ElementType == NusysConstants.ElementType.PDF || vm.ElementType == NusysConstants.ElementType.PdfRegion)
+                        if (vm.ElementType == NusysConstants.ElementType.PDF)
                         {
                             var pdfVm = (PdfNodeViewModel)vm;
                             PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber; // this is a static field so we can set it here, even though it looks weird

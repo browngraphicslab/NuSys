@@ -20,17 +20,16 @@ namespace NuSysApp
             LibraryElementController = controller;           
         }
 
-        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
+        public override CreateNewLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
-            var args = new CreateNewTimeSpanRegionRequestArgs();
-            args.RegionStart = .25;
-            args.RegionEnd = .75;
-            if (LibraryElementController is AudioRegionLibraryElementController)
-            {
-                var region = LibraryElementController.LibraryElementModel as AudioRegionModel;
-                args.RegionStart = region.Start + (region.End - region.Start) * 0.25;
-                args.RegionEnd = region.Start + (region.End - region.Start) * 0.75;
-            }
+            var audioModel = LibraryElementController?.LibraryElementModel as AudioLibraryElementModel;
+
+            Debug.Assert(audioModel != null);
+
+            var args = new CreateNewAudioLibraryElementRequestArgs();
+            args.StartTime = audioModel.NormalizedStartTime + (audioModel.NormalizedEndTime - audioModel.NormalizedStartTime) * .25;
+            args.EndTime = audioModel.NormalizedStartTime + (audioModel.NormalizedEndTime - audioModel.NormalizedStartTime) * .75; ;
+
             return args;
         }
     }

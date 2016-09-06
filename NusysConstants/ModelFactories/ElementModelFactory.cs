@@ -25,22 +25,18 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Text:
                     elementModel = new TextElementModel(id);
                     break;
-                case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
                     elementModel = new ImageElementModel(id);
                     break;
                 case NusysConstants.ElementType.Word:
                     elementModel = new WordNodeModel(id);
                     break;
-                case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
                     elementModel = new PdfNodeModel(id);
                     break;
-                case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
                     elementModel = new AudioNodeModel(id);
                     break;
-                case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
                     elementModel = new VideoNodeModel(id);
                     break;
@@ -72,22 +68,18 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Text:
                      elementModel = JsonConvert.DeserializeObject<TextElementModel>(elementJSON);
                     break;
-                case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
                      elementModel = JsonConvert.DeserializeObject<ImageElementModel>(elementJSON);
                     break;
                 case NusysConstants.ElementType.Word:
                      elementModel = JsonConvert.DeserializeObject<WordNodeModel>(elementJSON);
                     break;
-                case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
                      elementModel = JsonConvert.DeserializeObject<PdfNodeModel>(elementJSON);
                     break;
-                case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
                         elementModel = JsonConvert.DeserializeObject<AudioNodeModel>(elementJSON);
                     break;
-                case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
                         elementModel = JsonConvert.DeserializeObject<VideoNodeModel>(elementJSON);
                     break;

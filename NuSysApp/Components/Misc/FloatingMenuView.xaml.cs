@@ -250,7 +250,7 @@ namespace NuSysApp
             rect.Hide();
 
             var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(args.Position);
-            //var r = NuSysRenderer.Instance.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
+            var r = NuSysRenderer.Instance.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
 
             // Add the element at the dropped location
             // Add the element at the dropped location

@@ -28,7 +28,6 @@ namespace NuSysApp
     {
 
         private ObservableCollection<FrameworkElement> _views;
-        private FreeFormNodeViewFactory _factory;
         private int _count = 0;
 
         private double _x;

@@ -55,10 +55,10 @@ namespace NuSysApp
         /// to be called when we make the regon library element model.  Adds it to dictionaries
         /// </summary>
         /// <param name="regionModel"></param>
-        public void AddRegion(Region regionModel)
+        public void AddRegion(LibraryElementModel regionModel)
         {
             Debug.Assert(regionModel != null);
-            var clippingParentId = regionModel.ClippingParentId;
+            var clippingParentId = regionModel.ParentId;
             var contentId = regionModel.ContentDataModelId;
             if (clippingParentId == null)   {
                 clippingParentId = "";
@@ -87,10 +87,10 @@ namespace NuSysApp
             contentDataModel.AddRegion(regionModel.LibraryElementId);
         }
 
-        public void RemoveRegion(Region regionModel)
+        public void RemoveRegion(LibraryElementModel regionModel)
         {
             Debug.Assert(regionModel != null);
-            var clippingParentId = regionModel.ClippingParentId;
+            var clippingParentId = regionModel.ParentId;
             var contentId = regionModel.ContentDataModelId;
             Debug.Assert(clippingParentId != null || contentId != null, "This should never be null");
             /*

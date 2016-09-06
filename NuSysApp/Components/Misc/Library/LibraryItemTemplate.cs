@@ -35,16 +35,6 @@ namespace NuSysApp
             LibraryElementId = controller.LibraryElementModel.LibraryElementId;
         }
 
-        public LibraryItemTemplate(RegionLibraryElementController libraryElementController)
-        {
-            Title = libraryElementController.Title;
-            libraryElementController.TitleChanged += Controller_TitleChanged;
-            ThumbnailUri = libraryElementController.SmallIconUri;
-            Timestamp = libraryElementController.LibraryElementModel.Timestamp.Substring(0, libraryElementController.LibraryElementModel.Timestamp.Length - 3);
-            Type = libraryElementController.LibraryElementModel.Type.ToString();
-            LibraryElementId = libraryElementController.LibraryElementModel.LibraryElementId;
-        }
-
         private void Controller_TitleChanged(object sender, string title)
         {
             if (title == null)

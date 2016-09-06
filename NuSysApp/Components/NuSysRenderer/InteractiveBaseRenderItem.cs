@@ -23,7 +23,7 @@ namespace NuSysApp
 
         public virtual void OnDragged(CanvasPointer pointer)
         {
-
+            
         }
     }
 }

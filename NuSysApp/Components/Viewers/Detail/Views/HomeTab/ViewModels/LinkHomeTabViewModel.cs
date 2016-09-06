@@ -19,52 +19,13 @@ namespace NuSysApp
         {
             _controller = controller;
             var linkModel = controller.LinkLibraryElementModel;
-
-            if (NusysConstants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId).LibraryElementModel.Type))
-            {
-                var fromController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId);
-                if (fromController == null)
-                {
-                    var fromLibraryElementController =
-                        SessionController.Instance.ContentController.GetLibraryElementController(
-                            linkModel.OutAtomId);
-                    LinkFrom = fromLibraryElementController.Title;
-
-                }
-                else
-                {
-                    LinkFrom = fromController.Title;
-                }
-                
-            }
-            else
-            {
-                var fromController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId);
-                LinkFrom = fromController.Title;
-            }
-
-            if (NusysConstants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId).LibraryElementModel.Type))
-            {
-                var toController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId);
-                if (toController == null)
-                {
-                    var toLibraryElementController =
-                        SessionController.Instance.ContentController.GetLibraryElementController(
-                            linkModel.InAtomId);
-                    LinkTo = toLibraryElementController.Title;
-                    return;
-                }
-                else
-                {
-                    LinkTo = toController?.Title;
-                }
-                
-            }
-            else
-            {
-                var toController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId);
-                LinkTo = toController.Title;
-            }
+            
+            var fromController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId);
+            LinkFrom = fromController.Title;
+            
+            var toController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId);
+            LinkTo = toController.Title;
+            
 
             Annotation = controller.Data;
             controller.ContentDataController.ContentDataUpdated += Controller_ContentChanged; 
@@ -85,7 +46,7 @@ namespace NuSysApp
         }
 
         // There is no region here so this method should not be called
-        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
+        public override CreateNewLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();
         }

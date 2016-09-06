@@ -23,7 +23,6 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Text:
                     view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller));
                     break;
-                case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
                     view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller));
                     break;
@@ -33,18 +32,15 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Powerpoint:
                     //view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
                     break;
-                case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
                     view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller));
                     break;
                 case NusysConstants.ElementType.Web:
                     //view = new WebDetailView(new WebNodeViewModel(controller));
                     break;
-                case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
                     view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller));
                     break;
-                case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
                     view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller));
                     break;

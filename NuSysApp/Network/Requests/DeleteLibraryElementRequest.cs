@@ -77,10 +77,6 @@ namespace NuSysApp
             }
             // This checks if this LibraryElementRequest is a region and if so then call the regionscontroller remove region method
 
-            if (libraryElementController is RegionLibraryElementController)
-            {
-                SessionController.Instance.RegionsController.RemoveRegion(libraryElementController.LibraryElementModel as Region);
-            }
             SessionController.Instance.LinksController.RemoveContent(libraryElementController);
             UITask.Run(delegate {
                 libraryElementController.Delete();

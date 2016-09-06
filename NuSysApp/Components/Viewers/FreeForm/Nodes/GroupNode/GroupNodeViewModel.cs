@@ -34,7 +34,6 @@ namespace NuSysApp
        
         public GroupNodeViewModel(ElementCollectionController controller) : base(controller)
         {
-            _nodeViewFactory = new GroupItemThumbFactory();
             CalculateToolAnchorPoint();
             ActiveCollectionViewType = (controller.Model as CollectionElementModel).ActiveCollectionViewType;
             Controller.SizeChanged += Controller_SizeChanged;

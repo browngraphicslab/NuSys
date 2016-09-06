@@ -68,6 +68,10 @@ namespace NuSysApp
         {
             get { return _contents.Count; }
         }
+        public HashSet<LibraryElementModel> AllLibraryElementModels
+        {
+            get { return new HashSet<LibraryElementModel>(_contents.Values); }
+        }
 
         public HashSet<string> IdList
         {
@@ -156,12 +160,7 @@ namespace NuSysApp
         /// <param name="model"></param>
         private void AddModelToControllers(LibraryElementModel model)
         {
-
-            if (NusysConstants.IsRegionType(model.Type))
-            {
-                Debug.Assert(model is Region);
-                SessionController.Instance.RegionsController.AddRegion(model as Region);
-            }
+            SessionController.Instance.RegionsController.AddRegion(model);
             if (model.Type == NusysConstants.ElementType.Link)
             {
                 var linkController =

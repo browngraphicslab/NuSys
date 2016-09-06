@@ -114,66 +114,56 @@ namespace NuSysApp
 
             if (originalController.LibraryElementModel.Type != NusysConstants.ElementType.Text)
             {
-                dynamic args = new CreateNewLibraryElementRequestArgs();
-                dynamic model = null;
-                //Create and execute the new Library element request
-                //Dear Harsh,
-                ///    This is how you do create deep copies.
-                //
-                //Love,
-                //    Sahil
-                //
-                //P.S.
-                //    If this breaks then good luck
-                //
-                // P.P.S.
-                //    Change the type from dynamic if this breaks, it'll make it easier
+                CreateNewLibraryElementRequestArgs args;
+
                 switch (originalController.LibraryElementModel.Type)
                 {
                     case NusysConstants.ElementType.Image:
-                        args = new CreateNewImageLibraryElementRequestArgs();
-                        model = originalController.LibraryElementModel as ImageLibraryElementModel;
-                        args.AspectRatio = model.Ratio;
+                        var imageArgs = new CreateNewImageLibraryElementRequestArgs();
+                        var imageModel = originalController?.LibraryElementModel as ImageLibraryElementModel;
+                        Debug.Assert(imageModel != null);
+                        imageArgs.AspectRatio = imageModel.Ratio;
+                        imageArgs.NormalizedHeight = imageModel.NormalizedHeight;
+                        imageArgs.NormalizedWidth = imageModel.NormalizedWidth;
+                        imageArgs.NormalizedX = imageModel.NormalizedX;
+                        imageArgs.NormalizedY = imageModel.NormalizedY;
+                        imageArgs.ParentLibraryElementId = imageModel.ParentId;
+                        args = imageArgs;
                         break;
                     case NusysConstants.ElementType.Video:
-                        args = new CreateNewVideoLibraryElementRequestArgs();
-                        model = originalController.LibraryElementModel as VideoLibraryElementModel;
-                        args.AspectRatio = model.Ratio;
+                        var videoArgs = new CreateNewVideoLibraryElementRequestArgs();
+                        var videoModel = originalController?.LibraryElementModel as VideoLibraryElementModel;
+                        Debug.Assert(videoModel != null);
+                        videoArgs.AspectRatio = videoModel.Ratio;
+                        videoArgs.StartTime = videoModel.NormalizedStartTime;
+                        videoArgs.EndTime = videoModel.NormalizedEndTime;
+                        videoArgs.ParentLibraryElementId = videoModel.ParentId;
+                        args = videoArgs;
                         break;
                     case NusysConstants.ElementType.Audio:
+                        var audioArgs = new CreateNewAudioLibraryElementRequestArgs();
+                        var audioModel = originalController?.LibraryElementModel as AudioLibraryElementModel;
+                        Debug.Assert(audioModel != null);
+                        audioArgs.StartTime = audioModel.NormalizedStartTime;
+                        audioArgs.EndTime = audioModel.NormalizedEndTime;
+                        audioArgs.ParentLibraryElementId = audioModel.ParentId;
+                        args = audioArgs;
+                        break;
                     case NusysConstants.ElementType.PDF:
-                        args = new CreateNewLibraryElementRequestArgs();
+                        var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                        var pdfModel = originalController?.LibraryElementModel as PdfLibraryElementModel;
+                        Debug.Assert(pdfModel != null);
+                        pdfArgs.NormalizedHeight = pdfModel.NormalizedHeight;
+                        pdfArgs.NormalizedWidth = pdfModel.NormalizedWidth;
+                        pdfArgs.NormalizedX = pdfModel.NormalizedX;
+                        pdfArgs.NormalizedY = pdfModel.NormalizedY;
+                        pdfArgs.PdfPageStart = pdfModel.PageStart;
+                        pdfArgs.PdfPageEnd = pdfModel.PageEnd;
+                        pdfArgs.ParentLibraryElementId = pdfModel.ParentId;
+                        args = pdfArgs;
                         break;
-                    case NusysConstants.ElementType.VideoRegion:
-                    case NusysConstants.ElementType.AudioRegion:
-                        args = new CreateNewTimeSpanRegionRequestArgs();
-                        model = originalController.LibraryElementModel as AudioRegionModel;
-
-                        args.RegionStart = model.Start;
-                        args.RegionEnd = model.End;
-                        args.ClippingParentLibraryId = model.ClippingParentId;
-                        break;
-                    case NusysConstants.ElementType.ImageRegion:
-                        args = new CreateNewRectangleRegionLibraryElementRequestArgs();
-                        model = originalController.LibraryElementModel as RectangleRegion;
-
-                        args.RegionHeight = model.Height;
-                        args.RegionWidth = model.Width;
-                        args.TopLeftPoint = model.TopLeftPoint;
-                        args.ClippingParentLibraryId = model.ClippingParentId;
-                        break;
-                    case NusysConstants.ElementType.PdfRegion:
-                        args = new CreateNewPDFRegionLibraryElementRequestArgs();
-                        model = originalController.LibraryElementModel as PdfRegionModel;
-
-                        args.RegionHeight = model.Height;
-                        args.RegionWidth = model.Width;
-                        args.TopLeftPoint = model.TopLeftPoint;
-                        args.PageLocation = model.PageLocation;
-                        args.ClippingParentLibraryId = model.ClippingParentId;
-                        break;
-                    case NusysConstants.ElementType.Link:
-                        Debug.Fail("this should never even be hit because links are not copyable");
+                    default:
+                        Debug.Fail("this should never even be hit because this is not copyable");
                         return "";
                         break;
                 }

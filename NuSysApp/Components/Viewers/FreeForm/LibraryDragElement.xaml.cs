@@ -46,17 +46,13 @@ namespace NuSysApp
         {
             IconImage.Visibility = Visibility.Collapsed;
 
-            switch (element.Type)
+            switch (element.Type) //honestly wtf is this switch statmenet
             {
                 // icons supported
                 case NusysConstants.ElementType.Image:
-                case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Video:
-                case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.PDF:
-                case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.Audio:
-                case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Text:
                 case NusysConstants.ElementType.Link:
                 case NusysConstants.ElementType.Collection:
@@ -84,11 +80,9 @@ namespace NuSysApp
             {
                 //default icon support
                 case NusysConstants.ElementType.PDF:
-                case NusysConstants.ElementType.PdfRegion:
                     IconImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/library_thumbnails/pdf.png"));
                     break;
                 case NusysConstants.ElementType.Audio:
-                case NusysConstants.ElementType.AudioRegion:
                     IconImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/library_thumbnails/audio.png"));
                     break;
                 case NusysConstants.ElementType.Text:

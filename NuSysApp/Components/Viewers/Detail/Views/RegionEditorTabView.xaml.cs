@@ -46,29 +46,25 @@ namespace NuSysApp
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
             NusysConstants.ElementType type;
 
-            CreateNewRegionLibraryElementRequestArgs regionRequestArgs = new CreateNewRegionLibraryElementRequestArgs();
+            CreateNewLibraryElementRequestArgs regionRequestArgs = new CreateNewLibraryElementRequestArgs();
             //in each case, create a new CreateNewRegionLibraryElementRequestArgs or subclass
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
-                case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
                     regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
-                    type = NusysConstants.ElementType.ImageRegion;
+                    type = NusysConstants.ElementType.Image;
                     break;
-                case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
                     regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
-                    type = NusysConstants.ElementType.AudioRegion;
+                    type = NusysConstants.ElementType.Audio;
                     break;
-                case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
                     regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
-                    type  = NusysConstants.ElementType.VideoRegion;
+                    type  = NusysConstants.ElementType.Video;
                     break;
-                case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
                     regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
-                    type = NusysConstants.ElementType.PdfRegion;
+                    type = NusysConstants.ElementType.PDF;
                     break;
                 default:
                     Debug.Fail("This should never occur, if it does we just return to be safe but this is a massive bug");
@@ -80,7 +76,7 @@ namespace NuSysApp
             regionRequestArgs.ContentId = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
             regionRequestArgs.LibraryElementType = type;
             regionRequestArgs.Title = "Region " + vm.CurrentElementController.Title; // TODO factor out this hard-coded string to a constant
-            regionRequestArgs.ClippingParentLibraryId = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
+            regionRequestArgs.ParentLibraryElementId = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
             if (PublicRegionButton.IsChecked == true)
             {
                 regionRequestArgs.AccessType = NusysConstants.AccessType.Public;
@@ -112,7 +108,7 @@ namespace NuSysApp
                 {
                     var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
                     Debug.Assert(detailViewerView != null);
-                    xListViewPresenter.Content = new PDFRegionListView(detailViewerView);
+                    //xListViewPresenter.Content = new PDFRegionListView(detailViewerView);
                     if (!xMainGrid.ColumnDefinitions.Contains(xSecondColumn))
                     {
                         xMainGrid.ColumnDefinitions.Add(xSecondColumn);

@@ -20,25 +20,25 @@ namespace NuSysApp
             LibraryElementController controller;
             switch (model.Type)
             {
-                case NusysConstants.ElementType.ImageRegion:
-                    var imageModel = model as RectangleRegion;
+                case NusysConstants.ElementType.Image:
+                    var imageModel = model as ImageLibraryElementModel;
                     Debug.Assert(imageModel != null);
-                    controller = new RectangleRegionLibraryElementController(imageModel);
+                    controller = new ImageLibraryElementController(imageModel);
                     break;
-                case NusysConstants.ElementType.PdfRegion:
-                    var pdfModel = model as PdfRegionModel;
+                case NusysConstants.ElementType.PDF:
+                    var pdfModel = model as PdfLibraryElementModel;
                     Debug.Assert(pdfModel != null);
-                    controller = new PdfRegionLibraryElementController(pdfModel);
+                    controller = new PdfLibraryElementController(pdfModel);
                     break;
-                case NusysConstants.ElementType.AudioRegion:
-                    var audioModel = model as AudioRegionModel;
+                case NusysConstants.ElementType.Audio:
+                    var audioModel = model as AudioLibraryElementModel;
                     Debug.Assert(audioModel != null);
-                    controller = new AudioRegionLibraryElementController(audioModel);
+                    controller = new AudioLibraryElementController(audioModel);
                     break;
-                case NusysConstants.ElementType.VideoRegion:
-                    var videoModel = model as VideoRegionModel;
+                case NusysConstants.ElementType.Video:
+                    var videoModel = model as VideoLibraryElementModel;
                     Debug.Assert(videoModel != null);
-                    controller = new VideoRegionLibraryElementController(videoModel);
+                    controller = new VideoLibraryElementController(videoModel);
                     break;
                 case NusysConstants.ElementType.Word:
                     //Do debug.asserts above the controller instantiation to make sure the model types are correct

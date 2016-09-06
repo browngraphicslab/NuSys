@@ -18,11 +18,19 @@ namespace NusysIntermediate
         /// </summary>
         public double Ratio { get; set; }
         
+        public double NormalizedX { get; set; }
+
+        public double NormalizedY { get; set; }
+
+        public double NormalizedWidth { get; set; }
+        public double NormalizedHeight { get; set; }
+
         /// <summary>
         /// the constructor just takes in an id and then tells the base class what type of library element model this is.
+        /// Ity also takes in an element type (uesd for pdfs)
         /// </summary>
         /// <param name="libraryElementId"></param>
-        public ImageLibraryElementModel(string libraryElementId) : base(libraryElementId, NusysConstants.ElementType.Image) {}
+        public ImageLibraryElementModel(string libraryElementId, NusysConstants.ElementType type = NusysConstants.ElementType.Image) : base(libraryElementId, type) { }
 
         /// <summary>
         /// override unpack from database keys method used to set the properties of this model after a message is recieved from a sql query.
@@ -34,6 +42,22 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY))
             {
                 Ratio = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_HEIGHT_KEY))
+            {
+                NormalizedHeight = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_HEIGHT_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY))
+            {
+                NormalizedWidth = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_X_KEY))
+            {
+                NormalizedX = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_X_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_Y_KEY))
+            {
+                NormalizedY = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_Y_KEY);
             }
             base.UnPackFromDatabaseKeys(message);
         }

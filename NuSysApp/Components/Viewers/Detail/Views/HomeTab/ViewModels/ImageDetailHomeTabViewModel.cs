@@ -29,27 +29,17 @@ namespace NuSysApp
             Editable = true;         
         }
 
-        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
+        public override CreateNewLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
-            var args = new CreateNewRectangleRegionLibraryElementRequestArgs();
-            args.TopLeftPoint = new PointModel(.25, .25);
-            args.RegionWidth = .5;
-            args.RegionHeight = .5;
-           
-            // if the library element LibraryElementController is a region noramlize top left point, height, and width for original content
-            if (LibraryElementController is RectangleRegionLibraryElementController)
-            {
-                var imageRegionLibraryElementController =
-                    LibraryElementController as RectangleRegionLibraryElementController;
-                var rectangleRegionModel = imageRegionLibraryElementController?.RectangleRegionModel;
+            var imageLibraryElement = (LibraryElementController as ImageLibraryElementController)?.ImageLibraryElementModel;
+            Debug.Assert(imageLibraryElement != null);
 
-                // normalizes the top left point so that it is in the correct place on the original content
-                args.TopLeftPoint = new PointModel(.25 * rectangleRegionModel.Width + rectangleRegionModel.TopLeftPoint.X, 
-                                                    .25 * rectangleRegionModel.Height + rectangleRegionModel.TopLeftPoint.Y);
-                // same for width and height
-                args.RegionWidth = .5 * rectangleRegionModel.Width;
-                args.RegionHeight = .5 * rectangleRegionModel.Height;
-            }
+            var args = new CreateNewImageLibraryElementRequestArgs();
+            args.NormalizedX = imageLibraryElement.NormalizedX + .25 * imageLibraryElement.NormalizedWidth;
+            args.NormalizedY = imageLibraryElement.NormalizedY + .25 * imageLibraryElement.NormalizedHeight;
+            args.NormalizedHeight = .5 * imageLibraryElement.NormalizedHeight;
+            args.NormalizedWidth = .5 * imageLibraryElement.NormalizedWidth;
+            args.AspectRatio = imageLibraryElement.Ratio;
 
             return args;
         }

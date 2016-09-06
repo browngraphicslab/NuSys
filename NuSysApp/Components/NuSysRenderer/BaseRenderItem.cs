@@ -49,7 +49,7 @@ namespace NuSysApp
 
             ds.Transform = GetTransform() * ds.Transform;
 
-            foreach (var child in Children)
+            foreach (var child in Children.ToArray())
             {
                 child.Draw(ds);
             }

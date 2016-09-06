@@ -50,7 +50,7 @@ namespace NuSysApp
 
         protected override void OnSizeChanged(object source, double width, double height)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.SetAudioSize(width, height);
+            //SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.SetAudioSize(width, height);
             base.OnSizeChanged(source, width, height);
         }
     }

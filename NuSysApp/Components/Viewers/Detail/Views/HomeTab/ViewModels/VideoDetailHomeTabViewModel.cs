@@ -21,17 +21,15 @@ namespace NuSysApp
             LibraryElementController = controller;
         }
 
-        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
+        public override CreateNewLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
-            var args = new CreateNewTimeSpanRegionRequestArgs();
-            args.RegionStart = .25;
-            args.RegionEnd = .75;
-            if (LibraryElementController is VideoRegionLibraryElementController)
-            {
-                var region = LibraryElementController.LibraryElementModel as VideoRegionModel;
-                args.RegionStart = region.Start + (region.End - region.Start) * 0.25;
-                args.RegionEnd = region.Start + (region.End - region.Start) * 0.75;
-            }
+            var videoModel = LibraryElementController?.LibraryElementModel as VideoLibraryElementModel;
+
+            Debug.Assert(videoModel != null);
+
+            var args = new CreateNewVideoLibraryElementRequestArgs();
+            args.StartTime = videoModel.NormalizedStartTime + (videoModel.NormalizedEndTime - videoModel.NormalizedStartTime) * .25;
+            args.EndTime = videoModel.NormalizedStartTime + (videoModel.NormalizedEndTime - videoModel.NormalizedStartTime) * .75; ;
 
             return args;
         }

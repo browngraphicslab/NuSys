@@ -23,18 +23,6 @@ namespace NusysIntermediate
             Debug.Assert(id != null);
             switch (type)
             {
-                case NusysConstants.ElementType.ImageRegion:
-                    model = new RectangleRegion(id, NusysConstants.ElementType.ImageRegion);
-                    break;
-                case NusysConstants.ElementType.VideoRegion:
-                    model = new VideoRegionModel(id);
-                    break;
-                case NusysConstants.ElementType.PdfRegion:
-                    model = new PdfRegionModel(id);
-                    break;
-                case NusysConstants.ElementType.AudioRegion:
-                    model = new AudioRegionModel(id);
-                    break;
                 case NusysConstants.ElementType.Collection:
                     model = new CollectionLibraryElementModel(id);
                     break;
@@ -46,6 +34,12 @@ namespace NusysIntermediate
                     break;
                 case NusysConstants.ElementType.Image:
                     model = new ImageLibraryElementModel(id);
+                    break;
+                case NusysConstants.ElementType.Audio:
+                    model = new AudioLibraryElementModel(id);
+                    break;
+                case NusysConstants.ElementType.PDF:
+                    model = new PdfLibraryElementModel(id);
                     break;
                 default:
                     model = new LibraryElementModel(id, type);
@@ -68,18 +62,6 @@ namespace NusysIntermediate
                 var model = JsonConvert.DeserializeObject<LibraryElementModel>(libraryElementJSON);
                 switch (model.Type)
                 {
-                    case NusysConstants.ElementType.ImageRegion:
-                        model = JsonConvert.DeserializeObject<RectangleRegion>(libraryElementJSON);
-                        break;
-                    case NusysConstants.ElementType.VideoRegion:
-                        model = JsonConvert.DeserializeObject<VideoRegionModel>(libraryElementJSON);
-                        break;
-                    case NusysConstants.ElementType.PdfRegion:
-                        model = JsonConvert.DeserializeObject<PdfRegionModel>(libraryElementJSON);
-                        break;
-                    case NusysConstants.ElementType.AudioRegion:
-                        model = JsonConvert.DeserializeObject<AudioRegionModel>(libraryElementJSON);
-                        break;
                     case NusysConstants.ElementType.Collection:
                         model = JsonConvert.DeserializeObject<CollectionLibraryElementModel>(libraryElementJSON);
                         break;
@@ -88,6 +70,15 @@ namespace NusysIntermediate
                         break;
                     case NusysConstants.ElementType.Video:
                         model = JsonConvert.DeserializeObject<VideoLibraryElementModel>(libraryElementJSON);
+                        break;
+                    case NusysConstants.ElementType.Audio:
+                        model = JsonConvert.DeserializeObject<AudioLibraryElementModel>(libraryElementJSON);
+                        break;
+                    case NusysConstants.ElementType.PDF:
+                        model = JsonConvert.DeserializeObject<PdfLibraryElementModel>(libraryElementJSON);
+                        break;
+                    case NusysConstants.ElementType.Image:
+                        model = JsonConvert.DeserializeObject<ImageLibraryElementModel>(libraryElementJSON);
                         break;
                 }
                 //VERY IMPORTANT

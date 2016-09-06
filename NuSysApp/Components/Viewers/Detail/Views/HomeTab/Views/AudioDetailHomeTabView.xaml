@@ -23,18 +23,18 @@
         <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" Grid.Row="1">
 
             <Grid VerticalAlignment="Center">
-                <local:AudioMediaPlayer x:Name="MediaPlayer"></local:AudioMediaPlayer>
+                
+                <!--<local:AudioMediaPlayer x:Name="MediaPlayer"></local:AudioMediaPlayer>
                 <ItemsControl ItemsSource="{Binding RegionViews}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Grid/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                </ItemsControl>-->
             </Grid>
         </Border>
         <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
-        <local:ShowHideRegionButtons x:Name="xShowHideRegionButtons" Grid.Row="0" HorizontalAlignment="Right"></local:ShowHideRegionButtons>
 
     </Grid>
 

@@ -171,13 +171,6 @@ namespace NuSysApp
                 border.BorderThickness = _collapsedThickness;
                 thumbnail.Visibility = Visibility.Collapsed;
             }
-
-            //If links to a region....
-            var regionController = SessionController.Instance.ContentController.GetLibraryElementController(LinkLibraryElementId) as RegionLibraryElementController;
-            if (regionController != null)
-            {
-             //   regionController.Select();
-            }
         }
 
         /// <summary>

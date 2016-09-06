@@ -321,6 +321,9 @@
     <Compile Include="Components\NuSysRenderer\CanvasRenderEngine.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionResizerRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementSelectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
@@ -346,29 +349,9 @@
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
-    <Compile Include="Components\Regions\TemporaryImageRegionView.xaml.cs">
-      <DependentUpon>TemporaryImageRegionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
-      <DependentUpon>VideoRegionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Regions\VideoRegionViewModel.cs" />
-    <Compile Include="Components\Regions\ImageRegionView.xaml.cs">
-      <DependentUpon>ImageRegionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Regions\ImageRegionViewModel.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
       <DependentUpon>AudioRegionBound.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Regions\AudioRegionView.xaml.cs">
-      <DependentUpon>AudioRegionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Regions\AudioRegionViewModel.cs" />
-    <Compile Include="Components\Regions\PDFRegionView.xaml.cs">
-      <DependentUpon>PDFRegionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
-    <Compile Include="Components\Regions\RegionViewModel.cs" />
     <Compile Include="Components\Misc\RelevanceLineView.xaml.cs">
       <DependentUpon>RelevanceLineView.xaml</DependentUpon>
     </Compile>
@@ -421,7 +404,6 @@
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
-    <Compile Include="Components\Regions\TemporaryImageRegionViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ShowHideRegionButtons.xaml.cs">
@@ -441,31 +423,16 @@
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\AliasTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
-      <DependentUpon>PDFRegionListView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\FreeFormElementViewModelFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
-      <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
-      <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Wrapper\AudioWrapper.xaml.cs">
-      <DependentUpon>AudioWrapper.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Wrapper\IRegionHideable.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml.cs">
-      <DependentUpon>RectangleWrapper.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controller\AnalysisModelController.cs" />
-    <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
     <Compile Include="Controller\ContentDataController.cs" />
     <Compile Include="Controller\ContentDataControllerFactory.cs" />
@@ -475,18 +442,15 @@
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinksController.cs" />
     <Compile Include="Components\NuSysRenderer\PseudoElementRenderItem.cs" />
-    <Compile Include="Controller\RectangleRegionLibraryElementController.cs" />
-    <Compile Include="Controller\PdfRegionLibraryElementController.cs" />
-    <Compile Include="Controller\RegionLibraryElementController.cs" />
-    <Compile Include="Controller\RegionControllerFactory.cs" />
+    <Compile Include="Controller\LibraryElementController\ImageLibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\PdfLibraryElementController.cs" />
     <Compile Include="Controller\RegionsController.cs" />
-    <Compile Include="Controller\VideoRegionLibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\VideoLibraryElementController.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
@@ -638,9 +602,6 @@
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\TagNode\LabelNodeViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageNodeView.xaml.cs">
-      <DependentUpon>ImageNodeView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementViewModel.cs" />
     <Compile Include="Components\ContextMenuView.xaml.cs">
       <DependentUpon>ContextMenuView.xaml</DependentUpon>
@@ -704,18 +665,16 @@
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewAudioLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewImageLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewPdfLibraryElementModelRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewPresentationLinkRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewVideoLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\DeleteMetadataRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewCollectionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\MoveElementToCollectionRequestArgs.cs" />
-    <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewPDFRegionLibraryElementRequestArgs.cs" />
-    <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
-    <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />
-    <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewTimeSpanRegionRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdateContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdatePresentationLinkRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdateMetadataEntryRequestArgs.cs" />
@@ -873,22 +832,15 @@
     <Compile Include="Components\Misc\MultiSelectMenuView.xaml.cs">
       <DependentUpon>MultiSelectMenuView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeView.xaml.cs">
-      <DependentUpon>AudioNodeView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Links\LinkViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\TextNode\TextNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\FreeFormViewerViewModel.cs" />
     <Compile Include="Components\Viewers\ElementCollectionViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\NodeTemplate.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeView.xaml.cs">
-      <DependentUpon>PdfNodeView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\PseudoNode.xaml.cs">
       <DependentUpon>PseudoNode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\FreeFormNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\TagNode\LabelNodeView.xaml.cs">
       <DependentUpon>LabelNodeView.xaml</DependentUpon>
     </Compile>
@@ -903,9 +855,6 @@
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\TextNode\TextNodeView.xaml.cs">
       <DependentUpon>TextNodeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeView.xaml.cs">
-      <DependentUpon>VideoNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Modes\AddNodeMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\CortanaMode.cs" />
@@ -1035,27 +984,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Regions\TemporaryImageRegionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Regions\VideoRegionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Regions\ImageRegionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Regions\AudioRegionBound.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Regions\AudioRegionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Regions\PDFRegionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1143,10 +1072,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1227,10 +1152,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1271,15 +1192,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1303,14 +1216,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Wrapper\AudioWrapper.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Viewers\Search\SearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1329,14 +1234,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Misc\MultiSelectMenuView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1363,10 +1260,6 @@
     <Page Include="Components\Misc\FloatingMenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
