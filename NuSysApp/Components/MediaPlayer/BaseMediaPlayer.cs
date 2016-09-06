@@ -49,11 +49,35 @@ namespace NuSysApp
             Children.Add(_mediaElement);
             Children.Add(_progressBar);
             Children.Add(_playPauseButton);
+            _progressBar.Tapped += ProgressBarOnTapped;
             _tickTimer = new Timer(TimerTick, null, Timeout.Infinite, Timeout.Infinite);
             _mediaElement.AutoPlay = false;
             _mediaElement.MediaOpened += MediaElementOnLoaded;
             _playPauseButton.Tapped += PlayPauseButtonOnTapped;
             _playPauseButton.RenderTransform = new TranslateTransform();
+        }
+
+        private void ProgressBarOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
+        {
+            var newMilliseconds = (int)((tappedRoutedEventArgs.GetPosition(_progressBar).X / _progressBar.Width) * _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+            _mediaElement.Position = new TimeSpan(0,0,0,0,newMilliseconds);
+        }
+
+        public void Dispose()
+        {
+            if (_progressBar != null)
+            {
+                _progressBar.Tapped += ProgressBarOnTapped;
+                _progressBar.Dispose();
+            }
+            if (_mediaElement != null)
+            {
+                _mediaElement.MediaOpened += MediaElementOnLoaded;
+            }
+            if (_playPauseButton != null)
+            {
+                _playPauseButton.Tapped += PlayPauseButtonOnTapped;
+            }
         }
 
         private void PlayPauseButtonOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using WinRTXamlToolkit.Tools;
@@ -96,10 +97,6 @@ namespace NuSysApp
                 return;
             }
             _progressBar.Width = Width*normalizedTime;
-            if ((int) (normalizedTime*10)%1 == 0)
-            {
-                //TESTING SHIT
-            }
         }
 
         private class RegionView : Canvas
@@ -177,7 +174,8 @@ namespace NuSysApp
                 Children.Add(_topLeftCircle);
                 Children.Add(_bottomLeftCircle);
                 Children.Add(_bottomRightCircle);
-
+                
+                RenderTransform = new TranslateTransform();
                 SetLeft(this,_libraryElementController.AudioLibraryElementModel.NormalizedStartTime);
 
                 _libraryElementController.DurationChanged += SetDuration;
