@@ -52,7 +52,7 @@ namespace NusysServer
             {NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_TOP_LEFT_Y, NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_Y_KEY },//top left point y
 
             //audio
-            {NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_END, NusysConstants.AUDIO_LIBRARY_ELEMENT_END_TIME_KEY }, //time end
+            {NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_DURATION, NusysConstants.AUDIO_LIBRARY_ELEMENT_DURATION_KEY }, //time end
             {NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_START, NusysConstants.AUDIO_LIBRARY_ELEMENT_START_TIME_KEY },//time start
 
             //pdf

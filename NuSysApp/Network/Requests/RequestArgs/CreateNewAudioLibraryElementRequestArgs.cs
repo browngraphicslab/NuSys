@@ -22,17 +22,17 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// the normalized end time of the audio library element being made.  
+        /// the normalized  duration of the audio library element being made.  
         /// Will default to 1 if not set
         /// </summary>
-        public double? EndTime { get; set; }
+        public double? Duration { get; set; }
 
 
         public override Message PackToRequestKeys()
         {
             var message = base.PackToRequestKeys();
             message[NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_START] = StartTime ?? 0;
-            message[NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_END] = EndTime ?? 0;
+            message[NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_DURATION] = Duration ?? 1;
             return message;
         }
     }

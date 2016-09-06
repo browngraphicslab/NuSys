@@ -51,7 +51,7 @@ namespace NuSysApp
 
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
-        //public VideoMediaPlayer VideoPlayer => xVideoPlayer;
+        public BaseMediaPlayer VideoPlayer => xVideoPlayer;
         //public AudioMediaPlayer AudioPlayer => xAudioPlayer;
 
         public VideoElementRenderItem ActiveVideoRenderItem;
@@ -359,7 +359,6 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element)
         {
-            return;/*
             if (element is VideoElementRenderItem)
             {
                 ActiveVideoRenderItem = (VideoElementRenderItem) element;
@@ -373,17 +372,14 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
 
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.AudioWrapper.Controller =
-                    element.ViewModel.Controller.LibraryElementController;
 
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source =
-                    new Uri(ActiveVideoRenderItem.ViewModel.Controller.LibraryElementController.Data);
 
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.SetVideoSize(element.ViewModel.Width, element.ViewModel.Height);
-
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Visible;
+                VideoPlayer.SetSize(element.ViewModel.Width, element.ViewModel.Height);
+                VideoPlayer.SetLibraryElement(element.ViewModel.Controller.LibraryElementController as AudioLibraryElementController);
+                VideoPlayer.Visibility = Visibility.Visible;
                 return;
             }
+            /*
             if (element is AudioElementRenderItem)
             {
                 ActiveAudioRenderItem = (AudioElementRenderItem) element;
@@ -789,7 +785,7 @@ namespace NuSysApp
 
         private void UpdateMediaPlayer()
         {
-            /*
+            
             if (ActiveVideoRenderItem != null)
             {
                 var t = ActiveVideoRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(ActiveVideoRenderItem);
@@ -799,7 +795,7 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
             }
-
+            /*
             if (ActiveAudioRenderItem != null)
             {
                 var t = ActiveAudioRenderItem.GetTransform() * NuSysRenderer.Instance.GetTransformUntil(ActiveAudioRenderItem);
@@ -809,7 +805,7 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
             }
-
+            */
             var vm = (FreeFormViewerViewModel)InitialCollection.ViewModel;
             vm.CompositeTransform.TranslateX = InitialCollection.Camera.T.M31;
             vm.CompositeTransform.TranslateY = InitialCollection.Camera.T.M32;
@@ -817,7 +813,7 @@ namespace NuSysApp
             vm.CompositeTransform.CenterY = InitialCollection.Camera.C.M32;
             vm.CompositeTransform.ScaleX = InitialCollection.Camera.S.M11;
             vm.CompositeTransform.ScaleY = InitialCollection.Camera.S.M22;
-            */
+            
         }
 
 

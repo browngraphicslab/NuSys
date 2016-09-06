@@ -131,7 +131,7 @@ namespace NuSysApp
                 item.Update();
 
             foreach (var item in _renderItems2.ToArray())
-                item.Update();
+                item?.Update();
 
             foreach (var item in _renderItems3.ToArray())
                 item.Update();

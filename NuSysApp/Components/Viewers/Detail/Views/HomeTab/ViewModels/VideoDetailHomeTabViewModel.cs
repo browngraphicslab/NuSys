@@ -28,8 +28,8 @@ namespace NuSysApp
             Debug.Assert(videoModel != null);
 
             var args = new CreateNewVideoLibraryElementRequestArgs();
-            args.StartTime = videoModel.NormalizedStartTime + (videoModel.NormalizedEndTime - videoModel.NormalizedStartTime) * .25;
-            args.EndTime = videoModel.NormalizedStartTime + (videoModel.NormalizedEndTime - videoModel.NormalizedStartTime) * .75; ;
+            args.StartTime = videoModel.NormalizedStartTime + videoModel.NormalizedDuration * .25;
+            args.Duration = videoModel.NormalizedDuration * .5; ;
 
             return args;
         }

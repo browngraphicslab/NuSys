@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -405,7 +405,7 @@ namespace NusysIntermediate
                 /// the key that will hold the end of the interval of the requested audio library elment model 
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
-                public static readonly string NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_END = "audio_time_end";
+                public static readonly string NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_DURATION = "audio_time_duration";
 
                 /// <summary>
                 /// key in message for when the request returns with the fully populated libraryelementModel.
@@ -1322,7 +1322,7 @@ namespace NusysIntermediate
             /// This key is used to hold the end time of a audio library elmenet when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string AUDIO_LIBRARY_ELEMENT_END_TIME_KEY = "end_time_key";
+            public static readonly string AUDIO_LIBRARY_ELEMENT_DURATION_KEY = "end_time_key";
 
 
         #endregion Audio

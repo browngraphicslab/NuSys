@@ -27,8 +27,8 @@ namespace NuSysApp
             Debug.Assert(audioModel != null);
 
             var args = new CreateNewAudioLibraryElementRequestArgs();
-            args.StartTime = audioModel.NormalizedStartTime + (audioModel.NormalizedEndTime - audioModel.NormalizedStartTime) * .25;
-            args.EndTime = audioModel.NormalizedStartTime + (audioModel.NormalizedEndTime - audioModel.NormalizedStartTime) * .75; ;
+            args.StartTime = audioModel.NormalizedStartTime + (audioModel.NormalizedDuration) * .25;
+            args.Duration = audioModel.NormalizedDuration * .5; ;
 
             return args;
         }
