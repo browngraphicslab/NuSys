@@ -25,7 +25,6 @@ namespace NuSysApp
 {
     public class CollectionRenderItem : ElementRenderItem, I2dTransformable
     {
-
         protected List<BaseRenderItem> _renderItems0 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems1 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems2 = new List<BaseRenderItem>();
@@ -36,7 +35,7 @@ namespace NuSysApp
 
         public Transformable Camera { get; set; } = new Transformable();
 
-        public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
+        public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {            
             ViewModel = vm;
             var collectionController = (ElementCollectionController)vm.Controller;

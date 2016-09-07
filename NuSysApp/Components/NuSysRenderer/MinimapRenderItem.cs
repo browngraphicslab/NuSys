@@ -145,10 +145,10 @@ namespace NuSysApp
                     _collection.ViewModel.Width,
                     _collection.ViewModel.Height);
 
-                var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, NuSysRenderer.Instance.GetTransformUntil(_collection));
+                var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection));
 
-                //if (currentColl == NuSysRenderer.Instance.InitialCollection)
-                var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(_collection)));
+                //if (currentColl == SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.InitialCollection)
+                var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
 
                 var rects = new List<Rect>();
                 foreach (var vm in _collection.ViewModel.Elements.ToArray())

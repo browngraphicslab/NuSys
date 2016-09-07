@@ -28,7 +28,7 @@ namespace NuSysApp
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed
         };
         
-        public ShapedCollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas, interactionEnabled)
+        public ShapedCollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas, interactionEnabled)
         {
             _vm = vm;
             _vm.Controller.SizeChanged += ControllerOnSizeChanged;

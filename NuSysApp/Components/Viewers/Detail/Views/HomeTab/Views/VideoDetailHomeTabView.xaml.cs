@@ -58,6 +58,8 @@ namespace NuSysApp
         {
             var vm = SessionController.Instance.SessionView.DetailViewerView.DataContext as DetailViewerViewModel;
             var vlem = (vm.CurrentElementController.LibraryElementModel as VideoLibraryElementModel);
+
+            VideoPlayer.SetSize(sizeChangedEventArgs.NewSize.Width, sizeChangedEventArgs.NewSize.Height);
             //VideoMediaPlayer.Grid.Width = sizeChangedEventArgs.NewSize.Width;
             //VideoMediaPlayer.Grid.Height = sizeChangedEventArgs.NewSize.Width/vlem.Ratio;
             //VideoMediaPlayer.SetVideoSize(sizeChangedEventArgs.NewSize.Width, sizeChangedEventArgs.NewSize.Width / vlem.Ratio);
@@ -73,17 +75,20 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoDetailHomeTabViewModel;
+            VideoPlayer.SetLibraryElement(vm.LibraryElementController as AudioLibraryElementController);
             //VideoMediaPlayer.Source = new Uri(vm.LibraryElementController.Data);
         }
 
         public void Dispose()
         {
+            VideoPlayer.Dispose();
             //VideoMediaPlayer.StopVideo();
         }
 
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (VideoDetailHomeTabViewModel)DataContext;
+            VideoPlayer.Dispose();
       //      vm.Controller.Disposed -= ControllerOnDisposed;
         }
     }

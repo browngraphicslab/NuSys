@@ -12,12 +12,12 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class PdfPageButtonRenderItem : BaseRenderItem
+    public class PdfPageButtonRenderItem : InteractiveBaseRenderItem
     {
         private Rect _measure = new Rect();
         private CanvasGeometry _triangle;
         private Rect _triangleBounds;
-        public PdfPageButtonRenderItem(int direction, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public PdfPageButtonRenderItem(int direction, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             var x = (float)(direction*15);
             _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
@@ -25,7 +25,11 @@ namespace NuSysApp
                 new Vector2(x + direction * 25, 0),
                 new Vector2(x, 20),
                 new Vector2(x, -20)});
+        }
 
+        public override void OnTapped(CanvasPointer pointer)
+        {
+            base.OnTapped(pointer);
         }
 
         public override void Dispose()
@@ -50,6 +54,6 @@ namespace NuSysApp
         public override BaseRenderItem HitTest(Vector2 point)
         {
             return _triangleBounds.Contains(new Point(point.X, point.Y)) ? this : null;
-            }
+        }
     }
 }

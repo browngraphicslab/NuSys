@@ -24,7 +24,7 @@ namespace NuSysApp
 
         public PresentationLinkViewModel ViewModel => _vm;
 
-        public TrailRenderItem(PresentationLinkViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
+        public TrailRenderItem(PresentationLinkViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
             _vm = vm;
             _elementController1 = SessionController.Instance.IdToControllers[_vm.Model.OutElementId];

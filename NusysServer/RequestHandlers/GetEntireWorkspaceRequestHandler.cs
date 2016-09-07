@@ -94,13 +94,11 @@ namespace NusysServer
                     break;
             }
             command = command + " SELECT q.*, " + Constants.GetTableName(Constants.SQLTableType.Properties) +
-            ".*, " + Constants.GetTableName(Constants.SQLTableType.Content) + ".*, " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".type FROM q LEFT JOIN " +
-            Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " ON q." + NusysConstants.ALIAS_LIBRARY_ID_KEY + " = "
-            + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " LEFT JOIN " +
-            Constants.GetTableName(Constants.SQLTableType.Content) + " ON " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " = "
-            + Constants.GetTableName(Constants.SQLTableType.Content) + "." + NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY +
-            " LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.Properties) + " on " +
-            Constants.GetTableName(Constants.SQLTableType.Properties) + "." + NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " = q." + NusysConstants.ALIAS_ID_KEY + " WHERE q." + NusysConstants.ALIAS_ACCESS_KEY + " = '" + NusysConstants.AccessType.Public + "' OR q." + NusysConstants.ALIAS_ACCESS_KEY + " = '" + NusysConstants.AccessType.ReadOnly + "' OR q." + NusysConstants.ALIAS_CREATOR_ID_KEY + " = '" + userId + "'";
+            ".*, " + Constants.GetTableName(Constants.SQLTableType.Content) + ".*, " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".type FROM q" +
+            " INNER JOIN " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " ON q." + NusysConstants.ALIAS_LIBRARY_ID_KEY + " = " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + 
+            " INNER JOIN " + Constants.GetTableName(Constants.SQLTableType.Content) + " ON " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " = "+ Constants.GetTableName(Constants.SQLTableType.Content) + "." + NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY +
+            " LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.Properties) + " on " +Constants.GetTableName(Constants.SQLTableType.Properties) + "." + NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " = q." + NusysConstants.ALIAS_ID_KEY 
+            + " WHERE q." + NusysConstants.ALIAS_ACCESS_KEY + " = '" + NusysConstants.AccessType.Public + "' OR q." + NusysConstants.ALIAS_ACCESS_KEY + " = '" + NusysConstants.AccessType.ReadOnly + "' OR q." + NusysConstants.ALIAS_CREATOR_ID_KEY + " = '" + userId + "'";
             return ContentController.Instance.SqlConnector.MakeCommand(command);
 
         }

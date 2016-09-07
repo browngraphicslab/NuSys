@@ -31,7 +31,12 @@ namespace NuSysApp
         }
         public void SetStartTime(double startTime)
         {
+            startTime = Math.Min(Math.Max(startTime, 0), 1-Constants.MinimumVideoAndAudioDuration);
             AudioLibraryElementModel.NormalizedStartTime = startTime;
+            if (startTime + AudioLibraryElementModel.NormalizedDuration > 1)
+            {
+                SetDuration(1-startTime);
+            }
             TimeChanged?.Invoke(this, AudioLibraryElementModel.NormalizedStartTime);
             if (!_blockServerInteraction)
             {
@@ -45,6 +50,7 @@ namespace NuSysApp
         /// <param name="duration"></param>
         public void SetDuration(double duration)
         {
+            duration = Math.Max(Math.Min(duration,1-AudioLibraryElementModel.NormalizedStartTime), Constants.MinimumVideoAndAudioDuration);
             AudioLibraryElementModel.NormalizedDuration = duration;
             DurationChanged?.Invoke(this,duration);
             if (!_blockServerInteraction)

@@ -147,7 +147,7 @@ namespace NuSysApp
             _screenRect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
             ds.Transform = Matrix3x2.Identity;
 
-            var margin = 15 * ResourceCreator.DpiScale;
+            var margin = 15 * SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.DpiScale;
             _screenRect.X -= margin;
             _screenRect.Y -= margin;
             _screenRect.Width += margin * 2;

@@ -26,14 +26,14 @@ namespace NuSysApp
         /// <summary>
         /// the media element xaml component that will be playing the audio and video.
         /// </summary>
-        private MediaElement _mediaElement = new MediaElement();
+        protected MediaElement MediaElement = new MediaElement();
 
         /// <summary>
         /// the progress bar of the media element
         /// </summary>
-        private MediaPlayerProgressBar _progressBar = new MediaPlayerProgressBar();
+        protected MediaPlayerProgressBar ProgressBar = new MediaPlayerProgressBar();
 
-        private Button _playPauseButton = new Button()
+        protected Button PlayPauseButton = new Button()
         {
             Content = "play",
             Width = 80,
@@ -46,37 +46,43 @@ namespace NuSysApp
 
         public BaseMediaPlayer()
         {
-            Children.Add(_mediaElement);
-            Children.Add(_progressBar);
-            Children.Add(_playPauseButton);
-            _progressBar.Tapped += ProgressBarOnTapped;
+            Children.Add(MediaElement);
+            Children.Add(ProgressBar);
+            Children.Add(PlayPauseButton);
+            ProgressBar.Tapped += ProgressBarOnTapped;
+
             _tickTimer = new Timer(TimerTick, null, Timeout.Infinite, Timeout.Infinite);
-            _mediaElement.AutoPlay = false;
-            _mediaElement.MediaOpened += MediaElementOnLoaded;
-            _playPauseButton.Tapped += PlayPauseButtonOnTapped;
-            _playPauseButton.RenderTransform = new TranslateTransform();
+            MediaElement.AutoPlay = false;
+            MediaElement.MediaOpened += MediaElementOnLoaded;
+            PlayPauseButton.Tapped += PlayPauseButtonOnTapped;
+            PlayPauseButton.RenderTransform = new TranslateTransform();
+            ProgressBar.RenderTransform = new TranslateTransform();
         }
 
         private void ProgressBarOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
         {
-            var newMilliseconds = (int)((tappedRoutedEventArgs.GetPosition(_progressBar).X / _progressBar.Width) * _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
-            _mediaElement.Position = new TimeSpan(0,0,0,0,newMilliseconds);
+            var newMilliseconds = (int)((((tappedRoutedEventArgs.GetPosition(ProgressBar).X/ProgressBar.Width)*
+                       CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration) +
+                      CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime)*
+                     MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+            MediaElement.Position = new TimeSpan(0,0,0,0,newMilliseconds);
+            TimerTick("Forced");
         }
 
         public void Dispose()
         {
-            if (_progressBar != null)
+            if (ProgressBar != null)
             {
-                _progressBar.Tapped += ProgressBarOnTapped;
-                _progressBar.Dispose();
+                ProgressBar.Tapped += ProgressBarOnTapped;
+                ProgressBar.Dispose();
             }
-            if (_mediaElement != null)
+            if (MediaElement != null)
             {
-                _mediaElement.MediaOpened += MediaElementOnLoaded;
+                MediaElement.MediaOpened += MediaElementOnLoaded;
             }
-            if (_playPauseButton != null)
+            if (PlayPauseButton != null)
             {
-                _playPauseButton.Tapped += PlayPauseButtonOnTapped;
+                PlayPauseButton.Tapped += PlayPauseButtonOnTapped;
             }
         }
 
@@ -93,28 +99,28 @@ namespace NuSysApp
         {
             UITask.Run(delegate
             {
-                var duration = _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-                var currentPosition = _mediaElement.Position.TotalMilliseconds;
+                var duration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                var currentPosition = MediaElement.Position.TotalMilliseconds;
                 var max = (CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration + CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime ) * duration;
 
                 if (currentPosition >= max)
                 {
-                    _mediaElement.Position = new TimeSpan(0, 0, 0, 0, (int) max);
+                    MediaElement.Position = new TimeSpan(0, 0, 0, 0, (int) max);
                     Pause();
                 }
                 var normalizedPosition = currentPosition/duration;
-                _progressBar.UpdateTime(normalizedPosition);
+                ProgressBar.UpdateTime(normalizedPosition);
             });
         }
 
         public void TogglePlayPause()
         {
-            Debug.Assert(_mediaElement != null);
-            if (_mediaElement == null)
+            Debug.Assert(MediaElement != null);
+            if (MediaElement == null)
             {
                 return;
             }
-            if (_mediaElement.CurrentState == MediaElementState.Playing)
+            if (MediaElement.CurrentState == MediaElementState.Playing)
             {
                 Pause();
             }
@@ -126,32 +132,32 @@ namespace NuSysApp
 
         public void Pause()
         {
-            _mediaElement.Pause();
+            MediaElement.Pause();
             _tickTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            _playPauseButton.Content = "play";
+            PlayPauseButton.Content = "play";
         }
 
         public void Play()
         {
-            var duration = _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            var duration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
 
-            var currentPosition = _mediaElement.Position.TotalMilliseconds;
+            var currentPosition = MediaElement.Position.TotalMilliseconds;
             var min = CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime*duration;
             var max = (CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration + min) * duration;
 
             if (currentPosition >= max)
             {
-                _mediaElement.Position = new TimeSpan(0,0,0,0, (int )max);
+                MediaElement.Position = new TimeSpan(0,0,0,0, (int )max);
                 return;
             }
             else if (currentPosition <= min)
             {
-                _mediaElement.Position = new TimeSpan(0, 0, 0, 0, (int)min);
+                MediaElement.Position = new TimeSpan(0, 0, 0, 0, (int)min);
             }
 
-            _mediaElement.Play();
+            MediaElement.Play();
             _tickTimer.Change(new TimeSpan(0, 0, 0, 0, TimerMillisecondDelay), new TimeSpan(0, 0, 0, 0, TimerMillisecondDelay));
-            _playPauseButton.Content = "pause";
+            PlayPauseButton.Content = "pause";
         }
 
 
@@ -163,14 +169,14 @@ namespace NuSysApp
         /// <param name="height"></param>
         public virtual void SetSize(double width, double height)
         {
-            Debug.Assert(_mediaElement != null, "this should never be null");
+            Debug.Assert(MediaElement != null, "this should never be null");
             Width = width;
             Height = height;
-            _mediaElement.Width = width;
-            _mediaElement.Height = height;
-            _progressBar.SetSize(width);
-            ((TranslateTransform) _playPauseButton.RenderTransform).Y = height;
-            ((TranslateTransform)_playPauseButton.RenderTransform).X = (width + _playPauseButton.Width )/ 2;
+            MediaElement.Width = width;
+            MediaElement.Height = height;
+            ProgressBar.SetWidth(width);
+            ((TranslateTransform) PlayPauseButton.RenderTransform).Y = height;
+            ((TranslateTransform)PlayPauseButton.RenderTransform).X = (width + PlayPauseButton.Width )/ 2;
         }
 
         /// <summary>
@@ -180,9 +186,12 @@ namespace NuSysApp
         public virtual void SetLibraryElement(AudioLibraryElementController controller)
         {
             Debug.Assert(controller != null);
-            CurrentLibraryElementController = controller;
-            _progressBar.SetLibraryElementController(controller);
-            _mediaElement.Source = new Uri(controller.Data);
+            if (controller != CurrentLibraryElementController)
+            {
+                CurrentLibraryElementController = controller;
+                ProgressBar.SetLibraryElementController(controller);
+                MediaElement.Source = new Uri(controller.Data);
+            }
         }
 
         private void MediaElementOnLoaded(object sender, RoutedEventArgs routedEventArgs)

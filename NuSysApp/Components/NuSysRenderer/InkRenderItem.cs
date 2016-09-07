@@ -35,14 +35,13 @@ namespace NuSysApp
         private object _lock = new object();
 
 
-        public InkRenderItem(CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
+        public InkRenderItem(CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
         }
 
         public async override Task Load()
-        {
-           
-            _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, new Size(ResourceCreator.Width, ResourceCreator.Height));
+        {           
+            _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, SessionController.Instance.SessionView.RenderSize);
             base.CreateResources();
         }
 
@@ -65,14 +64,14 @@ namespace NuSysApp
 
         public void UpdateDryInkTransform()
         {
-            _transform = Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(this));
+            _transform = Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this));
             _needsDryStrokesUpdate = true;
         }
 
         public void StartInkByEvent(CanvasPointer e)
         {
             _isDrawing = true;
-            _transform = Win2dUtil.Invert(NuSysRenderer.Instance.GetTransformUntil(this));
+            _transform = Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this));
 
             _isEraser = e.Properties.IsEraser || e.Properties.IsRightButtonPressed;
             _currentStroke = new List<InkPoint>();

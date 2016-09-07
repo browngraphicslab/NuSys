@@ -34,17 +34,17 @@
             
             
             <Canvas x:Name="xMultimediaCanvas" HorizontalAlignment="Left">
-                <local:BaseMediaPlayer x:Name="xVideoPlayer" Visibility="Collapsed">
+                <local:VideoPlayer x:Name="xVideoPlayer" Visibility="Collapsed">
                     <local:BaseMediaPlayer.RenderTransform>
                         <CompositeTransform></CompositeTransform>
                     </local:BaseMediaPlayer.RenderTransform>
-                </local:BaseMediaPlayer>
-                <!--
-                <local:AudioMediaPlayer x:Name="xAudioPlayer" Visibility="Collapsed">
-                    <local:AudioMediaPlayer.RenderTransform>
+                </local:VideoPlayer>
+
+                <local:AudioPlayer x:Name="xAudioPlayer" Visibility="Collapsed">
+                    <local:BaseMediaPlayer.RenderTransform>
                         <CompositeTransform></CompositeTransform>
-                    </local:AudioMediaPlayer.RenderTransform>
-                </local:AudioMediaPlayer>-->
+                    </local:BaseMediaPlayer.RenderTransform>
+                </local:AudioPlayer>
             </Canvas>
             
             <local:UndoButton x:Name="xUndoButton"></local:UndoButton>

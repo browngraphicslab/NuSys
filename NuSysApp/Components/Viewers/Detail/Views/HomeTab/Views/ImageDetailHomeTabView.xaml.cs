@@ -20,6 +20,8 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas.UI;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
 
 
@@ -30,12 +32,28 @@ namespace NuSysApp
     public sealed partial class ImageDetailHomeTabView : UserControl
     {
         private NusysImageAnalysisModel _analysisModel;
+
+        private CanvasRenderEngine _renderEngine;
+        private RenderItemInteractionManager _interactionManager;
+        private ImageDetailRenderItem _imageDetailRenderItem;
+
         public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();
 
+
+            xImgCanvas.CreateResources += XImgCanvasOnCreateResources;
+
+
+            //Show hide region buttons need access to rectangle/audio wrapper for methods to work.
+        //    xShowHideRegionButtons.Wrapper = xClippingWrapper;
+
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
+
+       //     xClippingWrapper.Controller = vm.LibraryElementController;
+        //    xClippingWrapper.ProcessLibraryElementController();
+
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
@@ -47,6 +65,27 @@ namespace NuSysApp
                     SetImageAnalysis();
                 });
             });
+        }
+
+        private async void XImgCanvasOnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
+        {
+            var vm = (ImageDetailHomeTabViewModel)DataContext;
+            _renderEngine = new CanvasRenderEngine();
+            var root = new BaseRenderItem(null, xImgCanvas);
+            _imageDetailRenderItem = new ImageDetailRenderItem(vm.LibraryElementController as ImageLibraryElementController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
+            _imageDetailRenderItem.NeedsRedraw += ImageOnNeedsRedraw;
+
+            await _imageDetailRenderItem.Load();
+            
+            root.Children.Add(_imageDetailRenderItem);
+            _renderEngine.Init(xImgCanvas, root);
+            _interactionManager = new RenderItemInteractionManager(_renderEngine, xImgCanvas);
+            xImgCanvas.Invalidate();
+        }
+
+        private void ImageOnNeedsRedraw()
+        {
+            xImgCanvas.Invalidate();
         }
 
         /// <summary>
@@ -142,14 +181,15 @@ namespace NuSysApp
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
-            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
-            detailViewerView.Disposed -= DetailViewerView_Disposed;
+
             Dispose();
         }
 
         private void Dispose()
         {
-
+            _imageDetailRenderItem?.Dispose();
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
             DisposeTags();
         }
         
@@ -157,6 +197,7 @@ namespace NuSysApp
         {
             var vm = (ImageDetailHomeTabViewModel) DataContext;
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;
+
             DataContext = null;
         }
 
@@ -223,6 +264,12 @@ namespace NuSysApp
                                 continue;
                             }
                             //create a temp region for every face
+
+                         //   var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,null,vm.LibraryElementController.LibraryElementModel.AccessType);
+                       //     var tempview = new TemporaryImageRegionView(tempvm);
+                     //       tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
+                          //  xClippingWrapper.AddTemporaryRegion(tempview);
+
                         }
                     }
                 });

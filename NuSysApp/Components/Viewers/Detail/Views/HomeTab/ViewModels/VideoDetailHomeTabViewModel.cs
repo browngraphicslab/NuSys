@@ -29,7 +29,8 @@ namespace NuSysApp
 
             var args = new CreateNewVideoLibraryElementRequestArgs();
             args.StartTime = videoModel.NormalizedStartTime + videoModel.NormalizedDuration * .25;
-            args.Duration = videoModel.NormalizedDuration * .5; ;
+            args.Duration = videoModel.NormalizedDuration * .5;
+            args.AspectRatio = videoModel.Ratio;
 
             return args;
         }

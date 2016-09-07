@@ -29,7 +29,7 @@ namespace NuSysApp
         private bool _needsTitleUpdate = true;
         private CanvasTextFormat _format;
 
-        public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
+        public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;
             if (_vm != null) { 
@@ -61,7 +61,10 @@ namespace NuSysApp
             _tagRenderItem = null;
             _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+            if (_vm.Controller?.LibraryElementController != null)
+            {
+                _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+            }
             _vm = null;
             _textLayout.Dispose();
             _textLayout = null;
@@ -152,7 +155,7 @@ namespace NuSysApp
             if (_textLayout == null)
                 return new Rect();
 
-            _transform = NuSysRenderer.Instance.GetTransformUntil(this);
+            _transform = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this);
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
             var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);

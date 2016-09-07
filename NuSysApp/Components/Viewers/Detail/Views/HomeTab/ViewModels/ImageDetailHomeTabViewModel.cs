@@ -35,10 +35,11 @@ namespace NuSysApp
             Debug.Assert(imageLibraryElement != null);
 
             var args = new CreateNewImageLibraryElementRequestArgs();
-            args.NormalizedX = .25 * imageLibraryElement.NormalizedX;
-            args.NormalizedY = .25 * imageLibraryElement.NormalizedY;
+            args.NormalizedX = imageLibraryElement.NormalizedX + .25 * imageLibraryElement.NormalizedWidth;
+            args.NormalizedY = imageLibraryElement.NormalizedY + .25 * imageLibraryElement.NormalizedHeight;
             args.NormalizedHeight = .5 * imageLibraryElement.NormalizedHeight;
             args.NormalizedWidth = .5 * imageLibraryElement.NormalizedWidth;
+            args.AspectRatio = imageLibraryElement.Ratio;
 
             return args;
         }

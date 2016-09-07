@@ -8,7 +8,7 @@ namespace NusysIntermediate
 {
     public class ContentDataModel
     {
-        public delegate Task RegionAddedEventHandler(string regionLibraryElementModelId);
+        public delegate void RegionAddedEventHandler(string regionLibraryElementModelId);
 
         public event RegionAddedEventHandler OnRegionAdded;
         public delegate void RegionRemovedEventHandler(string regionLibraryElementModelId);

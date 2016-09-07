@@ -43,6 +43,22 @@ namespace NusysIntermediate
             {
                 Ratio = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY);
             }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_HEIGHT_KEY))
+            {
+                NormalizedHeight = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_HEIGHT_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY))
+            {
+                NormalizedWidth = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_X_KEY))
+            {
+                NormalizedX = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_X_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_Y_KEY))
+            {
+                NormalizedY = message.GetDouble(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_TOP_LEFT_Y_KEY);
+            }
             base.UnPackFromDatabaseKeys(message);
         }
     }

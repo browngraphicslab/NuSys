@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -25,9 +26,14 @@ namespace NuSysApp
         /// </summary>
         public AudioLibraryElementController CurrentLibraryElementController { get; private set; }
 
-        private static readonly double PROGRESS_BAR_HEIGHT = 50;
+        private const double PROGRESS_BAR_DEFAULT_HEIGHT = 50;
 
         private Rectangle _progressBar = new Rectangle();
+        private Rectangle _backgroundRectangle = new Rectangle() {};
+        private RectangleGeometry _clipping = new RectangleGeometry()
+        {
+            Transform = new TranslateTransform() { Y = - 2 * RegionView.HANDLE_EXTENSION_HEIGHT}
+        };
 
         private IEnumerable<RegionView> _regionViews {
             get
@@ -48,40 +54,114 @@ namespace NuSysApp
         public MediaPlayerProgressBar()
         {
             Children.Add(_progressBar);
+            Children.Add(_backgroundRectangle);
+            this.Clip = _clipping;
             _progressBar.Fill = new SolidColorBrush(Colors.Chartreuse);
-            _progressBar.Height = PROGRESS_BAR_HEIGHT;
+            _progressBar.Height = PROGRESS_BAR_DEFAULT_HEIGHT;
+            _backgroundRectangle.Height = PROGRESS_BAR_DEFAULT_HEIGHT;
+            Height = PROGRESS_BAR_DEFAULT_HEIGHT;
         }
 
         public void SetLibraryElementController(AudioLibraryElementController libaryElementController)
         {
+            Debug.Assert(libaryElementController != null);
             RemoveOldController(CurrentLibraryElementController);
+
+            var color = MediaUtil.GetHashColorFromString(libaryElementController.LibraryElementModel.LibraryElementId);
+            color.A = 100;
+            _backgroundRectangle.Fill = new SolidColorBrush(color);
+
+            libaryElementController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            libaryElementController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+
+
             CurrentLibraryElementController = libaryElementController;
             _progressBar = _progressBar ?? new Rectangle();
 
             foreach(var model in SessionController.Instance.ContentController.ContentValues.Where(item => item.ContentDataModelId == libaryElementController.AudioLibraryElementModel.ContentDataModelId))
             { 
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryElementId) as AudioLibraryElementController;
-                if (controller != null && controller != libaryElementController)
+                if (controller != null && controller.AudioLibraryElementModel.LibraryElementId != libaryElementController.AudioLibraryElementModel.LibraryElementId)
                 {
                     var child = new RegionView(controller, this);
                     Children.Add(child);
                 }
             }
+            foreach (var region in _regionViews)
+            {
+                if (!(region.LibraryElementController.AudioLibraryElementModel.NormalizedStartTime < //if the region start and end is not entirely out of view,
+                    CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime &&
+                    region.LibraryElementController.AudioLibraryElementModel.NormalizedStartTime +
+                    region.LibraryElementController.AudioLibraryElementModel.NormalizedDuration >
+                    CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime +
+                    CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration))
+                {
+                    Canvas.SetZIndex(region,5);
+                }
+            }
+        }
+
+        private void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        {
+            foreach (var region in _regionViews)
+            {
+                if (region?.LibraryElementController?.LibraryElementModel?.LibraryElementId == regionLibraryElementModelId)
+                {
+                    Children.Remove(region);
+                    region?.Dispose();
+                    break;
+                }
+            }
+        }
+
+        private void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementModelId) as AudioLibraryElementController;
+            if (controller != null && controller != CurrentLibraryElementController)
+            {
+                var child = new RegionView(controller, this);
+                Children.Add(child);
+            }
         }
 
         private void RemoveOldController(AudioLibraryElementController controller)
         {
-            _regionViews.Where(item => Children.Remove(item)).ForEach(item => item.Dispose());//remove and dispose existing regions
+            foreach (var region in _regionViews.ToList())
+            {
+                Children.Remove(region);
+                region.Dispose();
+            }
             if (controller == null)
             {
                 return;
             }
-
+            if (controller.ContentDataController?.ContentDataModel != null)
+            {
+                controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+                controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            }
+            
         }
 
-        public void SetSize(double width)
+        public void SetHeight(double height)
+        {
+            Height = (double)height;
+            _progressBar.Height = height;
+            _backgroundRectangle.Height = height;
+            _regionViews.ForEach(region => region.SetHeight(height));
+        }
+
+        public void SetWidth(double width)
         {
             Width = width;
+            _backgroundRectangle.Width = width;
+            _clipping.Rect = new Rect() { Height = Height + 4 * RegionView.HANDLE_EXTENSION_HEIGHT, Width = width};
+            foreach (var region in _regionViews)
+            {
+                region?.SetDuration(this, region.LibraryElementController.AudioLibraryElementModel.NormalizedDuration);
+                region?.SetLeft(this, region.LibraryElementController.AudioLibraryElementModel.NormalizedStartTime);
+            }
+
         }
 
         public void Dispose()
@@ -96,13 +176,13 @@ namespace NuSysApp
             {
                 return;
             }
-            _progressBar.Width = Width*normalizedTime;
+            _progressBar.Width = Math.Max(0,Width*((normalizedTime - CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime)/CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration));
         }
 
         private class RegionView : Canvas
         {
-            private static readonly double HANDLE_EXTENSION_HEIGHT = 10;
-            private static readonly Color COLOR = Color.FromArgb(100,39,244,65);
+            public static readonly double HANDLE_EXTENSION_HEIGHT = 10;
+            private Color _color;
 
             private Rectangle _leftHitBox = new Rectangle();
             private Rectangle _rightHitBox = new Rectangle();
@@ -111,87 +191,198 @@ namespace NuSysApp
             private Ellipse _bottomLeftCircle = new Ellipse();
             private Ellipse _bottomRightCircle = new Ellipse();
 
-            private AudioLibraryElementController _libraryElementController;
+            public AudioLibraryElementController LibraryElementController;
             private MediaPlayerProgressBar _progressBar;
             public RegionView(AudioLibraryElementController controller, MediaPlayerProgressBar progressBar)
             {
-                _libraryElementController = controller;
+                Debug.Assert(controller != null && progressBar != null);
+
+                _color = MediaUtil.GetHashColorFromString(controller.LibraryElementModel.LibraryElementId);
+                _color.A = 100;
+
+                LibraryElementController = controller;
                 _progressBar = progressBar;
 
                 Width = ((controller.AudioLibraryElementModel.NormalizedDuration) * progressBar.Width) / (progressBar.NormalizedWidth);
-                Height = PROGRESS_BAR_HEIGHT;
-                Background = new SolidColorBrush(COLOR);
+                Height = progressBar.Height;
+                Background = new SolidColorBrush(_color);
 
                 _leftHitBox = new Rectangle()
                 {
-                    Height = PROGRESS_BAR_HEIGHT + 2 * HANDLE_EXTENSION_HEIGHT,
+                    Fill = new SolidColorBrush(Colors.Transparent),
+                    Height = progressBar.Height + 4 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2*HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT }
+                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = -HANDLE_EXTENSION_HEIGHT }
                 };
 
                 _rightHitBox = new Rectangle()
                 {
-                    Height = PROGRESS_BAR_HEIGHT + 2 * HANDLE_EXTENSION_HEIGHT,
+                    Fill = new SolidColorBrush(Colors.Transparent),
+                    Height = progressBar.Height + 4 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT, X = this.Width - 2 * HANDLE_EXTENSION_HEIGHT}
+                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = this.Width - HANDLE_EXTENSION_HEIGHT}
                 };
 
                 _topLeftCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(COLOR),
+                    Fill = new SolidColorBrush(_color),
                     Height = 2* HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT }
+                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT , X = -HANDLE_EXTENSION_HEIGHT}
                 };
 
                 _topRightCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(COLOR),
+                    Fill = new SolidColorBrush(_color),
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT, X =  this.Width - 2 * HANDLE_EXTENSION_HEIGHT}
+                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT, X =  this.Width -  HANDLE_EXTENSION_HEIGHT}
                 };
 
                 _bottomLeftCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(COLOR),
+                    Fill = new SolidColorBrush(_color),
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = PROGRESS_BAR_HEIGHT - HANDLE_EXTENSION_HEIGHT}
+                    RenderTransform = new TranslateTransform() { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = -HANDLE_EXTENSION_HEIGHT }
                 };
 
                 _bottomRightCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(COLOR),
+                    Fill = new SolidColorBrush(_color),
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = PROGRESS_BAR_HEIGHT - HANDLE_EXTENSION_HEIGHT, X = this.Width - 2 * HANDLE_EXTENSION_HEIGHT }
+                    RenderTransform = new TranslateTransform() { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = this.Width - HANDLE_EXTENSION_HEIGHT }
                 };
-
-                Children.Add(_leftHitBox);
-                Children.Add(_rightHitBox);
+                
                 Children.Add(_topRightCircle);
                 Children.Add(_topLeftCircle);
                 Children.Add(_bottomLeftCircle);
                 Children.Add(_bottomRightCircle);
-                
-                RenderTransform = new TranslateTransform();
-                SetLeft(this,_libraryElementController.AudioLibraryElementModel.NormalizedStartTime);
+                Children.Add(_leftHitBox);
+                Children.Add(_rightHitBox);
 
-                _libraryElementController.DurationChanged += SetDuration;
-                _libraryElementController.TimeChanged += SetLeft;
+                RenderTransform = new TranslateTransform();
+                SetLeft(this,LibraryElementController.AudioLibraryElementModel.NormalizedStartTime);
+
+
+                _leftHitBox.ManipulationMode = ManipulationModes.All;
+                _rightHitBox.ManipulationMode = ManipulationModes.All;
+                ManipulationMode = ManipulationModes.All;
+
+                _leftHitBox.ManipulationDelta += LeftHitBoxOnManipulationDelta;
+                _rightHitBox.ManipulationDelta += RightHitBoxOnManipulationDelta;
+                _leftHitBox.ManipulationStarting += RightHitBoxOnManipulationStarting;
+                _rightHitBox.ManipulationStarting += RightHitBoxOnManipulationStarting;
+                _leftHitBox.ManipulationCompleted += LeftHitBoxOnManipulationCompleted;
+                _rightHitBox.ManipulationCompleted += LeftHitBoxOnManipulationCompleted;
+                ManipulationStarting += RightHitBoxOnManipulationStarting;
+                ManipulationCompleted += LeftHitBoxOnManipulationCompleted;
+                ManipulationDelta += OnManipulationDelta;
+                DoubleTapped += OnDoubleTapped;
+
+                _leftHitBox.PointerPressed += OnPointerPressed;
+                _rightHitBox.PointerPressed += OnPointerPressed;
+                PointerPressed += OnPointerPressed;
+                PointerReleased += OnPointerReleased;
+
+                LibraryElementController.DurationChanged += SetDuration;
+                LibraryElementController.TimeChanged += SetLeft;
+            }
+
+            private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+            {
+                SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
+                Debug.WriteLine("Manip completed called");
+            }
+
+            private void OnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+            {
+                SessionController.Instance.SessionView.FreeFormViewer.Freeze();
+                Debug.WriteLine("Manip starting called");
+                CapturePointer(pointerRoutedEventArgs.Pointer);
+            }
+
+            private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
+            {
+                SessionController.Instance.SessionView.DetailViewerView.ShowElement(LibraryElementController,DetailViewTabType.Home);
+            }
+
+
+            private void LeftHitBoxOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
+            {
+                
+            }
+
+            private void RightHitBoxOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
+            {
+                
+            }
+
+
+            private void RightHitBoxOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
+            {
+                var delta = -manipulationDeltaRoutedEventArgs.Delta.Translation.X;
+                UpdateDuration(delta);
+                manipulationDeltaRoutedEventArgs.Handled = true;
+            }
+
+            private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
+            {
+                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X;
+                UpdateLeft(delta);
+            }
+
+            private void LeftHitBoxOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
+            {
+                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X;
+                UpdateDuration(delta);
+                UpdateLeft(delta);
+                manipulationDeltaRoutedEventArgs.Handled = true;
+            }
+
+            private void UpdateDuration(double delta)
+            {
+                var newNormalizedDuration = ((Width - delta) / _progressBar.Width) * _progressBar.NormalizedWidth;
+                LibraryElementController.SetDuration(newNormalizedDuration);
+            }
+
+            private void UpdateLeft(double delta)
+            {
+                var newNormalizedStart = ((((RenderTransform as TranslateTransform).X + delta) / _progressBar.Width) * _progressBar.NormalizedWidth) +
+                         _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime;
+
+                LibraryElementController.SetStartTime(newNormalizedStart);
             }
 
             public void Dispose()
             {
-                _libraryElementController.DurationChanged -= SetDuration;
-                _libraryElementController.TimeChanged -= SetLeft;
+                LibraryElementController.DurationChanged -= SetDuration;
+                LibraryElementController.TimeChanged -= SetLeft;
+                _leftHitBox.ManipulationDelta -= LeftHitBoxOnManipulationDelta;
+                _rightHitBox.ManipulationDelta -= RightHitBoxOnManipulationDelta;
+                _leftHitBox.ManipulationStarting -= RightHitBoxOnManipulationStarting;
+                _rightHitBox.ManipulationStarting -= RightHitBoxOnManipulationStarting;
+                _leftHitBox.ManipulationCompleted -= LeftHitBoxOnManipulationCompleted;
+                _rightHitBox.ManipulationCompleted -= LeftHitBoxOnManipulationCompleted;
+                ManipulationStarting -= RightHitBoxOnManipulationStarting;
+                ManipulationCompleted -= LeftHitBoxOnManipulationCompleted;
+                ManipulationDelta -= OnManipulationDelta;
+                DoubleTapped -= OnDoubleTapped;
+
+                _leftHitBox = null;
+                _rightHitBox = null;
+                _bottomLeftCircle = null;
+                _topRightCircle = null;
+                _bottomRightCircle = null;
+                _topLeftCircle = null;
             }
 
             public void SetLeft(object sender, double newNormalizedStartTime)
             {
                 Debug.Assert(RenderTransform is TranslateTransform);
-                (RenderTransform as TranslateTransform).X = newNormalizedStartTime * Width;
+                Debug.Assert(_progressBar?.CurrentLibraryElementController?.AudioLibraryElementModel != null);
+                (RenderTransform as TranslateTransform).X = (newNormalizedStartTime - _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime) * (_progressBar.Width/_progressBar.NormalizedWidth);
             }
 
             public void SetDuration(object sender, double newNormalizedDuration)
@@ -206,11 +397,16 @@ namespace NuSysApp
                 Debug.Assert(bottomRightCircleTransform != null);
                 Debug.Assert(rightHitBoxTransform != null);
 
-                var newX = this.Width - 2 * HANDLE_EXTENSION_HEIGHT;
+                var newX = this.Width - HANDLE_EXTENSION_HEIGHT;
 
                 rightHitBoxTransform.X = newX;
                 bottomRightCircleTransform.X = newX;
                 topRightCircleTransform.X = newX;
+            }
+
+            public void SetHeight(double height)
+            {
+                Height = height;
             }
         }
     }

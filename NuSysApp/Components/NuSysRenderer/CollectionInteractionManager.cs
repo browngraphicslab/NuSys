@@ -123,7 +123,7 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnTwoElementsReleased()
         {
-            var menu = NuSysRenderer.Instance.NodeMarkingMenu;
+            var menu = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.NodeMarkingMenu;
             menu.IsVisible = false;
             _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
             if (menu.CurrentIndex == 0)
@@ -140,9 +140,9 @@ namespace NuSysApp
             _potentiaLink = new Tuple<ElementRenderItem, ElementRenderItem>(element1, element2);
             _isTwoElementsPressed = true;
             _nodeMarkingMenuPointer = pointer2;
-            NuSysRenderer.Instance.NodeMarkingMenu.UpdatePointerLocation(pointer2.CurrentPoint);
-            NuSysRenderer.Instance.NodeMarkingMenu.IsVisible = true;
-            NuSysRenderer.Instance.NodeMarkingMenu.Show(pointer2.CurrentPoint.X, pointer2.CurrentPoint.Y);
+            SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.NodeMarkingMenu.UpdatePointerLocation(pointer2.CurrentPoint);
+            SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.NodeMarkingMenu.IsVisible = true;
+            SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.NodeMarkingMenu.Show(pointer2.CurrentPoint.X, pointer2.CurrentPoint.Y);
 
             _canvasInteractionManager.PointerMoved += CanvasInteractionManagerOnPointerMoved;
         }
@@ -151,14 +151,14 @@ namespace NuSysApp
         {
             if (pointer.PointerId == _nodeMarkingMenuPointer.PointerId)
             {
-                NuSysRenderer.Instance.NodeMarkingMenu.UpdatePointerLocation(pointer.CurrentPoint);
+                SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.NodeMarkingMenu.UpdatePointerLocation(pointer.CurrentPoint);
             }
         }
 
         private void CanvasInteractionManagerOnTwoPointerPressed(CanvasPointer pointer1, CanvasPointer pointer2)
         {
-            var item1 = NuSysRenderer.Instance.GetRenderItemAt(pointer1.CurrentPoint, _collection, 1);
-            var item2 = NuSysRenderer.Instance.GetRenderItemAt(pointer2.CurrentPoint, _collection, 1);
+            var item1 = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer1.CurrentPoint, _collection, 1);
+            var item2 = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer2.CurrentPoint, _collection, 1);
             if (!(item1 is ElementRenderItem) || !(item2 is ElementRenderItem))
                 return;
 
@@ -227,20 +227,20 @@ namespace NuSysApp
             {
                 var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
                 var latestStroke = currentCollection.InkRenderItem.LatestStroke;
-                var t = Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(currentCollection));
+                var t = Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(currentCollection));
                 if (InkUtil.IsPointCloseToStroke(Vector2.Transform(pointer.CurrentPoint, t), latestStroke))
                 {
                     SelectionInkPressed?.Invoke(pointer, latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)));
                 }
             }
 
-            var until = NuSysRenderer.Instance.GetTransformUntil(_collection);
+            var until = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection);
             _transform = Win2dUtil.Invert(_collection.C) * _collection.S * _collection.C * _collection.T * until;
 
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
             {
-                var hit = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-                if (hit == NuSysRenderer.Instance.ElementSelectionRenderItem.Resizer)
+                var hit = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                if (hit == SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ElementSelectionRenderItem.Resizer)
                 {
                     _resizerHit = true;
                     if (_resizerHit)
@@ -251,12 +251,12 @@ namespace NuSysApp
                 }
                 _selectedRenderItem = hit as ElementRenderItem;
                 if (_selectedRenderItem != null && _selectedRenderItem.Parent != null && _selectedRenderItem != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection)
-                    _selectedRenderItem.Parent.BringForward(_selectedRenderItem as ElementRenderItem);
+                    (_selectedRenderItem.Parent as CollectionRenderItem).BringForward(_selectedRenderItem as ElementRenderItem);
             }
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 2)
             {
 
-                _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1) as ElementRenderItem;
+                _secondSelectedRenderItem = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1) as ElementRenderItem;
                 _transformables.Clear();
 
                 if (_canvasInteractionManager.ActiveCanvasPointers[0].MillisecondsActive > 300)
@@ -292,7 +292,7 @@ namespace NuSysApp
             }
 
 
-            var hits = NuSysRenderer.Instance.GetRenderItemsAt(pointer.CurrentPoint);
+            var hits = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemsAt(pointer.CurrentPoint);
             var underlyingCollections = hits.OfType<CollectionRenderItem>().ToList();
             if (underlyingCollections.Count() == 1)
             {
@@ -336,7 +336,7 @@ namespace NuSysApp
             var keyStateL = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.L);
             if (keyStateL.HasFlag(CoreVirtualKeyStates.Down))
             {
-                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                _selectedRenderItem = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
                 _mode = Mode.Link;
                 return;
             }
@@ -344,7 +344,7 @@ namespace NuSysApp
             var keyStateT = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.T);
             if (keyStateT.HasFlag(CoreVirtualKeyStates.Down))
             {
-                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                _selectedRenderItem = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
                 _mode = Mode.Trail;
                 return;
             }
@@ -375,7 +375,7 @@ namespace NuSysApp
 
                 if (keyState.HasFlag(CoreVirtualKeyStates.Down))
                 {
-                    _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection,
+                    _secondSelectedRenderItem = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection,
                         1);
 
                     if (_selectedRenderItem != null && _selectedRenderItem != _collection &&
@@ -397,7 +397,7 @@ namespace NuSysApp
 
                 if (keyState.HasFlag(CoreVirtualKeyStates.Down))
                 {
-                    _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                    _secondSelectedRenderItem = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
                     if (_selectedRenderItem != null && _selectedRenderItem != _collection &&
                         _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection)
@@ -425,7 +425,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnItemLongTapped(CanvasPointer pointer)
         {
-            var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+            var element = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
             if (element == SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection)
                 return;
@@ -453,7 +453,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnItemDoubleTapped(CanvasPointer pointer)
         {
-            var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+            var element = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
             var elementRenderItem = element as ElementRenderItem;
             if (elementRenderItem == null)
                 return;
@@ -463,7 +463,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
         {
-            var element = NuSysRenderer.Instance.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+            var element = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
             if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
                 return;

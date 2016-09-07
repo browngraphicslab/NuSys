@@ -33,7 +33,7 @@ namespace NuSysApp
         private CanvasStrokeStyle _strokeStyle;
         private float _margin = 10;
 
-        public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
+        public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
             _htmlParser = new HTMLParser(resourceCreator);

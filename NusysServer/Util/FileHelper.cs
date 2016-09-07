@@ -28,10 +28,6 @@ namespace NusysServer
         {
             try
             {
-                if (contentUrl.Length <= Constants.SERVER_ADDRESS.Length)
-                {
-                    throw new Exception("the suggested content URL is too short");
-                }
                 switch (contentType)
                 {
                     case NusysConstants.ContentType.Audio:
@@ -41,6 +37,11 @@ namespace NusysServer
                     case NusysConstants.ContentType.Word:
                         return contentUrl;
                     case NusysConstants.ContentType.Text:
+                        if (contentUrl.Length <= Constants.SERVER_ADDRESS.Length)
+                        {
+                            ErrorLog.AddError(new Exception("the suggested content URL is too short: " + contentUrl + "  type: "+contentType));
+                            return "";
+                        }
                         return FetchDataFromFile(contentUrl.Substring(Constants.SERVER_ADDRESS.Length));
                 }
                 throw new Exception("the requested contentType is not supported yet for url-to-data conversion");

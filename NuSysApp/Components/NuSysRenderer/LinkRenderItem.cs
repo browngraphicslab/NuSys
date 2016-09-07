@@ -19,7 +19,7 @@ namespace NuSysApp
         private CanvasGeometry _path;
         public LinkViewModel ViewModel => _vm;
 
-        public LinkRenderItem(LinkViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
+        public LinkRenderItem(LinkViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
             _vm = vm;
             _vm.Controller.InElement.AnchorChanged += OnAnchorChanged;

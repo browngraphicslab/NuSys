@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -351,6 +352,9 @@ namespace NuSysApp
                             videoArgs.AspectRatio = aspectRatio;
                             libraryElementArgs = videoArgs;
                             break;
+                        case NusysConstants.ElementType.Audio:
+                            libraryElementArgs = new CreateNewAudioLibraryElementRequestArgs();
+                            break;
                         default:
                             libraryElementArgs = new CreateNewLibraryElementRequestArgs();
                             break;
@@ -561,10 +565,11 @@ namespace NuSysApp
 
             // Add a collection to the dropped location
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
+            var r = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)_searchExportPos.X, (float)_searchExportPos.Y), SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
+
+            var dropPoint = new Point(r.X, r.Y);
             await ExportSearchResultsToCollection(dropPoint);
             e.Handled = true;
-           
         }
 
         /// <summary>
