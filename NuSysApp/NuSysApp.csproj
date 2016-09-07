@@ -903,6 +903,7 @@
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />
     <Content Include="Assets\record dark.png" />
+    <Content Include="Assets\refresh icon.png" />
     <Content Include="Assets\refresh.png" />
     <Content Include="Assets\region icon.png" />
     <Content Include="Assets\resizer.png" />
