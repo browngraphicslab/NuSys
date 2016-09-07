@@ -58,7 +58,15 @@ namespace NuSysApp
             MediaElement.MediaOpened += MediaElementOnLoaded;
             PlayPauseButton.Tapped += PlayPauseButtonOnTapped;
             PlayPauseButton.RenderTransform = new TranslateTransform();
+            Canvas.SetZIndex(PlayPauseButton,10);
             ProgressBar.RenderTransform = new TranslateTransform();
+            ProgressBar.Scrubbed += ProgressBarScrubbed;
+        }
+
+        private void ProgressBarScrubbed(object sender, double d)
+        {
+            var newMilliseconds = (int)(d*MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+            GotoTime(newMilliseconds);
         }
 
         private void ProgressBarOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
@@ -67,7 +75,12 @@ namespace NuSysApp
                        CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration) +
                       CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime)*
                      MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
-            MediaElement.Position = new TimeSpan(0,0,0,0,newMilliseconds);
+            GotoTime(newMilliseconds);
+        }
+
+        private void GotoTime(int newMilliseconds)
+        {
+            MediaElement.Position = new TimeSpan(0, 0, 0, 0, newMilliseconds);
             TimerTick("Forced");
         }
 
@@ -76,6 +89,7 @@ namespace NuSysApp
             if (ProgressBar != null)
             {
                 ProgressBar.Tapped -= ProgressBarOnTapped;
+                ProgressBar.Scrubbed -= ProgressBarScrubbed;
                 ProgressBar.Dispose();
             }
             if (MediaElement != null)

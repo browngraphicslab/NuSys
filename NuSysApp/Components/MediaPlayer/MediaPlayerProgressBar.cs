@@ -20,6 +20,9 @@ namespace NuSysApp
     /// </summary>
     public class MediaPlayerProgressBar : Canvas
     {
+
+        public EventHandler<double> Scrubbed;
+
         /// <summary>
         /// the current library element controller of this progress bar.
         /// Can be null;
@@ -59,7 +62,45 @@ namespace NuSysApp
             _progressBar.Fill = new SolidColorBrush(Colors.Chartreuse);
             _progressBar.Height = PROGRESS_BAR_DEFAULT_HEIGHT;
             _backgroundRectangle.Height = PROGRESS_BAR_DEFAULT_HEIGHT;
+            _backgroundRectangle.ManipulationDelta += BackgroundRectangleOnManipulationDelta;
+            _backgroundRectangle.PointerPressed += BackgroundRectangleOnPointerPressed;
+            PointerReleased += OnPointerReleased;
+            _backgroundRectangle.DoubleTapped += BackgroundRectangleOnDoubleTapped;
             Height = PROGRESS_BAR_DEFAULT_HEIGHT;
+            _backgroundRectangle.ManipulationMode = ManipulationModes.All;
+        }
+
+        private void BackgroundRectangleOnDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
+        {
+            SessionController.Instance.SessionView.DetailViewerView.ShowElement(CurrentLibraryElementController);
+        }
+
+        private void BackgroundRectangleOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.Freeze();
+            CapturePointer(pointerRoutedEventArgs.Pointer);
+        }
+
+        private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
+        }
+
+        private void BackgroundRectangleOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
+        {
+            if (!manipulationDeltaRoutedEventArgs.IsInertial)
+            {
+                manipulationDeltaRoutedEventArgs.Handled = true;
+                var seekNormalized = ((manipulationDeltaRoutedEventArgs.Position.X/Width)*
+                                      CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration) +
+                                     CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime;
+                Scrubbed?.Invoke(this, seekNormalized);
+            }
+        }
+
+        public void FireScrubbed(double normalizedScrub)
+        {
+            Scrubbed?.Invoke(this, normalizedScrub);
         }
 
         public void SetBackgroundColor(Color color, byte opacity)
@@ -172,12 +213,23 @@ namespace NuSysApp
                 region?.SetDuration(this, region.LibraryElementController.AudioLibraryElementModel.NormalizedDuration);
                 region?.SetLeft(this, region.LibraryElementController.AudioLibraryElementModel.NormalizedStartTime);
             }
-
         }
 
         public void Dispose()
         {
             Children.ForEach(view => (view as RegionView)?.Dispose());
+
+            _backgroundRectangle.ManipulationDelta -= BackgroundRectangleOnManipulationDelta;
+            _backgroundRectangle.PointerPressed -= BackgroundRectangleOnPointerPressed;
+            _backgroundRectangle.DoubleTapped -= BackgroundRectangleOnDoubleTapped;
+
+            PointerReleased -= OnPointerReleased;
+
+            if (CurrentLibraryElementController.ContentDataController?.ContentDataModel != null)
+            {
+                CurrentLibraryElementController.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+                CurrentLibraryElementController.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            }
         }
 
         public void UpdateTime(double normalizedTime)
@@ -330,10 +382,19 @@ namespace NuSysApp
 
             private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
             {
-                var scale = ((_progressBar?.Parent as Canvas)?.RenderTransform as CompositeTransform)?.ScaleX ?? 1;
-                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X / scale;
-                UpdateLeft(delta);
-                manipulationDeltaRoutedEventArgs.Handled = true;
+                if (!manipulationDeltaRoutedEventArgs.IsInertial)
+                {
+                    var scale = ((_progressBar?.Parent as Canvas)?.RenderTransform as CompositeTransform)?.ScaleX ?? 1;
+                    var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X/scale;
+                    if (!UpdateLeft(delta)) //if the update failed because we cant move left or right anymore,
+                    {
+                        var seekNormalized = ((manipulationDeltaRoutedEventArgs.Position.X/Width)*
+                                              LibraryElementController.AudioLibraryElementModel.NormalizedDuration) +
+                                             LibraryElementController.AudioLibraryElementModel.NormalizedStartTime;
+                        _progressBar?.FireScrubbed(seekNormalized);
+                    }
+                    manipulationDeltaRoutedEventArgs.Handled = true;
+                }
             }
 
             private void LeftHitBoxOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
@@ -351,14 +412,16 @@ namespace NuSysApp
                 LibraryElementController.SetDuration(newNormalizedDuration);
             }
 
-            private void UpdateLeft(double delta)
+            private bool UpdateLeft(double delta)
             {
                 var newNormalizedStart = ((((RenderTransform as TranslateTransform).X + delta) / _progressBar.Width) * _progressBar.NormalizedWidth) +
                          _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime;
-                if (newNormalizedStart + LibraryElementController.AudioLibraryElementModel.NormalizedDuration <= 1)
+                if (newNormalizedStart + LibraryElementController.AudioLibraryElementModel.NormalizedDuration <= 1 && newNormalizedStart > 0)
                 {
                     LibraryElementController.SetStartTime(newNormalizedStart);
+                    return true;
                 }
+                return false;
             }
 
             public void Dispose()
