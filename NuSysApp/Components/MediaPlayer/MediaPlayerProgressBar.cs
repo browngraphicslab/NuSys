@@ -29,7 +29,7 @@ namespace NuSysApp
         private const double PROGRESS_BAR_DEFAULT_HEIGHT = 50;
 
         private Rectangle _progressBar = new Rectangle();
-        private Rectangle _backgroundRectangle = new Rectangle() {};
+        private Rectangle _backgroundRectangle = new Rectangle() {Fill = new SolidColorBrush(Colors.Transparent)};
         private RectangleGeometry _clipping = new RectangleGeometry()
         {
             Transform = new TranslateTransform() { Y = - 2 * RegionView.HANDLE_EXTENSION_HEIGHT}
