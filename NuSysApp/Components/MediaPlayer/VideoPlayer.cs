@@ -19,5 +19,11 @@ namespace NuSysApp
             progressTransform.Y = MediaElement.Height;
             buttonTranform.Y = MediaElement.Height + ProgressBar.Height;
         }
+
+        public override void SetLibraryElement(AudioLibraryElementController controller, bool autoStartWhenLoaded = true)
+        {
+            ProgressBar.SetBackgroundColor(MediaUtil.GetHashColorFromString(controller.AudioLibraryElementModel.LibraryElementId),100);
+            base.SetLibraryElement(controller, autoStartWhenLoaded);
+        }
     }
 }

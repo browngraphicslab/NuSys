@@ -33,6 +33,8 @@ namespace NuSysApp
         /// </summary>
         protected MediaPlayerProgressBar ProgressBar = new MediaPlayerProgressBar();
 
+        protected bool AutoStartMedia = true;
+
         protected Button PlayPauseButton = new Button()
         {
             Content = "play",
@@ -73,16 +75,17 @@ namespace NuSysApp
         {
             if (ProgressBar != null)
             {
-                ProgressBar.Tapped += ProgressBarOnTapped;
+                ProgressBar.Tapped -= ProgressBarOnTapped;
                 ProgressBar.Dispose();
             }
             if (MediaElement != null)
             {
-                MediaElement.MediaOpened += MediaElementOnLoaded;
+                MediaElement.Stop();
+                MediaElement.MediaOpened -= MediaElementOnLoaded;
             }
             if (PlayPauseButton != null)
             {
-                PlayPauseButton.Tapped += PlayPauseButtonOnTapped;
+                PlayPauseButton.Tapped -= PlayPauseButtonOnTapped;
             }
         }
 
@@ -143,16 +146,11 @@ namespace NuSysApp
 
             var currentPosition = MediaElement.Position.TotalMilliseconds;
             var min = CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime*duration;
-            var max = (CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration + min) * duration;
+            var max = (CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration + CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime) * duration;
 
-            if (currentPosition >= max)
+            if (currentPosition >= max || currentPosition <= min)
             {
-                MediaElement.Position = new TimeSpan(0,0,0,0, (int )max);
-                return;
-            }
-            else if (currentPosition <= min)
-            {
-                MediaElement.Position = new TimeSpan(0, 0, 0, 0, (int)min);
+                MediaElement.Position = new TimeSpan(0,0,0,0, (int )min);
             }
 
             MediaElement.Play();
@@ -176,14 +174,14 @@ namespace NuSysApp
             MediaElement.Height = height;
             ProgressBar.SetWidth(width);
             ((TranslateTransform) PlayPauseButton.RenderTransform).Y = height;
-            ((TranslateTransform)PlayPauseButton.RenderTransform).X = (width + PlayPauseButton.Width )/ 2;
+            ((TranslateTransform)PlayPauseButton.RenderTransform).X = (width - PlayPauseButton.Width )/ 2;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="controller"></param>
-        public virtual void SetLibraryElement(AudioLibraryElementController controller)
+        public virtual void SetLibraryElement(AudioLibraryElementController controller, bool autoStartWhenLoaded = true)
         {
             Debug.Assert(controller != null);
             if (controller != CurrentLibraryElementController)
@@ -191,12 +189,16 @@ namespace NuSysApp
                 CurrentLibraryElementController = controller;
                 ProgressBar.SetLibraryElementController(controller);
                 MediaElement.Source = new Uri(controller.Data);
+                AutoStartMedia = autoStartWhenLoaded;
             }
         }
 
         private void MediaElementOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            Play();
+            if (AutoStartMedia)
+            {
+                Play();
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace NuSysApp
             base.SetSize(width, height);
         }
 
-        public override void SetLibraryElement(AudioLibraryElementController controller)
+        public override void SetLibraryElement(AudioLibraryElementController controller, bool autoStartWhenLoaded = true)
         {
             if (controller != CurrentLibraryElementController)
             {
@@ -29,7 +29,7 @@ namespace NuSysApp
                 Children.ForEach(child => Canvas.SetZIndex(child, 2));
                 Children.Add(new BackgroundImage(controller, ProgressBar.Width, ProgressBar.Height));
             }
-            base.SetLibraryElement(controller);
+            base.SetLibraryElement(controller,autoStartWhenLoaded);
         }
 
         private class BackgroundImage : Canvas

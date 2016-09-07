@@ -62,21 +62,23 @@ namespace NuSysApp
             Height = PROGRESS_BAR_DEFAULT_HEIGHT;
         }
 
+        public void SetBackgroundColor(Color color, byte opacity)
+        {
+            color.A = opacity;
+            _backgroundRectangle.Fill = new SolidColorBrush(color);
+        }
+
         public void SetLibraryElementController(AudioLibraryElementController libaryElementController)
         {
             Debug.Assert(libaryElementController != null);
             RemoveOldController(CurrentLibraryElementController);
-
-            var color = MediaUtil.GetHashColorFromString(libaryElementController.LibraryElementModel.LibraryElementId);
-            color.A = 100;
-            _backgroundRectangle.Fill = new SolidColorBrush(color);
-
+            
             libaryElementController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             libaryElementController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
 
 
             CurrentLibraryElementController = libaryElementController;
-            _progressBar = _progressBar ?? new Rectangle();
+            _progressBar.Fill = new SolidColorBrush(MediaUtil.GetHashColorFromString(libaryElementController.AudioLibraryElementModel.LibraryElementId)) {Opacity = 65};
 
             foreach(var model in SessionController.Instance.ContentController.ContentValues.Where(item => item.ContentDataModelId == libaryElementController.AudioLibraryElementModel.ContentDataModelId))
             { 
@@ -121,6 +123,15 @@ namespace NuSysApp
             {
                 var child = new RegionView(controller, this);
                 Children.Add(child);
+                if (!(controller.AudioLibraryElementModel.NormalizedStartTime < //if the region start and end is not entirely out of view,
+                    CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime &&
+                    controller.AudioLibraryElementModel.NormalizedStartTime +
+                    controller.AudioLibraryElementModel.NormalizedDuration >
+                    CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime +
+                    CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration))
+                {
+                    Canvas.SetZIndex(child, 5);
+                }
             }
         }
 
@@ -182,7 +193,11 @@ namespace NuSysApp
         private class RegionView : Canvas
         {
             public static readonly double HANDLE_EXTENSION_HEIGHT = 10;
+
+            private static byte CIRCLE_OPACITY = 160;
+
             private Color _color;
+            private Color _circleColor;
 
             private Rectangle _leftHitBox = new Rectangle();
             private Rectangle _rightHitBox = new Rectangle();
@@ -198,7 +213,10 @@ namespace NuSysApp
                 Debug.Assert(controller != null && progressBar != null);
 
                 _color = MediaUtil.GetHashColorFromString(controller.LibraryElementModel.LibraryElementId);
-                _color.A = 100;
+                _color.A = 50;
+
+                _circleColor = _color;
+                _circleColor.A = CIRCLE_OPACITY;
 
                 LibraryElementController = controller;
                 _progressBar = progressBar;
@@ -211,21 +229,21 @@ namespace NuSysApp
                 {
                     Fill = new SolidColorBrush(Colors.Transparent),
                     Height = progressBar.Height + 4 * HANDLE_EXTENSION_HEIGHT,
-                    Width = 2*HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = -HANDLE_EXTENSION_HEIGHT }
+                    Width = 3*HANDLE_EXTENSION_HEIGHT,
+                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = -1.5*HANDLE_EXTENSION_HEIGHT }
                 };
 
                 _rightHitBox = new Rectangle()
                 {
                     Fill = new SolidColorBrush(Colors.Transparent),
                     Height = progressBar.Height + 4 * HANDLE_EXTENSION_HEIGHT,
-                    Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = this.Width - HANDLE_EXTENSION_HEIGHT}
+                    Width = 3 * HANDLE_EXTENSION_HEIGHT,
+                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = this.Width - 1.5* HANDLE_EXTENSION_HEIGHT}
                 };
 
                 _topLeftCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(_color),
+                    Fill = new SolidColorBrush(_circleColor),
                     Height = 2* HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
                     RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT , X = -HANDLE_EXTENSION_HEIGHT}
@@ -233,7 +251,7 @@ namespace NuSysApp
 
                 _topRightCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(_color),
+                    Fill = new SolidColorBrush(_circleColor) ,
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
                     RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT, X =  this.Width -  HANDLE_EXTENSION_HEIGHT}
@@ -241,7 +259,7 @@ namespace NuSysApp
 
                 _bottomLeftCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(_color),
+                    Fill = new SolidColorBrush(_circleColor),
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
                     RenderTransform = new TranslateTransform() { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = -HANDLE_EXTENSION_HEIGHT }
@@ -249,7 +267,7 @@ namespace NuSysApp
 
                 _bottomRightCircle = new Ellipse()
                 {
-                    Fill = new SolidColorBrush(_color),
+                    Fill = new SolidColorBrush(_circleColor),
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
                     RenderTransform = new TranslateTransform() { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = this.Width - HANDLE_EXTENSION_HEIGHT }
@@ -272,17 +290,12 @@ namespace NuSysApp
 
                 _leftHitBox.ManipulationDelta += LeftHitBoxOnManipulationDelta;
                 _rightHitBox.ManipulationDelta += RightHitBoxOnManipulationDelta;
-                _leftHitBox.ManipulationStarting += RightHitBoxOnManipulationStarting;
-                _rightHitBox.ManipulationStarting += RightHitBoxOnManipulationStarting;
-                _leftHitBox.ManipulationCompleted += LeftHitBoxOnManipulationCompleted;
-                _rightHitBox.ManipulationCompleted += LeftHitBoxOnManipulationCompleted;
-                ManipulationStarting += RightHitBoxOnManipulationStarting;
-                ManipulationCompleted += LeftHitBoxOnManipulationCompleted;
                 ManipulationDelta += OnManipulationDelta;
                 DoubleTapped += OnDoubleTapped;
 
                 _leftHitBox.PointerPressed += OnPointerPressed;
                 _rightHitBox.PointerPressed += OnPointerPressed;
+
                 PointerPressed += OnPointerPressed;
                 PointerReleased += OnPointerReleased;
 
@@ -293,13 +306,11 @@ namespace NuSysApp
             private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
             {
                 SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
-                Debug.WriteLine("Manip completed called");
             }
 
             private void OnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
             {
                 SessionController.Instance.SessionView.FreeFormViewer.Freeze();
-                Debug.WriteLine("Manip starting called");
                 CapturePointer(pointerRoutedEventArgs.Pointer);
             }
 
@@ -309,41 +320,34 @@ namespace NuSysApp
             }
 
 
-            private void LeftHitBoxOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
-            {
-                
-            }
-
-            private void RightHitBoxOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
-            {
-                
-            }
-
-
             private void RightHitBoxOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
             {
-                var delta = -manipulationDeltaRoutedEventArgs.Delta.Translation.X;
+                var scale = ((_progressBar?.Parent as Canvas)?.RenderTransform as CompositeTransform)?.ScaleX ?? 1;
+                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X / scale;
                 UpdateDuration(delta);
                 manipulationDeltaRoutedEventArgs.Handled = true;
             }
 
             private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
             {
-                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X;
+                var scale = ((_progressBar?.Parent as Canvas)?.RenderTransform as CompositeTransform)?.ScaleX ?? 1;
+                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X / scale;
                 UpdateLeft(delta);
+                manipulationDeltaRoutedEventArgs.Handled = true;
             }
 
             private void LeftHitBoxOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
             {
-                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X;
-                UpdateDuration(delta);
+                var scale = ((_progressBar?.Parent as Canvas)?.RenderTransform as CompositeTransform)?.ScaleX ?? 1;
+                var delta = manipulationDeltaRoutedEventArgs.Delta.Translation.X / scale;
+                UpdateDuration(-delta);
                 UpdateLeft(delta);
                 manipulationDeltaRoutedEventArgs.Handled = true;
             }
 
             private void UpdateDuration(double delta)
             {
-                var newNormalizedDuration = ((Width - delta) / _progressBar.Width) * _progressBar.NormalizedWidth;
+                var newNormalizedDuration = ((Width + delta) / _progressBar.Width) * _progressBar.NormalizedWidth;
                 LibraryElementController.SetDuration(newNormalizedDuration);
             }
 
@@ -351,8 +355,10 @@ namespace NuSysApp
             {
                 var newNormalizedStart = ((((RenderTransform as TranslateTransform).X + delta) / _progressBar.Width) * _progressBar.NormalizedWidth) +
                          _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime;
-
-                LibraryElementController.SetStartTime(newNormalizedStart);
+                if (newNormalizedStart + LibraryElementController.AudioLibraryElementModel.NormalizedDuration <= 1)
+                {
+                    LibraryElementController.SetStartTime(newNormalizedStart);
+                }
             }
 
             public void Dispose()
@@ -361,14 +367,13 @@ namespace NuSysApp
                 LibraryElementController.TimeChanged -= SetLeft;
                 _leftHitBox.ManipulationDelta -= LeftHitBoxOnManipulationDelta;
                 _rightHitBox.ManipulationDelta -= RightHitBoxOnManipulationDelta;
-                _leftHitBox.ManipulationStarting -= RightHitBoxOnManipulationStarting;
-                _rightHitBox.ManipulationStarting -= RightHitBoxOnManipulationStarting;
-                _leftHitBox.ManipulationCompleted -= LeftHitBoxOnManipulationCompleted;
-                _rightHitBox.ManipulationCompleted -= LeftHitBoxOnManipulationCompleted;
-                ManipulationStarting -= RightHitBoxOnManipulationStarting;
-                ManipulationCompleted -= LeftHitBoxOnManipulationCompleted;
                 ManipulationDelta -= OnManipulationDelta;
                 DoubleTapped -= OnDoubleTapped;
+
+                _leftHitBox.PointerPressed -= OnPointerPressed;
+                _rightHitBox.PointerPressed -= OnPointerPressed;
+                PointerPressed -= OnPointerPressed;
+                PointerReleased -= OnPointerReleased;
 
                 _leftHitBox = null;
                 _rightHitBox = null;
@@ -399,7 +404,7 @@ namespace NuSysApp
 
                 var newX = this.Width - HANDLE_EXTENSION_HEIGHT;
 
-                rightHitBoxTransform.X = newX;
+                rightHitBoxTransform.X = this.Width - 1.5* HANDLE_EXTENSION_HEIGHT;
                 bottomRightCircleTransform.X = newX;
                 topRightCircleTransform.X = newX;
             }
@@ -407,6 +412,18 @@ namespace NuSysApp
             public void SetHeight(double height)
             {
                 Height = height;
+
+                var bottomRightCircleTransform = _bottomRightCircle.RenderTransform as TranslateTransform;
+                var bottomLeftCircleTransform = _bottomLeftCircle.RenderTransform as TranslateTransform;
+
+                Debug.Assert(bottomLeftCircleTransform != null);
+                Debug.Assert(bottomRightCircleTransform != null);
+
+                bottomLeftCircleTransform.Y = height - HANDLE_EXTENSION_HEIGHT;
+                bottomRightCircleTransform.Y = height - HANDLE_EXTENSION_HEIGHT;
+
+                _leftHitBox.Height = _progressBar.Height + 4*HANDLE_EXTENSION_HEIGHT;
+                _rightHitBox.Height = _progressBar.Height + 4 * HANDLE_EXTENSION_HEIGHT;
             }
         }
     }
