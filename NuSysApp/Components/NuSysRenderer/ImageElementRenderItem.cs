@@ -71,7 +71,8 @@ namespace NuSysApp
             var nw = lib.NormalizedWidth * _bmp.Size.Width;
             var nh = lib.NormalizedHeight * _bmp.Size.Height;
             _srcRect = new Rect(nx, ny, nw, nh);
-            _vm.Controller.SetSize(nw, nh, false);
+            var ratio = nw/nh;
+            _vm.Controller.SetSize(_vm.Height * ratio, _vm.Height, false);
             _isCropping = false;
         }
 
