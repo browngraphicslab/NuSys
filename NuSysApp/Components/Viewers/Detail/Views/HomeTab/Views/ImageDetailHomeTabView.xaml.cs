@@ -70,9 +70,13 @@ namespace NuSysApp
         private async void XImgCanvasOnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
         {
             var vm = (ImageDetailHomeTabViewModel)DataContext;
+            var libElemController = vm.LibraryElementController as ImageLibraryElementController;
+            libElemController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            libElemController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+
             _renderEngine = new CanvasRenderEngine();
             var root = new BaseRenderItem(null, xImgCanvas);
-            _imageDetailRenderItem = new ImageDetailRenderItem(vm.LibraryElementController as ImageLibraryElementController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
+            _imageDetailRenderItem = new ImageDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
             _imageDetailRenderItem.NeedsRedraw += ImageOnNeedsRedraw;
 
             await _imageDetailRenderItem.Load();
@@ -80,6 +84,16 @@ namespace NuSysApp
             root.Children.Add(_imageDetailRenderItem);
             _renderEngine.Init(xImgCanvas, root);
             _interactionManager = new RenderItemInteractionManager(_renderEngine, xImgCanvas);
+            xImgCanvas.Invalidate();
+        }
+
+        private void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        {
+            xImgCanvas.Invalidate();
+        }
+
+        private async Task ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        {
             xImgCanvas.Invalidate();
         }
 
@@ -187,6 +201,9 @@ namespace NuSysApp
 
         private void Dispose()
         {
+            var vm = (ImageDetailHomeTabViewModel)DataContext;
+            var libElemController = vm.LibraryElementController as ImageLibraryElementController;
+            libElemController.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _imageDetailRenderItem?.Dispose();
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed -= DetailViewerView_Disposed;

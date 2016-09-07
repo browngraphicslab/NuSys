@@ -144,7 +144,11 @@ namespace NuSysApp
             
             ds.Transform = Matrix3x2.Identity;
             ds.DrawTextLayout(_textLayout, new Vector2(sp.X + (spr.X-sp.X - 200f)/2f, sp.Y - (float)_textLayout.DrawBounds.Height-18), Colors.Black);
+
             ds.Transform = oldTransform;
+            base.Draw(ds);
+            ds.Transform = oldTransform;
+
         }
 
         public Rect GetScreenBoundingRect()
