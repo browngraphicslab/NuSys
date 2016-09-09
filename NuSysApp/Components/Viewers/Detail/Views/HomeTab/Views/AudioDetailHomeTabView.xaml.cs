@@ -26,25 +26,29 @@ namespace NuSysApp
 {
     public sealed partial class AudioDetailHomeTabView : UserControl
     {
-        private bool _stopped;
-
-        public event ContentLoadedEventHandler ContentLoaded;
-        public delegate void ContentLoadedEventHandler(object sender);
-
-        //public AudioMediaPlayer AudioMediaPlayer { get { return MediaPlayer; } } TODO put back in
-
         
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
             this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
             this.InitializeComponent();
 
-            //Show/hide region buttons need access to the audiowrapper for event handlers
-            //xShowHideRegionButtons.Wrapper = AudioMediaPlayer.AudioWrapper;
+            SizeChanged += OnSizeChanged;
 
-            //AudioMediaPlayer.AudioSource = new Uri(vm.LibraryElementController.Data);
-            //AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            
+
+            if (!vm.LibraryElementController.ContentLoaded)
+            {
+                UITask.Run(async delegate
+                {
+                    await vm.LibraryElementController.LoadContentDataModelAsync();
+                    LoadAudio();
+                });
+            }
+            else
+            {
+                LoadAudio();
+            }
+
+
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
 
@@ -53,29 +57,40 @@ namespace NuSysApp
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
-            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
-            detailViewerView.Disposed -= DetailViewerView_Disposed;
-            Dispose();
-        }
 
-        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            var vm = DataContext as AudioDetailHomeTabViewModel;
-            //vm.Duration = AudioMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-            ContentLoaded?.Invoke(this);
+            Dispose();
         }
 
         private void ControllerOnDisposed(object source, object args)
         {
-            var vm = (AudioNodeViewModel) DataContext;
-            //MediaPlayer.Dispose();
-            vm.Controller.Disposed -= ControllerOnDisposed;   
+
+            Dispose();
         }
+
+        private void LoadAudio()
+        {
+            var vm = DataContext as AudioDetailHomeTabViewModel;
+            xAudioPlayer.SetLibraryElement(vm?.LibraryElementController as AudioLibraryElementController, false);
+        }
+
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        {
+            xAudioPlayer.SetSize(sizeChangedEventArgs.NewSize.Width, 200);
+        }
+
 
 
         public void Dispose()
         {
-            //MediaPlayer.Dispose();
+            var vm = (AudioDetailHomeTabViewModel)DataContext;
+            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
+
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+
+            SizeChanged -= OnSizeChanged;
+            xAudioPlayer.Dispose();
         }
       
     }

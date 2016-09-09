@@ -77,6 +77,9 @@ namespace NuSysApp
             regionRequestArgs.LibraryElementType = type;
             regionRequestArgs.Title = "Region " + vm.CurrentElementController.Title; // TODO factor out this hard-coded string to a constant
             regionRequestArgs.ParentLibraryElementId = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
+            regionRequestArgs.Large_Thumbnail_Url = vm.CurrentElementController.LibraryElementModel.LargeIconUrl;
+            regionRequestArgs.Medium_Thumbnail_Url = vm.CurrentElementController.LibraryElementModel.MediumIconUrl;
+            regionRequestArgs.Small_Thumbnail_Url = vm.CurrentElementController.LibraryElementModel.SmallIconUrl;
             if (PublicRegionButton.IsChecked == true)
             {
                 regionRequestArgs.AccessType = NusysConstants.AccessType.Public;

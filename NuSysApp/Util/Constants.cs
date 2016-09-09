@@ -163,6 +163,8 @@ namespace NuSysApp
 
         #region Other
         public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
+
+        public static readonly double MinimumVideoAndAudioDuration = .00000001;
         #endregion Other
 
         #region InitialTransform

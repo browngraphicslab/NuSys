@@ -43,8 +43,8 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            ResetTables(true);
-            SetUpTables();
+            //ResetTables(true);
+            //SetUpTables();
 
 
             TestFunc();
@@ -86,7 +86,6 @@ namespace NusysServer
             var contentTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content) + " (" +
                 NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
-                NusysConstants.METADATA_MUTABILITY_COLUMN_KEY + " varchar(256)," +
                 NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(MAX));");
 
             var libraryElementTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " (" +

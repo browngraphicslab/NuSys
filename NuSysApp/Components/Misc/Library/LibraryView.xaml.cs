@@ -352,6 +352,9 @@ namespace NuSysApp
                             videoArgs.AspectRatio = aspectRatio;
                             libraryElementArgs = videoArgs;
                             break;
+                        case NusysConstants.ElementType.Audio:
+                            libraryElementArgs = new CreateNewAudioLibraryElementRequestArgs();
+                            break;
                         default:
                             libraryElementArgs = new CreateNewLibraryElementRequestArgs();
                             break;

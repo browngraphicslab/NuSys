@@ -22,16 +22,27 @@
         </Grid.RowDefinitions>
         <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" Grid.Row="1">
 
-            <Grid VerticalAlignment="Center">
-                
-                <!--<local:AudioMediaPlayer x:Name="MediaPlayer"></local:AudioMediaPlayer>
-                <ItemsControl ItemsSource="{Binding RegionViews}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Grid/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>-->
+            <Grid x:Name="grid">
+                <Grid.Resources>
+                    <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <CaptureElement x:Name="preview"/>
+                <Grid Background="Aqua">
+                    <local:AudioPlayer x:Name="xAudioPlayer">
+                        <local:AudioPlayer.RenderTransform>
+                            <CompositeTransform></CompositeTransform>
+                        </local:AudioPlayer.RenderTransform>
+                    </local:AudioPlayer>
+                </Grid>
+                <GridView Visibility="Collapsed" x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
+
             </Grid>
         </Border>
         <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>

@@ -136,7 +136,7 @@ namespace NuSysApp
                         Debug.Assert(videoModel != null);
                         videoArgs.AspectRatio = videoModel.Ratio;
                         videoArgs.StartTime = videoModel.NormalizedStartTime;
-                        videoArgs.EndTime = videoModel.NormalizedEndTime;
+                        videoArgs.Duration = videoModel.NormalizedDuration;
                         videoArgs.ParentLibraryElementId = videoModel.ParentId;
                         args = videoArgs;
                         break;
@@ -145,7 +145,7 @@ namespace NuSysApp
                         var audioModel = originalController?.LibraryElementModel as AudioLibraryElementModel;
                         Debug.Assert(audioModel != null);
                         audioArgs.StartTime = audioModel.NormalizedStartTime;
-                        audioArgs.EndTime = audioModel.NormalizedEndTime;
+                        audioArgs.Duration = audioModel.NormalizedDuration;
                         audioArgs.ParentLibraryElementId = audioModel.ParentId;
                         args = audioArgs;
                         break;

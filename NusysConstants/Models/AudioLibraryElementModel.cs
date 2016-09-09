@@ -15,9 +15,10 @@ namespace NusysIntermediate
         public double NormalizedStartTime { get; set; }
 
         /// <summary>
-        /// the NORMALIZED end time
+        /// the NORMALIZED width of the region.  
+        /// Must be less than (1-NormalizedStartTime)
         /// </summary>
-        public double NormalizedEndTime { get; set; }
+        public double NormalizedDuration { get; set; }
         
         public AudioLibraryElementModel(string libraryId, NusysConstants.ElementType elementType =  NusysConstants.ElementType.Audio) : base(libraryId, elementType)
         {
@@ -30,9 +31,9 @@ namespace NusysIntermediate
             {
                 NormalizedStartTime = message.GetDouble(NusysConstants.AUDIO_LIBRARY_ELEMENT_START_TIME_KEY);
             }
-            if (message.ContainsKey(NusysConstants.AUDIO_LIBRARY_ELEMENT_END_TIME_KEY))
+            if (message.ContainsKey(NusysConstants.AUDIO_LIBRARY_ELEMENT_DURATION_KEY))
             {
-                NormalizedEndTime = message.GetDouble(NusysConstants.AUDIO_LIBRARY_ELEMENT_END_TIME_KEY);
+                NormalizedDuration = message.GetDouble(NusysConstants.AUDIO_LIBRARY_ELEMENT_DURATION_KEY);
             }
         }
     }

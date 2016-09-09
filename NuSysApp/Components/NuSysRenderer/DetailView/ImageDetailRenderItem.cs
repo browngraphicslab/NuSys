@@ -57,7 +57,7 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        private async Task ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        private async void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
         {
             ComputeRegions();
         }

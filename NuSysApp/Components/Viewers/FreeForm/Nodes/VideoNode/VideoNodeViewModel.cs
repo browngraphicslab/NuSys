@@ -29,18 +29,31 @@ namespace NuSysApp
                 await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
             Controller.SetSize(Model.Width, Model.Height);
-        }      
+        }
 
+        public override double GetRatio()
+        {
+            var lib = (Controller.LibraryElementModel as VideoLibraryElementModel);
+            var newRatio = lib.Ratio;
+            return newRatio;
+
+        }
+        /// <summary>
+        /// This is the function that recieves a set size event from the element controller and appropriately 
+        /// resizes the node that is attached to the controller according to the aspect ratio
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         protected override void OnSizeChanged(object source, double width, double height)
         {
-            var ratio = (Controller.LibraryElementModel as VideoLibraryElementModel).Ratio;
-            if (height * ratio < Constants.MinNodeSize)
+            if (height * GetRatio() < Constants.MinNodeSize)
             {
                 return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour
             }
 
-            SetSize(height*ratio, height);
-            //SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.SetVideoSize(Width, Height);
+            SetSize(height * GetRatio(), height);
+
         }
     }
 }

@@ -10,8 +10,16 @@ namespace NuSysApp
 {
     public class AudioLibraryElementController : LibraryElementController
     {
+        /// <summary>
+        /// event fired whenever the start time changes
+        /// </summary>
         public event RegionTimeChangedEventHandler TimeChanged;
-        public delegate void RegionTimeChangedEventHandler(object sender, double start, double end);
+        public delegate void RegionTimeChangedEventHandler(object sender, double start);
+
+        /// <summary>
+        /// event fired whenever the duration changes
+        /// </summary>
+        public EventHandler<double> DurationChanged;
 
         public AudioLibraryElementModel AudioLibraryElementModel
         {
@@ -23,20 +31,31 @@ namespace NuSysApp
         }
         public void SetStartTime(double startTime)
         {
+            startTime = Math.Min(Math.Max(startTime, 0), 1-Constants.MinimumVideoAndAudioDuration);
             AudioLibraryElementModel.NormalizedStartTime = startTime;
-            TimeChanged?.Invoke(this, AudioLibraryElementModel.NormalizedStartTime, AudioLibraryElementModel.NormalizedEndTime);
+            if (startTime + AudioLibraryElementModel.NormalizedDuration > 1)
+            {
+                SetDuration(1-startTime);
+            }
+            TimeChanged?.Invoke(this, AudioLibraryElementModel.NormalizedStartTime);
             if (!_blockServerInteraction)
             {
                 _debouncingDictionary.Add(NusysConstants.AUDIO_LIBRARY_ELEMENT_START_TIME_KEY, AudioLibraryElementModel.NormalizedStartTime);
             }
         }
-        public void SetEndTime(double endTime)
+
+        /// <summary>
+        /// setter for the normalized duration
+        /// </summary>
+        /// <param name="duration"></param>
+        public void SetDuration(double duration)
         {
-            AudioLibraryElementModel.NormalizedEndTime = endTime;
-            TimeChanged?.Invoke(this, AudioLibraryElementModel.NormalizedStartTime, AudioLibraryElementModel.NormalizedEndTime);
+            duration = Math.Max(Math.Min(duration,1-AudioLibraryElementModel.NormalizedStartTime), Constants.MinimumVideoAndAudioDuration);
+            AudioLibraryElementModel.NormalizedDuration = duration;
+            DurationChanged?.Invoke(this,duration);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add(NusysConstants.AUDIO_LIBRARY_ELEMENT_END_TIME_KEY, AudioLibraryElementModel.NormalizedEndTime);
+                _debouncingDictionary.Add(NusysConstants.AUDIO_LIBRARY_ELEMENT_DURATION_KEY, duration);
             }
         }
         public override void UnPack(Message message)
@@ -46,9 +65,9 @@ namespace NuSysApp
             {
                 SetStartTime(message.GetDouble(NusysConstants.AUDIO_LIBRARY_ELEMENT_START_TIME_KEY));
             }
-            if (message.ContainsKey(NusysConstants.AUDIO_LIBRARY_ELEMENT_END_TIME_KEY))
+            if (message.ContainsKey(NusysConstants.AUDIO_LIBRARY_ELEMENT_DURATION_KEY))
             {
-                SetEndTime(message.GetDouble(NusysConstants.AUDIO_LIBRARY_ELEMENT_END_TIME_KEY));
+                SetDuration(message.GetDouble(NusysConstants.AUDIO_LIBRARY_ELEMENT_DURATION_KEY));
             }
             base.UnPack(message);
             SetBlockServerBoolean(false);

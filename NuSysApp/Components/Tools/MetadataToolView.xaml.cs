@@ -768,6 +768,8 @@ namespace NuSysApp
                                     button.Background = new SolidColorBrush(Colors.Green);
                                     button.Content = null;
                                     RefreshFomTopOfChain();
+                                    button.Background = new SolidColorBrush(Colors.Transparent);
+                                    button.Content = "Hide Suggested Tags";
                                 });
                             }
                             else
@@ -780,9 +782,10 @@ namespace NuSysApp
                         });
                     
                 }
-
+                
 
             });
+            
         }
 
         /// <summary>
