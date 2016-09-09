@@ -32,7 +32,7 @@ namespace NuSysApp
 
         public void SetHeight(double normalizedHeight)
         {
-            ImageLibraryElementModel.NormalizedHeight = normalizedHeight;
+            ImageLibraryElementModel.NormalizedHeight = Math.Max(0, Math.Min(1, normalizedHeight)); ; ;
             SizeChanged?.Invoke(this, ImageLibraryElementModel.NormalizedWidth, ImageLibraryElementModel.NormalizedHeight);
             if (!_blockServerInteraction)
             {
@@ -41,7 +41,7 @@ namespace NuSysApp
         }
         public void SetWidth(double normalizedWidth)
         {
-            ImageLibraryElementModel.NormalizedWidth = normalizedWidth;
+            ImageLibraryElementModel.NormalizedWidth = Math.Max(0, Math.Min(1, normalizedWidth)); ; ;
             SizeChanged?.Invoke(this, ImageLibraryElementModel.NormalizedWidth, ImageLibraryElementModel.NormalizedHeight);
             if (!_blockServerInteraction)
             {
@@ -56,7 +56,7 @@ namespace NuSysApp
         /// <param name="normalizedX"></param>
         public void SetXLocation(double normalizedX)
         {
-            ImageLibraryElementModel.NormalizedX = normalizedX;
+            ImageLibraryElementModel.NormalizedX = Math.Max(0, Math.Min(1 - ImageLibraryElementModel.NormalizedWidth, normalizedX));
             LocationChanged?.Invoke(this, new Point(ImageLibraryElementModel.NormalizedX, ImageLibraryElementModel.NormalizedY));
 
             if (!_blockServerInteraction)
@@ -72,7 +72,7 @@ namespace NuSysApp
         /// <param name="normalizedX"></param>
         public void SetYLocation(double normalizedY)
         {
-            ImageLibraryElementModel.NormalizedY = normalizedY;
+            ImageLibraryElementModel.NormalizedY = Math.Max(0, Math.Min(1 - ImageLibraryElementModel.NormalizedHeight, normalizedY)); ;
 
             LocationChanged?.Invoke(this, new Point(ImageLibraryElementModel.NormalizedX, ImageLibraryElementModel.NormalizedY));
 

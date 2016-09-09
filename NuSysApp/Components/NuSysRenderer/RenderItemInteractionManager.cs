@@ -20,6 +20,7 @@ namespace NuSysApp
             PointerPressed += OnPointerPressed;
             Translated += OnTranslated;
             ItemTapped += OnItemTapped;
+            ItemDoubleTapped += OnItemDoubleTapped;
             AllPointersReleased += OnAllPointersReleased;
         }
 
@@ -59,6 +60,15 @@ namespace NuSysApp
             if (hit != null)
             {
                 hit.OnTapped(pointer);
+            }
+        }
+
+        private void OnItemDoubleTapped(CanvasPointer pointer)
+        {
+            var hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
+            if (hit != null)
+            {
+                hit.OnDoubleTapped(pointer);
             }
         }
     }

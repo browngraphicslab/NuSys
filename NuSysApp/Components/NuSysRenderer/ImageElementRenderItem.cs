@@ -20,7 +20,7 @@ namespace NuSysApp
         private ImageElementViewModel _vm;
         private ImageLibraryElementController _controller;
         private CanvasBitmap _bmp;
-        private Rect _srcRect;
+        private Rect _cropRegion;
         private bool _isCropping;
 
         public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
@@ -49,7 +49,7 @@ namespace NuSysApp
             foreach (var child in Children)
             {
                 var region = child as ImageDetailRegionRenderItem;
-                region?.UpdateImageBound(new Rect(0,0,_vm.Width, _vm.Height));
+                region?.UpdateImageBound();
             }
         }
 
@@ -93,7 +93,7 @@ namespace NuSysApp
             var ny = lib.NormalizedY * _bmp.Size.Height;
             var nw = lib.NormalizedWidth * _bmp.Size.Width;
             var nh = lib.NormalizedHeight * _bmp.Size.Height;
-            _srcRect = new Rect(nx, ny, nw, nh);
+            _cropRegion = new Rect(nx, ny, nw, nh);
             var ratio = nw/nh;
             _vm.Controller.SetSize(_vm.Height * ratio, _vm.Height, false);
             _isCropping = false;
@@ -113,8 +113,8 @@ namespace NuSysApp
             foreach (var regionLibraryElementModel in others)
             {
                 var elementBounds = new Rect(0,0,_vm.Width, _vm.Height);
-                var region = new ImageDetailRegionRenderItem(regionLibraryElementModel, elementBounds, elementBounds, this, ResourceCreator, false);
-                Children.Add(region);
+           //     var region = new ImageDetailRegionRenderItem(regionLibraryElementModel, _bmp.Bounds, _bmp.Bounds, _cropRegion.Width/_bmp.Size.Width, this, ResourceCreator, false);
+            //    Children.Add(region);
             }
         }
 
@@ -129,10 +129,10 @@ namespace NuSysApp
             ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
 
             if (_bmp != null)
-                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height}, _srcRect);
+                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height}, _cropRegion);
 
             ds.Transform = orgTransform;
-            base.Draw(ds);
+        //    base.Draw(ds);
 
             ds.Transform = orgTransform;
 

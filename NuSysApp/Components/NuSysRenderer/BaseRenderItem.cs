@@ -36,7 +36,7 @@ namespace NuSysApp
 
         public virtual void Update()
         {
-            foreach (var child in Children)
+            foreach (var child in Children.ToArray())
             {
                 child.Update();
             }

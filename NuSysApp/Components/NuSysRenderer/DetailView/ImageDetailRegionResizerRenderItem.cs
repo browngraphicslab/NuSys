@@ -66,5 +66,10 @@ namespace NuSysApp
         {
             base.OnTapped(pointer);
         }
+
+        public override Rect GetMeasure()
+        {
+            return new Rect(-30, -30, 30, 30);
+        }
     }
 }

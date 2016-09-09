@@ -16,6 +16,11 @@ namespace NuSysApp
             
         }
 
+        public virtual void OnDoubleTapped(CanvasPointer pointer)
+        {
+
+        }
+
         public virtual void OnTapped(CanvasPointer pointer)
         {
             

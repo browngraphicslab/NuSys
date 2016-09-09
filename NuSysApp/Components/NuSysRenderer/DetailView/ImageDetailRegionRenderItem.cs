@@ -8,59 +8,90 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
     public class ImageDetailRegionRenderItem : InteractiveBaseRenderItem
     {
         private ImageLibraryElementController _controller;
-        private Rect _regionBounds;
-        private Rect _imageContainerBounds;
+        public Size Size;
+        public delegate void RegionUpdatedHandler(ImageDetailRegionRenderItem regionRegion, Vector2 regionBounds);
+        public event RegionUpdatedHandler RegionMoved;
+        public event RegionUpdatedHandler RegionResized;
 
-        public delegate void RegionUpdatedHandler(ImageDetailRegionRenderItem regionRegion);
-        public event RegionUpdatedHandler RegionUpdated;
         private ImageDetailRegionResizerRenderItem _resizer;
-
-        private Rect _bmpRect;
+        private Rect _cropAreaNormalized;
+        private Rect _bitmap;
+        private double _totalScale;
         public ImageLibraryElementModel LibraryElementModel { get; set; }
+
+        private bool _isModifiable;
+
         public bool IsModifiable { get; set; }
-        
-        public ImageDetailRegionRenderItem(ImageLibraryElementModel libraryElementModel, Rect bitmapRect, Rect imageContainerBounds, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, bool isModifiable = true) : base(parent, resourceCreator)
+
+        public ImageDetailRegionRenderItem(ImageLibraryElementModel libraryElementModel, Rect cropAreaNormalized, Rect bitmap, double totalScale, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, bool isModifiable = true) : base(parent, resourceCreator)
         {
-            IsModifiable = isModifiable;
-            _bmpRect = bitmapRect;
+            _totalScale = totalScale;
+            _isModifiable = isModifiable;
+            _bitmap = bitmap;
+            _cropAreaNormalized = cropAreaNormalized;
+            LibraryElementModel = libraryElementModel;
+
+
+            var rect = new Rect(LibraryElementModel.NormalizedX,
+                                LibraryElementModel.NormalizedY,
+                                LibraryElementModel.NormalizedWidth,
+                                LibraryElementModel.NormalizedHeight);
+
+            _isModifiable = _isModifiable && IsFullyContained(rect);
+            if (_isModifiable) { 
+                _resizer = new ImageDetailRegionResizerRenderItem(this, ResourceCreator);
+                _resizer.ResizerDragged += ResizerOnResizerDragged;
+                Children.Add(_resizer);
+            }
+
             _controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModel.LibraryElementId) as ImageLibraryElementController;
             _controller.SizeChanged += ControllerOnSizeChanged;
             _controller.LocationChanged += ControllerOnLocationChanged;
-            LibraryElementModel = libraryElementModel;
-            _imageContainerBounds = imageContainerBounds;
-
-            UpdateImageBound(_imageContainerBounds);
-      
-            if (IsModifiable) { 
-                _resizer = new ImageDetailRegionResizerRenderItem(this, resourceCreator);
-                _resizer.ResizerDragged += ResizerOnResizerDragged;            
-                Children.Add(_resizer);
-            }
+            
+            UpdateImageBound();
         }
 
-
-        public void UpdateImageBound(Rect imageBounds)
+        public void UpdateImageBound()
         {
-            _imageContainerBounds = imageBounds;
-            _regionBounds = new Rect(0, 0, LibraryElementModel.NormalizedWidth * _bmpRect.Width, LibraryElementModel.NormalizedHeight * _bmpRect.Height);
-            T = Matrix3x2.CreateTranslation((float)(_imageContainerBounds.X + LibraryElementModel.NormalizedX *  _bmpRect.Width), (float)(_imageContainerBounds.Y + LibraryElementModel.NormalizedY *  _bmpRect.Height));
+            double scale = _totalScale;
+
+            var rect = new Rect(LibraryElementModel.NormalizedX - _cropAreaNormalized.X,
+                                LibraryElementModel.NormalizedY - _cropAreaNormalized.Y, 
+                                LibraryElementModel.NormalizedWidth, 
+                                LibraryElementModel.NormalizedHeight);
+
+            var tx = rect.X * scale * _bitmap.Width;
+            var ty = rect.Y * scale * _bitmap.Height;
+
+            var tw = rect.Width * scale * _bitmap.Width;
+            var th = rect.Height * scale * _bitmap.Height;
+
+            if (_resizer != null) { 
+                th = Math.Max(th, _resizer.GetMeasure().Height);
+                tw = Math.Max(tw, _resizer.GetMeasure().Width);
+            }
+
+            Size = new Size(tw, th);
+            T = Matrix3x2.CreateTranslation((float)(tx), (float)(ty));
         }
 
         private void ControllerOnLocationChanged(object sender, Point topLeft)
         {
-            UpdateImageBound(_imageContainerBounds);
+            UpdateImageBound();
          }
 
         private void ControllerOnSizeChanged(object sender, double width, double height)
         {
-            UpdateImageBound( new Rect(0, 0, LibraryElementModel.NormalizedWidth * _bmpRect.Width, LibraryElementModel.NormalizedHeight * _imageContainerBounds.Height));
+            UpdateImageBound();
         }
 
         public override void Dispose()
@@ -76,13 +107,21 @@ namespace NuSysApp
 
         private void ResizerOnResizerDragged(Vector2 delta)
         {
-            _controller.SizeChanged -= ControllerOnSizeChanged;
-            _controller.LocationChanged -= ControllerOnLocationChanged;
-            _regionBounds.Width += delta.X;
-            _regionBounds.Height += delta.Y;
-            RegionUpdated?.Invoke(this);
-            _controller.SizeChanged += ControllerOnSizeChanged;
-            _controller.LocationChanged += ControllerOnLocationChanged;
+            if (!_isModifiable)
+                return;
+            RegionResized?.Invoke(this, delta);
+        }
+
+        private bool IsFullyContained(Rect rect)
+        {
+            if (rect.X >= _cropAreaNormalized.X
+                && rect.Y >= _cropAreaNormalized.Y
+                && rect.X + rect.Width <= _cropAreaNormalized.X + _cropAreaNormalized.Width
+                && rect.Y + rect.Height <= _cropAreaNormalized.Y + _cropAreaNormalized.Height)
+            {
+                return true;
+            }
+            return false;
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -92,36 +131,33 @@ namespace NuSysApp
 
             ds.Transform = GetTransform()*orgTransform;
    
-            ds.DrawRectangle(new Rect(0,0,_regionBounds.Width, _regionBounds.Height), Color.FromArgb(0x33,0,0x55,0), 3);
+            ds.DrawRectangle(new Rect(0,0,Size.Width, Size.Height), Color.FromArgb(0x99,255,0x0,0), 2);
 
             ds.Transform = orgTransform;
 
             if (_resizer != null)
-                _resizer.T = Matrix3x2.CreateTranslation((float)(_regionBounds.X +_regionBounds.Width), (float)(_regionBounds.Y + _regionBounds.Height));
+                _resizer.T = Matrix3x2.CreateTranslation((float)(Size.Width), (float)(Size.Height));
             base.Draw(ds);
         }
 
         public override void OnDragged(CanvasPointer pointer)
         {
-            if (!IsModifiable)
+            if (!_isModifiable)
                 return;
-
-            _controller.SizeChanged -= ControllerOnSizeChanged;
-            _controller.LocationChanged -= ControllerOnLocationChanged;
             base.OnDragged(pointer);
 
-            var nx = (float)Math.Max(_imageContainerBounds.X, Math.Min(_imageContainerBounds.X + _imageContainerBounds.Width - _regionBounds.Width, T.M31 + pointer.DeltaSinceLastUpdate.X));
-            var ny = (float)Math.Max(_imageContainerBounds.Y, Math.Min(_imageContainerBounds.Y + _imageContainerBounds.Height - _regionBounds.Height, T.M32 + pointer.DeltaSinceLastUpdate.Y));
-            T = Matrix3x2.CreateTranslation(nx, ny);
-            RegionUpdated?.Invoke(this);
+         
+            RegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate);
+        }
 
-            _controller.SizeChanged += ControllerOnSizeChanged;
-            _controller.LocationChanged += ControllerOnLocationChanged;
+        public override void OnDoubleTapped(CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionView.ShowDetailView(_controller);
         }
 
         public override Rect GetMeasure()
         {
-            return _regionBounds;
+            return new Rect(0,0, Size.Width, Size.Height);
         }
     }
 }
