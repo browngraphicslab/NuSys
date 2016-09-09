@@ -23,7 +23,6 @@ namespace NuSysApp
         private Rect _normalizedCroppedRect;
         private double _scaleOrgToDisplay;
         private double _scaleDisplayToCrop;
-        private List<ImageDetailRegionRenderItem> _regions = new List<ImageDetailRegionRenderItem>();
         private CanvasGeometry _mask;
 
         public delegate void RegionUpdatedHandler();
