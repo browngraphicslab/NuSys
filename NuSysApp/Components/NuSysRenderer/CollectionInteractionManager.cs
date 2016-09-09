@@ -225,6 +225,7 @@ namespace NuSysApp
         {
             _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
             _finalInkPointer = pointer.PointerId;
+            _finalInkPointerUpdated = DateTime.Now;
             InkStopped?.Invoke(pointer);
         }
 

@@ -45,7 +45,7 @@ namespace NuSysApp
                     FontSize = 17f,
                     WordWrapping = CanvasWordWrapping.Wrap,
                     HorizontalAlignment = CanvasHorizontalAlignment.Center,
-                    FontFamily = "/Assets/fonts/Frutiger LT 45 Light.ttf#Frutiger LT 45 Light"
+                    FontFamily = "/Assets/fonts/freightsans.ttf#FreightSans BookSC"
                 };
 
                 foreach (var tag in _vm.Tags)

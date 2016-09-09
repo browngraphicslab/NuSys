@@ -18,20 +18,19 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid x:Name="xWrapper">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="1" x:Name="xBorder" BorderBrush="{StaticResource color6}"   HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Grid x:Name="totalStackPanel">
-                <xaml:CanvasControl x:Name="xImgCanvas" Width="500" Height="500"></xaml:CanvasControl>
-            </Grid>
-        </Border>
-        
-        <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top"/>
+        <local:AddToCollectionButton Grid.Row="0" VerticalAlignment="Top" Background="Red"/>
+
+        <Grid Grid.Row="1" x:Name="totalStackPanel">
+            <xaml:CanvasControl x:Name="xImgCanvas" Width="500" Height="500"></xaml:CanvasControl>
+        </Grid>
+
 
         <StackPanel Grid.Row="2">
             <Button Tapped="Button_Tapped" HorizontalAlignment="Center" Style="{StaticResource DarkButton}">Suggest regions</Button>

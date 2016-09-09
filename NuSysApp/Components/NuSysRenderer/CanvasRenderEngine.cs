@@ -54,7 +54,7 @@ namespace NuSysApp
         {
             using (var ds = args.DrawingSession)
             {
-                ds.Clear(Colors.White);
+                ds.Clear(Colors.Transparent);
                 Root.Draw(ds);
             }
         }

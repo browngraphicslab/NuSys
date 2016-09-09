@@ -89,10 +89,12 @@ namespace NuSysApp
 
         private void RecomputeSize()
         {
+            if (_bmp == null)
+                return;
 
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
             var croppedRectRatio = _rectToCropFromContent.Width / _rectToCropFromContent.Height;
-            if (_rectToCropFromContent.Width > _rectToCropFromContent.Height)
+            if (_rectToCropFromContent.Width > _rectToCropFromContent.Height && CanvasSize.Width * 1 / croppedRectRatio <= CanvasSize.Height)
             {
                 _croppedImageTarget.Width = CanvasSize.Width;
                 _croppedImageTarget.Height = _croppedImageTarget.Width * 1 / croppedRectRatio;
@@ -189,7 +191,7 @@ namespace NuSysApp
             { 
                 if (_bmp != null)
 
-                    ds.DrawImage(_bmp, _croppedImageTarget, _rectToCropFromContent);
+                    ds.DrawImage(_bmp, _croppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
                 ds.Transform = orgTransform;
 
                 if (IsRegionsVisible)

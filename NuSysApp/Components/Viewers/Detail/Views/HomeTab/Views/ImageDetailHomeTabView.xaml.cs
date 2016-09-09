@@ -49,6 +49,7 @@ namespace NuSysApp
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
+            SizeChanged += OnSizeChanged;
 
             Task.Run(async delegate
             {
@@ -57,6 +58,16 @@ namespace NuSysApp
                     SetImageAnalysis();
                 });
             });
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        {
+            if (_imageDetailRenderItem == null)
+                return; 
+            xImgCanvas.Width = totalStackPanel.ActualWidth;
+            xImgCanvas.Height = totalStackPanel.ActualHeight;
+            _imageDetailRenderItem.CanvasSize = new Size(totalStackPanel.ActualWidth, totalStackPanel.ActualHeight);
+      
         }
 
         private async void XImgCanvasOnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
@@ -70,6 +81,11 @@ namespace NuSysApp
             var root = new BaseRenderItem(null, xImgCanvas);
             _imageDetailRenderItem = new ImageDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
             _imageDetailRenderItem.IsRegionsVisible = ShowRegions;
+            _imageDetailRenderItem.CanvasSize = new Size(totalStackPanel.ActualWidth, totalStackPanel.ActualHeight);
+
+            xImgCanvas.Width = totalStackPanel.ActualWidth;
+            xImgCanvas.Height = totalStackPanel.ActualHeight;
+
             if (ShowRegions)
             {
                 _imageDetailRenderItem.IsRegionsModifiable = true;
@@ -77,8 +93,10 @@ namespace NuSysApp
             _imageDetailRenderItem.NeedsRedraw += ImageOnNeedsRedraw;
 
             await _imageDetailRenderItem.Load();
-            
             root.Children.Add(_imageDetailRenderItem);
+
+
+
             _renderEngine.Init(xImgCanvas, root);
             _interactionManager = new RenderItemInteractionManager(_renderEngine, xImgCanvas);
             xImgCanvas.Invalidate();
@@ -89,7 +107,7 @@ namespace NuSysApp
             xImgCanvas.Invalidate();
         }
 
-        private async Task ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        private void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
         {
             xImgCanvas.Invalidate();
         }
@@ -206,6 +224,7 @@ namespace NuSysApp
             detailViewerView.Disposed -= DetailViewerView_Disposed;
             _interactionManager?.Dispose();
             _interactionManager = null;
+            SizeChanged -= OnSizeChanged;
             DisposeTags();
         }
         

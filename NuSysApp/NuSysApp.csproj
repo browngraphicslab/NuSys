@@ -248,6 +248,8 @@
     </Content>
     <Content Include="Assets\fonts\Frutiger LT 45 Light.ttf" />
     <Content Include="Assets\fonts\Frutiger LT 56 Italic.ttf" />
+    <Content Include="Assets\fonts\freightsans.ttf" />
+    <Content Include="Assets\fonts\freightsanslight.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />

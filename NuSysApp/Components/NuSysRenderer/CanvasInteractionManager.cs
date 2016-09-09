@@ -180,7 +180,7 @@ namespace NuSysApp
                 return;
 
             var releasedPointer = exisitingPointer.First();
-            releasedPointer.Update(e.GetCurrentPoint(_canvas).Position);
+            releasedPointer.Update(e.GetCurrentPoint(_canvas));
             _pointers.Remove(releasedPointer);
             PointerReleased?.Invoke(releasedPointer);
             if (_pointers.Count == 1)
@@ -228,7 +228,7 @@ namespace NuSysApp
                     return;
 
                 var pointer = exisitingPointer.First();
-                pointer.Update(args.GetCurrentPoint(_canvas).Position);
+                pointer.Update(args.GetCurrentPoint(_canvas));
 
                 if (_pointers.Count == 1)
                 {

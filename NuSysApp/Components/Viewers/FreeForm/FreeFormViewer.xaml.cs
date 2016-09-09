@@ -247,6 +247,8 @@ namespace NuSysApp
             foreach (var selection in Selections)
             {
                 var elem = selection.ViewModel;
+                if (elem == null)
+                    continue;
                 var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
                 var newCenter = Vector2.Transform(imgCenter, transform);
 

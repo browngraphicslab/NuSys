@@ -78,7 +78,7 @@ namespace NuSysApp
 
             lock (_lock) {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Properties.Pressure));
+                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
             }
 
             _needsWetStrokeUpdate = true;
@@ -89,7 +89,7 @@ namespace NuSysApp
             lock (_lock)
             {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Properties.Pressure));
+                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
             }
 
             _needsWetStrokeUpdate = true;
@@ -100,7 +100,7 @@ namespace NuSysApp
             lock (_lock)
             {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Properties.Pressure));
+                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
 
                 var builder = new InkStrokeBuilder();
                 LatestStroke = builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);

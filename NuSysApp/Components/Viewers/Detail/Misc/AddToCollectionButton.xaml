@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Border Grid.Row="1" Background="Transparent" Padding="5" Margin="0,0,0,0"
+    <Border Padding="5" Margin="0,0,0,0"
                 Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}"
                    PointerPressed="AddToCollection_OnPointerPressed" ManipulationStarted="AddToCollection_OnManipulationStarted"
                    ManipulationDelta="AddToCollection_ManipulationDelta" ManipulationCompleted="AddToCollection_ManipulationCompleted"

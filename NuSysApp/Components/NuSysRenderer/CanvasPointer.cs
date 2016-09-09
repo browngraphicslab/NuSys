@@ -20,6 +20,7 @@ namespace NuSysApp
         public PointerPointProperties Properties;
         public Vector2 StartPoint;
         public Vector2 CurrentPoint;
+        public float Pressure;
 
         public CanvasPointer() { }
         public CanvasPointer(PointerPoint pointerpoint)
@@ -33,6 +34,7 @@ namespace NuSysApp
             Properties = pointerpoint.Properties;
             DistanceTraveled = 0;
             _prevPoint = new Vector2((float)pointerpoint.Position.X, (float)pointerpoint.Position.Y); ;
+            Pressure = pointerpoint.Properties.Pressure;
 
         }
 
@@ -51,13 +53,14 @@ namespace NuSysApp
         private Vector2 _prevPoint;
 
 
-        public void Update(Point point)
+        public void Update(PointerPoint point)
         {
             _prevPoint = CurrentPoint;
-            var newPoint = new Vector2((float)point.X, (float)point.Y);
+            var newPoint = new Vector2((float)point.Position.X, (float)point.Position.Y);
             DistanceTraveled += Math.Abs(newPoint.X - CurrentPoint.X) + Math.Abs(newPoint.Y - CurrentPoint.Y);
             CurrentPoint = newPoint;
             LastUpdated = DateTime.Now;
+            Pressure = point.Properties.Pressure;
         }
 
         public double MillisecondsActive

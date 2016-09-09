@@ -29,6 +29,7 @@ namespace NuSysApp
             _textFormat = new CanvasTextFormat();
             _textFormat.WordWrapping = CanvasWordWrapping.Wrap;
             _textFormat.FontSize = 13;
+            _textFormat.FontFamily = "/Assets/fonts/freightsanslight.ttf#FreightSans Light";
         }
 
         public CanvasTextLayout GetParsedText(string html, double canvasHeight, double canvasWidth)
