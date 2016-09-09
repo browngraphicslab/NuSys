@@ -49,6 +49,7 @@ namespace NuSysApp
         /// <param name="height"></param>
         protected override void OnSizeChanged(object source, double width, double height)
         {
+
             if (height * GetRatio() < Constants.MinNodeSize)
             {
                 return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour

@@ -37,23 +37,15 @@ namespace NuSysApp
         private RenderItemInteractionManager _interactionManager;
         private ImageDetailRenderItem _imageDetailRenderItem;
 
+        public bool ShowRegions;
+
         public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();
 
-
             xImgCanvas.CreateResources += XImgCanvasOnCreateResources;
-
-
-            //Show hide region buttons need access to rectangle/audio wrapper for methods to work.
-        //    xShowHideRegionButtons.Wrapper = xClippingWrapper;
-
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-
-       //     xClippingWrapper.Controller = vm.LibraryElementController;
-        //    xClippingWrapper.ProcessLibraryElementController();
-
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
@@ -77,6 +69,11 @@ namespace NuSysApp
             _renderEngine = new CanvasRenderEngine();
             var root = new BaseRenderItem(null, xImgCanvas);
             _imageDetailRenderItem = new ImageDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
+            _imageDetailRenderItem.IsRegionsVisible = ShowRegions;
+            if (ShowRegions)
+            {
+                _imageDetailRenderItem.IsRegionsModifiable = true;
+            }
             _imageDetailRenderItem.NeedsRedraw += ImageOnNeedsRedraw;
 
             await _imageDetailRenderItem.Load();
@@ -207,6 +204,8 @@ namespace NuSysApp
             _imageDetailRenderItem?.Dispose();
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed -= DetailViewerView_Disposed;
+            _interactionManager?.Dispose();
+            _interactionManager = null;
             DisposeTags();
         }
         

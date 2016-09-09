@@ -18,12 +18,16 @@ namespace NuSysApp
         private ImageLibraryElementController _controller;
         private CanvasBitmap _bmp;
         private Rect _croppedImageTarget;
-        private Size _maxSize;
         private Rect _rectToCropFromContent;
         private Rect _normalizedCroppedRect;
         private double _scaleOrgToDisplay;
         private double _scaleDisplayToCrop;
         private CanvasGeometry _mask;
+        private Size _canvasSize;
+        private bool _needsMaskRefresh;
+
+        public bool IsRegionsVisible { get; set; }
+        public bool IsRegionsModifiable { get; set; }
 
         public delegate void RegionUpdatedHandler();
         public event RegionUpdatedHandler NeedsRedraw;
@@ -31,10 +35,11 @@ namespace NuSysApp
         public ImageDetailRenderItem(ImageLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _controller = controller;
-            _maxSize = maxSize;
+            _canvasSize = maxSize;
 
             controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            
         }
 
         public override void Dispose()
@@ -75,25 +80,34 @@ namespace NuSysApp
             _normalizedCroppedRect = new Rect(lib.NormalizedX, lib.NormalizedY, lib.NormalizedWidth, lib.NormalizedHeight);
             _rectToCropFromContent = new Rect(nx, ny, nw, nh);
 
-            var croppedRectRatio = nw/nh;
+            RecomputeSize();
+
+            
+
+            ComputeRegions();
+        }
+
+        private void RecomputeSize()
+        {
+
+            var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
+            var croppedRectRatio = _rectToCropFromContent.Width / _rectToCropFromContent.Height;
             if (_rectToCropFromContent.Width > _rectToCropFromContent.Height)
             {
-                _croppedImageTarget.Width = _maxSize.Width;
-                _croppedImageTarget.Height = _croppedImageTarget.Width*1/ croppedRectRatio;
-                _scaleOrgToDisplay = _maxSize.Width/_bmp.Size.Width;
-                _scaleDisplayToCrop = 1/lib.NormalizedWidth;
+                _croppedImageTarget.Width = CanvasSize.Width;
+                _croppedImageTarget.Height = _croppedImageTarget.Width * 1 / croppedRectRatio;
+                _scaleOrgToDisplay = CanvasSize.Width / _bmp.Size.Width;
+                _scaleDisplayToCrop = 1 / lib.NormalizedWidth;
             }
             else
             {
-                _croppedImageTarget.Height = _maxSize.Height;
+                _croppedImageTarget.Height = CanvasSize.Height;
                 _croppedImageTarget.Width = _croppedImageTarget.Height * croppedRectRatio;
-                _scaleOrgToDisplay = _maxSize.Height / _bmp.Size.Height;
+                _scaleOrgToDisplay = CanvasSize.Height / _bmp.Size.Height;
                 _scaleDisplayToCrop = 1 / lib.NormalizedHeight;
             }
 
-            _mask = CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget);
-
-            ComputeRegions();
+            _needsMaskRefresh = true;
         }
 
         private void ComputeRegions()
@@ -113,7 +127,7 @@ namespace NuSysApp
             others = others.Where(l => l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId);
             foreach (var l in others)
             {
-                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator);
+                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
                 region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized += RegionOnRegionResized;
                 
@@ -131,6 +145,8 @@ namespace NuSysApp
         {
             var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
             var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _croppedImageTarget.Height / _scaleDisplayToCrop;
+            rx = Math.Max(0, Math.Min(_normalizedCroppedRect.Width - (region.LibraryElementModel.NormalizedX - _normalizedCroppedRect.X), rx));
+            ry = Math.Max(0, Math.Min( _normalizedCroppedRect.Height - (region.LibraryElementModel.NormalizedY - _normalizedCroppedRect.Y), ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetWidth(rx);
             controller.SetHeight(ry);
@@ -153,13 +169,20 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            ds.Clear(Colors.Transparent);
+
+            if (_needsMaskRefresh)
+            {
+                _mask = CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget);
+                _needsMaskRefresh = false;
+            }
 
             if (_mask == null)
                 return;
+
+
             var orgTransform = ds.Transform;
-            var offsetX = (float)(_maxSize.Width - _croppedImageTarget.Width) / 2f;
-            var offsetY = (float)(_maxSize.Height - _croppedImageTarget.Height) / 2f;
+            var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;
+            var offsetY = (float)(CanvasSize.Height - _croppedImageTarget.Height) / 2f;
             T = Matrix3x2.CreateTranslation(offsetX, offsetY);
             ds.Transform = GetTransform() * orgTransform;
             using (ds.CreateLayer(1, _mask))
@@ -168,9 +191,30 @@ namespace NuSysApp
 
                     ds.DrawImage(_bmp, _croppedImageTarget, _rectToCropFromContent);
                 ds.Transform = orgTransform;
-                base.Draw(ds);
+
+                if (IsRegionsVisible)
+                    base.Draw(ds);
 
                 ds.Transform = orgTransform;
+            }
+        }
+
+        public Size CanvasSize
+        {
+            get
+            {
+                return _canvasSize;
+            }
+            set
+            {
+                _canvasSize = value;
+                RecomputeSize();
+
+                foreach (var child in Children.ToArray())
+                {
+                    var region = child as ImageDetailRegionRenderItem;
+                    region.UpdateImageBound(_scaleDisplayToCrop * _scaleOrgToDisplay);
+                }
             }
         }
     }

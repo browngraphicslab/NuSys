@@ -57,12 +57,12 @@ namespace NuSysApp
             _controller.SizeChanged += ControllerOnSizeChanged;
             _controller.LocationChanged += ControllerOnLocationChanged;
             
-            UpdateImageBound();
+            UpdateImageBound(_totalScale);
         }
 
-        public void UpdateImageBound()
+        public void UpdateImageBound(double scale)
         {
-            double scale = _totalScale;
+            _totalScale = scale;
 
             var rect = new Rect(LibraryElementModel.NormalizedX - _cropAreaNormalized.X,
                                 LibraryElementModel.NormalizedY - _cropAreaNormalized.Y, 
@@ -86,12 +86,12 @@ namespace NuSysApp
 
         private void ControllerOnLocationChanged(object sender, Point topLeft)
         {
-            UpdateImageBound();
+            UpdateImageBound(_totalScale);
          }
 
         private void ControllerOnSizeChanged(object sender, double width, double height)
         {
-            UpdateImageBound();
+            UpdateImageBound(_totalScale);
         }
 
         public override void Dispose()

@@ -18,104 +18,37 @@ namespace NuSysApp
     public class ImageElementRenderItem : ElementRenderItem
     {
         private ImageElementViewModel _vm;
-        private ImageLibraryElementController _controller;
-        private CanvasBitmap _bmp;
-        private Rect _cropRegion;
-        private bool _isCropping;
+        private ImageDetailRenderItem _image;
 
         public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
             _vm.Controller.SizeChanged += ControllerOnSizeChanged;
-            _controller = (_vm.Controller.LibraryElementController as ImageLibraryElementController);
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
-            _controller.LocationChanged += LibOnLocationChanged;
-            _controller.SizeChanged += LibOnSizeChanged;
+            var imageController = _vm.Controller.LibraryElementController as ImageLibraryElementController;
+            _image = new ImageDetailRenderItem(imageController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
+            _image.IsRegionsVisible = true;
+            _image.IsRegionsModifiable = false;
         }
 
-        private void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        public async override Task Load()
         {
-            ComputeRegions();
-        }
-
-        private async Task ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
-        {
-            ComputeRegions();
+            await _image.Load();
+            _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Height, false);
+            _image.CanvasSize = new Size(_vm.Controller.Model.Width, _vm.Controller.Model.Height);
         }
 
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
-            foreach (var child in Children)
-            {
-                var region = child as ImageDetailRegionRenderItem;
-                region?.UpdateImageBound();
-            }
+           _image.CanvasSize = new Size(width,height);
         }
 
         public override void Dispose()
         {
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
             _vm = null;
-            _bmp.Dispose();
-            _bmp = null;
-            _controller.LocationChanged -= LibOnLocationChanged;
-            _controller.SizeChanged -= LibOnSizeChanged;
-            _controller = null;
+            _image.Dispose();
+            _image = null;
             base.Dispose();
-        }
-
-        private void LibOnSizeChanged(object sender, double width, double height)
-        {
-            Crop();
-        }
-
-        private void LibOnLocationChanged(object sender, Point topLeft)
-        {
-            Crop();
-        }
-
-        public override async Task Load()
-        {
-            var url = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel.Data;
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(url), ResourceCreator.Dpi);
-            _vm.ImageSize = _bmp.Size;
-
-            Crop();
-            ComputeRegions();
-        }
-
-        private void Crop()
-        {
-            _isCropping = true;
-            var lib = (_vm.Controller.LibraryElementModel as ImageLibraryElementModel);
-            var nx = lib.NormalizedX * _bmp.Size.Width;
-            var ny = lib.NormalizedY * _bmp.Size.Height;
-            var nw = lib.NormalizedWidth * _bmp.Size.Width;
-            var nh = lib.NormalizedHeight * _bmp.Size.Height;
-            _cropRegion = new Rect(nx, ny, nw, nh);
-            var ratio = nw/nh;
-            _vm.Controller.SetSize(_vm.Height * ratio, _vm.Height, false);
-            _isCropping = false;
-        }
-
-        private void ComputeRegions()
-        {
-            var children = Children.ToArray();
-            Children.Clear();
-            foreach (var child in children)
-            {
-                child.Dispose();
-            }
-
-      
-            var others = SessionController.Instance.ContentController.AllLibraryElementModels.Where(l => l.ContentDataModelId == _controller.ContentDataController.ContentDataModel.ContentId && l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId).Cast<ImageLibraryElementModel>();
-            foreach (var regionLibraryElementModel in others)
-            {
-                var elementBounds = new Rect(0,0,_vm.Width, _vm.Height);
-           //     var region = new ImageDetailRegionRenderItem(regionLibraryElementModel, _bmp.Bounds, _bmp.Bounds, _cropRegion.Width/_bmp.Size.Width, this, ResourceCreator, false);
-            //    Children.Add(region);
-            }
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -126,14 +59,10 @@ namespace NuSysApp
                 return;
           
             ds.Transform = GetTransform() * ds.Transform;
-            ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
-
-            if (_bmp != null)
-                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height}, _cropRegion);
+            _image.Draw(ds);
 
             ds.Transform = orgTransform;
-        //    base.Draw(ds);
-
+            base.Draw(ds);
             ds.Transform = orgTransform;
 
 

@@ -140,6 +140,12 @@ namespace NuSysApp
                 return false;
             }
 
+            var imageRegionView = RegionView as ImageDetailHomeTabView;
+            if (imageRegionView != null)
+            {
+                imageRegionView.ShowRegions = true;
+            }
+
 
             _regionableRegionTabViewModel = RegionView.DataContext as DetailHomeTabViewModel;
             _regionableRegionTabViewModel.Editable = true;
