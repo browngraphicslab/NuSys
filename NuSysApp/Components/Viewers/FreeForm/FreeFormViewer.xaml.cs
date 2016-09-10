@@ -637,7 +637,7 @@ namespace NuSysApp
             await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
 
             var oldLocationScreen = new Point2d(pointer.StartPoint.X, pointer.StartPoint.Y);
-            var oldLocationCollectionV = RenderEngine.ScreenPointerToCollectionPoint(pointer.StartPoint, collection);
+            var oldLocationCollectionV = RenderEngine.ScreenPointerToCollectionPoint(pointer.StartPoint, CurrentCollection);
             var oldLocationCollection = new Point2d(oldLocationCollectionV.X, oldLocationCollectionV.Y);
             var newLocation = new Point2d(target.X, target.Y);
             var action = new MoveToCollectionAction(elementId, parentCollectionId, collection.ViewModel.Model.LibraryId, oldLocationCollection, newLocation);

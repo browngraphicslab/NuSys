@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -340,8 +341,7 @@ namespace NuSysApp
                 return;
 
             rect.Hide();
-            var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
-
+          
             if (_x < this.Width) return;
 
             //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
@@ -375,7 +375,8 @@ namespace NuSysApp
             }
 
             // transforms the point from the maincanvas to the workspace
-            var workspacePoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(_x, _y));
+
+            var workspacePoint = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)_x, (float)_y), SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
 
             // create a new element request args, and pass in the required fields
             var newElementRequestArgs = new NewElementRequestArgs
