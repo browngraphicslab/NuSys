@@ -42,10 +42,9 @@ namespace NuSysApp
 
             controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
-            
         }
 
-        private void ReRender()
+        protected void ReRender()
         {
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
             var nx = lib.NormalizedX * _bmp.Size.Width;
