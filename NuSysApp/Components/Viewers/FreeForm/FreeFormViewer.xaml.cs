@@ -111,7 +111,6 @@ namespace NuSysApp
                 vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
             } 
             InitialCollection?.Dispose();
-            _canvasInteractionManager?.Dispose();
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.Elements.CollectionChanged += ElementsOnCollectionChanged;
             _vm = vm;
@@ -160,7 +159,7 @@ namespace NuSysApp
 
              */
 
-
+            _minimap?.Dispose();
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
@@ -532,7 +531,7 @@ namespace NuSysApp
             ClearSelections();
         }
 
-        private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
+        private async void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
         {
             var item = RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
             if (Selections.Count == 0)
@@ -563,6 +562,14 @@ namespace NuSysApp
             {
                 SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
+            }
+
+            if (item == RenderEngine.ElementSelectionRenderItem.BtnEnterCollection)
+            {
+                var id = Selections[0].ViewModel.LibraryElementId;
+                InitialCollection.Dispose();
+
+                await SessionController.Instance.EnterCollection(id);
             }
 
             if (item == RenderEngine.ElementSelectionRenderItem.BtnPdfLeft)

@@ -24,6 +24,8 @@ namespace NuSysApp
 
         public List<BaseRenderItem> Children { get; private set; } = new List<BaseRenderItem>();
 
+        public bool IsDisposed { get; set; }
+
         public BaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
         {
             Parent = parent;
@@ -74,6 +76,7 @@ namespace NuSysApp
             }
             ResourceCreator = null;
             Parent = null;
+            IsDisposed = true;
         }
 
         public virtual BaseRenderItem HitTest(Vector2 point)

@@ -25,6 +25,8 @@ namespace NuSysApp
         private CanvasControl _canvasControl;
         public Size RenderTargetSize => _renderTarget.Size;
 
+        private bool _isDisposed;
+
         public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasControl resourceCreator)
         {
             _collection = collection;
@@ -50,8 +52,12 @@ namespace NuSysApp
 
         public void Dispose()
         {
+            if (_isDisposed)
+                return;
             _collection.ViewModel.Elements.CollectionChanged -= ElementsOnCollectionChanged;
             _collection = null;
+            _canvasControl.Draw -= CanvasControlOnDraw;
+            _isDisposed = true;
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -114,6 +120,8 @@ namespace NuSysApp
 
         public void Draw(CanvasDrawingSession ds)
         {
+            if (_isDisposed)
+                return;
 
             if (_collection.ViewModel.Elements.Count == 0)
                 return;
