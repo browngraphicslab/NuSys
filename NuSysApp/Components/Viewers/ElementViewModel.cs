@@ -41,8 +41,8 @@ namespace NuSysApp
             _controller = controller;
             LinkList = new ObservableCollection<LinkController>();
             controller.MetadataChange += OnMetadataChange;
-          //  controller.PositionChanged += OnPositionChanged;
-            //controller.SizeChanged += OnSizeChanged;
+            controller.PositionChanged += OnPositionChanged;
+            controller.SizeChanged += OnSizeChanged;
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
