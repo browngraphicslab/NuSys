@@ -90,21 +90,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// this constructor is just like the main one, except with a custom timer timeout value
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="milliSecondDebounce"></param>
-        /// <param name="updateLibraryElement"></param>
-        public DebouncingDictionary(string id, int milliSecondDebounce)
-        {
-            _dict = new ConcurrentDictionary<string, object>();
-            _serverDict = new ConcurrentDictionary<string, object>();
-            _milliSecondDebounce = _milliSecondDebounce;
-            _id = id;
-        }
-
-
-        /// <summary>
         /// call this method to add an object to be updated on other clients.
         /// This should use the same keys as the database uses.  
         /// If you dont know what those keys are, check the NusysConstants class or ask somebody. 

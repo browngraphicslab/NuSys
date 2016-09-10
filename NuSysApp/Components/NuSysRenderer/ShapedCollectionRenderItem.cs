@@ -36,7 +36,10 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+            if (_vm?.Controller != null)
+            {
+                _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+            }
             _shape?.Dispose();
             _shape = null;
             _vm = null;

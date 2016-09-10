@@ -35,14 +35,8 @@ namespace NusysServer
                     case NusysConstants.ContentType.Video:
                     case NusysConstants.ContentType.PDF:
                     case NusysConstants.ContentType.Word:
-                        return contentUrl;
                     case NusysConstants.ContentType.Text:
-                        if (contentUrl.Length <= Constants.SERVER_ADDRESS.Length)
-                        {
-                            ErrorLog.AddError(new Exception("the suggested content URL is too short: " + contentUrl + "  type: "+contentType));
-                            return "";
-                        }
-                        return FetchDataFromFile(contentUrl.Substring(Constants.SERVER_ADDRESS.Length));
+                        return contentUrl;
                 }
                 throw new Exception("the requested contentType is not supported yet for url-to-data conversion");
             }
@@ -97,7 +91,7 @@ namespace NusysServer
         /// A file exstension is needed for Audio, Video, and Image contentTypes.  
         /// If the contentType isn't on of those, the extension string will be ignored.  
         /// 
-        /// Returns the url to store in the database
+        /// Returns the string to store in the database
         /// </summary>
         /// <param name="contentDataModelId"></param>
         /// <param name="contentType"></param>
@@ -164,12 +158,8 @@ namespace NusysServer
                         return JsonConvert.SerializeObject(listOfUrls);
                         break;
                     case NusysConstants.ContentType.Text:
-                        var extension = Constants.TEXT_DATA_FILE_FILE_EXTENSION;
-                        filePath = contentDataModelId + extension;
-                        var stream = File.Create(Constants.FILE_FOLDER + filePath);
-                        stream.Dispose();
-                        File.WriteAllText(Constants.FILE_FOLDER + filePath, contentData);
-                        fileUrl = Constants.SERVER_ADDRESS + filePath;
+                        filePath = "";
+                        fileUrl = contentData ?? "";
                         break;
                 }
                 if (filePath == null || fileUrl == null)
@@ -203,18 +193,13 @@ namespace NusysServer
                     case NusysConstants.ContentType.Image:
                     case NusysConstants.ContentType.Video:
                     case NusysConstants.ContentType.PDF:
+                    case NusysConstants.ContentType.Word:
                         throw new Exception("only text content can be updated");
                     case NusysConstants.ContentType.Text:
-                        var filePath = Constants.FILE_FOLDER + contentId + Constants.TEXT_DATA_FILE_FILE_EXTENSION;
-                        if (File.Exists(filePath))
-                        {
-                            File.WriteAllText(filePath,updatedContentData);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        var sqlQuery = new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.Content),
+                            new List<SqlQueryEquals>() {new SqlQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY, updatedContentData)},
+                            new SqlQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentId));
+                        return sqlQuery.ExecuteCommand();
                     default:
                         return false;
                 }

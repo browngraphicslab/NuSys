@@ -68,14 +68,10 @@ namespace NuSysApp
         {
             _model = model;
 
-            //   Debug.WriteLine(Model.Title);
+            Debug.Assert(model != null, "wtf");
 
-            //   LibraryElementModel.SetTitle(Model.Title);
+            _debouncingDictionary = new ElementDebouncingDictionary(model.Id);
 
-            if (_model != null)
-            {
-                _debouncingDictionary = new ElementDebouncingDictionary(model.Id);
-            }
             if (LibraryElementController != null)
             {
                 LibraryElementController.Deleted += Delete;

@@ -947,5 +947,39 @@ namespace NuSysApp
         {
             _selectedCollection = m;
         }
+
+        /// <summary>
+        /// event handler called whenever the recently used button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RecentlyUsedButton_Onclick(object sender, RoutedEventArgs e)
+        {
+            Task.Run(async delegate
+            {
+                var request = new GetLastUsedCollectionsRequest(new GetLastUsedCollectionsServerRequestArgs() {UserId = UserID});
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+                Debug.Assert(request.WasSuccessful() == true);
+
+                var idHashSet = new HashSet<string>(request.GetReturnedModels().Select(model => model.CollectionId));
+
+                UITask.Run(async delegate
+                {
+                    foreach (var item in List.Items.ToList())
+                    {
+                        var box = item as CollectionListBox;
+                        if (box == null)
+                        {
+                            continue;
+                        }
+                        if (!idHashSet.Contains(box.ID))
+                        {
+                            List.Items.Remove(box);
+                        }
+                    }
+                });
+            });
+        }
     }
 }

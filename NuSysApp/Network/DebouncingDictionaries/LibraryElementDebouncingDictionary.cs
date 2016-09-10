@@ -32,7 +32,7 @@ namespace NuSysApp
         protected override async Task SendToServer(Message message, bool shouldSave, string objectId)
         {
             message[NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID] = objectId; //set the id of the library element to be updated;
-            var request = new UpdateLibraryElementModelRequest(message);
+            var request = new UpdateLibraryElementModelRequest(message,shouldSave);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }
     }

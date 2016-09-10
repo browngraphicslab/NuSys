@@ -95,7 +95,7 @@ namespace NusysServer
                         case NusysConstants.RequestType.UpdateContentRequest:
                             requestHandler = new UpdateContentRequestHandler();
                             break;
-                       case NusysConstants.RequestType.CreateSnapshotOfCollectionRequest:
+                        case NusysConstants.RequestType.CreateSnapshotOfCollectionRequest:
                             requestHandler = new CreateSnapshotOfCollectionRequestHandler();
                             break;
                         case NusysConstants.RequestType.GetRelatedDocumentsRequest:
@@ -116,9 +116,14 @@ namespace NusysServer
                         case NusysConstants.RequestType.MoveElementToCollectionRequest:
                             requestHandler = new MoveElementToCollectionRequestHandler();
                             break;
-                        default: 
-                            requestHandler = null;
-                            return false;
+                        case NusysConstants.RequestType.AddNewLastUsedCollectionRequest:
+                            requestHandler = new AddNewLastUsedCollectionRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.GetLastUsedCollectionsRequest:
+                            requestHandler = new GetLastUsedCollectionsRequestHandler();
+                            break;
+                        default:
+                            throw new Exception("request type not supported on the server yet!");
                     }
                     messageToReturn = requestHandler.HandleRequest(request, webSocketHandler) ?? new Message();
                 }

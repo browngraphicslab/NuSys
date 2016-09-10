@@ -164,7 +164,8 @@ namespace NusysServer
             PresentationLink,
             Users,
             AnalysisModels,
-            Ink
+            Ink,
+            LastUsedCollections
         }
 
         /// <summary>
@@ -225,6 +226,9 @@ namespace NusysServer
                     break;
                 case SQLTableType.Ink:
                     keys = NusysConstants.ACCEPTED_INK_TABLE_KEYS;
+                    break;
+                case SQLTableType.LastUsedCollections:
+                    keys = NusysConstants.ACCEPTED_LAST_USED_COLLECTIONS_TABLE_KEYS;
                     break;
                 default:
                     return new List<string>();
@@ -343,6 +347,9 @@ namespace NusysServer
                     break;
                 case Constants.SQLTableType.Ink:
                     name = NusysConstants.INK_SQL_TABLE_NAME;
+                    break;
+                case Constants.SQLTableType.LastUsedCollections:
+                    name = NusysConstants.LAST_USED_COLLECTIONS_SQL_TABLE_NAME;
                     break;
                 default:
                     throw new Exception("type not supported yet for getting the table name");

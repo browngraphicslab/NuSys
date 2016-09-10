@@ -56,8 +56,8 @@ namespace NusysServer
             {NusysConstants.NEW_AUDIO_LIBRARY_ELEMENT_REQUEST_TIME_START, NusysConstants.AUDIO_LIBRARY_ELEMENT_START_TIME_KEY },//time start
 
             //pdf
-            {NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY, NusysConstants.PDF_PAGE_START_KEY },//pdf page number
-            {NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY, NusysConstants.PDF_PAGE_END_KEY },//pdf page number
+            {NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY, NusysConstants.PDF_PAGE_START_KEY },//pdf page number start
+            {NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY, NusysConstants.PDF_PAGE_END_KEY },//pdf page number end
         };
 
 

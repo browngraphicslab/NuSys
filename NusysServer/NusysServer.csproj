@@ -258,6 +258,7 @@
     <Compile Include="Notifications\NotificationArgs\NewUserNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestHandlers\AddNewLastUsedCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\ChatRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateInkStrokeRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewCollectionRequestHandler.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="RequestHandlers\DeleteInkStrokeRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAliasesOfLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetLastUsedCollectionsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />
     <Compile Include="RequestHandlers\MoveElementToCollectionRequestHandler.cs" />
