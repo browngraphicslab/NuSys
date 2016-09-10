@@ -47,7 +47,7 @@
                 </local:AudioPlayer>
             </Canvas>
             
-            <local:UndoButton x:Name="xUndoButton"></local:UndoButton>
+            <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed"></local:UndoButton>
             
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
 

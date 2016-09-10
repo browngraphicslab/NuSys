@@ -74,7 +74,9 @@ namespace NuSysApp
             Debug.Assert(chatMessage != null);
 
 
-            AddChat(user,chatMessage);
+            UITask.Run(() => {
+                AddChat(user, chatMessage);
+            });
         }
 
         /// <summary>

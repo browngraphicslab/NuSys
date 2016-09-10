@@ -308,7 +308,7 @@
                 </StackPanel>
             </Border>
         </Canvas>
-        <Grid Grid.Row="1" Margin="0,15,0,0" HorizontalAlignment="Right">
+        <Grid Grid.Row="1" Margin="0,15,0,0" HorizontalAlignment="Left">
             <Button x:Name="ChatBoxButton" Click="ChatBoxButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50">
                 <Image Source="ms-appx:///Assets/icon_chat.png" Width="25" Height="25"></Image>
             </Button>

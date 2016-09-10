@@ -28,7 +28,7 @@ namespace NuSysApp
     public sealed partial class SessionView : Page
     {
         #region Private Members
-       
+
         private int _penSize = Constants.InitialPenSize;
         private CortanaMode _cortanaModeInstance;
         private FreeFormViewer _activeFreeFormViewer;
@@ -56,7 +56,7 @@ namespace NuSysApp
         {
             get { return LibraryDraggingNode; }
         }
-        
+
 
         /// <summary>
         /// Gets the instance of the speech to text box on the main canvas
@@ -77,8 +77,7 @@ namespace NuSysApp
             var bounds = Window.Current.Bounds;
             var height = bounds.Height;
             var width = bounds.Width;
-            Canvas.SetLeft(xChatBox, width - 300 - 10);
-            Canvas.SetTop(xChatBox, height - 375 - 10 - 50 - 10 - 7);
+ 
 
 
 
@@ -102,7 +101,7 @@ namespace NuSysApp
             Loaded += OnLoaded;
 
             MainCanvas.SizeChanged += Resize;
-            
+
         }
 
         /// <summary>
@@ -114,13 +113,13 @@ namespace NuSysApp
             if (e.Parameter != null)
             {
                 var accessType = (NusysConstants.AccessType)e.Parameter;
-            
+
                 if (accessType == NusysConstants.AccessType.ReadOnly)
                 {
                     MakeWorkspaceReadonly();
                     IsReadonly = true;
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -136,7 +135,7 @@ namespace NuSysApp
             // only let the user pan and zoom initially
             SessionController.Instance.SwitchMode(Options.PanZoomOnly);
             this.IsReadonly = true;
-           
+
         }
 
         /// <summary>
@@ -194,13 +193,14 @@ namespace NuSysApp
         }
 
 
-        private void NewNetworkUser(NetworkUser user)
+        private async void NewNetworkUser(NetworkUser user)
         {
-            UITask.Run(delegate
+            await UITask.Run(delegate
             {
                 UserLabel b = new UserLabel(user);
                 Users.Children.Add(b);
             });
+            Resize(null, null);
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace NuSysApp
             // set the buttons
             SetModeButtons();
 
-           
+
         }
 
         public void ExploreSelectedObject(ElementViewModel elementViewModel)
@@ -376,7 +376,7 @@ namespace NuSysApp
             SetModeButtons();
         }
 
-      
+
 
         /// <summary>
         /// Gets a data context passed in when an element is clicked
@@ -493,10 +493,11 @@ namespace NuSysApp
                 xReadonlyFloatingMenu.DeactivateAllButtons();
                 SessionController.Instance.SwitchMode(Options.PanZoomOnly);
             }
-            else {
+            else
+            {
                 xFloatingMenu.Visibility = Visibility.Visible;
             }
-            
+
 
 
         }
@@ -624,6 +625,7 @@ namespace NuSysApp
             Debug.WriteLine("done joining collection: " + collectionId);
 
             xLoadingGrid.Visibility = Visibility.Collapsed;
+            Resize(null, null);
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
@@ -677,7 +679,8 @@ namespace NuSysApp
         {
             await DisposeCollectionView(_activeFreeFormViewer);
 
-            if (_activeFreeFormViewer == null) {
+            if (_activeFreeFormViewer == null)
+            {
                 _activeFreeFormViewer = new FreeFormViewer();
                 _activeFreeFormViewer.Width = ActualWidth;
                 _activeFreeFormViewer.Height = ActualHeight;
@@ -687,7 +690,7 @@ namespace NuSysApp
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
             _activeFreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
-            
+
 
             SessionController.Instance.SessionView = this;
 
@@ -696,19 +699,22 @@ namespace NuSysApp
 
         private void Resize(object sender, SizeChangedEventArgs e)
         {
-            Users.Height = 50;
-            Canvas.SetLeft(Users, 5);
-            Canvas.SetTop(Users, 50);
-            Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
-            Canvas.SetLeft(ChatPopup, 5);
-            Canvas.SetLeft(ChatButton, 5);
-            Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
-            Canvas.SetLeft(xReadonlyFloatingMenu, mainCanvas.ActualWidth / 2 - xReadonlyFloatingMenu.ActualWidth/2);
-            Canvas.SetTop(xReadonlyFloatingMenu, mainCanvas.ActualHeight - xReadonlyFloatingMenu.ActualHeight - 20);
-            //Canvas.SetLeft(ChatNotifs, 37);
-            //Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
-            //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
-            //Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
+            UITask.Run(() =>
+            {
+                Users.Height = 50;
+                Canvas.SetLeft(Users, 75);
+                Canvas.SetTop(Users, mainCanvas.ActualHeight - 61);
+                Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
+                Canvas.SetLeft(ChatPopup, 5);
+                Canvas.SetLeft(ChatButton, 5);
+                Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
+                Canvas.SetLeft(xReadonlyFloatingMenu, mainCanvas.ActualWidth/2 - xReadonlyFloatingMenu.ActualWidth/2);
+                Canvas.SetTop(xReadonlyFloatingMenu, mainCanvas.ActualHeight - xReadonlyFloatingMenu.ActualHeight - 20);
+                Canvas.SetLeft(xChatBox, 15);
+                Canvas.SetTop(xChatBox, mainCanvas.ActualHeight - 375 - 10 - 50 - 10 - 7);
+
+                Canvas.SetTop(BtnBack, (mainCanvas.ActualHeight - BtnBack.ActualHeight)/2);
+            });
         }
 
 
@@ -716,7 +722,7 @@ namespace NuSysApp
         {
 
             await xDetailViewer.ShowElement(viewable, tabToOpenTo);
-            
+
         }
 
         public async void OpenFile(ElementViewModel vm)
@@ -882,7 +888,7 @@ namespace NuSysApp
         private void GoBackToWaitingRoom_OnClick(object sender, RoutedEventArgs e)
         {
             SessionController.Instance.ClearControllersForCollectionExit();
-            Frame.Navigate(typeof (WaitingRoomView), this);
+            Frame.Navigate(typeof(WaitingRoomView), this);
         }
 
         /// <summary>
