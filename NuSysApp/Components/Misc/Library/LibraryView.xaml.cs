@@ -27,8 +27,28 @@ using WinRTXamlToolkit.Imaging;
 
 namespace NuSysApp
 {
+
     public sealed partial class LibraryView : UserControl
     {
+        /// <summary>
+        /// Define the quality of the waveform
+        /// </summary>
+        private enum WaveFormQuality
+        {
+            /// <summary>
+            /// Lowest Quality, somewhat blurry on one region level
+            /// </summary>
+            Low,
+            /// <summary>
+            /// Medium Quality, somewhat blurry on two region levels
+            /// </summary>
+            Medium,
+            /// <summary>
+            /// Medium Quality, somewhat blurry on three region levels
+            /// </summary>
+            High
+        }
+
 
         private LibraryFavorites _libraryFavorites;
         private LibraryList _libraryList;
@@ -40,6 +60,8 @@ namespace NuSysApp
         private Point2d _searchExportPos;
 
         private Dictionary<string, NusysConstants.AccessType> _fileIdToAccessMap = new Dictionary<string, NusysConstants.AccessType>();
+
+
 
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
@@ -253,7 +275,7 @@ namespace NuSysApp
 
                         // save the image as a file (temporarily)
                         var x = await image.SaveAsync(NuSysStorages.SaveFolder);
-
+                        
                         // use the system to convert the file to a byte array
                         pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
                         if (pageNumber == 0)
@@ -305,8 +327,13 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    var frameWorkWaveForm = GetWaveFormFrameWorkElement(fileBytes);
+                    var frameWorkWaveForm = GetWaveFormFrameWorkElement(fileBytes, WaveFormQuality.High);
                     thumbnails = await GetThumbnailsFromFrameworkElement(frameWorkWaveForm);
+
+                    // override the largest thumbnail for higher resolution
+                    thumbnails[NusysConstants.ThumbnailSize.Large] = 
+                        await GetImageAsStringFromFrameworkElement(frameWorkWaveForm);
+
                     data = Convert.ToBase64String(fileBytes);
                 }
                 else
@@ -593,11 +620,13 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Converts Audio into a
+        /// Converts Audio into a Framework element representing its waveform. The quality level defaults to low but
+        /// can be set higher if desired.
         /// </summary>
         /// <param name="bytes"></param>
+        /// <param name="quality"></param>
         /// <returns></returns>
-        private FrameworkElement GetWaveFormFrameWorkElement(Byte[] bytes)
+        private FrameworkElement GetWaveFormFrameWorkElement(Byte[] bytes, WaveFormQuality quality = WaveFormQuality.Low)
         {
             MemoryStream s = new MemoryStream(bytes);
             var stream = s.AsRandomAccessStream();
@@ -610,24 +639,40 @@ namespace NuSysApp
 
             if (waveStream.TotalTime.TotalMinutes > 15)
             {
-                samplesPerPixel = 65536;
+                samplesPerPixel = (int)Math.Pow(2, 15);
             }
             else if (waveStream.TotalTime.TotalMinutes > 8)
             {
-                samplesPerPixel = 32768;
+                samplesPerPixel = (int)Math.Pow(2, 14);
             }
             else if (waveStream.TotalTime.TotalMinutes > 5)
             {
-                samplesPerPixel = 16384;
+                samplesPerPixel = (int)Math.Pow(2, 13);
             }
             else if (waveStream.TotalTime.TotalMinutes > 3)
             {
-                samplesPerPixel = 8192;
+                samplesPerPixel = (int)Math.Pow(2, 12);
             }
             else if (waveStream.TotalTime.TotalMinutes > 0.5)
             {
-                samplesPerPixel = 2048;
+                samplesPerPixel = (int) Math.Pow(2, 11);
             }
+
+            // change the quality of the waveform by affecting the number of samples used
+            switch (quality)
+            {
+                case WaveFormQuality.Low:
+                    break;
+                case WaveFormQuality.Medium:
+                    samplesPerPixel /= 2;
+                    break;
+                case WaveFormQuality.High:
+                    samplesPerPixel /= 4;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(quality), quality, "The quality level is not supported here");
+            }
+            
 
             byte[] waveData = new byte[samplesPerPixel*bytesPerSample];
             var visualGrid = new Grid();
@@ -656,7 +701,6 @@ namespace NuSysApp
                 line.StrokeThickness = 1;
                 x++;
                 visualGrid.Children.Add(line);
-
             }
             visualGrid.Height = 100;
             visualGrid.Width = x;
@@ -681,12 +725,12 @@ namespace NuSysApp
         private async Task<Dictionary<NusysConstants.ThumbnailSize, string>> GetThumbnailsFromFrameworkElement(FrameworkElement frameWorkElement)
         {
             // add the ui element to the canvas out of sight
-            Canvas.SetTop(frameWorkElement, -frameWorkElement.Height * 2);
+            Canvas.SetTop(frameWorkElement, -frameWorkElement.Height*2);
             SessionController.Instance.SessionView.MainCanvas.Children.Add(frameWorkElement);
 
             // render it
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
-            await renderTargetBitmap.RenderAsync(frameWorkElement, (int)frameWorkElement.Width, (int)frameWorkElement.Height);
+            await renderTargetBitmap.RenderAsync(frameWorkElement, (int) frameWorkElement.Width, (int) frameWorkElement.Height);
 
             // remove the visual grid from the canvas
             SessionController.Instance.SessionView.MainCanvas.Children.Remove(frameWorkElement);
@@ -714,6 +758,51 @@ namespace NuSysApp
             await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
 
             return thumbnails;
+        }
+
+        /// <summary>
+        /// Pass in a framework element and render a 1 : 1 pixel representation image of it.
+        /// Returns the image as a string for use in JSON
+        /// </summary>
+        /// <param name="frameWorkElement"></param>
+        /// <returns>A string representation of the passed in framework element as an image</returns>
+        private async Task<string> GetImageAsStringFromFrameworkElement(FrameworkElement frameWorkElement)
+        {
+            // add the ui element to the canvas out of sight
+            Canvas.SetTop(frameWorkElement, -frameWorkElement.Height*2);
+            SessionController.Instance.SessionView.MainCanvas.Children.Add(frameWorkElement);
+
+            // render it
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
+            await renderTargetBitmap.RenderAsync(frameWorkElement, (int) frameWorkElement.Width, (int) frameWorkElement.Height);
+
+            // remove the visual grid from the canvas
+            SessionController.Instance.SessionView.MainCanvas.Children.Remove(frameWorkElement);
+
+            // create a buffer from the rendered bitmap
+            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+            byte[] pixels = pixelBuffer.ToArray();
+
+            // create a WriteableBitmap with desired width and height
+            var writeableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
+
+            // write the pixels to the bitmap
+            using (Stream bitmapStream = writeableBitmap.PixelBuffer.AsStream())
+            {
+                await bitmapStream.WriteAsync(pixels, 0, pixels.Length);
+            }
+
+            // save the writeable bitmap to a file
+            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+
+            // use the system to convert the file to a string
+            var imageAsString = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(tempFile));
+
+            // delete the writeable bitmap file that we saved
+            await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
+            // return the string representation of the image
+            return imageAsString;
         }
     }
 }
