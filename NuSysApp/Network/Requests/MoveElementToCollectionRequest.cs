@@ -55,7 +55,10 @@ namespace NuSysApp
             var x = _message.GetDouble(NusysConstants.MOVE_ELEMENT_TO_COLLECTION_REQUEST_X_KEY);
             var y = _message.GetDouble(NusysConstants.MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY);
 
-            await MoveElementToCollection(elementId, newParentCollectionId, x, y);
+            await UITask.Run(async delegate
+            {
+                await MoveElementToCollection(elementId, newParentCollectionId, x, y);
+            });
         }
 
         /// <summary>

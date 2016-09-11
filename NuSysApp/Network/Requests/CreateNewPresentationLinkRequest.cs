@@ -69,7 +69,10 @@ namespace NuSysApp
             // since we always create presentation links client side the same way, just call AddPresenationLinkToLibrary
             if (SessionController.Instance.IdToControllers.ContainsKey(model.InElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId))
             {
-                await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(model);
+                await UITask.Run(async delegate
+                {
+                    await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(model);
+                });
             }
         }
 
