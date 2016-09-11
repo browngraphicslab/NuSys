@@ -25,18 +25,28 @@ namespace NuSysApp
         private CanvasBitmap _bmp;
         public int CurrentPage;
         private bool _isUpdating;
+        private ImageDetailRenderItem _image;
+        private PdfLibraryElementController _pdfLibraryElementController;
 
         public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
+            _vm.Controller.SizeChanged += ControllerOnSizeChanged;
+            _pdfLibraryElementController = _vm.Controller.LibraryElementController as PdfLibraryElementController;
+            _image = new ImageDetailRenderItem(_pdfLibraryElementController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
+            _image.IsRegionsVisible = true;
+            _image.IsRegionsModifiable = false;
 
+        }
+
+        private void ControllerOnSizeChanged(object source, double width, double height)
+        {
+            _image.CanvasSize = new Size(width, height);
         }
 
         public override void Dispose()
         {
             _vm = null;
-            _bmp.Dispose();
-            _bmp = null;
             base.Dispose();
         }
 
@@ -56,41 +66,39 @@ namespace NuSysApp
                 CurrentPage = page;
             }
 
-            if (_bmp != null)
-            {
-                _bmp.Dispose();
-            }
-
+            _image.ImageUrl = content.PageUrls[CurrentPage];
+            await _image.Load();
+            
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(content.PageUrls[CurrentPage]), ResourceCreator.Dpi);
             _vm.ImageSize = _bmp.Size;
+
             var ratio = (double)_bmp.Size.Width / (double)_bmp.Size.Height;
             if (Math.Abs(_vm.Width/_vm.Height) -1 > 0.001)
                 _vm.Controller.SetSize(_vm.Width, _vm.Height* ratio, false);
+
             _isUpdating = false;
         }
 
         public override async Task Load()
         {
-            var content = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(content.PageUrls[CurrentPage]), ResourceCreator.Dpi);
-            _vm.ImageSize = _bmp.Size;
-            var ratio = (double)_bmp.Size.Width / (double)_bmp.Size.Height;
-            _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Width * ratio, false);
+            await _image.Load();
+            _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Height, false);
+            _image.CanvasSize = new Size(_vm.Controller.Model.Width, _vm.Controller.Model.Height);
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            base.Draw(ds);
+            var orgTransform = ds.Transform;
             if (_isUpdating || _vm == null)
                 return;
-            var orgTransform = ds.Transform;
-            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
-            ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
 
-            if (_bmp != null)
-                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height });
+            ds.Transform = GetTransform() * ds.Transform;
+            _image.Draw(ds);
 
             ds.Transform = orgTransform;
+            base.Draw(ds);
+            ds.Transform = orgTransform;
+
         }
     }
 }

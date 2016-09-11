@@ -1,12 +1,10 @@
 ﻿using NuSysApp.Util;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -17,8 +15,13 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using Windows.UI.Text;
+using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas.UI;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
 
 
@@ -28,117 +31,236 @@ namespace NuSysApp
 {
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
+        private NusysImageAnalysisModel _analysisModel;
 
-        private NusysPdfAnalysisModel _analysisModel;
+        private CanvasRenderEngine _renderEngine;
+        private RenderItemInteractionManager _interactionManager;
+        private ImageDetailRenderItem _imageDetailRenderItem;
+
+        public bool ShowRegions;
+
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
-            InitializeComponent();
-            //Show/hide regions buttons need reference to rectangle wrapper for methods to work.
-
-            vm.LibraryElementController.Disposed += ControllerOnDisposed;
-
             DataContext = vm;
-            vm.PageLocationChanged += Vm_PageLocationChanged;
-            Loaded += PdfDetailHomeTabView_Loaded;
+            InitializeComponent();
+
+            xImgCanvas.CreateResources += XImgCanvasOnCreateResources;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
+            SizeChanged += OnSizeChanged;
 
             Task.Run(async delegate
             {
-                _analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(vm.LibraryElementController.LibraryElementModel.ContentDataModelId) as NusysPdfAnalysisModel;
+                _analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(vm.LibraryElementController.LibraryElementModel.ContentDataModelId) as NusysImageAnalysisModel;
                 UITask.Run(async delegate {
-                    SetPdfSuggestions(vm.CurrentPageNumber);
+                    SetImageAnalysis();
                 });
             });
         }
 
-        private void DetailViewerView_Disposed(object sender, EventArgs e)
+        private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
-            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
-            detailViewerView.Disposed -= DetailViewerView_Disposed;
-            Dispose(); 
+            if (_imageDetailRenderItem == null)
+                return;
+            xImgCanvas.Width = totalStackPanel.ActualWidth;
+            xImgCanvas.Height = totalStackPanel.ActualHeight;
+            _imageDetailRenderItem.CanvasSize = new Size(totalStackPanel.ActualWidth, totalStackPanel.ActualHeight);
+
         }
 
-        private void Vm_PageLocationChanged(object sender, int pageLocation)
+        private async void XImgCanvasOnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
         {
-            UpdateRegionViews(pageLocation);
-            SetPdfSuggestions(pageLocation);
+            var vm = (PdfDetailHomeTabViewModel)DataContext;
+            var libElemController = vm.LibraryElementController as PdfLibraryElementController;
+            libElemController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            libElemController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+
+            _renderEngine = new CanvasRenderEngine();
+            var root = new BaseRenderItem(null, xImgCanvas);
+            _imageDetailRenderItem = new ImageDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
+            _imageDetailRenderItem.IsRegionsVisible = ShowRegions;
+            _imageDetailRenderItem.CanvasSize = new Size(totalStackPanel.ActualWidth, totalStackPanel.ActualHeight);
+
+            xImgCanvas.Width = totalStackPanel.ActualWidth;
+            xImgCanvas.Height = totalStackPanel.ActualHeight;
+
+            if (ShowRegions)
+            {
+                _imageDetailRenderItem.IsRegionsModifiable = true;
+            }
+            _imageDetailRenderItem.NeedsRedraw += ImageOnNeedsRedraw;
+
+            await _imageDetailRenderItem.Load();
+            root.Children.Add(_imageDetailRenderItem);
+
+
+
+            _renderEngine.Init(xImgCanvas, root);
+            _interactionManager = new RenderItemInteractionManager(_renderEngine, xImgCanvas);
+            xImgCanvas.Invalidate();
+        }
+
+        private void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        {
+            xImgCanvas.Invalidate();
+        }
+
+        private void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        {
+            xImgCanvas.Invalidate();
+        }
+
+        private void ImageOnNeedsRedraw()
+        {
+            xImgCanvas.Invalidate();
         }
 
         /// <summary>
-        /// sets the page info via the suggestion box.  THe info is gathered from the server-given Analysis Model
+        /// Set information gained from cognitive image analysis.
         /// </summary>
-        /// <param name="pageNumber"></param>
-        private void SetPdfSuggestions(int pageNumber)
+        private void SetImageAnalysis()
         {
-            xPageNumberBox.Text = pageNumber.ToString();
             if (_analysisModel != null)
             {
-                if (_analysisModel.DocumentAnalysisModel.Segments.Any(segment => segment.pageNumber == pageNumber))
+                //set description to caption with highest confidence
+                var descriptionlist = _analysisModel.Description.Captions.ToList();
+                var bestDescription = descriptionlist.OrderByDescending(x => x.Confidence).FirstOrDefault();
+                xDescription.Text = bestDescription.Text;
+
+                if (_analysisModel.Categories != null && _analysisModel.Categories.Any())
                 {
-                    xSentimentBox.Text = Math.Round( _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Average(segment => segment.SentimentRating)*100, 3) + " %";
+                    //get categories and add the category if the score meets min confidence level
+                    var categorylist = _analysisModel.Categories.ToList();
+                    var categories =
+                        categorylist.Where(x => x.Score > Constants.MinConfidence).OrderByDescending(x => x.Score);
+                    foreach (var i in categories)
+                    {
+                        i.Name = i.Name.Replace("_", " ");
+                        i.Name.Trim();
+                    }
+                    xCategories.Text = string.Join(", ", categories.Select(category => string.Join(", ", category.Name)));
                 }
-                else
+
+
+                //get tag list and order them in order of confidence
+                var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
+                //add to items control of suggested tags
+                foreach (var i in taglist)
                 {
-                    xSentimentBox.Text = "None found";
+                    var tag = MakeSuggestedTag(i.Name);
+                    xTags?.Items?.Add(tag);
                 }
-                xKeyPhrasesBox.Text = string.Join(", ", _analysisModel.DocumentAnalysisModel.Segments.Where(segment => segment.pageNumber == pageNumber).Select(segment => string.Join(", ", segment.KeyPhrases)));
             }
-            else
+
+        }
+        /// <summary>
+        /// hyperlink button that represents an auto generated tag
+        /// on tapped they are added to the element's taglist
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private FrameworkElement MakeSuggestedTag(string text)
+        {
+            HyperlinkButton tag;
+            tag = new HyperlinkButton();
+            tag.Margin = new Thickness(3);
+            tag.Content = text;
+            tag.FontStyle = FontStyle.Italic;
+            tag.Foreground = new SolidColorBrush(Constants.color3);
+            tag.Tapped += SuggestedTag_OnTapped;
+
+            return tag;
+        }
+        /// <summary>
+        /// handler to add tag to element's taglist
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SuggestedTag_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var tag = (HyperlinkButton)sender;
+            var keyword = new Keyword((string)tag.Content, Keyword.KeywordSource.UserInput);
+            var vm = (PdfDetailHomeTabViewModel)DataContext;
+            vm.LibraryElementController.AddKeyword(keyword);
+
+            //remove from suggested tag list
+            foreach (var i in xTags?.Items)
             {
-                xSentimentBox.Text = "...";
-                xKeyPhrasesBox.Text = "...";
+                var currTag = (HyperlinkButton)i;
+                if (currTag.Content == tag.Content)
+                {
+                    xTags?.Items?.Remove(i);
+                }
             }
         }
 
-        private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// dispose suggestedtag_ontapped method
+        /// </summary>
+        private void DisposeTags()
+        {
+            foreach (var i in xTags?.Items)
+            {
+                var currTag = (HyperlinkButton)i;
+                currTag.Tapped -= SuggestedTag_OnTapped;
+            }
+        }
+
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
 
+            Dispose();
+        }
+
+        private void Dispose()
+        {
+            var vm = (PdfDetailHomeTabViewModel)DataContext;
+            var libElemController = vm.LibraryElementController as PdfLibraryElementController;
+            libElemController.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _imageDetailRenderItem?.Dispose();
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            _interactionManager?.Dispose();
+            _interactionManager = null;
+            SizeChanged -= OnSizeChanged;
+            DisposeTags();
         }
 
         private void ControllerOnDisposed(object source, object args)
         {
-            var vm = (PdfDetailHomeTabViewModel)DataContext;
+            var vm = (ImageDetailHomeTabViewModel)DataContext;
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;
+
             DataContext = null;
         }
-        
-        private async void OnPageLeftClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (PdfDetailHomeTabViewModel)this.DataContext;
-            if (vm == null)
-                return;
-            await vm.FlipLeft();
-        }
 
-        private async void OnPageRightClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (PdfDetailHomeTabViewModel)this.DataContext;
-            if (vm == null)
-                return;
-            await vm.FlipRight();
-        }
         /// <summary>
-        /// Updates region views so that views on current page are visible. Also depends on current regions visibility option.
+        /// collapse image analysis for more space if necessary
         /// </summary>
-        /// <param name="currentPageNumber"></param>
-        private async void UpdateRegionViews(int currentPageNumber)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CollapseIcon_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-        }
-
-        public void Dispose()
-        {
-            var vm = DataContext as PdfDetailHomeTabViewModel;
-            if (vm != null) // because delete library element request can remove the view model outside of this
+            if (ContentScrollViewer.Visibility == Visibility.Visible)
             {
-                vm.PageLocationChanged -= Vm_PageLocationChanged;
+                ContentScrollViewer.Visibility = Visibility.Collapsed;
+                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/open up.png"));
             }
-
-            
+            else
+            {
+                ContentScrollViewer.Visibility = Visibility.Visible;
+                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/collapse down.png"));
+            }
         }
 
-        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        /// <summary>
+        /// when the suggest Temp Regions button is pressen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (PdfDetailHomeTabViewModel)DataContext;
             if (vm == null)
@@ -146,30 +268,10 @@ namespace NuSysApp
                 return;
             }
 
-            if (_analysisModel != null)
-            {
-                var suggestedRegions = _analysisModel.PageImageAnalysisModels.SelectMany(item => item?.Regions ?? new List<CognitiveApiRegionModel>());//.Where(i => i.MarkedImportant);
-
-                foreach (var region in suggestedRegions)
-                {
-                    var rect = region.Rectangle;
-                    if (rect.Height == null || rect.Left == null || rect.Top == null || rect.Width == null)
-                    {
-                        continue;
-                    }
-
-                }
-                vm.Goto(vm.CurrentPageNumber);
-            }
-
-            /*
             var contentDataModelId = vm.LibraryElementController.LibraryElementModel.ContentDataModelId;
             Task.Run(async delegate
             {
-                //create the request to get the analysis model
-                var request = new GetAnalysisModelRequest(contentDataModelId);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                var analysisModel = request.GetReturnedAnalysisModel() as NusysImageAnalysisModel;
+                var analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(contentDataModelId) as NusysImageAnalysisModel;
 
                 //switch back to UI thread for adding the regions
                 await UITask.Run(delegate
@@ -197,37 +299,18 @@ namespace NuSysApp
                                 continue;
                             }
                             //create a temp region for every face
-                            var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel);
-                            var tempview = new TemporaryImageRegionView(tempvm);
-                            tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
-                            xClippingWrapper.AddTemporaryRegion(tempview);
+
+                            //   var tempvm = new TemporaryImageRegionViewModel(new Point(rect.Left.Value, rect.Top.Value), rect.Width.Value, rect.Height.Value, this.xClippingWrapper, this.DataContext as DetailHomeTabViewModel,null,vm.LibraryElementController.LibraryElementModel.AccessType);
+                            //     var tempview = new TemporaryImageRegionView(tempvm);
+                            //       tempvm.MetadataToAddUponBeingFullRegion = metadataDict;
+                            //  xClippingWrapper.AddTemporaryRegion(tempview);
+
                         }
                     }
                 });
 
             });
-        */
         }
 
-        /// <summary>
-        /// collapse pdf analysis for more space if necessary
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CollapseIcon_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (ContentGrid.Visibility == Visibility.Visible)
-            {
-                ContentGrid.Visibility = Visibility.Collapsed;
-                KeyPhrases.Visibility = Visibility.Collapsed;
-                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/open up.png"));
-            }
-            else
-            {
-                ContentGrid.Visibility = Visibility.Visible;
-                KeyPhrases.Visibility = Visibility.Visible;
-                CollapseIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/collapse down.png"));
-            }
-        }
     }
 }

@@ -95,31 +95,6 @@ namespace NuSysApp
             
         }
 
-        public void ShowListView(bool visible, NusysConstants.ElementType type)
-        {
-            if (!visible)
-            {
-                xListViewPresenter.Content = null;
-                if (xMainGrid.ColumnDefinitions.Contains(xSecondColumn))
-                {
-                    xMainGrid.ColumnDefinitions.Remove(xSecondColumn);
-                }
-                return;
-            }
-            else
-            {
-                if (type == NusysConstants.ElementType.PDF)
-                {
-                    var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
-                    Debug.Assert(detailViewerView != null);
-                    //xListViewPresenter.Content = new PDFRegionListView(detailViewerView);
-                    if (!xMainGrid.ColumnDefinitions.Contains(xSecondColumn))
-                    {
-                        xMainGrid.ColumnDefinitions.Add(xSecondColumn);
-                    }
-                    return;
-                }
-            }
-        }
+
     }
 }

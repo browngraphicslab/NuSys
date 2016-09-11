@@ -347,6 +347,13 @@ namespace NuSysApp
                             imageArgs.AspectRatio = aspectRatio;
                             libraryElementArgs = imageArgs;
                             break;
+                        case NusysConstants.ElementType.PDF:
+                            var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                            pdfArgs.PdfPageStart = 0;
+                            pdfArgs.PdfPageEnd = pdfTextByPage.Count;
+                            pdfArgs.AspectRatio = aspectRatio;
+                            libraryElementArgs = pdfArgs;
+                            break;
                         case NusysConstants.ElementType.Video:
                             var videoArgs = new CreateNewVideoLibraryElementRequestArgs();
                             videoArgs.AspectRatio = aspectRatio;

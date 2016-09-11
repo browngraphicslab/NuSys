@@ -24,7 +24,8 @@ namespace NuSysApp
         private double _scaleDisplayToCrop;
         private CanvasGeometry _mask;
         private Size _canvasSize;
-        private bool _needsMaskRefresh;
+        private bool _needsMaskRefresh = true;
+        public string ImageUrl { get; set; }
 
         public bool IsRegionsVisible { get; set; }
         public bool IsRegionsModifiable { get; set; }
@@ -34,6 +35,23 @@ namespace NuSysApp
 
         public ImageDetailRenderItem(ImageLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            ImageUrl = controller.ContentDataController.ContentDataModel.Data;
+
+            _controller = controller;
+            _canvasSize = maxSize;
+
+            _controller.LocationChanged += ControllerOnLocationChanged;
+            _controller.SizeChanged += ControllerOnSizeChanged;
+
+            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+        }
+
+        public ImageDetailRenderItem(PdfLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        {
+            var content = controller.ContentDataController.ContentDataModel as PdfContentDataModel;
+            ImageUrl = content.PageUrls[0];
+
             _controller = controller;
             _canvasSize = maxSize;
 
@@ -100,8 +118,8 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            var url = _controller.ContentDataController.ContentDataModel.Data;
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(url), ResourceCreator.Dpi);
+            _bmp?.Dispose();
+            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
             ReRender();
         }
 
