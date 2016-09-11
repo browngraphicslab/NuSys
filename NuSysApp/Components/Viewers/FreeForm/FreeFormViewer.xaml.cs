@@ -171,6 +171,8 @@ namespace NuSysApp
                 if (CurrentCollection != null)
                 {
                     _collectionInteractionManager.ItemSelected -= CollectionInteractionManagerOnItemTapped;
+                    _collectionInteractionManager.LinkSelected -= CollectionInteractionManagerOnLinkSelected;
+                    _collectionInteractionManager.TrailSelected -= CollectionInteractionManagerOnTrailSelected;
                     _collectionInteractionManager.DoubleTapped -= OnItemDoubleTapped;
                     _collectionInteractionManager.SelectionsCleared -= CollectionInteractionManagerOnSelectionsCleared;
                     _collectionInteractionManager.Panned -= CollectionInteractionManagerOnPanned;
@@ -225,10 +227,8 @@ namespace NuSysApp
                 _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
                 _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
                 _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
-                _collectionInteractionManager.ElementAddedToCollection +=
-                    CollectionInteractionManagerOnElementAddedToCollection;
-                _collectionInteractionManager.MultimediaElementActivated +=
-                    CollectionInteractionManagerOnMultimediaElementActivated;
+                _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
+                _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
                 _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
                 _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
@@ -236,6 +236,14 @@ namespace NuSysApp
 
                 _minimap?.SwitchCollection(collection);
             }
+        }
+
+        private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element)
+        {
+        }
+
+        private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element)
+        {
         }
 
         private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,

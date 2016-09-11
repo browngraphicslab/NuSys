@@ -41,6 +41,8 @@ namespace NuSysApp
 
     public class CollectionInteractionManager : IDisposable
     {
+        public delegate void LinkSelectedHandler(LinkRenderItem element);
+        public delegate void TrailSelectedHandler(TrailRenderItem element);
         public delegate void RenderItemSelectedHandler(ElementRenderItem element);
         public delegate void InkDrawHandler(CanvasPointer pointer);
         public delegate void LinkCreatedHandler(ElementRenderItem element1, ElementRenderItem element2);
@@ -57,6 +59,8 @@ namespace NuSysApp
         public event ElementDropHandler ElementAddedToCollection;
         public event SelectionInkPressedHandler SelectionInkPressed;
         public event RenderItemSelectedHandler ItemSelected;
+        public event LinkSelectedHandler LinkSelected;
+        public event TrailSelectedHandler TrailSelected;
         public event RenderItemSelectedHandler MultimediaElementActivated;
         public event RenderItemSelectedHandler DoubleTapped;
         public event MovedHandler ItemMoved;
@@ -476,18 +480,22 @@ namespace NuSysApp
             if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
                 return;
 
+            if (element is LinkRenderItem)
+            {
+                LinkSelected?.Invoke((LinkRenderItem) element);
+            }
+
+            if (element is LinkRenderItem)
+            {
+                TrailSelected?.Invoke((TrailRenderItem)element);
+            }
+
             var elementRenderItem = element as ElementRenderItem;
             var initialCollection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
             var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
             if (elementRenderItem == initialCollection || elementRenderItem == currentCollection || elementRenderItem == null)
             {
                 SelectionsCleared?.Invoke();
-                /*
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Source = null;
-                SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Collapsed;
-                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.AudioSource = null;
-                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Collapsed;
-                */
                 if (element == null)
                     CollectionSwitched?.Invoke(initialCollection);
 
