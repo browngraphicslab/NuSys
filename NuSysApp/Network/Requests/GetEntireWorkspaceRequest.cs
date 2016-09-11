@@ -102,30 +102,32 @@ namespace NuSysApp
             {
                 var args = _returnMessage.Get<GetEntireWorkspaceRequestReturnArgs>(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY);
 
+                Debug.Assert(args != null);
+
                 //create the aliases from the returned args strings
                 _returnedElementModels = new List<ElementModel>();
-                foreach (var elementString in args.AliasStrings)
+                foreach (var elementString in args?.AliasStrings ?? new List<string>())
                 {
                     _returnedElementModels.Add(ElementModelFactory.DeserializeFromString(elementString));
                 }
 
                 //create the content data models from the returned args strings
                 _returnedContentDataModels = new List<ContentDataModel>();
-                foreach (var contentString in args.ContentMessages)
+                foreach (var contentString in args?.ContentMessages ?? new List<string>())
                 {
                     _returnedContentDataModels.Add(ContentDataModelFactory.DeserializeFromString(contentString));
                 }
 
                 //create the presentation links
                 _returnedPresentationLinkModels = new List<PresentationLinkModel>();
-                foreach (var presentationLink in args.PresentationLinks)
+                foreach (var presentationLink in args?.PresentationLinks ?? new List<string>())
                 {
                     _returnedPresentationLinkModels.Add(JsonConvert.DeserializeObject<PresentationLinkModel>(presentationLink));
                 }
 
                 //create the ink models
                 _returnedInkModels = new List<InkModel>();
-                foreach (var ink in args.InkStrokes)
+                foreach (var ink in args?.InkStrokes ?? new List<string>())
                 {
                     _returnedInkModels.Add(JsonConvert.DeserializeObject<InkModel>(ink));
                 }
