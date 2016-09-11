@@ -22,7 +22,19 @@ namespace NuSysApp
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
-        protected bool _blockServerInteraction = false;
+        /// <summary>
+        /// count to represent how many unpacks are currently running.
+        /// This is being used to replace the boolean. If this number is greater than 0, then an unpack is currently happening
+        /// </summary>
+        protected int _blockServerInteractionCount;
+
+        protected bool _blockServerInteraction
+        {
+            get
+            {
+                return _blockServerInteractionCount != 0;
+            }
+        }
         public string Title {
             get
             {
@@ -204,7 +216,14 @@ namespace NuSysApp
         /// <param name="blockServerUpdates"></param>
         protected void SetBlockServerBoolean(bool blockServerUpdates)
         {
-            _blockServerInteraction = blockServerUpdates;
+            if (blockServerUpdates)
+            {
+                _blockServerInteractionCount++;
+            }
+            else
+            {
+                _blockServerInteractionCount--;
+            }
         }
 
         /// <summary>
@@ -633,7 +652,7 @@ namespace NuSysApp
             {
                 LibraryElementModel.ContentDataModelId = message.GetString("content__id");
             }
-            //TODO set regions maybe
+            
             SetBlockServerBoolean(false);
         }
 

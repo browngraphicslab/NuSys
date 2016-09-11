@@ -45,8 +45,7 @@ namespace NusysServer
 
             //ResetTables(true);
             //SetUpTables();
-
-
+            
             TestFunc();
         }
 

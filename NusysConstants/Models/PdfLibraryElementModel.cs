@@ -20,13 +20,13 @@ namespace NusysIntermediate
         public override void UnPackFromDatabaseKeys(Message message)
         {
             base.UnPackFromDatabaseKeys(message);
-            if (message.ContainsKey(NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY))
+            if (message.ContainsKey(NusysConstants.PDF_PAGE_START_KEY))
             {
-                PageStart = message.GetInt(NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY);
+                PageStart = message.GetInt(NusysConstants.PDF_PAGE_START_KEY);
             }
-            if (message.ContainsKey(NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY))
+            if (message.ContainsKey(NusysConstants.PDF_PAGE_END_KEY))
             {
-                PageEnd = message.GetInt(NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY);
+                PageEnd = message.GetInt(NusysConstants.PDF_PAGE_END_KEY);
             }
         }
     }

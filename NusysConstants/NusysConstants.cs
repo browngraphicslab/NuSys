@@ -1378,13 +1378,13 @@ namespace NusysIntermediate
         /// This key is used to hold the page number of the ending page when represented in message form.
         /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
         /// </summary>
-        public static readonly string PDF_PAGE_START_KEY = "page_end_number";
+        public static readonly string PDF_PAGE_START_KEY = "page_start_number";
 
             /// <summary>
             /// This key is used to hold the page number of the starting page when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string PDF_PAGE_END_KEY = "page_start_number";
+            public static readonly string PDF_PAGE_END_KEY = "page_end_number";
 
             #endregion PdfRegion 
 
