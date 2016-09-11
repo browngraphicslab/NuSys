@@ -692,7 +692,7 @@ namespace NusysIntermediate
             /// <summary>
             /// Key in message for sending the json serialized list of points that compose the stroke. Used for the create ink stroke request
             /// </summary>
-            public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "content_id";
+            public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "ink_points";
 
             /// <summary>
             /// Key in message used by the server to send the InkModel back to clients. 

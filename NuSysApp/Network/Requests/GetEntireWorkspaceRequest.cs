@@ -17,6 +17,7 @@ namespace NuSysApp
         private List<ContentDataModel> _returnedContentDataModels;
         private List<ElementModel> _returnedElementModels;
         private List<PresentationLinkModel> _returnedPresentationLinkModels;
+        private List<InkModel> _returnedInkModels;
 
         /// <summary>
         /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch, and the levels of recursion you want.
@@ -42,7 +43,7 @@ namespace NuSysApp
         /// <returns></returns>
         public List<ContentDataModel> GetReturnedContentDataModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
             {
                 GetReturnedArgs();
             }
@@ -55,7 +56,7 @@ namespace NuSysApp
         /// <returns></returns>
         public List<ElementModel> GetReturnedElementModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
             {
                 GetReturnedArgs();
             }
@@ -68,11 +69,24 @@ namespace NuSysApp
         /// <returns></returns>
         public List<PresentationLinkModel> GetReturnedPresentationLinkModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
             {
                 GetReturnedArgs();
             }
             return _returnedPresentationLinkModels;
+        }
+
+        /// <summary>
+        /// method to get the returned ink models after a successful request.
+        /// </summary>
+        /// <returns></returns>
+        public List<InkModel> GetReturnedInkModels()
+        {
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
+            {
+                GetReturnedArgs();
+            }
+            return _returnedInkModels;
         }
 
 
@@ -82,6 +96,7 @@ namespace NuSysApp
         /// </summary>
         private void GetReturnedArgs()
         {
+            CheckWasSuccessfull();
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY));
             try
             {
@@ -108,6 +123,13 @@ namespace NuSysApp
                     _returnedPresentationLinkModels.Add(JsonConvert.DeserializeObject<PresentationLinkModel>(presentationLink));
                 }
 
+                //create the ink models
+                _returnedInkModels = new List<InkModel>();
+                foreach (var ink in args.InkStrokes)
+                {
+                    _returnedInkModels.Add(JsonConvert.DeserializeObject<InkModel>(ink));
+                }
+
             }
             catch (JsonException parseException)
             {
@@ -115,6 +137,7 @@ namespace NuSysApp
                 _returnedElementModels = new List<ElementModel>();
                 _returnedContentDataModels = new List<ContentDataModel>();
                 _returnedPresentationLinkModels = new List<PresentationLinkModel>();
+                _returnedInkModels = new List<InkModel>();
             }
         }
 

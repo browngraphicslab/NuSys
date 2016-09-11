@@ -90,7 +90,7 @@ namespace NuSysApp
         public void Activate(IUndoable action)
         {
             _state = UndoButtonState.Active;
-            this.Opacity = 1;
+            Visibility = Visibility.Visible;
             OriginalAction = action;
 
             // Weird syntax since TimerCallback can't directly take in Dispose().
@@ -108,7 +108,7 @@ namespace NuSysApp
         public void Deactivate()
         {
             _state=UndoButtonState.Inactive;
-            this.Opacity = 0;
+            Visibility = Visibility.Collapsed;
             _timer?.Dispose();
         }
        

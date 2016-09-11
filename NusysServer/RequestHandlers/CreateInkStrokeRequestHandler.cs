@@ -35,7 +35,7 @@ namespace NusysServer
                 return new Message(new Dictionary<string, object>() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false } });
             }
             //Update the collections last edited time stamp
-            UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY));
+            //UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY));
             //Create the ink model and forward it to everyone except the original sender
             var inkModel = new InkModel();
             inkModel.UnPackFromDatabaseMessage(message);

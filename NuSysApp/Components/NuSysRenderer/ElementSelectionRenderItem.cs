@@ -25,26 +25,27 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
-        public NodeMenuButtonRenderItem BtnOptions;
+        public NodeMenuButtonRenderItem BtnEnterCollection;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
         private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
         private bool _isSinglePdfSelected;
+        private bool _isSingleCollectionSelected;
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
-            BtnOptions = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
-
+            BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
+            
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
 
-            Buttons = new List<BaseRenderItem> {BtnDelete, BtnOptions, BtnGroup, BtnPresent, BtnPdfLeft, BtnPdfRight };
-            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnOptions, BtnGroup, BtnPresent };
+            Buttons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnPdfLeft, BtnPdfRight, BtnEnterCollection };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnEnterCollection };
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
@@ -88,7 +89,9 @@ namespace NuSysApp
             }
 
             _isSinglePdfSelected = _selectedItems.Count == 1 && _selectedItems[0] is PdfElementRenderItem;
+            _isSingleCollectionSelected = _selectedItems.Count == 1 && _selectedItems[0] is CollectionRenderItem;
 
+            BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
 
             IsDirty = true;
         }
@@ -115,6 +118,7 @@ namespace NuSysApp
             BtnPresent.Update();
             BtnGroup.Update();
             Resizer.Update();
+            BtnEnterCollection.Update();
 
             if (_selectedItems.Count == 0)
             {

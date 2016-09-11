@@ -62,6 +62,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            base.Dispose();
+
             var collectionController = (ElementCollectionController)ViewModel.Controller;
             collectionController.CameraPositionChanged -= OnCameraPositionChanged;
             collectionController.CameraCenterChanged -= OnCameraCenterChanged;
@@ -100,7 +102,7 @@ namespace NuSysApp
 
             Camera = null;
 
-            base.Dispose();
+            
         }
 
         private void OnCameraCenterChanged(float f, float f1)
@@ -121,6 +123,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             base.Update();
 
             foreach (var item in _renderItems0.ToArray())

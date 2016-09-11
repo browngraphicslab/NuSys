@@ -36,10 +36,10 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            if (_vm?.Controller != null)
-            {
-                _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            }
+            if (IsDisposed)
+                return;
+
+            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
             _shape?.Dispose();
             _shape = null;
             _vm = null;
@@ -54,6 +54,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             base.Update();
 
             if (!IsDirty)
@@ -83,7 +86,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (_rect == null)
+            if (IsDisposed || _vm == null || _rect == null)
                 return;
 
             var orgTransform = ds.Transform;

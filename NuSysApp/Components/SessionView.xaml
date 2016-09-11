@@ -59,15 +59,13 @@
                 <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             </Button>
             <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
-        </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <!--<Button x:Name="CurrentCollectionDV" Click="CurrentCollectionDV_OnClick"  VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">-->
-                <!--<Image Source="ms-appx:///Assets/info.png" Width="60" Height="60" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>-->
-                <!--</Button>-->
             </StackPanel>
 
             <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">
                 <Image Source="ms-appx:///Assets/snapshot_icon.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            </Button>
+            <Button x:Name="BtnBack" Background="Transparent" Height="50" Width="50" Margin="20"  Click="GoBackToWaitingRoom_OnClick">
+                <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
             </Button>
             <local:ChatBoxView x:Name ="xChatBox" Visibility="Collapsed"></local:ChatBoxView>
             <local:LibraryDragElement x:Name="LibraryDraggingNode" Visibility="Collapsed"></local:LibraryDragElement>
@@ -81,10 +79,10 @@
             <local:SpeechToTextBox x:Name="xSpeechToTextBox"></local:SpeechToTextBox>
             <local:FileAddedAclsPopup x:Name="xFileAddedAclesPopup"></local:FileAddedAclsPopup>
         </Canvas>
-         <Button x:Name="xCurrentCollectionDVButton"  Click="CurrentCollectionDV_OnClick" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,300,0">
+         <Button x:Name="xCurrentCollectionDVButton"  Click="CurrentCollectionDV_OnClick" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,15,0">
             <Image Source="ms-appx:///Assets/info.png" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
-        <Button x:Name="xSettingsButton" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,330,0">
+        <Button x:Name="xSettingsButton" VerticalAlignment="Top" Padding="0" Background="Transparent" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Width="45" Height="45" Margin="0,0,45,0">
             <Image Source="ms-appx:///Assets/settings icon.png" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             <Button.Flyout>
                 <MenuFlyout>
@@ -92,9 +90,7 @@
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-        <Button Background="Transparent" Height="50" Width="50" Margin="20"  Click="GoBackToWaitingRoom_OnClick">
-            <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
-        </Button>
+
         <local:DetailViewerView x:Name="xDetailViewer" HorizontalAlignment="Right"></local:DetailViewerView>
         <local:SearchView x:Name="xSearchViewer" HorizontalAlignment="Left" Visibility="Collapsed"></local:SearchView>
 

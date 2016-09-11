@@ -19,7 +19,6 @@ namespace NuSysApp
         private CanvasBitmap _bmp;
         private string _iconUrl;
 
-
         public bool IsVisible { get; set; } = true;
 
         public NodeMenuButtonRenderItem( string iconUrl, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
@@ -41,6 +40,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (!IsVisible)
+                return;
+
             base.Draw(ds);
 
             var orgTransform = ds.Transform;
@@ -58,6 +60,9 @@ namespace NuSysApp
 
         public override BaseRenderItem HitTest(Vector2 point)
         {
+            if (IsVisible == false)
+                return null;
+
             var rect = new Rect(T.M31-15, T.M32 - 15, 30,30);
             if (rect.Contains(point.ToPoint()))
             {

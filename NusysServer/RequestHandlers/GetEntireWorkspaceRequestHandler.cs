@@ -46,6 +46,7 @@ namespace NusysServer
             returnArgs.ContentMessages = contentDataModels.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.AliasStrings = aliases.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.PresentationLinks = GetAllPresentationLinks(workspaceId);
+            returnArgs.InkStrokes = GetAllInkStrokes(workspaceId);
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY] = returnArgs;
@@ -72,6 +73,23 @@ namespace NusysServer
         } 
 
         /// <summary>
+        /// returns the json serialized version of all the ink strokes for any of the content ids given
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<string> GetAllInkStrokes(string collectionId)
+        {
+            var query = new SQLSelectQuery(new JoinedTable(new SqlJoinOperationArgs() {
+                JoinOperator = Constants.JoinedType.LeftJoin,
+                LeftTable = new SingleTable(Constants.SQLTableType.LibraryElement),
+                RightTable = new SingleTable(Constants.SQLTableType.Ink),
+                Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).First(),
+                Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Ink, NusysConstants.INK_TABLE_CONTENT_ID).First(),
+            }), new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY, collectionId));
+            var inkStrokes = query.ExecuteCommand();
+            return inkStrokes.Select(stroke => JsonConvert.SerializeObject(InkModelFactory.ParseFromDatabaseMessage(stroke)));
+        }
+
+        /// <summary>
         /// Creates a select query for getting all information for the get entire workspace query for the specified workspace id.
         /// </summary>
         /// <param name="workspaceId"></param>
@@ -94,7 +112,7 @@ namespace NusysServer
                     break;
             }
             command = command + " SELECT q.*, " + Constants.GetTableName(Constants.SQLTableType.Properties) +
-            ".*, " + Constants.GetTableName(Constants.SQLTableType.Content) + ".*, " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".type FROM q" +
+            ".*, " + Constants.GetTableName(Constants.SQLTableType.Content) + ".*, "+ Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".type FROM q" +
             " INNER JOIN " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " ON q." + NusysConstants.ALIAS_LIBRARY_ID_KEY + " = " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + 
             " INNER JOIN " + Constants.GetTableName(Constants.SQLTableType.Content) + " ON " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " = "+ Constants.GetTableName(Constants.SQLTableType.Content) + "." + NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY +
             " LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.Properties) + " on " +Constants.GetTableName(Constants.SQLTableType.Properties) + "." + NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " = q." + NusysConstants.ALIAS_ID_KEY 

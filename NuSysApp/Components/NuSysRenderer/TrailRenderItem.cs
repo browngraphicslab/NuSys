@@ -62,7 +62,7 @@ namespace NuSysApp
         public override void Update()
         {
             base.Update();
-            if (!IsDirty)
+            if (!IsDirty || _vm == null)
                 return;
             var anchor1 = new Vector2((float)_vm.InAnchor.X, (float)_vm.InAnchor.Y);
             var anchor2 = new Vector2((float)_vm.OutAnchor.X, (float)_vm.OutAnchor.Y);
