@@ -68,22 +68,13 @@ namespace NuSysApp
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
 
+        public static WaitingRoomView Instance;
+
         public WaitingRoomView()
         {
+            Instance = this;
             this.InitializeComponent();
             LoginCredentialsFilePath = StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp).Result.Path + "\\LoginInfo.json";
-            //waitingroomanimation.Begin();
-
-            //TelemetryConfiguration.Active.TelemetryChannel.DeveloperMode = true;
-            //  App.TelemetryClient.Context.Device.
-
-            App.TelemetryClient.InstrumentationKey = "8f830614-4100-43cd-a0c9-5b94ada7b3f6";
-            App.TelemetryClient.Context.InstrumentationKey = "8f830614-4100-43cd-a0c9-5b94ada7b3f6";
-
-            App.TelemetryClient.TrackEvent("woo", new Dictionary<string, string>());
-
-            //  Telemetry.Init();
-            //  Telemetry.TrackEvent("startup");
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
@@ -291,16 +282,31 @@ namespace NuSysApp
 
                 if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserID))
                 {
-                    this.Frame.Navigate(typeof(SessionView), m.AccessType);
+                    // TODO: add back in
+                   // this.Frame.Navigate(typeof(SessionView), m.AccessType);
                 }
                 else
                 {
-                    this.Frame.Navigate(typeof(SessionView));
+                    ShowWorkspace();
+                    await xSessionView.Init();
                 }
 
                 // Detach the handler for refreshing the list of collections
                 SessionController.Instance.ContentController.OnNewLibraryElement -= ContentController_OnNewLibraryElememt;
             }
+        }
+
+        public void ShowWaitingRoom()
+        {
+            xWaitingRoom.Visibility = Visibility.Visible;
+            xSessionView.Visibility = Visibility.Collapsed;
+        }
+
+        public void ShowWorkspace()
+        {
+
+            xWaitingRoom.Visibility = Visibility.Collapsed;
+            xSessionView.Visibility = Visibility.Visible;
         }
 
         public static IEnumerable<ElementModel> GetFirstLoadList()

@@ -127,6 +127,8 @@
     </UserControl.Resources>
 
     <Grid Background="{StaticResource color1}">
+        <local:SessionView x:Name="xSessionView" Visibility="Collapsed"></local:SessionView>
+        <Grid x:Name="xWaitingRoom">
         <StackPanel Margin="0,100,0,0" x:Name="NuSysTitle">
             <TextBlock  VerticalAlignment="Top"  Height="75" Width="300" TextAlignment="Center" FontSize="45" 
                    Foreground="{StaticResource darkforeground}">
@@ -331,6 +333,6 @@
                 </StackPanel>
             </Grid>
         </Popup>
-        
+        </Grid>
     </Grid>
 </Page>

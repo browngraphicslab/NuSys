@@ -102,7 +102,7 @@ namespace NuSysApp
             Canvas.SetTop(xMinimapCanvas, sizeChangedEventArgs.NewSize.Height- xMinimapCanvas.Height);
         }
 
-        public void LoadInitialCollection(FreeFormViewerViewModel vm)
+        public async Task LoadInitialCollection(FreeFormViewerViewModel vm)
         {
 
             if (_vm != null)
@@ -116,7 +116,7 @@ namespace NuSysApp
             _vm = vm;
             DataContext = _vm;
 
-            TryInitialize();
+            await TryInitialize();
            
         }
 
@@ -125,7 +125,7 @@ namespace NuSysApp
             _minimap?.Invalidate();
         }
 
-        private async void TryInitialize()
+        private async Task TryInitialize()
         {
             if (!(_renderCanvasInitialized && _minimapInitialized))
                 return;
@@ -143,22 +143,6 @@ namespace NuSysApp
 
             SwitchCollection(InitialCollection);
 
-            /*
-            if (_vm.Controller.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
-            {
-                if (_vm.Controller.LibraryElementModel.Creator != SessionController.Instance.LocalUserID)
-                {
-                    SwitchMode(Options.PanZoomOnly);
-                }
-
-            }
-            else
-            {
-                SwitchMode(Options.SelectNode);
-            }
-
-             */
-
             _minimap?.Dispose();
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
@@ -166,76 +150,85 @@ namespace NuSysApp
 
         private void SwitchCollection(CollectionRenderItem collection)
         {
-            if (collection != CurrentCollection && collection != null)
+
+            if (CurrentCollection != null)
             {
-                if (CurrentCollection != null)
-                {
-                    _collectionInteractionManager.ItemSelected -= CollectionInteractionManagerOnItemTapped;
-                    _collectionInteractionManager.DoubleTapped -= OnItemDoubleTapped;
-                    _collectionInteractionManager.SelectionsCleared -= CollectionInteractionManagerOnSelectionsCleared;
-                    _collectionInteractionManager.Panned -= CollectionInteractionManagerOnPanned;
-                    _collectionInteractionManager.PanZoomed -= CollectionInteractionManagerOnPanZoomed;
-                    _collectionInteractionManager.SelectionPanZoomed -= CollectionInteractionManagerOnSelectionPanZoomed;
-                    _collectionInteractionManager.ItemMoved -= CollectionInteractionManagerOnItemMoved;
-                    _collectionInteractionManager.DuplicateCreated -= CollectionInteractionManagerOnDuplicateCreated;
-                    _collectionInteractionManager.CollectionSwitched -= CollectionInteractionManagerOnCollectionSwitched;
-                    _collectionInteractionManager.InkStarted -= CollectionInteractionManagerOnInkStarted;
-                    _collectionInteractionManager.InkDrawing -= CollectionInteractionManagerOnInkDrawing;
-                    _collectionInteractionManager.InkStopped -= CollectionInteractionManagerOnInkStopped;
-                    _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
-                    _collectionInteractionManager.SelectionInkPressed -=
-                        CollectionInteractionManagerOnSelectionInkPressed;
-                    _collectionInteractionManager.ResizerStarted -= CollectionInteractionManagerOnResizerStarted;
-                    _collectionInteractionManager.ResizerStopped -= CollectionInteractionManagerOnResizerStopped;
-                    _collectionInteractionManager.LinkCreated -= CollectionInteractionManagerOnLinkCreated;
-                    _collectionInteractionManager.TrailCreated -= CollectionInteractionManagerOnTrailCreated;
-                    _collectionInteractionManager.ElementAddedToCollection -=
-                        CollectionInteractionManagerOnElementAddedToCollection;
-                    _collectionInteractionManager.MultimediaElementActivated -=
-                        CollectionInteractionManagerOnMultimediaElementActivated;
-                    _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
-                    _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
-                    multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
-                    _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
-
-                    _collectionInteractionManager.Dispose();
-                }
-
-                CurrentCollection = collection;
-                _collectionInteractionManager = new CollectionInteractionManager(_canvasInteractionManager, collection);
-                _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
-                _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
-                _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
-                if (!collection.ViewModel.IsFinite || collection == InitialCollection)
-                {
-                    _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
-                    _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
-                }
-
-                _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
-                _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
-                _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
-                _collectionInteractionManager.CollectionSwitched += CollectionInteractionManagerOnCollectionSwitched;
-                _collectionInteractionManager.InkStarted += CollectionInteractionManagerOnInkStarted;
-                _collectionInteractionManager.InkDrawing += CollectionInteractionManagerOnInkDrawing;
-                _collectionInteractionManager.InkStopped += CollectionInteractionManagerOnInkStopped;
-                _collectionInteractionManager.ResizerDragged += CollectionInteractionManagerOnResizerDragged;
-                _collectionInteractionManager.SelectionInkPressed += CollectionInteractionManagerOnSelectionInkPressed;
-                _collectionInteractionManager.ResizerStarted += CollectionInteractionManagerOnResizerStarted;
-                _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
-                _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
-                _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
-                _collectionInteractionManager.ElementAddedToCollection +=
+                _collectionInteractionManager.ItemSelected -= CollectionInteractionManagerOnItemTapped;
+                _collectionInteractionManager.LinkSelected -= CollectionInteractionManagerOnLinkSelected;
+                _collectionInteractionManager.TrailSelected -= CollectionInteractionManagerOnTrailSelected;
+                _collectionInteractionManager.DoubleTapped -= OnItemDoubleTapped;
+                _collectionInteractionManager.SelectionsCleared -= CollectionInteractionManagerOnSelectionsCleared;
+                _collectionInteractionManager.Panned -= CollectionInteractionManagerOnPanned;
+                _collectionInteractionManager.PanZoomed -= CollectionInteractionManagerOnPanZoomed;
+                _collectionInteractionManager.SelectionPanZoomed -= CollectionInteractionManagerOnSelectionPanZoomed;
+                _collectionInteractionManager.ItemMoved -= CollectionInteractionManagerOnItemMoved;
+                _collectionInteractionManager.DuplicateCreated -= CollectionInteractionManagerOnDuplicateCreated;
+                _collectionInteractionManager.CollectionSwitched -= CollectionInteractionManagerOnCollectionSwitched;
+                _collectionInteractionManager.InkStarted -= CollectionInteractionManagerOnInkStarted;
+                _collectionInteractionManager.InkDrawing -= CollectionInteractionManagerOnInkDrawing;
+                _collectionInteractionManager.InkStopped -= CollectionInteractionManagerOnInkStopped;
+                _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
+                _collectionInteractionManager.SelectionInkPressed -=
+                    CollectionInteractionManagerOnSelectionInkPressed;
+                _collectionInteractionManager.ResizerStarted -= CollectionInteractionManagerOnResizerStarted;
+                _collectionInteractionManager.ResizerStopped -= CollectionInteractionManagerOnResizerStopped;
+                _collectionInteractionManager.LinkCreated -= CollectionInteractionManagerOnLinkCreated;
+                _collectionInteractionManager.TrailCreated -= CollectionInteractionManagerOnTrailCreated;
+                _collectionInteractionManager.ElementAddedToCollection -=
                     CollectionInteractionManagerOnElementAddedToCollection;
-                _collectionInteractionManager.MultimediaElementActivated +=
+                _collectionInteractionManager.MultimediaElementActivated -=
                     CollectionInteractionManagerOnMultimediaElementActivated;
-                _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
-                _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
-                multiMenu.CreateCollection += MultiMenuOnCreateCollection;
-                _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
+                _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
+                _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
+                multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
+                _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
 
-                _minimap?.SwitchCollection(collection);
+                _collectionInteractionManager.Dispose();
             }
+
+            CurrentCollection = collection;
+            _collectionInteractionManager = new CollectionInteractionManager(_canvasInteractionManager, collection);
+            _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
+            _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
+            _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
+            if (!collection.ViewModel.IsFinite || collection == InitialCollection)
+            {
+                _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
+                _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
+            }
+
+            _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
+            _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
+            _collectionInteractionManager.LinkSelected += CollectionInteractionManagerOnLinkSelected;
+            _collectionInteractionManager.TrailSelected += CollectionInteractionManagerOnTrailSelected;
+            _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
+            _collectionInteractionManager.CollectionSwitched += CollectionInteractionManagerOnCollectionSwitched;
+            _collectionInteractionManager.InkStarted += CollectionInteractionManagerOnInkStarted;
+            _collectionInteractionManager.InkDrawing += CollectionInteractionManagerOnInkDrawing;
+            _collectionInteractionManager.InkStopped += CollectionInteractionManagerOnInkStopped;
+            _collectionInteractionManager.ResizerDragged += CollectionInteractionManagerOnResizerDragged;
+            _collectionInteractionManager.SelectionInkPressed += CollectionInteractionManagerOnSelectionInkPressed;
+            _collectionInteractionManager.ResizerStarted += CollectionInteractionManagerOnResizerStarted;
+            _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
+            _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
+            _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
+            _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
+            _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
+            _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
+            _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
+            multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+            _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
+
+            _minimap?.SwitchCollection(collection);
+            
+        }
+
+        private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element)
+        {
+        }
+
+        private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element)
+        {
         }
 
         private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,
@@ -567,8 +560,6 @@ namespace NuSysApp
             if (item == RenderEngine.ElementSelectionRenderItem.BtnEnterCollection)
             {
                 var id = Selections[0].ViewModel.LibraryElementId;
-                InitialCollection.Dispose();
-
                 await SessionController.Instance.EnterCollection(id);
             }
 

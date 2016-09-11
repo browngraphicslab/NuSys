@@ -74,6 +74,12 @@ namespace NuSysApp
         // sets the view equal to the size of the window
         private void ResizeView(bool width, bool height)
         {
+            if (SessionController.Instance.SessionView.ActualWidth <= 0 ||
+                SessionController.Instance.SessionView.ActualHeight <= 0)
+            {
+                return;
+            }
+
             // resize width
             if (width)
             {

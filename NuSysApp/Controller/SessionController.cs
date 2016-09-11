@@ -386,6 +386,12 @@ namespace NuSysApp
         public async Task EnterCollection(string collectionLibraryId)
         {
             EnterNewCollectionStarting?.Invoke(this,collectionLibraryId);
+            
+            SessionView.FreeFormViewer?.RenderEngine?.Stop();
+            SessionView.FreeFormViewer?.InitialCollection?.Dispose();
+            _activeFreeFormViewer?.Dispose();
+            ClearControllersForCollectionExit();
+
             //creates a new request to get the new workspace
             var request = new GetEntireWorkspaceRequest(collectionLibraryId);
 
@@ -396,9 +402,7 @@ namespace NuSysApp
             var elementModels = request.GetReturnedElementModels();
 
             var presentationLinks = request.GetReturnedPresentationLinkModels();
-
-            ClearControllersForCollectionExit();
-
+            
             //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
