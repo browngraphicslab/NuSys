@@ -26,6 +26,8 @@ namespace NusysIntermediate
             return CreateNewContentRequestDictionary != null && CreateNewContentRequestDictionary.Count() > 0 && NewElementRequestDictionaries != null;
         }
 
+        //no comments on these because this is hacky.  Need to port NewElement and CreateNewContent requests to this args format before we can use this correctly
+
         public Dictionary<string,object> CreateNewContentRequestDictionary { get; set; }
 
         public List<Dictionary<string,object>> NewElementRequestDictionaries { get; set; }

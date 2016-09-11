@@ -162,7 +162,7 @@
                         Foreground="White" Click="NewButton_OnClick">NEW</Button>
                 <AutoSuggestBox x:Name="SearchBox"  Style="{StaticResource NuSysSearch}" Grid.Column="1" Margin="0,0,20,0" VerticalAlignment="Bottom" Height="40" HorizontalAlignment="Stretch" QueryIcon="Find" TextChanged="SearchBox_Suggest" QuerySubmitted="Searched"/>
                 <StackPanel Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
-                    <Button x:Name="RecentlyUsedButton" FontSize="16"  Style="{StaticResource WhiteButton}" Background="White" Height="40" Width="150"  Padding="5"  Margin="0,0,5,0" Foreground="{StaticResource color2}">
+                    <Button x:Name="RecentlyUsedButton" FontSize="16"  Click="RecentlyUsedButton_Onclick" Style="{StaticResource WhiteButton}" Background="White" Height="40" Width="150"  Padding="5"  Margin="0,0,5,0" Foreground="{StaticResource color2}">
                         RECENTLY USED</Button>
                     <Button x:Name="MyWorkspacesButton" FontSize="16" Click="MyWorkspacesButton_OnClick"  Style="{StaticResource WhiteButton}" Padding="5" Height="40" Margin="0,0,5,0" Foreground="{StaticResource color2}">
                         MY WORKSPACES</Button>

@@ -17,6 +17,7 @@ namespace NuSysApp
         private List<ContentDataModel> _returnedContentDataModels;
         private List<ElementModel> _returnedElementModels;
         private List<PresentationLinkModel> _returnedPresentationLinkModels;
+        private List<InkModel> _returnedInkModels;
 
         /// <summary>
         /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch, and the levels of recursion you want.
@@ -42,7 +43,7 @@ namespace NuSysApp
         /// <returns></returns>
         public List<ContentDataModel> GetReturnedContentDataModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
             {
                 GetReturnedArgs();
             }
@@ -55,7 +56,7 @@ namespace NuSysApp
         /// <returns></returns>
         public List<ElementModel> GetReturnedElementModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
             {
                 GetReturnedArgs();
             }
@@ -68,11 +69,24 @@ namespace NuSysApp
         /// <returns></returns>
         public List<PresentationLinkModel> GetReturnedPresentationLinkModels()
         {
-            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null)
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
             {
                 GetReturnedArgs();
             }
             return _returnedPresentationLinkModels;
+        }
+
+        /// <summary>
+        /// method to get the returned ink models after a successful request.
+        /// </summary>
+        /// <returns></returns>
+        public List<InkModel> GetReturnedInkModels()
+        {
+            if (_returnedContentDataModels == null || _returnedElementModels == null || _returnedPresentationLinkModels == null || _returnedInkModels == null)
+            {
+                GetReturnedArgs();
+            }
+            return _returnedInkModels;
         }
 
 
@@ -82,30 +96,40 @@ namespace NuSysApp
         /// </summary>
         private void GetReturnedArgs()
         {
+            CheckWasSuccessfull();
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY));
             try
             {
                 var args = _returnMessage.Get<GetEntireWorkspaceRequestReturnArgs>(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY);
 
+                Debug.Assert(args != null);
+
                 //create the aliases from the returned args strings
                 _returnedElementModels = new List<ElementModel>();
-                foreach (var elementString in args.AliasStrings)
+                foreach (var elementString in args?.AliasStrings ?? new List<string>())
                 {
                     _returnedElementModels.Add(ElementModelFactory.DeserializeFromString(elementString));
                 }
 
                 //create the content data models from the returned args strings
                 _returnedContentDataModels = new List<ContentDataModel>();
-                foreach (var contentString in args.ContentMessages)
+                foreach (var contentString in args?.ContentMessages ?? new List<string>())
                 {
                     _returnedContentDataModels.Add(ContentDataModelFactory.DeserializeFromString(contentString));
                 }
 
                 //create the presentation links
                 _returnedPresentationLinkModels = new List<PresentationLinkModel>();
-                foreach (var presentationLink in args.PresentationLinks)
+                foreach (var presentationLink in args?.PresentationLinks ?? new List<string>())
                 {
                     _returnedPresentationLinkModels.Add(JsonConvert.DeserializeObject<PresentationLinkModel>(presentationLink));
+                }
+
+                //create the ink models
+                _returnedInkModels = new List<InkModel>();
+                foreach (var ink in args?.InkStrokes ?? new List<string>())
+                {
+                    _returnedInkModels.Add(JsonConvert.DeserializeObject<InkModel>(ink));
                 }
 
             }
@@ -115,6 +139,7 @@ namespace NuSysApp
                 _returnedElementModels = new List<ElementModel>();
                 _returnedContentDataModels = new List<ContentDataModel>();
                 _returnedPresentationLinkModels = new List<PresentationLinkModel>();
+                _returnedInkModels = new List<InkModel>();
             }
         }
 

@@ -16,10 +16,18 @@ namespace NuSysApp
         protected DebouncingDictionary _debouncingDictionary;
 
         /// <summary>
-        /// bool to indicate when we are blocking server calls from being produced by the controller.
-        /// Should only be used when updating from the server. 
+        /// count to represent how many unpacks are currently running.
+        /// This is being used to replace the boolean. If this number is greater than 0, then an unpack is currently happening
         /// </summary>
-        private bool _blockServerInteraction;
+        private int _blockServerInteractionCount;
+
+        private bool _blockServerInteraction
+        {
+            get
+            {
+                return _blockServerInteractionCount != 0;
+            }
+        }
 
         public delegate void AlphaChangedEventHandler(object source, double alpha);
 
@@ -68,14 +76,10 @@ namespace NuSysApp
         {
             _model = model;
 
-            //   Debug.WriteLine(Model.Title);
+            Debug.Assert(model != null, "wtf");
 
-            //   LibraryElementModel.SetTitle(Model.Title);
+            _debouncingDictionary = new ElementDebouncingDictionary(model.Id);
 
-            if (_model != null)
-            {
-                _debouncingDictionary = new ElementDebouncingDictionary(model.Id);
-            }
             if (LibraryElementController != null)
             {
                 LibraryElementController.Deleted += Delete;
@@ -317,7 +321,7 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
-            _blockServerInteraction = true;
+            _blockServerInteractionCount++;
             if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_X_KEY) || props.ContainsKey(NusysConstants.ALIAS_LOCATION_Y_KEY))
             {
                 //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y
@@ -331,7 +335,7 @@ namespace NuSysApp
                 var height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, this.Model.Height);
                 SetSize(width,height);
             }
-            _blockServerInteraction = false;
+            _blockServerInteractionCount--;
         }
 
         public void UpdateCircleLinks()

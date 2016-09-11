@@ -459,7 +459,7 @@ namespace NusysIntermediate
 
         #endregion NewLibraryElementRequest
 
-        #region CreateNewMetadataRequest
+            #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
@@ -692,7 +692,7 @@ namespace NusysIntermediate
             /// <summary>
             /// Key in message for sending the json serialized list of points that compose the stroke. Used for the create ink stroke request
             /// </summary>
-            public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "content_id";
+            public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "ink_points";
 
             /// <summary>
             /// Key in message used by the server to send the InkModel back to clients. 
@@ -705,32 +705,41 @@ namespace NusysIntermediate
             /// Key in message for ink stroke unique id for the delete ink stroke request
             /// </summary>
             public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
-        
-            #endregion DeleteInkStrokeRequest
 
-        #region MoveElementToCollectionRequest
-        /// <summary>
-        /// Key in message for sending the id of the element to move
-        /// </summary>
-        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_ELEMENT_ID_KEY = "element_id";
+        #endregion DeleteInkStrokeRequest
 
-        /// <summary>
-        /// Key in message for sending the id the new parent collection
-        /// </summary>
-        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_NEW_PARENT_COLLECTION_ID_KEY = "new_parent_collection_id";
+            #region GetLastUsedCollectionsRequest
 
-        /// <summary>
-        /// Key in message for sending the new x coordinate of the element in the new parent
-        /// collection
-        /// </summary>
-        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_X_KEY = "x";
+            /// <summary>
+            /// the key used during the get last used collections request that will hold the json-serialized list of lastUsedCollectionModels.
+            /// </summary>
+            public static readonly string GET_LAST_USED_COLLECTIONS_REQUEST_RETURNED_MODELS_KEY = "returned_models";
 
-        /// <summary>
-        /// Key in message for sending the new y coordinate of the element in the new parent
-        /// collection
-        /// </summary>
-        public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY = "y";
-        #endregion MoveElementToCollectionRequest
+            #endregion GetLastUsedCollectionsRequest
+
+            #region MoveElementToCollectionRequest
+            /// <summary>
+            /// Key in message for sending the id of the element to move
+            /// </summary>
+            public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_ELEMENT_ID_KEY = "element_id";
+
+            /// <summary>
+            /// Key in message for sending the id the new parent collection
+            /// </summary>
+            public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_NEW_PARENT_COLLECTION_ID_KEY = "new_parent_collection_id";
+
+            /// <summary>
+            /// Key in message for sending the new x coordinate of the element in the new parent
+            /// collection
+            /// </summary>
+            public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_X_KEY = "x";
+
+            /// <summary>
+            /// Key in message for sending the new y coordinate of the element in the new parent
+            /// collection
+            /// </summary>
+            public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY = "y";
+            #endregion MoveElementToCollectionRequest
 
         #endregion RequestKeys
 
@@ -1225,7 +1234,38 @@ namespace NusysIntermediate
         };
         #endregion Ink
 
+        #region LastUsedCollections
 
+        /// <summary>
+        /// the string user id of the person who entered the collection.
+        /// max legnth 64 characters
+        /// </summary>
+        public static readonly string LAST_USED_COLLECTIONS_TABLE_USER_ID = "user_id";
+
+        /// <summary>
+        /// the string id of the library element id for the collection
+        /// max 32 characters, an id
+        /// </summary>
+        public static readonly string LAST_USED_COLLECTIONS_TABLE_COLLECTION_LIBRARY_ID = "collection_library_id";
+
+        /// <summary>
+        /// The date of the last time this collection was used.  
+        /// This will be of type date in the database
+        /// </summary>
+        public static readonly string LAST_USED_COLLECTIONS_TABLE_LAST_USED_DATE = "last_used_date";
+
+        /// <summary>
+        /// the list of keys that can be used as column names in the database.
+        /// Use this to make sure your key is correct when entering key-value-pairs into the last used collections table
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_LAST_USED_COLLECTIONS_TABLE_KEYS = new HashSet<string>()
+        {
+            LAST_USED_COLLECTIONS_TABLE_USER_ID,
+            LAST_USED_COLLECTIONS_TABLE_COLLECTION_LIBRARY_ID,
+            LAST_USED_COLLECTIONS_TABLE_COLLECTION_LIBRARY_ID
+        };
+
+        #endregion LastUsedCollections
 
 
         #endregion SQLColumnNames
@@ -1276,6 +1316,11 @@ namespace NusysIntermediate
         /// The string name of the ink stroke SQL table in our database
         /// </summary>
         public static readonly string INK_SQL_TABLE_NAME = "ink";
+
+        /// <summary>
+        /// the string name of the table used to store the last used collections for each user.
+        /// </summary>
+        public static readonly string LAST_USED_COLLECTIONS_SQL_TABLE_NAME = "last_used_collections";
 
         #endregion SQLTableNames
 
@@ -1333,13 +1378,13 @@ namespace NusysIntermediate
         /// This key is used to hold the page number of the ending page when represented in message form.
         /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
         /// </summary>
-        public static readonly string PDF_PAGE_START_KEY = "page_end_number";
+        public static readonly string PDF_PAGE_START_KEY = "page_start_number";
 
             /// <summary>
             /// This key is used to hold the page number of the starting page when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string PDF_PAGE_END_KEY = "page_start_number";
+            public static readonly string PDF_PAGE_END_KEY = "page_end_number";
 
             #endregion PdfRegion 
 
@@ -1568,6 +1613,9 @@ namespace NusysIntermediate
             CreateInkStrokeRequest,
             DeleteInkStrokeRequest,
             MoveElementToCollectionRequest,
+
+            AddNewLastUsedCollectionRequest,
+            GetLastUsedCollectionsRequest,
 
             /// <summary>
             /// this request type is used to create a new collection content and default library element with a pre-populated collection.

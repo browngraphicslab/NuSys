@@ -223,8 +223,10 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes)); 
-                    
+                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
+
+                    pdfPageCount = MuPdfDoc.PageCount;
+
                     // convert each page of the pdf into an image file, and store it in the pdfPages list
                     for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
                     {
@@ -350,7 +352,7 @@ namespace NuSysApp
                         case NusysConstants.ElementType.PDF:
                             var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
                             pdfArgs.PdfPageStart = 0;
-                            pdfArgs.PdfPageEnd = pdfTextByPage.Count;
+                            pdfArgs.PdfPageEnd = pdfPageCount;
                             pdfArgs.AspectRatio = aspectRatio;
                             libraryElementArgs = pdfArgs;
                             break;

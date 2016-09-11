@@ -45,8 +45,7 @@ namespace NusysServer
 
             //ResetTables(true);
             //SetUpTables();
-
-
+            
             TestFunc();
         }
 
@@ -132,6 +131,11 @@ namespace NusysServer
                 NusysConstants.INK_TABLE_CONTENT_ID + " varchar(128), " +
                 NusysConstants.INK_TABLE_POINTS + " varchar(MAX));");
 
+            var lastUsedCollections = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LastUsedCollections) + " (" +
+                NusysConstants.LAST_USED_COLLECTIONS_TABLE_LAST_USED_DATE + " datetime, " +
+                NusysConstants.LAST_USED_COLLECTIONS_TABLE_USER_ID + " varchar(128), " +
+                NusysConstants.LAST_USED_COLLECTIONS_TABLE_COLLECTION_LIBRARY_ID + " varchar(128));");
+
             usersTable.ExecuteNonQuery();
             analysisModelsTable.ExecuteNonQuery();
             presentationLinksTable.ExecuteNonQuery();
@@ -141,6 +145,7 @@ namespace NusysServer
             propertiesTable.ExecuteNonQuery();
             contentTable.ExecuteNonQuery();
             inkTable.ExecuteNonQuery();
+            lastUsedCollections.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -162,6 +167,7 @@ namespace NusysServer
                 var dropAnalysisModels = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.AnalysisModels) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
                 var dropUsers = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Users) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
                 var dropInk = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.Ink) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Ink));
+                var dropLastUsedCollections = MakeCommand("IF OBJECT_ID('dbo." + Constants.GetTableName(Constants.SQLTableType.LastUsedCollections) + "', 'U') IS NOT NULL DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.LastUsedCollections));
 
 
                 dropPresentationLinks.ExecuteNonQuery();
@@ -173,6 +179,7 @@ namespace NusysServer
                 dropAnalysisModels.ExecuteNonQuery();
                 dropUsers.ExecuteNonQuery();
                 dropInk.ExecuteNonQuery();
+                dropLastUsedCollections.ExecuteNonQuery();
             }
             else
             {
@@ -185,6 +192,7 @@ namespace NusysServer
                 var clearAnalysisModels = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
                 var clearUsers = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
                 var clearInk = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Ink));
+                var clearLastUsedCollections = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LastUsedCollections));
 
                 clearPresentationLinks.ExecuteNonQuery();
                 clearAliases.ExecuteNonQuery();
@@ -195,6 +203,7 @@ namespace NusysServer
                 clearAnalysisModels.ExecuteNonQuery();
                 clearUsers.ExecuteNonQuery();
                 clearInk.ExecuteNonQuery();
+                clearLastUsedCollections.ExecuteNonQuery();
             }
 
             if (File.Exists(Constants.FILE_FOLDER + "docsave.txt"))//delete a dictionary json saving Junsu' comparisons

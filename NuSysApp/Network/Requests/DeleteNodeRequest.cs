@@ -43,8 +43,10 @@ namespace NuSysApp
             Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID));
 
             var id = _message.GetString(NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID);
-
-            RemoveElementWithId(id);
+            await UITask.Run(async delegate
+            {
+                RemoveElementWithId(id);
+            });
         }
 
 

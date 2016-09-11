@@ -402,7 +402,16 @@ namespace NuSysApp
             //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
-            //TODO put back in for collction entering
+            Task.Run(async delegate ///tell the server about the latest collection we're entering
+            {
+                await NuSysNetworkSession.ExecuteRequestAsync(
+                    new AddNewLastUsedCollectionRequest(new AddNewLastUsedCollectionServerRequestArgs()
+                    {
+                        CollectionLibraryId = collectionLibraryId,
+                        UserId = WaitingRoomView.UserID
+                    }));
+            });
+            
             await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels, presentationLinks);
         }
 

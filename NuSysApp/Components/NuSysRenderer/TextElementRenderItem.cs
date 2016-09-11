@@ -41,6 +41,7 @@ namespace NuSysApp
             _vm.Controller.SizeChanged += Controller_SizeChanged;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
             _strokeStyle = new CanvasStrokeStyle {TransformBehavior = CanvasStrokeTransformBehavior.Fixed};
+            _textboxtext = vm.Text;
         }
 
         public override void Dispose()

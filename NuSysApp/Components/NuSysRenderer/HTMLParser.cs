@@ -21,7 +21,6 @@ namespace NuSysApp
     {
         private ICanvasResourceCreator _resourceCreator;
         private CanvasTextFormat _textFormat;
-        private List<ParseItem> _parsedItems = new List<ParseItem>();
 
         public HTMLParser(ICanvasResourceCreator resourceCreator)
         {
@@ -35,19 +34,19 @@ namespace NuSysApp
         public CanvasTextLayout GetParsedText(string html, double canvasHeight, double canvasWidth)
         {
             _textFormat.FontSize = 13;
-            _parsedItems = new List<ParseItem>();
+            var parsedItems = new List<ParseItem>();
             var htmlDocument = GetHTMLDocumentFromString(html);
-            RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0);
+            RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0, parsedItems);
             var text = HTMLHelper.StripTagsRegex(AddWhiteSpace(html));
             var textLayout = new CanvasTextLayout(_resourceCreator, text, _textFormat, (float) canvasWidth, (float) canvasHeight);
-            ApplyFormatting(textLayout);
+            ApplyFormatting(textLayout, parsedItems);
             return textLayout;
 
         }
 
-        private void ApplyFormatting(CanvasTextLayout textLayout)
+        private void ApplyFormatting(CanvasTextLayout textLayout, List<ParseItem> parsedItems)
         {
-            foreach (var parsedItem in _parsedItems.ToArray())
+            foreach (var parsedItem in parsedItems.ToArray())
             {
 
                 if (parsedItem.Tag == "b")
@@ -121,14 +120,14 @@ namespace NuSysApp
             return document;
         }
         
-        private void RecursiveParsing(IEnumerable<HtmlNode> children, int currentIndex)
+        private void RecursiveParsing(IEnumerable<HtmlNode> children, int currentIndex, List<ParseItem> parsedItems)
         {
             var characterIndex = currentIndex;
             foreach (HtmlNode node in children)
             {
                 if (node.HasChildNodes)
                 {
-                    RecursiveParsing(node.ChildNodes, currentIndex);
+                    RecursiveParsing(node.ChildNodes, currentIndex, parsedItems);
                 }
 
                 var innerString = HTMLHelper.StripTagsRegex(node.InnerHtml);
@@ -138,7 +137,7 @@ namespace NuSysApp
                 item.StartIndex = characterIndex;
                 item.Tag = node.Name;
                 item.Size = node.GetAttributeValue("size", 3);
-                _parsedItems.Add(item);
+                parsedItems.Add(item);
                 currentIndex += item.Length;
                 characterIndex += item.Length;
             }

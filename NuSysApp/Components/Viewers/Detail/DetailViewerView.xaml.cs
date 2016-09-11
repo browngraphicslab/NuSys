@@ -370,10 +370,10 @@ namespace NuSysApp
         {
             Disposed?.Invoke(this, EventArgs.Empty);
             var vm = DataContext as DetailViewerViewModel;
-            vm.Tabs.Clear();
+            vm?.Tabs?.Clear();
             SessionController.Instance.SessionView.SizeChanged -= SessionView_SizeChanged;
 
-            vm.Dispose();
+            vm?.Dispose();
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)

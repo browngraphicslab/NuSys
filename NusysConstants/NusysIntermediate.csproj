@@ -38,8 +38,12 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModelFactories\InkModelFactory.cs" />
     <Compile Include="Models\ImageLibraryElementModel.cs" />
+    <Compile Include="Models\LastUsedCollectionModel.cs" />
     <Compile Include="Models\VideoLibraryElementModel.cs" />
+    <Compile Include="RequestArgs\AddNewLastUsedCollectionServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\GetLastUsedCollectionsServerRequestArgs.cs" />
     <Compile Include="ServerArgsRequest.cs" />
     <Compile Include="BaseClient.cs" />
     <Compile Include="INotificationArgumentable.cs" />
