@@ -35,7 +35,7 @@ namespace NuSysApp
 
         private CanvasRenderEngine _renderEngine;
         private RenderItemInteractionManager _interactionManager;
-        private ImageDetailRenderItem _imageDetailRenderItem;
+        private PdfDetailRenderItem _imageDetailRenderItem;
 
         public bool ShowRegions;
 
@@ -60,6 +60,39 @@ namespace NuSysApp
             });
         }
 
+        public async void GotoPage(int page)
+        {
+            var vm = DataContext as PdfDetailHomeTabViewModel;
+            var content = vm.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
+            if (page < 0)
+            {
+                _imageDetailRenderItem.CurrentPage = 0;
+            }
+            else if (page > content.PageUrls.Count - 1)
+            {
+                _imageDetailRenderItem.CurrentPage = content.PageUrls.Count - 1;
+            }
+            else
+            {
+                _imageDetailRenderItem.CurrentPage = page;
+            }
+
+            vm.CurrentPageNumber = _imageDetailRenderItem.CurrentPage;
+
+            _imageDetailRenderItem.ImageUrl = content.PageUrls[_imageDetailRenderItem.CurrentPage];
+            await _imageDetailRenderItem.Load();
+        }
+
+        private async void OnPageLeftClick(object sender, RoutedEventArgs e)
+        {
+            GotoPage(_imageDetailRenderItem.CurrentPage -1);
+        }
+
+        private async void OnPageRightClick(object sender, RoutedEventArgs e)
+        {
+            GotoPage(_imageDetailRenderItem.CurrentPage + 1);
+        }
+
         private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
             if (_imageDetailRenderItem == null)
@@ -79,7 +112,7 @@ namespace NuSysApp
 
             _renderEngine = new CanvasRenderEngine();
             var root = new BaseRenderItem(null, xImgCanvas);
-            _imageDetailRenderItem = new ImageDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
+            _imageDetailRenderItem = new PdfDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
             _imageDetailRenderItem.IsRegionsVisible = ShowRegions;
             _imageDetailRenderItem.CanvasSize = new Size(totalStackPanel.ActualWidth, totalStackPanel.ActualHeight);
 

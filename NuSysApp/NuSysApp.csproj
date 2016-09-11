@@ -330,6 +330,7 @@
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\PdfDetailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionResizerRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />

@@ -25,7 +25,7 @@ namespace NuSysApp
         private CanvasBitmap _bmp;
         public int CurrentPage;
         private bool _isUpdating;
-        private ImageDetailRenderItem _image;
+        private PdfDetailRenderItem _image;
         private PdfLibraryElementController _pdfLibraryElementController;
 
         public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
@@ -33,7 +33,7 @@ namespace NuSysApp
             _vm = vm;
             _vm.Controller.SizeChanged += ControllerOnSizeChanged;
             _pdfLibraryElementController = _vm.Controller.LibraryElementController as PdfLibraryElementController;
-            _image = new ImageDetailRenderItem(_pdfLibraryElementController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
+            _image = new PdfDetailRenderItem(_pdfLibraryElementController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
             _image.IsRegionsVisible = true;
             _image.IsRegionsModifiable = false;
 
@@ -66,15 +66,10 @@ namespace NuSysApp
                 CurrentPage = page;
             }
 
+            _image.CurrentPage = CurrentPage;
             _image.ImageUrl = content.PageUrls[CurrentPage];
-            await _image.Load();
-            
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(content.PageUrls[CurrentPage]), ResourceCreator.Dpi);
-            _vm.ImageSize = _bmp.Size;
+            await _image.Load();           
 
-            var ratio = (double)_bmp.Size.Width / (double)_bmp.Size.Height;
-            if (Math.Abs(_vm.Width/_vm.Height) -1 > 0.001)
-                _vm.Controller.SetSize(_vm.Width, _vm.Height* ratio, false);
 
             _isUpdating = false;
         }

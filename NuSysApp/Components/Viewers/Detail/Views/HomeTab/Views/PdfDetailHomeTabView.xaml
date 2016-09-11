@@ -29,6 +29,16 @@
 
         <Grid Grid.Row="1" x:Name="totalStackPanel">
             <xaml:CanvasControl x:Name="xImgCanvas" Width="500" Height="500"></xaml:CanvasControl>
+            <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
+                <Button.Content>
+                    <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
+                </Button.Content>
+            </Button>
+            <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Click="OnPageRightClick">
+                <Button.Content>
+                    <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
+                </Button.Content>
+            </Button>
         </Grid>
 
 

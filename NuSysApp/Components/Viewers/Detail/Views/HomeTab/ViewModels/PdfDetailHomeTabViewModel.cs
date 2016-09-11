@@ -47,7 +47,7 @@ namespace NuSysApp
 
         private int _pageNumber;
 
-        public int CurrentPageNumber => _pageNumber;
+        public int CurrentPageNumber { get; set; }
 
         public static int InitialPageNumber;
         
@@ -98,8 +98,8 @@ namespace NuSysApp
             Debug.Assert(pdfLibraryElement != null);
 
             var args = new CreateNewPdfLibraryElementModelRequestArgs();
-            args.PdfPageEnd = _pageNumber;
-            args.PdfPageStart = _pageNumber;
+            args.PdfPageEnd = CurrentPageNumber;
+            args.PdfPageStart = CurrentPageNumber;
             args.NormalizedX = .25 * pdfLibraryElement.NormalizedX;
             args.NormalizedY = .25 * pdfLibraryElement.NormalizedY;
             args.NormalizedHeight = .5 * pdfLibraryElement.NormalizedHeight;
