@@ -35,6 +35,7 @@ namespace NuSysApp
         private Options _prevOptions = Options.SelectNode;
 
         private IModable _modeInstance = null;
+        private bool _isInitialized;
         public IModable ModeInstance => _modeInstance;
 
 
@@ -75,52 +76,17 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             var bounds = Window.Current.Bounds;
-            var height = bounds.Height;
-            var width = bounds.Width;
  
-
-
-
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
 
             SessionController.Instance.SessionView = this;
 
-            SizeChanged +=
-                delegate (object sender, SizeChangedEventArgs args)
-                {
-                    Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
-                    if (_activeFreeFormViewer != null)
-                    {
-                        _activeFreeFormViewer.Width = args.NewSize.Width;
-                        _activeFreeFormViewer.Height = args.NewSize.Height;
-                    }
-
-                };
-
-            Loaded += OnLoaded;
-
-            MainCanvas.SizeChanged += Resize;
+       
 
         }
 
-        /// <summary>
-        /// called when frame.navigate goes to sessionview page
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (e.Parameter != null)
-            {
-                var accessType = (NusysConstants.AccessType)e.Parameter;
 
-                if (accessType == NusysConstants.AccessType.ReadOnly)
-                {
-                    MakeWorkspaceReadonly();
-                    IsReadonly = true;
-                }
-            }
-        }
 
         /// <summary>
         /// Makes a workspace readonly by showing the readonly menu and modifying the modes
@@ -153,43 +119,50 @@ namespace NuSysApp
             this.IsReadonly = false;
         }
 
-        private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        public async Task Init()
         {
-            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
-            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
+            if (!_isInitialized)
+            {
 
+                SizeChanged += delegate(object sender, SizeChangedEventArgs args)
+                {
+                    Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
+                    if (_activeFreeFormViewer != null)
+                    {
+                        _activeFreeFormViewer.Width = args.NewSize.Width;
+                        _activeFreeFormViewer.Height = args.NewSize.Height;
+                    }
+                };
+
+                MainCanvas.SizeChanged += Resize;
+
+                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
+                SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
+
+
+
+                xDetailViewer.DataContext = new DetailViewerViewModel();
+                xSearchViewer.DataContext = new SearchViewModel();
+                xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
+                xFileAddedAclesPopup.DataContext = new FileAddedAclsPopupViewModel();
+                xChatBox.DataContext = new ChatBoxViewModel();
+
+                var xRegionEditorView = (RegionEditorTabView) xDetailViewer.FindName("xRegionEditorView");
+                xRegionEditorView.DataContext = xDetailViewer.DataContext;
+
+
+                await SessionController.Instance.InitializeRecog();
+
+                foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
+                {
+                    NewNetworkUser(user);
+                }
+            }
+            _isInitialized = true;
             var collectionId = WaitingRoomView.InitialWorkspaceId;
-
-            var request = new GetEntireWorkspaceRequest(collectionId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-            Debug.Assert(request.WasSuccessful() == true);
-
             await SessionController.Instance.EnterCollection(collectionId);
 
-            xDetailViewer.DataContext = new DetailViewerViewModel();
-            xSearchViewer.DataContext = new SearchViewModel();
-            xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
-            xFileAddedAclesPopup.DataContext = new FileAddedAclsPopupViewModel();
-            xChatBox.DataContext = new ChatBoxViewModel();
-
-            var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
-            xRegionEditorView.DataContext = xDetailViewer.DataContext;
-
-
-            await SessionController.Instance.InitializeRecog();
-
-            foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
-            {
-                NewNetworkUser(user);
-            }
-
-            //// Will make the collection readonly if the active freeform viewer is readonly
-            //IsReadonly = true;
-            //if (IsReadonly)
-            //{
-            //    this.MakeWorkspaceReadonly();
-            //}
+       
         }
 
 
@@ -604,7 +577,21 @@ namespace NuSysApp
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
             SessionController.Instance.CollectionIdsInUse.Add(collectionId);
 
-            await OpenCollection(elementCollectionInstanceController);
+            if (_activeFreeFormViewer == null)
+            {
+                _activeFreeFormViewer = new FreeFormViewer();
+                _activeFreeFormViewer.Width = ActualWidth;
+                _activeFreeFormViewer.Height = ActualHeight;
+                mainCanvas.Children.Insert(0, _activeFreeFormViewer);
+            }
+            //      var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
+            var freeFormViewerViewModel = new FreeFormViewerViewModel(elementCollectionInstanceController);
+            SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
+            await _activeFreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
+
+            SessionController.Instance.SessionView = this;
+
+            ChatPopup.Visibility = Visibility.Collapsed;
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
@@ -677,24 +664,7 @@ namespace NuSysApp
 
         public async Task OpenCollection(ElementCollectionController collectionController)
         {
-            await DisposeCollectionView(_activeFreeFormViewer);
-
-            if (_activeFreeFormViewer == null)
-            {
-                _activeFreeFormViewer = new FreeFormViewer();
-                _activeFreeFormViewer.Width = ActualWidth;
-                _activeFreeFormViewer.Height = ActualHeight;
-                mainCanvas.Children.Insert(0, _activeFreeFormViewer);
-            }
-            //      var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
-            var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
-            SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
-            _activeFreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
-
-
-            SessionController.Instance.SessionView = this;
-
-            ChatPopup.Visibility = Visibility.Collapsed;
+      
         }
 
         private void Resize(object sender, SizeChangedEventArgs e)
@@ -799,12 +769,6 @@ namespace NuSysApp
             get { return xDetailViewer; }
         }
 
-
-        private async Task DisposeCollectionView(FreeFormViewer oldFreeFormViewer)
-        {
-            oldFreeFormViewer?.Dispose();
-        }
-
         private void ChatButton_OnClick(object sender, RoutedEventArgs e)
         {
             //initChatNotifs = ChatPopup.getTexts().Count;
@@ -888,7 +852,9 @@ namespace NuSysApp
         private void GoBackToWaitingRoom_OnClick(object sender, RoutedEventArgs e)
         {
             SessionController.Instance.ClearControllersForCollectionExit();
-            Frame.Navigate(typeof(WaitingRoomView), this);
+
+            WaitingRoomView.Instance.ShowWaitingRoom();
+            
         }
 
         /// <summary>

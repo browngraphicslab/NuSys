@@ -34,8 +34,10 @@ namespace NuSysApp
         public override void Dispose()
         {
             base.Dispose();
-            _vm.Controller.InElement.AnchorChanged -= OnAnchorChanged;
-            _vm.Controller.OutElement.AnchorChanged -= OnAnchorChanged;
+            if (_vm.Controller?.InElement != null)
+                _vm.Controller.InElement.AnchorChanged -= OnAnchorChanged;
+            if (_vm.Controller?.OutElement != null)
+                _vm.Controller.OutElement.AnchorChanged -= OnAnchorChanged;
             _vm = null;
             _path.Dispose();
             _path = null;
