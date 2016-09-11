@@ -146,6 +146,12 @@ namespace NuSysApp
                 imageRegionView.ShowRegions = true;
             }
 
+            var pdfRegionView = RegionView as PdfDetailHomeTabView;
+            if (pdfRegionView != null)
+            {
+                pdfRegionView.ShowRegions = true;
+            }
+
 
             _regionableRegionTabViewModel = RegionView.DataContext as DetailHomeTabViewModel;
             _regionableRegionTabViewModel.Editable = true;

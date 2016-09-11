@@ -88,7 +88,6 @@ namespace NuSysApp
 
        private void CanvasOnPointerExited(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
        {
-          // throw new NotImplementedException();
           if (pointerRoutedEventArgs.OriginalSource != _canvas)
                 OnPointerReleased(sender, pointerRoutedEventArgs);
        }

@@ -227,15 +227,8 @@ namespace NuSysApp
                 }
 
                 //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
-                if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
-                {
-                    xRegionEditorView.ShowListView(true, NusysConstants.ElementType.PDF);
 
-                }
-                else
-                {
-                    xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
-                }
+
 
                 // Update the list of links in the Link Editor
                 var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;

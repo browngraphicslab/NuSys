@@ -15,16 +15,17 @@ namespace NuSysApp
 {
     public class ImageDetailRenderItem : BaseRenderItem
     {
-        private ImageLibraryElementController _controller;
-        private CanvasBitmap _bmp;
-        private Rect _croppedImageTarget;
-        private Rect _rectToCropFromContent;
-        private Rect _normalizedCroppedRect;
-        private double _scaleOrgToDisplay;
-        private double _scaleDisplayToCrop;
-        private CanvasGeometry _mask;
-        private Size _canvasSize;
-        private bool _needsMaskRefresh;
+        protected ImageLibraryElementController _controller;
+        protected CanvasBitmap _bmp;
+        protected Rect _croppedImageTarget;
+        protected Rect _rectToCropFromContent;
+        protected Rect _normalizedCroppedRect;
+        protected double _scaleOrgToDisplay;
+        protected double _scaleDisplayToCrop;
+        protected CanvasGeometry _mask;
+        protected Size _canvasSize;
+        protected bool _needsMaskRefresh = true;
+        public string ImageUrl { get; set; }
 
         public bool IsRegionsVisible { get; set; }
         public bool IsRegionsModifiable { get; set; }
@@ -34,18 +35,67 @@ namespace NuSysApp
 
         public ImageDetailRenderItem(ImageLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            ImageUrl = controller.ContentDataController.ContentDataModel.Data;
+
             _controller = controller;
             _canvasSize = maxSize;
 
+            _controller.LocationChanged += ControllerOnLocationChanged;
+            _controller.SizeChanged += ControllerOnSizeChanged;
+
             controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
-            
+        }
+
+        public ImageDetailRenderItem(PdfLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        {
+            var content = controller.ContentDataController.ContentDataModel as PdfContentDataModel;
+            ImageUrl = content.PageUrls[0];
+
+            _controller = controller;
+            _canvasSize = maxSize;
+
+            _controller.LocationChanged += ControllerOnLocationChanged;
+            _controller.SizeChanged += ControllerOnSizeChanged;
+
+            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+        }
+
+        protected void ReRender()
+        {
+            var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
+            var nx = lib.NormalizedX * _bmp.Size.Width;
+            var ny = lib.NormalizedY * _bmp.Size.Height;
+            var nw = lib.NormalizedWidth * _bmp.Size.Width;
+            var nh = lib.NormalizedHeight * _bmp.Size.Height;
+
+            _normalizedCroppedRect = new Rect(lib.NormalizedX, lib.NormalizedY, lib.NormalizedWidth, lib.NormalizedHeight);
+            _rectToCropFromContent = new Rect(nx, ny, nw, nh);
+
+            _needsMaskRefresh = true;
+            RecomputeSize();
+            ComputeRegions();
+
+        }
+
+        protected void ControllerOnSizeChanged(object sender, double width, double height)
+        {
+            ReRender();
+        }
+
+        protected void ControllerOnLocationChanged(object sender, Point topLeft)
+        {
+            ReRender();
         }
 
         public override void Dispose()
         {
             _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            _controller.LocationChanged -= ControllerOnLocationChanged;
+            _controller.SizeChanged -= ControllerOnSizeChanged;
+
             foreach (var child in Children)
             {
                 var region = child as ImageDetailRegionRenderItem;
@@ -57,34 +107,20 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        private async void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        protected async void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
         {
             ComputeRegions();
         }
-        private void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        protected void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
         {
             ComputeRegions();
         }
 
         public override async Task Load()
         {
-            var url = _controller.ContentDataController.ContentDataModel.Data;
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(url), ResourceCreator.Dpi);
-
-            var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
-            var nx = lib.NormalizedX * _bmp.Size.Width;
-            var ny = lib.NormalizedY * _bmp.Size.Height;
-            var nw = lib.NormalizedWidth * _bmp.Size.Width;
-            var nh = lib.NormalizedHeight * _bmp.Size.Height;
-
-            _normalizedCroppedRect = new Rect(lib.NormalizedX, lib.NormalizedY, lib.NormalizedWidth, lib.NormalizedHeight);
-            _rectToCropFromContent = new Rect(nx, ny, nw, nh);
-
-            RecomputeSize();
-
-            
-
-            ComputeRegions();
+            _bmp?.Dispose();
+            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
+            ReRender();
         }
 
         private void RecomputeSize()
@@ -112,7 +148,7 @@ namespace NuSysApp
             _needsMaskRefresh = true;
         }
 
-        private void ComputeRegions()
+        protected virtual void ComputeRegions()
         {
             var children = Children.ToArray();
             Children.Clear();
@@ -120,7 +156,9 @@ namespace NuSysApp
             {
                 var region = child as ImageDetailRegionRenderItem;
                 region.RegionMoved -= RegionOnRegionMoved;
+                region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized -= RegionOnRegionResized;
+                region.RegionResized += RegionOnRegionResized;
 
                 region?.Dispose();
             }
@@ -143,7 +181,7 @@ namespace NuSysApp
             NeedsRedraw?.Invoke();
         }
         
-        private void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
+        protected void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
             var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
             var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _croppedImageTarget.Height / _scaleDisplayToCrop;
@@ -156,7 +194,7 @@ namespace NuSysApp
             NeedsRedraw?.Invoke();
         }
 
-        private void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
+        protected void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
             var rx = region.LibraryElementModel.NormalizedX + delta.X/_croppedImageTarget.Width / _scaleDisplayToCrop;
             var ry = region.LibraryElementModel.NormalizedY + delta.Y/_croppedImageTarget.Height / _scaleDisplayToCrop;
@@ -199,6 +237,11 @@ namespace NuSysApp
 
                 ds.Transform = orgTransform;
             }
+        }
+
+        protected void FireRedraw()
+        {
+            NeedsRedraw?.Invoke();
         }
 
         public Size CanvasSize

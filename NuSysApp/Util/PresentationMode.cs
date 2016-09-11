@@ -123,7 +123,7 @@ namespace NuSysApp
         public void ExitMode()
         {
             _originalTransform = MakeShallowCopy(SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera);
-            AnimatePresentation(_originalTransform.ScaleX - _originalTransform.ScaleX * 0.3, -_originalTransform.TranslateX, -_originalTransform.TranslateY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
+            AnimatePresentation(_originalTransform.ScaleX - _originalTransform.ScaleX * 0.3, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
         }
 
         /// <summary>
@@ -215,8 +215,8 @@ namespace NuSysApp
             var nodeWidth = elementToBeFullScreened.Width;
             var nodeHeight = elementToBeFullScreened.Height + 40 + tagAdjustment; // 40 for title adjustment
                                                                                   // var sv = SessionController.Instance.SessionView;
-            var x = elementToBeFullScreened.Model.X + nodeWidth / 2 - SessionController.Instance.SessionView.ActualWidth/2 / SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.S.M11;
-            var y = elementToBeFullScreened.Model.Y + nodeHeight / 2 - SessionController.Instance.SessionView.ActualHeight / 2 / SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.S.M22;
+            var x = elementToBeFullScreened.Model.X + nodeWidth / 2;
+            var y = elementToBeFullScreened.Model.Y - 40 + nodeHeight / 2;
             var widthAdjustment = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Width / 2;
             var heightAdjustment = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Height / 2;
 
@@ -247,7 +247,7 @@ namespace NuSysApp
 
 
             // Call a helper method to set up the animation
-            AnimatePresentation(1, x, y, translateX, translateY);
+            AnimatePresentation(scale, x, y, translateX, translateY);
 
         }
 
@@ -271,16 +271,11 @@ namespace NuSysApp
             // Create a DoubleAnimation for each property to animate
             var scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
             var scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
-         //   var centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
-          //  var centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
-            var translateAnimationX = MakeAnimationElement(-x, "TranslateX", duration);
-            var translateAnimationY = MakeAnimationElement(-y, "TranslateY", duration);
-
-
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.C = Matrix3x2.CreateTranslation((float)x, (float)y);
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)x, (float)y);
-
-            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { translateAnimationX, translateAnimationY,  scaleAnimationX, scaleAnimationY });
+            var centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
+            var centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
+            var translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
+            var translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
+            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { translateAnimationX, translateAnimationY, centerAnimationX, centerAnimationY, scaleAnimationX, scaleAnimationY });
 
             // Add each animation to the storyboard
             foreach (var anim in animationList)
@@ -344,10 +339,10 @@ namespace NuSysApp
                 toReturn.From = _originalTransform.ScaleX;
 
             if (name == "CenterX")
-                toReturn.From = -_originalTransform.TranslateX;
+                toReturn.From = _originalTransform.CenterX;
 
             if (name == "CenterY")
-                toReturn.From = -_originalTransform.TranslateY;
+                toReturn.From = _originalTransform.CenterY;
 
             if (name == "TranslateX")
                 toReturn.From = _originalTransform.TranslateX;
