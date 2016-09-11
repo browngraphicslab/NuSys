@@ -43,7 +43,7 @@
 
 
         <StackPanel Grid.Row="2">
-            <Button Tapped="Button_Tapped" HorizontalAlignment="Center" Style="{StaticResource DarkButton}">Suggest regions</Button>
+            <Button Tapped="Button_Tapped" HorizontalAlignment="Center" Style="{StaticResource DarkButton}" Visibility="Collapsed">Suggest regions</Button>
             <Grid x:Name="SegmentPanel">
                 <StackPanel>
                     <Grid BorderThickness="0,0,0,2" BorderBrush="{StaticResource color3}">

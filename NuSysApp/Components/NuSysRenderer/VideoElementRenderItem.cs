@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -22,11 +23,13 @@ namespace NuSysApp
 
         public VideoElementRenderItem(VideoNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
+            Debug.WriteLine("video consturctor");
             _vm = vm;
         }
 
         public override async Task Load()
         {
+            Debug.WriteLine("video load");
             var url = _vm.Controller.LibraryElementController.LargeIconUri;
             _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, url, ResourceCreator.Dpi);
         }
