@@ -110,11 +110,14 @@ namespace NuSysApp
         /// <param name="model"></param>
         private void ContentController_OnNewLibraryElememt(LibraryElementModel model)
         {
-            Init();
-            if (model.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(model.LibraryElementId))
+            UITask.Run(delegate
             {
-                _preloadedIDs.Add(model.LibraryElementId);
-            }
+                Init();
+                if (model.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(model.LibraryElementId))
+                {
+                    _preloadedIDs.Add(model.LibraryElementId);
+                }
+            });
         }
 
 

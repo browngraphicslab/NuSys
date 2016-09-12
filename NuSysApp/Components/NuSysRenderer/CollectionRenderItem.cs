@@ -230,7 +230,7 @@ namespace NuSysApp
                     else if (vm is VideoNodeViewModel)
                     {
                         item = new VideoElementRenderItem((VideoNodeViewModel) vm, this, ResourceCreator);
-                        await item.Load();
+                        item.Load();
                         _renderItems2.Add(item);
                     }
                     else if (vm is ElementCollectionViewModel)

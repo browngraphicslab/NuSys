@@ -103,6 +103,7 @@ namespace NuSysApp
             SessionController.Instance.IdToControllers.TryRemove(elementId, out elementController);//get the controller for the given id
             var model = elementController?.Model; //get the existing element model for the given id
 
+
             Debug.Assert(model != null);
 
 

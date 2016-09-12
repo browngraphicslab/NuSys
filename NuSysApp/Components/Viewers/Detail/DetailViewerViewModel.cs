@@ -106,10 +106,13 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            CurrentElementController.TitleChanged -= ControllerTitleChanged;
+            if (CurrentElementController != null)
+            {
+                CurrentElementController.TitleChanged -= ControllerTitleChanged;
 
-            // If this is null remove it 
-            CurrentElementController.KeywordsChanged -= KeywordsChanged;
+                // If this is null remove it 
+                CurrentElementController.KeywordsChanged -= KeywordsChanged;
+            }
         }
         public async Task<bool> ShowElement(LibraryElementController controller)
         {                     
