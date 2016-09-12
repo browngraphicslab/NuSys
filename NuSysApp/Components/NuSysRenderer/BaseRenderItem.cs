@@ -58,7 +58,7 @@ namespace NuSysApp
 
             foreach (var child in Children.ToArray())
             {
-                child.Draw(ds);
+                child?.Draw(ds);
             }
 
             ds.Transform = orgTransform;

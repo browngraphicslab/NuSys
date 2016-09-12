@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
+using System.Diagnostics;
 
 namespace NuSysApp
 {

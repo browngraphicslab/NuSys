@@ -259,6 +259,11 @@ namespace NuSysApp
         /// <returns></returns>
         public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000, double width = Double.NaN, double height =Double.NaN)
         {
+            if(newCollectionLibraryID == Model.LibraryId)
+            {
+                return;
+            }
+
             var args = new MoveElementToCollectionRequestArgs();
             args.ElementId = Id;
             args.NewParentCollectionId = newCollectionLibraryID;

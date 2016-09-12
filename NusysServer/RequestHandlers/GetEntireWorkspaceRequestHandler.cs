@@ -79,7 +79,7 @@ namespace NusysServer
         private IEnumerable<string> GetAllInkStrokes(string collectionId)
         {
             var query = new SQLSelectQuery(new JoinedTable(new SqlJoinOperationArgs() {
-                JoinOperator = Constants.JoinedType.LeftJoin,
+                JoinOperator = Constants.JoinedType.InnerJoin,
                 LeftTable = new SingleTable(Constants.SQLTableType.LibraryElement),
                 RightTable = new SingleTable(Constants.SQLTableType.Ink),
                 Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).First(),

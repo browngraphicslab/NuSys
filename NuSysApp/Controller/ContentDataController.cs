@@ -20,7 +20,19 @@ namespace NuSysApp
         /// the private bool used to indicate when the controller is being updated form the server. 
         /// It should be set true whenerver we are in the process of updating the controller from a server request.
         /// </summary>
-        private bool _blockServerInteraction = false;
+        private bool _blockServerInteraction
+        {
+            get
+            {
+                return _blockServerInteractionCount != 0;
+            }
+        }
+
+        /// <summary>
+        /// count to represent how many unpacks are currently running.
+        /// This is being used to replace the boolean. If this number is greater than 0, then an unpack is currently happening
+        /// </summary>
+        private int _blockServerInteractionCount;
 
         /// <summary>
         /// the event that will fire whenever the content data string changes.  
@@ -94,9 +106,9 @@ namespace NuSysApp
         /// <param name="newData"></param>
         public void UpdateFromServer(string newData)
         {
-            _blockServerInteraction = true;
+            _blockServerInteractionCount++;
             SetData(newData);
-            _blockServerInteraction = false;
+            _blockServerInteractionCount--;
         }
 
         /// <summary>

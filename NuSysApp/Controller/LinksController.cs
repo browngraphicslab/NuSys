@@ -361,7 +361,7 @@ namespace NuSysApp
             }
             else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
             {
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Links.Add(vm);
+                SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.ViewModel.Links.Add(vm);
             }
             controller.OutElement.UpdateCircleLinks();
             controller.InElement.UpdateCircleLinks();

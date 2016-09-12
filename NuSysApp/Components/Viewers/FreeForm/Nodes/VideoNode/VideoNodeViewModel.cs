@@ -28,7 +28,7 @@ namespace NuSysApp
             {
                 await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            Controller.SetSize(Model.Width, Model.Height);
+            Controller.SetSize(Model.Width, Model.Height,false);
         }
 
         public override double GetRatio()

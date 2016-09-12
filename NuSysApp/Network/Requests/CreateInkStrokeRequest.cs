@@ -33,12 +33,19 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task ExecuteRequestFunction()
         {
-            Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY));
-            Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_INK_STROKE_REQUEST_POINTS_KEY));
-            Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY));
-
             var inkModel = _message.Get<InkModel>(NusysConstants.CREATE_INK_STROKE_REQUEST_RETURNED_INK_MODEL_KEY);
-            //TODO: Add ink somewhere
+
+            Debug.Assert(inkModel != null);
+            if(inkModel == null)
+            {
+                return;
+            }
+
+            var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
+
+            Debug.Assert(contentController != null);
+
+            contentController?.AddInk(inkModel);
         }
 
         /// <summary>

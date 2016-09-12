@@ -55,7 +55,10 @@ namespace NuSysApp
             var x = _message.GetDouble(NusysConstants.MOVE_ELEMENT_TO_COLLECTION_REQUEST_X_KEY);
             var y = _message.GetDouble(NusysConstants.MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY);
 
-            await MoveElementToCollection(elementId, newParentCollectionId, x, y);
+            await UITask.Run(async delegate
+            {
+                await MoveElementToCollection(elementId, newParentCollectionId, x, y);
+            });
         }
 
         /// <summary>
@@ -99,6 +102,7 @@ namespace NuSysApp
             ElementController elementController;  
             SessionController.Instance.IdToControllers.TryRemove(elementId, out elementController);//get the controller for the given id
             var model = elementController?.Model; //get the existing element model for the given id
+
 
             Debug.Assert(model != null);
 
