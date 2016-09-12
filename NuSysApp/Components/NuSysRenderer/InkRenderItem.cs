@@ -47,9 +47,9 @@ namespace NuSysApp
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved += ContentDataControllerOnInkRemoved;
         }
 
-        private void ContentDataControllerOnInkRemoved(InkModel inkModel)
+        private void ContentDataControllerOnInkRemoved(string strokeId)
         {
-            
+            RemoveInkModel(strokeId);
         }
 
         private void ContentDataControllerOnInkAdded(InkModel inkModel)
@@ -149,22 +149,17 @@ namespace NuSysApp
                 }
 
                 var selected = GetSelectedStrokes();
-                _inkManager.DeleteSelected();
 
-                foreach (var s in selected)
-                {
-                    //     InkStrokeRemoved?.Invoke(this, s);
-                }
-
-                _inkManager.SelectWithPolyLine(thisStroke);
-                selected = GetSelectedStrokes();
-                _inkManager.DeleteSelected();
 
                 foreach (var s in selected)
                 {
                     var strokeId = StrokesMap.GetKeyByValue(s);
                     SendInkStrokeRemovedRequest(strokeId);
                 }
+                _inkManager.DeleteSelected();
+                _inkManager.SelectWithPolyLine(thisStroke);
+                selected = GetSelectedStrokes();
+                _inkManager.DeleteSelected();
 
             }
             else
@@ -187,14 +182,15 @@ namespace NuSysApp
             StrokesMap.Remove(strokeId);
             var parentCollection = (CollectionRenderItem)Parent;
 
-            var request = new DeleteInkStrokeRequest(strokeId);
+            var contentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
+            var request = new DeleteInkStrokeRequest(strokeId, contentId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }
 
         private async Task SendInkStrokeAddedRequest()
         {
             var strokeId = SessionController.Instance.GenerateId();
-            StrokesMap.Add(strokeId, LatestStroke);
+            StrokesMap[strokeId] = LatestStroke;
             var parentCollection = (CollectionRenderItem)Parent;
             var args = new CreateInkStrokeRequestArgs();
             args.ContentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
@@ -207,9 +203,7 @@ namespace NuSysApp
 
         public void AddInkModel(InkModel inkModel)
         {
-            try
-            {
-                lock (_lock)
+            lock (_lock)
             {
            
                     var builder = new InkStrokeBuilder();
@@ -221,12 +215,19 @@ namespace NuSysApp
                     _inkManager.AddStroke(inkStroke);
                     _strokesToDraw = _inkManager.GetStrokes().ToList();
                     _needsDryStrokesUpdate = true;
+                    StrokesMap[inkModel.InkStrokeId] = inkStroke;
                
             }
-            }
-            catch
+        }
+
+        public void RemoveInkModel(string strokeId)
+        {
+            lock (_lock)
             {
-                Debug.WriteLine("");
+                var inkStroke = StrokesMap[strokeId];
+                inkStroke.Selected = true;
+                _inkManager.DeleteSelected();
+                _strokesToDraw = _inkManager.GetStrokes().ToList();
             }
         }
 

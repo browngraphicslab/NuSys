@@ -40,6 +40,7 @@ namespace NuSysApp
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
 
         public CollectionRenderItem Root { get; set; }
+        private bool _isStopped;
 
 
         public Size Size { get; set; }
@@ -54,6 +55,7 @@ namespace NuSysApp
 
         public override void Stop()
         {
+            _isStopped = true;
             if (_canvas == null)
                 return;
             
@@ -61,6 +63,7 @@ namespace NuSysApp
             _canvas.Update -= CanvasOnUpdate;
             _canvas.CreateResources -= CanvasOnCreateResources;
             _canvas.SizeChanged -= CanvasOnSizeChanged;
+
             Root.Dispose();
 
             _canvas.Invalidate();
@@ -76,6 +79,7 @@ namespace NuSysApp
             _canvas.Update += CanvasOnUpdate;
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
+            _isStopped = false;
         }
 
         private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -229,15 +233,19 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
 
         private void CanvasOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
         {
+            if (_isStopped)
+                return;
+
             Root.Update();
-         //   _minimap.IsDirty = true;
-         //   _minimap.Update();
             ElementSelectionRenderItem.Update();
             NodeMarkingMenu.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
+            if (_isStopped)
+                return;
+
             using(var ds = args.DrawingSession) {
                 ds.Clear(Colors.Transparent);
                 ds.Transform = Matrix3x2.Identity;

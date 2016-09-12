@@ -69,7 +69,7 @@ namespace NuSysApp
                 _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
             }
             _vm = null;
-            _textLayout.Dispose();
+            _textLayout?.Dispose();
             _textLayout = null;
             base.Dispose();
         }
@@ -147,7 +147,7 @@ namespace NuSysApp
             var oldTransform = ds.Transform;
 
             ds.Transform = Matrix3x2.CreateTranslation(0, (float)_vm.Height + 10f) * GetTransform()*oldTransform;
-            _tagRenderItem.Draw(ds);
+            _tagRenderItem?.Draw(ds);
 
             _transform = oldTransform;
             

@@ -55,8 +55,9 @@ namespace NuSysApp
         protected ContentDebouncingDictionary _debouncingDictionary;
 
         public delegate void InkAddEventHandler(InkModel inkModel);
+        public delegate void InkRemoveEventHandler(string strokeId);
         public event InkAddEventHandler InkAdded;
-        public event InkAddEventHandler InkRemoved;
+        public event InkRemoveEventHandler InkRemoved;
 
         /// <summary>
         /// The constructor of the controller only takes in a Content Data Model.  
@@ -92,10 +93,11 @@ namespace NuSysApp
             InkAdded?.Invoke(inkModel);
         }
 
-        public void RemoveInk(InkModel inkModel)
+        public void RemoveInk(string strokeId)
         {
-            ContentDataModel.Strokes.Remove(inkModel);
-            InkRemoved?.Invoke(inkModel);
+            var stroke = ContentDataModel.Strokes.Where(s => s.InkStrokeId == strokeId).First();
+            ContentDataModel.Strokes.Remove(stroke);
+            InkRemoved?.Invoke(strokeId);
         }
 
         /// <summary>

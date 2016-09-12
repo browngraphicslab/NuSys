@@ -40,7 +40,17 @@ namespace NuSysApp
             DataContext = vm;
             _libraryElementId = vm.LibraryElementController.LibraryElementModel?.LibraryElementId;
 
-            var model = vm.Model;
+            var data = vm.LibraryElementController.ContentDataController.ContentDataModel.Data;
+
+
+            var model = vm.Model as CollectionLibraryElementModel;
+
+            //var links = SessionController.Instance.ContentController.AllLibraryElementModels.OfType<LinkLibraryElementModel>();
+
+
+            xStats.Items.Add("Elements: \t\t" + model.Children.Count);
+            xStats.Items.Add("Visual Links: \t\t" + SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.NumLinks);
+            xStats.Items.Add("Ink Strokes: \t\t" + vm.LibraryElementController.ContentDataController.ContentDataModel.Strokes.Count);
             //If same collection, disable enter collection button
             var id = ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.LibraryElementId;
 
@@ -63,30 +73,9 @@ namespace NuSysApp
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 await SessionController.Instance.InitializeRecog();
-                SetHeight(SessionController.Instance.SessionView.ActualHeight / 2);
             };
 
-            MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
-            MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
-
-            //   _views = new ObservableCollection<FrameworkElement>();
-
-            // _factory = new FreeFormNodeViewFactory();
-
-            // this.AddChildren();
-
-            //Loaded += delegate (object sender, RoutedEventArgs args)
-            //{
-            //    var sw = SessionController.Instance.SessionView.ActualWidth / 1.2;
-            //    var sh = SessionController.Instance.SessionView.ActualHeight / 1.2;
-
-            //    var ratio = xGrid.ActualWidth > xGrid.ActualHeight ? xGrid.ActualWidth / sw : xGrid.ActualHeight / sh;
-            //    xGrid.Width = xGrid.ActualWidth / ratio;
-            //    xGrid.Height = xGrid.ActualHeight / ratio;
-            //};
-
-            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
-
+         
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
         }
@@ -110,35 +99,9 @@ namespace NuSysApp
             }
         }
 
-        private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-        {
-            if (((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.Data != "")
-            {
-                UpdateText(((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.Data);
-            }
-        }
-
-        private async void UpdateText(String str)
-        {
-            if (!string.IsNullOrEmpty(str))
-            {
-                String[] myString = { str };
-                IEnumerable<String> s = myString;
-                MyWebView.InvokeScriptAsync("InsertText", s);
-            }
-        }
-
-        public void SetHeight(double parentHeight)
-        {
-            MyWebView.Height = parentHeight;
-        }
-
-
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (GroupDetailHomeTabViewModel)DataContext;
-            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
-            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }

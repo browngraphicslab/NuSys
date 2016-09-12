@@ -633,6 +633,8 @@ namespace NuSysApp
                     outLibElemController.InvokeLinkRemoved(linkLibraryElementId);
                 }
 
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.RemoveLink(linkLibraryElementId);
+
                 // return true because request was performed succesfully
                 return true;
             }

@@ -47,7 +47,7 @@ namespace NuSysApp.Network.Requests
             var controller = SessionController.Instance.ContentController.GetContentDataController(contentId);
             Debug.Assert(controller != null);
 
-            //controller?.RemoveInk(inkStrokeId); // TODO uncomment
+            controller?.RemoveInk(inkStrokeId);
         }
 
         /// <summary>

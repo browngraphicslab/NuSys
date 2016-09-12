@@ -85,6 +85,10 @@
     </UserControl.Resources>
 
     <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        
+        <ListBox x:Name="xStats">
+            
+        </ListBox>
         <Button Name="EnterCollectionButton" Click="EnterCollectionButton_Click" VerticalAlignment="Top" 
                         HorizontalAlignment="Center" Margin="5" Background="{StaticResource color2}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Visibility="Collapsed">
             <TextBlock Margin="0,-4,0,0" FontSize="24">enter collection</TextBlock>
@@ -93,11 +97,7 @@
                         HorizontalAlignment="Center" Margin="5" Background="{StaticResource color2}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Visibility="Collapsed">
             <TextBlock Margin="0,-4,0,0" FontSize="24">return to origin</TextBlock>
         </Button>
-        <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
-            <WebView Name ="MyWebView"  Width="{Binding ElementName=WebContainer, Path=Width}"  Height ="100"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
-                             Visibility="Collapsed" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True">
-            </WebView>
-        </Grid>
+        
         <Border Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
                 Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
             <TextBlock x:Name="AddToCollection" Width="Auto" Height="Auto" Foreground="{StaticResource color3}" Text="Drag To Collection" TextAlignment="Center"
