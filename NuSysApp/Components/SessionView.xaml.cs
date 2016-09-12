@@ -663,11 +663,6 @@ namespace NuSysApp
             madeElementIds.Add(element.Id);
         }
 
-        public async Task OpenCollection(ElementCollectionController collectionController)
-        {
-      
-        }
-
         private void Resize(object sender, SizeChangedEventArgs e)
         {
             UITask.Run(() =>

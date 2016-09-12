@@ -62,6 +62,8 @@ namespace NuSysApp
             _canvas.CreateResources -= CanvasOnCreateResources;
             _canvas.SizeChanged -= CanvasOnSizeChanged;
             Root.Dispose();
+
+            _canvas.Invalidate();
         }
 
 
@@ -242,8 +244,10 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 Root.Draw(ds);
                 ds.Transform = Matrix3x2.Identity;
 
-                ElementSelectionRenderItem.Draw(ds);
-                NodeMarkingMenu.Draw(ds);
+                if (ElementSelectionRenderItem != null)
+                    ElementSelectionRenderItem.Draw(ds);
+                if (NodeMarkingMenu != null)
+                    NodeMarkingMenu.Draw(ds);
             }
         }
     }

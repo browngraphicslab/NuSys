@@ -298,6 +298,7 @@ namespace NuSysApp
 
         public void ShowWaitingRoom()
         {
+            SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.Stop();
             xWaitingRoom.Visibility = Visibility.Visible;
             xSessionView.Visibility = Visibility.Collapsed;
         }

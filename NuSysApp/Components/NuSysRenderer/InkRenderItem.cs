@@ -39,6 +39,19 @@ namespace NuSysApp
 
         public InkRenderItem(CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
+           
+            parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkAdded += ContentDataControllerOnInkAdded;
+            parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved += ContentDataControllerOnInkRemoved;
+        }
+
+        private void ContentDataControllerOnInkRemoved(InkModel inkModel)
+        {
+            
+        }
+
+        private void ContentDataControllerOnInkAdded(InkModel inkModel)
+        {
+            AddInkModel(inkModel);
         }
 
         public async override Task Load()
@@ -49,6 +62,12 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+            var parent = (CollectionRenderItem) Parent;
+            parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkAdded -= ContentDataControllerOnInkAdded;
+            parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved -= ContentDataControllerOnInkRemoved;
+
             _vm = null;
             _builder = null;
             _currentInkStroke = null;
@@ -175,14 +194,26 @@ namespace NuSysApp
 
         public void AddInkModel(InkModel inkModel)
         {
-            lock (_lock)
+            try
             {
-                var builder = new InkStrokeBuilder();
-                var inkStroke = builder.CreateStrokeFromInkPoints(inkModel.InkPoints.Select( p => new InkPoint(new Point(p.X, p.Y), p.Pressure)), Matrix3x2.Identity);
-                inkStroke.DrawingAttributes = GetDrawingAttributes();
-                _inkManager.AddStroke(inkStroke);
-                _strokesToDraw = _inkManager.GetStrokes().ToList();
-                _needsDryStrokesUpdate = true;
+                lock (_lock)
+            {
+           
+                    var builder = new InkStrokeBuilder();
+                    var inkStroke =
+                        builder.CreateStrokeFromInkPoints(
+                            inkModel.InkPoints.Select(p => new InkPoint(new Point(p.X, p.Y), p.Pressure)),
+                            Matrix3x2.Identity);
+                    inkStroke.DrawingAttributes = GetDrawingAttributes();
+                    _inkManager.AddStroke(inkStroke);
+                    _strokesToDraw = _inkManager.GetStrokes().ToList();
+                    _needsDryStrokesUpdate = true;
+               
+            }
+            }
+            catch
+            {
+                Debug.WriteLine("");
             }
         }
 
