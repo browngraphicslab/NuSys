@@ -485,7 +485,7 @@ namespace NuSysApp
                 LinkSelected?.Invoke((LinkRenderItem) element);
             }
 
-            if (element is LinkRenderItem)
+            if (element is TrailRenderItem)
             {
                 TrailSelected?.Invoke((TrailRenderItem)element);
             }
