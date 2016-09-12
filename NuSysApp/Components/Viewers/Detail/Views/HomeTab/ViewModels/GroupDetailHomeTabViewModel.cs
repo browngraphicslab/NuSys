@@ -13,23 +13,15 @@ namespace NuSysApp
 
         public LibraryElementModel Model { get; }
 
-        public bool Finite { get; }
-
-        public int ShapePoints { get; }
-
         public GroupDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             LibraryElementController = controller;
             Model = controller.LibraryElementModel;
-
-            var collectionmodel = Model as CollectionLibraryElementModel;
-            Finite = collectionmodel.IsFinite;
-            ShapePoints = collectionmodel.ShapePoints?.Count ?? 0;
         }
 
         public override CreateNewLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); //todo can someone explain why this should never happen?
         }
     }
 }

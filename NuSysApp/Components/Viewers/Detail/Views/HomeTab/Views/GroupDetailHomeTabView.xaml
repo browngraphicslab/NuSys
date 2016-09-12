@@ -83,26 +83,8 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <Grid Width="300" Margin="0,-100,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50"></RowDefinition>
-                <RowDefinition Height="50"></RowDefinition>
-                <RowDefinition Height="50"></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0">Finite</TextBlock>
-            <TextBlock Grid.Column="0" Grid.Row="1">ShapePoints</TextBlock>
-            <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Finite}"></TextBlock>
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ShapePoints}"></TextBlock>
-            <Button Grid.Row="2" Grid.Column="0" Width="150" Click="SetFiniteOnClick">
-                <TextBlock x:Name="SetFiniteButton"></TextBlock>
-            </Button>
-        </Grid>
         <Button Name="EnterCollectionButton" Click="EnterCollectionButton_Click" VerticalAlignment="Top" 
                         HorizontalAlignment="Center" Margin="5" Background="{StaticResource color2}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Visibility="Collapsed">
             <TextBlock Margin="0,-4,0,0" FontSize="24">enter collection</TextBlock>
