@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -101,16 +102,28 @@ namespace NuSysApp
 
         /// <summary>
         /// Shows error text on the detail view if the create link button fails for some reason.
-        /// Make sure to hide the error text correctly.
+        /// The error text is hidden by CreateLinkButton_OnLostFocus
         /// </summary>
         /// <param name="text">The error text you wish to show.</param>
         private void ShowCreateLinkErrorText(string text)
         {
+            Debug.Assert(string.IsNullOrWhiteSpace(text) == false, "The text should be a helpful message.");
             xCreateLinkErrorBox.Text = text;
+            // show the error box if it is currently invisible
             if (xCreateLinkErrorBox.Visibility == Visibility.Collapsed)
             {
                 xCreateLinkErrorBox.Visibility = Visibility.Visible;
             }
+        }
+
+        /// <summary>
+        /// Closes the xCreateLinkErrorBox to maintain responsive UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateLinkButton_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            xCreateLinkErrorBox.Visibility = Visibility.Collapsed;
         }
 
         private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)

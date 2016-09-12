@@ -89,15 +89,6 @@ namespace NuSysApp
 
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-
-            if (vm.Finite)
-            {
-                SetFiniteButton.Text = "Make Infinite";
-            }
-            else
-            {
-                SetFiniteButton.Text = "Make Finite";
-            }
         }
 
 
@@ -432,20 +423,6 @@ namespace NuSysApp
 
         #endregion addToCollection
 
-        private void SetFiniteOnClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (GroupDetailHomeTabViewModel) DataContext;
-            if (vm.Finite)
-            {
-                ((CollectionLibraryElementModel) vm.LibraryElementController.LibraryElementModel).IsFinite = false;
-                SetFiniteButton.Text = "Make Finite";
-            }
-            else
-            {
-                ((CollectionLibraryElementModel)vm.LibraryElementController.LibraryElementModel).IsFinite = true;
-                SetFiniteButton.Text = "Make Infinite";
-            }
-        }
     }
 }
 
