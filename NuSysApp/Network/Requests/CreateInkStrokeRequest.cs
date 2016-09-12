@@ -43,8 +43,6 @@ namespace NuSysApp
 
             var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
 
-            Debug.Assert(contentController != null);
-
             contentController?.AddInk(inkModel);
         }
 
