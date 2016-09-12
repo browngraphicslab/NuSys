@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using NusysIntermediate;
 
-namespace NuSysApp.Network.Requests
+namespace NuSysApp
 {
-    public class DeleteInkStrokeRequest:Request
+    public class DeleteInkStrokeRequest : Request
     {
         /// <summary>
         /// This constructor should only be used to create a new request from the message that was returned from the server.
