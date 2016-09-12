@@ -42,6 +42,10 @@ namespace NuSysApp
         /// </summary>
         protected ContentDebouncingDictionary _debouncingDictionary;
 
+        public delegate void InkAddEventHandler(InkModel inkModel);
+        public event InkAddEventHandler InkAdded;
+        public event InkAddEventHandler InkRemoved;
+
         /// <summary>
         /// The constructor of the controller only takes in a Content Data Model.  
         /// </summary>
@@ -52,6 +56,7 @@ namespace NuSysApp
             Debug.Assert(contentDataModel?.ContentId != null);
             _debouncingDictionary = new ContentDebouncingDictionary(contentDataModel.ContentId, contentDataModel.ContentType);//instantiate the deboucning dictionary
         }
+        
 
         /// <summary>
         /// this Method should be where all the updates of the content String go through.  
@@ -67,6 +72,18 @@ namespace NuSysApp
             {
                 _debouncingDictionary.AddLatestContent(data);
             }
+        }
+
+        public void AddInk(InkModel inkModel)
+        {
+            ContentDataModel.Strokes.Add(inkModel);
+            InkAdded?.Invoke(inkModel);
+        }
+
+        public void RemoveInk(InkModel inkModel)
+        {
+            ContentDataModel.Strokes.Remove(inkModel);
+            InkRemoved?.Invoke(inkModel);
         }
 
         /// <summary>

@@ -33,6 +33,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             base.Dispose();
             _vm = null;
             _bmp.Dispose();
@@ -42,6 +45,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             base.Draw(ds);
             var orgTransform = ds.Transform;
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;

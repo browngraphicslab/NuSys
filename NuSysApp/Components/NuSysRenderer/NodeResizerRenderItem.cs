@@ -31,6 +31,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             var orgTransform = ds.Transform;
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
 

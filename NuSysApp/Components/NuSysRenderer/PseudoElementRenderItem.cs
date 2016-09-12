@@ -45,11 +45,6 @@ namespace NuSysApp
             Rect = new Rect(t.TranslateX+60, t.TranslateY, s.ActualWidth, s.ActualHeight);
         }
 
-        public override void Draw(CanvasDrawingSession ds)
-        {
-          //  ds.DrawRectangle(Rect, Colors.Red);
-        }
-
         public override BaseRenderItem HitTest(Vector2 point)
         {
             return Rect.Contains(new Point(point.X, point.Y)) ? this : null;

@@ -58,11 +58,6 @@ namespace NuSysApp
                 new Vector2(0, 0)});
             }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
         public void UpdatePointerLocation(Vector2 pointerPosition)
         {
             _pointerPosition = pointerPosition;
@@ -81,6 +76,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             base.Update();
 
             if (!IsVisible)
@@ -108,6 +106,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             base.Draw(ds);
 
             if (!IsVisible || !_isActive)

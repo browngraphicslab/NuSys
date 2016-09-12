@@ -241,7 +241,7 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 ds.Transform = Matrix3x2.Identity;
                 Root.Draw(ds);
                 ds.Transform = Matrix3x2.Identity;
-            //    _minimap.Draw(ds);
+
                 ElementSelectionRenderItem.Draw(ds);
                 NodeMarkingMenu.Draw(ds);
             }

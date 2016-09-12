@@ -109,6 +109,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             if (!IsDirty && !_isVisible)
                 return;
 
@@ -137,6 +140,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             if (!_isVisible)
                 return;
 

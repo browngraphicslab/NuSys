@@ -23,6 +23,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             var orgTransform = ds.Transform;
             base.Update();
             var lineWidth = 0.0;
@@ -68,6 +71,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             base.Update();
             foreach (var baseRenderItem in Items.ToArray())
             {

@@ -28,6 +28,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             base.Dispose();
             _bmp.Dispose();
             _bmp = null;
@@ -40,6 +43,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             if (!IsVisible)
                 return;
 

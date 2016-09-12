@@ -54,7 +54,8 @@ namespace NuSysApp
         {
             if (_isDisposed)
                 return;
-            _collection.ViewModel.Elements.CollectionChanged -= ElementsOnCollectionChanged;
+            if (_collection?.ViewModel?.Elements != null)
+                _collection.ViewModel.Elements.CollectionChanged -= ElementsOnCollectionChanged;
             _collection = null;
             _canvasControl.Draw -= CanvasControlOnDraw;
             _isDisposed = true;
@@ -115,6 +116,7 @@ namespace NuSysApp
 
         public void Invalidate()
         {
+
             _canvasControl.Invalidate();
         }
 

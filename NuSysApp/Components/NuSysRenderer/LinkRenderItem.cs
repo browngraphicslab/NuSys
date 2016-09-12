@@ -33,6 +33,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             base.Dispose();
             if (_vm.Controller?.InElement != null)
                 _vm.Controller.InElement.AnchorChanged -= OnAnchorChanged;
@@ -45,6 +48,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             if (!IsDirty)
                 return;
             var controller = (LinkController)_vm.Controller;
@@ -71,6 +77,9 @@ namespace NuSysApp
         }
 
         public override void Draw(CanvasDrawingSession ds) {
+            if (IsDisposed)
+                return;
+
             if (_path != null)
                 ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
         }

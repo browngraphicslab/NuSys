@@ -13,14 +13,16 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class InkRenderItem : BaseRenderItem
     {
+        private BiDictionary<string, InkStroke> _mapping = new BiDictionary<string, InkStroke>(); 
         private ElementViewModel _vm;
         private bool _isEraser;
-        private List<InkPoint> _currentStroke = new List<InkPoint>();
+        private List<InkPoint> _currentInkPoints = new List<InkPoint>();
         private InkStroke _currentInkStroke;
         private InkManager _inkManager = new InkManager();
         private Matrix3x2 _transform = Matrix3x2.Identity;
@@ -50,8 +52,8 @@ namespace NuSysApp
             _vm = null;
             _builder = null;
             _currentInkStroke = null;
-            _currentStroke?.Clear();
-            _currentStroke = null;
+            _currentInkPoints?.Clear();
+            _currentInkPoints = null;
             _dryStrokesTarget?.Dispose();;
             _dryStrokesTarget = null;
             _inkManager = null;
@@ -74,11 +76,11 @@ namespace NuSysApp
             _transform = Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this));
 
             _isEraser = e.Properties.IsEraser || e.Properties.IsRightButtonPressed;
-            _currentStroke = new List<InkPoint>();
+            _currentInkPoints = new List<InkPoint>();
 
             lock (_lock) {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+                _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
             }
 
             _needsWetStrokeUpdate = true;
@@ -89,7 +91,7 @@ namespace NuSysApp
             lock (_lock)
             {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+                _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
             }
 
             _needsWetStrokeUpdate = true;
@@ -100,17 +102,17 @@ namespace NuSysApp
             lock (_lock)
             {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentStroke.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+                _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
 
                 var builder = new InkStrokeBuilder();
-                LatestStroke = builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
+                LatestStroke = builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
                 LatestStroke.DrawingAttributes = GetDrawingAttributes();
             }
 
             if (_isEraser)
             {
                 var allStrokes = _inkManager.GetStrokes().ToArray();
-                var thisStroke = _currentStroke.Select(p => p.Position);
+                var thisStroke = _currentInkPoints.Select(p => p.Position);
                 var thisLineString = thisStroke.GetLineString();
 
                 foreach (var otherStroke in allStrokes)
@@ -145,19 +147,43 @@ namespace NuSysApp
             else
             {
                 _inkManager.AddStroke(LatestStroke);
-
                 LatestStrokeAdded = DateTime.Now;
-                //  InkStrokeAdded?.Invoke(this, stroke);
-            } 
-            _currentStroke = new List<InkPoint>();
+
+                SendInkStrokeAddedRequest();
+            }
+
+            _currentInkPoints = new List<InkPoint>();
             _strokesToDraw = _inkManager.GetStrokes().ToList();
 
             _needsDryStrokesUpdate = true;
             _needsWetStrokeUpdate = true;
         }
 
-        public void AddStroke(InkStroke stroke)
+        private async Task SendInkStrokeAddedRequest()
         {
+            var strokeId = SessionController.Instance.GenerateId();
+            _mapping.Add(strokeId, LatestStroke);
+            var parentCollection = (CollectionRenderItem)Parent;
+            var args = new CreateInkStrokeRequestArgs();
+            args.ContentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
+            args.InkPoints = LatestStroke.GetInkPoints().Select(p => new PointModel(p.Position.X, p.Position.Y, p.Pressure)).ToList();
+            args.InkStrokeId = strokeId;
+
+            var request = new CreateInkStrokeRequest(args);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+        }
+
+        public void AddInkModel(InkModel inkModel)
+        {
+            lock (_lock)
+            {
+                var builder = new InkStrokeBuilder();
+                var inkStroke = builder.CreateStrokeFromInkPoints(inkModel.InkPoints.Select( p => new InkPoint(new Point(p.X, p.Y), p.Pressure)), Matrix3x2.Identity);
+                inkStroke.DrawingAttributes = GetDrawingAttributes();
+                _inkManager.AddStroke(inkStroke);
+                _strokesToDraw = _inkManager.GetStrokes().ToList();
+                _needsDryStrokesUpdate = true;
+            }
         }
 
         public void RemoveLatestStroke()
@@ -171,13 +197,11 @@ namespace NuSysApp
             _needsDryStrokesUpdate = true;
         }
 
-        public override void Update()
-        {
-        }
-
         public override void Draw(CanvasDrawingSession ds)
         {
-    
+            if (IsDisposed)
+                return;
+
             var orgTransform = ds.Transform;
             if (_needsDryStrokesUpdate)
             {
@@ -206,7 +230,7 @@ namespace NuSysApp
                 ds.DrawImage(_dryStrokesTarget);
 
             ds.Transform = orgTransform;
-            if (_needsWetStrokeUpdate && _currentStroke.Count > 2)
+            if (_needsWetStrokeUpdate && _currentInkPoints.Count > 2)
             {
                 if (_builder == null)
                 {
@@ -214,12 +238,12 @@ namespace NuSysApp
                     _builder.SetDefaultDrawingAttributes(GetDrawingAttributes());
                 }
                 lock (_lock) { 
-                var s = _builder.CreateStrokeFromInkPoints(_currentStroke.ToArray(), Matrix3x2.Identity);
+                    var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
 
-                _builder.SetDefaultDrawingAttributes(GetDrawingAttributes());
-                if (_isEraser)
-                    s.DrawingAttributes = new InkDrawingAttributes { Color = Colors.DarkRed };
-                ds.DrawInk(new InkStroke[] { s });
+                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes());
+                    if (_isEraser)
+                        s.DrawingAttributes = new InkDrawingAttributes { Color = Colors.DarkRed };
+                    ds.DrawInk(new InkStroke[] { s });
                 }
 
             }

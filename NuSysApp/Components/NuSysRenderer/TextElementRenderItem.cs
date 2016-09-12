@@ -46,6 +46,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             _vm = null;
             _htmlParser = null;
             _textItemLayout.Dispose();
@@ -69,6 +72,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             base.Update();
             if (!IsDirty)
                 return;
@@ -81,6 +87,9 @@ namespace NuSysApp
 
         public async override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             base.Draw(ds);
 
             var orgTransform = ds.Transform;
