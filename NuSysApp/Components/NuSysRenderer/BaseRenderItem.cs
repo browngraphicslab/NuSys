@@ -38,6 +38,9 @@ namespace NuSysApp
 
         public virtual void Update()
         {
+            if (IsDisposed)
+                return;
+
             foreach (var child in Children.ToArray())
             {
                 child.Update();
@@ -46,6 +49,8 @@ namespace NuSysApp
 
         public virtual void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
 
             var orgTransform = ds.Transform;
 
@@ -70,6 +75,9 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             foreach (var child in Children)
             {
                 child.Dispose();

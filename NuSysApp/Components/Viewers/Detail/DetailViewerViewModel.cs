@@ -106,6 +106,8 @@ namespace NuSysApp
 
         public void Dispose()
         {
+            if (CurrentElementController == null)
+                return;
             CurrentElementController.TitleChanged -= ControllerTitleChanged;
 
             // If this is null remove it 
