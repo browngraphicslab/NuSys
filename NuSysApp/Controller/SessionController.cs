@@ -392,6 +392,11 @@ namespace NuSysApp
             _activeFreeFormViewer?.Dispose();
             ClearControllersForCollectionExit();
 
+
+            var mainContentDataId = SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryId).ContentDataModelId;
+            var mainContentDataModel = new ContentDataModel(mainContentDataId, string.Empty);
+            ContentController.AddContentDataModel(mainContentDataModel);
+
             //creates a new request to get the new workspace
             var request = new GetEntireWorkspaceRequest(collectionLibraryId);
 
@@ -406,6 +411,8 @@ namespace NuSysApp
             //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
+            
+
             Task.Run(async delegate ///tell the server about the latest collection we're entering
             {
                 await NuSysNetworkSession.ExecuteRequestAsync(
@@ -416,7 +423,7 @@ namespace NuSysApp
                     }));
             });
             
-            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels, presentationLinks);
+            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels, presentationLinks, request.GetReturnedInkModels());
         }
 
         /// <summary>

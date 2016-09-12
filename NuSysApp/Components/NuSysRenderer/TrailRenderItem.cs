@@ -47,6 +47,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             _elementController1.PositionChanged -= ElementController1OnPositionChanged;
             _elementController1.SizeChanged -= ElementController1OnSizeChanged;
             _elementController2.PositionChanged -= ElementController1OnPositionChanged;
@@ -61,6 +64,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             base.Update();
             if (!IsDirty || _vm == null)
                 return;
@@ -80,13 +86,12 @@ namespace NuSysApp
             cb.AddCubicBezier(Point1, Point2, Point3);
             cb.EndFigure(CanvasFigureLoop.Open);
             _path = CanvasGeometry.CreatePath(cb);
-            
-
-          
-
         }
 
         public override void Draw(CanvasDrawingSession ds) {
+            if (IsDisposed)
+                return;
+
             if (_path != null)
                 ds.DrawGeometry(_path, Colors.PaleVioletRed, 30);
         }

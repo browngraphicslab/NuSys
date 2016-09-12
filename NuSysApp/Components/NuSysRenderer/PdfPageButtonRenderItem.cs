@@ -34,6 +34,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             base.Dispose();
             _triangle.Dispose();
             _triangle = null;
@@ -41,6 +44,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             base.Draw(ds);
             ds.FillGeometry(_triangle, Colors.Black);
             _triangleBounds = _triangle.ComputeBounds(ds.Transform);

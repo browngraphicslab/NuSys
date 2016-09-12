@@ -38,6 +38,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             _textLayout.Dispose();
             _textLayout = null;
             Text = null;
@@ -46,6 +49,8 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
 
             base.Draw(ds);
             ds.FillRectangle(_measurement, Constants.color4);

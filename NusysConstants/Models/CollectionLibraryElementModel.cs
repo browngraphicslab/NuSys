@@ -7,7 +7,7 @@ using NusysIntermediate;
 
 namespace NusysIntermediate
 {
-    /// <summary>
+    /// <summary>nk
     /// this is the library element sub class used for all collections. 
     ///  The only additions to the regular library element class are the local hashset of children element model Ids,  and properties defining the settings on this collection.
     /// </summary>

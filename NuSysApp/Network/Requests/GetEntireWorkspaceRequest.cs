@@ -129,7 +129,7 @@ namespace NuSysApp
                 _returnedInkModels = new List<InkModel>();
                 foreach (var ink in args?.InkStrokes ?? new List<string>())
                 {
-                    _returnedInkModels.Add(JsonConvert.DeserializeObject<InkModel>(ink));
+                    _returnedInkModels.Add(JsonConvert.DeserializeObject<InkModel>(ink, new JsonSerializerSettings() {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii}));
                 }
 
             }
@@ -183,5 +183,6 @@ namespace NuSysApp
                 await SessionController.Instance.SessionView.MakeCollection(elements.ToDictionary(e => e.Id, e => e));
             }
         }
+
     }
 }

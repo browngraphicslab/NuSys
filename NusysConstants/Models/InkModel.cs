@@ -11,17 +11,17 @@ namespace NusysIntermediate
         /// <summary>
         /// The Unique id for the ink stroke
         /// </summary>
-        public string InkStrokeId { get; private set; }
+        public string InkStrokeId { get; set; }
 
         /// <summary>
         /// The content where the ink is drawn on
         /// </summary>
-        public string ContentId { get; private set; }
+        public string ContentId { get; set; }
 
         /// <summary>
         /// These are the list of points that make up the ink stroke
         /// </summary>
-        public List<PointModel> InkPoints { get; private set; }
+        public List<PointModel> InkPoints { get; set; }
 
         /// <summary>
         /// To create a new Ink model, create a new instance then call unpack from database

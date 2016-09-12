@@ -57,6 +57,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             _tagRenderItem.Dispose();
             _tagRenderItem = null;
             _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
@@ -115,6 +118,9 @@ namespace NuSysApp
 
         public override void Update()
         {
+            if (IsDisposed)
+                return;
+
             base.Update();
             if (_tagRenderItem != null)
                 _tagRenderItem.Update();
@@ -130,6 +136,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             if (_textLayout == null)
             {
                 IsDirty = true;

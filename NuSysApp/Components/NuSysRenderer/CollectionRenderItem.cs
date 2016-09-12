@@ -48,20 +48,41 @@ namespace NuSysApp
             Camera.T = Matrix3x2.CreateTranslation(vm.CameraTranslation);
             Camera.C = Matrix3x2.CreateTranslation(vm.CameraCenter);
             Camera.S = Matrix3x2.CreateScale(vm.CameraScale);
-            
 
             vm.Elements.CollectionChanged += OnElementsChanged;
             vm.Links.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
-
+            
             InkRenderItem = new InkRenderItem(this, canvas);
+
+
+
+        }
+        public async override Task Load()
+        {
+            await base.Load();
+            var collectionController = (ElementCollectionController)ViewModel.Controller;
+            if (!collectionController.LibraryElementController.ContentLoaded)
+            {
+                await collectionController.LibraryElementController.LoadContentDataModelAsync();
+            }
+            var strokes = collectionController.LibraryElementController.ContentDataController.ContentDataModel.Strokes;
+            foreach (var inkModel in strokes)
+            {
+                InkRenderItem.AddInkModel(inkModel);
+            }
+
             InkRenderItem.Load();
             _renderItems0.Add(InkRenderItem);
+
         }
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             base.Dispose();
 
             var collectionController = (ElementCollectionController)ViewModel.Controller;
@@ -101,8 +122,6 @@ namespace NuSysApp
             ViewModel = null;
 
             Camera = null;
-
-            
         }
 
         private void OnCameraCenterChanged(float f, float f1)
@@ -142,55 +161,7 @@ namespace NuSysApp
 
         }
 
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            base.Draw(ds);
-            /*
-            var orgTransform = ds.Transform;
-            ds.Transform = GetTransform() * ds.Transform;
-            var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
-
-            Color borderColor;
-            float borderWidth = 4f;
-
-            if (SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection == this)
-            {
-                borderColor = Color.FromArgb(255, 0, 102, 255);
-                borderWidth = 6f;
-            }
-            else
-            {
-                borderColor = Colors.Black;
-                borderWidth = 4f;
-            }
-
-            if (this != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
-                ds.DrawRectangle(boundaries, borderColor, borderWidth);
-
-            var boundariesGeom = CanvasGeometry.CreateRectangle(ds, boundaries);
-            using (ds.CreateLayer(1, boundariesGeom))
-            {
-                ds.Transform = GetCameraTransform() * ds.Transform;
-           
-                foreach (var item in _renderItems0.ToArray())
-                    item.Draw(ds);
-
-                foreach (var item in _renderItems1.ToArray())
-                    item.Draw(ds);
-
-                foreach (var item in _renderItems2.ToArray())
-                    item.Draw(ds);
-
-                foreach (var item in _renderItems3.ToArray())
-                    item.Draw(ds);
-
-
-
-                ds.Transform = orgTransform;
-            }
-            */
-        }
-
+      
         private async void OnElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -313,11 +284,6 @@ namespace NuSysApp
                 _renderItems2.Remove(item);
             if (_renderItems3.Contains(item))
                 _renderItems3.Remove(item);
-        }
-
-        public void AddStroke(InkStroke stroke)
-        {
-            InkRenderItem.AddStroke(stroke);
         }
 
         public void AddLink(LinkViewModel vm)

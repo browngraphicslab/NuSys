@@ -18,6 +18,8 @@ namespace NusysIntermediate
         public string ContentId { get; set; }
 
         public string Data { get; set; }
+
+        public List<InkModel> Strokes { get; set; } = new List<InkModel>();
         public NusysConstants.ContentType ContentType { get; set; }
         
         public ContentDataModel(string contentId, string data)

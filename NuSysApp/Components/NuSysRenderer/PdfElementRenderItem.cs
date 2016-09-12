@@ -46,6 +46,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             _vm = null;
             base.Dispose();
         }
@@ -83,6 +86,9 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
+
             var orgTransform = ds.Transform;
             if (_isUpdating || _vm == null)
                 return;

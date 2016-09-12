@@ -82,8 +82,10 @@ namespace NuSysApp
 
             SessionController.Instance.SessionView = this;
 
-       
-
+            _activeFreeFormViewer = new FreeFormViewer();
+            _activeFreeFormViewer.Width = ActualWidth;
+            _activeFreeFormViewer.Height = ActualHeight;
+            mainCanvas.Children.Insert(0, _activeFreeFormViewer);
         }
 
 
@@ -550,7 +552,7 @@ namespace NuSysApp
 
 
 
-        public async Task LoadWorkspaceFromServer(string collectionId, IEnumerable<ElementModel> elements, IEnumerable<PresentationLinkModel> presentationLinkModels)
+        public async Task LoadWorkspaceFromServer(string collectionId, IEnumerable<ElementModel> elements, IEnumerable<PresentationLinkModel> presentationLinkModels, List<InkModel> inks)
         {
             xLoadingGrid.Visibility = Visibility.Visible;
 
@@ -577,13 +579,7 @@ namespace NuSysApp
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
             SessionController.Instance.CollectionIdsInUse.Add(collectionId);
 
-            if (_activeFreeFormViewer == null)
-            {
-                _activeFreeFormViewer = new FreeFormViewer();
-                _activeFreeFormViewer.Width = ActualWidth;
-                _activeFreeFormViewer.Height = ActualHeight;
-                mainCanvas.Children.Insert(0, _activeFreeFormViewer);
-            }
+
             //      var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
             var freeFormViewerViewModel = new FreeFormViewerViewModel(elementCollectionInstanceController);
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
@@ -608,6 +604,11 @@ namespace NuSysApp
                 await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
             }
 
+            foreach (var inkModel in inks)
+            {
+                var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
+                contentController.AddInk(inkModel);
+            }
 
             Debug.WriteLine("done joining collection: " + collectionId);
 
@@ -660,11 +661,6 @@ namespace NuSysApp
             ///add element
             elementsLeft.Remove(element.Id);
             madeElementIds.Add(element.Id);
-        }
-
-        public async Task OpenCollection(ElementCollectionController collectionController)
-        {
-      
         }
 
         private void Resize(object sender, SizeChangedEventArgs e)

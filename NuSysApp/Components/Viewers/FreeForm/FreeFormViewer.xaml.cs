@@ -88,6 +88,7 @@ namespace NuSysApp
                 _renderCanvasInitialized = true;
                 TryInitialize();
             };
+            
         }
 
         public void ActivateUndo(IUndoable action, Point2d location)
@@ -104,7 +105,6 @@ namespace NuSysApp
 
         public async Task LoadInitialCollection(FreeFormViewerViewModel vm)
         {
-
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -114,10 +114,24 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.Elements.CollectionChanged += ElementsOnCollectionChanged;
             _vm = vm;
+            _vm.X = 0;
+            _vm.Y = 0;
+            _vm.Width = xRenderCanvas.Width;
+            _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
-            await TryInitialize();
+            InitialCollection = new ShapedCollectionRenderItem(_vm, null, xRenderCanvas, true);
+            _minimap?.Dispose();
+            _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+            await InitialCollection.Load();
            
+
+            RenderEngine.Init(xRenderCanvas, InitialCollection);
+
+            if (_canvasInteractionManager == null)
+                _canvasInteractionManager = new CanvasInteractionManager(SessionController.Instance.SessionView.MainCanvas);
+
+            SwitchCollection(InitialCollection);
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -130,21 +144,6 @@ namespace NuSysApp
             if (!(_renderCanvasInitialized && _minimapInitialized))
                 return;
 
-            RenderEngine.Stop();
-            InitialCollection = new ShapedCollectionRenderItem(_vm, null, xRenderCanvas, true);
-            RenderEngine.Init(xRenderCanvas, InitialCollection);
-            _vm.X = 0;
-            _vm.Y = 0;
-            _vm.Width = xRenderCanvas.Width;
-            _vm.Height = xRenderCanvas.Height;
-
-            if (_canvasInteractionManager == null)
-                _canvasInteractionManager = new CanvasInteractionManager(SessionController.Instance.SessionView.MainCanvas);
-
-            SwitchCollection(InitialCollection);
-
-            _minimap?.Dispose();
-            _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
 
