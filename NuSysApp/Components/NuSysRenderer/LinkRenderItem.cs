@@ -98,7 +98,7 @@ namespace NuSysApp
             var p3 = anchor2;
 
             var pointsOnCurve = new List<Point>();
-            var numPoints = 10;
+            var numPoints = 15;
             for (var i = 10; i >= 0; i--)
                 pointsOnCurve.Add(MathUtil.GetPointOnBezierCurve(p0, p1, p2, p3, 1.0 / numPoints * i));
 

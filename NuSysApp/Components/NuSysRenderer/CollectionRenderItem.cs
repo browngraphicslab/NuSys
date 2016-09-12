@@ -35,6 +35,8 @@ namespace NuSysApp
 
         public Transformable Camera { get; set; } = new Transformable();
 
+        public int NumLinks => ViewModel.Links.Count;
+
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {            
             ViewModel = vm;
@@ -55,10 +57,19 @@ namespace NuSysApp
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
             
             InkRenderItem = new InkRenderItem(this, canvas);
-
-
-
         }
+
+        public void RemoveLink(string libraryElementId)
+        {
+            var soughtLinks = ViewModel.Links.Where( l => l.Controller.LibraryElementController.LibraryElementModel.LibraryElementId == libraryElementId);
+            if (!soughtLinks.Any())
+            {
+                return;
+            }
+            
+            ViewModel.Links.Remove(soughtLinks.First());
+        }
+
         public async override Task Load()
         {
             await base.Load();
@@ -80,49 +91,53 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            if (IsDisposed)
-                return;
+            UITask.Run(() =>
+            {
+                if (IsDisposed)
+                    return;
 
-            base.Dispose();
+                base.Dispose();
 
-            var collectionController = (ElementCollectionController)ViewModel.Controller;
-            collectionController.CameraPositionChanged -= OnCameraPositionChanged;
-            collectionController.CameraCenterChanged -= OnCameraCenterChanged;
+                var collectionController = (ElementCollectionController) ViewModel.Controller;
+                collectionController.CameraPositionChanged -= OnCameraPositionChanged;
+                collectionController.CameraCenterChanged -= OnCameraCenterChanged;
 
-            ViewModel.Elements.CollectionChanged -= OnElementsChanged;
-            ViewModel.Links.CollectionChanged -= OnElementsChanged;
-            ViewModel.Trails.CollectionChanged -= OnElementsChanged;
-            ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
+                ViewModel.Elements.CollectionChanged -= OnElementsChanged;
+                ViewModel.Links.CollectionChanged -= OnElementsChanged;
+                ViewModel.Trails.CollectionChanged -= OnElementsChanged;
+                ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
 
-            foreach (var item in _renderItems0.ToArray())
-                item.Dispose();
+                foreach (var item in _renderItems0.ToArray())
+                    item.Dispose();
 
-            foreach (var item in _renderItems1.ToArray())
-                item.Dispose();
+                foreach (var item in _renderItems1.ToArray())
+                    item.Dispose();
 
-            foreach (var item in _renderItems2.ToArray())
-                item.Dispose();
+                foreach (var item in _renderItems2.ToArray())
+                    item.Dispose();
 
-            foreach (var item in _renderItems3.ToArray())
-                item.Dispose();
+                foreach (var item in _renderItems3.ToArray())
+                    item.Dispose();
 
-            _renderItems0.Clear();
-            _renderItems0 = null;
-            _renderItems1.Clear();
-            _renderItems1 = null;
-            _renderItems2.Clear();
-            _renderItems2 = null;
-            _renderItems3.Clear();
-            _renderItems3 = null;
+                _renderItems0.Clear();
+                _renderItems0 = null;
+                _renderItems1.Clear();
+                _renderItems1 = null;
+                _renderItems2.Clear();
+                _renderItems2 = null;
+                _renderItems3.Clear();
+                _renderItems3 = null;
 
-            InkRenderItem.Dispose();
-            InkRenderItem = null;
+                InkRenderItem.Dispose();
+                InkRenderItem = null;
 
-            ViewModel.Dispose();
-            ViewModel = null;
+                ViewModel.Dispose();
+                ViewModel = null;
 
-            Camera = null;
-        }
+                Camera = null;
+            
+        });
+    }
 
         private void OnCameraCenterChanged(float f, float f1)
         {
@@ -148,115 +163,120 @@ namespace NuSysApp
             base.Update();
 
             foreach (var item in _renderItems0.ToArray())
-                item.Update();
+                item?.Update();
 
             foreach (var item in _renderItems1.ToArray())
-                item.Update();
+                item?.Update();
 
             foreach (var item in _renderItems2.ToArray())
                 item?.Update();
 
             foreach (var item in _renderItems3.ToArray())
-                item.Update();
+                item?.Update();
 
         }
 
       
         private async void OnElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.NewItems != null)
-            {
-                foreach (var newItem in e.NewItems)
-                {
-                    BaseRenderItem item;
-                    var vm = newItem;
-                    if (vm is ToolFilterView || vm is BaseToolView)
-                    {
-                        _renderItems2.Add(new PseudoElementRenderItem((ITool)vm, this, ResourceCreator));
-                    }
-                    else if (vm is TextNodeViewModel)
-                    {
-                        item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
-                        await item.Load();
-                        _renderItems2.Add(item);
-                    }
-                    else if (vm is ImageElementViewModel)
-                    {
-                        item = new ImageElementRenderItem((ImageElementViewModel) vm, this, ResourceCreator);
-                        await item.Load();
-                        _renderItems2.Add(item);
-                    }
-                    else if (vm is PdfNodeViewModel)
-                    {
-                        item = new PdfElementRenderItem((PdfNodeViewModel) vm, this, ResourceCreator);
-                        await item.Load();
-                        _renderItems2.Add(item);
-                    }
-                    else if (vm is AudioNodeViewModel)
-                    {
-                        item = new AudioElementRenderItem((AudioNodeViewModel) vm, this, ResourceCreator);
-                        await item.Load();
-                        _renderItems2.Add(item);
-                    }
-                    else if (vm is VideoNodeViewModel)
-                    {
-                        item = new VideoElementRenderItem((VideoNodeViewModel) vm, this, ResourceCreator);
-                        item.Load();
-                        _renderItems2.Add(item);
-                    }
-                    else if (vm is ElementCollectionViewModel)
-                    {
-                        var collectionVm = (ElementCollectionViewModel) vm;
-                        item = new ShapedCollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
-                        await item.Load();
-                        _renderItems2.Add(item);
-                    }
-                    else if (vm is LinkViewModel)
-                    {
-                        AddLink((LinkViewModel)vm);
-                    }
-                    else if (vm is PresentationLinkViewModel)
-                    {
-                        AddTrail((PresentationLinkViewModel)vm);
-                    }
-                }
-            }
-
-            if (e.OldItems == null)
+            if (IsDisposed)
                 return;
 
-            var allItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3);
-            foreach (var oldItem in e.OldItems)
+            UITask.Run(async () =>
             {
-                var renderItem = allItems.OfType<ElementRenderItem>().Where(el => el.ViewModel == oldItem);
-                if (renderItem.Any())
+                if (e.NewItems != null)
                 {
-                    var element = renderItem.First();
-                    Remove(element);
-                    element.Dispose();
-                }
-                var linkItem = allItems.OfType<LinkRenderItem>().Where(el => el.ViewModel == oldItem);
-                if (linkItem.Any())
-                {
-                    var link = linkItem.First();
-                    Remove(link);
-                    link.Dispose();
+                    foreach (var newItem in e.NewItems)
+                    {
+                        BaseRenderItem item;
+                        var vm = newItem;
+                        if (vm is ToolFilterView || vm is BaseToolView)
+                        {
+                            _renderItems2?.Add(new PseudoElementRenderItem((ITool) vm, this, ResourceCreator));
+                        }
+                        else if (vm is TextNodeViewModel)
+                        {
+                            item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
+                            await item.Load();
+                            _renderItems2?.Add(item);
+                        }
+                        else if (vm is ImageElementViewModel)
+                        {
+                            item = new ImageElementRenderItem((ImageElementViewModel) vm, this, ResourceCreator);
+                            await item.Load();
+                            _renderItems2?.Add(item);
+                        }
+                        else if (vm is PdfNodeViewModel)
+                        {
+                            item = new PdfElementRenderItem((PdfNodeViewModel) vm, this, ResourceCreator);
+                            await item.Load();
+                            _renderItems2?.Add(item);
+                        }
+                        else if (vm is AudioNodeViewModel)
+                        {
+                            item = new AudioElementRenderItem((AudioNodeViewModel) vm, this, ResourceCreator);
+                            await item.Load();
+                            _renderItems2?.Add(item);
+                        }
+                        else if (vm is VideoNodeViewModel)
+                        {
+                            item = new VideoElementRenderItem((VideoNodeViewModel) vm, this, ResourceCreator);
+                            item.Load();
+                            _renderItems2?.Add(item);
+                        }
+                        else if (vm is ElementCollectionViewModel)
+                        {
+                            item = new ShapedCollectionRenderItem((ElementCollectionViewModel) vm, this, ResourceCreator);
+                            await item.Load();
+                            _renderItems2?.Add(item);
+                        }
+                        else if (vm is LinkViewModel)
+                        {
+                            AddLink((LinkViewModel) vm);
+                        }
+                        else if (vm is PresentationLinkViewModel)
+                        {
+                            AddTrail((PresentationLinkViewModel) vm);
+                        }
+                    }
                 }
 
-                var trailItems = allItems.OfType<TrailRenderItem>().Where(el => el.ViewModel == oldItem);
-                if (trailItems.Any())
-                {
-                    var trail = trailItems.First();
-                    Remove(trail);
-                    trail.Dispose();
-                }
+                if (e.OldItems == null)
+                    return;
 
-                var toolItem = allItems.OfType<PseudoElementRenderItem>().Where(el => el.Tool == oldItem);
-                if (toolItem.Any())
+                var allItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3);
+                foreach (var oldItem in e.OldItems)
                 {
-                    Remove(toolItem.First());
+                    var renderItem = allItems.OfType<ElementRenderItem>().Where(el => el.ViewModel == oldItem);
+                    if (renderItem.Any())
+                    {
+                        var element = renderItem.First();
+                        Remove(element);
+                        element.Dispose();
+                    }
+                    var linkItem = allItems.OfType<LinkRenderItem>().Where(el => el.ViewModel == oldItem);
+                    if (linkItem.Any())
+                    {
+                        var link = linkItem.First();
+                        Remove(link);
+                        link.Dispose();
+                    }
+
+                    var trailItems = allItems.OfType<TrailRenderItem>().Where(el => el.ViewModel == oldItem);
+                    if (trailItems.Any())
+                    {
+                        var trail = trailItems.First();
+                        Remove(trail);
+                        trail.Dispose();
+                    }
+
+                    var toolItem = allItems.OfType<PseudoElementRenderItem>().Where(el => el.Tool == oldItem);
+                    if (toolItem.Any())
+                    {
+                        Remove(toolItem.First());
+                    }
                 }
-            }
+            });
         }
 
         public override void CreateResources()

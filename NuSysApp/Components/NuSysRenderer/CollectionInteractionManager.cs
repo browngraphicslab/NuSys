@@ -43,6 +43,7 @@ namespace NuSysApp
     {
         public delegate void LinkSelectedHandler(LinkRenderItem element);
         public delegate void TrailSelectedHandler(TrailRenderItem element);
+        public delegate void BaseRenderItemSelectedHandler(BaseRenderItem element);
         public delegate void RenderItemSelectedHandler(ElementRenderItem element);
         public delegate void InkDrawHandler(CanvasPointer pointer);
         public delegate void LinkCreatedHandler(ElementRenderItem element1, ElementRenderItem element2);
@@ -62,7 +63,7 @@ namespace NuSysApp
         public event LinkSelectedHandler LinkSelected;
         public event TrailSelectedHandler TrailSelected;
         public event RenderItemSelectedHandler MultimediaElementActivated;
-        public event RenderItemSelectedHandler DoubleTapped;
+        public event BaseRenderItemSelectedHandler DoubleTapped;
         public event MovedHandler ItemMoved;
         public event PanZoomHandler SelectionPanZoomed;
         public event MarkingMenuPointerReleasedHandler SelectionsCleared;
@@ -466,11 +467,14 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnItemDoubleTapped(CanvasPointer pointer)
         {
             var element = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-            var elementRenderItem = element as ElementRenderItem;
-            if (elementRenderItem == null)
+            BaseRenderItem hit;
+            hit = element as ElementRenderItem;
+            if (hit == null)
+                hit = element as LinkRenderItem;
+            if (hit == null)
                 return;
 
-            DoubleTapped?.Invoke(elementRenderItem);
+            DoubleTapped?.Invoke(hit);
         }
 
         private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)

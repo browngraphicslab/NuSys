@@ -292,6 +292,7 @@ namespace NuSysApp
                         controller.SetCameraPosition(ct.M31 + dtx*tranInv.M11, ct.M32 + dty*tranInv.M22);
                         controller.SetCameraCenter(cc.M31 - dtx*tranInv.M11, cc.M32 - dty*tranInv.M22);
                     }
+                    (selection as CollectionRenderItem).InkRenderItem.UpdateDryInkTransform();
                 }
             }
 
@@ -694,6 +695,11 @@ namespace NuSysApp
             if (!Selections.Contains(elem))
             {
                 elem.ViewModel.Controller.SetPosition(newX, newY);
+                if (elem is CollectionRenderItem)
+                {
+                    (elem as CollectionRenderItem).InkRenderItem.UpdateDryInkTransform();
+                }
+
             }
             else
             {
@@ -703,6 +709,10 @@ namespace NuSysApp
                     var newXe = e.X + delta.X/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
                     var newYe = e.Y + delta.Y/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
                     e.Controller.SetPosition(newXe, newYe);
+                    if (selectable is CollectionRenderItem)
+                    {
+                        (selectable as CollectionRenderItem).InkRenderItem.UpdateDryInkTransform();
+                    }
                 }
             }
 
@@ -723,6 +733,12 @@ namespace NuSysApp
                 deltaTranslation.Y/_transform.M11, deltaZoom);
 
             CurrentCollection.InkRenderItem.UpdateDryInkTransform();
+            // update the ink transform of all children. Currently one level only.
+            foreach (var childCollection in CurrentCollection.GetRenderItems().OfType<CollectionRenderItem>())
+            {
+                childCollection.InkRenderItem.UpdateDryInkTransform();
+            }
+            
 
             UpdateNonWin2dElements();
             _minimap.Invalidate();
@@ -734,6 +750,13 @@ namespace NuSysApp
                 return;
             PanZoom2(CurrentCollection.Camera, _transform, point, delta.X/_transform.M11, delta.Y/_transform.M11, 1);
             CurrentCollection.InkRenderItem.UpdateDryInkTransform();
+
+            // update the ink transform of all children. Currently one level only.
+            foreach (var childCollection in CurrentCollection.GetRenderItems().OfType<CollectionRenderItem>())
+            {
+                childCollection.InkRenderItem.UpdateDryInkTransform();
+            }
+
             UpdateNonWin2dElements();
             _minimap.Invalidate();
         }
@@ -754,14 +777,23 @@ namespace NuSysApp
         }
 
 
-        private void OnItemDoubleTapped(ElementRenderItem element)
+        private void OnItemDoubleTapped(BaseRenderItem item)
         {
-            if (element == CurrentCollection || element == InitialCollection)
+            if (item == CurrentCollection || item == InitialCollection)
                 return;
 
-            var libraryElementModelId = element.ViewModel.Controller.LibraryElementModel.LibraryElementId;
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-            SessionController.Instance.SessionView.ShowDetailView(controller);
+            if (item is ElementRenderItem)
+            {
+                var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+                SessionController.Instance.SessionView.ShowDetailView(controller);
+            } else if (item is LinkRenderItem)
+            {
+                var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+                SessionController.Instance.SessionView.ShowDetailView(controller);
+            }
+
         }
 
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
