@@ -188,13 +188,13 @@ namespace NuSysApp
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 
-                foreach (var item in _renderItems1.ToArray())
+                foreach (var item in _renderItems1?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
-                foreach (var item in _renderItems2.ToArray())
+                foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
-                foreach (var item in _renderItems3.ToArray())
+                foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
                 ds.Transform = orgTransform;

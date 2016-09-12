@@ -42,13 +42,24 @@
 
             <TextBox x:Name="xKey" PlaceholderText="Enter a Key" Margin="0,0,10,0" Background="White" Foreground="Black"/>
             <TextBox Grid.Column="1" x:Name="xValue" Margin="0,0,10,0" PlaceholderText="Enter Values" Background="White" Foreground="Black" />
-            <Grid Grid.Column="2" Background="White">
-                <Image Grid.Column="2" Source ="ms-appx:///Assets/icon_metadata_plus.png"   Tapped="AddEntryButton_OnClick " HorizontalAlignment="Stretch" Height="25" Width="25" Margin="5" />
-            </Grid>
+            <Button Grid.Column="2" Background="White" Tapped="AddEntryButton_OnClick" LostFocus="ShowErrorTextInstantiator_OnLostFocus">
+                <Button.Content>
+                    <Image Source ="ms-appx:///Assets/icon_metadata_plus.png" HorizontalAlignment="Stretch" Height="25" Width="25" Margin="5" />
+                </Button.Content>
+            </Button>
+
             
+
         </Grid>
 
-        <TextBox PlaceholderText="Search" Grid.Row="1" Margin="0,10,0,0" TextChanged="SearchBox_OnTextChanged" Background="White" Foreground="Black"></TextBox>
+        <Grid Grid.Row="1" Margin="0,10,0,0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBox PlaceholderText="Search" Grid.Row="0" Margin="0,10,0,0" TextChanged="SearchBox_OnTextChanged" Background="White" Foreground="Black"/>
+            <TextBlock x:Name="xErrorBox" Grid.Row="1" HorizontalAlignment="Center" Visibility="Collapsed"></TextBlock>
+        </Grid>
 
         <Grid Grid.Row="2" Margin="0,15,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>

@@ -15,11 +15,17 @@ namespace NuSysApp.Network.Requests
 
         /// <summary>
         /// Prefered constructor When creating new request to send to the server. To use, pass in the ink stroke id 
-        /// of the stroke you want to remove. To use this request, await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request). 
+        /// of the stroke you want to remove. 
+        /// Also pass in the content id of the stroke that you want to remove.
+        /// To use this request, await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request). 
         /// </summary>
-        public DeleteInkStrokeRequest(string inkStrokeId) : base(NusysConstants.RequestType.DeleteInkStrokeRequest)
+        public DeleteInkStrokeRequest(string inkStrokeId, string contentId) : base(NusysConstants.RequestType.DeleteInkStrokeRequest)
         {
+            Debug.Assert(!string.IsNullOrEmpty(contentId));
+            Debug.Assert(!string.IsNullOrEmpty(inkStrokeId));
+
             _message[NusysConstants.DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY] = inkStrokeId;
+            _message[NusysConstants.DELETE_INK_STROKE_REQUEST_CONTENT_ID_KEY] = contentId;
         }
 
         /// <summary>
@@ -30,9 +36,18 @@ namespace NuSysApp.Network.Requests
         public override async Task ExecuteRequestFunction()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_INK_STROKE_REQUEST_CONTENT_ID_KEY));
 
+            var contentId = _message.GetString(NusysConstants.DELETE_INK_STROKE_REQUEST_CONTENT_ID_KEY);
             var inkStrokeId = _message.GetString(NusysConstants.DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY);
-            //TODO: DELETE ink somewhere
+
+            Debug.Assert(!string.IsNullOrEmpty(contentId));
+            Debug.Assert(!string.IsNullOrEmpty(inkStrokeId));
+
+            var controller = SessionController.Instance.ContentController.GetContentDataController(contentId);
+            Debug.Assert(controller != null);
+
+            //controller?.RemoveInk(inkStrokeId); // TODO uncomment
         }
 
         /// <summary>
@@ -42,6 +57,8 @@ namespace NuSysApp.Network.Requests
         public override async Task CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_INK_STROKE_REQUEST_CONTENT_ID_KEY));
+
         }
     }
 }

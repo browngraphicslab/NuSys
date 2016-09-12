@@ -329,7 +329,7 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    var frameWorkWaveForm = GetWaveFormFrameWorkElement(fileBytes, WaveFormQuality.High);
+                    var frameWorkWaveForm = GetWaveFormFrameWorkElement(fileBytes);
                     thumbnails = await GetThumbnailsFromFrameworkElement(frameWorkWaveForm);
 
                     // override the largest thumbnail for higher resolution

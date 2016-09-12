@@ -104,7 +104,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Button x:Name="createLinkButton" Content="create link" Tapped="CreateLinkButton_OnTapped"  HorizontalAlignment="Center" IsEnabled="False"></Button>
+            <Button x:Name="createLinkButton" Content="create link" Tapped="CreateLinkButton_OnTapped"  HorizontalAlignment="Center" IsEnabled="False" LostFocus="CreateLinkButton_OnLostFocus"></Button>
             <TextBlock x:Name="xCreateLinkErrorBox" Grid.Row="1" HorizontalAlignment="Center" Visibility="Collapsed"></TextBlock>
         </Grid>
 

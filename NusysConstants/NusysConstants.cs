@@ -706,14 +706,19 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY = "stroke_id";
 
-        #endregion DeleteInkStrokeRequest
-
-            #region GetLastUsedCollectionsRequest
-
             /// <summary>
-            /// the key used during the get last used collections request that will hold the json-serialized list of lastUsedCollectionModels.
+            /// Key in message for the content id of the ink stroke
             /// </summary>
-            public static readonly string GET_LAST_USED_COLLECTIONS_REQUEST_RETURNED_MODELS_KEY = "returned_models";
+            public static readonly string DELETE_INK_STROKE_REQUEST_CONTENT_ID_KEY = "content_id";
+
+            #endregion DeleteInkStrokeRequest
+
+        #region GetLastUsedCollectionsRequest
+
+        /// <summary>
+        /// the key used during the get last used collections request that will hold the json-serialized list of lastUsedCollectionModels.
+        /// </summary>
+        public static readonly string GET_LAST_USED_COLLECTIONS_REQUEST_RETURNED_MODELS_KEY = "returned_models";
 
             #endregion GetLastUsedCollectionsRequest
 

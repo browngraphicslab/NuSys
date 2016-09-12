@@ -108,10 +108,24 @@ namespace NuSysApp
             var val = xValue.Text;
 
             // Obtains metadata dictionary, and uses it to handle bad input
-
             var metadata = Metadatable.GetMetadata();
-            if (metadata.ContainsKey(key) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(val) || string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(val))
+
+            // show a proper error message for each possible bad input, note ordering exceptions properly is important, key comes before value in ui
+            if (metadata.ContainsKey(key))
+            {
+                ShowErrorText("That key already exists. If it is mutable, click on its value in the table below to edit it.");
                 return;
+            }
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                ShowErrorText("Enter a Key");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(val))
+            {
+                ShowErrorText("Enter a Value");
+                return;
+            }
 
             var entry = new MetadataEntry(xKey.Text, new List<string>(xValue.Text.Split(new char[] { ','}, StringSplitOptions.RemoveEmptyEntries)), MetadataMutability.MUTABLE);
 
@@ -500,5 +514,34 @@ namespace NuSysApp
                 }
             }
         }
+
+        /// <summary>
+        /// Shows error text on the detail view if there is a failure
+        /// The error text is hidden by CreateLinkButton_OnLostFocus
+        /// </summary>
+        /// <param name="text">The error text you wish to show.</param>
+        private void ShowErrorText(string text)
+        {
+            Debug.Assert(string.IsNullOrWhiteSpace(text) == false, "The text should be a helpful message.");
+            xErrorBox.Text = text;
+            // show the error box if it is currently invisible
+            if (xErrorBox.Visibility == Visibility.Collapsed)
+            {
+                xErrorBox.Visibility = Visibility.Visible;
+            }
+        }
+
+        /// <summary>
+        /// Closes the Errortext, should be implemented as the OnLostFocus method
+        /// for the item, normally a button, that would have triggered the ShowErrorText
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowErrorTextInstantiator_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            xErrorBox.Visibility = Visibility.Collapsed;
+        }
+
+
     }
 }

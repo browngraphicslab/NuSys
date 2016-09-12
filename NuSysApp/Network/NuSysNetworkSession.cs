@@ -255,8 +255,9 @@ namespace NuSysApp
             }
             request.SetSystemProperties(systemDict);
 
-             await request.ExecuteRequestFunction();//switches to UI thread
-       
+            await UITask.Run(async delegate {
+                await request.ExecuteRequestFunction();
+            });//switches to UI thread
         }
 
         #endregion Requests
