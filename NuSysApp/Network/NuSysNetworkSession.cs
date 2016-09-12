@@ -237,6 +237,12 @@ namespace NuSysApp
                 case NusysConstants.RequestType.MoveElementToCollectionRequest:
                     request = new MoveElementToCollectionRequest(message);
                     break;
+                case NusysConstants.RequestType.CreateInkStrokeRequest:
+                    request = new CreateInkStrokeRequest(message);
+                    break;
+                case NusysConstants.RequestType.DeleteInkStrokeRequest:
+                    request = new DeleteInkStrokeRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }

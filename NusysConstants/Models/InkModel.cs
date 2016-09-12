@@ -39,17 +39,17 @@ namespace NusysIntermediate
         /// <param name="props"></param>
         public void UnPackFromDatabaseMessage(Message props)
         {
-            if (props.ContainsKey(NusysConstants.CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY))
+            if (props.ContainsKey(NusysConstants.INK_TABLE_STROKE_ID))
             {
-                InkStrokeId = props.GetString(NusysConstants.CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY);
+                InkStrokeId = props.GetString(NusysConstants.INK_TABLE_STROKE_ID);
             }
-            if (props.ContainsKey(NusysConstants.CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY))
+            if (props.ContainsKey(NusysConstants.INK_TABLE_CONTENT_ID))
             {
-                ContentId = props.GetString(NusysConstants.CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY);
+                ContentId = props.GetString(NusysConstants.INK_TABLE_CONTENT_ID);
             }
-            if (props.ContainsKey(NusysConstants.CREATE_INK_STROKE_REQUEST_POINTS_KEY))
+            if (props.ContainsKey(NusysConstants.INK_TABLE_POINTS))
             {
-                InkPoints = props.GetList<PointModel>(NusysConstants.CREATE_INK_STROKE_REQUEST_POINTS_KEY);
+                InkPoints = props.GetList<PointModel>(NusysConstants.INK_TABLE_POINTS);
             }
         }
     }

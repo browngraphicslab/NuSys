@@ -61,6 +61,10 @@ namespace NuSysApp
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
         public bool ToolsAreBeingInteractedWith { get; set; }
+
+        private ElementController _currentAudioElementController;
+        private ElementController _currentVideoElementController;
+
         private bool _inkPressed;
         private bool _renderCanvasInitialized;
         private bool _minimapInitialized;
@@ -366,7 +370,7 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
 
-
+                _currentVideoElementController = element?.ViewModel?.Controller;
 
                 VideoPlayer.SetSize(element.ViewModel.Width, element.ViewModel.Height);
                 VideoPlayer.SetLibraryElement(element.ViewModel.Controller.LibraryElementController as AudioLibraryElementController);
@@ -384,7 +388,9 @@ namespace NuSysApp
                 ct.TranslateY = t.M32;
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
-                
+
+                _currentAudioElementController = element?.ViewModel?.Controller;
+
                 AudioPlayer.SetSize(element.ViewModel.Width, element.ViewModel.Height);
                 AudioPlayer.SetLibraryElement(element.ViewModel.Controller.LibraryElementController as AudioLibraryElementController);
                 SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
@@ -402,6 +408,14 @@ namespace NuSysApp
                 var nw = elem.ViewModel.Width + delta.X/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
                 var nh = elem.ViewModel.Height + delta.Y/(_transform.M22*collection.S.M22*collection.Camera.S.M22);
                 item.ViewModel.Controller.SetSize(nw, nh);
+                if(_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
+                {
+                    xAudioPlayer?.SetSize(nw, nh);
+                }
+                if (_currentVideoElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentVideoElementController?.Model?.Id != null)
+                {
+                    xVideoPlayer?.SetSize(nw, nh);
+                }
             }
 
             _minimap.Invalidate();
