@@ -385,6 +385,8 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task EnterCollection(string collectionLibraryId)
         {
+            SessionView.FreeFormViewer.RenderEngine.Stop();
+
             EnterNewCollectionStarting?.Invoke(this,collectionLibraryId);
             
             SessionView.FreeFormViewer?.RenderEngine?.Stop();
