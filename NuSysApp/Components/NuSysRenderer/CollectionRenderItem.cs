@@ -58,11 +58,6 @@ namespace NuSysApp
             vm.Links.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
-
-            foreach (var elementViewModel in ViewModel.Elements)
-            {
-                AddItem(elementViewModel);
-            }
         }
 
         public void RemoveLink(string libraryElementId)
@@ -97,6 +92,14 @@ namespace NuSysApp
                 {
                     InkRenderItem.AddInkModel(inkModel);
                 }
+
+
+                foreach (var elementViewModel in ViewModel.Elements)
+                {
+                    await AddItem(elementViewModel);
+                }
+
+                Debug.WriteLine("Loading done.");
             });
         }
 
@@ -104,8 +107,6 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-
-
 
             var collectionController = (ElementCollectionController) ViewModel.Controller;
             collectionController.CameraPositionChanged -= OnCameraPositionChanged;
@@ -117,25 +118,21 @@ namespace NuSysApp
             ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
 
             foreach (var item in _renderItems0.ToArray())
-                item.Dispose();
+                Remove(item);
 
             foreach (var item in _renderItems1.ToArray())
-                item.Dispose();
+                Remove(item);
 
             foreach (var item in _renderItems2.ToArray())
-                item.Dispose();
+                Remove(item);
 
             foreach (var item in _renderItems3.ToArray())
-                item.Dispose();
+                Remove(item);
 
             _renderItems0.Clear();
-            _renderItems0 = null;
             _renderItems1.Clear();
-            _renderItems1 = null;
             _renderItems2.Clear();
-            _renderItems2 = null;
             _renderItems3.Clear();
-            _renderItems3 = null;
 
             InkRenderItem.Dispose();
             InkRenderItem = null;

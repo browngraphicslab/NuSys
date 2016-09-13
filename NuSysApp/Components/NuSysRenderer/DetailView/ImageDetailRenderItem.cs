@@ -62,6 +62,28 @@ namespace NuSysApp
             controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
+        public override void Dispose()
+        {
+            if (!IsDisposed)
+                return;
+
+            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            _controller.LocationChanged -= ControllerOnLocationChanged;
+            _controller.SizeChanged -= ControllerOnSizeChanged;
+
+            foreach (var child in Children)
+            {
+                var region = child as ImageDetailRegionRenderItem;
+                region.RegionMoved -= RegionOnRegionMoved;
+                region.RegionResized -= RegionOnRegionResized;
+                region?.Dispose();
+            }
+
+            base.Dispose();
+
+        }
+
         protected void ReRender()
         {
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
@@ -89,27 +111,6 @@ namespace NuSysApp
             ReRender();
         }
 
-        public override void Dispose()
-        {
-            if (!IsDisposed)
-                return;
-
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
-            _controller.LocationChanged -= ControllerOnLocationChanged;
-            _controller.SizeChanged -= ControllerOnSizeChanged;
-
-            foreach (var child in Children)
-            {
-                var region = child as ImageDetailRegionRenderItem;
-                region.RegionMoved -= RegionOnRegionMoved;
-                region.RegionResized -= RegionOnRegionResized;
-                region?.Dispose();
-            }
-
-            base.Dispose();
-        }
-
         protected async void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
         {
             ComputeRegions();
@@ -122,7 +123,13 @@ namespace NuSysApp
         public override async Task Load()
         {
             _bmp?.Dispose();
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
+            await Task.Run(async () =>
+            {
+                _bmp =
+                    await
+                        CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
+                            ResourceCreator.Dpi);
+            });
             ReRender();
         }
 
@@ -229,8 +236,9 @@ namespace NuSysApp
             using (ds.CreateLayer(1, _mask))
             { 
                 if (_bmp != null)
-
                     ds.DrawImage(_bmp, _croppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
+                else 
+                    ds.FillRectangle(_croppedImageTarget, Colors.Gray);
                 ds.Transform = orgTransform;
 
                 if (IsRegionsVisible)

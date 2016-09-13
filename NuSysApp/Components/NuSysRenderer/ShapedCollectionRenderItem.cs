@@ -40,13 +40,23 @@ namespace NuSysApp
                 return;
 
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            _shape.Dispose();
+            _shape?.Dispose();
             _shape = null;
             _rect.Dispose();
             _rect = null;
             _vm = null;
             _strokeStyle = null;
             base.Dispose();
+        }
+
+        public async override Task Load()
+        {
+            if ((_vm.IsFinite || _vm.IsShaped))
+                RecomputeShape();
+
+            var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
+            _rect = CanvasGeometry.CreateRectangle(ResourceCreator, boundaries);
+            await base.Load();
         }
 
         private void ControllerOnSizeChanged(object source, double width, double height)
@@ -65,25 +75,29 @@ namespace NuSysApp
                 return;
           
             if ((_vm.IsFinite || _vm.IsShaped) && _recomputeShape) { 
-                var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
-                var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
-                if (pts.Count() == 5)
-                {
-                    _shape = CanvasGeometry.CreateRectangle(ResourceCreator, pts[0].X, pts[0].Y, pts[2].X - pts[0].X,
-                        pts[2].Y - pts[0].Y);
-                }
-                else
-                {
-                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
-                }
-                
-                _shapeBounds = _shape.ComputeBounds();
-                _recomputeShape = false;
+                RecomputeShape();
             }
 
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
             _rect = CanvasGeometry.CreateRectangle(ResourceCreator, boundaries);
             IsDirty = false;
+        }
+
+        private void RecomputeShape()
+        {
+            var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
+            var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
+            if (pts.Count() == 5)
+            {
+                _shape = CanvasGeometry.CreateRectangle(ResourceCreator, pts[0].X, pts[0].Y, pts[2].X - pts[0].X,
+                    pts[2].Y - pts[0].Y);
+            }
+            else
+            {
+                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+            }
+
+            _shapeBounds = _shape.ComputeBounds();
         }
 
         public override void Draw(CanvasDrawingSession ds)

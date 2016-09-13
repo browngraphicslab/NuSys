@@ -87,7 +87,14 @@ namespace NuSysApp
             _canvas.SizeChanged += CanvasOnSizeChanged;
             _canvas.RunOnGameLoopThreadAsync(async () =>
             {
-                await Root.Load();
+                try
+                {
+                    await Root.Load();
+                }
+                catch (Exception e)
+                {
+                    
+                }
                 _isStopped = false;
             });
         }
