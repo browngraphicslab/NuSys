@@ -91,6 +91,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (!IsDisposed)
+                return;
+
             _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             _controller.LocationChanged -= ControllerOnLocationChanged;
@@ -209,16 +212,14 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed)
+                return;
 
             if (_needsMaskRefresh)
             {
                 _mask = CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget);
                 _needsMaskRefresh = false;
             }
-
-            if (_mask == null)
-                return;
-
 
             var orgTransform = ds.Transform;
             var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;

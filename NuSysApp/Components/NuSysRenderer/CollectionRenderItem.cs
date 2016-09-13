@@ -102,51 +102,48 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _canvas.RunOnGameLoopThreadAsync(() =>
-            {
-                if (IsDisposed)
-                    return;
+            if (IsDisposed)
+                return;
 
-                base.Dispose();
 
-                var collectionController = (ElementCollectionController) ViewModel.Controller;
-                collectionController.CameraPositionChanged -= OnCameraPositionChanged;
-                collectionController.CameraCenterChanged -= OnCameraCenterChanged;
 
-                ViewModel.Elements.CollectionChanged -= OnElementsChanged;
-                ViewModel.Links.CollectionChanged -= OnElementsChanged;
-                ViewModel.Trails.CollectionChanged -= OnElementsChanged;
-                ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
+            var collectionController = (ElementCollectionController) ViewModel.Controller;
+            collectionController.CameraPositionChanged -= OnCameraPositionChanged;
+            collectionController.CameraCenterChanged -= OnCameraCenterChanged;
 
-                foreach (var item in _renderItems0.ToArray())
-                    item.Dispose();
+            ViewModel.Elements.CollectionChanged -= OnElementsChanged;
+            ViewModel.Links.CollectionChanged -= OnElementsChanged;
+            ViewModel.Trails.CollectionChanged -= OnElementsChanged;
+            ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
 
-                foreach (var item in _renderItems1.ToArray())
-                    item.Dispose();
+            foreach (var item in _renderItems0.ToArray())
+                item.Dispose();
 
-                foreach (var item in _renderItems2.ToArray())
-                    item.Dispose();
+            foreach (var item in _renderItems1.ToArray())
+                item.Dispose();
 
-                foreach (var item in _renderItems3.ToArray())
-                    item.Dispose();
+            foreach (var item in _renderItems2.ToArray())
+                item.Dispose();
 
-                _renderItems0.Clear();
-                _renderItems0 = null;
-                _renderItems1.Clear();
-                _renderItems1 = null;
-                _renderItems2.Clear();
-                _renderItems2 = null;
-                _renderItems3.Clear();
-                _renderItems3 = null;
+            foreach (var item in _renderItems3.ToArray())
+                item.Dispose();
 
-                InkRenderItem.Dispose();
-                InkRenderItem = null;
+            _renderItems0.Clear();
+            _renderItems0 = null;
+            _renderItems1.Clear();
+            _renderItems1 = null;
+            _renderItems2.Clear();
+            _renderItems2 = null;
+            _renderItems3.Clear();
+            _renderItems3 = null;
 
-                ViewModel.Dispose();
-                ViewModel = null;
+            InkRenderItem.Dispose();
+            InkRenderItem = null;
 
-                Camera = null;
-            });
+            ViewModel = null;
+            Camera = null;
+
+            base.Dispose();
         }
 
         private void OnCameraCenterChanged(float f, float f1)

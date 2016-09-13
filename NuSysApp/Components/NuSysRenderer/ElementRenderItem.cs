@@ -59,15 +59,13 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-
+            
             _tagRenderItem.Dispose();
             _tagRenderItem = null;
+            _vm.Tags.CollectionChanged -= TagsOnCollectionChanged;
             _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            if (_vm.Controller?.LibraryElementController != null)
-            {
-                _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
-            }
+            _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
             _vm = null;
             _textLayout?.Dispose();
             _textLayout = null;

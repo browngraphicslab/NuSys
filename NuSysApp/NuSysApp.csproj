@@ -346,7 +346,6 @@
     <Compile Include="Components\NuSysRenderer\NodeMarkingMenuRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\NodeMenuButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\NodeResizerRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\NuSysInkStroke.cs" />
     <Compile Include="Components\NuSysRenderer\NuSysRenderer.cs" />
     <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\PdfPageButtonRenderItem.cs" />

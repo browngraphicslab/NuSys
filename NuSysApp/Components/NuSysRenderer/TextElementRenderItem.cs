@@ -54,6 +54,10 @@ namespace NuSysApp
             _textItemLayout.Dispose();
             _textItemLayout = null;
             _textboxtext = null;
+            _clippingRect.Dispose();
+            _clippingRect = null;
+            _strokeStyle.Dispose();
+            _strokeStyle = null;
             base.Dispose();
         }
 

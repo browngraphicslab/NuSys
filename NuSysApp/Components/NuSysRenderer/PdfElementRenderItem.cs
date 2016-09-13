@@ -49,7 +49,14 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
+            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+            _bmp.Dispose();
+            _bmp = null;
+            _image.Dispose();
+            _image = null;
             _vm = null;
+            _pdfLibraryElementController = null;
+
             base.Dispose();
         }
 

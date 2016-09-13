@@ -39,10 +39,11 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
-            if (_vm?.Controller != null)
-                _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            _shape?.Dispose();
+            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+            _shape.Dispose();
             _shape = null;
+            _rect.Dispose();
+            _rect = null;
             _vm = null;
             _strokeStyle = null;
             base.Dispose();
@@ -87,7 +88,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed || _vm == null || _rect == null)
+            if (IsDisposed)
                 return;
 
             var orgTransform = ds.Transform;

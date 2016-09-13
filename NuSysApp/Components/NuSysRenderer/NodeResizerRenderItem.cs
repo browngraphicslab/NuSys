@@ -20,6 +20,13 @@ namespace NuSysApp
         {
         }
 
+        public override void Dispose()
+        {
+            _triangle.Dispose();
+            _triangle = null;
+            base.Dispose();
+        }
+
         public override async Task Load()
         {
             _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{new Vector2(0, 30),

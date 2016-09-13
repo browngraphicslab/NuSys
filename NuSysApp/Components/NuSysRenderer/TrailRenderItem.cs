@@ -59,6 +59,7 @@ namespace NuSysApp
             _vm = null;
             _path.Dispose();
             _path = null;
+
             base.Dispose();
         }
 
@@ -67,7 +68,7 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
-            base.Update();
+            
             if (!IsDirty || _vm == null)
                 return;
             var anchor1 = new Vector2((float)_vm.InAnchor.X, (float)_vm.InAnchor.Y);
@@ -86,6 +87,8 @@ namespace NuSysApp
             cb.AddCubicBezier(Point1, Point2, Point3);
             cb.EndFigure(CanvasFigureLoop.Open);
             _path = CanvasGeometry.CreatePath(cb);
+
+            base.Update();
         }
 
         public override void Draw(CanvasDrawingSession ds) {

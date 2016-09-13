@@ -30,7 +30,6 @@ namespace NuSysApp
         public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasControl resourceCreator)
         {
             _collection = collection;
-            collection.ViewModel.Elements.CollectionChanged += ElementsOnCollectionChanged;
             _canvasControl = resourceCreator;
             _canvasControl.Draw += CanvasControlOnDraw;
         }
@@ -54,43 +53,14 @@ namespace NuSysApp
         {
             if (_isDisposed)
                 return;
-            if (_collection?.ViewModel?.Elements != null)
-                _collection.ViewModel.Elements.CollectionChanged -= ElementsOnCollectionChanged;
+
             _collection = null;
             _canvasControl.Draw -= CanvasControlOnDraw;
             _isDisposed = true;
         }
-
-        private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
-        {
-            if (args.NewItems != null) { 
-                foreach (var newItem in args.NewItems)
-                {
-                    AddElement((ElementViewModel)newItem);
-                }
-            }
-
-            if (args.OldItems == null)
-                return;
-
-            foreach (var newItem in args.OldItems)
-            {
-                RemoveElement((ElementViewModel)newItem);
-            }
-        }
-
-        public void AddElement(ElementViewModel element)
-        {
-
-        }
         
-        public void RemoveElement(ElementViewModel element)
-        {
-        }
-
         public void CreateResources()
         {
-
             if (_renderTarget != null)
             {
                 _renderTarget.Dispose();
@@ -116,7 +86,6 @@ namespace NuSysApp
 
         public void Invalidate()
         {
-
             _canvasControl.Invalidate();
         }
 
@@ -234,16 +203,6 @@ namespace NuSysApp
             }
             return new Rect(minX, minY, maxW - minX, maxH - minY);
 
-        }
-
-        private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
-        {
-            _canvasControl.Invalidate();
-        }
-
-        private void ControllerOnSizeChanged(object source, double width, double height)
-        {
-            _canvasControl.Invalidate();
         }
     }
 }

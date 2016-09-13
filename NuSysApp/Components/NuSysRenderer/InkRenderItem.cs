@@ -68,6 +68,7 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
+
             var parent = (CollectionRenderItem) Parent;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkAdded -= ContentDataControllerOnInkAdded;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved -= ContentDataControllerOnInkRemoved;

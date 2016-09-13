@@ -27,19 +27,16 @@ namespace NuSysApp
                 new Vector2(x, -20)});
         }
 
-        public override void OnTapped(CanvasPointer pointer)
-        {
-            base.OnTapped(pointer);
-        }
+
 
         public override void Dispose()
         {
             if (IsDisposed)
                 return;
-
-            base.Dispose();
+            
             _triangle.Dispose();
             _triangle = null;
+            base.Dispose();
         }
 
         public override void Draw(CanvasDrawingSession ds)
