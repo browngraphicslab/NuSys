@@ -11,6 +11,7 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using NusysIntermediate;
 using NuSysApp.Tools;
 
@@ -52,6 +53,13 @@ namespace NuSysApp
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
             IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;
+
+            foreach (var childId in model.Children)
+            {
+                var childController =  SessionController.Instance.IdToControllers[childId];
+                Debug.Assert(childController != null);
+                CreateChild(childController);
+            }
             
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;

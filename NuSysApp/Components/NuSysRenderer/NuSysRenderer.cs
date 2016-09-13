@@ -55,31 +55,41 @@ namespace NuSysApp
 
         public override void Stop()
         {
-            _isStopped = true;
-            if (_canvas == null)
-                return;
-            
+
+               
+                if (_canvas == null)
+                    return;
+
             _canvas.Draw -= CanvasOnDraw;
             _canvas.Update -= CanvasOnUpdate;
             _canvas.CreateResources -= CanvasOnCreateResources;
             _canvas.SizeChanged -= CanvasOnSizeChanged;
 
-            Root.Dispose();
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                _isStopped = true;
+                Root.Dispose();
+                _canvas.Invalidate();
+            });
 
-            _canvas.Invalidate();
+
         }
 
 
         public override void Init(CanvasAnimatedControl canvas, BaseRenderItem root)
         {
+            _canvas = canvas;
             Size = new Size(canvas.Width, canvas.Height);
             Root = root as CollectionRenderItem;
-            _canvas = canvas;
             _canvas.Draw += CanvasOnDraw;
             _canvas.Update += CanvasOnUpdate;
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
-            _isStopped = false;
+            _canvas.RunOnGameLoopThreadAsync(async () =>
+            {
+                await Root.Load();
+                _isStopped = false;
+            });
         }
 
         private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)

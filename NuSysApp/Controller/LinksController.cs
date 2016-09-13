@@ -332,6 +332,7 @@ namespace NuSysApp
         /// <param name="two"></param>
         private void CreateBezierLinkBetween(ILinkable one, ILinkable two)
         {
+            return;
             if (!AreBezierLinksVisible)
             {
                 return; // if we do not want to see the visual links then this should stop the links from being created

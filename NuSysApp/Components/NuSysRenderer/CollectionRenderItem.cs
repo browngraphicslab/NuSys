@@ -25,6 +25,8 @@ namespace NuSysApp
 {
     public class CollectionRenderItem : ElementRenderItem, I2dTransformable
     {
+        private CanvasAnimatedControl _canvas;
+
         protected List<BaseRenderItem> _renderItems0 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems1 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems2 = new List<BaseRenderItem>();
@@ -34,11 +36,12 @@ namespace NuSysApp
         public ElementCollectionViewModel ViewModel;
 
         public Transformable Camera { get; set; } = new Transformable();
-
+        
         public int NumLinks => ViewModel.Links.Count;
-
+        
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
-        {            
+        {
+            _canvas = (CanvasAnimatedControl)ResourceCreator;
             ViewModel = vm;
             var collectionController = (ElementCollectionController)vm.Controller;
             collectionController.CameraPositionChanged += OnCameraPositionChanged;
@@ -55,8 +58,11 @@ namespace NuSysApp
             vm.Links.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
-            
-            InkRenderItem = new InkRenderItem(this, canvas);
+
+            foreach (var elementViewModel in ViewModel.Elements)
+            {
+                AddItem(elementViewModel);
+            }
         }
 
         public void RemoveLink(string libraryElementId)
@@ -72,26 +78,31 @@ namespace NuSysApp
 
         public async override Task Load()
         {
-            await base.Load();
-            var collectionController = (ElementCollectionController)ViewModel.Controller;
-            if (!collectionController.LibraryElementController.ContentLoaded)
+            _canvas.RunOnGameLoopThreadAsync(async () =>
             {
-                await collectionController.LibraryElementController.LoadContentDataModelAsync();
-            }
-            var strokes = collectionController.LibraryElementController.ContentDataController.ContentDataModel.Strokes;
-            foreach (var inkModel in strokes)
-            {
-                InkRenderItem.AddInkModel(inkModel);
-            }
+                InkRenderItem = new InkRenderItem(this, _canvas);
+                await base.Load();
+                var collectionController = (ElementCollectionController) ViewModel.Controller;
+                if (!collectionController.LibraryElementController.ContentLoaded)
+                {
+                    await collectionController.LibraryElementController.LoadContentDataModelAsync();
+                }
 
-            InkRenderItem.Load();
-            _renderItems0.Add(InkRenderItem);
 
+                InkRenderItem.Load();
+                _renderItems0.Add(InkRenderItem);
+
+                var strokes = collectionController.LibraryElementController.ContentDataController.ContentDataModel.Strokes;
+                foreach (var inkModel in strokes)
+                {
+                    InkRenderItem.AddInkModel(inkModel);
+                }
+            });
         }
 
         public override void Dispose()
         {
-            UITask.Run(() =>
+            _canvas.RunOnGameLoopThreadAsync(() =>
             {
                 if (IsDisposed)
                     return;
@@ -135,9 +146,8 @@ namespace NuSysApp
                 ViewModel = null;
 
                 Camera = null;
-            
-        });
-    }
+            });
+        }
 
         private void OnCameraCenterChanged(float f, float f1)
         {
@@ -151,8 +161,11 @@ namespace NuSysApp
 
         public void BringForward(ElementRenderItem item)
         {
-            _renderItems2.Remove(item);
-            _renderItems2.Insert(_renderItems2.Count,item);
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                _renderItems2.Remove(item);
+                _renderItems2.Insert(_renderItems2.Count, item);
+            });
         }
 
         public override void Update()
@@ -173,110 +186,139 @@ namespace NuSysApp
 
             foreach (var item in _renderItems3.ToArray())
                 item?.Update();
-
         }
 
       
         private async void OnElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (IsDisposed)
-                return;
-
-            UITask.Run(async () =>
+            _canvas.RunOnGameLoopThreadAsync(async () =>
             {
-                if (e.NewItems != null)
+                if (IsDisposed)
+                    return;
+                if (e.Action == NotifyCollectionChangedAction.Reset)
+                {
+                    foreach (var baseRenderItem in _renderItems0)
+                        Remove(baseRenderItem);
+                    foreach (var baseRenderItem in _renderItems1)
+                        Remove(baseRenderItem);
+                    foreach (var baseRenderItem in _renderItems2)
+                        Remove(baseRenderItem);
+                    foreach (var baseRenderItem in _renderItems3)
+                        Remove(baseRenderItem);
+
+                }
+
+                if (e.Action == NotifyCollectionChangedAction.Add)
                 {
                     foreach (var newItem in e.NewItems)
                     {
-                        BaseRenderItem item;
-                        var vm = newItem;
-                        if (vm is ToolFilterView || vm is BaseToolView)
-                        {
-                            _renderItems2?.Add(new PseudoElementRenderItem((ITool) vm, this, ResourceCreator));
-                        }
-                        else if (vm is TextNodeViewModel)
-                        {
-                            item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
-                            await item.Load();
-                            _renderItems2?.Add(item);
-                        }
-                        else if (vm is ImageElementViewModel)
-                        {
-                            item = new ImageElementRenderItem((ImageElementViewModel) vm, this, ResourceCreator);
-                            await item.Load();
-                            _renderItems2?.Add(item);
-                        }
-                        else if (vm is PdfNodeViewModel)
-                        {
-                            item = new PdfElementRenderItem((PdfNodeViewModel) vm, this, ResourceCreator);
-                            await item.Load();
-                            _renderItems2?.Add(item);
-                        }
-                        else if (vm is AudioNodeViewModel)
-                        {
-                            item = new AudioElementRenderItem((AudioNodeViewModel) vm, this, ResourceCreator);
-                            await item.Load();
-                            _renderItems2?.Add(item);
-                        }
-                        else if (vm is VideoNodeViewModel)
-                        {
-                            item = new VideoElementRenderItem((VideoNodeViewModel) vm, this, ResourceCreator);
-                            item.Load();
-                            _renderItems2?.Add(item);
-                        }
-                        else if (vm is ElementCollectionViewModel)
-                        {
-                            item = new ShapedCollectionRenderItem((ElementCollectionViewModel) vm, this, ResourceCreator);
-                            await item.Load();
-                            _renderItems2?.Add(item);
-                        }
-                        else if (vm is LinkViewModel)
-                        {
-                            AddLink((LinkViewModel) vm);
-                        }
-                        else if (vm is PresentationLinkViewModel)
-                        {
-                            AddTrail((PresentationLinkViewModel) vm);
-                        }
+                        AddItem(newItem);
                     }
                 }
-
-                if (e.OldItems == null)
-                    return;
-
-                var allItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3);
-                foreach (var oldItem in e.OldItems)
+                if (e.Action == NotifyCollectionChangedAction.Remove)
                 {
-                    var renderItem = allItems.OfType<ElementRenderItem>().Where(el => el.ViewModel == oldItem);
-                    if (renderItem.Any())
+                    foreach (var oldItem in e.OldItems)
                     {
-                        var element = renderItem.First();
-                        Remove(element);
-                        element.Dispose();
-                    }
-                    var linkItem = allItems.OfType<LinkRenderItem>().Where(el => el.ViewModel == oldItem);
-                    if (linkItem.Any())
-                    {
-                        var link = linkItem.First();
-                        Remove(link);
-                        link.Dispose();
-                    }
-
-                    var trailItems = allItems.OfType<TrailRenderItem>().Where(el => el.ViewModel == oldItem);
-                    if (trailItems.Any())
-                    {
-                        var trail = trailItems.First();
-                        Remove(trail);
-                        trail.Dispose();
-                    }
-
-                    var toolItem = allItems.OfType<PseudoElementRenderItem>().Where(el => el.Tool == oldItem);
-                    if (toolItem.Any())
-                    {
-                        Remove(toolItem.First());
+                        RemoveItem(oldItem);
                     }
                 }
+             
+                
             });
+        }
+
+        private async Task AddItem(object vm)
+        {
+            BaseRenderItem item;
+            if (vm is ToolFilterView || vm is BaseToolView)
+            {
+                _renderItems2?.Add(new PseudoElementRenderItem((ITool)vm, this, ResourceCreator));
+            }
+            else if (vm is TextNodeViewModel)
+            {
+                item = new TextElementRenderItem((TextNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+            else if (vm is ImageElementViewModel)
+            {
+                item = new ImageElementRenderItem((ImageElementViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+            else if (vm is PdfNodeViewModel)
+            {
+                item = new PdfElementRenderItem((PdfNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+            else if (vm is AudioNodeViewModel)
+            {
+                item = new AudioElementRenderItem((AudioNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+            else if (vm is VideoNodeViewModel)
+            {
+                item = new VideoElementRenderItem((VideoNodeViewModel)vm, this, ResourceCreator);
+                item.Load();
+                _renderItems2?.Add(item);
+            }
+            else if (vm is ElementCollectionViewModel)
+            {
+                item = new ShapedCollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+            else if (vm is LinkViewModel)
+            {
+                _renderItems1.Add(new LinkRenderItem((LinkViewModel)vm, this, ResourceCreator));
+            }
+            else if (vm is PresentationLinkViewModel)
+            {
+                _renderItems1.Add(new TrailRenderItem((PresentationLinkViewModel)vm, this, ResourceCreator));
+            }
+        }
+
+        private void RemoveItem(object item)
+        {
+
+            if (item is ElementViewModel) { 
+                var renderItem = _renderItems2.OfType<ElementRenderItem>().Where(el => el.ViewModel == item);
+                if (renderItem.Any())
+                {
+                    var element = renderItem.First();
+                    Remove(element);
+                }
+            }
+
+            if (item is LinkViewModel)
+            {
+                var linkItem = _renderItems1.OfType<LinkRenderItem>().Where(el => el.ViewModel == item);
+                if (linkItem.Any())
+                {
+                    var link = linkItem.First();
+                    Remove(link);
+                }
+            }
+
+            if (item is PresentationLinkViewModel)
+            {
+                var trailItems = _renderItems1.OfType<TrailRenderItem>().Where(el => el.ViewModel == item);
+                if (trailItems.Any())
+                {
+                    var trail = trailItems.First();
+                    Remove(trail);
+                }
+            }
+            if (item is ITool)
+            {
+                var toolItem = _renderItems2.OfType<PseudoElementRenderItem>().Where(el => el.Tool == item);
+                if (toolItem.Any())
+                {
+                    Remove(toolItem.First());
+                }
+            }
         }
 
         public override void CreateResources()
@@ -296,24 +338,19 @@ namespace NuSysApp
 
         public void Remove(BaseRenderItem item)
         {
-            if (_renderItems0.Contains(item))
-                _renderItems0.Remove(item);
-            if (_renderItems1.Contains(item))
-                _renderItems1.Remove(item);
-            if (_renderItems2.Contains(item))
-                _renderItems2.Remove(item);
-            if (_renderItems3.Contains(item))
-                _renderItems3.Remove(item);
-        }
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                if (_renderItems0.Contains(item))
+                    _renderItems0.Remove(item);
+                if (_renderItems1.Contains(item))
+                    _renderItems1.Remove(item);
+                if (_renderItems2.Contains(item))
+                    _renderItems2.Remove(item);
+                if (_renderItems3.Contains(item))
+                    _renderItems3.Remove(item);
 
-        public void AddLink(LinkViewModel vm)
-        {
-            _renderItems1.Add(new LinkRenderItem(vm, this, ResourceCreator));
-        }
-
-        public void AddTrail(PresentationLinkViewModel vm)
-        {
-            _renderItems1.Add(new TrailRenderItem(vm, this, ResourceCreator));
+                item.Dispose();
+            });
         }
 
         public Matrix3x2 GetCameraTransform()

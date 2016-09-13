@@ -441,7 +441,7 @@ namespace NuSysApp
 
         public void ShowBlockingScreen(bool visible)
         {
-            xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+         //   xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
             xLoadingGrid.Tapped += delegate
             {
                 SessionController.Instance.LoadCapturedState();
@@ -549,81 +549,7 @@ namespace NuSysApp
             }
         }
 
-
-
-
-        public async Task LoadWorkspaceFromServer(string collectionId, IEnumerable<ElementModel> elements, IEnumerable<PresentationLinkModel> presentationLinkModels, List<InkModel> inks)
-        {
-            xLoadingGrid.Visibility = Visibility.Visible;
-
-            foreach (var controller in SessionController.Instance.IdToControllers.Values)
-            {
-                controller.Dispose();
-            }
-
-            SessionController.Instance.IdToControllers.Clear();
-
-            var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
-            {
-                Title = "Instance title",
-                LocationX = -Constants.MaxCanvasSize / 2.0,
-                LocationY = -Constants.MaxCanvasSize / 2.0,
-                CenterX = -Constants.MaxCanvasSize / 2.0,
-                CenterY = -Constants.MaxCanvasSize / 2.0,
-                Zoom = 1,
-            };
-
-            elementCollectionInstance.LibraryId = collectionId;
-
-            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
-            SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
-            SessionController.Instance.CollectionIdsInUse.Add(collectionId);
-
-
-            //      var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
-            var freeFormViewerViewModel = new FreeFormViewerViewModel(elementCollectionInstanceController);
-            SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
-            await _activeFreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
-
-            SessionController.Instance.SessionView = this;
-
-            ChatPopup.Visibility = Visibility.Collapsed;
-
-            xDetailViewer.DataContext = new DetailViewerViewModel();
-
-            var dict = elements.ToDictionary(e => e.Id, e => e); //convert the elements to the form needed for the make collection method
-
-            await Task.Run(async delegate
-            {
-                await MakeCollection(new Dictionary<string, ElementModel>(dict));
-            });
-
-
-            foreach (var presentationLink in presentationLinkModels)//add the presentation links
-            {
-                await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
-            }
-
-            foreach (var inkModel in inks)
-            {
-                var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
-                contentController.AddInk(inkModel);
-            }
-
-            Debug.WriteLine("done joining collection: " + collectionId);
-
-            xLoadingGrid.Visibility = Visibility.Collapsed;
-            Resize(null, null);
-        }
-
-        public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
-        {
-            var made = new HashSet<string>();
-            while (elementsLeft.Any())
-            {
-                await MakeElement(made, elementsLeft, elementsLeft.First().Value);
-            }
-        }
+        
 
         public void ToggleVisualLinks(object sender, RoutedEventArgs e)
         {
@@ -637,31 +563,7 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        /// recursive method to create an element.  
-        /// You need to pass in a list of Ids that have  already been made, as well as a dictionary of Id to elements that remain to be made.  
-        /// you also have to pass in the current elment being made.  
-        /// </summary>
-        /// <param name="madeElementIds"></param>
-        /// <param name="elementsLeft"></param>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        private async Task MakeElement(HashSet<string> madeElementIds, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
-        {
-            Debug.WriteLine("making element: " + element.Id);
-            var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(element.LibraryId);
-            if (libraryModel == null)
-            {
-                elementsLeft.Remove(element.Id);
-                return;
-            }
-
-            await SessionController.Instance.AddElementAsync(element);
-
-            ///add element
-            elementsLeft.Remove(element.Id);
-            madeElementIds.Add(element.Id);
-        }
+        
 
         private void Resize(object sender, SizeChangedEventArgs e)
         {

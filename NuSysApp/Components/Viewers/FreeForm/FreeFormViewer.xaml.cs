@@ -84,15 +84,25 @@ namespace NuSysApp
                 delegate(CanvasControl sender, CanvasCreateResourcesEventArgs args)
                 {
                     _minimapInitialized = true;
-                    TryInitialize();
+              //      TryInitialize();
                 };
 
             xRenderCanvas.CreateResources += async delegate
             {
                 _renderCanvasInitialized = true;
-                TryInitialize();
+            //    TryInitialize();
             };
             
+        }
+
+        public void Clear()
+        {
+           // vm.Controller.Disposed -= ControllerOnDisposed;
+          //  vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
+            InitialCollection?.Dispose();
+            xRenderCanvas.Invalidate();
+            _minimap?.Dispose();
+
         }
 
         public void ActivateUndo(IUndoable action, Point2d location)
@@ -109,14 +119,6 @@ namespace NuSysApp
 
         public async Task LoadInitialCollection(FreeFormViewerViewModel vm)
         {
-            if (_vm != null)
-            {
-                vm.Controller.Disposed -= ControllerOnDisposed;
-                vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
-            } 
-            InitialCollection?.Dispose();
-            vm.Controller.Disposed += ControllerOnDisposed;
-            vm.Elements.CollectionChanged += ElementsOnCollectionChanged;
             _vm = vm;
             _vm.X = 0;
             _vm.Y = 0;
@@ -124,32 +126,30 @@ namespace NuSysApp
             _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
-            InitialCollection = new ShapedCollectionRenderItem(_vm, null, xRenderCanvas, true);
-            _minimap?.Dispose();
-            _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
-            await InitialCollection.Load();
-           
-
-            RenderEngine.Init(xRenderCanvas, InitialCollection);
-
             if (_canvasInteractionManager == null)
                 _canvasInteractionManager = new CanvasInteractionManager(SessionController.Instance.SessionView.MainCanvas);
 
+            if (_vm != null)
+            {
+                vm.Controller.Disposed -= ControllerOnDisposed;
+                vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
+            } 
+
+            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.Elements.CollectionChanged += ElementsOnCollectionChanged;
+
+         
+            InitialCollection = new ShapedCollectionRenderItem(_vm, null, xRenderCanvas, true);
             SwitchCollection(InitialCollection);
+            RenderEngine.Init(xRenderCanvas, InitialCollection);
+
+            _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             _minimap?.Invalidate();
         }
-
-        private async Task TryInitialize()
-        {
-            if (!(_renderCanvasInitialized && _minimapInitialized))
-                return;
-
-        }
-
 
         private void SwitchCollection(CollectionRenderItem collection)
         {
@@ -697,7 +697,7 @@ namespace NuSysApp
                 elem.ViewModel.Controller.SetPosition(newX, newY);
                 if (elem is CollectionRenderItem)
                 {
-                    (elem as CollectionRenderItem).InkRenderItem.UpdateDryInkTransform();
+                    (elem as CollectionRenderItem).InkRenderItem?.UpdateDryInkTransform();
                 }
 
             }
@@ -711,7 +711,7 @@ namespace NuSysApp
                     e.Controller.SetPosition(newXe, newYe);
                     if (selectable is CollectionRenderItem)
                     {
-                        (selectable as CollectionRenderItem).InkRenderItem.UpdateDryInkTransform();
+                        (selectable as CollectionRenderItem).InkRenderItem?.UpdateDryInkTransform();
                     }
                 }
             }
@@ -732,11 +732,11 @@ namespace NuSysApp
             PanZoom2(CurrentCollection.Camera, _transform, center, deltaTranslation.X/_transform.M11,
                 deltaTranslation.Y/_transform.M11, deltaZoom);
 
-            CurrentCollection.InkRenderItem.UpdateDryInkTransform();
+            CurrentCollection.InkRenderItem?.UpdateDryInkTransform();
             // update the ink transform of all children. Currently one level only.
             foreach (var childCollection in CurrentCollection.GetRenderItems().OfType<CollectionRenderItem>())
             {
-                childCollection.InkRenderItem.UpdateDryInkTransform();
+                childCollection.InkRenderItem?.UpdateDryInkTransform();
             }
             
 
@@ -749,12 +749,12 @@ namespace NuSysApp
             if (ToolsAreBeingInteractedWith)
                 return;
             PanZoom2(CurrentCollection.Camera, _transform, point, delta.X/_transform.M11, delta.Y/_transform.M11, 1);
-            CurrentCollection.InkRenderItem.UpdateDryInkTransform();
+            CurrentCollection.InkRenderItem?.UpdateDryInkTransform();
 
             // update the ink transform of all children. Currently one level only.
             foreach (var childCollection in CurrentCollection.GetRenderItems().OfType<CollectionRenderItem>())
             {
-                childCollection.InkRenderItem.UpdateDryInkTransform();
+                childCollection.InkRenderItem?.UpdateDryInkTransform();
             }
 
             UpdateNonWin2dElements();
