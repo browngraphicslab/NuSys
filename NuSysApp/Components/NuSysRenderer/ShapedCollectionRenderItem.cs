@@ -102,7 +102,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed)
+            if (IsDisposed || _rect ==null)
                 return;
 
             var orgTransform = ds.Transform;

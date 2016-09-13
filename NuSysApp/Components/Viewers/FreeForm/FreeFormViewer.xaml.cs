@@ -858,9 +858,6 @@ namespace NuSysApp
             
         }
 
-
-
-
         protected void PanZoom2(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
         {
             var cInv = Win2dUtil.Invert(target.C);

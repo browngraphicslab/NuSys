@@ -85,7 +85,7 @@ namespace NuSysApp
             _canvas.Update += CanvasOnUpdate;
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
-            _canvas.RunOnGameLoopThreadAsync(async () =>
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(_canvas, async () =>
             {
                 try
                 {
@@ -93,7 +93,7 @@ namespace NuSysApp
                 }
                 catch (Exception e)
                 {
-                    
+                    Debug.Fail("Error while loading collection");
                 }
                 _isStopped = false;
             });

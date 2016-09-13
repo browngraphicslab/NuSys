@@ -73,7 +73,7 @@ namespace NuSysApp
 
         public async override Task Load()
         {
-            _canvas.RunOnGameLoopThreadAsync(async () =>
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(_canvas, async () =>
             {
                 InkRenderItem = new InkRenderItem(this, _canvas);
                 await base.Load();
@@ -94,7 +94,7 @@ namespace NuSysApp
                 }
 
 
-                foreach (var elementViewModel in ViewModel.Elements)
+                foreach (var elementViewModel in ViewModel.Elements.ToArray())
                 {
                     await AddItem(elementViewModel);
                 }

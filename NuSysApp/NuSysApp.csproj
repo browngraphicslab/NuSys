@@ -335,6 +335,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionResizerRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementSelectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\GameLoopSynchronizationContext.cs" />
     <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
     <Compile Include="Components\NuSysRenderer\HTMLParser.cs" />
     <Compile Include="Components\NuSysRenderer\I2dTransformable.cs" />

@@ -22,6 +22,8 @@ namespace NuSysApp
 
         public BaseRenderItem Root { get; set; }
 
+        public GameLoopSynchronizationContext GameLoopSynchronizationContext { get; private set; }
+
 
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
@@ -67,6 +69,7 @@ namespace NuSysApp
             _canvasAnimatedControl.Draw += CanvasOnDraw;
             _canvasAnimatedControl.Update += CanvasOnUpdate;
             _canvasAnimatedControl.CreateResources += CanvasOnCreateResources;
+            GameLoopSynchronizationContext = new GameLoopSynchronizationContext(canvas);
         }
 
         public virtual void Init(CanvasControl canvas, BaseRenderItem root)
