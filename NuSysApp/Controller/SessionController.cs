@@ -532,6 +532,7 @@ namespace NuSysApp
         {
             //unload all the content data models by deleting them, and clear the element controllers
             //Instance?.ContentController?.ClearAllContentDataModels();
+            Instance?.LinksController.Clear();
             Instance?.ActiveFreeFormViewer?.AtomViewList?.Clear();
             Instance?.IdToControllers?.ForEach(kvp => kvp.Value?.Dispose());
             Instance?.IdToControllers?.Clear();//TODO actually unload all of these.  very important

@@ -34,6 +34,7 @@ namespace NuSysApp
 
         public InkRenderItem InkRenderItem { get; set; }
         public ElementCollectionViewModel ViewModel;
+        private List<BaseRenderItem> _allRenderItems = new List<BaseRenderItem>();
 
         public Transformable Camera { get; set; } = new Transformable();
         
@@ -69,6 +70,10 @@ namespace NuSysApp
             }
             
             ViewModel.Links.Remove(soughtLinks.First());
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
+            });            
         }
 
         public async override Task Load()
@@ -92,11 +97,15 @@ namespace NuSysApp
                 {
                     InkRenderItem.AddInkModel(inkModel);
                 }
-
-
+                
                 foreach (var elementViewModel in ViewModel.Elements.ToArray())
                 {
                     await AddItem(elementViewModel);
+                }
+
+                foreach (var linkViewModel in ViewModel.Links.ToArray())
+                {
+                    await AddItem(linkViewModel);
                 }
 
                 Debug.WriteLine("Loading done.");
@@ -216,8 +225,7 @@ namespace NuSysApp
                         RemoveItem(oldItem);
                     }
                 }
-             
-                
+            
             });
         }
 
@@ -272,6 +280,12 @@ namespace NuSysApp
             {
                 _renderItems1.Add(new TrailRenderItem((PresentationLinkViewModel)vm, this, ResourceCreator));
             }
+
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
+            });
+        
         }
 
         private void RemoveItem(object item)
@@ -344,6 +358,12 @@ namespace NuSysApp
                     _renderItems3.Remove(item);
 
                 item.Dispose();
+
+                _canvas.RunOnGameLoopThreadAsync(() =>
+                {
+                    _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
+                });
+            
             });
         }
 
@@ -354,7 +374,7 @@ namespace NuSysApp
 
         public List<BaseRenderItem> GetRenderItems()
         {
-            return _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
+            return _allRenderItems;
         }
 
         public override BaseRenderItem HitTest(Vector2 point)

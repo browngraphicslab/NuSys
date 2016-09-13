@@ -254,8 +254,8 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 return;
 
             Root.Update();
-            ElementSelectionRenderItem.Update();
-            NodeMarkingMenu.Update();
+            ElementSelectionRenderItem?.Update();
+            NodeMarkingMenu?.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)

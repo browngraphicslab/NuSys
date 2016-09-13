@@ -78,7 +78,7 @@ namespace NuSysApp
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event EventHandler<LinkLibraryElementController> LinkAdded;
+        public event EventHandler<LinkViewModel> LinkAdded;
         public event EventHandler<string> LinkRemoved;
 
         /// <summary>
@@ -683,9 +683,9 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
-        public void AddLink(LinkLibraryElementController linkController)
+        public void AddLink(LinkViewModel linkViewModel)
         {
-            LinkAdded?.Invoke(this, linkController);
+            LinkAdded?.Invoke(this, linkViewModel);
         }
 
         #region Linking methods

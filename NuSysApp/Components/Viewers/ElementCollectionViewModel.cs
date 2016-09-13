@@ -50,6 +50,8 @@ namespace NuSysApp
             controller.CameraPositionChanged += ControllerOnCameraPositionChanged;
             controller.CameraCenterChanged += ControllerOnCameraCenterChanged;
 
+            controller.LibraryElementController.LinkAdded += LibraryElementControllerOnLinkAdded;
+
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
             IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;
@@ -60,6 +62,12 @@ namespace NuSysApp
                 Debug.Assert(childController != null);
                 CreateChild(childController);
             }
+
+            foreach (var vm in SessionController.Instance.LinksController.GetLinkViewModel(controller.LibraryElementModel.LibraryElementId))
+            {
+                if (!Links.Contains(vm))
+                    Links.Add(vm);   
+            }
             
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
@@ -68,6 +76,11 @@ namespace NuSysApp
             AtomViewList = new ObservableCollection<FrameworkElement>();
             _toolStartableId = SessionController.Instance.GenerateId();
             ToolController.ToolControllers.Add(_toolStartableId, this);
+        }
+
+        private void LibraryElementControllerOnLinkAdded(object sender, LinkViewModel linkViewModel)
+        {
+            Links.Add(linkViewModel);
         }
 
         private void ControllerOnCameraCenterChanged(float f, float f1)

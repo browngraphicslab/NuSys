@@ -28,6 +28,22 @@ namespace NuSysApp
         //Get all link Ids attached to a linkable
         private ConcurrentDictionary<string, HashSet<string>> _linkableIdToLinkIds = new ConcurrentDictionary<string, HashSet<string>>();
 
+        private ConcurrentDictionary<string, HashSet<LinkViewModel>> _collectionLibraryIdToLinkViewModels = new ConcurrentDictionary<string, HashSet<LinkViewModel>>();
+        
+        public HashSet<LinkViewModel> GetLinkViewModel(string collectionLibraryId)
+        {
+            if (_collectionLibraryIdToLinkViewModels.ContainsKey(collectionLibraryId))
+            {
+                return _collectionLibraryIdToLinkViewModels[collectionLibraryId];
+            }
+            return new HashSet<LinkViewModel>(); 
+        }
+
+        public void Clear()
+        {
+            _collectionLibraryIdToLinkViewModels.Clear();
+        }
+
         /// <summary>
         /// Gets a Linkable (Link controller or ElementController) from it's id.  Aka elementId
         /// </summary>
@@ -259,6 +275,18 @@ namespace NuSysApp
                 {
                     _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
                 }
+
+                foreach (var collectionLibraryIdToLinkViewModel in _collectionLibraryIdToLinkViewModels)
+                {
+                    foreach (var linkViewModel in collectionLibraryIdToLinkViewModel.Value.ToArray())
+                    {
+
+                        if (linkViewModel.Controller.ContentId == linkLibraryElementModel.OutAtomId || linkViewModel.Controller.ContentId == linkLibraryElementModel.InAtomId)
+                        {
+                            collectionLibraryIdToLinkViewModel.Value.Remove(linkViewModel);
+                        }
+                    }
+                }
             }
 
             var linkedIds = GetLinkedIds(libraryElementController.LibraryElementModel.LibraryElementId);
@@ -268,6 +296,8 @@ namespace NuSysApp
                 var linkController = GetLinkLibraryElementControllerFromLibraryElementId(linkId);
                 var inelementid = linkController.LinkLibraryElementModel.InAtomId;
                 var outelementid = linkController.LinkLibraryElementModel.OutAtomId;
+
+     
 
 
                 if (_contentIdToLinkableIds.ContainsKey(inelementid))
@@ -332,7 +362,7 @@ namespace NuSysApp
         /// <param name="two"></param>
         private void CreateBezierLinkBetween(ILinkable one, ILinkable two)
         {
-            return;
+
             if (!AreBezierLinksVisible)
             {
                 return; // if we do not want to see the visual links then this should stop the links from being created
@@ -352,18 +382,29 @@ namespace NuSysApp
             model.InAtomId = one.Id;
             model.OutAtomId = two.Id;
             var controller = new LinkController(model, linkLibElemController);
+            //    var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
+            //   var collectionViewModel = allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
 
             var vm = new LinkViewModel(controller);
-            var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-            var collectionViewModel = allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
+            if (!_collectionLibraryIdToLinkViewModels.ContainsKey(oneParentCollectionId)) { 
+                _collectionLibraryIdToLinkViewModels[oneParentCollectionId] = new HashSet<LinkViewModel>();
+            }
+            _collectionLibraryIdToLinkViewModels[oneParentCollectionId].Add(vm);
+
+            var parentCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(oneParentCollectionId);
+            parentCollectionController.AddLink(new LinkViewModel(controller));
+
+            return;
+            /*
             if (collectionViewModel != null)
             {
-                collectionViewModel.Links.Add(vm);
+             //   collectionViewModel.Links.Add(vm);
             }
             else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
             {
                 SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.ViewModel.Links.Add(vm);
             }
+            */
             controller.OutElement.UpdateCircleLinks();
             controller.InElement.UpdateCircleLinks();
         }
@@ -601,7 +642,7 @@ namespace NuSysApp
                 }
             }
             _contentIdToLinkableIds.TryRemove(libraryElementId, out outObj);
-            _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);
+            _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);           
         }
 
         /// <summary>
@@ -684,7 +725,7 @@ namespace NuSysApp
             }
             else
             {
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Trails.Add(vm);
+             //   SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Trails.Add(vm);
             }
             isSuccess = true;
 

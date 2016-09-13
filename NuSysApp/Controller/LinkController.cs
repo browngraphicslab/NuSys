@@ -97,13 +97,11 @@ namespace NuSysApp
             {
                 InElement.AnchorChanged -= ChangeAnchor;
                 InElement.Disposed -= Dispose;
-                InElement = null;
             }
             if (OutElement != null)
             {
                 OutElement.AnchorChanged -= ChangeAnchor;
                 OutElement.Disposed -= Dispose;
-                OutElement = null;
             }
             if (LibraryElementController != null)
             {
