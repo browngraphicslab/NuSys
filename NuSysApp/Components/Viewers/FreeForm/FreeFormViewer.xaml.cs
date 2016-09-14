@@ -127,7 +127,7 @@ namespace NuSysApp
             DataContext = _vm;
 
             if (_canvasInteractionManager == null)
-                _canvasInteractionManager = new CanvasInteractionManager(SessionController.Instance.SessionView.MainCanvas);
+                _canvasInteractionManager = new CanvasInteractionManager(xRenderCanvas);
 
             if (_vm != null)
             {

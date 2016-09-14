@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using NusysIntermediate;
 using Windows.UI.Xaml;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 { 
@@ -693,6 +694,24 @@ namespace NuSysApp
             }
 
             // return false if the request was performed unsuccesfully
+            return false;
+        }
+
+
+        public async Task<bool> RemovePresentationLink(string id)
+        {
+            foreach (var key in _collectionLibraryIdToTrailViewModels.Keys)
+            {
+                foreach (var trailViewModel in _collectionLibraryIdToTrailViewModels[key])
+                {
+                    if (trailViewModel.Model.LinkId == id)
+                    {
+                        var collectionLibElementController = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(key);
+                        collectionLibElementController.RemoveTrail(trailViewModel);
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 

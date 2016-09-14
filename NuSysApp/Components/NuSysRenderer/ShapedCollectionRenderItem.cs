@@ -21,11 +21,11 @@ namespace NuSysApp
         private CanvasGeometry _rect;
         private ElementCollectionViewModel _vm;
         private bool _recomputeShape = true;
-        private Rect _shapeBounds;
+        private CanvasGeometry _shapeBounds;
 
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
         {
-            TransformBehavior = CanvasStrokeTransformBehavior.Fixed
+            TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
         };
         
         public ShapedCollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas, interactionEnabled)
@@ -97,7 +97,7 @@ namespace NuSysApp
                 _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
             }
 
-            _shapeBounds = _shape.ComputeBounds();
+            _shapeBounds = CanvasGeometry.CreateRectangle(ResourceCreator, _shape.ComputeBounds());
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -107,43 +107,46 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             ds.Transform = GetTransform() * ds.Transform;
-            // ds.Transform = GetCameraTransform() * GetTransform() * ds.Transform;
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
-
 
             Color borderColor;
             Color bgColor;
             float borderWidth = 4f;
 
+            _strokeStyle.DashStyle = CanvasDashStyle.Solid;
+
             var isActive = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection == this;
 
             if (isActive)
             {
-                borderColor = Color.FromArgb(0x66, 0, 102, 255);
-                borderWidth = 8f;
+                borderColor = Color.FromArgb(0xFF, 0, 102, 255);
+                borderWidth = 1f;
                 bgColor = Colors.White;
             }
             else
             {
                 borderColor = Colors.Black;
-                borderWidth = 4f;
+                borderWidth = 1f;
                 bgColor = Colors.LightGray;
             }
 
+            CanvasGeometry borderGeometry= null;
 
             // infinite unshaped
             if (!_vm.IsShaped && !_vm.IsFinite)
             {
                 ds.Transform = GetTransform() * orgTransform;
+                borderGeometry = _rect;
                 ds.FillGeometry(_rect, bgColor);
-                ds.DrawRectangle(boundaries, borderColor, borderWidth);
+               // ds.DrawRectangle(boundaries, borderColor, borderWidth, _strokeStyle);
             }
             // finite unshaped 
             else if (!_vm.IsShaped && _vm.IsFinite)
             {
                 ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
                 ds.FillGeometry(_shape, bgColor);
-                ds.DrawRectangle(_shapeBounds, borderColor, borderWidth);
+                //ds.DrawRectangle(_shapeBounds, borderColor, borderWidth, _strokeStyle);
+                borderGeometry = _shapeBounds;
                 ds.Transform = GetTransform() * orgTransform;
             }
             // finite shaped
@@ -152,8 +155,9 @@ namespace NuSysApp
               
                 ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
                 ds.FillGeometry(_shape, bgColor);
-                ds.DrawGeometry(_shape, bgColor, 12f, _strokeStyle);
-               // ds.DrawRectangle(_shapeBounds, borderColor, borderWidth);
+                //  ds.DrawGeometry(_shape, bgColor, 6f, _strokeStyle);
+                // ds.DrawRectangle(_shapeBounds, borderColor, borderWidth);
+                borderGeometry = _shapeBounds;
                 ds.Transform = GetTransform() * orgTransform;
             }
             //inifite shaped
@@ -161,31 +165,16 @@ namespace NuSysApp
             {
                 ds.Transform = GetTransform() * orgTransform;
                 ds.FillGeometry(_rect, bgColor);
-                ds.DrawGeometry(_rect, borderColor, borderWidth);
+               // ds.DrawGeometry(_rect, borderColor, borderWidth, _strokeStyle);
+                borderGeometry = _rect;
                 ds.Transform = GetTransform() * orgTransform;
             }
-            /*
-            // infinite collections
-                if (_shape != null && !_vm.IsFinite )
-            {
-                ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
-                ds.FillGeometry(_shape, Colors.White);
-                ds.DrawRectangle(_shapeBounds, borderColor, borderWidth);
-                ds.Transform = GetTransform() * orgTransform;
-            }
-            else if (!_vm.IsFinite)
-            {
-                ds.Transform = GetTransform() * orgTransform;
-                ds.FillGeometry(_rect, Colors.White);
-                ds.DrawRectangle(boundaries, borderColor, borderWidth);
-            } */
-
 
 
             CanvasGeometry mask;
             if (_vm.IsFinite && _shape != null)
             {
-                var scaleFactor = (float)boundaries.Width / (float)_shapeBounds.Width;;
+                var scaleFactor = (float)boundaries.Width / (float)_shapeBounds.ComputeBounds().Width;
                 S = Matrix3x2.CreateScale(scaleFactor);
                 ds.Transform = GetCameraTransform()*GetTransform()*orgTransform;
                 mask = _shape;
@@ -213,7 +202,25 @@ namespace NuSysApp
                 foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
-                ds.Transform = orgTransform;
+      
+            
+             //   ds.Transform = GetTransform() * orgTransform;
+             //   ds.DrawGeometry(borderGeometry, bgColor);
+
+            
+            }
+
+            if (borderGeometry != null) {
+                if (ViewModel.IsFinite)
+                {
+                    ds.Transform = GetCameraTransform()*GetTransform()*orgTransform;
+                    ds.DrawGeometry(borderGeometry, borderColor, borderWidth, _strokeStyle);
+                }
+                else
+                {
+                    ds.Transform = GetTransform() * orgTransform;
+                    ds.DrawGeometry(borderGeometry, borderColor, borderWidth, _strokeStyle);
+                }
             }
 
             ds.Transform = orgTransform;

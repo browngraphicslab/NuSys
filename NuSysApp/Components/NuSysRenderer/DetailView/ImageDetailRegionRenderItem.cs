@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
 using Point = Windows.Foundation.Point;
@@ -19,6 +20,10 @@ namespace NuSysApp
         private ImageLibraryElementController _controller;
         public Size Size;
         public delegate void RegionUpdatedHandler(ImageDetailRegionRenderItem regionRegion, Vector2 regionBounds);
+        public delegate void RegionInteractionHandler(ImageDetailRegionRenderItem regionRegion);
+        public event RegionInteractionHandler RegionPressed;
+        public event RegionInteractionHandler RegionReleased;
+
         public event RegionUpdatedHandler RegionMoved;
         public event RegionUpdatedHandler RegionResized;
 
@@ -27,6 +32,11 @@ namespace NuSysApp
         private Rect _bitmap;
         private double _totalScale;
         public ImageLibraryElementModel LibraryElementModel { get; set; }
+
+        private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
+        {
+            TransformBehavior = CanvasStrokeTransformBehavior.Fixed
+        };
 
         private bool _isModifiable;
 
@@ -50,6 +60,8 @@ namespace NuSysApp
             if (_isModifiable) { 
                 _resizer = new ImageDetailRegionResizerRenderItem(this, ResourceCreator);
                 _resizer.ResizerDragged += ResizerOnResizerDragged;
+                _resizer.ResizerDragStarted += ResizerOnResizerDragStarted;
+                _resizer.ResizerDragEnded += ResizerOnResizerDragEnded;
                 Children.Add(_resizer);
             }
 
@@ -58,6 +70,16 @@ namespace NuSysApp
             _controller.LocationChanged += ControllerOnLocationChanged;
             
             UpdateImageBound(_totalScale);
+        }
+
+        private void ResizerOnResizerDragEnded()
+        {
+            RegionReleased?.Invoke(this);
+        }
+
+        private void ResizerOnResizerDragStarted()
+        {
+            RegionPressed?.Invoke(this);
         }
 
         public void UpdateImageBound(double scale)
@@ -128,16 +150,15 @@ namespace NuSysApp
         {
     
             var orgTransform = ds.Transform;
-
-            ds.Transform = GetTransform()*orgTransform;
-   
-            ds.DrawRectangle(new Rect(0,0,Size.Width, Size.Height), Color.FromArgb(0x99,255,0x0,0), 2);
-
-            ds.Transform = orgTransform;
-
+            
             if (_resizer != null)
                 _resizer.T = Matrix3x2.CreateTranslation((float)(Size.Width), (float)(Size.Height));
             base.Draw(ds);
+
+            ds.Transform = GetTransform() * orgTransform;
+
+            ds.DrawRectangle(new Rect(0, 0, Size.Width, Size.Height), Color.FromArgb(255, 200, 200, 200), 2, _strokeStyle);
+            ds.Transform = orgTransform;
         }
 
         public override void OnDragged(CanvasPointer pointer)
@@ -148,6 +169,18 @@ namespace NuSysApp
 
          
             RegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate);
+        }
+
+        public override void OnPressed(CanvasPointer pointer)
+        {
+            base.OnPressed(pointer);
+            RegionPressed?.Invoke(this);
+        }
+
+        public override void OnReleased(CanvasPointer pointer)
+        {
+            base.OnReleased(pointer);
+            RegionReleased?.Invoke(this);
         }
 
         public override void OnDoubleTapped(CanvasPointer pointer)

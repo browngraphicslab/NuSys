@@ -59,32 +59,16 @@ namespace NuSysApp
         /// <returns></returns>
         private async Task<bool> DeletePresentationLinkFromLibrary(string presentationLinkId)
         {
-            var success = false;
-            await UITask.Run(async delegate
+            var success = await SessionController.Instance.LinksController.RemovePresentationLink(presentationLinkId);
+            if (success)
             {
-                // A list of all the presentation lists on the active free form viewer
-                var presentationLinkViewModels =
-                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                        atom => atom.DataContext is PresentationLinkViewModel).Select(item => item.DataContext as PresentationLinkViewModel).ToList();
-
                 // the presentation link view model we are going to delete
-                var toBeDeleted = presentationLinkViewModels.FirstOrDefault(vm => vm.Model.LinkId == presentationLinkId);
+                var toBeDeleted = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.LinkId == presentationLinkId);
 
                 // if the presentation link view model we are going to delete exists
                 if (toBeDeleted != null)
-                {
-                    // then remove it from the wrapping and fire disposed
-                    var model = toBeDeleted.Model;
-                    PresentationLinkViewModel.Models.Remove(model);
-                    toBeDeleted.FireDisposed(this, EventArgs.Empty);
-                    success = true;
-                }
-                else
-                {
-                    // the presentation link view model we are going to delete does not exist so return false
-                    success = false;
-                }
-            });
+                    PresentationLinkViewModel.Models.Remove(toBeDeleted);
+            }
 
             return success;
         }

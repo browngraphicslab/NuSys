@@ -25,6 +25,7 @@ namespace NuSysApp
         protected CanvasGeometry _mask;
         protected Size _canvasSize;
         protected bool _needsMaskRefresh = true;
+        private CanvasGeometry _croppy;
         public string ImageUrl { get; set; }
 
         public bool IsRegionsVisible { get; set; }
@@ -32,6 +33,9 @@ namespace NuSysApp
 
         public delegate void RegionUpdatedHandler();
         public event RegionUpdatedHandler NeedsRedraw;
+
+        private bool _showCroppy;
+        private ImageDetailRegionRenderItem _activeRegion;
 
         public ImageDetailRenderItem(ImageLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -75,6 +79,8 @@ namespace NuSysApp
             foreach (var child in Children)
             {
                 var region = child as ImageDetailRegionRenderItem;
+                region.RegionPressed -= RegionOnRegionPressed;
+                region.RegionReleased -= RegionOnRegionReleased;
                 region.RegionMoved -= RegionOnRegionMoved;
                 region.RegionResized -= RegionOnRegionResized;
                 region?.Dispose();
@@ -83,6 +89,8 @@ namespace NuSysApp
             base.Dispose();
 
         }
+
+
 
         protected void ReRender()
         {
@@ -166,9 +174,9 @@ namespace NuSysApp
             {
                 var region = child as ImageDetailRegionRenderItem;
                 region.RegionMoved -= RegionOnRegionMoved;
-                region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized -= RegionOnRegionResized;
-                region.RegionResized += RegionOnRegionResized;
+                region.RegionPressed -= RegionOnRegionPressed;
+                region.RegionReleased -= RegionOnRegionReleased;
 
                 region?.Dispose();
             }
@@ -180,7 +188,9 @@ namespace NuSysApp
                 var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
                 region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized += RegionOnRegionResized;
-                
+                region.RegionPressed += RegionOnRegionPressed;
+                region.RegionReleased += RegionOnRegionReleased;
+
                 Children.Add(region);
             }
 
@@ -190,7 +200,24 @@ namespace NuSysApp
 
             NeedsRedraw?.Invoke();
         }
-        
+
+        protected void RegionOnRegionReleased(ImageDetailRegionRenderItem regionRegion)
+        {
+            _showCroppy = false;
+            _croppy = null;
+            _activeRegion = null;
+            NeedsRedraw?.Invoke();
+
+        }
+
+        protected void RegionOnRegionPressed(ImageDetailRegionRenderItem regionRegion)
+        {
+            _showCroppy = true;
+            _activeRegion = regionRegion;
+            NeedsRedraw?.Invoke();
+
+        }
+
         protected void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
             var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
@@ -228,6 +255,13 @@ namespace NuSysApp
                 _needsMaskRefresh = false;
             }
 
+            if (_showCroppy)
+            {
+
+                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.T.M31, _activeRegion.T.M32, _activeRegion.GetMeasure().Width, _activeRegion.GetMeasure().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
+            }
+
+
             var orgTransform = ds.Transform;
             var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;
             var offsetY = (float)(CanvasSize.Height - _croppedImageTarget.Height) / 2f;
@@ -239,6 +273,11 @@ namespace NuSysApp
                     ds.DrawImage(_bmp, _croppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
                 else 
                     ds.FillRectangle(_croppedImageTarget, Colors.Gray);
+
+                if (_activeRegion != null && _croppy != null) { 
+                  //  Debug.WriteLine(_croppy.ComputeBounds());
+                    ds.FillGeometry(_croppy, Color.FromArgb(0x88,0,0,0));
+                }
                 ds.Transform = orgTransform;
 
                 if (IsRegionsVisible)

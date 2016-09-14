@@ -308,7 +308,7 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float)_originalTransform.TranslateX, (float)_originalTransform.TranslateY);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)_originalTransform.CenterX, (float)_originalTransform.CenterY);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)_originalTransform.ScaleX;
-
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.UpdateDryInkTransform();
 
 
 

@@ -21,6 +21,10 @@ namespace NuSysApp
         public Vector2 StartPoint;
         public Vector2 CurrentPoint;
         public float Pressure;
+        private Vector2[] _buffer;
+        private bool _isBuffering;
+        private uint _bufferLength;
+        private int _bufferIndex;
 
         public CanvasPointer() { }
         public CanvasPointer(PointerPoint pointerpoint)
@@ -61,6 +65,33 @@ namespace NuSysApp
             CurrentPoint = newPoint;
             LastUpdated = DateTime.Now;
             Pressure = point.Properties.Pressure;
+            if (_isBuffering)
+            {
+                _buffer[_bufferIndex++] = CurrentPoint;
+                if (_bufferIndex == _bufferLength)
+                    _bufferIndex = 0;
+            }
+        }
+
+        public void StartBuffering(uint length)
+        {
+            _bufferLength = length;
+            _isBuffering = true;
+            _buffer = new Vector2[length];
+            for (int i = 0; i < length; i++)
+            {
+                _buffer[i] = CurrentPoint;
+            }
+        }
+
+        public Vector2 GetBufferMean()
+        {
+            var sum = Vector2.Zero;
+            for (int i = 0; i < _bufferLength; i++)
+            {
+                sum += _buffer[i];
+            }
+            return sum/_bufferLength;
         }
 
         public double MillisecondsActive

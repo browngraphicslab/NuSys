@@ -21,7 +21,13 @@ namespace NuSysApp
             Translated += OnTranslated;
             ItemTapped += OnItemTapped;
             ItemDoubleTapped += OnItemDoubleTapped;
+            PointerReleased += OnPointerReleased;
             AllPointersReleased += OnAllPointersReleased;
+        }
+
+        private void OnPointerReleased(CanvasPointer pointer)
+        {
+            _hit?.OnReleased(pointer);
         }
 
         private void OnAllPointersReleased()
@@ -36,13 +42,13 @@ namespace NuSysApp
                 return;
             _hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
             _isPressed = true;
+            _hit?.OnPressed(pointer);
         }
 
         private void OnTranslated(CanvasPointer pointer, Vector2 point, Vector2 delta)
         {
             if (_isPressed && _hit != null)
                 _hit.OnDragged(pointer);
-            
         }
 
         public override void Dispose()

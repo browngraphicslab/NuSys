@@ -46,10 +46,11 @@ namespace NuSysApp
         private CanvasPointer _lastTappedPointer = new CanvasPointer();
         private Vector2 _centerPoint;
         private double _twoFingerDist;
+        private double _twoFingerDistTarget;
         private List<CanvasPointer> _pointers = new List<CanvasPointer>();
         private FrameworkElement _canvas;
-       private bool _cancelLongTapped;
-       private bool _isEnabled = true;
+        private bool _cancelLongTapped;
+        private bool _isEnabled = true;
 
        public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
         
@@ -94,6 +95,8 @@ namespace NuSysApp
 
        private void OnAllPointersReleased()
        {
+           _twoFingerDist = 0;
+           _twoFingerDistTarget = 0;
            _cancelLongTapped = false;
        }
 
@@ -125,7 +128,7 @@ namespace NuSysApp
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
         {
-                        if (!_isEnabled)
+            if (!_isEnabled)
                 return;
             OnPointerTouchMoved(sender, args);
         }
@@ -135,9 +138,9 @@ namespace NuSysApp
             if (_pointers.Count == 1)
             {
                 _centerPoint = new Vector2((float)_pointers[0].CurrentPoint.X, (float)_pointers[0].CurrentPoint.Y);
-            } else { 
-                var p0 = _pointers[0].CurrentPoint;
-                var p1 = _pointers[1].CurrentPoint;
+            } else {
+                var p0 = _pointers[0].GetBufferMean();
+                var p1 = _pointers[1].GetBufferMean();
                 _centerPoint = new Vector2((float) (p0.X + p1.X)/2f, (float) (p0.Y + p1.Y)/2f);
             }
         }
@@ -145,20 +148,24 @@ namespace NuSysApp
         private void UpdateDist()
         {
             var points = _pointers.Select(p => p.CurrentPoint).ToArray();
-            var p0 = new Vector2((float)points[0].X, (float)points[0].Y);
-            var p1 = new Vector2((float)points[1].X, (float)points[1].Y);
+            var p0 = _pointers[0].GetBufferMean();
+            var p1 = _pointers[1].GetBufferMean();
             _twoFingerDist = MathUtil.Dist(p0, p1);
         }
                
         private async void OnPointerTouchPressed(object sender, PointerRoutedEventArgs e)
         {
+            _canvas.CapturePointer(e.Pointer);
+
             _pointers.Add(new CanvasPointer(e.GetCurrentPoint(_canvas)));
 
             UpdateCenterPoint();
 
             PointerPressed?.Invoke(_pointers.Last());
 
-            if (_pointers.Count == 2) {
+            if (_pointers.Count >= 2) {
+                _pointers[0].StartBuffering(5);
+                _pointers[1].StartBuffering(5);
                 UpdateCenterPoint();
                 UpdateDist();
                
@@ -174,6 +181,7 @@ namespace NuSysApp
 
         private async void OnPointerTouchReleased(object sender, PointerRoutedEventArgs e)
         {
+            _canvas.ReleasePointerCapture(e.Pointer);
             var exisitingPointer = _pointers.Where(p => p.PointerId == e.Pointer.PointerId);
             if (!exisitingPointer.Any())
                 return;
@@ -234,7 +242,7 @@ namespace NuSysApp
                     if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
                         Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);
                 }
-                if (_pointers.Count == 2)
+                if (_pointers.Count >= 2)
                 {
                     var prevCenterPoint = _centerPoint;
                     var prevDist = _twoFingerDist;
