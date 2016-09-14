@@ -441,7 +441,7 @@ namespace NuSysApp
 
         public void ShowBlockingScreen(bool visible)
         {
-         //   xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
             xLoadingGrid.Tapped += delegate
             {
                 SessionController.Instance.LoadCapturedState();

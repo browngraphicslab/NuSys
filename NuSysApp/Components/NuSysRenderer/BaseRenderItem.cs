@@ -82,7 +82,7 @@ namespace NuSysApp
             {
                 child.Dispose();
             }
-            ResourceCreator = null;
+
             Parent = null;
             IsDisposed = true;
         }

@@ -29,6 +29,7 @@ namespace NuSysApp
         private ConcurrentDictionary<string, HashSet<string>> _linkableIdToLinkIds = new ConcurrentDictionary<string, HashSet<string>>();
 
         private ConcurrentDictionary<string, HashSet<LinkViewModel>> _collectionLibraryIdToLinkViewModels = new ConcurrentDictionary<string, HashSet<LinkViewModel>>();
+        private ConcurrentDictionary<string, HashSet<PresentationLinkViewModel>> _collectionLibraryIdToTrailViewModels = new ConcurrentDictionary<string, HashSet<PresentationLinkViewModel>>();
         
         public HashSet<LinkViewModel> GetLinkViewModel(string collectionLibraryId)
         {
@@ -39,9 +40,19 @@ namespace NuSysApp
             return new HashSet<LinkViewModel>(); 
         }
 
-        public void Clear()
+        public HashSet<PresentationLinkViewModel> GetTrailViewModel(string collectionLibraryId)
+        {
+            if (_collectionLibraryIdToTrailViewModels.ContainsKey(collectionLibraryId))
+            {
+                return _collectionLibraryIdToTrailViewModels[collectionLibraryId];
+            }
+            return new HashSet<PresentationLinkViewModel>();
+        }
+
+        public void ClearVisualLinks()
         {
             _collectionLibraryIdToLinkViewModels.Clear();
+            _collectionLibraryIdToTrailViewModels.Clear();
         }
 
         /// <summary>
@@ -694,15 +705,19 @@ namespace NuSysApp
         public async Task<bool> AddPresentationLinkToLibrary(PresentationLinkModel model)
         {
             // If there exists a presentation link between two element models, return and do not create a new one
-            if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == model.InElementId && item.OutElementId == model.OutElementId) != null ||
-                PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == model.InElementId && item.InElementId == model.OutElementId) != null)
+            if (
+                PresentationLinkViewModel.Models.FirstOrDefault(
+                    item => item.InElementId == model.InElementId && item.OutElementId == model.OutElementId) != null ||
+                PresentationLinkViewModel.Models.FirstOrDefault(
+                    item => item.OutElementId == model.InElementId && item.InElementId == model.OutElementId) != null)
             {
                 return false;
             }
 
             var isSuccess = false;
-  
-            Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
+
+            Debug.Assert(PresentationLinkViewModel.Models != null,
+                "this hashset of presentationlinkmodels should be statically instantiated");
 
 
             // create a new presentation link view
@@ -714,19 +729,25 @@ namespace NuSysApp
 
             // Add the model to the list of models
             // create a new presentation link view model
-            var vm = new PresentationLinkViewModel(model);
-            PresentationLinkViewModel.Models.Add(vm.Model);
+            if (!(SessionController.Instance.IdToControllers.ContainsKey(model.InElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId)))
+                return false;
 
-            var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-            var collectionViewModel = allContent.FirstOrDefault(item => (item.LibraryElementId == vm.Model.ParentCollectionId)) as GroupNodeViewModel;
-            if (collectionViewModel != null)
+            var inElementController = SessionController.Instance.IdToControllers[model.InElementId];
+            var parentCollectionId = inElementController.GetParentCollectionId();
+            var parentCollectionController = (CollectionLibraryElementController) SessionController.Instance.ContentController.GetLibraryElementController(parentCollectionId);
+            var vm = new PresentationLinkViewModel(model);
+
+
+            if (!_collectionLibraryIdToTrailViewModels.ContainsKey(parentCollectionId))
             {
-                collectionViewModel.Trails.Add(vm);
+                _collectionLibraryIdToTrailViewModels[parentCollectionId] = new HashSet<PresentationLinkViewModel>();
             }
-            else
-            {
-             //   SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Trails.Add(vm);
-            }
+            _collectionLibraryIdToTrailViewModels[parentCollectionId].Add(vm);
+            parentCollectionController.AddTrail(vm);
+
+
+            PresentationLinkViewModel.Models.Add(vm.Model);
+            
             isSuccess = true;
 
             return isSuccess;

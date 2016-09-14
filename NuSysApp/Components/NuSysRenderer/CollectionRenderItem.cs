@@ -80,15 +80,18 @@ namespace NuSysApp
         {
             GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(_canvas, async () =>
             {
-                InkRenderItem = new InkRenderItem(this, _canvas);
+                if (IsDisposed)
+                    return;
+                
                 await base.Load();
+
                 var collectionController = (ElementCollectionController) ViewModel.Controller;
                 if (!collectionController.LibraryElementController.ContentLoaded)
                 {
                     await collectionController.LibraryElementController.LoadContentDataModelAsync();
                 }
 
-
+                InkRenderItem = new InkRenderItem(this, _canvas);
                 InkRenderItem.Load();
                 _renderItems0.Add(InkRenderItem);
 
@@ -100,12 +103,18 @@ namespace NuSysApp
                 
                 foreach (var elementViewModel in ViewModel.Elements.ToArray())
                 {
-                    await AddItem(elementViewModel);
+                    AddItem(elementViewModel);
                 }
 
                 foreach (var linkViewModel in ViewModel.Links.ToArray())
                 {
-                    await AddItem(linkViewModel);
+                    AddItem(linkViewModel);
+                }
+
+
+                foreach (var tailViewModel in ViewModel.Trails.ToArray())
+                {
+                    AddItem(tailViewModel);
                 }
 
                 Debug.WriteLine("Loading done.");

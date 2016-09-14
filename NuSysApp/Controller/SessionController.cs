@@ -30,6 +30,7 @@ namespace NuSysApp
         /// The passed string is the LibraryId of the newly entered collection.  
         /// </summary>
         public event EventHandler<string> EnterNewCollectionStarting;
+        public event EventHandler<string> EnterNewCollectionCompleted;
 
         /// <summary>
         /// Be careful adding to this event, check that the handlers you want to take care can't be taken care of in a mode instance in the free form viewer
@@ -385,9 +386,10 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task EnterCollection(string collectionLibraryId)
         {
-            SessionView.FreeFormViewer.RenderEngine.Stop();
+            SessionView.ShowBlockingScreen(true);
 
-           EnterNewCollectionStarting?.Invoke(this,collectionLibraryId);
+            EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
+            SessionView.FreeFormViewer.RenderEngine.Stop();
             
             // Clear free form viewer
             SessionView.FreeFormViewer.Clear();
@@ -487,6 +489,8 @@ namespace NuSysApp
             ActiveFreeFormViewer = freeFormViewerViewModel;
 
             await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
+
+            SessionView.ShowBlockingScreen(false);
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
@@ -532,7 +536,7 @@ namespace NuSysApp
         {
             //unload all the content data models by deleting them, and clear the element controllers
             //Instance?.ContentController?.ClearAllContentDataModels();
-            Instance?.LinksController.Clear();
+            Instance?.LinksController.ClearVisualLinks();
             Instance?.ActiveFreeFormViewer?.AtomViewList?.Clear();
             Instance?.IdToControllers?.ForEach(kvp => kvp.Value?.Dispose());
             Instance?.IdToControllers?.Clear();//TODO actually unload all of these.  very important

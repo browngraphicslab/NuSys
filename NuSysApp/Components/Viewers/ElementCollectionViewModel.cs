@@ -50,7 +50,10 @@ namespace NuSysApp
             controller.CameraPositionChanged += ControllerOnCameraPositionChanged;
             controller.CameraCenterChanged += ControllerOnCameraCenterChanged;
 
-            controller.LibraryElementController.LinkAdded += LibraryElementControllerOnLinkAdded;
+            var libElemController = (CollectionLibraryElementController) controller.LibraryElementController;
+            libElemController.LinkAdded += LibraryElementControllerOnLinkAdded;
+            libElemController.OnTrailAdded += LibElemControllerOnOnTrailAdded;
+            libElemController.OnTrailRemoved += LibElemControllerOnOnTrailRemoved;
 
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
@@ -68,14 +71,28 @@ namespace NuSysApp
                 if (!Links.Contains(vm))
                     Links.Add(vm);   
             }
-            
-            //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
-            //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
+
+            foreach (var vm in SessionController.Instance.LinksController.GetTrailViewModel(controller.LibraryElementModel.LibraryElementId))
+            {
+                if (!Trails.Contains(vm))
+                    Trails.Add(vm);
+            }
+
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             AtomViewList = new ObservableCollection<FrameworkElement>();
             _toolStartableId = SessionController.Instance.GenerateId();
             ToolController.ToolControllers.Add(_toolStartableId, this);
+        }
+
+        private void LibElemControllerOnOnTrailAdded(PresentationLinkViewModel vm)
+        {
+            Trails.Add(vm);
+        }
+
+        private void LibElemControllerOnOnTrailRemoved(PresentationLinkViewModel vm)
+        {
+            Trails.Remove(vm);
         }
 
         private void LibraryElementControllerOnLinkAdded(object sender, LinkViewModel linkViewModel)
@@ -109,10 +126,15 @@ namespace NuSysApp
             var controller = (ElementCollectionController) Controller;
             controller.ChildAdded -= OnChildAdded;
             controller.ChildRemoved -= OnChildRemoved;
+
+            var libElemController = (CollectionLibraryElementController)controller.LibraryElementController;
+            libElemController.LinkAdded -= LibraryElementControllerOnLinkAdded;
+            libElemController.OnTrailAdded -= LibElemControllerOnOnTrailAdded;
+            libElemController.OnTrailRemoved -= LibElemControllerOnOnTrailRemoved;
+
             base.Dispose();
             Disposed?.Invoke(this, _toolStartableId);
             ToolController.ToolControllers.Remove(_toolStartableId);
-
         }
 
         private async void OnChildAdded(object source, ElementController elementController)
