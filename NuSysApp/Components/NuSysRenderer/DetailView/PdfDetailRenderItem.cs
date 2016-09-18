@@ -35,15 +35,15 @@ namespace NuSysApp
 
         protected override void ComputeRegions()
         {
-            var children = Children.ToArray();
-            Children.Clear();
+            var children = GetChildren();
+            ClearChildren();
             foreach (var child in children)
             {
                 var region = child as ImageDetailRegionRenderItem;
                 region.RegionMoved -= RegionOnRegionMoved;
-                region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized -= RegionOnRegionResized;
-                region.RegionResized += RegionOnRegionResized;
+                region.RegionPressed -= RegionOnRegionPressed;
+                region.RegionReleased -= RegionOnRegionReleased;
 
                 region?.Dispose();
             }
@@ -55,11 +55,13 @@ namespace NuSysApp
                 var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
                 region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized += RegionOnRegionResized;
+                region.RegionPressed += RegionOnRegionPressed;
+                region.RegionReleased += RegionOnRegionReleased;
 
-                Children.Add(region);
+                AddChild(region);
             }
 
-            Children.Sort((a, b) => {
+            SortChildren((a, b) => {
                 var areaA = a.GetMeasure(); var areaB = b.GetMeasure();
                 return areaA.Width * areaA.Height > areaB.Width * areaB.Height ? 1 : -1;
             });

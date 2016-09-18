@@ -45,7 +45,7 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;

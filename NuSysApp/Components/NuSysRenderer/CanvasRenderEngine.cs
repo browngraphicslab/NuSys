@@ -16,70 +16,42 @@ namespace NuSysApp
     {
         private CanvasControl _canvasControl;
         private CanvasAnimatedControl _canvasAnimatedControl;
-        private MinimapRenderItem _minimap;
-        public ElementSelectionRenderItem ElementSelectionRenderItem;
-        public NodeMarkingMenuRenderItem NodeMarkingMenu;
+
+        public CanvasControl CanvasControl => _canvasControl;
+        public CanvasAnimatedControl CanvasAnimatedControl => _canvasAnimatedControl;
 
         public BaseRenderItem Root { get; set; }
 
         public GameLoopSynchronizationContext GameLoopSynchronizationContext { get; private set; }
 
-
-        private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
+        public CanvasRenderEngine(CanvasAnimatedControl canvas, BaseRenderItem root)
         {
+            Root = root;
+            _canvasAnimatedControl = canvas;
         }
 
-        public virtual void Stop()
+        public CanvasRenderEngine(CanvasControl canvas, BaseRenderItem root)
+        {
+            Root = root;
+            _canvasControl = canvas;
+        }
+
+        public virtual void Start()
         {
             if (_canvasAnimatedControl != null)
             {
-                _canvasAnimatedControl.Draw -= CanvasOnDraw;
-                _canvasAnimatedControl.Update -= CanvasOnUpdate;
-                _canvasAnimatedControl.CreateResources -= CanvasOnCreateResources;
+                _canvasAnimatedControl.Draw += CanvasAnimatedControlOnDraw;
+                _canvasAnimatedControl.Update += CanvasAnimatedControlOnUpdate;
+                _canvasAnimatedControl.CreateResources += CanvasAnimatedControlOnCreateResources;
+                GameLoopSynchronizationContext = new GameLoopSynchronizationContext(_canvasAnimatedControl);
             }
 
             if (_canvasControl != null)
             {
-                _canvasControl.Draw -= CanvasControlOnDraw;
-                _canvasControl.CreateResources -= CanvasControlOnCreateResources;
-            }
-
-
-            Root.Dispose();
-        }
-
-        private void CanvasControlOnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
-        {
-        }
-
-        private void CanvasControlOnDraw(CanvasControl sender, CanvasDrawEventArgs args)
-        {
-            using (var ds = args.DrawingSession)
-            {
-                ds.Clear(Colors.Transparent);
-                Root.Draw(ds);
+                _canvasControl.Draw += CanvasControlOnDraw;
+                _canvasControl.CreateResources += CanvasControlOnCreateResources;
             }
         }
-
-
-        public virtual void Init(CanvasAnimatedControl canvas, BaseRenderItem root)
-        {
-            Root = root;
-            _canvasAnimatedControl = canvas;
-            _canvasAnimatedControl.Draw += CanvasOnDraw;
-            _canvasAnimatedControl.Update += CanvasOnUpdate;
-            _canvasAnimatedControl.CreateResources += CanvasOnCreateResources;
-            GameLoopSynchronizationContext = new GameLoopSynchronizationContext(canvas);
-        }
-
-        public virtual void Init(CanvasControl canvas, BaseRenderItem root)
-        {
-            Root = root;
-            _canvasControl = canvas;
-            _canvasControl.Draw += CanvasControlOnDraw;
-            _canvasControl.CreateResources += CanvasControlOnCreateResources;
-        }
-
 
         public Matrix3x2 GetTransformUntilOf(BaseRenderItem item)
         {
@@ -88,13 +60,13 @@ namespace NuSysApp
             var parent = item.Parent;
             while (parent != null)
             {
-                transforms.Add(parent);
+                transforms.Add(parent.Transform);
                 parent = parent.Parent;
             }
 
             transforms.Reverse();
 
-            return transforms.Aggregate(Matrix3x2.Identity, (current, t) =>  Win2dUtil.Invert(t.C) * t.S * t.C * t.T * current);
+            return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.C) * t.S * t.C * t.T * current);
         }
 
         public BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem startItem, int maxLevel = int.MaxValue)
@@ -108,7 +80,7 @@ namespace NuSysApp
             var output = new List<BaseRenderItem>();
             startItem = startItem ?? Root;
             var mat = GetTransformUntilOf(startItem);
-           // _GetRenderItemsAt(startItem, sp, mat, output, 0, maxLevel);
+            // _GetRenderItemsAt(startItem, sp, mat, output, 0, maxLevel);
             return null;
         }
 
@@ -120,12 +92,12 @@ namespace NuSysApp
 
         private BaseRenderItem _GetRenderItemAt(BaseRenderItem startItem, Vector2 sp, Matrix3x2 transform, int currentLevel, int maxLevel)
         {
-            var t = startItem.GetTransform() * transform;
+            var t = startItem.Transform.LocalMatrix * transform;
 
             if (currentLevel < maxLevel)
-            {                
+            {
 
-                foreach (var child in startItem.Children)
+                foreach (var child in startItem.GetChildren())
                 {
                     if (currentLevel + 1 < maxLevel)
                     {
@@ -174,12 +146,49 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
             }
         }*/
 
-        private void CanvasOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
+        public virtual void Stop()
         {
-            Root.Update();
+            if (_canvasAnimatedControl != null)
+            {
+                _canvasAnimatedControl.Draw -= CanvasAnimatedControlOnDraw;
+                _canvasAnimatedControl.Update -= CanvasAnimatedControlOnUpdate;
+                _canvasAnimatedControl.CreateResources -= CanvasAnimatedControlOnCreateResources;
+            }
+
+            if (_canvasControl != null)
+            {
+                _canvasControl.Draw -= CanvasControlOnDraw;
+                _canvasControl.CreateResources -= CanvasControlOnCreateResources;
+            }
+
+
+            Root.ClearChildren();
         }
 
-        private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
+        protected virtual void CanvasControlOnCreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
+        {
+        }
+
+        protected virtual void CanvasAnimatedControlOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
+        {
+        }
+
+
+        private void CanvasControlOnDraw(CanvasControl sender, CanvasDrawEventArgs args)
+        {
+            using (var ds = args.DrawingSession)
+            {
+                ds.Clear(Colors.Transparent);
+                Root.Draw(ds);
+            }
+        }
+
+        protected virtual void CanvasAnimatedControlOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
+        {
+            Root.Update(Matrix3x2.Identity);
+        }
+
+        protected virtual void CanvasAnimatedControlOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
             using (var ds = args.DrawingSession)
             {

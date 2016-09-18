@@ -58,6 +58,7 @@ namespace NuSysApp
                     SetImageAnalysis();
                 });
             });
+           
         }
 
         public async void GotoPage(int page)
@@ -110,8 +111,8 @@ namespace NuSysApp
             libElemController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             libElemController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
 
-            _renderEngine = new CanvasRenderEngine();
             var root = new BaseRenderItem(null, xImgCanvas);
+            _renderEngine = new CanvasRenderEngine(xImgCanvas, root);
             _imageDetailRenderItem = new PdfDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
             _imageDetailRenderItem.IsRegionsVisible = ShowRegions;
             _imageDetailRenderItem.CanvasSize = new Size(totalStackPanel.ActualWidth, totalStackPanel.ActualHeight);
@@ -125,12 +126,11 @@ namespace NuSysApp
             }
             _imageDetailRenderItem.NeedsRedraw += ImageOnNeedsRedraw;
 
-            await _imageDetailRenderItem.Load();
-            root.Children.Add(_imageDetailRenderItem);
-
-
-
-            _renderEngine.Init(xImgCanvas, root);
+            var libElemModel = vm.LibraryElementController.LibraryElementModel as PdfLibraryElementModel;
+            GotoPage(libElemModel.PageStart);
+            root.AddChild(_imageDetailRenderItem);
+        
+            _renderEngine.Start();
             _interactionManager = new RenderItemInteractionManager(_renderEngine, xImgCanvas);
             xImgCanvas.Invalidate();
         }

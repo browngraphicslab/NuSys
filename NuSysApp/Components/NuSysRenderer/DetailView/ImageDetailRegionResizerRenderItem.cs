@@ -39,7 +39,7 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             var orgTransform = ds.Transform;
-            ds.Transform = GetTransform() * ds.Transform;
+            ds.Transform = Transform.LocalMatrix * ds.Transform;
 
             if (_triangle != null)
                 ds.FillGeometry(_triangle, new Vector2(0,0), Colors.Black);

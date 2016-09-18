@@ -302,13 +302,14 @@ namespace NuSysApp
 
         private void CompositionTargetOnRendering(object sender, object o)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.T = Matrix3x2.CreateTranslation((float)_originalTransform.TranslateX, (float)_originalTransform.TranslateY);
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.C = Matrix3x2.CreateTranslation((float)_originalTransform.CenterX, (float)_originalTransform.CenterY);
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.S = Matrix3x2.CreateScale((float)_originalTransform.ScaleX, (float)_originalTransform.ScaleY);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition = new Vector2((float)_originalTransform.TranslateX, (float)_originalTransform.TranslateY);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2((float)_originalTransform.CenterX, (float)_originalTransform.CenterY);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale = new Vector2((float)_originalTransform.ScaleX, (float)_originalTransform.ScaleY);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float)_originalTransform.TranslateX, (float)_originalTransform.TranslateY);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)_originalTransform.CenterX, (float)_originalTransform.CenterY);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)_originalTransform.ScaleX;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.UpdateDryInkTransform();
+            SessionController.Instance.SessionView.FreeFormViewer._minimap.Invalidate();
 
 
 

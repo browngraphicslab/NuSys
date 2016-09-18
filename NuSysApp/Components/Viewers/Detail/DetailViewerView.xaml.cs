@@ -90,12 +90,12 @@ namespace NuSysApp
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
-         //   SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
+            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
         }
 
         private void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
-           // SessionController.Instance.SessionView.FreeFormViewer.Freeze();
+            SessionController.Instance.SessionView.FreeFormViewer.Freeze();
         }
 
         /// <summary>

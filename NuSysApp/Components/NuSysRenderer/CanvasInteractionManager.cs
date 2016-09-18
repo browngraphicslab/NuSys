@@ -155,7 +155,7 @@ namespace NuSysApp
                
         private async void OnPointerTouchPressed(object sender, PointerRoutedEventArgs e)
         {
-            _canvas.CapturePointer(e.Pointer);
+     //       _canvas.CapturePointer(e.Pointer);
 
             _pointers.Add(new CanvasPointer(e.GetCurrentPoint(_canvas)));
 

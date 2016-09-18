@@ -23,6 +23,8 @@ namespace NuSysApp
         private bool _recomputeShape = true;
         private CanvasGeometry _shapeBounds;
 
+        private Rect _bounds;
+
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
         {
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
@@ -42,7 +44,7 @@ namespace NuSysApp
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
             _shape?.Dispose();
             _shape = null;
-            _rect.Dispose();
+            _rect?.Dispose();
             _rect = null;
             _vm = null;
             _strokeStyle = null;
@@ -64,12 +66,12 @@ namespace NuSysApp
             IsDirty = true;
         }
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            base.Update();
+            base.Update(parentLocalToScreenTransform);
 
             if (!IsDirty)
                 return;
@@ -106,7 +108,7 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-            ds.Transform = GetTransform() * ds.Transform;
+            ds.Transform = Transform.LocalMatrix * ds.Transform;
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
 
             Color borderColor;
@@ -135,7 +137,7 @@ namespace NuSysApp
             // infinite unshaped
             if (!_vm.IsShaped && !_vm.IsFinite)
             {
-                ds.Transform = GetTransform() * orgTransform;
+                ds.Transform = Transform.LocalMatrix * orgTransform;
                 borderGeometry = _rect;
                 ds.FillGeometry(_rect, bgColor);
                // ds.DrawRectangle(boundaries, borderColor, borderWidth, _strokeStyle);
@@ -143,31 +145,31 @@ namespace NuSysApp
             // finite unshaped 
             else if (!_vm.IsShaped && _vm.IsFinite)
             {
-                ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
+                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
                 ds.FillGeometry(_shape, bgColor);
                 //ds.DrawRectangle(_shapeBounds, borderColor, borderWidth, _strokeStyle);
                 borderGeometry = _shapeBounds;
-                ds.Transform = GetTransform() * orgTransform;
+                ds.Transform = Transform.LocalMatrix * orgTransform;
             }
             // finite shaped
             else if (_vm.IsFinite && _vm.IsShaped && isActive)
             {
               
-                ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
+                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
                 ds.FillGeometry(_shape, bgColor);
                 //  ds.DrawGeometry(_shape, bgColor, 6f, _strokeStyle);
                 // ds.DrawRectangle(_shapeBounds, borderColor, borderWidth);
                 borderGeometry = _shapeBounds;
-                ds.Transform = GetTransform() * orgTransform;
+                ds.Transform = Transform.LocalMatrix * orgTransform;
             }
             //inifite shaped
             else if(!_vm.IsFinite && _vm.IsShaped)
             {
-                ds.Transform = GetTransform() * orgTransform;
+                ds.Transform = Transform.LocalMatrix * orgTransform;
                 ds.FillGeometry(_rect, bgColor);
                // ds.DrawGeometry(_rect, borderColor, borderWidth, _strokeStyle);
                 borderGeometry = _rect;
-                ds.Transform = GetTransform() * orgTransform;
+                ds.Transform = Transform.LocalMatrix * orgTransform;
             }
 
 
@@ -175,19 +177,20 @@ namespace NuSysApp
             if (_vm.IsFinite && _shape != null)
             {
                 var scaleFactor = (float)boundaries.Width / (float)_shapeBounds.ComputeBounds().Width;
-                S = Matrix3x2.CreateScale(scaleFactor);
-                ds.Transform = GetCameraTransform()*GetTransform()*orgTransform;
+                Transform.LocalScale = new Vector2(scaleFactor);
+                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix*orgTransform;
                 mask = _shape;
             }
             else
             {
-                ds.Transform = GetTransform() * orgTransform;
+                ds.Transform = Transform.LocalMatrix * orgTransform;
                 mask = _rect;
-            }     
-            
-            using (ds.CreateLayer(1, mask))
+            }
+
+  
+            using (ds.CreateLayer(1f, mask))
             {
-                ds.Transform = GetCameraTransform() * GetTransform() * orgTransform;
+                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
                 if (_vm.IsShaped)
                     ds.FillGeometry(_shape, Colors.DarkSeaGreen);
                 foreach (var item in _renderItems0.ToArray())
@@ -201,30 +204,59 @@ namespace NuSysApp
 
                 foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
-
-      
-            
-             //   ds.Transform = GetTransform() * orgTransform;
-             //   ds.DrawGeometry(borderGeometry, bgColor);
-
-            
             }
 
             if (borderGeometry != null) {
                 if (ViewModel.IsFinite)
                 {
-                    ds.Transform = GetCameraTransform()*GetTransform()*orgTransform;
+                    ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix*orgTransform;
                     ds.DrawGeometry(borderGeometry, borderColor, borderWidth, _strokeStyle);
                 }
                 else
                 {
-                    ds.Transform = GetTransform() * orgTransform;
+                    ds.Transform = Transform.LocalMatrix * orgTransform;
                     ds.DrawGeometry(borderGeometry, borderColor, borderWidth, _strokeStyle);
                 }
+                _bounds = borderGeometry.ComputeBounds();
+            }
+
+
+
+            var initialCollection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
+            var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+
+            if (initialCollection != currentCollection && this == initialCollection)
+            {
+                var x = currentCollection.Transform.LocalPosition.X;
+                var y = currentCollection.Transform.LocalPosition.Y;
+                var size = currentCollection.GetMeasure();
+                var crop = Win2dUtil.TransformRect(new Rect(x, y, size.Width, size.Height), SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(currentCollection) );
+                var canvasSize = (ResourceCreator as CanvasAnimatedControl).Size;
+                CanvasGeometry _croppy;
+                var tt = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(currentCollection);
+                if (_vm.IsFinite && _vm.IsShaped)
+                    _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, canvasSize.Width, canvasSize.Height)).CombineWith(_shape, tt, CanvasGeometryCombine.Xor);
+                else
+                    _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, crop).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0,0,canvasSize.Width, canvasSize.Height) ), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
+                ds.FillGeometry(_croppy, Color.FromArgb(0x77,0,0,0));
+                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
+                ((ElementRenderItem)currentCollection).Draw(ds);
             }
 
             ds.Transform = orgTransform;
             base.Draw(ds);
+        }
+
+        public override Rect GetMeasure()
+        {
+            if (ViewModel.IsFinite)
+            {
+                return new Rect(ViewModel.X, ViewModel.Y, ViewModel.Width, ViewModel.Height);
+            }
+            else
+            {
+                return _bounds;
+            }
         }
     }
 }

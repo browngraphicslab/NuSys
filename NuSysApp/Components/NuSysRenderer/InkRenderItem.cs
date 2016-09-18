@@ -92,9 +92,7 @@ namespace NuSysApp
         {
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
-                _transform =
-                    Win2dUtil.Invert(
-                        SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this));
+                _transform = Transform.ScreenToLocalMatrix;
                 _needsDryStrokesUpdate = true;
             });
         }
@@ -106,11 +104,8 @@ namespace NuSysApp
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
                 _isDrawing = true;
-                _transform =
-                    Win2dUtil.Invert(
-                        SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this));
+                _transform = Transform.ScreenToLocalMatrix;
 
-                
                 _currentInkPoints = new List<InkPoint>();
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
                 _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));

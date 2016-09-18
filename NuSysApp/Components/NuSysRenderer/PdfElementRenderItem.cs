@@ -35,6 +35,7 @@ namespace NuSysApp
             _image = new PdfDetailRenderItem(_pdfLibraryElementController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
             _image.IsRegionsVisible = true;
             _image.IsRegionsModifiable = false;
+         
 
         }
 
@@ -58,7 +59,7 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public async void GotoPage(int page)
+        public async Task GotoPage(int page)
         {
             (ResourceCreator as CanvasAnimatedControl).RunOnGameLoopThreadAsync(async () => {
                 var content = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
@@ -83,9 +84,13 @@ namespace NuSysApp
 
         public override async Task Load()
         {
+            await GotoPage(_pdfLibraryElementController.PdfLibraryElementModel.PageStart);
+            return;
             await _image.Load();
             _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Height, false);
             _image.CanvasSize = new Size(_vm.Controller.Model.Width, _vm.Controller.Model.Height);
+
+            
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -95,7 +100,7 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
 
-            ds.Transform = GetTransform() * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
             _image.Draw(ds);
 
             ds.Transform = orgTransform;

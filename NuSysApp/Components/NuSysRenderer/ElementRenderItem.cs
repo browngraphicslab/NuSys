@@ -18,7 +18,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 namespace NuSysApp
 {
 
-    public class ElementRenderItem : BaseRenderItem, I2dTransformable
+    public class ElementRenderItem : BaseRenderItem
     {
         private ElementViewModel _vm;
         private CanvasTextLayout _textLayout;
@@ -33,7 +33,7 @@ namespace NuSysApp
         {
             _vm = vm;
             if (_vm != null) { 
-                T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
+                Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
                 _vm.Controller.PositionChanged += ControllerOnPositionChanged;
                 _vm.Controller.SizeChanged += ControllerOnSizeChanged;
                 _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
@@ -59,14 +59,16 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-            
-            _tagRenderItem.Dispose();
-            _tagRenderItem = null;
-            _vm.Tags.CollectionChanged -= TagsOnCollectionChanged;
-            _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
-            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
-            _vm = null;
+            if (_vm != null ) { 
+                _tagRenderItem.Dispose();
+                _tagRenderItem = null;
+                _vm.Tags.CollectionChanged -= TagsOnCollectionChanged;
+                _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
+                _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+                _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+                _vm = null;
+
+            }
             _textLayout?.Dispose();
             _textLayout = null;
             base.Dispose();
@@ -109,20 +111,18 @@ namespace NuSysApp
 
         private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
         {
-            T = Matrix3x2.CreateTranslation((float) d, (float) d1);
+            Transform.LocalPosition = new Vector2((float) d, (float) d1);
         }
 
 
-
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            base.Update();
-            if (_tagRenderItem != null)
-                _tagRenderItem.Update();
+            base.Update(parentLocalToScreenTransform);
 
+            _tagRenderItem?.Update(parentLocalToScreenTransform);
 
             if (!_needsTitleUpdate && _vm != null)
                 return;
@@ -144,16 +144,17 @@ namespace NuSysApp
             }
             var oldTransform = ds.Transform;
 
-            ds.Transform = Matrix3x2.CreateTranslation(0, (float)_vm.Height + 10f) * GetTransform()*oldTransform;
+            ds.Transform = Matrix3x2.CreateTranslation(0, (float)_vm.Height + 10f) * Transform.LocalToScreenMatrix;
             _tagRenderItem?.Draw(ds);
 
-            _transform = oldTransform;
-            
-            var sp = Vector2.Transform(new Vector2((float) _vm.X, (float) (_vm.Y)), _transform);
+            if (Transform.Parent != null)
+                _transform = Transform.Parent.LocalToScreenMatrix;
+
+            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
             
             ds.Transform = Matrix3x2.Identity;
-            Color color = Parent == SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection
+            Color color = this != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection
                 ? Color.FromArgb(0xdd,0,0,0)
                 : Colors.White;
             ds.DrawTextLayout(_textLayout, new Vector2(sp.X + (spr.X-sp.X - 200f)/2f, sp.Y - (float)_textLayout.DrawBounds.Height-18), color);
@@ -168,10 +169,9 @@ namespace NuSysApp
         {
             if (_textLayout == null)
                 return new Rect();
-
-            _transform = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this);
-            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
-            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
+            var transform = Transform.Parent.LocalToScreenMatrix;
+            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), transform);
             var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
             var tagsMeasurement = _tagRenderItem.GetMeasure();
             var rect = new Rect

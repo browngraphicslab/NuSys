@@ -240,9 +240,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
+        private void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = false;
+            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
             Debug.WriteLine("starting request");
 
             // Hide the library dragging rect
@@ -287,7 +287,7 @@ namespace NuSysApp
         /// <param name="args"></param>
         private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartingRoutedEventArgs args)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.ToolsAreBeingInteractedWith = true;
+            SessionController.Instance.SessionView.FreeFormViewer.Freeze();
             // set the _elementType based on the sender
             if (sender == btnAddTextNode)
             {
@@ -312,15 +312,17 @@ namespace NuSysApp
 
             // add the icon and start controlling the icon rect
             var view = SessionController.Instance.SessionView;
+            view.LibraryDraggingRectangle.IsHitTestVisible = false;
             view.LibraryDraggingRectangle.SetIcon(_elementType);
             view.LibraryDraggingRectangle.Show();
+            
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);
 
             // Make the rectangle movable and set its position
             rect.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += _exportPos.X;
+            t.TranslateX = _exportPos.X;
             t.TranslateY = _exportPos.Y;
         }
 

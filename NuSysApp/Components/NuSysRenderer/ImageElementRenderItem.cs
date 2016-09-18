@@ -64,7 +64,7 @@ namespace NuSysApp
             if (_vm == null )
                 return;
           
-            ds.Transform = GetTransform() * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
             _image.Draw(ds);
 
             ds.Transform = orgTransform;

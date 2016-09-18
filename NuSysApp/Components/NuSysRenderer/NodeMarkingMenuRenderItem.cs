@@ -82,16 +82,16 @@ namespace NuSysApp
             _isActive = true;
             _bounds.X = x - _bounds.Width/5*4;
             _bounds.Y = y - _bounds.Height/2 * index - _bounds.Height / 4;
-            T = Matrix3x2.CreateTranslation((float)_bounds.X, (float)_bounds.Y);
+            Transform.LocalPosition = new Vector2((float)_bounds.X, (float)_bounds.Y);
         }
 
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            base.Update();
+            base.Update(parentLocalToScreenTransform);
 
             if (!IsVisible)
                 return;
@@ -127,7 +127,7 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-            ds.Transform = GetTransform() * ds.Transform;
+            ds.Transform = Transform.LocalMatrix * ds.Transform;
 
             ds.FillRoundedRectangle(new Rect{X= 0, Y=0, Width = _bounds.Width, Height = _bounds.Height},5,5, Color.FromArgb(0x99, 0x6b,0x93,0x97));
            // ds.FillRectangle(new Rect { X = 0, Y = 200, Width = 150, Height = 200 }, Color.FromArgb(0x55, 0x55, 0x55, 0x55));

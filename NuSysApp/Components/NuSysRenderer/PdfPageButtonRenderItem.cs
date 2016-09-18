@@ -27,8 +27,6 @@ namespace NuSysApp
                 new Vector2(x, -20)});
         }
 
-
-
         public override void Dispose()
         {
             if (IsDisposed)

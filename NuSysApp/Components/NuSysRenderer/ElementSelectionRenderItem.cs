@@ -48,6 +48,13 @@ namespace NuSysApp
             _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnEnterCollection };
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
+            foreach (var menuButton in _menuButtons)
+            {
+                AddChild(menuButton);
+            }
+
+            AddChild(Resizer);
+
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
         }
 
@@ -107,7 +114,7 @@ namespace NuSysApp
             IsDirty = true;
         }
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
@@ -115,13 +122,9 @@ namespace NuSysApp
             if (!IsDirty && !_isVisible)
                 return;
 
-            base.Update();
+            base.Update(parentLocalToScreenTransform);
 
-            BtnDelete.Update();
-            BtnPresent.Update();
-            BtnGroup.Update();
-            Resizer.Update();
-            BtnEnterCollection.Update();
+         //   Resizer.Update(parentLocalToScreenTransform);
 
             if (_selectedItems.Count == 0)
             {
@@ -129,10 +132,26 @@ namespace NuSysApp
                 return;
             }
 
-          //  var bbs = _selectedItems.Select(elem => new Rect(elem.ViewModel.X, elem.ViewModel.Y, elem.ViewModel.Width, elem.ViewModel.Height)).ToList();
             var bbs = _selectedItems.ToArray().Select(elem => elem.GetScreenBoundingRect()).ToList();
 
             Rect = GetBoundingRect(bbs);
+
+            var tl = new Vector2((float)Rect.X, (float)Rect.Y);
+            var tr = new Vector2((float)(Rect.X + Rect.Width), (float)(Rect.Y + Rect.Height));
+
+            _screenRect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
+            var margin = 15 * SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.DpiScale;
+            _screenRect.X -= margin;
+            _screenRect.Y -= margin;
+            _screenRect.Width += margin * 2;
+            _screenRect.Height += margin * 2;
+
+            Transform.LocalPosition = new Vector2((float)_screenRect.X, (float)_screenRect.Y);
+            _screenRect.X = 0;
+            _screenRect.Y = 0;
+
+            Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
+
 
             IsDirty = false;
             _isVisible = true;
@@ -146,28 +165,13 @@ namespace NuSysApp
             if (!_isVisible)
                 return;
 
-            base.Draw(ds);
-            
- 
             var old = ds.Transform;
-
-            var tl = new Vector2((float)Rect.X, (float)Rect.Y);
-            var tr = new Vector2((float)(Rect.X+Rect.Width), (float)(Rect.Y + Rect.Height));
-           
-            _screenRect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
-            ds.Transform = Matrix3x2.Identity;
-
-            var margin = 15 * SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.DpiScale;
-            _screenRect.X -= margin;
-            _screenRect.Y -= margin;
-            _screenRect.Width += margin * 2;
-            _screenRect.Height += margin * 2;
+            ds.Transform = Transform.LocalToScreenMatrix;
 
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
 
-            Resizer.T = Matrix3x2.CreateTranslation(new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f)));
-
-            Resizer.Draw(ds);
+           
+      //      Resizer.Draw(ds);
 
             float leftOffset = -40;
             if (_isSinglePdfSelected) { 
@@ -180,9 +184,10 @@ namespace NuSysApp
             for (int index = 0; index < _menuButtons.Count; index++)
             {
                 var btn = _menuButtons[index];
-                btn.T = Matrix3x2.CreateTranslation((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + index * 35);
-                btn.Draw(ds);
+                btn.Transform.LocalPosition  = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + index * 35);
             }
+
+            base.Draw(ds);
 
 
             if (_isSinglePdfSelected) { 
@@ -210,7 +215,6 @@ namespace NuSysApp
                 maxH = rect.Y + rect.Height > maxH ? rect.Y + rect.Height : maxH;
             }
             return new Rect(minX, minY, maxW-minX, maxH-minY);
-
         }
     }
 }

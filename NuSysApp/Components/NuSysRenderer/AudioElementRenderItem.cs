@@ -22,7 +22,6 @@ namespace NuSysApp
         public AudioElementRenderItem(AudioNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
-
         }
 
         public override async Task Load()
@@ -41,7 +40,6 @@ namespace NuSysApp
             base.Dispose();
         }
 
-
         public override void Draw(CanvasDrawingSession ds)
         {
             if (IsDisposed)
@@ -50,8 +48,7 @@ namespace NuSysApp
             base.Draw(ds);
 
             var orgTransform = ds.Transform;
-            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
-            //   ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Black);
+            ds.Transform = Transform.LocalToScreenMatrix;
             if (_bmp != null)
                 ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height });
             ds.Transform = orgTransform;

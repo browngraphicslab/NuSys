@@ -34,7 +34,6 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-            base.Update();
             var lineWidth = 0.0;
             var lineY = 0.0;
             var lineX = 0.0;
@@ -44,12 +43,11 @@ namespace NuSysApp
             for (int index = 0; index < items.Length; index++)
             {
                 var baseRenderItem = items[index];
-                baseRenderItem.Update();
                 measure = baseRenderItem.GetMeasure();
                 // lineHeight = lineHeight + measure.Height > lineHeight ? lineHeight + measure.Height : lineHeight;
 
 
-                ds.Transform = Matrix3x2.CreateTranslation((float) lineX, (float) lineY)*GetTransform()*orgTransform;
+                ds.Transform = Matrix3x2.CreateTranslation((float) lineX, (float) lineY) * Transform.LocalToScreenMatrix;
                 baseRenderItem.Draw(ds);
 
                 if (index >= Items.Count - 1)
@@ -76,15 +74,15 @@ namespace NuSysApp
             ds.Transform = orgTransform;
         }
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            base.Update();
+            base.Update(parentLocalToScreenTransform);
             foreach (var baseRenderItem in Items.ToArray())
             {
-                baseRenderItem.Update();
+                baseRenderItem.Update(parentLocalToScreenTransform);
             }
         }
 

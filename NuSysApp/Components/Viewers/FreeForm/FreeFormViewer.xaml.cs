@@ -39,8 +39,8 @@ namespace NuSysApp
         private CollectionInteractionManager _collectionInteractionManager;
         private FreeFormViewerViewModel _vm;
 
-        private Dictionary<ElementViewModel, Transformable> _transformables =
-            new Dictionary<ElementViewModel, Transformable>();
+        private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
+            new Dictionary<ElementViewModel, RenderItemTransform>();
 
         public CollectionRenderItem CurrentCollection { get; private set; }
 
@@ -57,7 +57,7 @@ namespace NuSysApp
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
 
-        private MinimapRenderItem _minimap;
+        public MinimapRenderItem _minimap;
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
         public bool ToolsAreBeingInteractedWith { get; set; }
@@ -66,10 +66,9 @@ namespace NuSysApp
         private ElementController _currentVideoElementController;
 
         private bool _inkPressed;
-        private bool _renderCanvasInitialized;
-        private bool _minimapInitialized;
 
-        public NuSysRenderer RenderEngine { get; set; } = new NuSysRenderer();
+        private BaseRenderItem _renderRoot;
+        public NuSysRenderer RenderEngine { get; private set; }
 
 
         public FreeFormViewer()
@@ -77,22 +76,12 @@ namespace NuSysApp
             this.InitializeComponent();
 
             SizeChanged += OnSizeChanged;
-
             xMinimapCanvas.Width = 300;
             xMinimapCanvas.Height = 300;
-            xMinimapCanvas.CreateResources+=
-                delegate(CanvasControl sender, CanvasCreateResourcesEventArgs args)
-                {
-                    _minimapInitialized = true;
-              //      TryInitialize();
-                };
 
-            xRenderCanvas.CreateResources += async delegate
-            {
-                _renderCanvasInitialized = true;
-            //    TryInitialize();
-            };
-            
+            _renderRoot = new BaseRenderItem(null, xRenderCanvas);
+            RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
+     
         }
 
         public void Clear()
@@ -141,7 +130,12 @@ namespace NuSysApp
          
             InitialCollection = new ShapedCollectionRenderItem(_vm, null, xRenderCanvas, true);
             SwitchCollection(InitialCollection);
-            RenderEngine.Init(xRenderCanvas, InitialCollection);
+
+            RenderEngine.Root.ClearChildren();
+
+            InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
+            RenderEngine.Root.AddChild(InitialCollection);
+            RenderEngine.Start();
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
@@ -247,13 +241,13 @@ namespace NuSysApp
                 var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
                 var newCenter = Vector2.Transform(imgCenter, transform);
 
-                Transformable t;
+                RenderItemTransform t;
                 if (_transformables.ContainsKey(elem))
                     t = _transformables[elem];
                 else
                 {
-                    t = new Transformable();
-                    t.Position = new Point(elem.X, elem.Y);
+                    t = new RenderItemTransform();
+                    t.LocalPosition = new Vector2((float)elem.X, (float)elem.Y);
                     t.Size = new Size(elem.Width, elem.Height);
                     if (elem is ElementCollectionViewModel)
                     {
@@ -362,8 +356,7 @@ namespace NuSysApp
             if (element is VideoElementRenderItem)
             {
                 ActiveVideoRenderItem = (VideoElementRenderItem) element;
-                var t = ActiveVideoRenderItem.GetTransform()*
-                        RenderEngine.GetTransformUntil(ActiveVideoRenderItem);
+                var t = ActiveVideoRenderItem.Transform.LocalMatrix * RenderEngine.GetTransformUntil(ActiveVideoRenderItem);
                 var ct =
                     (CompositeTransform)VideoPlayer.RenderTransform;
                 ct.TranslateX = t.M31;
@@ -382,8 +375,7 @@ namespace NuSysApp
             if (element is AudioElementRenderItem)
             {
                 ActiveAudioRenderItem = (AudioElementRenderItem) element;
-                var t = ActiveAudioRenderItem.GetTransform()*
-                        RenderEngine.GetTransformUntil(ActiveAudioRenderItem);
+                var t = ActiveAudioRenderItem.Transform.LocalMatrix*RenderEngine.GetTransformUntil(ActiveAudioRenderItem);
                 var ct = (CompositeTransform)AudioPlayer.RenderTransform;
                 ct.TranslateX = t.M31;
                 ct.TranslateY = t.M32;
@@ -406,8 +398,8 @@ namespace NuSysApp
             {
                 var elem = item;
                 var collection = item.Parent as CollectionRenderItem;
-                var nw = elem.ViewModel.Width + delta.X/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
-                var nh = elem.ViewModel.Height + delta.Y/(_transform.M22*collection.S.M22*collection.Camera.S.M22);
+                var nw = elem.ViewModel.Width + delta.X/(_transform.M11*collection.Transform.LocalScale.X * collection.Camera.S.M11);
+                var nh = elem.ViewModel.Height + delta.Y/(_transform.M22*collection.Transform.LocalScale.Y * collection.Camera.S.M22);
                 item.ViewModel.Controller.SetSize(nw, nh);
                 if(_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
                 {
@@ -617,8 +609,7 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
             var until = RenderEngine.GetTransformUntil(CurrentCollection);
-            _transform = Win2dUtil.Invert(CurrentCollection.C)*CurrentCollection.S*CurrentCollection.C*
-                         CurrentCollection.T*until;
+            _transform = Win2dUtil.Invert(CurrentCollection.Transform.C)*CurrentCollection.Transform.S *CurrentCollection.Transform.C * CurrentCollection.Transform.T *until;
 
             _transformables.Clear();
         }
@@ -706,8 +697,8 @@ namespace NuSysApp
                 foreach (var selectable in Selections)
                 {
                     var e = selectable.ViewModel;
-                    var newXe = e.X + delta.X/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
-                    var newYe = e.Y + delta.Y/(_transform.M11*collection.S.M11*collection.Camera.S.M11);
+                    var newXe = e.X + delta.X/(_transform.M11*collection.Transform.LocalScale.X * collection.Camera.S.M11);
+                    var newYe = e.Y + delta.Y/(_transform.M11 * collection.Transform.LocalScale.Y * collection.Camera.S.M11);
                     e.Controller.SetPosition(newXe, newYe);
                     if (selectable is CollectionRenderItem)
                     {
@@ -723,8 +714,7 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnPointerPressed(CanvasPointer pointer)
         {
             var until = RenderEngine.GetTransformUntil(CurrentCollection);
-            _transform = Win2dUtil.Invert(CurrentCollection.C)*CurrentCollection.S*CurrentCollection.C*
-                         CurrentCollection.T*until;
+            _transform = Win2dUtil.Invert(CurrentCollection.Transform.C)*CurrentCollection.Transform.S *CurrentCollection.Transform.C *CurrentCollection.Transform.T *until;
         }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
@@ -830,7 +820,7 @@ namespace NuSysApp
             
             if (ActiveVideoRenderItem != null)
             {
-                var t = ActiveVideoRenderItem.GetTransform() * RenderEngine.GetTransformUntil(ActiveVideoRenderItem);
+                var t = ActiveVideoRenderItem.Transform.LocalMatrix * RenderEngine.GetTransformUntil(ActiveVideoRenderItem);
                 var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.RenderTransform;
                 ct.TranslateX = t.M31;
                 ct.TranslateY = t.M32;
@@ -840,7 +830,7 @@ namespace NuSysApp
             
             if (ActiveAudioRenderItem != null)
             {
-                var t = ActiveAudioRenderItem.GetTransform() * RenderEngine.GetTransformUntil(ActiveAudioRenderItem);
+                var t = ActiveAudioRenderItem.Transform.LocalMatrix * RenderEngine.GetTransformUntil(ActiveAudioRenderItem);
                 var ct = (CompositeTransform)SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.RenderTransform;
                 ct.TranslateX = t.M31;
                 ct.TranslateY = t.M32;
@@ -891,10 +881,9 @@ namespace NuSysApp
             var ncx = center.X;
             var ncy = center.Y;
 
-            target.T = Matrix3x2.CreateTranslation((float)ntx, (float)nty);
-            target.C = Matrix3x2.CreateTranslation(ncx, ncy);
-            target.S = Matrix3x2.CreateScale((float)nsx, (float)nsy);
-            target.Update();
+            target.LocalPosition = new Vector2(ntx, nty);
+            target.LocalScaleCenter = new Vector2(ncx, ncy);
+            target.LocalScale = new Vector2(nsx, nsy);
         }
 
 
