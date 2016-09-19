@@ -35,7 +35,9 @@ namespace NuSysApp
             _image = new PdfDetailRenderItem(_pdfLibraryElementController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
             _image.IsRegionsVisible = true;
             _image.IsRegionsModifiable = false;
-         
+
+            AddChild(_image);
+
 
         }
 
@@ -51,7 +53,6 @@ namespace NuSysApp
 
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
 
-            _image.Dispose();
             _image = null;
             _vm = null;
             _pdfLibraryElementController = null;
@@ -99,11 +100,7 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-
             ds.Transform = Transform.LocalToScreenMatrix;
-            _image.Draw(ds);
-
-            ds.Transform = orgTransform;
             base.Draw(ds);
             ds.Transform = orgTransform;
 

@@ -108,7 +108,7 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalMatrix * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
 
             Color borderColor;
@@ -137,7 +137,7 @@ namespace NuSysApp
             // infinite unshaped
             if (!_vm.IsShaped && !_vm.IsFinite)
             {
-                ds.Transform = Transform.LocalMatrix * orgTransform;
+                ds.Transform = Transform.LocalToScreenMatrix;
                 borderGeometry = _rect;
                 ds.FillGeometry(_rect, bgColor);
                // ds.DrawRectangle(boundaries, borderColor, borderWidth, _strokeStyle);
@@ -145,31 +145,31 @@ namespace NuSysApp
             // finite unshaped 
             else if (!_vm.IsShaped && _vm.IsFinite)
             {
-                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
+                ds.Transform = Camera.LocalToScreenMatrix;
                 ds.FillGeometry(_shape, bgColor);
                 //ds.DrawRectangle(_shapeBounds, borderColor, borderWidth, _strokeStyle);
                 borderGeometry = _shapeBounds;
-                ds.Transform = Transform.LocalMatrix * orgTransform;
+                ds.Transform = Transform.ScreenToLocalMatrix;
             }
             // finite shaped
             else if (_vm.IsFinite && _vm.IsShaped && isActive)
             {
               
-                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
+                ds.Transform = Camera.LocalToScreenMatrix;
                 ds.FillGeometry(_shape, bgColor);
                 //  ds.DrawGeometry(_shape, bgColor, 6f, _strokeStyle);
                 // ds.DrawRectangle(_shapeBounds, borderColor, borderWidth);
                 borderGeometry = _shapeBounds;
-                ds.Transform = Transform.LocalMatrix * orgTransform;
+                ds.Transform = Transform.ScreenToLocalMatrix;
             }
             //inifite shaped
             else if(!_vm.IsFinite && _vm.IsShaped)
             {
-                ds.Transform = Transform.LocalMatrix * orgTransform;
+                ds.Transform = Transform.ScreenToLocalMatrix;
                 ds.FillGeometry(_rect, bgColor);
                // ds.DrawGeometry(_rect, borderColor, borderWidth, _strokeStyle);
                 borderGeometry = _rect;
-                ds.Transform = Transform.LocalMatrix * orgTransform;
+                ds.Transform = Transform.ScreenToLocalMatrix;
             }
 
 
@@ -178,19 +178,19 @@ namespace NuSysApp
             {
                 var scaleFactor = (float)boundaries.Width / (float)_shapeBounds.ComputeBounds().Width;
                 Transform.LocalScale = new Vector2(scaleFactor);
-                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix*orgTransform;
+                ds.Transform = Camera.LocalToScreenMatrix;
                 mask = _shape;
             }
             else
             {
-                ds.Transform = Transform.LocalMatrix * orgTransform;
+                ds.Transform = Transform.LocalToScreenMatrix;
                 mask = _rect;
             }
 
   
             using (ds.CreateLayer(1f, mask))
             {
-                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
+                ds.Transform = Camera.LocalToScreenMatrix;
                 if (_vm.IsShaped)
                     ds.FillGeometry(_shape, Colors.DarkSeaGreen);
                 foreach (var item in _renderItems0.ToArray())
@@ -209,12 +209,12 @@ namespace NuSysApp
             if (borderGeometry != null) {
                 if (ViewModel.IsFinite)
                 {
-                    ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix*orgTransform;
+                    ds.Transform = Camera.LocalToScreenMatrix;
                     ds.DrawGeometry(borderGeometry, borderColor, borderWidth, _strokeStyle);
                 }
                 else
                 {
-                    ds.Transform = Transform.LocalMatrix * orgTransform;
+                    ds.Transform = Transform.LocalToScreenMatrix;
                     ds.DrawGeometry(borderGeometry, borderColor, borderWidth, _strokeStyle);
                 }
                 _bounds = borderGeometry.ComputeBounds();
@@ -239,8 +239,8 @@ namespace NuSysApp
                 else
                     _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, crop).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0,0,canvasSize.Width, canvasSize.Height) ), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
                 ds.FillGeometry(_croppy, Color.FromArgb(0x77,0,0,0));
-                ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
-                ((ElementRenderItem)currentCollection).Draw(ds);
+             //   ds.Transform = Camera.LocalMatrix * Transform.LocalMatrix * orgTransform;
+              //  ((ElementRenderItem)currentCollection).Draw(ds);
             }
 
             ds.Transform = orgTransform;
@@ -253,10 +253,8 @@ namespace NuSysApp
             {
                 return new Rect(ViewModel.X, ViewModel.Y, ViewModel.Width, ViewModel.Height);
             }
-            else
-            {
-                return _bounds;
-            }
+
+            return _bounds;
         }
     }
 }

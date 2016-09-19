@@ -153,6 +153,11 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 _canvasAnimatedControl.Draw -= CanvasAnimatedControlOnDraw;
                 _canvasAnimatedControl.Update -= CanvasAnimatedControlOnUpdate;
                 _canvasAnimatedControl.CreateResources -= CanvasAnimatedControlOnCreateResources;
+                _canvasAnimatedControl.RunOnGameLoopThreadAsync(() =>
+                {
+                    Root.ClearChildren();
+                    CanvasAnimatedControl.Invalidate();
+                });
             }
 
             if (_canvasControl != null)
@@ -179,6 +184,7 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
             using (var ds = args.DrawingSession)
             {
                 ds.Clear(Colors.Transparent);
+                Root.Update(Matrix3x2.Identity);
                 Root.Draw(ds);
             }
         }

@@ -50,8 +50,10 @@ namespace NuSysApp
 
                 foreach (var tag in _vm.Tags)
                 {
-                    _tagRenderItem.AddItem(new TagRenderItem(tag, Parent, ResourceCreator));
+                    _tagRenderItem.AddChild(new TagRenderItem(tag, Parent, ResourceCreator));
                 }
+
+                AddChild(_tagRenderItem);
             }
         }
 
@@ -60,7 +62,6 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
             if (_vm != null ) { 
-                _tagRenderItem.Dispose();
                 _tagRenderItem = null;
                 _vm.Tags.CollectionChanged -= TagsOnCollectionChanged;
                 _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
@@ -91,7 +92,7 @@ namespace NuSysApp
             {
                 foreach (var oldItem in e.OldItems)
                 {
-                    _tagRenderItem.RemoveItem(_tagRenderItem.Items.Where( i => ((TagRenderItem)i).Text == oldItem ).First());
+                    _tagRenderItem.RemoveChild(_tagRenderItem.Items.Where( i => ((TagRenderItem)i).Text == oldItem ).First());
                 }
             }
 
@@ -99,7 +100,7 @@ namespace NuSysApp
             {
                 foreach (var newItem in e.NewItems)
                 {
-                    _tagRenderItem.AddItem(new TagRenderItem(newItem.ToString(), Parent, ResourceCreator));
+                    _tagRenderItem.AddChild(new TagRenderItem(newItem.ToString(), Parent, ResourceCreator));
                 }
             }
         }
@@ -120,9 +121,9 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
-            base.Update(parentLocalToScreenTransform);
+            _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
 
-            _tagRenderItem?.Update(parentLocalToScreenTransform);
+            base.Update(parentLocalToScreenTransform);
 
             if (!_needsTitleUpdate && _vm != null)
                 return;
@@ -144,8 +145,7 @@ namespace NuSysApp
             }
             var oldTransform = ds.Transform;
 
-            ds.Transform = Matrix3x2.CreateTranslation(0, (float)_vm.Height + 10f) * Transform.LocalToScreenMatrix;
-            _tagRenderItem?.Draw(ds);
+      //      _tagRenderItem?.Draw(ds);
 
             if (Transform.Parent != null)
                 _transform = Transform.Parent.LocalToScreenMatrix;

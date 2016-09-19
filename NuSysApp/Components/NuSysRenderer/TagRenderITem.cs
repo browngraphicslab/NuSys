@@ -53,6 +53,7 @@ namespace NuSysApp
                 return;
 
             base.Draw(ds);
+            ds.Transform = Transform.LocalToScreenMatrix;
             ds.FillRectangle(_measurement, Constants.color4);
             ds.DrawTextLayout(_textLayout, 5, 5, Constants.color6);
         }

@@ -198,7 +198,7 @@ namespace NuSysApp
                 AddChild(region);
             }
 
-            SortChildren( (a,b) => { var areaA = a.GetMeasure(); var areaB = b.GetMeasure(); return areaA.Width*areaA.Height > areaB.Width*areaB.Height ?  1 : -1;
+            SortChildren( (a,b) => { var areaA = a.GetMeasure(); var areaB = b.GetMeasure(); return areaA.Width*areaA.Height >= areaB.Width*areaB.Height ?  1 : -1;
             });
 
             NeedsRedraw?.Invoke();
@@ -247,6 +247,14 @@ namespace NuSysApp
             NeedsRedraw?.Invoke();
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;
+            var offsetY = (float)(CanvasSize.Height - _croppedImageTarget.Height) / 2f;
+            Transform.LocalPosition = new Vector2(offsetX, offsetY);
+            base.Update(parentLocalToScreenTransform);
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
             if (IsDisposed || _isLoading)
@@ -266,10 +274,8 @@ namespace NuSysApp
 
 
             var orgTransform = ds.Transform;
-            var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;
-            var offsetY = (float)(CanvasSize.Height - _croppedImageTarget.Height) / 2f;
-            Transform.LocalPosition  = new Vector2(offsetX, offsetY);
-            ds.Transform = Transform.LocalMatrix * orgTransform;
+
+            ds.Transform = Transform.LocalToScreenMatrix;
             using (ds.CreateLayer(1, _mask))
             { 
                 if (_bmp != null)
@@ -278,7 +284,6 @@ namespace NuSysApp
                     ds.FillRectangle(_croppedImageTarget, Colors.Gray);
 
                 if (_activeRegion != null && _croppy != null) { 
-                  //  Debug.WriteLine(_croppy.ComputeBounds());
                     ds.FillGeometry(_croppy, Color.FromArgb(0x88,0,0,0));
                 }
                 ds.Transform = orgTransform;

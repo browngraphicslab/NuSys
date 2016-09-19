@@ -76,6 +76,7 @@ namespace NuSysApp
             this.InitializeComponent();
 
             SizeChanged += OnSizeChanged;
+            xMinimapCanvas.IsHitTestVisible = false;
             xMinimapCanvas.Width = 300;
             xMinimapCanvas.Height = 300;
 
@@ -116,7 +117,7 @@ namespace NuSysApp
             DataContext = _vm;
 
             if (_canvasInteractionManager == null)
-                _canvasInteractionManager = new CanvasInteractionManager(xRenderCanvas);
+                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
 
             if (_vm != null)
             {
@@ -264,8 +265,8 @@ namespace NuSysApp
                 elem.Controller.SetSize(t.Size.Width*t.S.M11, t.Size.Height*t.S.M22);
                 var dtx = (float) (t.Size.Width*t.S.M11 - t.Size.Width)/2f;
                 var dty = (float) (t.Size.Height*t.S.M22 - t.Size.Height)/2f;
-                var nx = t.Position.X - dtx;
-                var ny = t.Position.Y - dty;
+                var nx = t.LocalPosition.X - dtx;
+                var ny = t.LocalPosition.Y - dty;
                 elem.Controller.SetPosition(nx, ny);
 
                 if (elem is ElementCollectionViewModel)
@@ -422,7 +423,7 @@ namespace NuSysApp
             double offsetY = 0;
 
             Rect targetScreenRect;
-            var collectionTransform = RenderEngine.GetCollectionTransform(CurrentCollection);
+            var collectionTransform = CurrentCollection.Transform.LocalToScreenMatrix;
             if (shaped && _latestStroke != null)
             {
                 strokeBoundingBox = Geometry.PointCollecionToBoundingRect(_latestStroke);
@@ -439,7 +440,7 @@ namespace NuSysApp
             }
             else
             {
-                targetScreenRect = RenderEngine.ElementSelectionRenderItem._screenRect;
+                targetScreenRect = RenderEngine.ElementSelectionRenderItem.GetBounds();
 
             }
 

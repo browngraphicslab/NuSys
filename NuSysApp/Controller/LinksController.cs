@@ -754,19 +754,24 @@ namespace NuSysApp
             var inElementController = SessionController.Instance.IdToControllers[model.InElementId];
             var parentCollectionId = inElementController.GetParentCollectionId();
             var parentCollectionController = (CollectionLibraryElementController) SessionController.Instance.ContentController.GetLibraryElementController(parentCollectionId);
-            var vm = new PresentationLinkViewModel(model);
 
-
-            if (!_collectionLibraryIdToTrailViewModels.ContainsKey(parentCollectionId))
+            await UITask.Run(async () =>
             {
-                _collectionLibraryIdToTrailViewModels[parentCollectionId] = new HashSet<PresentationLinkViewModel>();
-            }
-            _collectionLibraryIdToTrailViewModels[parentCollectionId].Add(vm);
-            parentCollectionController.AddTrail(vm);
+                var vm = new PresentationLinkViewModel(model);
 
 
-            PresentationLinkViewModel.Models.Add(vm.Model);
-            
+                if (!_collectionLibraryIdToTrailViewModels.ContainsKey(parentCollectionId))
+                {
+                    _collectionLibraryIdToTrailViewModels[parentCollectionId] = new HashSet<PresentationLinkViewModel>();
+                }
+                _collectionLibraryIdToTrailViewModels[parentCollectionId].Add(vm);
+                parentCollectionController.AddTrail(vm);
+
+
+                PresentationLinkViewModel.Models.Add(vm.Model);
+            });
+
+
             isSuccess = true;
 
             return isSuccess;

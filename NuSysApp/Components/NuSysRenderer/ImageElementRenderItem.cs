@@ -28,6 +28,7 @@ namespace NuSysApp
             _image = new ImageDetailRenderItem(imageController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
             _image.IsRegionsVisible = true;
             _image.IsRegionsModifiable = false;
+            AddChild(_image);
         }
 
         public async override Task Load()
@@ -63,11 +64,8 @@ namespace NuSysApp
 
             if (_vm == null )
                 return;
-          
+         
             ds.Transform = Transform.LocalToScreenMatrix;
-            _image.Draw(ds);
-
-            ds.Transform = orgTransform;
             base.Draw(ds);
             ds.Transform = orgTransform;
 

@@ -345,6 +345,7 @@ namespace NuSysApp
         private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             await CloseDv();
+            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
             if (AccessPopup.IsOpen)
             {
                 AccessPopup.IsOpen = false;

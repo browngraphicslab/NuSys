@@ -78,7 +78,7 @@ namespace NuSysApp
 
             foreach (var child in _children.ToArray())
             {
-                child.Update(Transform.LocalMatrix);
+                child.Update(Transform.LocalToScreenMatrix);
             }
         }
 

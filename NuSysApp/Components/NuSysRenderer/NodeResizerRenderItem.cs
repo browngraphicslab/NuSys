@@ -54,8 +54,9 @@ namespace NuSysApp
 
         public override BaseRenderItem HitTest(Vector2 point)
         {
-            var rect = new Rect(Transform.Position.X, Transform.Position.Y, 30, 30);
-            if (rect.Contains(point.ToPoint()))
+            var p = Vector2.Transform(point, Transform.ScreenToLocalMatrix);
+            var rect = new Rect(0, 0, 30, 30);
+            if (rect.Contains(p.ToPoint()))
             {
                 return this;
             }

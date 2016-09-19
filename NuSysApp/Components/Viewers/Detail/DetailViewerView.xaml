@@ -233,7 +233,7 @@
         </Grid>
 
         <Grid x:Name="TabPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{StaticResource color2}"
-                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Visibility="{Binding TabVisibility}" Height="35">
+                    Visibility="{Binding TabVisibility}" Height="35">
             <Grid.RenderTransform>
                 <TranslateTransform X="0"></TranslateTransform>
             </Grid.RenderTransform>

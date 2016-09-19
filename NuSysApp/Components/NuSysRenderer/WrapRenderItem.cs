@@ -28,42 +28,40 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public override void Draw(CanvasDrawingSession ds)
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            var orgTransform = ds.Transform;
             var lineWidth = 0.0;
             var lineY = 0.0;
             var lineX = 0.0;
             var linNum = 0;
             Rect measure;
-            var items = Items.ToArray();
-            for (int index = 0; index < items.Length; index++)
+            for (int index = 0; index < _children.Count; index++)
             {
-                var baseRenderItem = items[index];
+                var baseRenderItem = _children[index];
                 measure = baseRenderItem.GetMeasure();
                 // lineHeight = lineHeight + measure.Height > lineHeight ? lineHeight + measure.Height : lineHeight;
 
 
-                ds.Transform = Matrix3x2.CreateTranslation((float) lineX, (float) lineY) * Transform.LocalToScreenMatrix;
-                baseRenderItem.Draw(ds);
+                baseRenderItem.Transform.LocalPosition = new Vector2((float)lineX, (float)lineY);
 
-                if (index >= Items.Count - 1)
+                if (index >= _children.Count - 1)
                 {
                     continue;
                 }
 
-                var nextMeasure = items[index + 1].GetMeasure();
+                var nextMeasure = _children[index + 1].GetMeasure();
 
                 if (lineX + measure.Width + 10 + nextMeasure.Width < MaxWidth)
                 {
                     lineX += measure.Width + 10;
-                } else if (lineX + measure.Width + 10 + nextMeasure.Width > MaxWidth)
+                }
+                else if (lineX + measure.Width + 10 + nextMeasure.Width > MaxWidth)
                 {
                     linNum += 1;
-                    lineY = linNum*(measure.Height + 10);
+                    lineY = linNum * (measure.Height + 10);
                     lineX = 0.0;
                 }
             }
@@ -71,19 +69,9 @@ namespace NuSysApp
             _measurement.Y = 0;
             _measurement.Width = MaxWidth;
             _measurement.Height = lineY + measure.Height;
-            ds.Transform = orgTransform;
-        }
-
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            if (IsDisposed)
-                return;
 
             base.Update(parentLocalToScreenTransform);
-            foreach (var baseRenderItem in Items.ToArray())
-            {
-                baseRenderItem.Update(parentLocalToScreenTransform);
-            }
+          
         }
 
         public override Rect GetMeasure()
@@ -91,14 +79,5 @@ namespace NuSysApp
             return _measurement;
         }
 
-        public void AddItem(BaseRenderItem item)
-        {
-            Items.Add(item);
-        }
-
-        public void RemoveItem(BaseRenderItem item)
-        {
-            Items.Remove(item);
-        }
     }
 }

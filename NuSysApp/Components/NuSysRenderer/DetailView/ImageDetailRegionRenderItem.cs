@@ -146,17 +146,18 @@ namespace NuSysApp
             return false;
         }
 
-        public override void Draw(CanvasDrawingSession ds)
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-    
-            var orgTransform = ds.Transform;
-            
             if (_resizer != null)
                 _resizer.Transform.LocalPosition = new Vector2((float)(Size.Width), (float)(Size.Height));
+            base.Update(parentLocalToScreenTransform);
+        }
+
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
             base.Draw(ds);
-
-            ds.Transform = Transform.LocalMatrix * orgTransform;
-
             ds.DrawRectangle(new Rect(0, 0, Size.Width, Size.Height), Color.FromArgb(255, 200, 200, 200), 2, _strokeStyle);
             ds.Transform = orgTransform;
         }
@@ -164,22 +165,17 @@ namespace NuSysApp
         public override void OnDragged(CanvasPointer pointer)
         {
             if (!_isModifiable)
-                return;
-            base.OnDragged(pointer);
-
-         
+                return;         
             RegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate);
         }
 
         public override void OnPressed(CanvasPointer pointer)
         {
-            base.OnPressed(pointer);
             RegionPressed?.Invoke(this);
         }
 
         public override void OnReleased(CanvasPointer pointer)
         {
-            base.OnReleased(pointer);
             RegionReleased?.Invoke(this);
         }
 

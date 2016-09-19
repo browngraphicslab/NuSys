@@ -181,6 +181,10 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
             
+            Transform.Update(parentLocalToScreenTransform);
+            base.Update(parentLocalToScreenTransform);
+            Camera.Update(Transform.LocalToScreenMatrix);
+
             foreach (var item in _renderItems0.ToArray())
                 item?.Update(Camera.LocalToScreenMatrix);
 

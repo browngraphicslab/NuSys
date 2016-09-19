@@ -66,15 +66,13 @@ namespace NuSysApp
         {
             if (CanvasAnimatedControl == null)
                 return;
-
-            base.Stop();
-
+            
             CanvasAnimatedControl.RunOnGameLoopThreadAsync(() =>
             {
                 _isStopped = true;
-                Root.ClearChildren();
-                CanvasAnimatedControl.Invalidate();
             });
+
+            base.Stop();
         }
         
 
