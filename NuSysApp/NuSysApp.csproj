@@ -351,7 +351,6 @@
     <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\PdfPageButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\RenderItemInteractionManager.cs" />
-    <Compile Include="Components\NuSysRenderer\ShapedCollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TagRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TempLinkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TextElementRenderItem.cs" />

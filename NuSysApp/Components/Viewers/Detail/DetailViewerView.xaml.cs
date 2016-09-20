@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
@@ -119,12 +120,12 @@ namespace NuSysApp
             // resize width
             if (width)
             {
-                Width = SessionController.Instance.SessionView.ActualWidth / 2;
+                Width = CoreApplication.MainView.CoreWindow.Bounds.Width / 2;
             }
             // resize height
             if (height)
             {
-                Height = SessionController.Instance.SessionView.ActualHeight;
+                Height = CoreApplication.MainView.CoreWindow.Bounds.Height;
             }
 
             // set the max height and width
@@ -404,20 +405,22 @@ namespace NuSysApp
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
+
+            var newWidth = Width - e.Delta.Translation.X;
+            Debug.WriteLine(newWidth);
 
             // if the width is greater than maxWidth and the x translation is to the left, then complete the manipulationdelta
-            if (Width > MaxWidth && e.Delta.Translation.X <= 0)
+            if (newWidth > MaxWidth && e.Delta.Translation.X <= 0)
             {
                 e.Complete();
             }
             // if the width is less than the minWidth and the x translation is to the right then complete the manipulationdelta
-            else if (Width < MinWidth && e.Delta.Translation.X >= 0)
+            else if (newWidth < MinWidth && e.Delta.Translation.X >= 0)
             {
                 e.Complete();
             }
             // Checks if the DV should be allowed to be resized and calls Resize if needed.
-            else if ((Width >= MinWidth || e.Delta.Translation.X <= 0) &&
+            else if ((newWidth >= MinWidth || e.Delta.Translation.X <= 0) &&
                 (Canvas.GetLeft(this) >= 30 || e.Delta.Translation.X >= 0))
             {
                 var rightCoordinate = Canvas.GetLeft(this) + this.Width;
@@ -427,19 +430,19 @@ namespace NuSysApp
             // Here the tab pane width is set again to make the tabs on the DV as wide as the DV itself.
             var vm = (DetailViewerViewModel)DataContext;
             // if the TabPaneWidth is less than minWidth, set the TabPaneWidth to MinWidth
-            if (Width < MinWidth)
+            if (newWidth < MinWidth)
             {
                 vm.TabPaneWidth = MinWidth;
             }
             // if the TabPaneWidth is more than maxWidth, set the TabPaneWidth to maxWidth
-            else if (Width > MaxWidth)
+            else if (newWidth > MaxWidth)
             {
                 vm.TabPaneWidth = MaxWidth;
             }
             // else set the TabPaneWidth to the width
             else
             {
-                vm.TabPaneWidth = Width;
+                vm.TabPaneWidth = newWidth;
             }
             if (vm.Tabs.Count == 0) { return; }
             vm.TabWidth = vm.TabPaneWidth/vm.Tabs.Count;

@@ -160,7 +160,7 @@ namespace NuSysApp
                 btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + index * 35);
             }
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;
-            BtnPdfRight.IsVisible = _isSingleCollectionSelected;
+            BtnPdfRight.IsVisible = _isSinglePdfSelected;
 
             if (_isSinglePdfSelected)
             {

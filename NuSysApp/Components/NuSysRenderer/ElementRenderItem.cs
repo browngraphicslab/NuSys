@@ -112,7 +112,7 @@ namespace NuSysApp
 
         private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
         {
-            Transform.LocalPosition = new Vector2((float) d, (float) d1);
+            IsDirty = true;
         }
 
 
@@ -121,6 +121,7 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
+            Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
 
             base.Update(parentLocalToScreenTransform);
@@ -214,6 +215,11 @@ namespace NuSysApp
             };
 
             return rect.Contains(new Point(point.X, point.Y));
+        }
+
+        public override Rect GetMeasure()
+        {
+            return new Rect(ViewModel.X, ViewModel.Y, ViewModel.Width, ViewModel.Height);
         }
     }
 }

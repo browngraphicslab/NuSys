@@ -26,6 +26,12 @@ namespace NuSysApp
     public class CollectionRenderItem : ElementRenderItem
     {
         private CanvasAnimatedControl _canvas;
+        private Size _elementSize;
+        private CanvasGeometry _shape;
+        private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
+        {
+            TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
+        };
 
         protected List<BaseRenderItem> _renderItems0 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems1 = new List<BaseRenderItem>();
@@ -34,6 +40,7 @@ namespace NuSysApp
 
         public InkRenderItem InkRenderItem { get; set; }
         public ElementCollectionViewModel ViewModel;
+        public CanvasGeometry Mask { get; set; }
         private List<BaseRenderItem> _allRenderItems = new List<BaseRenderItem>();
 
         public RenderItemTransform Camera { get; set; } = new RenderItemTransform();
@@ -180,7 +187,9 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-            
+
+            _elementSize = new Size(ViewModel.Width, ViewModel.Height);
+
             Transform.Update(parentLocalToScreenTransform);
             base.Update(parentLocalToScreenTransform);
             Camera.Update(Transform.LocalToScreenMatrix);
@@ -196,6 +205,107 @@ namespace NuSysApp
 
             foreach (var item in _renderItems3.ToArray())
                 item?.Update(Camera.LocalToScreenMatrix);
+        }
+
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            if (IsDisposed)
+                return;
+
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            Color borderColor;
+            Color bgColor;
+            float borderWidth = 4f;
+
+            var elementRect = new Rect(0, 0, _elementSize.Width, _elementSize.Height);
+            if (!(ViewModel.IsFinite && ViewModel.IsShaped)) { 
+                _strokeStyle.TransformBehavior = CanvasStrokeTransformBehavior.Hairline;
+                ds.DrawRectangle(elementRect, Colors.Red, 1f, _strokeStyle);
+            }
+
+            if (ViewModel.IsShaped || ViewModel.IsFinite)
+            {
+                var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
+                var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
+                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+            }
+
+
+            if (ViewModel.IsFinite && ViewModel.IsShaped)
+            {
+                var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
+                Camera.LocalScale = new Vector2(scaleFactor);
+                ds.Transform = Camera.LocalToScreenMatrix;
+                Mask = _shape;
+            }
+            else if (ViewModel.IsFinite && !ViewModel.IsShaped)
+            {
+                var bounds = _shape.ComputeBounds();
+                var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
+                Camera.LocalScale = new Vector2(scaleFactor);
+                ds.Transform = Transform.LocalToScreenMatrix;
+                Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
+            }
+            else
+            {
+                ds.Transform = Transform.LocalToScreenMatrix;
+                Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
+            }
+
+
+
+            using (ds.CreateLayer(1f, Mask))
+            {
+                ds.Transform = Transform.LocalToScreenMatrix;
+                ds.FillRectangle(GetMeasure(), Colors.White);
+
+                ds.Transform = Camera.LocalToScreenMatrix;
+                if (ViewModel.IsShaped)
+                {
+                    ds.FillGeometry(_shape, Colors.Red);
+                }
+                foreach (var item in _renderItems0.ToArray())
+                    item.Draw(ds);
+
+                foreach (var item in _renderItems1?.ToArray() ?? new BaseRenderItem[0])
+                    item.Draw(ds);
+
+                foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
+                    item.Draw(ds);
+
+                foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
+                    item.Draw(ds);
+
+                var initialCollection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
+                var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+
+                if (initialCollection != currentCollection && this == initialCollection)
+                {
+                    var canvasSize = (ResourceCreator as CanvasAnimatedControl).Size;
+                    CanvasGeometry crop;
+
+                    Matrix3x2 tt;
+
+                    if (currentCollection.ViewModel.IsFinite && currentCollection.ViewModel.IsShaped)
+                    {
+                        tt = currentCollection.Camera.LocalToScreenMatrix;
+                    }
+                    else
+                    {
+                        tt = currentCollection.Transform.LocalToScreenMatrix;
+                    }
+
+                    crop = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, canvasSize.Width, canvasSize.Height)).CombineWith(currentCollection.Mask, tt, CanvasGeometryCombine.Xor);
+
+                    ds.Transform = Matrix3x2.Identity;
+                    ds.FillGeometry(crop, Color.FromArgb(0x77, 0, 0, 0));
+                    ds.Transform = Camera.LocalToScreenMatrix;
+                    currentCollection.Draw(ds);
+                }
+            }
+
+            base.Draw(ds);
         }
 
         public override void CreateResources()
@@ -342,7 +452,7 @@ namespace NuSysApp
             }
             else if (vm is ElementCollectionViewModel)
             {
-                item = new ShapedCollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
+                item = new CollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
                 await item.Load();
                 _renderItems2?.Add(item);
             }

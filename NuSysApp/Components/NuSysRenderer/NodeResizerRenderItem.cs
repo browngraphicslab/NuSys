@@ -22,6 +22,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
             _triangle.Dispose();
             _triangle = null;
             base.Dispose();
