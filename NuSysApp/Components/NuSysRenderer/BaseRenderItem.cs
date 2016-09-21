@@ -76,11 +76,13 @@ namespace NuSysApp
         public virtual void Dispose()
         {
             if (IsDisposed)
+            {
                 return;
+            }
 
             foreach (var child in Children)
             {
-                child.Dispose();
+                child?.Dispose();
             }
 
             Parent = null;

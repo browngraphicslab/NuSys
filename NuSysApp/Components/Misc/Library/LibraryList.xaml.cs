@@ -254,10 +254,12 @@ namespace NuSysApp
             }
 
             var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-           
+
 
             if (rect.Visibility == Visibility.Collapsed)
+            {
                 return;
+            }
 
             var el = (FrameworkElement)sender;
             var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);

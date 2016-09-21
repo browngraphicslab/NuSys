@@ -68,9 +68,9 @@ namespace NuSysApp
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
 
-        public static WaitingRoomView Instance;
+        public static WaitingRoomView Instance;//singleton now
 
-        public WaitingRoomView()
+        public WaitingRoomView() //TODO make this private, like an actual singleton
         {
             Instance = this;
             this.InitializeComponent();
@@ -375,6 +375,11 @@ namespace NuSysApp
                 UserLabel b = new UserLabel(user);
                 Users.Children.Add(b);
             });
+        }
+
+        public void ClearUsers()
+        {
+            Users?.Children?.Clear();
         }
 
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)

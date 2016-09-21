@@ -86,9 +86,14 @@ namespace NuSysApp
             _activeFreeFormViewer.Width = ActualWidth;
             _activeFreeFormViewer.Height = ActualHeight;
             mainCanvas.Children.Insert(0, _activeFreeFormViewer);
+
+            xLoadingGrid.Tapped += xLoadingGridTapped;
         }
 
-
+        private void xLoadingGridTapped(object sender, TappedRoutedEventArgs e)
+        {
+            SessionController.Instance.LoadCapturedState();
+        }
 
         /// <summary>
         /// Makes a workspace readonly by showing the readonly menu and modifying the modes
@@ -442,10 +447,6 @@ namespace NuSysApp
         public void ShowBlockingScreen(bool visible)
         {
             xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
-            xLoadingGrid.Tapped += delegate
-            {
-                SessionController.Instance.LoadCapturedState();
-            };
         }
 
         /// <summary>
@@ -761,6 +762,7 @@ namespace NuSysApp
         public void ClearUsers()
         {
             Users?.Children?.Clear();
+            WaitingRoomView.Instance.ClearUsers();
         }
     }
 }

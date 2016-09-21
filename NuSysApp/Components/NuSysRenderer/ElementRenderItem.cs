@@ -60,12 +60,19 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
             
-            _tagRenderItem.Dispose();
+            _tagRenderItem?.Dispose();
             _tagRenderItem = null;
-            _vm.Tags.CollectionChanged -= TagsOnCollectionChanged;
-            _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
-            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+            if (_vm?.Tags != null)
+            {
+                _vm.Tags.CollectionChanged -= TagsOnCollectionChanged;
+            }
+            if (_vm?.Controller != null)
+            {
+                _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
+
+                _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+                _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+            }
             _vm = null;
             _textLayout?.Dispose();
             _textLayout = null;
@@ -191,13 +198,13 @@ namespace NuSysApp
         }
 
         public override BaseRenderItem HitTest(Vector2 point)
-        {
+        { //tODO not have to null check these numbers, figure out where the mull is coming form
             var rect = new Rect
             {
-                X = _vm.X,
-                Y = _vm.Y,
-                Width = _vm.Width,
-                Height = _vm.Height
+                X = _vm?.X ?? 0,
+                Y = _vm?.Y ?? 0,
+                Width = _vm?.Width ?? 0,
+                Height = _vm?.Height ?? 0
             };
 
             return rect.Contains(new Point(point.X, point.Y)) ? this : null;

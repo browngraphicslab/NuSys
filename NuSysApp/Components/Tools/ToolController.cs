@@ -218,7 +218,7 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
             if (controller != null)
             {
-                var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=> v.Value.Values.ToDictionary( k => k, j => 1.0)) ?? new Dictionary<string, Dictionary<string,double>>());
+                var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=> v.Value.Values.Where(item => item != null).ToDictionary( k => k, j => 1.0)) ?? new Dictionary<string, Dictionary<string,double>>());
 
                 if (SessionController.Instance.ContentController.HasAnalysisModel(controller.LibraryElementModel.ContentDataModelId) && ((Model as MetadataToolModel)?.IncludeSuggestedTags ?? false)) { 
                     var analysisController = SessionController.Instance.ContentController.GetAnalysisModel(controller.LibraryElementModel.ContentDataModelId);

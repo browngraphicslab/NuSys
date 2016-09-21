@@ -260,21 +260,28 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
-            _controller.MetadataChange -= OnMetadataChange;
-            _controller.PositionChanged -= OnPositionChanged;
-            _controller.SizeChanged -= OnSizeChanged;
-            _controller.ScaleChanged -= OnScaleChanged;
-            _controller.AlphaChanged -= OnAlphaChanged;
-            _controller.AnchorChanged -= ControllerOnAnchorChanged;
-            _controller.MetadataChange -= OnMetadataChange;
+            Debug.Assert(_controller != null);
+            if (_controller != null)
+            {
+                _controller.MetadataChange -= OnMetadataChange;
+                _controller.PositionChanged -= OnPositionChanged;
+                _controller.SizeChanged -= OnSizeChanged;
+                _controller.ScaleChanged -= OnScaleChanged;
+                _controller.AlphaChanged -= OnAlphaChanged;
+                _controller.AnchorChanged -= ControllerOnAnchorChanged;
+                _controller.MetadataChange -= OnMetadataChange;
+            }
             if (_controller.LibraryElementController != null)
             {
                 _controller.LibraryElementController.TitleChanged -= OnTitleChanged;
                 _controller.LibraryElementController.KeywordsChanged -= KeywordsChanged;
             }
-            _controller.Disposed -= OnDisposed;
-            _controller.Deleted -= ControllerOnDeleted;
-            _controller.LinksUpdated -= ControllerLinksUpdated;
+            if (_controller != null)
+            {
+                _controller.Disposed -= OnDisposed;
+                _controller.Deleted -= ControllerOnDeleted;
+                _controller.LinksUpdated -= ControllerLinksUpdated;
+            }
 
             Tags = null;
             _transform = null;

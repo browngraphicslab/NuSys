@@ -37,12 +37,16 @@ namespace NuSysApp
         public override void Dispose()
         {
             if (IsDisposed)
+            {
                 return;
+            }
             if (_vm?.Controller != null)
+            {
                 _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+            }
             _shape?.Dispose();
             _shape = null;
-            _rect.Dispose();
+            _rect?.Dispose();
             _rect = null;
             _vm = null;
             _strokeStyle = null;
@@ -52,7 +56,9 @@ namespace NuSysApp
         public async override Task Load()
         {
             if ((_vm.IsFinite || _vm.IsShaped))
+            {
                 RecomputeShape();
+            }
 
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
             _rect = CanvasGeometry.CreateRectangle(ResourceCreator, boundaries);
@@ -210,7 +216,7 @@ namespace NuSysApp
             
             }
 
-            if (borderGeometry != null) {
+            if (borderGeometry != null && ViewModel != null) { // TODO catch the null ViewModel, not just continue
                 if (ViewModel.IsFinite)
                 {
                     ds.Transform = GetCameraTransform()*GetTransform()*orgTransform;

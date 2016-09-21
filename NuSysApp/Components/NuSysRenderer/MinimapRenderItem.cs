@@ -52,10 +52,15 @@ namespace NuSysApp
         public void Dispose()
         {
             if (_isDisposed)
+            {
                 return;
+            }
 
             _collection = null;
-            _canvasControl.Draw -= CanvasControlOnDraw;
+            if (_canvasControl != null)
+            {
+                _canvasControl.Draw -= CanvasControlOnDraw;
+            }
             _isDisposed = true;
         }
         
@@ -92,13 +97,25 @@ namespace NuSysApp
         public void Draw(CanvasDrawingSession ds)
         {
             if (_isDisposed)
+            {
                 return;
+            }
 
-            if (_collection.ViewModel.Elements.Count == 0)
+            if (_collection?.ViewModel?.Elements?.Count != null && _collection?.ViewModel?.Elements?.Count == 0)
+            {
                 return;
+            }
 
             if (_renderTarget == null)
+            {
                 CreateResources();
+            }
+
+            if(_collection?.ViewModel == null)
+            {
+                Debug.Fail("this shouldn't be null");
+                return;
+            }
 
             float rh = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
             float newW;

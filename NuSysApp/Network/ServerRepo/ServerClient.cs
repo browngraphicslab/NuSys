@@ -54,8 +54,7 @@ namespace NuSysApp
         /// </summary>
         public void CloseConnection()
         {
-            _socket.Close(1000,"done");
-
+            _socket.Close(1000,"done"); //1000 means a graceful exit
         }
 
         public async Task Init()
@@ -127,6 +126,7 @@ namespace NuSysApp
                             Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
                             Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
                             Debug.WriteLine("  *******************  END SERVER ERROR MESSAGE  *******************  ");
+                            Debug.Fail("shouldn't be getting server errors");
                             if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
                                 //if we can untangle a waiting request
                             {

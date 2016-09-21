@@ -395,8 +395,16 @@ namespace NuSysApp
                         _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection &&
                         _selectedRenderItem != _secondSelectedRenderItem)
                     {
-                        LinkCreated?.Invoke((ElementRenderItem) _selectedRenderItem,
-                            (ElementRenderItem) _secondSelectedRenderItem);
+                        if (_selectedRenderItem is ElementRenderItem && _secondSelectedRenderItem is ElementRenderItem)
+                        {
+                            LinkCreated?.Invoke((ElementRenderItem)_selectedRenderItem,
+                                (ElementRenderItem)_secondSelectedRenderItem);
+
+                        }
+                        else
+                        {
+                            Debug.Fail("Failed to cast to element render item;");
+                        }
                     }
                 }
                 _mode = Mode.None;

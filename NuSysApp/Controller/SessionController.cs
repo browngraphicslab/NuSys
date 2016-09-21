@@ -205,6 +205,8 @@ namespace NuSysApp
         {
             if (_capturedState != null)
             {
+                var state = _capturedState;
+                _capturedState = null;
                 var tup = await WaitingRoomView.AttemptLogin(WaitingRoomView.UserName, WaitingRoomView.HashedPass, "", false);
                 Debug.Assert(tup.Item1);
                 SessionView?.ClearUsers();
@@ -221,13 +223,13 @@ namespace NuSysApp
                     }
                 }
 
-                await EnterCollection(_capturedState.CollectionLibraryElementId);
+                await EnterCollection(state.CollectionLibraryElementId);
                 UITask.Run(delegate
                 {
-                    ActiveFreeFormViewer.CompositeTransform.CenterX = _capturedState.XLocation;
-                    ActiveFreeFormViewer.CompositeTransform.CenterY = _capturedState.YLocation;
-                    ActiveFreeFormViewer.CompositeTransform.ScaleX = _capturedState.XZoomLevel;
-                    ActiveFreeFormViewer.CompositeTransform.ScaleY = _capturedState.YZoomLevel;
+                    ActiveFreeFormViewer.CompositeTransform.CenterX = state.XLocation;
+                    ActiveFreeFormViewer.CompositeTransform.CenterY = state.YLocation;
+                    ActiveFreeFormViewer.CompositeTransform.ScaleX = state.XZoomLevel;
+                    ActiveFreeFormViewer.CompositeTransform.ScaleY = state.YZoomLevel;
                     SessionView.ShowBlockingScreen(false);
                 });
             }

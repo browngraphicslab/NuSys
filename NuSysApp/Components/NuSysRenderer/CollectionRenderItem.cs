@@ -243,7 +243,10 @@ namespace NuSysApp
             BaseRenderItem item;
             if (vm is ToolFilterView || vm is BaseToolView)
             {
-                _renderItems2?.Add(new PseudoElementRenderItem((ITool)vm, this, ResourceCreator));
+                await UITask.Run(async delegate
+                {
+                    _renderItems2?.Add(new PseudoElementRenderItem((ITool)vm, this, ResourceCreator));
+                });
             }
             else if (vm is TextNodeViewModel)
             {

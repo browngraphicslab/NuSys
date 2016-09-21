@@ -161,6 +161,7 @@ namespace NuSysApp
                 }
                 catch (Exception exception)
                 {
+                    Debug.Fail("can't have empty try-catch");
                     // Do Exception Handling
                 }
             }
@@ -179,20 +180,24 @@ namespace NuSysApp
             {
                 case NusysConstants.ElementType.Audio:
                     // instantiate the common variables for createNewLibraryElementRequestArgs
-                    var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs();
-                    createNewLibraryElementRequestArgs.ContentId = SessionController.Instance.GenerateId();
+                    var createNewAudioLibraryElementRequestArgs = new CreateNewAudioLibraryElementRequestArgs();
+                    createNewAudioLibraryElementRequestArgs.ContentId = SessionController.Instance.GenerateId();
                     // generated because we want to add this element to the collection using this later
-                    createNewLibraryElementRequestArgs.LibraryElementId = SessionController.Instance.GenerateId();
-                    createNewLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Audio;
-                    createNewLibraryElementRequestArgs.Title = "Audio Recording";
+                    createNewAudioLibraryElementRequestArgs.LibraryElementId = SessionController.Instance.GenerateId();
+                    createNewAudioLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Audio;
+                    createNewAudioLibraryElementRequestArgs.Title = "Audio Recording";
                     fileExtension = Constants.RecordingNodeAudioFileType;
                     //Make thumbnails from waveform
                     var frameWorkWaveForm = GetWaveFormFrameWorkElement(data);
                     thumbnails = await GetThumbnailsFromFrameworkElement(frameWorkWaveForm);
-                    createNewLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
-                    createNewLibraryElementRequestArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
-                    createNewLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
-                    args = createNewLibraryElementRequestArgs;
+                    createNewAudioLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+                    createNewAudioLibraryElementRequestArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+                    createNewAudioLibraryElementRequestArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+
+                    createNewAudioLibraryElementRequestArgs.Duration = 1;
+                    createNewAudioLibraryElementRequestArgs.StartTime = 0;
+
+                    args = createNewAudioLibraryElementRequestArgs;
 
 
                     break;
@@ -205,6 +210,9 @@ namespace NuSysApp
                     createNewVideoLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Video;
                     createNewVideoLibraryElementRequestArgs.Title = "Video Recording";
                     fileExtension = Constants.RecordingNodeVideoFileType;
+
+                    createNewVideoLibraryElementRequestArgs.Duration = 1;
+                    createNewVideoLibraryElementRequestArgs.StartTime = 0;
 
                     //TODO: make thumbnail for video
                     //Create temporary storagefile.
@@ -220,6 +228,8 @@ namespace NuSysApp
 
                     // set the aspect ratio to the one of QVGA
                     createNewVideoLibraryElementRequestArgs.AspectRatio = 320.0/240.0;
+
+                    
 
                     // delete the video file that we saved
                     await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
