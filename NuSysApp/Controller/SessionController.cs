@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -189,12 +190,15 @@ namespace NuSysApp
         {
             UITask.Run(async delegate
             {
+                var camera = SessionView.FreeFormViewer.InitialCollection.Camera;
                 var currentState = new CapturedStateModel(
                     ActiveFreeFormViewer.LibraryElementId,
-                    ActiveFreeFormViewer.CompositeTransform.CenterX,
-                    ActiveFreeFormViewer.CompositeTransform.CenterY,
-                    ActiveFreeFormViewer.CompositeTransform.ScaleX,
-                    ActiveFreeFormViewer.CompositeTransform.ScaleY);
+                    camera.LocalPosition.X,
+                    camera.LocalPosition.Y,
+                    camera.LocalScaleCenter.X,
+                    camera.LocalScaleCenter.Y,
+                    camera.LocalScale.X,
+                    camera.LocalScale.Y);
                 _capturedState = currentState;
                 SessionView.ShowBlockingScreen(true);
             });
@@ -222,12 +226,20 @@ namespace NuSysApp
                 }
 
                 await EnterCollection(_capturedState.CollectionLibraryElementId);
+
+                var collection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
+                collection.Camera.LocalPosition = new Vector2(_capturedState.XLocation, _capturedState.YLocation);
+                collection.Camera.LocalScaleCenter = new Vector2(_capturedState.XCenter, _capturedState.YCenter);
+                collection.Camera.LocalScale = new Vector2(_capturedState.XZoomLevel, _capturedState.YZoomLevel);
+
                 UITask.Run(delegate
                 {
+                    
                     ActiveFreeFormViewer.CompositeTransform.CenterX = _capturedState.XLocation;
                     ActiveFreeFormViewer.CompositeTransform.CenterY = _capturedState.YLocation;
                     ActiveFreeFormViewer.CompositeTransform.ScaleX = _capturedState.XZoomLevel;
                     ActiveFreeFormViewer.CompositeTransform.ScaleY = _capturedState.YZoomLevel;
+                    
                     SessionView.ShowBlockingScreen(false);
                 });
             }

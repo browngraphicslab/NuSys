@@ -186,7 +186,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="320"></ColumnDefinition>
                                 <ColumnDefinition Width="100"></ColumnDefinition>
-                                <ColumnDefinition Width="120"></ColumnDefinition>
+                                <ColumnDefinition Width="200    "></ColumnDefinition>
                                 <ColumnDefinition Width="300"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="TitleHeader" Grid.Column="0" Background="White" Style="{StaticResource WhiteButton}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 

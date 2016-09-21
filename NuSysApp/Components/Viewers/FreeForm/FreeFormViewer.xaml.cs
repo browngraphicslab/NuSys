@@ -474,7 +474,8 @@ namespace NuSysApp
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
                     IsFiniteCollection = finite,
-                    ShapePoints = shapePoints
+                    ShapePoints = shapePoints,
+                    AspectRatio = targetRectInCollection.Width/ targetRectInCollection.Height
 
                 },
                 ContentId = SessionController.Instance.GenerateId()
@@ -722,7 +723,6 @@ namespace NuSysApp
             {
                 childCollection.InkRenderItem?.UpdateDryInkTransform();
             }
-            
 
             UpdateNonWin2dElements();
             _minimap.Invalidate();

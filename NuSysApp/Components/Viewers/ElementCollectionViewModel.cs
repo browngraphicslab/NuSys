@@ -42,6 +42,7 @@ namespace NuSysApp
 
         public bool IsFinite { get; set; }
         public bool IsShaped { get; set; }
+        public double AspectRatio { get; set; }
 
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
@@ -58,6 +59,7 @@ namespace NuSysApp
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
             IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;
+            AspectRatio = model.AspectRatio;
 
             foreach (var childId in model.Children)
             {
@@ -108,7 +110,6 @@ namespace NuSysApp
         private void ControllerOnCameraPositionChanged(float f, float f1)
         {
             CameraTranslation = new Vector2(f, f1);
-
         }
 
         public async Task CreateChildren()
@@ -204,6 +205,23 @@ namespace NuSysApp
                 }
             }
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
+        }
+
+        protected override void OnSizeChanged(object source, double width, double height)
+        {
+            if (!IsFinite)
+            {
+                base.OnSizeChanged(source, width, height);
+                return;
+            }
+
+            if (height *  AspectRatio < Constants.MinNodeSize)
+            {
+                return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour
+            }
+
+            SetSize(height * AspectRatio, height);
+
         }
 
         /// <summary>

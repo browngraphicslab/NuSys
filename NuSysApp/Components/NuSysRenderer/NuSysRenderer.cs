@@ -159,7 +159,9 @@ transforms.Reverse();
           Win2dUtil.Invert(collection.Transform.C) * collection.Transform.S * collection.Transform.C * collection.Transform.T * transform;
                 var childTransform = Win2dUtil.Invert(poo);
 
-                foreach (var renderItem in collection.GetRenderItems())
+                var childElements = collection.GetRenderItems();
+                childElements.Reverse();
+                foreach (var renderItem in childElements)
                 {
                     var innerCollection = renderItem as CollectionRenderItem;
                     if (innerCollection != null)

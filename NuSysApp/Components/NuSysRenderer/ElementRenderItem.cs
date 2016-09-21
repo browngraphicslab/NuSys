@@ -84,7 +84,7 @@ namespace NuSysApp
         {
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                _tagRenderItem.Items.Clear();
+                _tagRenderItem.ClearChildren();
                 return;
             }
 
@@ -120,6 +120,12 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
+
+            if (_vm == null)
+            {
+                base.Update(parentLocalToScreenTransform);
+                return;
+            }
 
             Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);

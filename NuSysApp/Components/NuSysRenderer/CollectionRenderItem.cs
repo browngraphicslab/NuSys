@@ -214,6 +214,10 @@ namespace NuSysApp
 
             ds.Transform = Transform.LocalToScreenMatrix;
 
+            var initialCollection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
+            var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+
+
             Color borderColor;
             Color bgColor;
             float borderWidth = 4f;
@@ -221,7 +225,7 @@ namespace NuSysApp
             var elementRect = new Rect(0, 0, _elementSize.Width, _elementSize.Height);
             if (!(ViewModel.IsFinite && ViewModel.IsShaped)) { 
                 _strokeStyle.TransformBehavior = CanvasStrokeTransformBehavior.Hairline;
-                ds.DrawRectangle(elementRect, Colors.Red, 1f, _strokeStyle);
+                ds.DrawRectangle(elementRect, Colors.Black, 1f, _strokeStyle);
             }
 
             if (ViewModel.IsShaped || ViewModel.IsFinite)
@@ -232,14 +236,14 @@ namespace NuSysApp
             }
 
 
-            if (ViewModel.IsFinite && ViewModel.IsShaped)
+            if (this != initialCollection && ViewModel.IsFinite && ViewModel.IsShaped)
             {
                 var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
                 Camera.LocalScale = new Vector2(scaleFactor);
                 ds.Transform = Camera.LocalToScreenMatrix;
                 Mask = _shape;
             }
-            else if (ViewModel.IsFinite && !ViewModel.IsShaped)
+            else if (this != initialCollection && ViewModel.IsFinite && !ViewModel.IsShaped)
             {
                 var bounds = _shape.ComputeBounds();
                 var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
@@ -263,7 +267,7 @@ namespace NuSysApp
                 ds.Transform = Camera.LocalToScreenMatrix;
                 if (ViewModel.IsShaped)
                 {
-                    ds.FillGeometry(_shape, Colors.Red);
+                    ds.FillGeometry(_shape, Colors.DarkSeaGreen);
                 }
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
@@ -277,9 +281,7 @@ namespace NuSysApp
                 foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
-                var initialCollection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
-                var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
-
+               
                 if (initialCollection != currentCollection && this == initialCollection)
                 {
                     var canvasSize = (ResourceCreator as CanvasAnimatedControl).Size;
@@ -353,6 +355,7 @@ namespace NuSysApp
 
         public List<BaseRenderItem> GetRenderItems()
         {
+            _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
             return _allRenderItems;
         }
 

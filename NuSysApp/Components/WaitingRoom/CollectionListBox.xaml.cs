@@ -25,41 +25,49 @@ namespace NuSysApp
     public sealed partial class CollectionListBox : UserControl
     {
         private WaitingRoomView _waitingRoom;
-        private LibraryElementModel _m;
+        public LibraryElementModel LibraryElementModel;
         public string ID { set; get; }
-        public string Title { set; get; }
+        public string Title { set { TitleBox.Text = value; } get { return TitleBox.Text; } }
         public string Date { set; get; }
         public string Access { set; get; }
+
         public bool MadeByRosemary = false;
 
-        public CollectionListBox(LibraryElementModel m, WaitingRoomView w)
+        public CollectionListBox(LibraryElementModel libraryElementModel, WaitingRoomView w)
         {
             this.InitializeComponent();
 
             _waitingRoom = w;
-            _m = m;
+            LibraryElementModel = libraryElementModel;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(LibraryElementModel.LibraryElementId);
+            controller.TitleChanged += ControllerOnTitleChanged;
 
-            ID = m.LibraryElementId;
-            Title = m.Title;
-            Date = m.Timestamp;
+            ID = libraryElementModel.LibraryElementId;
+            Title = libraryElementModel.Title;
+            Date = libraryElementModel.Timestamp;
             Access = "public"; //only temporary - when merging with acls make this real
 
             TitleBox.Text = Title;
             DateBox.Text = Date;
 
-            if (m.Creator == "rms" || m.Creator == "rosemary")
+            if (libraryElementModel.Creator == "rms" || libraryElementModel.Creator == "rosemary")
             {
                 MadeByRosemary = true;
             }
-            AccessBox.Text = m.AccessType.ToString();
-            Access = m.AccessType.ToString();
+            AccessBox.Text = libraryElementModel.AccessType.ToString();
+            Access = libraryElementModel.AccessType.ToString();
+        }
+
+        private void ControllerOnTitleChanged(object sender, string s)
+        {
+            Title = s;
         }
 
         private void Collection_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             if (_waitingRoom != null)
             {
-                _waitingRoom.SetSelectedCollection(_m);
+                _waitingRoom.SetSelectedCollection(LibraryElementModel);
                 _waitingRoom.Join_Workspace_Click(sender, e);
             }
         }

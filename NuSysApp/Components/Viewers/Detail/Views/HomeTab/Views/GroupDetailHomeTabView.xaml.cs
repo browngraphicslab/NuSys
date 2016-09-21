@@ -50,7 +50,7 @@ namespace NuSysApp
 
             xStats.Items.Add("Elements: \t\t" + model.Children.Count);
             xStats.Items.Add("Visual Links: \t\t" + SessionController.Instance.LinksController.GetLinkViewModel(model.LibraryElementId).Count);
-            xStats.Items.Add("Trails: \t\t\t" + SessionController.Instance.LinksController.GetLinkViewModel(model.LibraryElementId).Count);
+            xStats.Items.Add("Trails: \t\t\t" + SessionController.Instance.LinksController.GetTrailViewModel(model.LibraryElementId).Count);
             xStats.Items.Add("Ink Strokes: \t\t" + vm.LibraryElementController.ContentDataController.ContentDataModel.Strokes.Count);
             //If same collection, disable enter collection button
             var id = ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.LibraryElementId;

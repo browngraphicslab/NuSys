@@ -32,6 +32,12 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class WaitingRoomView : Page
     {
+        public enum SortType { TitleAsc, TitleDesc, DateAsc, DateDesc, AccessAsc, AccessDesc}
+        private SortType _currentSortType = SortType.TitleAsc;
+        public enum FilterType { RecentlyUsed, Mine, Others, All}
+        private FilterType _currentFilterType = FilterType.All;
+
+
         public FreeFormViewer _freeFormViewer;
 
         public static string InitialWorkspaceId { get; private set; }
@@ -61,10 +67,6 @@ namespace NuSysApp
         //selected collection by user
         private LibraryElementModel _selectedCollection = null;
 
-        //sort booleans for reverse
-        private bool _titleReverse;
-        private bool _dateReverse;
-        private bool _accessReverse;
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
 
@@ -96,27 +98,56 @@ namespace NuSysApp
 
             ellipse.Begin();
             _selectedCollection = null;
-            _titleReverse = false;
-            _dateReverse = false;
-            _accessReverse = false;
 
             // Every time a new collection is added by another user, the list of collections is refreshed by calling Init
             SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewLibraryElememt;
+            SessionController.Instance.ContentController.OnLibraryElementDelete += ContentControllerOnOnLibraryElementDelete;
+        }
+
+        private async void ContentControllerOnOnLibraryElementDelete(LibraryElementModel model)
+        {
+            if (model.Type != NusysConstants.ElementType.Collection)
+                return;
+            if (_preloadedIDs.Contains(model.LibraryElementId)) { 
+                _preloadedIDs.Remove(model.LibraryElementId);
+            }
+
+            var libraryElement = SessionController.Instance.ContentController.GetLibraryElementModel(model.LibraryElementId);
+
+            _collectionList.Remove(libraryElement);
+            var result = List.Items.OfType<CollectionListBox>().Where(c => c.LibraryElementModel.LibraryElementId == model.LibraryElementId);
+            if (result.Any())
+            {
+                List.Items.Remove(result.First());
+            }
+
+            await ApplyFilter(_currentFilterType);
+            ApplySorting(_currentSortType);
         }
 
         /// <summary>
         /// This handler is responsible for refreshing the list of collections every time another user adds a new collection.
         /// </summary>
         /// <param name="model"></param>
-        private void ContentController_OnNewLibraryElememt(LibraryElementModel model)
+        private async void ContentController_OnNewLibraryElememt(LibraryElementModel model)
         {
-            UITask.Run(delegate
+            if (model.Type != NusysConstants.ElementType.Collection)
+                return;
+
+            await UITask.Run(async delegate
             {
-                Init();
-                if (model.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(model.LibraryElementId))
+                if (!_preloadedIDs.Contains(model.LibraryElementId))
                 {
                     _preloadedIDs.Add(model.LibraryElementId);
                 }
+
+                var libraryElement = SessionController.Instance.ContentController.GetLibraryElementModel(model.LibraryElementId);
+
+                _collectionList.Add(libraryElement);
+                List.Items.Add(new CollectionListBox(libraryElement, this));
+
+                await ApplyFilter(_currentFilterType);
+                ApplySorting(_currentSortType);
             });
         }
 
@@ -124,7 +155,7 @@ namespace NuSysApp
         /// <summary>
         /// initializes collection listview
         /// </summary>
-        private async void Init()
+        private async Task Init()
         {
             SessionController.Instance.ContentController.OnNewLibraryElement -= ContentController_OnNewLibraryElememt;//remove the habndler so it doesn't Init() forever
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
@@ -146,17 +177,16 @@ namespace NuSysApp
                         _collectionList.Add(libraryElement);
                     }
                 }
-                //set items in collectionlist alphabetically
-                List?.Items?.Clear();
-                all.Sort((a, b) => a.Title.CompareTo(b.Title));
+
                 foreach (var i in all)
                 {
                     List?.Items.Add(i);
                 }
+                //set items in collectionlist alphabetically
+                await ApplyFilter(FilterType.Mine);
+                ApplySorting(SortType.TitleAsc);
                 //makes sure collection doesn't get added twice
                 _collectionAdded = true;
-                //next time title is clicked, it will reverse the list
-                _titleReverse = true;
             }
             catch (Exception e)
             {
@@ -266,7 +296,7 @@ namespace NuSysApp
 
             var request = new CreateNewContentRequest(contentRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            Init();
+       //     Init();
             NewWorkspaceName.Text = "";
             NewWorkspacePopup.IsOpen = false;
         }
@@ -293,14 +323,13 @@ namespace NuSysApp
                     ShowWorkspace();
                     await xSessionView.Init();
                 }
-
-                // Detach the handler for refreshing the list of collections
-                SessionController.Instance.ContentController.OnNewLibraryElement -= ContentController_OnNewLibraryElememt;
             }
         }
 
-        public void ShowWaitingRoom()
+        public async Task ShowWaitingRoom()
         {
+            await ApplyFilter(_currentFilterType);
+            ApplySorting(_currentSortType);
             SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.Stop();
             xWaitingRoom.Visibility = Visibility.Visible;
             xSessionView.Visibility = Visibility.Collapsed;
@@ -308,7 +337,6 @@ namespace NuSysApp
 
         public void ShowWorkspace()
         {
-
             xWaitingRoom.Visibility = Visibility.Collapsed;
             xSessionView.Visibility = Visibility.Visible;
         }
@@ -833,124 +861,34 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void SortList_OnClick(object sender, RoutedEventArgs e)
         {
-            var collections = List?.Items.ToList();
-            List?.Items?.Clear();
-            var sorttype = ((Button)sender).Name;
-
-            switch (sorttype)
+            var sortTypeStr = ((Button)sender).Name;
+            switch (sortTypeStr)
             {
                 case "TitleHeader":
-                    //sort by title string comparison and reverse if necessary, and make sure you set the reverse bool again
-                    collections.Sort((a, b) => (a as CollectionListBox).Title.CompareTo((b as CollectionListBox).Title));
-                    if (_titleReverse)
-                    {
-                        collections.Reverse();
-                        _titleReverse = false;
-                    }
-                    else
-                    {
-                        _titleReverse = true;
-                    }
+                    _currentSortType = _currentSortType == SortType.TitleAsc ? SortType.TitleDesc : SortType.TitleAsc;
                     break;
                 case "AccessHeader":
-                    collections.Sort(
-                        (a, b) => (a as CollectionListBox).Access.CompareTo((b as CollectionListBox).Access));
-                    if (_accessReverse)
-                    {
-                        collections.Reverse();
-                        _accessReverse = false;
-                    }
-                    else
-                    {
-                        _accessReverse = true;
-                    }
+                    _currentSortType = _currentSortType == SortType.AccessAsc ? SortType.AccessDesc : SortType.AccessAsc;
                     break;
                 case "DateHeader":
-                    collections.Sort((a, b) => (a as CollectionListBox).Date.CompareTo((b as CollectionListBox).Date));
-                    if (_dateReverse)
-                    {
-                        collections.Reverse();
-                        _dateReverse = false;
-                    }
-                    else
-                    {
-                        _dateReverse = true;
-                    }
-                    break;
-                default:
-
+                    _currentSortType = _currentSortType == SortType.DateAsc ? SortType.DateDesc : SortType.DateAsc;
                     break;
             }
-
-            foreach (var i in collections)
-            {
-                List?.Items?.Add(i);
-            }
+            ApplySorting(_currentSortType);
         }
 
-        private void MyWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
+        private async void MyWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var mycollections = new List<CollectionListBox>();
-            foreach (var i in _collectionList)
-            {
-                if (i.Creator == UserID)
-                {
-                    var listbox = new CollectionListBox(i, this);
-                    mycollections.Add(listbox);
-                }
-            }
-            //set items in collectionlist alphabetically
-            List?.Items?.Clear();
-            mycollections.Sort((a, b) => a.Title.CompareTo(b.Title));
-            foreach (var i in mycollections)
-            {
-                List?.Items?.Add(i);
-            }
-            _collectionAdded = true;
-            //next time title is clicked, it will reverse the list
-            _titleReverse = true;
+            await ApplyFilter(FilterType.Mine);
         }
 
-        private void OtherWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
+        private async void OtherWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var othercollections = new List<CollectionListBox>();
-            foreach (var i in _collectionList)
-            {
-                if (i.Creator != UserID)
-                {
-                    var listbox = new CollectionListBox(i, this);
-                    othercollections.Add(listbox);
-                }
-            }
-            //set items in collectionlist alphabetically
-            List?.Items?.Clear();
-            othercollections.Sort((a, b) => a.Title.CompareTo(b.Title));
-            foreach (var i in othercollections)
-            {
-                List?.Items?.Add(i);
-            }
-            _collectionAdded = true;
-            //next time title is clicked, it will reverse the list
-            _titleReverse = true;
+            await ApplyFilter(FilterType.Others);
         }
-        private void AllWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
+        private async void AllWorkspacesButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var othercollections = new List<CollectionListBox>();
-            foreach (var i in _collectionList)
-            {
-                var listbox = new CollectionListBox(i, this);
-                othercollections.Add(listbox);
-            }
-            //set items in collectionlist alphabetically
-            List?.Items?.Clear();
-            othercollections.Sort((a, b) => a.Title.CompareTo(b.Title));
-            foreach (var i in othercollections)
-            {
-                List?.Items?.Add(i);
-            }
-            _collectionAdded = true;
-            //next time title is clicked, it will reverse the list
-            _titleReverse = true;
+            await ApplyFilter(FilterType.All);
         }
 
         public void SetSelectedCollection(LibraryElementModel m)
@@ -965,31 +903,161 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void RecentlyUsedButton_Onclick(object sender, RoutedEventArgs e)
         {
-            Task.Run(async delegate
+           ApplyFilter(FilterType.RecentlyUsed);
+        }
+
+        private void ApplySorting(SortType sorttype)
+        {
+            _currentSortType = sorttype;
+            var collections = List?.Items.ToList();
+            List?.Items?.Clear();
+
+            switch (sorttype)
             {
-                var request = new GetLastUsedCollectionsRequest(new GetLastUsedCollectionsServerRequestArgs() {UserId = UserID});
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                case SortType.TitleAsc:
+                case SortType.TitleDesc:
+                    //sort by title string comparison and reverse if necessary, and make sure you set the reverse bool again
 
-                Debug.Assert(request.WasSuccessful() == true);
-
-                var idHashSet = new HashSet<string>(request.GetReturnedModels().Select(model => model.CollectionId));
-
-                UITask.Run(async delegate
-                {
-                    foreach (var item in List.Items.ToList())
+                    if (sorttype == SortType.TitleAsc)
                     {
-                        var box = item as CollectionListBox;
-                        if (box == null)
+                        collections.Sort(
+                            (a, b) => (a as CollectionListBox).Title.CompareTo((b as CollectionListBox).Title));
+                    }
+                    else
+                    {
+                        collections.Sort((b, a) => (a as CollectionListBox).Title.CompareTo((b as CollectionListBox).Title));
+                    }
+                    break;
+                case SortType.AccessAsc:
+                case SortType.AccessDesc:
+
+                    if (sorttype == SortType.AccessAsc)
+                    {
+                        collections.Sort(
+                            (a, b) => (a as CollectionListBox).Access.CompareTo((b as CollectionListBox).Access));
+                    }
+                    else
+                    {
+                        collections.Sort((b, a) => (a as CollectionListBox).Access.CompareTo((b as CollectionListBox).Access));
+                    }
+
+                    break;
+                case SortType.DateAsc:
+                case SortType.DateDesc:
+                    if (sorttype == SortType.DateAsc)
+                    {
+                        collections.Sort(
+                            (a, b) => (a as CollectionListBox).Date.CompareTo((b as CollectionListBox).Date));
+                    }
+                    else
+                    {
+                        collections.Sort((b, a) => (a as CollectionListBox).Date.CompareTo((b as CollectionListBox).Date));
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            foreach (var i in collections)
+            {
+                List?.Items?.Add(i);
+            }
+        }
+
+        private async Task ApplyFilter(FilterType type)
+        {
+            _currentFilterType = type;
+            switch (type)
+            {
+                case FilterType.RecentlyUsed:
+                    await Task.Run(async delegate
+                    {
+                        var request = new GetLastUsedCollectionsRequest(new GetLastUsedCollectionsServerRequestArgs() { UserId = UserID });
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+                        Debug.Assert(request.WasSuccessful() == true);
+
+                        var idHashSet = new HashSet<string>(request.GetReturnedModels().Select(model => model.CollectionId));
+
+                        await UITask.Run(async delegate
                         {
-                            continue;
+                            foreach (var item in List.Items.ToList())
+                            {
+                                var box = item as CollectionListBox;
+                                if (box == null)
+                                {
+                                    continue;
+                                }
+                                if (!idHashSet.Contains(box.ID))
+                                {
+                                    List.Items.Remove(box);
+                                }
+                            }
+                        });
+                    });
+                    break;
+                    case FilterType.All:
+                    var othercollections = new List<CollectionListBox>();
+                    foreach (var i in _collectionList)
+                    {
+                        var listbox = new CollectionListBox(i, this);
+                        othercollections.Add(listbox);
+                    }
+                    //set items in collectionlist alphabetically
+                    List?.Items?.Clear();
+                    othercollections.Sort((a, b) => a.Title.CompareTo(b.Title));
+                    foreach (var i in othercollections)
+                    {
+                        List?.Items?.Add(i);
+                    }
+                    _collectionAdded = true;
+                    //next time title is clicked, it will reverse the list
+
+                    break;
+
+                    case FilterType.Others:
+                        var othercollections1 = new List<CollectionListBox>();
+                        foreach (var i in _collectionList)
+                        {
+                            if (i.Creator != UserID)
+                            {
+                                var listbox = new CollectionListBox(i, this);
+                                othercollections1.Add(listbox);
+                            }
                         }
-                        if (!idHashSet.Contains(box.ID))
+                        //set items in collectionlist alphabetically
+                        List?.Items?.Clear();
+                        othercollections1.Sort((a, b) => a.Title.CompareTo(b.Title));
+                        foreach (var i in othercollections1)
                         {
-                            List.Items.Remove(box);
+                            List?.Items?.Add(i);
+                        }
+                        _collectionAdded = true;
+                        //next time title is clicked, it will reverse the list
+           
+                    break;
+                    case FilterType.Mine:
+                    var mycollections = new List<CollectionListBox>();
+                    foreach (var i in _collectionList)
+                    {
+                        if (i.Creator == UserID)
+                        {
+                            var listbox = new CollectionListBox(i, this);
+                            mycollections.Add(listbox);
                         }
                     }
-                });
-            });
+                    //set items in collectionlist alphabetically
+                    List?.Items?.Clear();
+                    mycollections.Sort((a, b) => a.Title.CompareTo(b.Title));
+                    foreach (var i in mycollections)
+                    {
+                        List?.Items?.Add(i);
+                    }
+                    _collectionAdded = true;
+                    //next time title is clicked, it will reverse the list
+       
+                    break;
+            }   
         }
     }
 }

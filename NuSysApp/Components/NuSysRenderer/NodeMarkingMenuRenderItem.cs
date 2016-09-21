@@ -127,7 +127,7 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalMatrix * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
 
             ds.FillRoundedRectangle(new Rect{X= 0, Y=0, Width = _bounds.Width, Height = _bounds.Height},5,5, Color.FromArgb(0x99, 0x6b,0x93,0x97));
            // ds.FillRectangle(new Rect { X = 0, Y = 200, Width = 150, Height = 200 }, Color.FromArgb(0x55, 0x55, 0x55, 0x55));

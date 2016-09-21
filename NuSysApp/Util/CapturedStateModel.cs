@@ -20,25 +20,25 @@ namespace NuSysApp
         /// the X coordinate lcoation of the camera when the state was captured.
         /// Can't be NaN.
         /// </summary>
-        public double XLocation { get; private set; }
+        public float XLocation { get; private set; }
 
         /// <summary>
         /// the Y coordinate location of the camera when the state was captured.        
         /// Can't be NaN.
         /// </summary>
-        public double YLocation { get; private set; }
+        public float YLocation { get; private set; }
 
         /// <summary>
         /// the double representing the X zoom level of the camera when the state was captured.  
         /// Can't be NaN.
         /// </summary>
-        public double XZoomLevel { get; private set; }
+        public float XZoomLevel { get; private set; }
 
         /// <summary>
         /// the double representing the Y zoom level of the camera when the state was captured.  
         /// Can't be NaN.
         /// </summary>
-        public double YZoomLevel { get; private set; }
+        public float YZoomLevel { get; private set; }
 
         /// <summary>
         /// constructor takes in the collection id, and coordinates of the camera, and the zoom level of the camera when the state is captured.
@@ -49,17 +49,23 @@ namespace NuSysApp
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="zoom"></param>
-        public CapturedStateModel(string collectionLibraryId, double x, double y, double xZoom, double yZoom)
+        public CapturedStateModel(string collectionLibraryId, float x, float y, float centerX, float centerY, float xZoom, float yZoom)
         {
-            if (double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(yZoom) || double.IsNaN(xZoom) || string.IsNullOrEmpty(collectionLibraryId))
+            if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(yZoom) || float.IsNaN(xZoom) || string.IsNullOrEmpty(collectionLibraryId))
             {
                 throw new Exception("Invalid state was trying to be captured");
             }
             CollectionLibraryElementId = collectionLibraryId;
             XLocation = x;
             YLocation = y;
+            XCenter = centerX;
+            YCenter = centerY;
             XZoomLevel = xZoom;
             YZoomLevel = yZoom;
         }
+
+        public float YCenter { get; set; }
+
+        public float XCenter { get; set; }
     }
 }
