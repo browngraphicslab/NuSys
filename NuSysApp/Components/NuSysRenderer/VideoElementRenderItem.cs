@@ -51,7 +51,7 @@ namespace NuSysApp
 
             base.Draw(ds);
             var orgTransform = ds.Transform;
-            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
            // ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height -100 }, Colors.Red);
 
             if (_bmp != null)

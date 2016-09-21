@@ -63,7 +63,7 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
@@ -88,7 +88,7 @@ namespace NuSysApp
             cb.EndFigure(CanvasFigureLoop.Open);
             _path = CanvasGeometry.CreatePath(cb);
 
-            base.Update();
+            base.Update(parentLocalToScreenTransform);
         }
 
         public override void Draw(CanvasDrawingSession ds) {

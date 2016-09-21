@@ -262,7 +262,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\IEditable.cs" />
     <Compile Include="Components\IExplorable.cs" />
@@ -351,11 +350,11 @@
     <Compile Include="Components\NuSysRenderer\PdfElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\PdfPageButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\RenderItemInteractionManager.cs" />
-    <Compile Include="Components\NuSysRenderer\ShapedCollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TagRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TempLinkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TextElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />

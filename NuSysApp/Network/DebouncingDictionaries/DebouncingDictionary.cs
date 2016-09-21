@@ -33,7 +33,7 @@ namespace NuSysApp
         /// <summary>
         /// a queue of dictionaries waiting to be updated
         /// </summary>
-        private static Queue<DebouncingDictionary> _debouncingDictionariesToUpdate = new Queue<DebouncingDictionary>();
+        private static ConcurrentQueue<DebouncingDictionary> _debouncingDictionariesToUpdate = new ConcurrentQueue<DebouncingDictionary>();
 
         /// <summary>
         /// the delay that the debouncing dicitonary must be left alone before a saving update 
@@ -158,7 +158,9 @@ namespace NuSysApp
         {
             while (_debouncingDictionariesToUpdate.Count > 0)//send message for every update timer
             {
-                _debouncingDictionariesToUpdate.Dequeue()?.SendMessage(false);
+                DebouncingDictionary result;
+                _debouncingDictionariesToUpdate.TryDequeue(out result);
+                result?.SendMessage(false);
             }
 
             foreach (var dict in _debouncingDictionariesToSave.ToList())//check every waiting save timer

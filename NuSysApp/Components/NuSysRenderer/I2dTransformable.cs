@@ -10,11 +10,14 @@ namespace NuSysApp
     public interface I2dTransformable
     {
 
-        Matrix3x2 T { get; set; }
-        Matrix3x2 S { get; set; }
-        Matrix3x2 C { get; set; }
+        Matrix3x2 T { get; }
+        Matrix3x2 S { get; }
+        Matrix3x2 C { get; }
 
-        void Update();
+        void Update(Matrix3x2 parentTransform);
+        Vector2 LocalPosition { get; set; }
+        Vector2 LocalScaleCenter { get; set; }
+        Vector2 LocalScale { get; set; }
     }
 
 }

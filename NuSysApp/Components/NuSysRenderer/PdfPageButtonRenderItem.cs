@@ -14,9 +14,9 @@ namespace NuSysApp
 {
     public class PdfPageButtonRenderItem : InteractiveBaseRenderItem
     {
-        private Rect _measure = new Rect();
         private CanvasGeometry _triangle;
         private Rect _triangleBounds;
+        public bool IsVisible { get; set; }
         public PdfPageButtonRenderItem(int direction, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             var x = (float)(direction*15);
@@ -26,8 +26,6 @@ namespace NuSysApp
                 new Vector2(x, 20),
                 new Vector2(x, -20)});
         }
-
-
 
         public override void Dispose()
         {
@@ -41,12 +39,14 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed)
+            if (IsDisposed || !IsVisible)
                 return;
-
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
             base.Draw(ds);
             ds.FillGeometry(_triangle, Colors.Black);
             _triangleBounds = _triangle.ComputeBounds(ds.Transform);
+            ds.Transform = orgTransform;
         }
 
         public override Rect GetMeasure()

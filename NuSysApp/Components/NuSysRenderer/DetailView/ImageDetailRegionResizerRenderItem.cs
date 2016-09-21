@@ -39,7 +39,7 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             var orgTransform = ds.Transform;
-            ds.Transform = GetTransform() * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
 
             if (_triangle != null)
                 ds.FillGeometry(_triangle, new Vector2(0,0), Colors.Black);
@@ -61,19 +61,16 @@ namespace NuSysApp
 
         public override void OnDragged(CanvasPointer pointer)
         {
-            base.OnDragged(pointer);
             ResizerDragged?.Invoke(pointer.DeltaSinceLastUpdate);
         }
 
         public override void OnPressed(CanvasPointer pointer)
         {
-            base.OnPressed(pointer);
             ResizerDragStarted?.Invoke();
         }
 
         public override void OnReleased(CanvasPointer pointer)
         {
-            base.OnReleased(pointer);
             ResizerDragEnded?.Invoke();
         }
 

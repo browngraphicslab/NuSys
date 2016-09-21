@@ -93,8 +93,7 @@
                         HorizontalAlignment="Center" Margin="5" Background="{StaticResource color2}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Visibility="Collapsed">
             <TextBlock Margin="0,-4,0,0" FontSize="24">enter collection</TextBlock>
         </Button>
-        <Button Name="ReturnToOriginButton" Click="ReturnToOriginButton_OnClick"  VerticalAlignment="Top" 
-                        HorizontalAlignment="Center" Margin="5" Background="{StaticResource color2}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Visibility="Collapsed">
+        <Button Name="ReturnToOriginButton" Click="ReturnToOriginButton_OnClick"  VerticalAlignment="Top"  HorizontalAlignment="Center" Margin="5" Background="{StaticResource color2}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Visibility="Collapsed">
             <TextBlock Margin="0,-4,0,0" FontSize="24">return to origin</TextBlock>
         </Button>
         

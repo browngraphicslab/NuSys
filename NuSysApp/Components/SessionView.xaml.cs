@@ -87,7 +87,13 @@ namespace NuSysApp
             _activeFreeFormViewer.Height = ActualHeight;
             mainCanvas.Children.Insert(0, _activeFreeFormViewer);
 
-            xLoadingGrid.Tapped += xLoadingGridTapped;
+
+            xLoadingGrid.PointerPressed += XLoadingGridOnPointerPressed;
+        }
+
+        private void XLoadingGridOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+        {
+            SessionController.Instance.LoadCapturedState();
         }
 
         private void xLoadingGridTapped(object sender, TappedRoutedEventArgs e)
@@ -203,14 +209,6 @@ namespace NuSysApp
                     }
                 }
             });
-        }
-
-        private void OnPointerExited(object sender, PointerRoutedEventArgs eventArgs)
-        {
-            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions == Options.PenGlobalInk)
-            {
-
-            }
         }
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
@@ -748,11 +746,11 @@ namespace NuSysApp
             }
         }
 
-        private void GoBackToWaitingRoom_OnClick(object sender, RoutedEventArgs e)
+        private async void GoBackToWaitingRoom_OnClick(object sender, RoutedEventArgs e)
         {
             SessionController.Instance.ClearControllersForCollectionExit();
 
-            WaitingRoomView.Instance.ShowWaitingRoom();
+            await WaitingRoomView.Instance.ShowWaitingRoom();
             
         }
 

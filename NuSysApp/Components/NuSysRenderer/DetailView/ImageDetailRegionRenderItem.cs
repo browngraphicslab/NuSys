@@ -62,7 +62,7 @@ namespace NuSysApp
                 _resizer.ResizerDragged += ResizerOnResizerDragged;
                 _resizer.ResizerDragStarted += ResizerOnResizerDragStarted;
                 _resizer.ResizerDragEnded += ResizerOnResizerDragEnded;
-                Children.Add(_resizer);
+                AddChild(_resizer);
             }
 
             _controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModel.LibraryElementId) as ImageLibraryElementController;
@@ -103,7 +103,7 @@ namespace NuSysApp
             }
 
             Size = new Size(tw, th);
-            T = Matrix3x2.CreateTranslation((float)(tx), (float)(ty));
+            Transform.LocalPosition = new Vector2((float)(tx), (float)(ty));
         }
 
         private void ControllerOnLocationChanged(object sender, Point topLeft)
@@ -146,17 +146,18 @@ namespace NuSysApp
             return false;
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            if (_resizer != null)
+                _resizer.Transform.LocalPosition = new Vector2((float)(Size.Width), (float)(Size.Height));
+            base.Update(parentLocalToScreenTransform);
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
-    
             var orgTransform = ds.Transform;
-            
-            if (_resizer != null)
-                _resizer.T = Matrix3x2.CreateTranslation((float)(Size.Width), (float)(Size.Height));
+            ds.Transform = Transform.LocalToScreenMatrix;
             base.Draw(ds);
-
-            ds.Transform = GetTransform() * orgTransform;
-
             ds.DrawRectangle(new Rect(0, 0, Size.Width, Size.Height), Color.FromArgb(255, 200, 200, 200), 2, _strokeStyle);
             ds.Transform = orgTransform;
         }
@@ -164,22 +165,17 @@ namespace NuSysApp
         public override void OnDragged(CanvasPointer pointer)
         {
             if (!_isModifiable)
-                return;
-            base.OnDragged(pointer);
-
-         
+                return;         
             RegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate);
         }
 
         public override void OnPressed(CanvasPointer pointer)
         {
-            base.OnPressed(pointer);
             RegionPressed?.Invoke(this);
         }
 
         public override void OnReleased(CanvasPointer pointer)
         {
-            base.OnReleased(pointer);
             RegionReleased?.Invoke(this);
         }
 

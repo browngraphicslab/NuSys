@@ -22,6 +22,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            if (IsDisposed)
+                return;
             _triangle.Dispose();
             _triangle = null;
             base.Dispose();
@@ -42,9 +44,8 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
 
-            // ds.FillCircle(new Rect { X = Postion.X, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
             if (_triangle != null)
                 ds.FillGeometry(_triangle, new Vector2(0,0), Colors.Black);
 
@@ -55,8 +56,9 @@ namespace NuSysApp
 
         public override BaseRenderItem HitTest(Vector2 point)
         {
-            var rect = new Rect(T.M31, T.M32, 30, 30);
-            if (rect.Contains(point.ToPoint()))
+            var p = Vector2.Transform(point, Transform.ScreenToLocalMatrix);
+            var rect = new Rect(0, 0, 30, 30);
+            if (rect.Contains(p.ToPoint()))
             {
                 return this;
             }

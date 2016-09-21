@@ -18,7 +18,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 namespace NuSysApp
 {
 
-    public class ElementRenderItem : BaseRenderItem, I2dTransformable
+    public class ElementRenderItem : BaseRenderItem
     {
         private ElementViewModel _vm;
         private CanvasTextLayout _textLayout;
@@ -33,7 +33,7 @@ namespace NuSysApp
         {
             _vm = vm;
             if (_vm != null) { 
-                T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
+                Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
                 _vm.Controller.PositionChanged += ControllerOnPositionChanged;
                 _vm.Controller.SizeChanged += ControllerOnSizeChanged;
                 _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
@@ -50,8 +50,10 @@ namespace NuSysApp
 
                 foreach (var tag in _vm.Tags)
                 {
-                    _tagRenderItem.AddItem(new TagRenderItem(tag, Parent, ResourceCreator));
+                    _tagRenderItem.AddChild(new TagRenderItem(tag, Parent, ResourceCreator));
                 }
+
+                AddChild(_tagRenderItem);
             }
         }
 
@@ -59,7 +61,7 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-            
+
             _tagRenderItem?.Dispose();
             _tagRenderItem = null;
             if (_vm?.Tags != null)
@@ -74,6 +76,7 @@ namespace NuSysApp
                 _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
             }
             _vm = null;
+
             _textLayout?.Dispose();
             _textLayout = null;
             base.Dispose();
@@ -88,7 +91,7 @@ namespace NuSysApp
         {
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                _tagRenderItem.Items.Clear();
+                _tagRenderItem.ClearChildren();
                 return;
             }
 
@@ -96,7 +99,7 @@ namespace NuSysApp
             {
                 foreach (var oldItem in e.OldItems)
                 {
-                    _tagRenderItem.RemoveItem(_tagRenderItem.Items.Where( i => ((TagRenderItem)i).Text == oldItem ).First());
+                    _tagRenderItem.RemoveChild(_tagRenderItem.GetChildren().Where( i => ((TagRenderItem)i).Text == oldItem ).First());
                 }
             }
 
@@ -104,7 +107,7 @@ namespace NuSysApp
             {
                 foreach (var newItem in e.NewItems)
                 {
-                    _tagRenderItem.AddItem(new TagRenderItem(newItem.ToString(), Parent, ResourceCreator));
+                    _tagRenderItem.AddChild(new TagRenderItem(newItem.ToString(), Parent, ResourceCreator));
                 }
             }
         }
@@ -116,20 +119,25 @@ namespace NuSysApp
 
         private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
         {
-            T = Matrix3x2.CreateTranslation((float) d, (float) d1);
+            IsDirty = true;
         }
 
 
-
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            base.Update();
-            if (_tagRenderItem != null)
-                _tagRenderItem.Update();
+            if (_vm == null)
+            {
+                base.Update(parentLocalToScreenTransform);
+                return;
+            }
 
+            Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
+            _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
+
+            base.Update(parentLocalToScreenTransform);
 
             if (!_needsTitleUpdate && _vm != null)
                 return;
@@ -151,16 +159,16 @@ namespace NuSysApp
             }
             var oldTransform = ds.Transform;
 
-            ds.Transform = Matrix3x2.CreateTranslation(0, (float)_vm.Height + 10f) * GetTransform()*oldTransform;
-            _tagRenderItem?.Draw(ds);
+      //      _tagRenderItem?.Draw(ds);
 
-            _transform = oldTransform;
-            
-            var sp = Vector2.Transform(new Vector2((float) _vm.X, (float) (_vm.Y)), _transform);
+            if (Transform.Parent != null)
+                _transform = Transform.Parent.LocalToScreenMatrix;
+
+            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
             
             ds.Transform = Matrix3x2.Identity;
-            Color color = Parent == SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection
+            Color color = this != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection
                 ? Color.FromArgb(0xdd,0,0,0)
                 : Colors.White;
             ds.DrawTextLayout(_textLayout, new Vector2(sp.X + (spr.X-sp.X - 200f)/2f, sp.Y - (float)_textLayout.DrawBounds.Height-18), color);
@@ -175,10 +183,9 @@ namespace NuSysApp
         {
             if (_textLayout == null)
                 return new Rect();
-
-            _transform = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(this);
-            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
-            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
+            var transform = Transform.Parent.LocalToScreenMatrix;
+            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), transform);
             var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
             var tagsMeasurement = _tagRenderItem.GetMeasure();
             var rect = new Rect
@@ -221,6 +228,11 @@ namespace NuSysApp
             };
 
             return rect.Contains(new Point(point.X, point.Y));
+        }
+
+        public override Rect GetMeasure()
+        {
+            return new Rect(ViewModel.X, ViewModel.Y, ViewModel.Width, ViewModel.Height);
         }
     }
 }

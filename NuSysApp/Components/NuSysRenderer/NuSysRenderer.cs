@@ -34,58 +34,21 @@ namespace NuSysApp
 {
     public class NuSysRenderer : CanvasRenderEngine
     { 
-        private CanvasAnimatedControl _canvas;
+        
         private MinimapRenderItem _minimap;
         public ElementSelectionRenderItem ElementSelectionRenderItem;
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
-
-        public CollectionRenderItem Root { get; set; }
         private bool _isStopped;
 
-
-        public Size Size { get; set; }
-
-
-        private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
+        public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
         {
-            ElementSelectionRenderItem = new ElementSelectionRenderItem(Root.ViewModel, null, _canvas);
-            ElementSelectionRenderItem.Load();
-            NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, _canvas);
         }
 
-        public override void Stop()
+        public override void Start()
         {
+            base.Start();
 
-               
-                if (_canvas == null)
-                    return;
-
-            _canvas.Draw -= CanvasOnDraw;
-            _canvas.Update -= CanvasOnUpdate;
-            _canvas.CreateResources -= CanvasOnCreateResources;
-            _canvas.SizeChanged -= CanvasOnSizeChanged;
-
-            _canvas.RunOnGameLoopThreadAsync(() =>
-            {
-                _isStopped = true;
-                Root.Dispose();
-                _canvas.Invalidate();
-            });
-
-
-        }
-
-
-        public override void Init(CanvasAnimatedControl canvas, BaseRenderItem root)
-        {
-            _canvas = canvas;
-            Size = new Size(canvas.Width, canvas.Height);
-            Root = root as CollectionRenderItem;
-            _canvas.Draw += CanvasOnDraw;
-            _canvas.Update += CanvasOnUpdate;
-            _canvas.CreateResources += CanvasOnCreateResources;
-            _canvas.SizeChanged += CanvasOnSizeChanged;
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(_canvas, async () =>
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(CanvasAnimatedControl, async () =>
             {
                 try
                 {
@@ -99,19 +62,29 @@ namespace NuSysApp
             });
         }
 
-        private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        public override void Stop()
         {
-            Size = sizeChangedEventArgs.NewSize;
+            if (CanvasAnimatedControl == null)
+                return;
+            
+            CanvasAnimatedControl.RunOnGameLoopThreadAsync(() =>
+            {
+                _isStopped = true;
+            });
+
+            base.Stop();
         }
+        
 
         public Vector2 ScreenPointerToCollectionPoint(Vector2 sp, CollectionRenderItem collection)
         {
-            var t = Win2dUtil.Invert(GetCollectionTransform(collection));
-            return Vector2.Transform(sp, t);
+            return Vector2.Transform(sp, collection.Camera.ScreenToLocalMatrix);
         }
 
         public Matrix3x2 GetCollectionTransform(CollectionRenderItem collection)
         {
+            return collection.Camera.LocalToScreenMatrix;
+            /*
             var transforms = new List<CollectionRenderItem> {collection};
            
             var parent = collection.Parent;
@@ -122,47 +95,51 @@ namespace NuSysApp
             }
 
             transforms.Reverse();
-            return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
+            return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.Transform.C)*t.Transform.S *t.Transform.C *t.Transform.T *current);
+            */
         }
 
         public Matrix3x2 GetTransformUntil(BaseRenderItem item)
         {
-            var transforms = new List<I2dTransformable>();
-        
-            var parent = item.Parent;
-            while (parent != null)
-            {
-                transforms.Add(parent);
-                parent = parent.Parent;
-            }
+            if (item.Parent == null)
+                return Matrix3x2.Identity;
 
-            transforms.Reverse();
+            return item.Transform.Parent.LocalToScreenMatrix;
+            /*
+var transforms = new List<I2dTransformable>();
 
-            return transforms.Select(t1 => t1 as CollectionRenderItem).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
+var parent = item.Parent?.Transform;
+while (parent != null)
+{
+    transforms.Add(parent);
+    parent = parent.Parent;
+}
+
+transforms.Reverse();
+*/
+            // return transforms.Select(t1 => t1 as RenderItemTransform).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.Transform.C)*t.Transform.S *t.Transform.C *t.Transform.T *current);
+            //return transforms.Select(t1 => t1 as RenderItemTransform).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.Transform.C)*t.Transform.S *t.Transform.C *t.Transform.T *current);
+            //   return transforms.Select(t1 => t1 as RenderItemTransform).Aggregate(Matrix3x2.Identity, (current, t) => t.LocalMatrix * current);
         }
 
         public BaseRenderItem GetRenderItemAt(Vector2 sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
         {
-            if (ElementSelectionRenderItem.Resizer.HitTest(sp) != null)
-                return ElementSelectionRenderItem.Resizer;
 
-            foreach (var btn in ElementSelectionRenderItem.Buttons)
-            {
-                if (btn.HitTest(sp) != null)
-                {
-                    return btn;
-                }
-            }
+            var r = Root.HitTest(sp);
+            if (!(r is CollectionRenderItem))
+                return r;
 
-            collection = collection ?? Root;
+            collection = (CollectionRenderItem)(collection ?? Root.GetChildren()[0]);
             var mat = GetTransformUntil(collection);
-            return _GetRenderItemAt(collection, sp, mat, 0, maxLevel);
+            var rr = _GetRenderItemAt(collection, sp, mat, 0, maxLevel);
+            
+            return rr;
         }
 
         public List<BaseRenderItem> GetRenderItemsAt(Vector2 sp,  CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
         {
             var output = new List<BaseRenderItem>();
-            collection = collection ?? Root;
+            collection = (CollectionRenderItem)(collection ?? Root.GetChildren()[0]);
             var mat = GetTransformUntil(collection);
             _GetRenderItemsAt(collection, sp, mat, output, 0, maxLevel);
             return output;
@@ -179,10 +156,12 @@ namespace NuSysApp
             if (currentLevel < maxLevel)
             {
                 var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T *
-          Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * transform;
+          Win2dUtil.Invert(collection.Transform.C) * collection.Transform.S * collection.Transform.C * collection.Transform.T * transform;
                 var childTransform = Win2dUtil.Invert(poo);
 
-                foreach (var renderItem in collection.GetRenderItems())
+                var childElements = collection.GetRenderItems();
+                childElements.Reverse();
+                foreach (var renderItem in childElements)
                 {
                     var innerCollection = renderItem as CollectionRenderItem;
                     if (innerCollection != null)
@@ -226,8 +205,7 @@ namespace NuSysApp
                 if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))) != null)
                     output.Add(collection);
 
-                var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T *
-Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * transform;
+                var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T * Win2dUtil.Invert(collection.Transform.C) * collection.Transform.S * collection.Transform.C * collection.Transform.T * transform;
                 var childTransform = Win2dUtil.Invert(poo);
 
                 foreach (var renderItem in collection.GetRenderItems())
@@ -248,17 +226,25 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
             } 
         }
 
-        private void CanvasOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
+        protected override void CanvasAnimatedControlOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
+        {
+            ElementSelectionRenderItem = new ElementSelectionRenderItem(((CollectionRenderItem)(Root.GetChildren()[0])).ViewModel, null, CanvasAnimatedControl);
+            ElementSelectionRenderItem.Load();
+            Root.AddChild(ElementSelectionRenderItem);
+            NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
+            Root.AddChild(NodeMarkingMenu);
+        }
+
+        
+        protected override void CanvasAnimatedControlOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
         {
             if (_isStopped)
                 return;
 
-            Root.Update();
-            ElementSelectionRenderItem?.Update();
-            NodeMarkingMenu?.Update();
+            Root.Update(Matrix3x2.Identity);
         }
 
-        private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
+        protected override void CanvasAnimatedControlOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
             if (_isStopped)
                 return;
@@ -268,11 +254,6 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 ds.Transform = Matrix3x2.Identity;
                 Root.Draw(ds);
                 ds.Transform = Matrix3x2.Identity;
-
-                if (ElementSelectionRenderItem != null)
-                    ElementSelectionRenderItem.Draw(ds);
-                if (NodeMarkingMenu != null)
-                    NodeMarkingMenu.Draw(ds);
             }
         }
     }

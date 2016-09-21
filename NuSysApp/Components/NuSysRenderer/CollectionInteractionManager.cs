@@ -22,23 +22,6 @@ using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
-
-    public class Transformable : I2dTransformable
-    {
-        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
-
-        public Size Size { get; set; }
-
-        public Point Position { get; set; }
-        public Vector2 CameraTranslation { get; set; }
-        public Vector2 CameraCenter { get; set; }
-        public float CameraScale { get; set; }
-
-        public void Update() { }
-    }
-
     public class CollectionInteractionManager : IDisposable
     {
         public delegate void LinkSelectedHandler(LinkRenderItem element);
@@ -95,8 +78,8 @@ namespace NuSysApp
 
         private Mode _mode = Mode.None;
 
-        private Dictionary<ElementViewModel, Transformable> _transformables =
-            new Dictionary<ElementViewModel, Transformable>();
+        private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
+            new Dictionary<ElementViewModel, RenderItemTransform>();
 
         private BaseRenderItem _selectedRenderItem;
         private BaseRenderItem _secondSelectedRenderItem;
@@ -248,7 +231,7 @@ namespace NuSysApp
             }
 
             var until = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection);
-            _transform = Win2dUtil.Invert(_collection.C) * _collection.S * _collection.C * _collection.T * until;
+            _transform = Win2dUtil.Invert(_collection.Transform.C) * _collection.Transform.S * _collection.Transform.C * _collection.Transform.T * until;
 
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
             {
@@ -263,8 +246,7 @@ namespace NuSysApp
 
                 }
                 _selectedRenderItem = hit as ElementRenderItem;
-                if (_selectedRenderItem != null && _selectedRenderItem.Parent != null && _selectedRenderItem != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection)
-                    (_selectedRenderItem.Parent as CollectionRenderItem).BringForward(_selectedRenderItem as ElementRenderItem);
+
             }
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 2)
             {
@@ -420,9 +402,11 @@ namespace NuSysApp
                 {
                     _secondSelectedRenderItem = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
-                    if (_selectedRenderItem != null && _selectedRenderItem != _collection &&
-                        _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection)
-                    {
+                    var item1 = _selectedRenderItem as ElementRenderItem;
+                    var item2 = _secondSelectedRenderItem as ElementRenderItem;
+
+                    if (!(item1 == null || item2 == null || item1 == _collection || item2 == _collection))
+                    { 
                         TrailCreated?.Invoke((ElementRenderItem)_selectedRenderItem, (ElementRenderItem)_secondSelectedRenderItem);
                     }
                 }

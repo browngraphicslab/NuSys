@@ -26,23 +26,32 @@ namespace NuSysApp
             Tool = tool;
             Tool.ToolAnchorChanged += OnToolAnchorChanged;
 
-            var s = (FrameworkElement) tool;
-            var t = (CompositeTransform) s.RenderTransform;
-            Rect = new Rect(t.TranslateX+60, t.TranslateY, s.Width, s.Height);
+            UITask.Run(() =>
+            {
+                var s = (FrameworkElement) tool;
+                var t = (CompositeTransform) s.RenderTransform;
+                Rect = new Rect(t.TranslateX + 60, t.TranslateY, s.Width, s.Height);
+            });
         }
 
         public override void Dispose()
         {
-            Tool.ToolAnchorChanged -= OnToolAnchorChanged;
-            Tool = null;
-            base.Dispose();
+            UITask.Run(() =>
+            {
+                Tool.ToolAnchorChanged -= OnToolAnchorChanged;
+                Tool = null;
+                base.Dispose();
+            });
         }
 
         private void OnToolAnchorChanged(object sender, Point2d point2D)
         {
-            var s = (FrameworkElement) sender;
-            var t = (CompositeTransform) s.RenderTransform;
-            Rect = new Rect(t.TranslateX+60, t.TranslateY, s.ActualWidth, s.ActualHeight);
+            UITask.Run(() =>
+            {
+                var s = (FrameworkElement) sender;
+                var t = (CompositeTransform) s.RenderTransform;
+                Rect = new Rect(t.TranslateX + 60, t.TranslateY, s.ActualWidth, s.ActualHeight);
+            });
         }
 
         public override BaseRenderItem HitTest(Vector2 point)

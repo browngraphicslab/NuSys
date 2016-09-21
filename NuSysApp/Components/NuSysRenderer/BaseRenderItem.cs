@@ -11,18 +11,16 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class BaseRenderItem : IDisposable, I2dTransformable
+    public class BaseRenderItem : IDisposable
     {
-        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
+        public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
         public bool IsDirty { get; set; } = true;
 
         public BaseRenderItem Parent { get; set; }
 
-        public List<BaseRenderItem> Children { get; private set; } = new List<BaseRenderItem>();
+        protected List<BaseRenderItem> _children = new List<BaseRenderItem>();
 
         public bool IsDisposed { get; set; }
 
@@ -34,16 +32,53 @@ namespace NuSysApp
 
         public virtual async Task Load() {
 
+            foreach (var child in _children)
+            {
+                await child.Load();
+            }
         }
 
-        public virtual void Update()
+        public virtual void AddChild(BaseRenderItem child)
+        {
+            child.Transform.SetParent(Transform);
+            _children.Add(child);
+        }
+
+        public virtual void RemoveChild(BaseRenderItem child)
+        {
+            _children.Remove(child);
+        }
+
+        public virtual BaseRenderItem[] GetChildren()
+        {
+            return _children.ToArray();
+        }
+
+        public virtual void ClearChildren()
+        {
+            var children = GetChildren();
+            _children.Clear();
+            foreach (var child in children)
+            {
+                child.Dispose();
+            }
+        }
+
+        public virtual void SortChildren(Comparison<BaseRenderItem> comparison)
+        {
+            _children.Sort(comparison);
+        }
+
+        public virtual void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            foreach (var child in Children.ToArray())
+            Transform.Update(parentLocalToScreenTransform);
+
+            foreach (var child in _children.ToArray())
             {
-                child.Update();
+                child.Update(Transform.LocalToScreenMatrix);
             }
         }
 
@@ -54,9 +89,9 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
 
-            ds.Transform = GetTransform() * ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
 
-            foreach (var child in Children.ToArray())
+            foreach (var child in _children.ToArray())
             {
                 child?.Draw(ds);
             }
@@ -68,11 +103,6 @@ namespace NuSysApp
         {            
         }
 
-        public virtual Matrix3x2 GetTransform()
-        {
-            return Win2dUtil.Invert(C)*S*C*T;
-        }
-
         public virtual void Dispose()
         {
             if (IsDisposed)
@@ -80,7 +110,7 @@ namespace NuSysApp
                 return;
             }
 
-            foreach (var child in Children)
+            foreach (var child in _children)
             {
                 child?.Dispose();
             }
@@ -91,7 +121,9 @@ namespace NuSysApp
 
         public virtual BaseRenderItem HitTest(Vector2 point)
         {
-            foreach (var child in Children)
+            var children = _children.ToList();
+            children.Reverse();
+            foreach (var child in children)
             {
                 var hit = child.HitTest(point);
                 if (hit != null)

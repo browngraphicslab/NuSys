@@ -40,7 +40,7 @@ namespace NuSysApp
             _path = null;
         }
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (!IsDirty)
                 return;

@@ -64,7 +64,7 @@ namespace NuSysApp
         private void Controller_SizeChanged(object source, double width, double height)
         {
             IsDirty = true;
-            Update();
+            Update(Transform.Parent.LocalMatrix);
         }
 
         private void LibraryElementControllerOnContentChanged(object source, string contentData)
@@ -74,12 +74,13 @@ namespace NuSysApp
         }
 
 
-        public override void Update()
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (IsDisposed)
                 return;
 
-            base.Update();
+            base.Update(parentLocalToScreenTransform);
+
             if (!IsDirty)
                 return;
             _textItemLayout = _htmlParser.GetParsedText(_textboxtext, _vm.Height - 2* _margin, _vm.Width - 2*_margin);
@@ -97,8 +98,8 @@ namespace NuSysApp
             base.Draw(ds);
 
             var orgTransform = ds.Transform;
-            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
 
+            ds.Transform = Transform.LocalToScreenMatrix;
             ds.FillRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Colors.White);
             ds.DrawRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Constants.color1, 1f, _strokeStyle);
 

@@ -15,6 +15,9 @@ namespace NuSysApp
 {
     public class ImageDetailRenderItem : BaseRenderItem
     {
+        private bool _showCroppy;
+        private ImageDetailRegionRenderItem _activeRegion;
+        private bool _isLoading;
         protected ImageLibraryElementController _controller;
         protected CanvasBitmap _bmp;
         protected Rect _croppedImageTarget;
@@ -34,8 +37,7 @@ namespace NuSysApp
         public delegate void RegionUpdatedHandler();
         public event RegionUpdatedHandler NeedsRedraw;
 
-        private bool _showCroppy;
-        private ImageDetailRegionRenderItem _activeRegion;
+
 
         public ImageDetailRenderItem(ImageLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -76,7 +78,7 @@ namespace NuSysApp
             _controller.LocationChanged -= ControllerOnLocationChanged;
             _controller.SizeChanged -= ControllerOnSizeChanged;
 
-            foreach (var child in Children)
+            foreach (var child in GetChildren())
             {
                 var region = child as ImageDetailRegionRenderItem;
                 region.RegionPressed -= RegionOnRegionPressed;
@@ -130,7 +132,8 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _bmp?.Dispose();
+            _isLoading = true;
+               _bmp?.Dispose();
             await Task.Run(async () =>
             {
                 _bmp =
@@ -139,6 +142,7 @@ namespace NuSysApp
                             ResourceCreator.Dpi);
             });
             ReRender();
+            _isLoading = false;
         }
 
         private void RecomputeSize()
@@ -168,8 +172,8 @@ namespace NuSysApp
 
         protected virtual void ComputeRegions()
         {
-            var children = Children.ToArray();
-            Children.Clear();
+            var children = GetChildren();
+            ClearChildren();
             foreach (var child in children)
             {
                 var region = child as ImageDetailRegionRenderItem;
@@ -191,11 +195,10 @@ namespace NuSysApp
                 region.RegionPressed += RegionOnRegionPressed;
                 region.RegionReleased += RegionOnRegionReleased;
 
-                Children.Add(region);
+                AddChild(region);
             }
 
-            Children.Sort( (a,b) => { var areaA = a.GetMeasure(); var areaB = b.GetMeasure();
-                                      return areaA.Width*areaA.Height > areaB.Width*areaB.Height ?  1 : -1;
+            SortChildren( (a,b) => { var areaA = a.GetMeasure(); var areaB = b.GetMeasure(); return areaA.Width*areaA.Height >= areaB.Width*areaB.Height ?  1 : -1;
             });
 
             NeedsRedraw?.Invoke();
@@ -244,9 +247,17 @@ namespace NuSysApp
             NeedsRedraw?.Invoke();
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;
+            var offsetY = (float)(CanvasSize.Height - _croppedImageTarget.Height) / 2f;
+            Transform.LocalPosition = new Vector2(offsetX, offsetY);
+            base.Update(parentLocalToScreenTransform);
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed)
+            if (IsDisposed || _isLoading)
                 return;
 
             if (_needsMaskRefresh)
@@ -258,15 +269,13 @@ namespace NuSysApp
             if (_showCroppy)
             {
 
-                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.T.M31, _activeRegion.T.M32, _activeRegion.GetMeasure().Width, _activeRegion.GetMeasure().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
+                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.Transform.LocalPosition.X, _activeRegion.Transform.LocalPosition.Y, _activeRegion.GetMeasure().Width, _activeRegion.GetMeasure().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
             }
 
 
             var orgTransform = ds.Transform;
-            var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;
-            var offsetY = (float)(CanvasSize.Height - _croppedImageTarget.Height) / 2f;
-            T = Matrix3x2.CreateTranslation(offsetX, offsetY);
-            ds.Transform = GetTransform() * orgTransform;
+
+            ds.Transform = Transform.LocalToScreenMatrix;
             using (ds.CreateLayer(1, _mask))
             { 
                 if (_bmp != null)
@@ -275,7 +284,6 @@ namespace NuSysApp
                     ds.FillRectangle(_croppedImageTarget, Colors.Gray);
 
                 if (_activeRegion != null && _croppy != null) { 
-                  //  Debug.WriteLine(_croppy.ComputeBounds());
                     ds.FillGeometry(_croppy, Color.FromArgb(0x88,0,0,0));
                 }
                 ds.Transform = orgTransform;
@@ -303,7 +311,7 @@ namespace NuSysApp
                 _canvasSize = value;
                 RecomputeSize();
 
-                foreach (var child in Children.ToArray())
+                foreach (var child in GetChildren())
                 {
                     var region = child as ImageDetailRegionRenderItem;
                     region.UpdateImageBound(_scaleDisplayToCrop * _scaleOrgToDisplay);

@@ -77,8 +77,9 @@ namespace NuSysApp
             libElemController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             libElemController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
 
-            _renderEngine = new CanvasRenderEngine();
+           
             var root = new BaseRenderItem(null, xImgCanvas);
+            _renderEngine = new CanvasRenderEngine(xImgCanvas, root);
             _imageDetailRenderItem = new ImageDetailRenderItem(libElemController, new Size(xImgCanvas.Width, xImgCanvas.Height), root, xImgCanvas);
             _imageDetailRenderItem.IsRegionsVisible = ShowRegions;
             _imageDetailRenderItem.CanvasSize = new Size(totalStackPanel.ActualWidth, totalStackPanel.ActualHeight);
@@ -93,11 +94,11 @@ namespace NuSysApp
             _imageDetailRenderItem.NeedsRedraw += ImageOnNeedsRedraw;
 
             await _imageDetailRenderItem.Load();
-            root.Children.Add(_imageDetailRenderItem);
+            root.AddChild(_imageDetailRenderItem);
 
 
 
-            _renderEngine.Init(xImgCanvas, root);
+            _renderEngine.Start();
             _interactionManager = new RenderItemInteractionManager(_renderEngine, xImgCanvas);
             xImgCanvas.Invalidate();
         }
