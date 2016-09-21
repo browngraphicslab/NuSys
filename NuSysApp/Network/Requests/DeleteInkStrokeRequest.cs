@@ -45,7 +45,6 @@ namespace NuSysApp
             Debug.Assert(!string.IsNullOrEmpty(inkStrokeId));
 
             var controller = SessionController.Instance.ContentController.GetContentDataController(contentId);
-            Debug.Assert(controller != null);
 
             controller?.RemoveInk(inkStrokeId);
         }

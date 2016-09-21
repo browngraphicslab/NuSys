@@ -89,8 +89,11 @@ namespace NuSysApp
 
         public void AddInk(InkModel inkModel)
         {
-            ContentDataModel.Strokes.Add(inkModel);
-            InkAdded?.Invoke(inkModel);
+            if (inkModel?.ContentId != null && inkModel?.InkStrokeId != null && inkModel?.InkPoints?.Any() == true)
+            {
+                ContentDataModel.Strokes.Add(inkModel);
+                InkAdded?.Invoke(inkModel);
+            }
         }
 
         public void RemoveInk(string strokeId)
