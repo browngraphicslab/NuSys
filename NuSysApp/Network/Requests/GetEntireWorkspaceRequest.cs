@@ -180,7 +180,7 @@ namespace NuSysApp
             var elements = GetReturnedElementModels();
             if (SessionController.Instance.SessionView != null)
             {
-                await SessionController.Instance.SessionView.MakeCollection(elements.ToDictionary(e => e.Id, e => e));
+                await SessionController.Instance.MakeCollection(elements.ToDictionary(e => e.Id, e => e));
             }
         }
 

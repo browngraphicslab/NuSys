@@ -56,7 +56,19 @@ namespace NuSysApp
                 new Vector2(15, 10),
                 new Vector2(0, 20),
                 new Vector2(0, 0)});
-            }
+        }
+
+        public override void Dispose()
+        {
+            _txtLink.Dispose();
+            _txtLink = null;
+            _txtTrail.Dispose();
+            _txtTrail = null;
+            _triangle.Dispose();
+            _triangle = null;
+
+            base.Dispose();
+        }
 
         public void UpdatePointerLocation(Vector2 pointerPosition)
         {

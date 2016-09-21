@@ -59,15 +59,13 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-
+            
             _tagRenderItem.Dispose();
             _tagRenderItem = null;
+            _vm.Tags.CollectionChanged -= TagsOnCollectionChanged;
             _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            if (_vm.Controller?.LibraryElementController != null)
-            {
-                _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
-            }
+            _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
             _vm = null;
             _textLayout?.Dispose();
             _textLayout = null;
@@ -155,7 +153,10 @@ namespace NuSysApp
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
             
             ds.Transform = Matrix3x2.Identity;
-            ds.DrawTextLayout(_textLayout, new Vector2(sp.X + (spr.X-sp.X - 200f)/2f, sp.Y - (float)_textLayout.DrawBounds.Height-18), Colors.Black);
+            Color color = Parent == SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection
+                ? Color.FromArgb(0xdd,0,0,0)
+                : Colors.White;
+            ds.DrawTextLayout(_textLayout, new Vector2(sp.X + (spr.X-sp.X - 200f)/2f, sp.Y - (float)_textLayout.DrawBounds.Height-18), color);
 
             ds.Transform = oldTransform;
             base.Draw(ds);

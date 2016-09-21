@@ -14,6 +14,7 @@ namespace NuSysApp
     {
         private ElementModel _model;
         protected DebouncingDictionary _debouncingDictionary;
+        protected bool IsDisposed;
 
         /// <summary>
         /// count to represent how many unpacks are currently running.
@@ -93,6 +94,7 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
+            IsDisposed = true;
             if (LibraryElementController != null)
             {
                 LibraryElementController.Deleted -= Delete;
@@ -153,6 +155,9 @@ namespace NuSysApp
 
         public void SetPosition(double x, double y)
         {
+            if (IsDisposed)
+                return;
+
             var px = Model.X;
             var py = Model.Y;
             Model.X = x;

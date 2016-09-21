@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using NusysIntermediate;
 using Windows.UI.Xaml;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 { 
@@ -27,6 +28,33 @@ namespace NuSysApp
 
         //Get all link Ids attached to a linkable
         private ConcurrentDictionary<string, HashSet<string>> _linkableIdToLinkIds = new ConcurrentDictionary<string, HashSet<string>>();
+
+        private ConcurrentDictionary<string, HashSet<LinkViewModel>> _collectionLibraryIdToLinkViewModels = new ConcurrentDictionary<string, HashSet<LinkViewModel>>();
+        private ConcurrentDictionary<string, HashSet<PresentationLinkViewModel>> _collectionLibraryIdToTrailViewModels = new ConcurrentDictionary<string, HashSet<PresentationLinkViewModel>>();
+        
+        public HashSet<LinkViewModel> GetLinkViewModel(string collectionLibraryId)
+        {
+            if (_collectionLibraryIdToLinkViewModels.ContainsKey(collectionLibraryId))
+            {
+                return _collectionLibraryIdToLinkViewModels[collectionLibraryId];
+            }
+            return new HashSet<LinkViewModel>(); 
+        }
+
+        public HashSet<PresentationLinkViewModel> GetTrailViewModel(string collectionLibraryId)
+        {
+            if (_collectionLibraryIdToTrailViewModels.ContainsKey(collectionLibraryId))
+            {
+                return _collectionLibraryIdToTrailViewModels[collectionLibraryId];
+            }
+            return new HashSet<PresentationLinkViewModel>();
+        }
+
+        public void ClearVisualLinks()
+        {
+            _collectionLibraryIdToLinkViewModels.Clear();
+            _collectionLibraryIdToTrailViewModels.Clear();
+        }
 
         /// <summary>
         /// Gets a Linkable (Link controller or ElementController) from it's id.  Aka elementId
@@ -259,6 +287,18 @@ namespace NuSysApp
                 {
                     _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
                 }
+
+                foreach (var collectionLibraryIdToLinkViewModel in _collectionLibraryIdToLinkViewModels)
+                {
+                    foreach (var linkViewModel in collectionLibraryIdToLinkViewModel.Value.ToArray())
+                    {
+
+                        if (linkViewModel.Controller.ContentId == linkLibraryElementModel.OutAtomId || linkViewModel.Controller.ContentId == linkLibraryElementModel.InAtomId)
+                        {
+                            collectionLibraryIdToLinkViewModel.Value.Remove(linkViewModel);
+                        }
+                    }
+                }
             }
 
             var linkedIds = GetLinkedIds(libraryElementController.LibraryElementModel.LibraryElementId);
@@ -268,6 +308,8 @@ namespace NuSysApp
                 var linkController = GetLinkLibraryElementControllerFromLibraryElementId(linkId);
                 var inelementid = linkController.LinkLibraryElementModel.InAtomId;
                 var outelementid = linkController.LinkLibraryElementModel.OutAtomId;
+
+     
 
 
                 if (_contentIdToLinkableIds.ContainsKey(inelementid))
@@ -332,6 +374,7 @@ namespace NuSysApp
         /// <param name="two"></param>
         private void CreateBezierLinkBetween(ILinkable one, ILinkable two)
         {
+
             if (!AreBezierLinksVisible)
             {
                 return; // if we do not want to see the visual links then this should stop the links from being created
@@ -351,18 +394,29 @@ namespace NuSysApp
             model.InAtomId = one.Id;
             model.OutAtomId = two.Id;
             var controller = new LinkController(model, linkLibElemController);
+            //    var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
+            //   var collectionViewModel = allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
 
             var vm = new LinkViewModel(controller);
-            var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-            var collectionViewModel = allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
+            if (!_collectionLibraryIdToLinkViewModels.ContainsKey(oneParentCollectionId)) { 
+                _collectionLibraryIdToLinkViewModels[oneParentCollectionId] = new HashSet<LinkViewModel>();
+            }
+            _collectionLibraryIdToLinkViewModels[oneParentCollectionId].Add(vm);
+
+            var parentCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(oneParentCollectionId);
+            parentCollectionController.AddLink(new LinkViewModel(controller));
+
+            return;
+            /*
             if (collectionViewModel != null)
             {
-                collectionViewModel.Links.Add(vm);
+             //   collectionViewModel.Links.Add(vm);
             }
             else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
             {
                 SessionController.Instance.SessionView.FreeFormViewer.InitialCollection.ViewModel.Links.Add(vm);
             }
+            */
             controller.OutElement.UpdateCircleLinks();
             controller.InElement.UpdateCircleLinks();
         }
@@ -600,7 +654,7 @@ namespace NuSysApp
                 }
             }
             _contentIdToLinkableIds.TryRemove(libraryElementId, out outObj);
-            _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);
+            _contentIdToLinkContentIds.TryRemove(libraryElementId, out outObj);           
         }
 
         /// <summary>
@@ -644,6 +698,24 @@ namespace NuSysApp
         }
 
 
+        public async Task<bool> RemovePresentationLink(string id)
+        {
+            foreach (var key in _collectionLibraryIdToTrailViewModels.Keys)
+            {
+                foreach (var trailViewModel in _collectionLibraryIdToTrailViewModels[key])
+                {
+                    if (trailViewModel.Model.LinkId == id)
+                    {
+                        var collectionLibElementController = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(key);
+                        collectionLibElementController.RemoveTrail(trailViewModel);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+
         /// <summary>
         /// This is a essentially static method that adds a presentation link to the library when given a presentation link model
         /// </summary>
@@ -652,15 +724,19 @@ namespace NuSysApp
         public async Task<bool> AddPresentationLinkToLibrary(PresentationLinkModel model)
         {
             // If there exists a presentation link between two element models, return and do not create a new one
-            if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == model.InElementId && item.OutElementId == model.OutElementId) != null ||
-                PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == model.InElementId && item.InElementId == model.OutElementId) != null)
+            if (
+                PresentationLinkViewModel.Models.FirstOrDefault(
+                    item => item.InElementId == model.InElementId && item.OutElementId == model.OutElementId) != null ||
+                PresentationLinkViewModel.Models.FirstOrDefault(
+                    item => item.OutElementId == model.InElementId && item.InElementId == model.OutElementId) != null)
             {
                 return false;
             }
 
             var isSuccess = false;
-  
-            Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
+
+            Debug.Assert(PresentationLinkViewModel.Models != null,
+                "this hashset of presentationlinkmodels should be statically instantiated");
 
 
             // create a new presentation link view
@@ -672,19 +748,25 @@ namespace NuSysApp
 
             // Add the model to the list of models
             // create a new presentation link view model
-            var vm = new PresentationLinkViewModel(model);
-            PresentationLinkViewModel.Models.Add(vm.Model);
+            if (!(SessionController.Instance.IdToControllers.ContainsKey(model.InElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId)))
+                return false;
 
-            var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-            var collectionViewModel = allContent.FirstOrDefault(item => (item.LibraryElementId == vm.Model.ParentCollectionId)) as GroupNodeViewModel;
-            if (collectionViewModel != null)
+            var inElementController = SessionController.Instance.IdToControllers[model.InElementId];
+            var parentCollectionId = inElementController.GetParentCollectionId();
+            var parentCollectionController = (CollectionLibraryElementController) SessionController.Instance.ContentController.GetLibraryElementController(parentCollectionId);
+            var vm = new PresentationLinkViewModel(model);
+
+
+            if (!_collectionLibraryIdToTrailViewModels.ContainsKey(parentCollectionId))
             {
-                collectionViewModel.Trails.Add(vm);
+                _collectionLibraryIdToTrailViewModels[parentCollectionId] = new HashSet<PresentationLinkViewModel>();
             }
-            else
-            {
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Trails.Add(vm);
-            }
+            _collectionLibraryIdToTrailViewModels[parentCollectionId].Add(vm);
+            parentCollectionController.AddTrail(vm);
+
+
+            PresentationLinkViewModel.Models.Add(vm.Model);
+            
             isSuccess = true;
 
             return isSuccess;

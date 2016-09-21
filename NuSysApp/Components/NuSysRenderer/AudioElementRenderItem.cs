@@ -35,11 +35,10 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-
-            base.Dispose();
-            _vm = null;
             _bmp.Dispose();
             _bmp = null;
+            _vm = null;
+            base.Dispose();
         }
 
 

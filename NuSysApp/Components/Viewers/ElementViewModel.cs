@@ -52,7 +52,7 @@ namespace NuSysApp
                 controller.LibraryElementController.TitleChanged += OnTitleChanged;
                 controller.LibraryElementController.KeywordsChanged += KeywordsChanged;
             }
-            controller.Disposed += OnDisposed;
+
             controller.Deleted += ControllerOnDeleted;
             controller.LinksUpdated += ControllerLinksUpdated;
 

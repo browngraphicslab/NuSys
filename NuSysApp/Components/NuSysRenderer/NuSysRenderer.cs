@@ -55,31 +55,48 @@ namespace NuSysApp
 
         public override void Stop()
         {
-            _isStopped = true;
-            if (_canvas == null)
-                return;
-            
+
+               
+                if (_canvas == null)
+                    return;
+
             _canvas.Draw -= CanvasOnDraw;
             _canvas.Update -= CanvasOnUpdate;
             _canvas.CreateResources -= CanvasOnCreateResources;
             _canvas.SizeChanged -= CanvasOnSizeChanged;
 
-            Root.Dispose();
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                _isStopped = true;
+                Root.Dispose();
+                _canvas.Invalidate();
+            });
 
-            _canvas.Invalidate();
+
         }
 
 
         public override void Init(CanvasAnimatedControl canvas, BaseRenderItem root)
         {
+            _canvas = canvas;
             Size = new Size(canvas.Width, canvas.Height);
             Root = root as CollectionRenderItem;
-            _canvas = canvas;
             _canvas.Draw += CanvasOnDraw;
             _canvas.Update += CanvasOnUpdate;
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
-            _isStopped = false;
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(_canvas, async () =>
+            {
+                try
+                {
+                    await Root.Load();
+                }
+                catch (Exception e)
+                {
+                    Debug.Fail("Error while loading collection");
+                }
+                _isStopped = false;
+            });
         }
 
         private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -237,8 +254,8 @@ Win2dUtil.Invert(collection.C) * collection.S * collection.C * collection.T * tr
                 return;
 
             Root.Update();
-            ElementSelectionRenderItem.Update();
-            NodeMarkingMenu.Update();
+            ElementSelectionRenderItem?.Update();
+            NodeMarkingMenu?.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)

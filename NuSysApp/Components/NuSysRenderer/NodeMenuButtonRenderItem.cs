@@ -30,10 +30,10 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-
-            base.Dispose();
+         
             _bmp.Dispose();
             _bmp = null;
+            base.Dispose();
         }
 
         public override async Task Load()

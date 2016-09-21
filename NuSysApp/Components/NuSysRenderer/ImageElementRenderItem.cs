@@ -44,10 +44,13 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-            _vm = null;
+            if (!IsDisposed)
+                return;
+
             _image.Dispose();
             _image = null;
+            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+            _vm = null;
             base.Dispose();
         }
 

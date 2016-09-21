@@ -243,6 +243,10 @@ namespace NuSysApp
                 case NusysConstants.RequestType.DeleteInkStrokeRequest:
                     request = new DeleteInkStrokeRequest(message);
                     break;
+                case NusysConstants.RequestType.DeletePresentationLinkRequest:
+                    request = new DeletePresentationLinkRequest(message);
+                    break;
+
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }

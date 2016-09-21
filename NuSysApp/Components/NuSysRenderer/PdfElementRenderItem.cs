@@ -22,9 +22,8 @@ namespace NuSysApp
     public class PdfElementRenderItem : ElementRenderItem
     {
         private PdfNodeViewModel _vm;
-        private CanvasBitmap _bmp;
         public int CurrentPage;
-        private bool _isUpdating;
+
         private PdfDetailRenderItem _image;
         private PdfLibraryElementController _pdfLibraryElementController;
 
@@ -49,33 +48,38 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
+            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+
+            _image.Dispose();
+            _image = null;
             _vm = null;
+            _pdfLibraryElementController = null;
+
             base.Dispose();
         }
 
         public async void GotoPage(int page)
         {
-            _isUpdating = true;
-            var content = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
-            if (page < 0)
-            {
-                CurrentPage = 0;
-            } else if (page > content.PageUrls.Count - 1)
-            {
-                CurrentPage = content.PageUrls.Count - 1;
-            }
-            else
-            {
-                CurrentPage = page;
-            }
+            (ResourceCreator as CanvasAnimatedControl).RunOnGameLoopThreadAsync(async () => {
+                var content = _vm.Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
+                if (page < 0)
+                {
+                    CurrentPage = 0;
+                }
+                else if (page > content.PageUrls.Count - 1)
+                {
+                    CurrentPage = content.PageUrls.Count - 1;
+                }
+                else
+                {
+                    CurrentPage = page;
+                }
 
-            _image.CurrentPage = CurrentPage;
-            _image.ImageUrl = content.PageUrls[CurrentPage];
-            await _image.Load();           
-
-
-            _isUpdating = false;
-        }
+                _image.CurrentPage = CurrentPage;
+                _image.ImageUrl = content.PageUrls[CurrentPage];
+                await _image.Load();
+        });
+    }
 
         public override async Task Load()
         {
@@ -90,8 +94,6 @@ namespace NuSysApp
                 return;
 
             var orgTransform = ds.Transform;
-            if (_isUpdating || _vm == null)
-                return;
 
             ds.Transform = GetTransform() * ds.Transform;
             _image.Draw(ds);

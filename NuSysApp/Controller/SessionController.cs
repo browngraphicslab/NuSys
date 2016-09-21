@@ -30,6 +30,7 @@ namespace NuSysApp
         /// The passed string is the LibraryId of the newly entered collection.  
         /// </summary>
         public event EventHandler<string> EnterNewCollectionStarting;
+        public event EventHandler<string> EnterNewCollectionCompleted;
 
         /// <summary>
         /// Be careful adding to this event, check that the handlers you want to take care can't be taken care of in a mode instance in the free form viewer
@@ -385,19 +386,35 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task EnterCollection(string collectionLibraryId)
         {
-            SessionView.FreeFormViewer.RenderEngine.Stop();
+            SessionView.ShowBlockingScreen(true);
 
-            EnterNewCollectionStarting?.Invoke(this,collectionLibraryId);
+            EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
+            SessionView.FreeFormViewer.RenderEngine.Stop();
             
-            SessionView.FreeFormViewer?.RenderEngine?.Stop();
-            SessionView.FreeFormViewer?.InitialCollection?.Dispose();
-            _activeFreeFormViewer?.Dispose();
+            // Clear free form viewer
+            SessionView.FreeFormViewer.Clear();
+
             ClearControllersForCollectionExit();
 
-
+            // Create a content model/controller for the collection that we're about to enter
             var mainContentDataId = SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryId).ContentDataModelId;
             var mainContentDataModel = new ContentDataModel(mainContentDataId, string.Empty);
             ContentController.AddContentDataModel(mainContentDataModel);
+
+            var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
+            {
+                Title = "Instance title",
+                LocationX = -Constants.MaxCanvasSize / 2.0,
+                LocationY = -Constants.MaxCanvasSize / 2.0,
+                CenterX = -Constants.MaxCanvasSize / 2.0,
+                CenterY = -Constants.MaxCanvasSize / 2.0,
+                Zoom = 1,
+                LibraryId = collectionLibraryId
+            };
+
+
+
+
 
             //creates a new request to get the new workspace
             var request = new GetEntireWorkspaceRequest(collectionLibraryId);
@@ -424,8 +441,91 @@ namespace NuSysApp
                         UserId = WaitingRoomView.UserID
                     }));
             });
+
+
             
-            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels, presentationLinks, request.GetReturnedInkModels());
+          //  await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels, presentationLinks, request.GetReturnedInkModels());
+
+
+          //  xLoadingGrid.Visibility = Visibility.Visible;
+
+
+
+
+
+
+            //   xDetailViewer.DataContext = new DetailViewerViewModel();
+
+            var dict = elementModels.ToDictionary(e => e.Id, e => e); //convert the elements to the form needed for the make collection method
+
+            await Task.Run(async delegate
+            {
+                await MakeCollection(new Dictionary<string, ElementModel>(dict));
+            });
+
+
+            foreach (var presentationLink in presentationLinks)//add the presentation links
+            {
+                await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
+            }
+
+            foreach (var inkModel in request.GetReturnedInkModels())
+            {
+                var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
+                contentController.AddInk(inkModel);
+            }
+
+            Debug.WriteLine("done joining collection: " + collectionLibraryId);
+
+            //    xLoadingGrid.Visibility = Visibility.Collapsed;
+            //    Resize(null, null);
+
+
+            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
+            IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
+            CollectionIdsInUse.Add(collectionLibraryId);
+
+            var freeFormViewerViewModel = new FreeFormViewerViewModel(elementCollectionInstanceController);
+            ActiveFreeFormViewer = freeFormViewerViewModel;
+
+            await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
+
+            SessionView.ShowBlockingScreen(false);
+        }
+
+        public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
+        {
+            var made = new HashSet<string>();
+            while (elementsLeft.Any())
+            {
+                await MakeElement(made, elementsLeft, elementsLeft.First().Value);
+            }
+        }
+
+        /// <summary>
+        /// recursive method to create an element.  
+        /// You need to pass in a list of Ids that have  already been made, as well as a dictionary of Id to elements that remain to be made.  
+        /// you also have to pass in the current elment being made.  
+        /// </summary>
+        /// <param name="madeElementIds"></param>
+        /// <param name="elementsLeft"></param>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        private async Task MakeElement(HashSet<string> madeElementIds, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
+        {
+            Debug.WriteLine("making element: " + element.Id);
+            var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(element.LibraryId);
+            if (libraryModel == null)
+            {
+                elementsLeft.Remove(element.Id);
+                return;
+            }
+
+            await SessionController.Instance.AddElementAsync(element);
+
+            ///add element
+            elementsLeft.Remove(element.Id);
+            madeElementIds.Add(element.Id);
         }
 
         /// <summary>
@@ -436,6 +536,7 @@ namespace NuSysApp
         {
             //unload all the content data models by deleting them, and clear the element controllers
             //Instance?.ContentController?.ClearAllContentDataModels();
+            Instance?.LinksController.ClearVisualLinks();
             Instance?.ActiveFreeFormViewer?.AtomViewList?.Clear();
             Instance?.IdToControllers?.ForEach(kvp => kvp.Value?.Dispose());
             Instance?.IdToControllers?.Clear();//TODO actually unload all of these.  very important

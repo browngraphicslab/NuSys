@@ -21,6 +21,13 @@ namespace NuSysApp
             MaxWidth = maxWidth;
         }
 
+        public override void Dispose()
+        {
+            Items.Clear();
+            Items = null;
+            base.Dispose();
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
             if (IsDisposed)

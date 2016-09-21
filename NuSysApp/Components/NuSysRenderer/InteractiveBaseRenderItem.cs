@@ -15,6 +15,15 @@ namespace NuSysApp
         {
             
         }
+        public virtual void OnPressed(CanvasPointer pointer)
+        {
+
+        }
+
+        public virtual void OnReleased(CanvasPointer pointer)
+        {
+
+        }
 
         public virtual void OnDoubleTapped(CanvasPointer pointer)
         {

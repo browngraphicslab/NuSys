@@ -15,8 +15,11 @@ namespace NuSysApp
     public class ImageDetailRegionResizerRenderItem : InteractiveBaseRenderItem
     {
         public delegate void ResizerDraggedHandler(Vector2 delta);
+        public delegate void ResizerHandler();
 
         public event ResizerDraggedHandler ResizerDragged;
+        public event ResizerHandler ResizerDragStarted;
+        public event ResizerHandler ResizerDragEnded;
         private CanvasGeometry _triangle;
         public ImageDetailRegionResizerRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -62,9 +65,16 @@ namespace NuSysApp
             ResizerDragged?.Invoke(pointer.DeltaSinceLastUpdate);
         }
 
-        public override void OnTapped(CanvasPointer pointer)
+        public override void OnPressed(CanvasPointer pointer)
         {
-            base.OnTapped(pointer);
+            base.OnPressed(pointer);
+            ResizerDragStarted?.Invoke();
+        }
+
+        public override void OnReleased(CanvasPointer pointer)
+        {
+            base.OnReleased(pointer);
+            ResizerDragEnded?.Invoke();
         }
 
         public override Rect GetMeasure()

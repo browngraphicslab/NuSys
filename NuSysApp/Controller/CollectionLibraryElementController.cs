@@ -17,14 +17,19 @@ namespace NuSysApp
         public HashSet<string> InkLines;
 
         public delegate void InkEventHandler(string id);
+        public delegate void TrailEventHandler(PresentationLinkViewModel vm);
         public event InkEventHandler OnInkAdded;
         public event InkEventHandler OnInkRemoved;
+        public event TrailEventHandler OnTrailAdded;
+        public event TrailEventHandler OnTrailRemoved;
 
         public delegate void ChildAddedEventHandler(string id);
         public event ChildAddedEventHandler OnChildAdded;
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
+
+
 
 
         public CollectionLibraryElementModel CollectionModel
@@ -39,6 +44,17 @@ namespace NuSysApp
         {
             InkLines = new HashSet<string>();
         }
+
+        public void AddTrail(PresentationLinkViewModel trailViewModel)
+        {
+            OnTrailAdded?.Invoke(trailViewModel);
+        }
+
+        public void RemoveTrail(PresentationLinkViewModel trailViewModel)
+        {
+            OnTrailRemoved?.Invoke(trailViewModel);
+        }
+
         public void AddInk(string id)
         {
             InkLines.Add(id);
@@ -71,7 +87,6 @@ namespace NuSysApp
             var elementController = (ElementController)source;
             CollectionModel.Children.Remove(elementController.Model.Id);
         }
-
 
         public bool RemoveChild(string id)
         {
