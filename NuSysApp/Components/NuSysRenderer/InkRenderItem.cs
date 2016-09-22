@@ -133,9 +133,8 @@ namespace NuSysApp
                 _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
 
                 var builder = new InkStrokeBuilder();
+                builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor));
                 LatestStroke = builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
-                LatestStroke.DrawingAttributes = GetDrawingAttributes(InkColor);
-
 
                 if (_isEraser)
                 {
@@ -203,6 +202,14 @@ namespace NuSysApp
             args.ContentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
             args.InkPoints = LatestStroke.GetInkPoints().Select(p => new PointModel(p.Position.X, p.Position.Y, p.Pressure)).ToList();
             args.InkStrokeId = strokeId;
+            args.Color = new ColorModel
+            {
+                A = InkColor.A,
+                B = InkColor.B,
+                G = InkColor.G,
+                R = InkColor.R,
+            };
+            args.Thickness = InkSize;
 
             var request = new CreateInkStrokeRequest(args);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
@@ -217,7 +224,7 @@ namespace NuSysApp
                     builder.CreateStrokeFromInkPoints(
                         inkModel.InkPoints.Select(p => new InkPoint(new Point(p.X, p.Y), p.Pressure)),
                         Matrix3x2.Identity);
-                inkStroke.DrawingAttributes = GetDrawingAttributes(InkColor);
+                inkStroke.DrawingAttributes = GetDrawingAttributes(Color.FromArgb((byte)inkModel.Color.A, (byte)inkModel.Color.R, (byte)inkModel.Color.G, (byte)inkModel.Color.B));
                 _inkManager.AddStroke(inkStroke);
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
                 _needsDryStrokesUpdate = true;
@@ -264,13 +271,6 @@ namespace NuSysApp
                     {
                         dss.Clear(Colors.Transparent);
                         var dryStrokes = _strokesToDraw;
-                        var aa = GetDrawingAttributes(InkColor);
-                        foreach (var s in dryStrokes)
-                        {
-                            var attr = aa;
-                            attr.Color = Colors.Black;
-                            s.DrawingAttributes = attr;
-                        }
                         dss.Transform = ds.Transform;
                         dss.DrawInk(dryStrokes);
 

@@ -24,7 +24,7 @@ namespace NusysIntermediate
 
         /// <summary>
         /// the double Blue value of the color.
-        /// </summary>
+        /// </summary>double
         public double B { get; set; }
 
         /// <summary>

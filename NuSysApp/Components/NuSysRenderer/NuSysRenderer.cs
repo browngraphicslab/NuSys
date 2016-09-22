@@ -235,6 +235,7 @@ transforms.Reverse();
             ElementSelectionRect.Load();
 
             InkOptions = new InkOptionsRenderItem(null, CanvasAnimatedControl);
+            InkOptions.IsVisible = false;
             InkOptions.Load();
 
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
