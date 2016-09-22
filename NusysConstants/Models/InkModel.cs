@@ -24,6 +24,17 @@ namespace NusysIntermediate
         public List<PointModel> InkPoints { get; set; }
 
         /// <summary>
+        /// the color of the ink stroke.
+        /// stored in the nusys intermediate type for color, colorModel.
+        /// </summary>
+        public ColorModel Color { get; set; }
+
+        /// <summary>
+        /// the double thickness of the ink stroke.  
+        /// </summary>
+        public double Thickness { get; set; }
+
+        /// <summary>
         /// To create a new Ink model, create a new instance then call unpack from database
         /// message passing in the message with ink id, content id, and ink points
         /// </summary>
@@ -51,6 +62,15 @@ namespace NusysIntermediate
             {
                 InkPoints = props.GetList<PointModel>(NusysConstants.INK_TABLE_POINTS);
             }
+            if (props.ContainsKey(NusysConstants.INK_TABLE_INK_COLOR))
+            {
+                Color = props.Get<ColorModel>(NusysConstants.INK_TABLE_INK_COLOR);
+            }
+            if (props.ContainsKey(NusysConstants.INK_TABLE_INK_THICKNESS))
+            {
+                Thickness = props.GetDouble(NusysConstants.INK_TABLE_INK_THICKNESS);
+            }
+
         }
     }
 }

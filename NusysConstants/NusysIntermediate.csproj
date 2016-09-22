@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModelFactories\InkModelFactory.cs" />
+    <Compile Include="Models\ColorModel.cs" />
     <Compile Include="Models\ImageLibraryElementModel.cs" />
     <Compile Include="Models\LastUsedCollectionModel.cs" />
     <Compile Include="Models\VideoLibraryElementModel.cs" />

@@ -45,7 +45,7 @@ namespace NusysServer
 
             //ResetTables(true);
             //SetUpTables();
-            
+
             TestFunc();
         }
 
@@ -129,6 +129,8 @@ namespace NusysServer
             var inkTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Ink) + " (" +
                 NusysConstants.INK_TABLE_STROKE_ID + " varchar(128), " +
                 NusysConstants.INK_TABLE_CONTENT_ID + " varchar(128), " +
+                NusysConstants.INK_TABLE_INK_COLOR + " varchar(MAX), " +
+                NusysConstants.INK_TABLE_INK_THICKNESS + " varchar(128), " +
                 NusysConstants.INK_TABLE_POINTS + " varchar(MAX));");
 
             var lastUsedCollections = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LastUsedCollections) + " (" +

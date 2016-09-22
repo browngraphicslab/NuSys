@@ -690,6 +690,16 @@ namespace NusysIntermediate
             public static readonly string CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY = "content_id";
 
             /// <summary>
+            /// Key in message for ink stroke thickness double
+            /// </summary>
+            public static readonly string CREATE_INK_STROKE_REQUEST_STROKE_THICKNESS_KEY = "thickness";
+
+            /// <summary>
+            /// Key in message for the color of the ink stroke
+            /// </summary>
+            public static readonly string CREATE_INK_STROKE_REQUEST_COLOR_KEY = "ink_color";
+
+            /// <summary>
             /// Key in message for sending the json serialized list of points that compose the stroke. Used for the create ink stroke request
             /// </summary>
             public static readonly string CREATE_INK_STROKE_REQUEST_POINTS_KEY= "ink_points";
@@ -1228,6 +1238,16 @@ namespace NusysIntermediate
         public static readonly string INK_TABLE_POINTS = "points";
 
         /// <summary>
+        /// the color of the ink stroke
+        /// </summary>
+        public static readonly string INK_TABLE_INK_COLOR = "color";
+
+        /// <summary>
+        /// This stores the thickness of the ink stroke
+        /// </summary>
+        public static readonly string INK_TABLE_INK_THICKNESS = "thickness";
+
+        /// <summary>
         /// the list of keys that will safely be entered into the INK table.  
         /// Use this to make sure that you're entering correct keys into the database
         /// </summary>
@@ -1235,7 +1255,9 @@ namespace NusysIntermediate
         {
             INK_TABLE_CONTENT_ID,
             INK_TABLE_STROKE_ID,
-            INK_TABLE_POINTS
+            INK_TABLE_POINTS,
+            INK_TABLE_INK_COLOR,
+            INK_TABLE_INK_THICKNESS
         };
         #endregion Ink
 

@@ -25,6 +25,8 @@ namespace NusysServer
                 message.GetString(NusysConstants.CREATE_INK_STROKE_REQUEST_CONTENT_ID_KEY);
             messageToPassIntoQuery[NusysConstants.INK_TABLE_POINTS] =
                 message.GetString(NusysConstants.CREATE_INK_STROKE_REQUEST_POINTS_KEY);
+            messageToPassIntoQuery[NusysConstants.INK_TABLE_INK_COLOR] = message.GetString(NusysConstants.CREATE_INK_STROKE_REQUEST_COLOR_KEY);
+            messageToPassIntoQuery[NusysConstants.INK_TABLE_INK_THICKNESS] = message.GetString(NusysConstants.CREATE_INK_STROKE_REQUEST_STROKE_THICKNESS_KEY);
             SQLInsertQuery insertInkQuery = new SQLInsertQuery(Constants.SQLTableType.Ink, messageToPassIntoQuery);
 
             var success = insertInkQuery.ExecuteCommand();
@@ -38,7 +40,7 @@ namespace NusysServer
             //UpdateLibraryElementLastEditedTimeStamp(message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY));
             //Create the ink model and forward it to everyone except the original sender
             var inkModel = new InkModel();
-            inkModel.UnPackFromDatabaseMessage(message);
+            inkModel.UnPackFromDatabaseMessage(messageToPassIntoQuery);
             var modelJson = JsonConvert.SerializeObject(inkModel);
             var forwardMessage = new Message(message);
             forwardMessage[NusysConstants.CREATE_INK_STROKE_REQUEST_RETURNED_INK_MODEL_KEY] = modelJson;
