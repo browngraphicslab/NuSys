@@ -12,10 +12,13 @@ namespace NuSysApp
 {
     public class WrapRenderItem : BaseRenderItem
     {
-        public double MaxWidth;
-        private Rect _measurement = new Rect();
+  
+        private Rect _measurement;
+        public float MarginX = 10;
+        public float MarginY = 10;
+        public float MaxWidth;
 
-        public WrapRenderItem(double maxWidth, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public WrapRenderItem(float maxWidth, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             MaxWidth = maxWidth;
         }
@@ -46,14 +49,14 @@ namespace NuSysApp
 
                 var nextMeasure = _children[index + 1].GetMeasure();
 
-                if (lineX + measure.Width + 10 + nextMeasure.Width < MaxWidth)
+                if (lineX + measure.Width + MarginX + nextMeasure.Width < MaxWidth)
                 {
-                    lineX += measure.Width + 10;
+                    lineX += measure.Width + MarginX;
                 }
-                else if (lineX + measure.Width + 10 + nextMeasure.Width > MaxWidth)
+                else if (lineX + measure.Width + MarginX + nextMeasure.Width > MaxWidth)
                 {
                     linNum += 1;
-                    lineY = linNum * (measure.Height + 10);
+                    lineY = linNum * (measure.Height + MarginY);
                     lineX = 0.0;
                 }
             }

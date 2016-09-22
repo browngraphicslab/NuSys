@@ -38,6 +38,8 @@ namespace NuSysApp
         private object _lock = new object();
         private CanvasAnimatedControl _canvas;
 
+        public Color InkColor { get; set; } = Colors.Black;
+        public float InkSize = 4;
         public BiDictionary<string, InkStroke> StrokesMap = new BiDictionary<string, InkStroke>();
 
         public InkRenderItem(CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
@@ -132,7 +134,7 @@ namespace NuSysApp
 
                 var builder = new InkStrokeBuilder();
                 LatestStroke = builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
-                LatestStroke.DrawingAttributes = GetDrawingAttributes(Colors.Black);
+                LatestStroke.DrawingAttributes = GetDrawingAttributes(InkColor);
 
 
                 if (_isEraser)
@@ -215,7 +217,7 @@ namespace NuSysApp
                     builder.CreateStrokeFromInkPoints(
                         inkModel.InkPoints.Select(p => new InkPoint(new Point(p.X, p.Y), p.Pressure)),
                         Matrix3x2.Identity);
-                inkStroke.DrawingAttributes = GetDrawingAttributes(Colors.Black);
+                inkStroke.DrawingAttributes = GetDrawingAttributes(InkColor);
                 _inkManager.AddStroke(inkStroke);
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
                 _needsDryStrokesUpdate = true;
@@ -262,7 +264,7 @@ namespace NuSysApp
                     {
                         dss.Clear(Colors.Transparent);
                         var dryStrokes = _strokesToDraw;
-                        var aa = GetDrawingAttributes(Colors.Black);
+                        var aa = GetDrawingAttributes(InkColor);
                         foreach (var s in dryStrokes)
                         {
                             var attr = aa;
@@ -287,17 +289,18 @@ namespace NuSysApp
                 if (_builder == null)
                 {
                     _builder = new InkStrokeBuilder();
-                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(Colors.Black));
+                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor));
+
                 }
-                lock (_lock) { 
+                lock (_lock)
+                {
+                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor));
                     var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
                     if (_isEraser)
                         s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed);
-                    ds.DrawInk(new InkStroke[] { s });
+                    ds.DrawInk(new InkStroke[] {s});
                 }
-
             }
-            
         }
 
         private InkDrawingAttributes GetDrawingAttributes(Color color)
@@ -307,7 +310,7 @@ namespace NuSysApp
                 PenTip = PenTipShape.Circle,
                 PenTipTransform = Matrix3x2.CreateRotation((float)Math.PI / 4),
                 IgnorePressure = false,
-                Size = new Size(4, 4),
+                Size = new Size(InkSize, InkSize),
                 Color = color
             };
 

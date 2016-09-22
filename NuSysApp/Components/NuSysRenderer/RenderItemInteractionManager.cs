@@ -58,8 +58,6 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        
-
         private void OnItemTapped(CanvasPointer pointer)
         {
             var hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;

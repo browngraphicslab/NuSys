@@ -224,7 +224,7 @@ namespace NuSysApp
                 var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
                 var latestStroke = currentCollection.InkRenderItem.LatestStroke;
                 var t = Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(currentCollection));
-                if (InkUtil.IsPointCloseToStroke(Vector2.Transform(pointer.CurrentPoint, t), latestStroke))
+                if (latestStroke != null && InkUtil.IsPointCloseToStroke(Vector2.Transform(pointer.CurrentPoint, t), latestStroke))
                 {
                     SelectionInkPressed?.Invoke(pointer, latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)));
                 }
@@ -236,7 +236,7 @@ namespace NuSysApp
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
             {
                 var hit = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-                if (hit == SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ElementSelectionRenderItem.Resizer)
+                if (hit == SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
                 {
                     _resizerHit = true;
                     if (_resizerHit)

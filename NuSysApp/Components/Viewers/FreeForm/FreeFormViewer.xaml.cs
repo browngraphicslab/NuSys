@@ -442,7 +442,7 @@ namespace NuSysApp
             }
             else
             {
-                var selectionRect = RenderEngine.ElementSelectionRenderItem.GetBounds();;
+                var selectionRect = RenderEngine.ElementSelectionRect.GetBounds();;
                 targetRectInCollection = Win2dUtil.TransformRect(selectionRect, Win2dUtil.Invert(collectionTransform));
             }
 
@@ -530,7 +530,7 @@ namespace NuSysApp
             var item = RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
             if (Selections.Count == 0)
                 return;
-            if (item == RenderEngine.ElementSelectionRenderItem.BtnDelete)
+            if (item == RenderEngine.ElementSelectionRect.BtnDelete)
             {
                 foreach (var elementRenderItem in Selections)
                 {
@@ -548,28 +548,28 @@ namespace NuSysApp
                 ClearSelections();
                 
             }
-            if (item == RenderEngine.ElementSelectionRenderItem.BtnGroup)
+            if (item == RenderEngine.ElementSelectionRect.BtnGroup)
             {
                 multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
             }
-            if (item == RenderEngine.ElementSelectionRenderItem.BtnPresent)
+            if (item == RenderEngine.ElementSelectionRect.BtnPresent)
             {
                 SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
 
-            if (item == RenderEngine.ElementSelectionRenderItem.BtnEnterCollection)
+            if (item == RenderEngine.ElementSelectionRect.BtnEnterCollection)
             {
                 var id = Selections[0].ViewModel.LibraryElementId;
                 await SessionController.Instance.EnterCollection(id);
             }
 
-            if (item == RenderEngine.ElementSelectionRenderItem.BtnPdfLeft)
+            if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
             {
                 var selection = (PdfElementRenderItem) Selections[0];
                 selection.GotoPage(selection.CurrentPage - 1);
             }
-            if (item == RenderEngine.ElementSelectionRenderItem.BtnPdfRight)
+            if (item == RenderEngine.ElementSelectionRect.BtnPdfRight)
             {
                 var selection = (PdfElementRenderItem)Selections[0];
                 selection.GotoPage(selection.CurrentPage + 1);
@@ -642,6 +642,26 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
             CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
+            if (pointer.DistanceTraveled < 10 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
+            {
+                var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
+                var optionsBounds = RenderEngine.InkOptions.GetMeasure();
+                var targetPoint  = pointer.CurrentPoint;
+                if (targetPoint.X < screenBounds.Width/2)
+                {
+                    targetPoint.X += 20;
+                }
+                else
+                {
+                    targetPoint.X -= (20 + (float)optionsBounds.Width);
+                }
+                targetPoint.Y -= (float)optionsBounds.Height/2;
+                targetPoint.X = (float)Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
+                targetPoint.Y = (float)Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
+                RenderEngine.InkOptions.Transform.LocalPosition = targetPoint;
+                RenderEngine.InkOptions.IsVisible = true;
+                CurrentCollection.InkRenderItem.RemoveLatestStroke();
+            }
 
         }
 

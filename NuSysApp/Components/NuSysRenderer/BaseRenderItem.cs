@@ -24,6 +24,8 @@ namespace NuSysApp
 
         public bool IsDisposed { get; set; }
 
+        public bool IsVisible { get; set; } = true;
+
         public BaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
         {
             Parent = parent;
@@ -84,7 +86,7 @@ namespace NuSysApp
 
         public virtual void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed)
+            if (IsDisposed || !IsVisible)
                 return;
 
             var orgTransform = ds.Transform;

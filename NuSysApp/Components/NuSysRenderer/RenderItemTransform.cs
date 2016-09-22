@@ -58,7 +58,8 @@ namespace NuSysApp
         public Vector2 LocalScale { get { return new Vector2(S.M11, S.M22); } set { S = Matrix3x2.CreateScale(value); HasChanged = true; } }
         public Vector2 LocalPosition { get { return new Vector2(T.M31, T.M32); } set { T = Matrix3x2.CreateTranslation(value); HasChanged = true; } }
         public Vector2 LocalScaleCenter { get { return new Vector2(C.M31, C.M32); } set { C = Matrix3x2.CreateTranslation(value); HasChanged = true; } }
-
+        public float LocalX { get { return T.M31; } set { T = Matrix3x2.CreateTranslation(value, T.M32); HasChanged = true; } }
+        public float LocalY { get { return T.M32; } set { T = Matrix3x2.CreateTranslation(T.M31, value); HasChanged = true; } }
 
         public Size Size { get; set; }
         public Point Position { get; set; }

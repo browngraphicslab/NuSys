@@ -96,9 +96,15 @@ namespace NuSysApp
 
             if (currentLevel < maxLevel)
             {
-
-                foreach (var child in startItem.GetChildren())
+                var reverseChildren = startItem.GetChildren().ToList();
+                reverseChildren.Reverse();
+                foreach (var child in reverseChildren)
                 {
+                    if (child is InkOptionsRenderItem)
+                    {
+                        
+                    }
+
                     if (currentLevel + 1 < maxLevel)
                     {
                         var result = _GetRenderItemAt(child, sp, t, currentLevel + 1, maxLevel);

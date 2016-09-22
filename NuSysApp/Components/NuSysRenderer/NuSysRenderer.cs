@@ -36,12 +36,15 @@ namespace NuSysApp
     { 
         
         private MinimapRenderItem _minimap;
-        public ElementSelectionRenderItem ElementSelectionRenderItem;
+        public ElementSelectionRenderItem ElementSelectionRect;
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
+        public InkOptionsRenderItem InkOptions;
         private bool _isStopped;
+        private RenderItemInteractionManager _interactionManager;
 
         public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
         {
+            _interactionManager = new RenderItemInteractionManager(this, canvas);
         }
 
         public override void Start()
@@ -228,11 +231,16 @@ transforms.Reverse();
 
         protected override void CanvasAnimatedControlOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
-            ElementSelectionRenderItem = new ElementSelectionRenderItem(((CollectionRenderItem)(Root.GetChildren()[0])).ViewModel, null, CanvasAnimatedControl);
-            ElementSelectionRenderItem.Load();
-            Root.AddChild(ElementSelectionRenderItem);
+            ElementSelectionRect = new ElementSelectionRenderItem(((CollectionRenderItem)(Root.GetChildren()[0])).ViewModel, null, CanvasAnimatedControl);
+            ElementSelectionRect.Load();
+
+            InkOptions = new InkOptionsRenderItem(null, CanvasAnimatedControl);
+            InkOptions.Load();
+
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
+            Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
+            Root.AddChild(InkOptions);
         }
 
         

@@ -37,7 +37,7 @@ namespace NuSysApp
                 _vm.Controller.PositionChanged += ControllerOnPositionChanged;
                 _vm.Controller.SizeChanged += ControllerOnSizeChanged;
                 _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
-                _tagRenderItem = new WrapRenderItem(_vm.Width, parent, resourceCreator);
+                _tagRenderItem = new WrapRenderItem((float)_vm.Width, parent, resourceCreator);
                 _vm.Tags.CollectionChanged += TagsOnCollectionChanged;
 
                 _format = new CanvasTextFormat
@@ -84,7 +84,7 @@ namespace NuSysApp
 
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
-            _tagRenderItem.MaxWidth = width;
+            _tagRenderItem.MaxWidth = (float)width;
         }
 
         private void TagsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
