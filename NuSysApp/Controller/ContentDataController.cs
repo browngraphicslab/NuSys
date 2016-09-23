@@ -98,9 +98,12 @@ namespace NuSysApp
 
         public void RemoveInk(string strokeId)
         {
-            var stroke = ContentDataModel.Strokes.Where(s => s.InkStrokeId == strokeId).First();
-            ContentDataModel.Strokes.Remove(stroke);
-            InkRemoved?.Invoke(strokeId);
+            var stroke = ContentDataModel.Strokes.Where(s => s.InkStrokeId == strokeId).FirstOrDefault();
+            if (stroke != null)
+            {
+                ContentDataModel.Strokes.Remove(stroke);
+                InkRemoved?.Invoke(strokeId);
+            }
         }
 
         /// <summary>
