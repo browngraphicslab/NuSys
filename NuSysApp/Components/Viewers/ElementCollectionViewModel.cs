@@ -43,6 +43,7 @@ namespace NuSysApp
         public bool IsFinite { get; set; }
         public bool IsShaped { get; set; }
         public double AspectRatio { get; set; }
+        public Color ShapeColor { get; set; } = Colors.Black;
 
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
@@ -60,6 +61,9 @@ namespace NuSysApp
             IsFinite = model.IsFinite;
             IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;
             AspectRatio = model.AspectRatio;
+
+            if (model.ShapeColor != null)
+                ShapeColor = model.ShapeColor.ToColor();
 
             foreach (var childId in model.Children)
             {
@@ -81,7 +85,6 @@ namespace NuSysApp
             }
 
 
-            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             AtomViewList = new ObservableCollection<FrameworkElement>();
             _toolStartableId = SessionController.Instance.GenerateId();
             ToolController.ToolControllers.Add(_toolStartableId, this);

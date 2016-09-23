@@ -4,20 +4,13 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
-using System.Diagnostics;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Input.Inking;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
-using Windows.Devices.Input;
 using Windows.UI;
-using GeoAPI.Geometries;
-using Microsoft.Graphics.Canvas.Geometry;
-using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
@@ -422,8 +415,8 @@ namespace NuSysApp
            
 
             List<PointModel> shapePoints = null;
-            double offsetX = 0;
-            double offsetY = 0;
+            double offsetX;
+            double offsetY;
 
             Rect targetRectInCollection;
             var collectionTransform = CurrentCollection.Camera.LocalToScreenMatrix;
@@ -475,7 +468,8 @@ namespace NuSysApp
                     LibraryElementId = SessionController.Instance.GenerateId(),
                     IsFiniteCollection = finite,
                     ShapePoints = shapePoints,
-                    AspectRatio = targetRectInCollection.Width/ targetRectInCollection.Height
+                    AspectRatio = targetRectInCollection.Width/ targetRectInCollection.Height,
+                    Color = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
 
                 },
                 ContentId = SessionController.Instance.GenerateId()
@@ -642,7 +636,7 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
             CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
-            if (pointer.DistanceTraveled < 10 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
+            if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
             {
                 var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
                 var optionsBounds = RenderEngine.InkOptions.GetLocalBounds();

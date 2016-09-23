@@ -133,7 +133,7 @@ namespace NuSysApp
                 _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
 
                 var builder = new InkStrokeBuilder();
-                builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor));
+                builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
                 LatestStroke = builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
 
                 if (_isEraser)
@@ -225,7 +225,7 @@ namespace NuSysApp
                     builder.CreateStrokeFromInkPoints(
                         inkModel.InkPoints.Select(p => new InkPoint(new Point(p.X, p.Y), p.Pressure)),
                         Matrix3x2.Identity);
-                inkStroke.DrawingAttributes = GetDrawingAttributes(Color.FromArgb((byte)inkModel.Color.A, (byte)inkModel.Color.R, (byte)inkModel.Color.G, (byte)inkModel.Color.B));
+                inkStroke.DrawingAttributes = GetDrawingAttributes(Color.FromArgb((byte)inkModel.Color.A, (byte)inkModel.Color.R, (byte)inkModel.Color.G, (byte)inkModel.Color.B), (float)inkModel.Thickness);
                 _inkManager.AddStroke(inkStroke);
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
                 _needsDryStrokesUpdate = true;
@@ -293,28 +293,28 @@ namespace NuSysApp
                 if (_builder == null)
                 {
                     _builder = new InkStrokeBuilder();
-                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor));
+                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
 
                 }
                 lock (_lock)
                 {
-                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor));
+                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
                     var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
                     if (_isEraser)
-                        s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed);
+                        s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
                     ds.DrawInk(new InkStroke[] {s});
                 }
             }
         }
 
-        private InkDrawingAttributes GetDrawingAttributes(Color color)
+        private InkDrawingAttributes GetDrawingAttributes(Color color, float thickness)
         {
             var _drawingAttributes = new InkDrawingAttributes
             {
                 PenTip = PenTipShape.Circle,
                 PenTipTransform = Matrix3x2.CreateRotation((float)Math.PI / 4),
                 IgnorePressure = false,
-                Size = new Size(InkSize, InkSize),
+                Size = new Size(thickness, thickness),
                 Color = color
             };
 

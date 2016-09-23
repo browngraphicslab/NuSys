@@ -270,7 +270,7 @@ namespace NuSysApp
                 ds.Transform = Camera.LocalToScreenMatrix;
                 if (ViewModel.IsShaped)
                 {
-                    ds.FillGeometry(_shape, Colors.DarkSeaGreen);
+                    ds.FillGeometry(_shape, ViewModel.ShapeColor);
                 }
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
