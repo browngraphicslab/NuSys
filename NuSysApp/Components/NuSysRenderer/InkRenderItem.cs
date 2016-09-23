@@ -191,6 +191,7 @@ namespace NuSysApp
             var contentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
             var request = new DeleteInkStrokeRequest(strokeId, contentId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            parentCollection.ViewModel.Controller.LibraryElementController.ContentDataController.RemoveInk(strokeId);
         }
 
         private async Task SendInkStrokeAddedRequest()
@@ -236,10 +237,13 @@ namespace NuSysApp
         {
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
-                var inkStroke = StrokesMap[strokeId];
-                inkStroke.Selected = true;
-                _inkManager.DeleteSelected();
-                _strokesToDraw = _inkManager.GetStrokes().ToList();
+                if (StrokesMap.ContainsKey(strokeId)) // TODO not have to check, this should only be getting called from the controller if it exists
+                {
+                    var inkStroke = StrokesMap[strokeId];
+                    inkStroke.Selected = true;
+                    _inkManager.DeleteSelected();
+                    _strokesToDraw = _inkManager.GetStrokes().ToList();
+                }
             });
         }
 

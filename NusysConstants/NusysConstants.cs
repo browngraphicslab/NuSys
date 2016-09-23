@@ -446,6 +446,11 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_ASPECT_RATIO_KEY = "shaped_points_aspect_ratio";
 
                 /// <summary>
+                /// the key that will hold the colorModel color of the collection's shape's color.
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_COLOR_KEY = "shaped_points_color";
+
+                /// <summary>
                 /// The key that will hold the double aspect ratio for a new image library element request.
                 /// This should not be a column title in any database. 
                 /// </summary>
@@ -1428,9 +1433,14 @@ namespace NusysIntermediate
             public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY = "shape_points";
 
             /// <summary>
-            /// this key is used to hold double aspect ratio of this collection.
+            /// this key is used to hold the double aspect ratio of this collection.
             /// </summary>
             public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_ASPECT_RATIO_KEY = "aspect_ration";
+
+            /// <summary>
+            /// this key is used to hold the colorModel class which represents the color of the background shape for this collection.
+            /// </summary>
+            public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_COLOR_KEY = "shape_color";
 
             #endregion Collection 
 
@@ -1443,7 +1453,7 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string VIDEO_LIBRARY_ELEMENT_MODEL_RATIO_KEY = "video_ratio";
 
-            #endregion Video
+                #endregion Video
 
             #region Image
 
@@ -1470,19 +1480,19 @@ namespace NusysIntermediate
             #endregion Image
 
 
-        #region LinkLibraryElementModel
+            #region LinkLibraryElementModel
 
-        /// <summary>
-        /// The key that will hold the LibraryElementId for the IN libary element
-        /// </summary>
-        public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
+            /// <summary>
+            /// The key that will hold the LibraryElementId for the IN libary element
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
 
-                            /// <summary>
-                            /// The key that will hold the LibraryElementId for the OUT libary element
-                            /// </summary>
-                            public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+                                /// <summary>
+                                /// The key that will hold the LibraryElementId for the OUT libary element
+                                /// </summary>
+                                public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
 
-                        #endregion LinkLibraryElementModel
+                            #endregion LinkLibraryElementModel
 
             #endregion LibraryElementModel
 

@@ -33,6 +33,8 @@ namespace NusysServer
                 return failedReturnMessage;
             }
 
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY] = DateTime.UtcNow.ToString();
+
             //create message of database keys from request keys
             var addLibraryElementMessage = RequestToSqlKeyMappings.LibraryElementRequestKeysToDatabaseKeys(message);
 

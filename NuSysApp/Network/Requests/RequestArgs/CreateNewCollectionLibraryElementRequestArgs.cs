@@ -44,6 +44,13 @@ namespace NuSysApp
         public double? AspectRatio { get; set; }
 
         /// <summary>
+        /// The ColorModel that represents the color of the shape of the collection.  
+        /// If there is no color, don't set this.
+        /// A null value will mean that the value won't be included in the request.
+        /// </summary>
+        public ColorModel Color { get; set; }
+
+        /// <summary>
         /// this override pack to request keys simply calls the base class's method to get a message.
         /// THen it will add to the message the key value pairs for the finite boolean and the shape points using request keys;
         /// </summary>
@@ -62,6 +69,10 @@ namespace NuSysApp
             if (AspectRatio != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_ASPECT_RATIO_KEY] = AspectRatio.Value;
+            }
+            if(Color != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_COLOR_KEY] = Color;
             }
             return message;
         }
