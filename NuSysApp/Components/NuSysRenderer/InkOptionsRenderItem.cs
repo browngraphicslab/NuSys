@@ -117,7 +117,7 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
             return _bg;
         }

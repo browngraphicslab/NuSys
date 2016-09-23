@@ -13,6 +13,7 @@ namespace NuSysApp
 {
     public class BaseRenderItem : IDisposable
     {
+        private bool _isHitTestVisible = true;
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
@@ -25,6 +26,21 @@ namespace NuSysApp
         public bool IsDisposed { get; set; }
 
         public bool IsVisible { get; set; } = true;
+
+        public bool IsHitTestVisible
+        {
+            get
+            {
+                return _isHitTestVisible;
+            }
+            set
+            {
+                _isHitTestVisible = value;
+                IsChildrenHitTestVisible = value;
+            }
+        }
+
+        public bool IsChildrenHitTestVisible { get; set; } = true;
 
         public BaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
         {
@@ -51,9 +67,9 @@ namespace NuSysApp
             _children.Remove(child);
         }
 
-        public virtual BaseRenderItem[] GetChildren()
+        public virtual List<BaseRenderItem> GetChildren()
         {
-            return _children.ToArray();
+            return _children.ToList();
         }
 
         public virtual void ClearChildren()
@@ -121,23 +137,40 @@ namespace NuSysApp
             IsDisposed = true;
         }
 
-        public virtual BaseRenderItem HitTest(Vector2 point)
+        public virtual BaseRenderItem HitTest(Vector2 screenPoint)
         {
-            var children = _children.ToList();
-            children.Reverse();
-            foreach (var child in children)
+            if (!IsVisible)
+                return null;
+
+            if (IsChildrenHitTestVisible)
             {
-                var hit = child.HitTest(point);
-                if (hit != null)
-                    return hit;
+                var children = _children.ToList();
+                children.Reverse();
+
+                foreach (var child in children)
+                {
+                    var hit = child.HitTest(screenPoint);
+                    if (hit != null)
+                        return hit;
+                }
             }
 
-            return GetMeasure().Contains(new Point(point.X, point.Y)) ? this : null;
+            if (!IsHitTestVisible)
+            {
+                return null;
+            }
+
+            return GetScreenBounds().Contains(screenPoint.ToPoint()) ? this : null;
         }
 
-        public virtual Rect GetMeasure()
+        public virtual Rect GetLocalBounds()
         {
             return new Rect();
+        }
+
+        public virtual Rect GetScreenBounds()
+        {
+            return Win2dUtil.TransformRect(GetLocalBounds(), Transform.LocalToScreenMatrix);
         }
     }
 }

@@ -180,24 +180,21 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="300"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <ListView x:Name="List" Grid.Column="0" BorderThickness="0"  Background="White" Margin="0,0,0,0" SelectionChanged="ListItemSelected">
+                    <ListView x:Name="List" Grid.Column="0" BorderThickness="0"  Background="White" Margin="0,0,0,0" SelectionChanged="ListItemSelected">
                     <ListView.Header>
                         <Grid Height="40" BorderThickness="0,0,0,5" BorderBrush="{StaticResource color1}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="320"></ColumnDefinition>
                                 <ColumnDefinition Width="100"></ColumnDefinition>
-                                <ColumnDefinition Width="200    "></ColumnDefinition>
-                                <ColumnDefinition Width="300"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
                             <Button x:Name="TitleHeader" Grid.Column="0" Background="White" Style="{StaticResource WhiteButton}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
                                     HorizontalContentAlignment="Left" FontWeight="SemiBold" Click="SortList_OnClick">TITLE</Button>
                             <Button x:Name="AccessHeader" Grid.Column="1" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
                                     HorizontalContentAlignment="Left" FontWeight="SemiBold" Click="SortList_OnClick">ACCESS</Button>
-                            <Button x:Name="DateHeader"  Grid.Column="2" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
+                                <Button x:Name="DateHeader"  Grid.Column="2" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
                                     HorizontalContentAlignment="Left" FontWeight="SemiBold" Click="SortList_OnClick">DATE</Button>
-                            <Button x:Name="CurrUsersHeader" Grid.Column="3" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
-                                    HorizontalContentAlignment="Left" FontWeight="SemiBold">CURRENT USERS</Button>
-                        </Grid>
+                            </Grid>
                     </ListView.Header>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
@@ -207,8 +204,13 @@
                             <!-- visual state groups -->
                         </Style>
                     </ListView.ItemContainerStyle>
-                    
-                </ListView>
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel  Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+
+                    </ListView>
                 <Grid  Grid.Column="1" HorizontalAlignment="Stretch" Background="White" BorderBrush="{StaticResource color1}" BorderThickness="5,0,0,0">
                     <Grid x:Name="DetailPanel" Visibility="Collapsed">
                         <TextBlock x:Name="SelectedCollectionTitle" HorizontalAlignment="Center" FontSize="35" Foreground="{StaticResource color2}" Margin="0,10,0,0" Height="50" VerticalAlignment="Top">

@@ -54,7 +54,6 @@ namespace NuSysApp
 
         private static IEnumerable<ElementModel> _firstLoadList;
         private bool _loggedIn = false;
-        private bool _isLoaded = false;
         private bool _isLoggingIn = false;
         //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
@@ -163,9 +162,12 @@ namespace NuSysApp
             {
                 var all = new List<CollectionListBox>();
                 var libraryElements = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                
                 foreach (var libraryElement in libraryElements)
                 {
-                    if (SessionController.Instance.ContentController.GetLibraryElementModel(libraryElement.LibraryElementId) == null)
+                    if (
+                        SessionController.Instance.ContentController.GetLibraryElementModel(
+                            libraryElement.LibraryElementId) == null)
                     {
                         SessionController.Instance.ContentController.Add(libraryElement);
                     }
@@ -178,10 +180,7 @@ namespace NuSysApp
                     }
                 }
 
-                foreach (var i in all)
-                {
-                    List?.Items.Add(i);
-                }
+
                 //set items in collectionlist alphabetically
                 await ApplyFilter(FilterType.Mine);
                 ApplySorting(SortType.TitleAsc);
@@ -193,7 +192,10 @@ namespace NuSysApp
                 Debug.WriteLine("not a valid server");
                 // TODO: fix this
             }
-            SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewLibraryElememt; //re-add the handler so we start listening for new contents again
+            finally
+            {
+                SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewLibraryElememt; //re-add the handler so we start listening for new contents again
+            }
         }
 
         /// <summary>
@@ -296,7 +298,8 @@ namespace NuSysApp
 
             var request = new CreateNewContentRequest(contentRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-       //     Init();
+
+            request.AddReturnedLibraryElementToLibrary();
             NewWorkspaceName.Text = "";
             NewWorkspacePopup.IsOpen = false;
         }
@@ -698,7 +701,7 @@ namespace NuSysApp
             return new Tuple<bool, string>(true, null);
         }
 
-        private async void Login(string username, string password, bool createNewUser, string displayname = null)
+        private async Task Login(string username, string password, bool createNewUser, string displayname = null)
         {
             try
             {
@@ -714,18 +717,17 @@ namespace NuSysApp
                         loggedInText.Text = "Logged In!";
                         NewUserLoginText.Text = "Logged In!";
                         _collectionList = new List<LibraryElementModel>();
-                        Init();
+                        await Init();
                         NewWorkspaceButton.IsEnabled = true;
                         _loggedIn = true;
-                        if (_isLoaded)
+    
+                        UITask.Run(delegate
                         {
-                            UITask.Run(delegate
-                            {
-                                JoinWorkspaceButton.Content = "Enter";
-                                JoinWorkspaceButton.IsEnabled = true;
-                                JoinWorkspaceButton.Visibility = Visibility.Visible;
-                            });
-                        }
+                            JoinWorkspaceButton.Content = "Enter";
+                            JoinWorkspaceButton.IsEnabled = true;
+                            JoinWorkspaceButton.Visibility = Visibility.Visible;
+                        });
+ 
                         LoginButton.IsEnabled = false;
                         if (createNewUser)
                         {
@@ -758,42 +760,10 @@ namespace NuSysApp
 
                         //add active users to list of users in corner
 
+                      
 
-                        await Task.Run(async delegate
-                        {
-                            var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                            foreach (var model in models)
-                            {
-                                try
-                                {
-                                    SessionController.Instance.ContentController.Add(model);
-                                }
-                                catch (NullReferenceException e)
-                                {
-                                    Debug.WriteLine(
-                                        " this shouldn't ever happen.  trent was too lazy to do error hadnling");
-                                }
-                            }
 
-                            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
-                            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
 
-                            foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
-                            {
-                                NewNetworkUser(user);
-                            }
-
-                            _isLoaded = true;
-                            if (_loggedIn)
-                            {
-                                UITask.Run(delegate
-                                {
-                                    JoinWorkspaceButton.IsEnabled = true;
-                                    JoinWorkspaceButton.Content = "Enter";
-                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
-                                });
-                            }
-                        });
                     }
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
@@ -986,6 +956,7 @@ namespace NuSysApp
 
                         await UITask.Run(async delegate
                         {
+ 
                             foreach (var item in List.Items.ToList())
                             {
                                 var box = item as CollectionListBox;

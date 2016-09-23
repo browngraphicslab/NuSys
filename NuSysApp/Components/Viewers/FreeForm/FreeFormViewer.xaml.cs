@@ -442,7 +442,7 @@ namespace NuSysApp
             }
             else
             {
-                var selectionRect = RenderEngine.ElementSelectionRect.GetBounds();;
+                var selectionRect = RenderEngine.ElementSelectionRect.GetScreenBounds();;
                 targetRectInCollection = Win2dUtil.TransformRect(selectionRect, Win2dUtil.Invert(collectionTransform));
             }
 
@@ -585,7 +585,7 @@ namespace NuSysApp
             var ch = multipoint.ConvexHull();
             _latestStroke = ch.Coordinates.Select(p => new PointModel(p.X, p.Y)).ToList();
 
-            foreach (var renderItem in CurrentCollection.GetRenderItems().OfType<ElementRenderItem>())
+            foreach (var renderItem in CurrentCollection.GetChildren().OfType<ElementRenderItem>())
             {
                 if (renderItem is PseudoElementRenderItem)
                     continue;
@@ -645,7 +645,7 @@ namespace NuSysApp
             if (pointer.DistanceTraveled < 10 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
             {
                 var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
-                var optionsBounds = RenderEngine.InkOptions.GetMeasure();
+                var optionsBounds = RenderEngine.InkOptions.GetLocalBounds();
                 var targetPoint  = pointer.CurrentPoint;
                 if (targetPoint.X < screenBounds.Width/2)
                 {
@@ -739,7 +739,7 @@ namespace NuSysApp
 
             CurrentCollection.InkRenderItem?.UpdateDryInkTransform();
             // update the ink transform of all children. Currently one level only.
-            foreach (var childCollection in CurrentCollection.GetRenderItems().OfType<CollectionRenderItem>())
+            foreach (var childCollection in CurrentCollection.GetChildren().OfType<CollectionRenderItem>())
             {
                 childCollection.InkRenderItem?.UpdateDryInkTransform();
             }
@@ -756,7 +756,7 @@ namespace NuSysApp
             CurrentCollection.InkRenderItem?.UpdateDryInkTransform();
 
             // update the ink transform of all children. Currently one level only.
-            foreach (var childCollection in CurrentCollection.GetRenderItems().OfType<CollectionRenderItem>())
+            foreach (var childCollection in CurrentCollection.GetChildren().OfType<CollectionRenderItem>())
             {
                 childCollection.InkRenderItem?.UpdateDryInkTransform();
             }

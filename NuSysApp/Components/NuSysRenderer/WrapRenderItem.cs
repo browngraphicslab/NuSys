@@ -36,7 +36,7 @@ namespace NuSysApp
             for (int index = 0; index < _children.Count; index++)
             {
                 var baseRenderItem = _children[index];
-                measure = baseRenderItem.GetMeasure();
+                measure = baseRenderItem.GetLocalBounds();
                 // lineHeight = lineHeight + measure.Height > lineHeight ? lineHeight + measure.Height : lineHeight;
 
 
@@ -47,7 +47,7 @@ namespace NuSysApp
                     continue;
                 }
 
-                var nextMeasure = _children[index + 1].GetMeasure();
+                var nextMeasure = _children[index + 1].GetLocalBounds();
 
                 if (lineX + measure.Width + MarginX + nextMeasure.Width < MaxWidth)
                 {
@@ -69,7 +69,7 @@ namespace NuSysApp
           
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
             return _measurement;
         }

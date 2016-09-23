@@ -35,6 +35,7 @@ namespace NuSysApp
             _image = new PdfDetailRenderItem(_pdfLibraryElementController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
             _image.IsRegionsVisible = true;
             _image.IsRegionsModifiable = false;
+            _image.IsHitTestVisible = false;
 
             AddChild(_image);
 

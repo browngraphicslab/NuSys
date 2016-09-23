@@ -47,7 +47,9 @@ namespace NuSysApp
 
             Buttons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnPdfLeft, BtnPdfRight, BtnEnterCollection, Resizer };
             _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnEnterCollection };
-            
+
+            IsHitTestVisible = false;
+            IsChildrenHitTestVisible = true;
 
             foreach (var btn in Buttons)
             {
@@ -114,15 +116,13 @@ namespace NuSysApp
             if (!IsDirty && !_isVisible)
                 return;
 
-     
-
             if (_selectedItems.Count == 0)
             {
                 _isVisible = false;
                 return;
             }
 
-            var bbs = _selectedItems.ToArray().Select(elem => elem.GetScreenBoundingRect()).ToList();
+            var bbs = _selectedItems.ToArray().Select(elem => elem.GetSelectionBoundingRect()).ToList();
 
             _selectionBoundingRect = GetBoundingRect(bbs);
 
@@ -229,9 +229,10 @@ namespace NuSysApp
             return new Rect(minX, minY, maxW-minX, maxH-minY);
         }
 
-        public Rect GetBounds()
+        public override Rect GetLocalBounds()
         {
-            return new Rect(Transform.LocalPosition.X, Transform.LocalPosition.Y, _screenRect.Width, _screenRect.Height);
+            return new Rect(0, 0, _screenRect.Width, _screenRect.Height);
         }
+
     }
 }

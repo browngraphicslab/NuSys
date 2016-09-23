@@ -41,14 +41,9 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
             return _targetRect;
-        }
-
-        public override BaseRenderItem HitTest(Vector2 point)
-        {
-            return _targetRect.Contains(point.ToPoint()) ? this : null;
         }
     }
 }

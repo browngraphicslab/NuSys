@@ -304,7 +304,7 @@ namespace NuSysApp
                 var selectedCollection = (_selectedRenderItem as CollectionRenderItem);
                 if (selectedCollection != null)
                 {
-                    var renderitems = selectedCollection.GetRenderItems();
+                    var renderitems = selectedCollection.GetChildren();
                     if (hit != currentCollection && hit != _selectedRenderItem && renderitems != null &&
                         !renderitems.Contains(hit))
                         ElementAddedToCollection?.Invoke((ElementRenderItem) _selectedRenderItem, hit, pointer);

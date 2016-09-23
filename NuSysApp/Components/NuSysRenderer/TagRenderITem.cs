@@ -58,7 +58,7 @@ namespace NuSysApp
             ds.DrawTextLayout(_textLayout, 5, 5, Constants.color6);
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
             return _measurement;
         }

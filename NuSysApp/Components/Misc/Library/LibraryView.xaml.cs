@@ -68,25 +68,31 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
+            _propertiesWindow = properties;
+            _menu = menu;
+
+        }
+
+        public void Init()
+        {
             var data = SessionController.Instance.ContentController.ContentValues.Select(item => SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId));
             _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementController>(data));
             _favoritesViewModel = new LibraryFavoritesViewModel(new ObservableCollection<LibraryElementController>(data));
-            this.MakeViews(_pageViewModel, properties);
-            _propertiesWindow = properties;
-            properties.AddedToFavorite += AddToFavorites;
+            this.MakeViews(_pageViewModel, _propertiesWindow);
+            _propertiesWindow.AddedToFavorite += AddToFavorites;
             this._libraryList.DeleteClicked += DeleteClicked;
             ListContainer.Children.Add(_libraryList);
             Searchfield.SetHeight = 34;
-            _menu = menu;
+           
 
-            vm.OnElementDeleted += delegate
+            (DataContext as LibraryBucketViewModel).OnElementDeleted += delegate
             {
                 UITask.Run(delegate
                 {
-                    properties.Visibility = Visibility.Collapsed;
+                    _propertiesWindow.Visibility = Visibility.Collapsed;
                 });
             };
-            _searchExportPos = new Point2d(0,0);
+            _searchExportPos = new Point2d(0, 0);
         }
 
 

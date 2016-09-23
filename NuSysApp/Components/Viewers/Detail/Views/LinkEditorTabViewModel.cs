@@ -40,8 +40,8 @@ namespace NuSysApp
                 
             }
             
-            SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewContent;
-            SessionController.Instance.ContentController.OnLibraryElementDelete += ContentControllerOnLibraryElementDelete;
+           SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewContent;
+           SessionController.Instance.ContentController.OnLibraryElementDelete += ContentControllerOnLibraryElementDelete;
 
         }
 

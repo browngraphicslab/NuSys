@@ -54,9 +54,9 @@ namespace NuSysApp
             });
         }
 
-        public override BaseRenderItem HitTest(Vector2 point)
+        public override Rect GetLocalBounds()
         {
-            return Rect.Contains(new Point(point.X, point.Y)) ? this : null;
+            return Rect;
         }
     }
 }

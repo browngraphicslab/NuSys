@@ -179,7 +179,7 @@ namespace NuSysApp
 
         }
 
-        public Rect GetScreenBoundingRect()
+        public Rect GetSelectionBoundingRect()
         {
             if (_textLayout == null)
                 return new Rect();
@@ -187,7 +187,7 @@ namespace NuSysApp
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), transform);
             var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
-            var tagsMeasurement = _tagRenderItem.GetMeasure();
+            var tagsMeasurement = _tagRenderItem.GetLocalBounds();
             var rect = new Rect
             {
                 X = Math.Min(sp.X, titlePos.X),
@@ -200,21 +200,8 @@ namespace NuSysApp
 
         public Vector2 GetCenterOnScreen()
         {
-            var bb = GetScreenBoundingRect();
+            var bb = GetSelectionBoundingRect();
             return new Vector2((float)(bb.X + bb.Width/2), (float)(bb.Y + bb.Height/2));
-        }
-
-        public override BaseRenderItem HitTest(Vector2 point)
-        { //tODO not have to null check these numbers, figure out where the mull is coming form
-            var rect = new Rect
-            {
-                X = _vm?.X ?? 0,
-                Y = _vm?.Y ?? 0,
-                Width = _vm?.Width ?? 0,
-                Height = _vm?.Height ?? 0
-            };
-
-            return rect.Contains(new Point(point.X, point.Y)) ? this : null;
         }
 
         public virtual bool HitTestTitle(Vector2 point)
@@ -230,9 +217,11 @@ namespace NuSysApp
             return rect.Contains(new Point(point.X, point.Y));
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
-            return new Rect(ViewModel.X, ViewModel.Y, ViewModel.Width, ViewModel.Height);
+            if (ViewModel == null)
+                return new Rect();
+            return new Rect(0, 0, ViewModel.Width, ViewModel.Height);
         }
     }
 }

@@ -71,42 +71,45 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            if (IsDisposed)
-                return;
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                if (IsDisposed)
+                    return;
 
-            var collectionController = (ElementCollectionController)ViewModel.Controller;
-            collectionController.CameraPositionChanged -= OnCameraPositionChanged;
-            collectionController.CameraCenterChanged -= OnCameraCenterChanged;
+                var collectionController = (ElementCollectionController) ViewModel.Controller;
+                collectionController.CameraPositionChanged -= OnCameraPositionChanged;
+                collectionController.CameraCenterChanged -= OnCameraCenterChanged;
 
-            ViewModel.Elements.CollectionChanged -= OnElementsChanged;
-            ViewModel.Links.CollectionChanged -= OnElementsChanged;
-            ViewModel.Trails.CollectionChanged -= OnElementsChanged;
-            ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
+                ViewModel.Elements.CollectionChanged -= OnElementsChanged;
+                ViewModel.Links.CollectionChanged -= OnElementsChanged;
+                ViewModel.Trails.CollectionChanged -= OnElementsChanged;
+                ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
 
-            foreach (var item in _renderItems0.ToArray())
-                Remove(item);
+                foreach (var item in _renderItems0.ToArray())
+                    Remove(item);
 
-            foreach (var item in _renderItems1.ToArray())
-                Remove(item);
+                foreach (var item in _renderItems1.ToArray())
+                    Remove(item);
 
-            foreach (var item in _renderItems2.ToArray())
-                Remove(item);
+                foreach (var item in _renderItems2.ToArray())
+                    Remove(item);
 
-            foreach (var item in _renderItems3.ToArray())
-                Remove(item);
+                foreach (var item in _renderItems3.ToArray())
+                    Remove(item);
 
-            _renderItems0.Clear();
-            _renderItems1.Clear();
-            _renderItems2.Clear();
-            _renderItems3.Clear();
+                _renderItems0.Clear();
+                _renderItems1.Clear();
+                _renderItems2.Clear();
+                _renderItems3.Clear();
 
-            InkRenderItem.Dispose();
-            InkRenderItem = null;
+                InkRenderItem.Dispose();
+                InkRenderItem = null;
 
-            ViewModel = null;
-            Camera = null;
+                ViewModel = null;
+                Camera = null;
 
-            base.Dispose();
+                base.Dispose();
+            });
         }
 
         public async override Task Load()
@@ -262,7 +265,7 @@ namespace NuSysApp
             using (ds.CreateLayer(1f, Mask))
             {
                 ds.Transform = Transform.LocalToScreenMatrix;
-                ds.FillRectangle(GetMeasure(), Colors.White);
+                ds.FillRectangle(GetLocalBounds(), Colors.White);
 
                 ds.Transform = Camera.LocalToScreenMatrix;
                 if (ViewModel.IsShaped)
@@ -353,20 +356,20 @@ namespace NuSysApp
             return Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T;
         }
 
-        public List<BaseRenderItem> GetRenderItems()
+        public override List<BaseRenderItem> GetChildren()
         {
             _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
             return _allRenderItems;
         }
 
-        public override BaseRenderItem HitTest(Vector2 point)
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
             if (ViewModel is FreeFormViewerViewModel)
             {
                 return this;
             }
 
-            return base.HitTest(point);
+            return base.HitTest(screenPoint);
         }
 
         private void OnCameraCenterChanged(float f, float f1)

@@ -16,7 +16,6 @@ namespace NuSysApp
     {
         private CanvasGeometry _triangle;
         private Rect _triangleBounds;
-        public bool IsVisible { get; set; }
         public PdfPageButtonRenderItem(int direction, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             var x = (float)(direction*15);
@@ -49,14 +48,9 @@ namespace NuSysApp
             ds.Transform = orgTransform;
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
             return _triangleBounds;
-        }
-
-        public override BaseRenderItem HitTest(Vector2 point)
-        {
-            return _triangleBounds.Contains(new Point(point.X, point.Y)) ? this : null;
         }
     }
 }

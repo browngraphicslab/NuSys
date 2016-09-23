@@ -83,7 +83,7 @@ namespace NuSysApp
                 ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
         }
 
-        public override BaseRenderItem HitTest(Vector2 point)
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
             var controller = _vm.Controller;
             var anchor1 = new Point((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
@@ -101,7 +101,7 @@ namespace NuSysApp
             for (var i = 10; i >= 0; i--)
                 pointsOnCurve.Add(MathUtil.GetPointOnBezierCurve(p0, p1, p2, p3, 1.0 / numPoints * i));
 
-            var minDist = pointsOnCurve.Select(p => MathUtil.Dist(p, new Point(point.X, point.Y))).Concat(new[] { double.PositiveInfinity }).Min();
+            var minDist = pointsOnCurve.Select(p => MathUtil.Dist(p, new Point(screenPoint.X, screenPoint.Y))).Concat(new[] { double.PositiveInfinity }).Min();
 
             return minDist < 50 ? this : null;
         }

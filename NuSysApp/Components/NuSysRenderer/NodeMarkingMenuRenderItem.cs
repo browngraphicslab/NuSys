@@ -29,10 +29,10 @@ namespace NuSysApp
         private bool _isActive;
         private Vector2 _entryPoint;
 
-        public bool IsVisible { get; set; } = false;
-
         public NodeMarkingMenuRenderItem( CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
         {
+            IsVisible = false;
+
             _txtLink = new CanvasTextLayout(resourceCreator, "Link",
                 new CanvasTextFormat()
                 {

@@ -62,7 +62,7 @@ namespace NuSysApp
             }
 
             SortChildren((a, b) => {
-                var areaA = a.GetMeasure(); var areaB = b.GetMeasure();
+                var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds();
                 return areaA.Width * areaA.Height > areaB.Width * areaB.Height ? 1 : -1;
             });
 

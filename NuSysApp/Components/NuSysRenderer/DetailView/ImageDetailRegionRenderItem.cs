@@ -98,8 +98,8 @@ namespace NuSysApp
             var th = rect.Height * scale * _bitmap.Height;
 
             if (_resizer != null) { 
-                th = Math.Max(th, _resizer.GetMeasure().Height);
-                tw = Math.Max(tw, _resizer.GetMeasure().Width);
+                th = Math.Max(th, _resizer.GetLocalBounds().Height);
+                tw = Math.Max(tw, _resizer.GetLocalBounds().Width);
             }
 
             Size = new Size(tw, th);
@@ -184,7 +184,7 @@ namespace NuSysApp
             SessionController.Instance.SessionView.ShowDetailView(_controller);
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
             return new Rect(0,0, Size.Width, Size.Height);
         }

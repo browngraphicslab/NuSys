@@ -28,6 +28,8 @@ namespace NuSysApp
             _image = new ImageDetailRenderItem(imageController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
             _image.IsRegionsVisible = true;
             _image.IsRegionsModifiable = false;
+            _image.IsHitTestVisible = false;
+
             AddChild(_image);
         }
 
@@ -64,7 +66,9 @@ namespace NuSysApp
 
             if (_vm == null )
                 return;
-         
+
+           
+
             ds.Transform = Transform.LocalToScreenMatrix;
             base.Draw(ds);
             ds.Transform = orgTransform;

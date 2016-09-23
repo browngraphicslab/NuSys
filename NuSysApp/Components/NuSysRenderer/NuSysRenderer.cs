@@ -87,19 +87,6 @@ namespace NuSysApp
         public Matrix3x2 GetCollectionTransform(CollectionRenderItem collection)
         {
             return collection.Camera.LocalToScreenMatrix;
-            /*
-            var transforms = new List<CollectionRenderItem> {collection};
-           
-            var parent = collection.Parent;
-            while (parent != null)
-            {
-                transforms.Add(parent as CollectionRenderItem);
-                parent = parent.Parent;
-            }
-
-            transforms.Reverse();
-            return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.Transform.C)*t.Transform.S *t.Transform.C *t.Transform.T *current);
-            */
         }
 
         public Matrix3x2 GetTransformUntil(BaseRenderItem item)
@@ -108,122 +95,82 @@ namespace NuSysApp
                 return Matrix3x2.Identity;
 
             return item.Transform.Parent.LocalToScreenMatrix;
-            /*
-var transforms = new List<I2dTransformable>();
-
-var parent = item.Parent?.Transform;
-while (parent != null)
-{
-    transforms.Add(parent);
-    parent = parent.Parent;
-}
-
-transforms.Reverse();
-*/
-            // return transforms.Select(t1 => t1 as RenderItemTransform).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.Transform.C)*t.Transform.S *t.Transform.C *t.Transform.T *current);
-            //return transforms.Select(t1 => t1 as RenderItemTransform).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.Transform.C)*t.Transform.S *t.Transform.C *t.Transform.T *current);
-            //   return transforms.Select(t1 => t1 as RenderItemTransform).Aggregate(Matrix3x2.Identity, (current, t) => t.LocalMatrix * current);
         }
 
-        public BaseRenderItem GetRenderItemAt(Vector2 sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
+        public override BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue)
         {
 
             var r = Root.HitTest(sp);
             if (!(r is CollectionRenderItem))
                 return r;
 
-            collection = (CollectionRenderItem)(collection ?? Root.GetChildren()[0]);
-            var mat = GetTransformUntil(collection);
-            var rr = _GetRenderItemAt(collection, sp, mat, 0, maxLevel);
+            item = item ?? Root;
+            var rr = _GetRenderItemAt(item, sp, 0, maxLevel);
             
             return rr;
         }
 
-        public List<BaseRenderItem> GetRenderItemsAt(Vector2 sp,  CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
-        {
-            var output = new List<BaseRenderItem>();
-            collection = (CollectionRenderItem)(collection ?? Root.GetChildren()[0]);
-            var mat = GetTransformUntil(collection);
-            _GetRenderItemsAt(collection, sp, mat, output, 0, maxLevel);
-            return output;
-        }
-
-        public BaseRenderItem GetRenderItemAt(Point sp, CollectionRenderItem collection = null, int maxLevel = int.MaxValue)
-        {
-            var result = GetRenderItemAt(new Vector2((float)sp.X, (float)sp.Y), collection, maxLevel);
-            return result;
-        }
-
-        private BaseRenderItem _GetRenderItemAt(CollectionRenderItem collection, Vector2 sp, Matrix3x2 transform, int currentLevel, int maxLevel)
+   
+        protected override BaseRenderItem _GetRenderItemAt(BaseRenderItem item, Vector2 screenPoint,  int currentLevel, int maxLevel)
         {
             if (currentLevel < maxLevel)
             {
-                var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T *
-          Win2dUtil.Invert(collection.Transform.C) * collection.Transform.S * collection.Transform.C * collection.Transform.T * transform;
-                var childTransform = Win2dUtil.Invert(poo);
-
-                var childElements = collection.GetRenderItems();
+                var childElements = item.GetChildren();
                 childElements.Reverse();
-                foreach (var renderItem in childElements)
+                foreach (var childItem in childElements)
                 {
-                    var innerCollection = renderItem as CollectionRenderItem;
-                    if (innerCollection != null)
+                    var childCollection = childItem as CollectionRenderItem;
+                    if (childCollection != null)
                     {
 
                         if (currentLevel + 1 < maxLevel)
                         {
-                            var result = _GetRenderItemAt(innerCollection, sp, poo, currentLevel + 1, maxLevel);
-                            if (result != collection)
+                            var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
+                            if (result != item)
                                 return result;
                         }
                         else
                         {
-                            if (innerCollection.HitTest(Vector2.Transform(sp, childTransform)) != null)
+                            if (childCollection.HitTest(screenPoint) != null)
                             {
-                                return innerCollection;
+                                return childCollection;
                             }
                         }
                     }
 
 
-                    if (renderItem.HitTest(Vector2.Transform(sp, childTransform)) != null)
+                    if (childItem.HitTest(screenPoint) != null)
                     {
-                        return renderItem;
+                        return childItem;
                     }
                 }
             }
 
-            if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))) != null)
-                return collection;
+            if (item.HitTest(screenPoint) != null)
+                return item;
 
             return null;
         }
 
-        private void _GetRenderItemsAt(CollectionRenderItem collection, Vector2 sp, Matrix3x2 transform, List<BaseRenderItem> output,  int currentLevel, int maxLevel)
+        protected override void _GetRenderItemsAt(BaseRenderItem item, Vector2 screenPoint, List<BaseRenderItem> output,  int currentLevel, int maxLevel)
         {
             if (currentLevel < maxLevel)
             {
+                if (item.HitTest(screenPoint) != null)
+                    output.Add(item);
 
-
-                if (collection.HitTest(Vector2.Transform(sp, Win2dUtil.Invert(transform))) != null)
-                    output.Add(collection);
-
-                var poo = Win2dUtil.Invert(collection.Camera.C) * collection.Camera.S * collection.Camera.C * collection.Camera.T * Win2dUtil.Invert(collection.Transform.C) * collection.Transform.S * collection.Transform.C * collection.Transform.T * transform;
-                var childTransform = Win2dUtil.Invert(poo);
-
-                foreach (var renderItem in collection.GetRenderItems())
+                foreach (var childItem in item.GetChildren())
                 {
-                    var coll = renderItem as CollectionRenderItem;
-                    if (coll != null)
+                    var childCollection = childItem as CollectionRenderItem;
+                    if (childCollection != null)
                     {
-
                         if (currentLevel + 1 < maxLevel)
                         {
-                             _GetRenderItemsAt(coll, sp, poo, output, currentLevel + 1, maxLevel);
+                             _GetRenderItemsAt(childCollection, screenPoint,  output, currentLevel + 1, maxLevel);
                         }
-                    } else if (renderItem.HitTest(Vector2.Transform(sp, childTransform)) != null)
+                    } else if (childItem.HitTest(screenPoint) != null)
                     {
-                        output.Add(renderItem);
+                        output.Add(childItem);
                     }
                 }
             } 

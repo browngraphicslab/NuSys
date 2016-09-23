@@ -170,6 +170,8 @@ namespace NuSysApp
                 {
                     NewNetworkUser(user);
                 }
+
+                xFloatingMenu.Library.Init();
             }
             _isInitialized = true;
             var collectionId = WaitingRoomView.InitialWorkspaceId;

@@ -19,8 +19,6 @@ namespace NuSysApp
         private CanvasBitmap _bmp;
         private string _iconUrl;
 
-        public bool IsVisible { get; set; } = true;
-
         public NodeMenuButtonRenderItem( string iconUrl, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
         {
             _iconUrl = iconUrl;
@@ -62,18 +60,11 @@ namespace NuSysApp
             ds.Transform = orgTransform;
         }
 
-        public override BaseRenderItem HitTest(Vector2 point)
-        {
-            if (IsVisible == false)
-                return null;
 
-            var p = Vector2.Transform(point, Transform.ScreenToLocalMatrix);
-            var rect = new Rect(-15, -15, 30,30);
-            if (rect.Contains(p.ToPoint()))
-            {
-                return this;
-            }
-            return null;
+        public override Rect GetLocalBounds()
+        {
+            return new Rect(-15, -15, 30, 30);
         }
+
     }
 }

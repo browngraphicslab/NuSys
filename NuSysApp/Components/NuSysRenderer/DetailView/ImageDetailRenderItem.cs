@@ -198,7 +198,7 @@ namespace NuSysApp
                 AddChild(region);
             }
 
-            SortChildren( (a,b) => { var areaA = a.GetMeasure(); var areaB = b.GetMeasure(); return areaA.Width*areaA.Height >= areaB.Width*areaB.Height ?  1 : -1;
+            SortChildren( (a,b) => { var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds(); return areaA.Width*areaA.Height >= areaB.Width*areaB.Height ?  1 : -1;
             });
 
             NeedsRedraw?.Invoke();
@@ -269,7 +269,7 @@ namespace NuSysApp
             if (_showCroppy)
             {
 
-                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.Transform.LocalPosition.X, _activeRegion.Transform.LocalPosition.Y, _activeRegion.GetMeasure().Width, _activeRegion.GetMeasure().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
+                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.Transform.LocalPosition.X, _activeRegion.Transform.LocalPosition.Y, _activeRegion.GetLocalBounds().Width, _activeRegion.GetLocalBounds().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
             }
 
 

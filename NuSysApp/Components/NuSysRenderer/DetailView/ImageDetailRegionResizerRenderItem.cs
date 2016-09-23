@@ -49,16 +49,6 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
-        public override BaseRenderItem HitTest(Vector2 point)
-        {
-            var rect = new Rect(-30, -30, 30, 30);
-            if (rect.Contains(point.ToPoint()))
-            {
-                return this;
-            }
-            return null;
-        }
-
         public override void OnDragged(CanvasPointer pointer)
         {
             ResizerDragged?.Invoke(pointer.DeltaSinceLastUpdate);
@@ -74,7 +64,7 @@ namespace NuSysApp
             ResizerDragEnded?.Invoke();
         }
 
-        public override Rect GetMeasure()
+        public override Rect GetLocalBounds()
         {
             return new Rect(-30, -30, 30, 30);
         }
