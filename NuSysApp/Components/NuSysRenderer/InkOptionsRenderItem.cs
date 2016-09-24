@@ -21,7 +21,7 @@ namespace NuSysApp
         private InkOptionsWidthRenderItem _activeWidth;
         private CloseButtonRenderItem _btnClose;
 
-        private Color[] _colors = {Colors.IndianRed, Colors.DarkOrange, Colors.Yellow, Colors.LightGreen, Colors.MediumPurple, Colors.LightBlue, Colors.HotPink, Colors.Black, Colors.White, Colors.Gray};
+        private Color[] _colors = {Colors.IndianRed, Colors.DarkOrange, Colors.Yellow, Colors.LightGreen, Colors.MediumPurple, Colors.RoyalBlue, Colors.HotPink, Colors.Black, Colors.White, Colors.Gray};
     
         public InkOptionsRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -89,6 +89,8 @@ namespace NuSysApp
                 color.IsActive = false;
             }
             _activeColor = (InkOptionsColorRenderItem)item;
+            InkOptionsWidthRenderItem.Color = _activeColor.Color;
+            
             _activeColor.IsActive = true;
 
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkColor = _activeColor.Color;

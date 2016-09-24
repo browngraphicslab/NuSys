@@ -722,6 +722,9 @@ namespace NuSysApp
         {
             if (elem is PseudoElementRenderItem)
                 return;
+            if (elem.ViewModel == null)
+                return;
+
             var collection = elem.Parent as CollectionRenderItem;
 
             var newX = elem.ViewModel.X + delta.X/(_transform.M11*collection.Camera.S.M11);

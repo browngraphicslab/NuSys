@@ -20,7 +20,7 @@ namespace NuSysApp
         {
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed
         };
-        public Color Color = Colors.MediumVioletRed;
+        public static Color Color = Colors.Black;
         public bool IsActive { get; set; }
 
         public InkOptionsWidthRenderItem(float radius, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
