@@ -213,9 +213,11 @@ namespace NuSysApp
         protected override void OnSizeChanged(object source, double width, double height)
         {
 
-                base.OnSizeChanged(source, width, height);
+            if (!IsFinite)
+            {
+                base.OnSizeChanged(source, width,height);
                 return;
-      
+            }
             if (height *  AspectRatio < Constants.MinNodeSize)
             {
                 return; // If the height becomes smaller than the minimum node size then we don't apply the size changed, applying the height's change causes weird behaviour

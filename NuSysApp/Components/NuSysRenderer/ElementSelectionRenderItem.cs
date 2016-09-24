@@ -7,9 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
 
 
 namespace NuSysApp
@@ -19,7 +21,6 @@ namespace NuSysApp
         public Rect _selectionBoundingRect;
         public Rect _screenRect;
         private FreeFormViewerViewModel _vm;
-        private bool _isVisible;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
 
         public NodeMenuButtonRenderItem BtnDelete;
@@ -45,8 +46,18 @@ namespace NuSysApp
             BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
-            Buttons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnPdfLeft, BtnPdfRight, BtnEnterCollection, Resizer };
-            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnEnterCollection };
+
+            Buttons = new List<BaseRenderItem>
+            {
+                BtnDelete,
+                BtnGroup,
+                BtnPresent,
+                BtnPdfLeft,
+                BtnPdfRight,
+                BtnEnterCollection,
+                Resizer
+            };
+            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnEnterCollection};
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -59,6 +70,8 @@ namespace NuSysApp
             AddChild(Resizer);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
+
+
         }
 
  
@@ -94,6 +107,11 @@ namespace NuSysApp
 
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
 
+
+            BtnDelete.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
+            BtnGroup.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
+            Resizer.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
+
             IsDirty = true;
         }
 
@@ -113,12 +131,12 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
-            if (!IsDirty && !_isVisible)
+            if (!IsDirty && !IsVisible)
                 return;
 
             if (_selectedItems.Count == 0)
             {
-                _isVisible = false;
+                IsVisible = false;
                 return;
             }
 
@@ -154,10 +172,13 @@ namespace NuSysApp
                 leftOffset = (float)Math.Max(-80, Math.Min(-40 - delta, -40));
             }
 
-            for (int index = 0; index < _menuButtons.Count; index++)
+            var count = 0;
+            foreach (var btn in _menuButtons)
             {
-                var btn = _menuButtons[index];
-                btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + index * 35);
+                if (!btn.IsVisible)
+                    continue;
+                btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
+                count++;
             }
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;
             BtnPdfRight.IsVisible = _isSinglePdfSelected;
@@ -171,7 +192,7 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
 
             IsDirty = false;
-            _isVisible = true;
+            IsVisible = true;
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -179,7 +200,7 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
-            if (!_isVisible)
+            if (!IsVisible)
                 return;
 
 

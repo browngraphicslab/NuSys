@@ -429,9 +429,6 @@ namespace NuSysApp
             };
 
 
-
-
-
             //creates a new request to get the new workspace
             var request = new GetEntireWorkspaceRequest(collectionLibraryId);
 
@@ -446,8 +443,6 @@ namespace NuSysApp
             //for each returned contentDataMofdel, add it to the session
             request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
 
-            
-
             Task.Run(async delegate ///tell the server about the latest collection we're entering
             {
                 await NuSysNetworkSession.ExecuteRequestAsync(
@@ -457,20 +452,6 @@ namespace NuSysApp
                         UserId = WaitingRoomView.UserID
                     }));
             });
-
-
-            
-          //  await SessionController.Instance.SessionView.LoadWorkspaceFromServer(collectionLibraryId, elementModels, presentationLinks, request.GetReturnedInkModels());
-
-
-          //  xLoadingGrid.Visibility = Visibility.Visible;
-
-
-
-
-
-
-            //   xDetailViewer.DataContext = new DetailViewerViewModel();
 
             var dict = elementModels.ToDictionary(e => e.Id, e => e); //convert the elements to the form needed for the make collection method
 
@@ -491,12 +472,6 @@ namespace NuSysApp
                 contentController.AddInk(inkModel);
             }
 
-            Debug.WriteLine("done joining collection: " + collectionLibraryId);
-
-            //    xLoadingGrid.Visibility = Visibility.Collapsed;
-            //    Resize(null, null);
-
-
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
             CollectionIdsInUse.Add(collectionLibraryId);
@@ -504,9 +479,25 @@ namespace NuSysApp
             var freeFormViewerViewModel = new FreeFormViewerViewModel(elementCollectionInstanceController);
             ActiveFreeFormViewer = freeFormViewerViewModel;
 
+
+            var userID = WaitingRoomView.UserID;
+            var creator = elementCollectionInstanceController.LibraryElementModel.Creator;
+
+            if (elementCollectionInstanceController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly &&
+                userID != creator)
+            {
+                SessionView.MakeWorkspaceReadonly();
+            }
+            else
+            {
+                SessionView.MakeWorkspaceEditable();
+            }
+
             await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
 
             SessionView.ShowBlockingScreen(false);
+
+     
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)

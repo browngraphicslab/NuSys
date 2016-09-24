@@ -236,20 +236,21 @@ namespace NuSysApp
                 var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
                 var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
                 _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+
             }
 
 
             if (this != initialCollection && ViewModel.IsFinite && ViewModel.IsShaped)
             {
                 var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
-                Transform.LocalScale = new Vector2(scaleFactor);
+                Camera.LocalScale = new Vector2(scaleFactor);
                 ds.Transform = Camera.LocalToScreenMatrix;
                 Mask = _shape;
             }
             else if (this != initialCollection && ViewModel.IsFinite && !ViewModel.IsShaped)
             {
                 var bounds = _shape.ComputeBounds();
-                var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
+                var scaleFactor = (float)_elementSize.Height / (float)_shape.ComputeBounds().Height;
                 Camera.LocalScale = new Vector2(scaleFactor);
                 ds.Transform = Transform.LocalToScreenMatrix;
                 Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
@@ -271,7 +272,9 @@ namespace NuSysApp
                 if (ViewModel.IsShaped)
                 {
                     ds.FillGeometry(_shape, ViewModel.ShapeColor);
+     
                 }
+
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 
@@ -311,6 +314,8 @@ namespace NuSysApp
             }
 
             base.Draw(ds);
+
+
         }
 
         public override void CreateResources()

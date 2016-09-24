@@ -50,8 +50,12 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
+            base.Update(parentLocalToScreenTransform);
+
             if (!IsDirty)
                 return;
+
+            
             var controller = (LinkController)_vm.Controller;
             if (controller.InElement == null || controller.OutElement == null)
                 return;
@@ -85,11 +89,14 @@ namespace NuSysApp
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
+            var worldPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
             var controller = _vm.Controller;
             var anchor1 = new Point((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
             var anchor2 = new Point((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
 
             var distanceX = (float)anchor1.X - anchor2.X;
+
+            ;
 
             var p2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             var p1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
@@ -97,11 +104,11 @@ namespace NuSysApp
             var p3 = anchor2;
 
             var pointsOnCurve = new List<Point>();
-            var numPoints = 15;
-            for (var i = 10; i >= 0; i--)
+            var numPoints = Math.Min(30, MathUtil.Dist(anchor1, anchor2) / 90);
+            for (var i = numPoints; i >= 0; i--)
                 pointsOnCurve.Add(MathUtil.GetPointOnBezierCurve(p0, p1, p2, p3, 1.0 / numPoints * i));
 
-            var minDist = pointsOnCurve.Select(p => MathUtil.Dist(p, new Point(screenPoint.X, screenPoint.Y))).Concat(new[] { double.PositiveInfinity }).Min();
+            var minDist = pointsOnCurve.Select(p => MathUtil.Dist(p, new Point(worldPoint.X, worldPoint.Y))).Concat(new[] { double.PositiveInfinity }).Min();
 
             return minDist < 50 ? this : null;
         }

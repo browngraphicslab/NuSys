@@ -66,6 +66,8 @@ namespace NuSysApp
             MetadataCollection.Clear();
             _orgList.Clear();
 
+            xSearchBox.Text = "";
+
             // Extract dictionary from libraryelementmodel.
             var dict = Metadatable.GetMetadata() ?? new Dictionary<string, MetadataEntry>();
 

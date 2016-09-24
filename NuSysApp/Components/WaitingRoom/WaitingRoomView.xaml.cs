@@ -312,20 +312,10 @@ namespace NuSysApp
 
                 Debug.Assert(!string.IsNullOrEmpty(id));
 
-                var m = SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
-                
                 InitialWorkspaceId = id;
-
-                if ((m.AccessType == NusysConstants.AccessType.ReadOnly) && (m.Creator != UserID))
-                {
-                    // TODO: add back in
-                   // this.Frame.Navigate(typeof(SessionView), m.AccessType);
-                }
-                else
-                {
-                    ShowWorkspace();
-                    await xSessionView.Init();
-                }
+            
+                ShowWorkspace();
+                await xSessionView.Init();
             }
         }
 

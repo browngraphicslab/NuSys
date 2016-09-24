@@ -57,7 +57,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBox PlaceholderText="Search" Grid.Row="0" Margin="0,10,0,0" TextChanged="SearchBox_OnTextChanged" Background="White" Foreground="Black"/>
+            <TextBox x:Name="xSearchBox" PlaceholderText="Search" Grid.Row="0" Margin="0,10,0,0" TextChanged="SearchBox_OnTextChanged" Background="White" Foreground="Black"/>
             <TextBlock x:Name="xErrorBox" Grid.Row="1" HorizontalAlignment="Center" Visibility="Collapsed"></TextBlock>
         </Grid>
 

@@ -254,6 +254,8 @@ namespace NuSysApp
                 if (LatestStroke != null)
                 {
                     LatestStroke.Selected = true;
+                    var strokeId = StrokesMap.GetKeyByValue(LatestStroke);
+                    SendInkStrokeRemovedRequest(strokeId);
                     _inkManager.DeleteSelected();
                     LatestStroke = null;
                 }

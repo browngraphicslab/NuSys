@@ -159,16 +159,13 @@ namespace NuSysApp
                 _collectionInteractionManager.InkDrawing -= CollectionInteractionManagerOnInkDrawing;
                 _collectionInteractionManager.InkStopped -= CollectionInteractionManagerOnInkStopped;
                 _collectionInteractionManager.ResizerDragged -= CollectionInteractionManagerOnResizerDragged;
-                _collectionInteractionManager.SelectionInkPressed -=
-                    CollectionInteractionManagerOnSelectionInkPressed;
+                _collectionInteractionManager.SelectionInkPressed -= CollectionInteractionManagerOnSelectionInkPressed;
                 _collectionInteractionManager.ResizerStarted -= CollectionInteractionManagerOnResizerStarted;
                 _collectionInteractionManager.ResizerStopped -= CollectionInteractionManagerOnResizerStopped;
                 _collectionInteractionManager.LinkCreated -= CollectionInteractionManagerOnLinkCreated;
                 _collectionInteractionManager.TrailCreated -= CollectionInteractionManagerOnTrailCreated;
-                _collectionInteractionManager.ElementAddedToCollection -=
-                    CollectionInteractionManagerOnElementAddedToCollection;
-                _collectionInteractionManager.MultimediaElementActivated -=
-                    CollectionInteractionManagerOnMultimediaElementActivated;
+                _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
+                _collectionInteractionManager.MultimediaElementActivated -= CollectionInteractionManagerOnMultimediaElementActivated;
                 _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
                 _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
@@ -179,36 +176,42 @@ namespace NuSysApp
 
             CurrentCollection = collection;
             _collectionInteractionManager = new CollectionInteractionManager(_canvasInteractionManager, collection);
-            _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
-            _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
-            _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
+
             if (!collection.ViewModel.IsFinite || collection == InitialCollection)
             {
                 _collectionInteractionManager.Panned += CollectionInteractionManagerOnPanned;
                 _collectionInteractionManager.PanZoomed += CollectionInteractionManagerOnPanZoomed;
             }
 
-            _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
-            _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
-            _collectionInteractionManager.LinkSelected += CollectionInteractionManagerOnLinkSelected;
-            _collectionInteractionManager.TrailSelected += CollectionInteractionManagerOnTrailSelected;
-            _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
+
+            if (!SessionController.Instance.SessionView.IsReadonly) { 
+                _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
+                _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
+                _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
+                _collectionInteractionManager.LinkSelected += CollectionInteractionManagerOnLinkSelected;
+                _collectionInteractionManager.TrailSelected += CollectionInteractionManagerOnTrailSelected;
+                _collectionInteractionManager.DuplicateCreated += CollectionInteractionManagerOnDuplicateCreated;
+                _collectionInteractionManager.InkStarted += CollectionInteractionManagerOnInkStarted;
+                _collectionInteractionManager.InkDrawing += CollectionInteractionManagerOnInkDrawing;
+                _collectionInteractionManager.InkStopped += CollectionInteractionManagerOnInkStopped;
+                _collectionInteractionManager.ResizerDragged += CollectionInteractionManagerOnResizerDragged;
+                _collectionInteractionManager.SelectionInkPressed += CollectionInteractionManagerOnSelectionInkPressed;
+                _collectionInteractionManager.ResizerStarted += CollectionInteractionManagerOnResizerStarted;
+                _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
+                _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
+                _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
+                _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
+                multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+            }
+
             _collectionInteractionManager.CollectionSwitched += CollectionInteractionManagerOnCollectionSwitched;
-            _collectionInteractionManager.InkStarted += CollectionInteractionManagerOnInkStarted;
-            _collectionInteractionManager.InkDrawing += CollectionInteractionManagerOnInkDrawing;
-            _collectionInteractionManager.InkStopped += CollectionInteractionManagerOnInkStopped;
-            _collectionInteractionManager.ResizerDragged += CollectionInteractionManagerOnResizerDragged;
-            _collectionInteractionManager.SelectionInkPressed += CollectionInteractionManagerOnSelectionInkPressed;
-            _collectionInteractionManager.ResizerStarted += CollectionInteractionManagerOnResizerStarted;
-            _collectionInteractionManager.ResizerStopped += CollectionInteractionManagerOnResizerStopped;
-            _collectionInteractionManager.LinkCreated += CollectionInteractionManagerOnLinkCreated;
-            _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
-            _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
+            _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
+            _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
             _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
+            _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
             _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
             _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
-            multiMenu.CreateCollection += MultiMenuOnCreateCollection;
-            _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
+
 
             _minimap?.SwitchCollection(collection);
             
@@ -256,12 +259,44 @@ namespace NuSysApp
                 PanZoom2(t, _transform, newCenter, deltaTranslation.X, deltaTranslation.Y, deltaZoom);
 
                 elem.Controller.SetSize(t.Size.Width*t.S.M11, t.Size.Height*t.S.M22);
+                var nw = t.Size.Width*t.S.M11;
+                var nh = t.Size.Height*t.S.M22;
                 var dtx = (float) (t.Size.Width*t.S.M11 - t.Size.Width)/2f;
                 var dty = (float) (t.Size.Height*t.S.M22 - t.Size.Height)/2f;
                 var nx = t.LocalPosition.X - dtx;
                 var ny = t.LocalPosition.Y - dty;
                 elem.Controller.SetPosition(nx, ny);
 
+                if (elem is AudioNodeViewModel)
+                {
+                    if (_currentAudioElementController?.Model?.Id == elem?.Controller?.Model?.Id &&
+                        _currentAudioElementController?.Model?.Id != null)
+                    {
+                        xAudioPlayer?.SetSize(nw, nh);
+                        var tt = ActiveAudioRenderItem.Transform.LocalToScreenMatrix;
+                        var ct = (CompositeTransform) AudioPlayer.RenderTransform;
+                        ct.TranslateX = tt.M31;
+                        ct.TranslateY = tt.M32;
+                        ct.ScaleX = tt.M11;
+                        ct.ScaleY = tt.M22;
+                    }
+                }
+                if (elem is VideoNodeViewModel)
+                {
+                    if (_currentVideoElementController?.Model?.Id == elem?.Controller?.Model?.Id &&
+                        _currentVideoElementController?.Model?.Id != null)
+                    {
+                        xVideoPlayer?.SetSize(nw, nh);
+                        var tt = ActiveVideoRenderItem.Transform.LocalToScreenMatrix;
+                        var ct = (CompositeTransform) VideoPlayer.RenderTransform;
+                        ct.TranslateX = tt.M31;
+                        ct.TranslateY = tt.M32;
+                        ct.ScaleX = tt.M11;
+                        ct.ScaleY = tt.M22;
+                    }
+                }
+
+                
                 if (elem is ElementCollectionViewModel)
                 {
                     var elemc = elem as ElementCollectionViewModel;
@@ -350,9 +385,8 @@ namespace NuSysApp
             if (element is VideoElementRenderItem)
             {
                 ActiveVideoRenderItem = (VideoElementRenderItem) element;
-                var t = ActiveVideoRenderItem.Transform.LocalMatrix * RenderEngine.GetTransformUntil(ActiveVideoRenderItem);
-                var ct =
-                    (CompositeTransform)VideoPlayer.RenderTransform;
+                var t = ActiveVideoRenderItem.Transform.LocalToScreenMatrix;
+                var ct = (CompositeTransform)VideoPlayer.RenderTransform;
                 ct.TranslateX = t.M31;
                 ct.TranslateY = t.M32;
                 ct.ScaleX = t.M11;
@@ -380,7 +414,7 @@ namespace NuSysApp
 
                 AudioPlayer.SetSize(element.ViewModel.Width, element.ViewModel.Height);
                 AudioPlayer.SetLibraryElement(element.ViewModel.Controller.LibraryElementController as AudioLibraryElementController);
-                SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.Visibility = Visibility.Visible;
+                AudioPlayer.Visibility = Visibility.Visible;
                 return;
             }
             
@@ -392,8 +426,9 @@ namespace NuSysApp
             {
                 var elem = item;
                 var collection = item.Parent as CollectionRenderItem;
-                var nw = elem.ViewModel.Width + delta.X/(_transform.M11*collection.Transform.LocalScale.X * collection.Camera.S.M11);
-                var nh = elem.ViewModel.Height + delta.Y/(_transform.M22*collection.Transform.LocalScale.Y * collection.Camera.S.M22);
+                var s = collection.Camera.LocalToScreenMatrix.M11;
+                var nw = elem.ViewModel.Width + delta.X/s;
+                var nh = elem.ViewModel.Height + delta.Y/s;
                 item.ViewModel.Controller.SetSize(nw, nh);
                 if(_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
                 {
@@ -722,8 +757,15 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnPointerPressed(CanvasPointer pointer)
         {
-            var until = RenderEngine.GetTransformUntil(CurrentCollection);
-            _transform = Win2dUtil.Invert(CurrentCollection.Transform.C)*CurrentCollection.Transform.S *CurrentCollection.Transform.C *CurrentCollection.Transform.T *until;
+            _transform = CurrentCollection.Transform.LocalToScreenMatrix;
+            if (ActiveAudioRenderItem?.HitTest(pointer.CurrentPoint) == null ||
+                ActiveVideoRenderItem?.HitTest(pointer.CurrentPoint) == null)
+            {
+                xAudioPlayer.Visibility = Visibility.Collapsed;
+                xAudioPlayer.Pause();
+                xVideoPlayer.Visibility = Visibility.Collapsed;
+                xVideoPlayer.Pause();
+            }
         }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)

@@ -44,6 +44,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
             base.Draw(ds);
             ds.FillGeometry(_triangle, Colors.Black);
+            ds.Transform = Matrix3x2.Identity;
             _triangleBounds = _triangle.ComputeBounds(ds.Transform);
             ds.Transform = orgTransform;
         }

@@ -16,14 +16,14 @@
     <Canvas>
         <Grid x:Name="GroupSettings" BorderBrush="{StaticResource color2}" BorderThickness="2"  Height="150" Width="200" Visibility="Collapsed" Background="{StaticResource color1}">
             <StackPanel Margin="10">
-                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="FiniteCheck" OnContent="Finite" OffContent="Infinite" ></ToggleSwitch>
+                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="FiniteCheck" OnContent="Bounded" OffContent="Unbounded" ></ToggleSwitch>
                 <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ShapeCheck" OnContent="Has Shape" OffContent="No Shape"></ToggleSwitch>
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}"  Content="Finite"></CheckBox>-->
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}" Content="Shaped"></CheckBox>-->
             </StackPanel>
             <Button Background="{StaticResource color2}" Foreground="White"  Padding="0" Margin="10"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="100" Height="30"
                     Click="CreateGroupButtonOnClick">
-                Make Group
+                Create
             </Button>
             <Button x:Name="CloseGroupSettings" Background="Transparent" Height="20" Width="20" HorizontalAlignment="Right"
                     VerticalAlignment="Top" Margin="10" Padding="0" Click="GroupSettingsXOnClick">

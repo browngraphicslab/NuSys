@@ -108,27 +108,20 @@ namespace NuSysApp
         {
             // toggle visibility and activity of some ui elements
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            xReadonlyFloatingMenu.Visibility = Visibility.Visible;
-            xCurrentCollectionDVButton.IsEnabled = false;
-
-            // only let the user pan and zoom initially
-            SessionController.Instance.SwitchMode(Options.PanZoomOnly);
+            xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
+            xCurrentCollectionDVButton.Visibility = Visibility.Collapsed;
             this.IsReadonly = true;
-
         }
 
         /// <summary>
         /// Reverts a workspace back to editable by modifying ui elements and the session mode
         /// </summary>
-        private void MakeWorkspaceEditable()
+        public void MakeWorkspaceEditable()
         {
             // toggle visibility of some ui elements
             xFloatingMenu.Visibility = Visibility.Visible;
             xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
-            xCurrentCollectionDVButton.IsEnabled = true;
-
-            // give the user more control
-            SessionController.Instance.SwitchMode(Options.SelectNode);
+            xCurrentCollectionDVButton.Visibility = Visibility.Visible;
             this.IsReadonly = false;
         }
 

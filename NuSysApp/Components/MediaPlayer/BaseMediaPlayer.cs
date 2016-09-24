@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -172,7 +173,6 @@ namespace NuSysApp
             PlayPauseButton.Content = "pause";
         }
 
-
         /// <summary>
         /// the method that should be called to set the size of the media element itself.  
         /// This should be overriden in the sub classes.
@@ -184,6 +184,7 @@ namespace NuSysApp
             Debug.Assert(MediaElement != null, "this should never be null");
             Width = width;
             Height = height;
+            MediaElement.Height = height;
             MediaElement.Width = width;
             MediaElement.Height = height;
             ProgressBar.SetWidth(width);
