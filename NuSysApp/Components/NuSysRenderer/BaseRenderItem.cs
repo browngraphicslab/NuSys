@@ -23,7 +23,7 @@ namespace NuSysApp
 
         protected List<BaseRenderItem> _children = new List<BaseRenderItem>();
 
-        public bool IsDisposed { get; set; }
+        public bool IsDisposed { get; protected set; }
 
         public bool IsVisible { get; set; } = true;
 

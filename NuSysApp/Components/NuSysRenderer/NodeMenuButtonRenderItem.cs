@@ -14,12 +14,12 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class NodeMenuButtonRenderItem : BaseRenderItem
+    public class NodeMenuButtonRenderItem : InteractiveBaseRenderItem
     {
         private CanvasBitmap _bmp;
         private string _iconUrl;
 
-        public NodeMenuButtonRenderItem( string iconUrl, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
+        public NodeMenuButtonRenderItem( string iconUrl, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
         {
             _iconUrl = iconUrl;
         }

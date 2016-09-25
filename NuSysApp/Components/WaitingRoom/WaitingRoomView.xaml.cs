@@ -111,9 +111,7 @@ namespace NuSysApp
                 _preloadedIDs.Remove(model.LibraryElementId);
             }
 
-            var libraryElement = SessionController.Instance.ContentController.GetLibraryElementModel(model.LibraryElementId);
-
-            _collectionList.Remove(libraryElement);
+            _collectionList.Remove(model);
             var result = List.Items.OfType<CollectionListBox>().Where(c => c.LibraryElementModel.LibraryElementId == model.LibraryElementId);
             if (result.Any())
             {

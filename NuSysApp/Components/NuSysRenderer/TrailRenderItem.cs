@@ -98,5 +98,30 @@ namespace NuSysApp
             if (_path != null)
                 ds.DrawGeometry(_path, Colors.PaleVioletRed, 30);
         }
+
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
+        {
+            var worldPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
+            var anchor1 = new Point((float)_vm.InAnchor.X, (float)_vm.InAnchor.Y);
+            var anchor2 = new Point((float)_vm.OutAnchor.X, (float)_vm.OutAnchor.Y);
+
+            var distanceX = (float)anchor1.X - anchor2.X;
+
+            ;
+
+            var p2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
+            var p1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
+            var p0 = anchor1;
+            var p3 = anchor2;
+
+            var pointsOnCurve = new List<Point>();
+            var numPoints = Math.Min(30, MathUtil.Dist(anchor1, anchor2) / 90);
+            for (var i = numPoints; i >= 0; i--)
+                pointsOnCurve.Add(MathUtil.GetPointOnBezierCurve(p0, p1, p2, p3, 1.0 / numPoints * i));
+
+            var minDist = pointsOnCurve.Select(p => MathUtil.Dist(p, new Point(worldPoint.X, worldPoint.Y))).Concat(new[] { double.PositiveInfinity }).Min();
+
+            return minDist < 50 ? this : null;
+        }
     }
 }

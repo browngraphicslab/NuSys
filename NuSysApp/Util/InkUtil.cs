@@ -26,7 +26,7 @@ namespace NuSysApp
                 if (dist < minDist)
                     minDist = dist;
             }
-            return minDist < 100;
+            return minDist < 100.0 / SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalToScreenMatrix.M11;
         }
     }
 }

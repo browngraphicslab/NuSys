@@ -33,10 +33,8 @@ namespace NuSysApp
         
         public LinkDetailHomeTabView(LinkHomeTabViewModel vm)
         {
-
             InitializeComponent();
             DataContext = vm;
-            
         }
 
 

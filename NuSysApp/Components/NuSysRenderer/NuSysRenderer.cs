@@ -39,12 +39,15 @@ namespace NuSysApp
         public ElementSelectionRenderItem ElementSelectionRect;
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
         public InkOptionsRenderItem InkOptions;
+        public NodeMenuButtonRenderItem BtnDelete;
         private bool _isStopped;
         private RenderItemInteractionManager _interactionManager;
+        private bool _isInitialized;
 
         public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
         {
             _interactionManager = new RenderItemInteractionManager(this, canvas);
+            
         }
 
         public override void Start()
@@ -178,17 +181,21 @@ namespace NuSysApp
 
         protected override void CanvasAnimatedControlOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
-            ElementSelectionRect = new ElementSelectionRenderItem(((CollectionRenderItem)(Root.GetChildren()[0])).ViewModel, null, CanvasAnimatedControl);
-            ElementSelectionRect.Load();
+
+            ElementSelectionRect = new ElementSelectionRenderItem(((CollectionRenderItem)(Root.GetChildren()[0])).ViewModel, Root, CanvasAnimatedControl);
 
             InkOptions = new InkOptionsRenderItem(null, CanvasAnimatedControl);
             InkOptions.IsVisible = false;
-            InkOptions.Load();
 
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
+            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", Root, CanvasAnimatedControl);
+            BtnDelete.IsVisible = false;
             Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
             Root.AddChild(InkOptions);
+            Root.AddChild(BtnDelete);
+
+            _isInitialized = true;
         }
 
         

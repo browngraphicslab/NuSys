@@ -16,7 +16,7 @@ namespace NuSysApp
     {
 
         private CanvasGeometry _triangle;
-        public NodeResizerRenderItem(CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public NodeResizerRenderItem(BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
         }
 

@@ -57,6 +57,8 @@ namespace NuSysApp
 
         private ElementController _currentAudioElementController;
         private ElementController _currentVideoElementController;
+        private BaseRenderItem _pressedRenderItem;
+        private BaseRenderItem _selectedLink;
 
         private bool _inkPressed;
 
@@ -131,6 +133,9 @@ namespace NuSysApp
             RenderEngine.Root.AddChild(InitialCollection);
             RenderEngine.Start();
 
+            RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
+            RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
+
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
@@ -204,6 +209,7 @@ namespace NuSysApp
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
             }
 
+            _collectionInteractionManager.RenderItemPressed += OnRenderItemPressed;
             _collectionInteractionManager.CollectionSwitched += CollectionInteractionManagerOnCollectionSwitched;
             _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
             _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
@@ -217,12 +223,41 @@ namespace NuSysApp
             
         }
 
-        private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element)
+        private async void BtnDeleteOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (_selectedLink is LinkRenderItem)
+            {
+                var linkItem = (LinkRenderItem) _selectedLink;
+                await SessionController.Instance.LinksController.RemoveLink(linkItem.ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId);
+            }
+            else if (_selectedLink is TrailRenderItem)
+            {
+                var trailItem = (TrailRenderItem)_selectedLink;
+                trailItem.ViewModel.DeletePresentationLink();
+            }
+            RenderEngine.BtnDelete.IsVisible = false;
         }
 
-        private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element)
+        private void OnRenderItemPressed(BaseRenderItem item, CanvasPointer point)
         {
+            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem))
+            {
+                RenderEngine.BtnDelete.IsVisible = false;
+            }
+        }
+
+        private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
+        {
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -40);
+            RenderEngine.BtnDelete.IsVisible = true;
+            _selectedLink = element;
+        }
+
+        private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element, CanvasPointer pointer)
+        {
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0,-40);
+            RenderEngine.BtnDelete.IsVisible = true;
+            _selectedLink = element;
         }
 
         private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,
@@ -632,9 +667,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
-            var until = RenderEngine.GetTransformUntil(CurrentCollection);
-            _transform = Win2dUtil.Invert(CurrentCollection.Transform.C)*CurrentCollection.Transform.S *CurrentCollection.Transform.C * CurrentCollection.Transform.T *until;
-
+            _transform = CurrentCollection.Camera.LocalToScreenMatrix;
             _transformables.Clear();
         }
 
@@ -643,11 +676,11 @@ namespace NuSysApp
         {
             if (element is VideoElementRenderItem)
             {
-                //xVideoPlayer.Visibility = Visibility.Collapsed; //TODO put back in
+                xVideoPlayer.Visibility = Visibility.Collapsed;
             }
             if (element is AudioElementRenderItem)
             {
-                //xVideoPlayer.Visibility = Visibility.Collapsed; //TODO put back in
+                xVideoPlayer.Visibility = Visibility.Collapsed;
             }
 
             var targetPoint = RenderEngine.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
@@ -663,7 +696,6 @@ namespace NuSysApp
             var action = new MoveToCollectionAction(elementId, parentCollectionId, collection.ViewModel.Model.LibraryId, oldLocationCollection, newLocation);
             
             ActivateUndo(action, oldLocationScreen);
-
 
             _minimap.Invalidate();
         }
