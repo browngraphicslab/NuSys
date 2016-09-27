@@ -30,6 +30,10 @@ namespace NuSysApp
         private List<PointModel> _latestStroke;
         private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
+        /// <summary>
+        /// The "root" of the detailview. 
+        /// </summary>
+        private DetailViewRenderItem _detailViewRenderItem;
         private FreeFormViewerViewModel _vm;
 
         private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
@@ -111,9 +115,18 @@ namespace NuSysApp
             _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
+            // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
+            {
                 _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+            }
 
+            // Make sure the _detailViewRenderItem is only implemented once
+            if (_detailViewRenderItem == null)
+            {
+                _detailViewRenderItem = new DetailViewRenderItem(null, xRenderCanvas);
+            }
+       
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -131,6 +144,9 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
+
+            // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
+            RenderEngine.Root.AddChild(_detailViewRenderItem);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
