@@ -12,7 +12,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
-    class WindowResizerBorderRenderItem : InteractiveBaseRenderItem
+    public class WindowResizerBorderRenderItem : InteractiveBaseRenderItem
     {
         /// <summary>
         ///  The canvas the WindowResizerBorderRenderItem is drawn on
@@ -28,12 +28,12 @@ namespace NuSysApp
         /// <summary>
         /// An enum describing the possible ResizerBorderPostions on a window
         /// </summary>
-        public enum ResizerBorderPosition { Left, Right, Bottom}
+        public enum ResizerBorderPosition { Left, Right, Bottom, BottomRight, BottomLeft}
 
         /// <summary>
-        /// The default width of the Resizer, treat this like a border width
+        /// The Width of the Resizer, treat this like a border width
         /// </summary>
-        public float ResizerWidth = 100; //todo add code so this can be dynamically changed
+        public float ResizerWidth;
 
         /// <summary>
         /// The position of the border on the the WindowBaseRenderItem
@@ -50,7 +50,13 @@ namespace NuSysApp
         /// </summary>
         public event WindowResizerRenderItem.ResizerDraggedHandler ResizerDragged;
 
-        public WindowResizerBorderRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ResizerBorderPosition position, WindowBaseRenderItem parentWindow) : base(parent, resourceCreator)
+        /// <summary>
+        /// The hit box will be at the smallest a _hitBoxErrorMargin x _hitBoxErrorMargin square
+        /// If the actual width and height are greater than the _hitBoxErrorMargin the margin is not applied
+        /// </summary>
+        private float _hitBoxErrorMargin = 25;
+
+        public WindowResizerBorderRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ResizerBorderPosition position, WindowBaseRenderItem parentWindow, float resizerWidth) : base(parent, resourceCreator)
         {
             // set the canvas equal to the passed in resourceCreator
             _canvas = resourceCreator as CanvasAnimatedControl;
@@ -61,6 +67,9 @@ namespace NuSysApp
 
             // set the parent window
             _parentWindow = parentWindow;
+
+            // set the width correctly
+            ResizerWidth = resizerWidth;
         }
 
         /// <summary>
@@ -69,7 +78,14 @@ namespace NuSysApp
         /// <param name="size"></param>
         private void _parentWindow_SizeChanged(Size size)
         {
-            // instantiate the values of the new WindowResizerBorderRenderItem based on the new size of the parent window
+            PlaceResizerBorderRenderItem();
+        }
+
+        /// <summary>
+        /// Places the resizer in the correct position. the _position variable must be set correcly
+        /// </summary>
+        public void PlaceResizerBorderRenderItem()
+        {
             switch (_position)
             {
                 case ResizerBorderPosition.Bottom:
@@ -85,6 +101,16 @@ namespace NuSysApp
                 case ResizerBorderPosition.Right:
                     Transform.LocalPosition = new Vector2((float)_parentWindow.Size.Width - ResizerWidth, 0);
                     Size.Height = _parentWindow.Size.Height;
+                    Size.Width = ResizerWidth;
+                    break;
+                case ResizerBorderPosition.BottomRight:
+                    Transform.LocalPosition = new Vector2((float)_parentWindow.Size.Width - ResizerWidth, (float)_parentWindow.Size.Height - ResizerWidth);
+                    Size.Height = ResizerWidth;
+                    Size.Width = ResizerWidth;
+                    break;
+                case ResizerBorderPosition.BottomLeft:
+                    Transform.LocalPosition = new Vector2(0, (float)_parentWindow.Size.Height - ResizerWidth);
+                    Size.Height = ResizerWidth;
                     Size.Width = ResizerWidth;
                     break;
                 default:
@@ -114,27 +140,8 @@ namespace NuSysApp
             // add the manipulation mode methods
             Dragged += WindowResizerBorderRenderItem_Dragged;
 
-            // instantiate the values of the new WindowResizerBorderRenderItem based on the passed in position
-            switch (_position)
-            {
-                case ResizerBorderPosition.Bottom:
-                    Transform.LocalPosition = new Vector2(0, (float)_parentWindow.Size.Height - ResizerWidth);
-                    Size.Height = ResizerWidth;
-                    Size.Width = _parentWindow.Size.Width;
-                    break;
-                case ResizerBorderPosition.Left:
-                    Transform.LocalPosition = new Vector2(0, 0);
-                    Size.Height = _parentWindow.Size.Height;
-                    Size.Width = ResizerWidth;
-                    break;
-                case ResizerBorderPosition.Right:
-                    Transform.LocalPosition = new Vector2((float)_parentWindow.Size.Width - ResizerWidth, 0);
-                    Size.Height = _parentWindow.Size.Height;
-                    Size.Width = ResizerWidth;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(_position), _position, null);
-            }
+            // Place the border in the correct place
+            PlaceResizerBorderRenderItem();
 
             base.Load();
         }
@@ -145,7 +152,6 @@ namespace NuSysApp
         /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-            // todo explain why we need this
             if (IsDisposed)
                 return;
 
@@ -185,6 +191,15 @@ namespace NuSysApp
                 case ResizerBorderPosition.Bottom:
                     sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
                     break;
+                case ResizerBorderPosition.BottomRight:
+                    sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
+                    sizeDelta.X += pointer.DeltaSinceLastUpdate.X;
+                    break;
+                case ResizerBorderPosition.BottomLeft:
+                    sizeDelta.X -= pointer.DeltaSinceLastUpdate.X;
+                    offsetDelta.X += pointer.DeltaSinceLastUpdate.X;
+                    sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -200,7 +215,12 @@ namespace NuSysApp
         /// <returns></returns>
         public override Rect GetLocalBounds()
         {
-            return new Rect(0, 0, Size.Width, Size.Height);
+            // get equal sized margins on the left and right. The hitbox is at least as wide and as tall as the square created
+            // with sides of size _hitboxErrorMargin
+            double horizontalMargin = _hitBoxErrorMargin - Size.Width/2 > 0 ? _hitBoxErrorMargin - Size.Width/2 : 0;
+            double verticalMargin = _hitBoxErrorMargin - Size.Height / 2 > 0 ? _hitBoxErrorMargin - Size.Height / 2 : 0;
+
+            return new Rect(-horizontalMargin, -verticalMargin, Size.Width + horizontalMargin * 2, Size.Height + verticalMargin * 2);
         }
     }
 }

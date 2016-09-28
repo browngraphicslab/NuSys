@@ -21,11 +21,6 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
 
         /// <summary>
-        /// The current _snapPosition of the WindowBaseRenderItem
-        /// </summary>
-        private SnapPosition _snapPosition;
-
-        /// <summary>
         /// The window's resizer
         /// </summary>
         private WindowResizerRenderItem _resizer;
@@ -46,6 +41,19 @@ namespace NuSysApp
         /// DO NOT SET THIS DIRECTLY. It would fail to populate SizeChanged event in window stack
         /// </summary>
         private Size _size;
+
+        /// <summary>
+        /// A size representing the full size of the screen in pixels
+        /// </summary>
+        private Size _fullScreen => new Size(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight);
+
+        /// <summary>
+        /// A size representing half the size of the screen in pixels
+        /// </summary>
+        private Size _halfScreen
+            => new Size(SessionController.Instance.ScreenWidth/2, SessionController.Instance.ScreenHeight);
+
+        private Size _quarterScreen => new Size(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenHeight / 2);
 
         /// <summary>
         /// The acceptable margin of error in pixels between the pointer position
@@ -69,6 +77,16 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// The size in pixels of the window's resizer border, can only be set on initialization
+        /// </summary>
+        public float ResizerSize = 3; // default value
+
+        /// <summary>
+        /// The size in pixels of the window's TopBar, can only be set on initialization
+        /// </summary>
+        public float TopBarSize = 25; // default value
+
+        /// <summary>
         /// Delegate used when the size of the window is changed
         /// </summary>
         /// <param name="size"></param>
@@ -84,14 +102,7 @@ namespace NuSysApp
         /// can snap to. The WindowBaseRenderItem can be snapped to
         /// any of these positions using the function SnapTo
         /// </summary>
-        public enum SnapPosition { Top, Left, Right, Bottom }
-
-        /// <summary>
-        /// Boolean which drescibes whether or not the current window instance
-        /// is snappable. True if the window supports snapping. False
-        /// if the window does not support snapping. Default is true.
-        /// </summary>
-        public bool SnapEnabled { get; set; }
+        public enum SnapPosition { Top, Left, Right, TopLeft, TopRight, BottomLeft, BottomRight, Center}
 
         public WindowBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -105,15 +116,12 @@ namespace NuSysApp
         /// </summary>
         public override async Task Load() //todo find out exactly when this is called
         {
-            // set SnapEnabled to true, this is the default
-            SnapEnabled = true;
-
             // snap the window to the rigth side of the screen
             SnapTo(SnapPosition.Right);
 
             // create the _resizer and _topBar and _preview
-            _resizer = new WindowResizerRenderItem(this, _canvas);
-            _topBar = new WindowTopBarRenderItem(this, _canvas);
+            _resizer = new WindowResizerRenderItem(this, _canvas, ResizerSize);
+            _topBar = new WindowTopBarRenderItem(this, _canvas, TopBarSize);
             _preview = new WindowSnapPreviewRenderItem(this, _canvas);
 
             // listen to the _resizer event
@@ -122,11 +130,6 @@ namespace NuSysApp
             // listen to the _topBar events
             _topBar.TopBarDragged += TopBarDragged;
             _topBar.TopBarReleased += TopBarReleased;
-
-            // add the manipulation mode methods
-            Dragged += WindowBaseRenderItem_Dragged;
-            Tapped += WindowBaseRenderItem_Tapped;
-            DoubleTapped += WindowBaseRenderItem_DoubleTapped;
 
             // add the _reizer and _topBar and the _preview to the children of the WindowBaseRenderItem
             AddChild(_resizer);
@@ -142,28 +145,13 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void TopBarReleased(CanvasPointer pointer)
         {
-            // if the pointer is on the right bound of the screen snap right
-            if (pointer.CurrentPoint.X > SessionController.Instance.ScreenWidth - _snapMargin)
+            // get the SnapPosition if the pointer was released in a SnapPosition
+            SnapPosition? position = GetSnapPosition(pointer);
+            if (position != null)
             {
-                SnapTo(SnapPosition.Right);
-                _preview.HidePreview();
-            }
-            // else if the pointer is on the bottom bound of the screen snap bottom
-            else if (pointer.CurrentPoint.Y > SessionController.Instance.ScreenHeight - _snapMargin)
-            {
-                SnapTo(SnapPosition.Bottom);
-                _preview.HidePreview();
-            }
-            // else if the pointer is on the left bound of the screen snap left
-            else if (pointer.CurrentPoint.X < 0 + _snapMargin)
-            {
-                SnapTo(SnapPosition.Left);
-                _preview.HidePreview();
-            }
-            // else if the pointer is on the top bound of the screen snap top
-            else if (pointer.CurrentPoint.Y < 0 + _snapMargin)
-            {
-                SnapTo(SnapPosition.Top);
+                // snap to the SnapPosition if one existed
+                SnapTo(position.Value);
+                // Hide the preview since it is no longer necessary
                 _preview.HidePreview();
             }
         }
@@ -180,34 +168,118 @@ namespace NuSysApp
             {
                 // shift the transform by the amount the topBar was moved
                 Transform.LocalPosition += offsetDelta;
-            });
             
 
-            // if the pointer is on the right bound of the screen show preview right
+                // get the SnapPosition if the pointer is in a SnapPosition
+                SnapPosition? position = GetSnapPosition(pointer);
+
+                // if the pointer is in a SnapPosition then show the preview
+                if (position != null)
+                {
+                    ShowPreview(position.Value);
+
+                }
+                 // otherwise hide the preview
+                else
+                {
+                    _preview.HidePreview();
+                }
+
+            });
+        }
+
+        /// <summary>
+        /// Takes in two normalized points x and y, and returns a vector 2 representing the screen coordinate of that point in pixels
+        /// VERY USEFUL for setting normalized coordinates
+        /// </summary>
+        /// <param name="x">must be a value between 0 and 1 inclusive</param>
+        /// <param name="y">must be a value between 0 and 1 inclusive</param>
+        /// <returns></returns>
+        private Vector2 NormalizedToScreen(float x, float y)
+        {
+            Debug.Assert(x <= 1 && x >= 0);
+            Debug.Assert(y <= 1 && y >= 0);
+            return new Vector2((float) SessionController.Instance.ScreenWidth * x, (float) SessionController.Instance.ScreenHeight * y);
+        }
+
+        /// <summary>
+        /// Takes in two normalized points x and y, and returns a vector 2 representing the inverse vector used to transform the
+        /// Transform.localposition to the normalized position on the screen
+        /// VERY USEFUL for setting normalized coordinates
+        /// </summary>
+        /// <param name="x">must be a value between 0 and 1 inclusive</param>
+        /// <param name="y">must be a value between 0 and 1 inclusive</param>
+        /// <returns></returns>
+        private Vector2 InverseNormalizedToScreen(float x, float y)
+        {
+            Vector2 NormalizedPostion = NormalizedToScreen(x, y);
+            return NormalizedPostion - Transform.LocalPosition;
+        }
+
+        /// <summary>
+        /// Takes in a CanvasPointer and returns the SnapPosition that pointer is on, null otherwise
+        /// </summary>
+        /// <param name="pointer"></param>
+        /// <returns></returns>
+        private SnapPosition? GetSnapPosition(CanvasPointer pointer)
+        {
+
+            // create booleans for all the sides an initialize them to false
+            bool right = false, left = false, top = false, bottom = false;
+
+            // the pointer is on the right bound of the screen
             if (pointer.CurrentPoint.X > SessionController.Instance.ScreenWidth - _snapMargin)
             {
-                ShowPreview(SnapPosition.Right);
+                right = true;
             }
             // else if the pointer is on the bottom bound of the show preview bottom
-            else if (pointer.CurrentPoint.Y > SessionController.Instance.ScreenHeight - _snapMargin)
+            if (pointer.CurrentPoint.Y > SessionController.Instance.ScreenHeight - _snapMargin)
             {
-                ShowPreview(SnapPosition.Bottom);
+                bottom = true;
             }
             // else if the pointer is on the left bound of the show preview left
-            else if (pointer.CurrentPoint.X < 0 + _snapMargin)
+            if (pointer.CurrentPoint.X < 0 + _snapMargin)
             {
-                ShowPreview(SnapPosition.Left);
+                left = true;
             }
             // else if the pointer is on the top bound of the show preview top
-            else if (pointer.CurrentPoint.Y < 0 + _snapMargin)
+            if (pointer.CurrentPoint.Y < 0 + _snapMargin)
             {
-                ShowPreview(SnapPosition.Top);
+                top = true;
             }
-            // else hide the preview
-            else
+
+            // these booleans should be self evident, check that we are in corners
+            // if we are not in a corner but we are in a side return a side
+            // if we are not in a side return null
+            if (top && left)
             {
-                _preview.HidePreview();
+                return SnapPosition.TopLeft;
             }
+            if (top && right)
+            {
+                return SnapPosition.TopRight;
+            }
+            if (top)
+            {
+                return SnapPosition.Top;
+            }
+            if (bottom && right)
+            {
+                return SnapPosition.BottomRight;
+            }
+            if (bottom && left)
+            {
+                return SnapPosition.BottomLeft;
+            }
+            if (left)
+            {
+                return SnapPosition.Left;
+            }
+            if (right)
+            {
+                return SnapPosition.Right;
+            }
+            return null;
         }
 
         /// <summary>
@@ -246,9 +318,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             // remove event handlers
-            Dragged -= WindowBaseRenderItem_Dragged;
-            Tapped -= WindowBaseRenderItem_Tapped;
-            DoubleTapped -= WindowBaseRenderItem_DoubleTapped;
             _resizer.ResizerDragged -= ResizerOnResizerDragged;
             _topBar.TopBarDragged -= TopBarDragged;
             _topBar.TopBarReleased -= TopBarReleased;
@@ -256,47 +325,6 @@ namespace NuSysApp
 
             // call base.Dispose to continue disposing items down the stack
             base.Dispose();
-        }
-
-        /// <summary>
-        /// Fired when the WindowBaseRenderItem is tapped
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void WindowBaseRenderItem_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            ;
-        }
-
-        private void WindowBaseRenderItem_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            if (_snapPosition == SnapPosition.Top)
-            {
-                SnapTo(SnapPosition.Right);
-            } else if (_snapPosition == SnapPosition.Right)
-            {
-                SnapTo(SnapPosition.Bottom);
-            } else if (_snapPosition == SnapPosition.Bottom)
-            {
-                SnapTo(SnapPosition.Left);
-            } else if (_snapPosition == SnapPosition.Left)
-            {
-                SnapTo(SnapPosition.Top);
-            }
-            else
-            {
-                Debug.Fail("Some snap case was not considered");
-            }
-        }
-
-        /// <summary>
-        /// Fired when the WindowBaseRenderItem is dragged
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void WindowBaseRenderItem_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            ;
         }
 
         /// <summary>
@@ -309,28 +337,40 @@ namespace NuSysApp
             switch (position)
             {
                 case SnapPosition.Top:
-                    Size = new Size(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight/2);
-                    Transform.LocalPosition = new Vector2(0, 0);
+                    Size = _fullScreen;
+                    Transform.LocalPosition = NormalizedToScreen(0, 0);
                     break;
                 case SnapPosition.Left:
-                    Size = new Size(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenHeight);
-                    Transform.LocalPosition = new Vector2(0, 0);
+                    Size = _halfScreen;
+                    Transform.LocalPosition = NormalizedToScreen(0, 0);
                     break;
                 case SnapPosition.Right:
-                    Size = new Size(SessionController.Instance.ScreenWidth/2, SessionController.Instance.ScreenHeight);
-                    Transform.LocalPosition = new Vector2((float)SessionController.Instance.ScreenWidth / 2, 0);
+                    Size = _halfScreen;
+                    Transform.LocalPosition = NormalizedToScreen(.5f, 0);
                     break;
-                case SnapPosition.Bottom:
-                    Size = new Size(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight/2);
-                    Transform.LocalPosition = new Vector2(0, (float) SessionController.Instance.ScreenHeight / 2);
+                case SnapPosition.TopLeft:
+                    Size = _quarterScreen;
+                    Transform.LocalPosition = NormalizedToScreen(0, 0);
+                    break;
+                case SnapPosition.TopRight:
+                    Size = _quarterScreen;
+                    Transform.LocalPosition = NormalizedToScreen(.5f, 0);
+                    break;
+                case SnapPosition.BottomLeft:
+                    Size = _quarterScreen;
+                    Transform.LocalPosition = NormalizedToScreen(0, .5f);
+                    break;
+                case SnapPosition.BottomRight:
+                    Size = _quarterScreen;
+                    Transform.LocalPosition = NormalizedToScreen(.5f, .5f);
+                    break;
+                case SnapPosition.Center:
+                    Size = _halfScreen;
+                    Transform.LocalPosition = NormalizedToScreen(.5f, .5f);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(position), position, null);
             }
-
-            // set the current position to the new position
-            _snapPosition = position;
-
         }
 
         /// <summary>
@@ -346,20 +386,36 @@ namespace NuSysApp
             switch (position)
             {
                 case SnapPosition.Top:
-                    previewSize = new Size(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight / 2);
-                    previewOffset = new Vector2(-Transform.LocalPosition.X, -Transform.LocalPosition.Y);
+                    previewSize = _fullScreen;
+                    previewOffset = InverseNormalizedToScreen(0, 0);
                     break;
                 case SnapPosition.Left:
-                    previewSize = new Size(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenHeight);
-                    previewOffset = new Vector2(-Transform.LocalPosition.X, -Transform.LocalPosition.Y);
+                    previewSize = _halfScreen;
+                    previewOffset = InverseNormalizedToScreen(0, 0);
                     break;
                 case SnapPosition.Right:
-                    previewSize = new Size(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenHeight);
-                    previewOffset = new Vector2(-Transform.LocalPosition.X + (float)SessionController.Instance.ScreenWidth / 2, -Transform.LocalPosition.Y);
+                    previewSize = _halfScreen;
+                    previewOffset = InverseNormalizedToScreen(.5f, 0);
                     break;
-                case SnapPosition.Bottom:
-                    previewSize = new Size(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight / 2);
-                    previewOffset = new Vector2(-Transform.LocalPosition.X, -Transform.LocalPosition.Y + (float)SessionController.Instance.ScreenHeight / 2);
+                case SnapPosition.TopLeft:
+                    previewSize = _quarterScreen;
+                    previewOffset = InverseNormalizedToScreen(0, 0);
+                    break;
+                case SnapPosition.TopRight:
+                    previewSize = _quarterScreen;
+                    previewOffset = InverseNormalizedToScreen(.5f, 0);
+                    break;
+                case SnapPosition.BottomLeft:
+                    previewSize = _quarterScreen;
+                    previewOffset = InverseNormalizedToScreen(0, .5f);
+                    break;
+                case SnapPosition.BottomRight:
+                    previewSize = _quarterScreen;
+                    previewOffset = InverseNormalizedToScreen(.5f, .5f);
+                    break;
+                case SnapPosition.Center:
+                    previewSize = _halfScreen;
+                    previewOffset = InverseNormalizedToScreen(.25f, .25f);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(position), position, null);

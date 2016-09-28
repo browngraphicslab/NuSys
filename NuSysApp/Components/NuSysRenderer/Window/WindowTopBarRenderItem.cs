@@ -55,9 +55,9 @@ namespace NuSysApp
         /// <summary>
         /// The default height of the TopBar
         /// </summary>
-        public float TopBarHeight = 100; //todo add code so this can be dynamically changed
+        public float TopBarHeight; //todo add code so this can be dynamically changed
 
-        public WindowTopBarRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public WindowTopBarRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, float topBarHeight) : base(parent, resourceCreator)
         {
             // set the canvas equal to the passed in resourceCreator
             _canvas = resourceCreator as CanvasAnimatedControl;
@@ -66,6 +66,8 @@ namespace NuSysApp
             _parentWindow = parent as WindowBaseRenderItem;
             Debug.Assert(_parentWindow != null, "If the parent calling this is not the WindowBaseRenderItem then make sure to pass the" +
                                                 "WindowBaseRenderItem as a variable down the stack");
+
+            TopBarHeight = topBarHeight;
         }
 
         /// <summary>

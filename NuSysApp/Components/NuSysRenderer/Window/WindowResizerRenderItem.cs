@@ -11,7 +11,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
-    class WindowResizerRenderItem : BaseRenderItem
+    public class WindowResizerRenderItem : BaseRenderItem
     {
 
         /// <summary>
@@ -30,14 +30,29 @@ namespace NuSysApp
         private WindowResizerBorderRenderItem _leftResizer;
 
         /// <summary>
-        /// The resizer at the top of the window
+        /// The resizer at the right of the window
         /// </summary>
         private WindowResizerBorderRenderItem _rightResizer;
+
+        /// <summary>
+        /// The resizer at the bottom right of the window
+        /// </summary>
+        private WindowResizerBorderRenderItem _bottomRightResizer;
+
+        /// <summary>
+        /// The resizer at the bottom left of the window
+        /// </summary>
+        private WindowResizerBorderRenderItem _bottomLeftResizer;
 
         /// <summary>
         /// The window this resizer is paired with
         /// </summary>
         private WindowBaseRenderItem _parentWindow;
+
+        /// <summary>
+        /// The width of the resizers
+        /// </summary>
+        private float _resizerWidth;
 
         /// <summary>
         /// Delegate that is passed the change in size, and the change in offset given
@@ -52,7 +67,7 @@ namespace NuSysApp
         /// </summary>
         public event ResizerDraggedHandler ResizerDragged;
 
-        public WindowResizerRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public WindowResizerRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, float resizerWidth) : base(parent, resourceCreator)
         {
 
             // set the canvas equal to the passed in resourceCreator
@@ -62,6 +77,8 @@ namespace NuSysApp
             // set the _parentWindow to the passed in parent
             _parentWindow = parent as WindowBaseRenderItem;
             Debug.Assert(_parentWindow != null, "The passed in parent should be an WindowBaseRenderItem if not add support for other types here");
+
+            _resizerWidth = resizerWidth;
         }
 
         /// <summary>
@@ -70,19 +87,32 @@ namespace NuSysApp
         public override async Task Load() //todo find out exactly when this is called
         {
             // create the _leftResizer and add it as a child
-            _leftResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.Left, _parentWindow);
+            _leftResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.Left, _parentWindow, _resizerWidth);
             _leftResizer.ResizerDragged += WindowResizerBorderRenderItem_OnResizerDragged;
             AddChild(_leftResizer);
 
             // create the _rightResizer and add it as a child
-            _rightResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.Right, _parentWindow);
+            _rightResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.Right, _parentWindow, _resizerWidth);
             _rightResizer.ResizerDragged += WindowResizerBorderRenderItem_OnResizerDragged;
             AddChild(_rightResizer);
 
             // create the _bottomResizer and add it as a child
-            _bottomResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.Bottom, _parentWindow);
+            _bottomResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.Bottom, _parentWindow, _resizerWidth);
             _bottomResizer.ResizerDragged += WindowResizerBorderRenderItem_OnResizerDragged;
             AddChild(_bottomResizer);
+
+            // WARNING!!! THE CORNER RESIZERS MUST BE ADDED LAST AS CHILDREN SO THEY ARE ON TOP!!!
+
+            // create the _bottomRightResizer and add it as a child
+            _bottomRightResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.BottomRight, _parentWindow, _resizerWidth);
+            _bottomRightResizer.ResizerDragged += WindowResizerBorderRenderItem_OnResizerDragged;
+            AddChild(_bottomRightResizer);
+
+            // create the _bottomLeftResizer and add it as a child
+            _bottomLeftResizer = new WindowResizerBorderRenderItem(this, _canvas, WindowResizerBorderRenderItem.ResizerBorderPosition.BottomLeft, _parentWindow, _resizerWidth);
+            _bottomLeftResizer.ResizerDragged += WindowResizerBorderRenderItem_OnResizerDragged;
+            AddChild(_bottomLeftResizer);
+
 
             base.Load();
         }
