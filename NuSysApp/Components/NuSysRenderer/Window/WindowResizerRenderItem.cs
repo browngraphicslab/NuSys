@@ -88,6 +88,20 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Dispose of any event handlers here and take care of clean exit
+        /// </summary>
+        public override void Dispose()
+        {
+            // remove event handlers
+            _leftResizer.ResizerDragged -= WindowResizerBorderRenderItem_OnResizerDragged;
+            _rightResizer.ResizerDragged -= WindowResizerBorderRenderItem_OnResizerDragged;
+            _bottomResizer.ResizerDragged -= WindowResizerBorderRenderItem_OnResizerDragged;
+
+            // call base.Dispose to continue disposing items down the stack
+            base.Dispose();
+        }
+
+        /// <summary>
         /// Called whenever one of the borders is dragged
         /// </summary>
         /// <param name="sizedelta"></param>

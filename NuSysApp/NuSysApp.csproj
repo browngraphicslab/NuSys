@@ -329,6 +329,7 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\Window\WindowSnapPreviewRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Window\WindowBaseRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\PdfDetailRenderItem.cs" />

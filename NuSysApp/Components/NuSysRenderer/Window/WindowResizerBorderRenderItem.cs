@@ -61,11 +61,6 @@ namespace NuSysApp
 
             // set the parent window
             _parentWindow = parentWindow;
-            // attach an event which is fired whenver the parent window size is changed
-            _parentWindow.SizeChanged += _parentWindow_SizeChanged;
-
-            // add the manipulation mode methods
-            Dragged += WindowResizerBorderRenderItem_Dragged;
         }
 
         /// <summary>
@@ -97,8 +92,28 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Dispose of any event handlers here and take care of clean exit
+        /// </summary>
+        public override void Dispose()
+        {
+            // remove event handlers
+            _parentWindow.SizeChanged -= _parentWindow_SizeChanged;
+            Dragged -= WindowResizerBorderRenderItem_Dragged;
+
+            // call base.Dispose to continue disposing items down the stack
+            base.Dispose();
+        }
+
         public override async Task Load()
         {
+
+            // attach an event which is fired whenever the parent window size is changed
+            _parentWindow.SizeChanged += _parentWindow_SizeChanged;
+
+            // add the manipulation mode methods
+            Dragged += WindowResizerBorderRenderItem_Dragged;
+
             // instantiate the values of the new WindowResizerBorderRenderItem based on the passed in position
             switch (_position)
             {
