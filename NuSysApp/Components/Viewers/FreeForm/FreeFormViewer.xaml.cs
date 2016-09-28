@@ -33,7 +33,7 @@ namespace NuSysApp
         /// <summary>
         /// The "root" of the detailview. 
         /// </summary>
-        private DetailViewRenderItem _detailViewRenderItem;
+        private WindowBaseRenderItem _windowBaseRenderItem;
         private FreeFormViewerViewModel _vm;
 
         private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
@@ -121,10 +121,10 @@ namespace NuSysApp
                 _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
             }
 
-            // Make sure the _detailViewRenderItem is only implemented once
-            if (_detailViewRenderItem == null)
+            // Make sure the _windowBaseRenderItem is only implemented once
+            if (_windowBaseRenderItem == null)
             {
-                _detailViewRenderItem = new DetailViewRenderItem(null, xRenderCanvas);
+                _windowBaseRenderItem = new WindowBaseRenderItem(null, xRenderCanvas);
             }
        
             if (_vm != null)
@@ -146,7 +146,7 @@ namespace NuSysApp
             RenderEngine.Root.AddChild(InitialCollection);
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(_detailViewRenderItem);
+            RenderEngine.Root.AddChild(_windowBaseRenderItem);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

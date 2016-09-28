@@ -329,6 +329,7 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\Window\WindowBaseRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\PdfDetailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRenderItem.cs" />
@@ -361,6 +362,9 @@
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
+    <Compile Include="Components\NuSysRenderer\Window\WindowResizerBorderRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\Window\WindowResizerRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\Window\WindowTopBarRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
       <DependentUpon>AudioRegionBound.xaml</DependentUpon>
