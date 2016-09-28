@@ -216,12 +216,14 @@ namespace NuSysApp
 
         private void ResizerOnResizerDragged(Vector2 sizeDelta, Vector2 offsetDelta)
         {
-            Size newSize = Size;
-            newSize.Width += sizeDelta.X;
-            newSize.Height += sizeDelta.Y;
-            Size = newSize;
-            Transform.LocalPosition += offsetDelta;
-
+            _canvas.RunOnGameLoopThreadAsync(() =>
+            {
+                Size newSize = Size;
+                newSize.Width += sizeDelta.X;
+                newSize.Height += sizeDelta.Y;
+                Transform.LocalPosition += offsetDelta;
+                Size = newSize;
+            });
         }
 
 
