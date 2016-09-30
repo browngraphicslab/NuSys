@@ -96,11 +96,6 @@ namespace NuSysApp
             SessionController.Instance.LoadCapturedState();
         }
 
-        private void xLoadingGridTapped(object sender, TappedRoutedEventArgs e)
-        {
-            SessionController.Instance.LoadCapturedState();
-        }
-
         /// <summary>
         /// Makes a workspace readonly by showing the readonly menu and modifying the modes
         /// </summary>

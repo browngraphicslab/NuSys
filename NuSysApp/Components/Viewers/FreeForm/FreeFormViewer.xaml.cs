@@ -683,6 +683,9 @@ namespace NuSysApp
                 xVideoPlayer.Visibility = Visibility.Collapsed;
             }
 
+           // collection.ViewModel.Controller.SetSize(500,500);
+          //  collection.ViewModel.Controller.SetPosition(50000,50000);
+
             var targetPoint = RenderEngine.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
             var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f, targetPoint.Y - (float) element.ViewModel.Height/2f);
             var elementId = element.ViewModel.Id;
