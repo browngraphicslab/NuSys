@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -137,6 +138,13 @@ namespace NuSysApp
             }
 
         }
+
+        /// <summary>
+        /// The InitialOffset of the Upper Left Corner of the Rectangle
+        /// From the parentss upper left corner. Offsets from the UpperLeft corner of
+        /// the screen if the parent is null.
+        /// </summary>
+        public override Vector2 InitialOffset { get; set; }
 
         /// <summary>
         /// Returns the LocalBounds of the base render item, used for hit testing. The bounds are given with the offset

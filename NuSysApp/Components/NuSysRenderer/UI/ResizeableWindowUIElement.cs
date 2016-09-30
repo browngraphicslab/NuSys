@@ -10,7 +10,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp.Components.NuSysRenderer.UI
 {
-    class ResizeableWindowUIElement : WindowUIElement
+    class ResizeableWindowUIElement : DraggableWindowUIElement
     {
         /// <summary>
         /// The maximum width of the resizable window
@@ -181,13 +181,6 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         }
 
         /// <summary>
-        /// A margin of error extending beyond the width and height of the window
-        /// to provide a bufferzone for the resizers. Any touch in the border or
-        /// in the ErrorMargin pixels extending past the border, will trigger resizing.
-        /// </summary>
-        public float ErrorMargin;
-
-        /// <summary>
         /// An enum describing the possible ResizerBorderPostions on a window
         /// </summary>
         public enum ResizerBorderPosition { Left, Right, Bottom, BottomRight, BottomLeft }
@@ -199,7 +192,6 @@ namespace NuSysApp.Components.NuSysRenderer.UI
 
         public ResizeableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            IsResizeable = true;
         }
 
         /// <summary>
@@ -359,16 +351,6 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 return ResizerBorderPosition.Bottom;
             }
             return null;
-        }
-
-        /// <summary>
-        /// Calculates the LocalBounds of the window by returning a Rect with coordinates relative
-        /// to the LocalTransform. The override here is to provide support for the resizer's ErrorMargin.
-        /// </summary>
-        /// <returns></returns>
-        public override Rect GetLocalBounds()
-        {
-            return new Rect(-ErrorMargin, 0, Width + ErrorMargin * 2, Height + ErrorMargin);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -53,6 +54,18 @@ namespace NuSysApp
         /// </summary>
         /// <param name="ds"></param>
         protected abstract void DrawBorder(CanvasDrawingSession ds);
+
+        /// <summary>
+        /// The InitialOffset of the UIElement from the parent's upper left corner.
+        /// Offsets from the top left of the screen if the parent is null.
+        /// </summary>
+        public abstract Vector2 InitialOffset { get; set; }
+
+        public override async Task Load()
+        {
+            Transform.LocalPosition += InitialOffset;
+            base.Load();
+        }
 
     }
 }

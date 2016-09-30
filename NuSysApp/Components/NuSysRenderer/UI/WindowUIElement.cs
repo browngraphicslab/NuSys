@@ -36,10 +36,16 @@ namespace NuSysApp
         /// </summary>
         public Color TopBarColor;
 
+        /// <summary>
+        /// A margin of error extending beyond the width and height of the window
+        /// to provide a bufferzone for touch events. Any touch in the ErrorMargin
+        /// pixels extending beyond the height and width of the UI Element will
+        /// trigger a touch event.
+        /// </summary>
+        public float ErrorMargin;
+
         public WindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            // todo remove this line it is for testing
-            Transform.LocalPosition += new Vector2((float) (SessionController.Instance.ScreenWidth / 4), (float) (SessionController.Instance.ScreenHeight/ 4));
         }
 
         /// <summary>
@@ -62,5 +68,17 @@ namespace NuSysApp
 
             ds.Transform = orgTransform;
         }
+
+        /// <summary>
+        /// Calculates the LocalBounds of the window by returning a Rect with coordinates relative
+        /// to the LocalTransform. The override here is to provide support for the ErrorMargin.
+        /// </summary>
+        /// <returns></returns>
+        public override Rect GetLocalBounds()
+        {
+            return new Rect(-ErrorMargin, 0, Width + ErrorMargin * 2, Height + ErrorMargin);
+        }
+
+
     }
 }

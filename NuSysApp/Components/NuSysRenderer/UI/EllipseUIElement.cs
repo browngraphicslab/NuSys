@@ -17,12 +17,12 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// The width of the ellipse
+        /// The X Radius of the ellipse
         /// </summary>
         private float _width;
 
         /// <summary>
-        /// The width of the ellipse. Must be greater than or equal to 0.
+        /// The X radius of the ellipse. Must be greater than or equal to 0.
         /// </summary>
         public override float Width {
             get { return _width; }
@@ -34,12 +34,12 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// The height of the ellipse
+        /// The Y Radius of the ellipse
         /// </summary>
         private float _height;
 
         /// <summary>
-        /// The height of the ellipse. Must be greater than or equal to 0.
+        /// The Y Radius of the ellipse. Must be greater than or equal to 0.
         /// </summary>
         public override float Height
         {
@@ -118,5 +118,23 @@ namespace NuSysApp
                 ds.DrawEllipse(CenterPoint, Width - BorderWidth / 2, Height - BorderWidth / 2, Bordercolor, BorderWidth);
             }
         }
+
+        /// <summary>
+        /// The initializer method for the ellipse
+        /// </summary>
+        /// <returns></returns>
+        public override Task Load()
+        {
+            // shift the ellipse by its width and height so its center point is draw on the upper
+            // let corner of the parent initially
+            Transform.LocalPosition -= new Vector2(Width, Height);
+            return base.Load();
+        }
+
+        /// <summary>
+        /// The Initial Offset of the Ellipses center point from the parent's upper left corner. 
+        /// Offsets the cetner point from the upper left corner of the screen if the parent is null.
+        /// </summary>
+        public override Vector2 InitialOffset { get; set; }
     }
 }

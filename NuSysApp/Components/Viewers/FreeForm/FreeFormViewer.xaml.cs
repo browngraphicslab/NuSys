@@ -147,7 +147,10 @@ namespace NuSysApp
                 Width = 300,
                 TopBarColor = Colors.CadetBlue,
                 TopBarHeight = 25,
-                ErrorMargin = 15
+                ErrorMargin = 15,
+                IsResizeable = true,
+                IsDraggable = true,
+                InitialOffset = new Vector2((float) (SessionController.Instance.ScreenWidth / 2), (float) SessionController.Instance.ScreenHeight / 2)
             });
             RenderEngine.Start();
 
