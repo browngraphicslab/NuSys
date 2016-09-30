@@ -63,6 +63,21 @@ namespace NuSysApp
         private float _snapMargin = 3;
 
         /// <summary>
+        /// Boolean value representing whether or not the window _isSnapped
+        /// </summary>
+        private bool _isSnapped;
+
+        /// <summary>
+        /// The _previousOffset of the window before it was snapped
+        /// </summary>
+        private Vector2 _previousOffset;
+
+        /// <summary>
+        /// The _previousOffset of the window before it was snapped
+        /// </summary>
+        private Size _previousSize;
+
+        /// <summary>
         /// The current size of the WindowBaseRenderItem in pixels.
         /// Contains Width and Height variables
         /// </summary>
@@ -119,6 +134,11 @@ namespace NuSysApp
             // snap the window to the rigth side of the screen
             SnapTo(SnapPosition.Right);
 
+            // initialize the _previousOffset _previousSize and _isSnapped variables to the current location
+            _previousOffset = Transform.LocalPosition;
+            _previousSize = Size;
+            _isSnapped = true;
+
             // create the _resizer and _topBar and _preview
             _resizer = new WindowResizerRenderItem(this, _canvas, ResizerSize);
             _topBar = new WindowTopBarRenderItem(this, _canvas, TopBarSize);
@@ -145,15 +165,18 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void TopBarReleased(CanvasPointer pointer)
         {
-            // get the SnapPosition if the pointer was released in a SnapPosition
-            SnapPosition? position = GetSnapPosition(pointer);
-            if (position != null)
+            _canvas.RunOnGameLoopThreadAsync(() =>
             {
-                // snap to the SnapPosition if one existed
-                SnapTo(position.Value);
-                // Hide the preview since it is no longer necessary
-                _preview.HidePreview();
-            }
+                // get the SnapPosition if the pointer was released in a SnapPosition
+                SnapPosition? position = GetSnapPosition(pointer);
+                if (position != null)
+                {
+                    // snap to the SnapPosition if one existed
+                    SnapTo(position.Value);
+                    // Hide the preview since it is no longer necessary
+                    _preview.HidePreview();
+                }
+            });
         }
 
         /// <summary>
@@ -182,6 +205,14 @@ namespace NuSysApp
                  // otherwise hide the preview
                 else
                 {
+                    // if the window was snapped
+                    if (_isSnapped)
+                    {
+                        // return it to the size it was at before it was snapped, as well as the location it was at
+                        Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X - (float) _previousSize.Width / 2, pointer.CurrentPoint.Y);
+                        Size = _previousSize;
+                        _isSnapped = false;
+                    }
                     _preview.HidePreview();
                 }
 
@@ -297,6 +328,7 @@ namespace NuSysApp
 
             ds.FillRectangle(new Rect(0, 0, Size.Width, Size.Height), Colors.Red );
 
+
             ds.Transform = orgTransform;
 
             base.Draw(ds);
@@ -333,6 +365,15 @@ namespace NuSysApp
         /// <param name="position"></param>
         private void SnapTo(SnapPosition position)
         {
+            // if the window was not already snapped, then set the _previousPostion
+            // and the _previousOffset before snapping it
+            if (!_isSnapped)
+            {
+                _previousOffset = Transform.LocalPosition;
+                _previousSize = Size;
+                _isSnapped = true;
+            }
+
             // snap the Window to the correct position
             switch (position)
             {

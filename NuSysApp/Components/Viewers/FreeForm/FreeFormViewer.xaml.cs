@@ -14,6 +14,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
 
@@ -30,10 +31,7 @@ namespace NuSysApp
         private List<PointModel> _latestStroke;
         private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
-        /// <summary>
-        /// The "root" of the detailview. 
-        /// </summary>
-        private WindowBaseRenderItem _windowBaseRenderItem;
+
         private FreeFormViewerViewModel _vm;
 
         private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
@@ -120,12 +118,6 @@ namespace NuSysApp
             {
                 _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
             }
-
-            // Make sure the _windowBaseRenderItem is only implemented once
-            if (_windowBaseRenderItem == null)
-            {
-                _windowBaseRenderItem = new WindowBaseRenderItem(null, xRenderCanvas);
-            }
        
             if (_vm != null)
             {
@@ -146,7 +138,17 @@ namespace NuSysApp
             RenderEngine.Root.AddChild(InitialCollection);
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(_windowBaseRenderItem);
+            RenderEngine.Root.AddChild(new ResizeableWindowUIElement(null, RenderCanvas)
+            {
+                Background = Colors.Azure,
+                Bordercolor = Colors.Black,
+                BorderWidth = 5,
+                Height = 500,
+                Width = 300,
+                TopBarColor = Colors.CadetBlue,
+                TopBarHeight = 25,
+                ErrorMargin = 15
+            });
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
