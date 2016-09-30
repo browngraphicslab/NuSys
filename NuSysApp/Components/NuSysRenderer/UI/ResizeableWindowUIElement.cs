@@ -18,6 +18,12 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         private float? _maxWidth;
 
         /// <summary>
+        /// True if the window is resizeable false otherwise. Checked in the GetResizerBorderPosition
+        /// method
+        /// </summary>
+        public bool IsResizeable;
+
+        /// <summary>
         /// The maximum width of the resizable window. Must be a value
         /// Greater than or equal to MinWidth. Must be a value greater than
         /// or equal to zero. Is float.MaxValue if set to null, otherwise
@@ -187,21 +193,13 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         public enum ResizerBorderPosition { Left, Right, Bottom, BottomRight, BottomLeft }
 
         /// <summary>
-        /// True if we are currently resizing the window. False otherwise. Gets set to false when the pointer
-        /// is released. Gets set to true if the pointer is dragged starting on a resizer element. If dragging
-        /// a resizer stops working when the pointer moves off the resizer, it is because this boolean is not
-        /// being properly set.
-        /// </summary>
-        private bool _resizing;
-
-        /// <summary>
         /// The current drag position we are in.
         /// </summary>
-        private ResizerBorderPosition? _position;
+        private ResizerBorderPosition? _resizePosition;
 
         public ResizeableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-
+            IsResizeable = true;
         }
 
         /// <summary>
@@ -212,9 +210,20 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         {
             // add manipulation events
             Dragged += ResizeableWindowUIElement_Dragged;
-            Released += ResizeableWindowUIElement_Released;
+            Pressed += ResizeableWindowUIElement_Pressed;
 
             return base.Load();
+        }
+
+        /// <summary>
+        /// Fired when a pointer is pressed on the ResizeableWindowUIElement.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ResizeableWindowUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // set the _resizePosition if the pointer is on a resizer
+            _resizePosition = GetResizerBorderPosition(pointer);
         }
 
         /// <summary>
@@ -223,20 +232,9 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         public override void Dispose()
         {
             Dragged -= ResizeableWindowUIElement_Dragged;
-            Released -= ResizeableWindowUIElement_Released;
+            Pressed -= ResizeableWindowUIElement_Pressed;
 
             base.Dispose();
-        }
-
-        /// <summary>
-        /// Fired when a pointer that was initially placed on the ResizeableWindowUIElement is released.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void ResizeableWindowUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            // set the _resizing boolean to false, you cannot be resizing if the pointer is no longer in contanct
-            _resizing = false;
         }
 
 
@@ -251,16 +249,8 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             Vector2 sizeDelta = new Vector2();
             Vector2 offsetDelta = new Vector2();
 
-            // if we are not currently resizing then check to see if the pointer is on a resizer
-            // otherwise _position already contains the resizer we are currently dragging
-            if (!_resizing)
-            {
-                // sets position to null if we are not currently on a resizer
-                _position = GetResizerBorderPosition(pointer);
-            }
-
             // calculate change in size and offset based on the resizer that is being dragged
-            switch (_position)
+            switch (_resizePosition)
             {
                 // in this case we are changing the size and the offset. Size decreases by drag x amount, offset increases
                 // by drag x amount
@@ -288,7 +278,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 default:
                     // make sure the pointer is null here, to indicate that we are not on a resizer. 
                     //If it isn't we may not have added support for an enum value.
-                    Debug.Assert(_position == null, $"We do not support {nameof(_position)} yet. Please add support or check call");
+                    Debug.Assert(_resizePosition == null, $"We do not support {nameof(_resizePosition)} yet. Please add support or check call");
                     return;
             }
             
@@ -296,10 +286,13 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             // Make sure the changes in size and offset are performed on the UI thread to avoid jerkiness
             Canvas.RunOnGameLoopThreadAsync(() =>
             {
-                _resizing = true;
                 Width += sizeDelta.X;
                 Height += sizeDelta.Y;
-                Transform.LocalPosition += offsetDelta;
+                // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+                if (Width != MinWidth)
+                {
+                    Transform.LocalPosition += offsetDelta;
+                }
             });
 
 
@@ -313,6 +306,11 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         /// <returns></returns>
         private ResizerBorderPosition? GetResizerBorderPosition(CanvasPointer pointer)
         {
+
+            if (!IsResizeable)
+            {
+                return null;
+            }
 
             // create booleans for all the sides an initialize them to false
             bool right = false, left = false, bottom = false;
