@@ -95,9 +95,7 @@ namespace NuSysApp
             var anchor2 = new Point((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
 
             var distanceX = (float)anchor1.X - anchor2.X;
-
-            ;
-
+            
             var p2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             var p1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
             var p0 = anchor1;

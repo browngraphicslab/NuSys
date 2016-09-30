@@ -217,6 +217,8 @@ namespace NuSysApp
 
             ds.Transform = Transform.LocalToScreenMatrix;
 
+          
+
             var initialCollection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
             var currentCollection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
 
@@ -363,7 +365,7 @@ namespace NuSysApp
 
         public override List<BaseRenderItem> GetChildren()
         {
-            _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
+            _allRenderItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3).ToList();
             return _allRenderItems;
         }
 

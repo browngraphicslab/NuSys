@@ -53,33 +53,11 @@ namespace NuSysApp
             }
         }
 
-        public Matrix3x2 GetTransformUntilOf(BaseRenderItem item)
-        {
-            var transforms = new List<I2dTransformable>();
-
-            var parent = item.Parent;
-            while (parent != null)
-            {
-                transforms.Add(parent.Transform);
-                parent = parent.Parent;
-            }
-
-            transforms.Reverse();
-
-            return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.C) * t.S * t.C * t.T * current);
-        }
-
         public virtual BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue)
         {
-
-            var r = Root.HitTest(sp);
-            if (!(r is CollectionRenderItem))
-                return r;
-
             item = item ?? Root;
-            var rr = _GetRenderItemAt(item, sp, 0, maxLevel);
-
-            return rr;
+            var hit = _GetRenderItemAt(item, sp, 0, maxLevel);
+            return hit;
         }
 
         public virtual List<BaseRenderItem> GetRenderItemsAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue)
@@ -88,12 +66,6 @@ namespace NuSysApp
             item = item ?? Root;
             _GetRenderItemsAt(item, sp, output, 0, maxLevel);
             return output;
-        }
-
-        public virtual BaseRenderItem GetRenderItemAt(Point sp, CollectionRenderItem item = null, int maxLevel = int.MaxValue)
-        {
-            var result = GetRenderItemAt(new Vector2((float)sp.X, (float)sp.Y), item, maxLevel);
-            return result;
         }
 
         protected virtual BaseRenderItem _GetRenderItemAt(BaseRenderItem item, Vector2 screenPoint, int currentLevel, int maxLevel)
