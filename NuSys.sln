@@ -11,6 +11,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrosoftOfficeInterop", "MicrosoftOfficeInterop\MicrosoftOfficeInterop.csproj", "{4D7BC424-7650-4D8B-AE2F-7C0FC7A3F290}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSysApp", "NuSysApp\NuSysApp.csproj", "{12A8F89E-F77A-43AD-B889-7C9D3631097D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71D1734C-EC9B-4122-97D7-6CCE8114170D} = {71D1734C-EC9B-4122-97D7-6CCE8114170D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MuPDFWinRT", "MuPDFWinRT\Win8\MuPDFWinRT.vcxproj", "{56C66C4F-3C21-4929-BAF1-2EDA2EC56823}"
 EndProject
