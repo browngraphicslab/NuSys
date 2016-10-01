@@ -10,7 +10,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp.Components.NuSysRenderer.UI
 {
-    class ResizeableWindowUIElement : DraggableWindowUIElement
+    public class ResizeableWindowUIElement : DraggableWindowUIElement
     {
         /// <summary>
         /// The maximum width of the resizable window
@@ -273,19 +273,15 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                     Debug.Assert(_resizePosition == null, $"We do not support {nameof(_resizePosition)} yet. Please add support or check call");
                     return;
             }
-            
 
-            // Make sure the changes in size and offset are performed on the UI thread to avoid jerkiness
-            Canvas.RunOnGameLoopThreadAsync(() =>
+
+            Width += sizeDelta.X;
+            Height += sizeDelta.Y;
+            // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+            if (Width != MinWidth)
             {
-                Width += sizeDelta.X;
-                Height += sizeDelta.Y;
-                // check the offset otherwise resizing the window below minwidth will just move the window across the screen
-                if (Width != MinWidth)
-                {
-                    Transform.LocalPosition += offsetDelta;
-                }
-            });
+                Transform.LocalPosition += offsetDelta;
+            }
 
 
         }

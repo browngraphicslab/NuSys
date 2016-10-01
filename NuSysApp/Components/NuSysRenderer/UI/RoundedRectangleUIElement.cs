@@ -123,6 +123,8 @@ namespace NuSysApp
             ds.Transform = orgTransform;
 
             base.Draw(ds);
+
+
         }
 
         /// <summary>

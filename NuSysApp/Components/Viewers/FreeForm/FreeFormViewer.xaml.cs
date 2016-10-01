@@ -136,9 +136,7 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-
-            // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(new ResizeableWindowUIElement(null, RenderCanvas)
+            var _resizableWindow = new SnappableWindowUIElement(null, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
@@ -150,7 +148,31 @@ namespace NuSysApp
                 ErrorMargin = 15,
                 IsResizeable = true,
                 IsDraggable = true,
-                InitialOffset = new Vector2((float) (SessionController.Instance.ScreenWidth / 2), (float) SessionController.Instance.ScreenHeight / 2)
+                IsSnappable = true,
+                SnapMargin = 10f,
+                PreviewColor = Color.FromArgb(196, 196, 196, 100),
+                InitialOffset =
+                    new Vector2((float) (SessionController.Instance.ScreenWidth/2),
+                        (float) SessionController.Instance.ScreenHeight/2)
+            };
+            // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
+            RenderEngine.Root.AddChild(_resizableWindow);
+            _resizableWindow.AddChild(new SnappableWindowUIElement(_resizableWindow, RenderCanvas)
+            {
+                Background = Colors.Azure,
+                Bordercolor = Colors.Yellow,
+                BorderWidth = 5,
+                Height = 100,
+                Width = 100,
+                TopBarColor = Colors.Red,
+                TopBarHeight = 25,
+                ErrorMargin = 15,
+                IsResizeable = true,
+                IsDraggable = true,
+                IsSnappable = true,
+                SnapMargin = 10f,
+                PreviewColor = Color.FromArgb(196, 196, 196, 100),
+                InitialOffset = new Vector2(30,30)
             });
             RenderEngine.Start();
 

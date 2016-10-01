@@ -11,7 +11,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    class WindowUIElement : RectangleUIElement
+    public class WindowUIElement : RectangleUIElement
     {
         /// <summary>
         /// The height of the TopBar.

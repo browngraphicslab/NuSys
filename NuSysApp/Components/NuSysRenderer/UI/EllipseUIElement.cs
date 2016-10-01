@@ -105,6 +105,8 @@ namespace NuSysApp
             ds.Transform = orgTransform;
 
             base.Draw(ds);
+
+
         }
 
         /// <summary>
@@ -113,10 +115,7 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
-            using (ds)
-            {
-                ds.DrawEllipse(CenterPoint, Width - BorderWidth / 2, Height - BorderWidth / 2, Bordercolor, BorderWidth);
-            }
+            ds.DrawEllipse(CenterPoint, Width - BorderWidth / 2, Height - BorderWidth / 2, Bordercolor, BorderWidth);
         }
 
         /// <summary>

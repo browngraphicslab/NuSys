@@ -91,7 +91,7 @@ namespace NuSysApp
             // return if the item is disposed or is not visible
             if (IsDisposed || !IsVisible)
                 return;
-
+                            
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
@@ -104,7 +104,6 @@ namespace NuSysApp
             ds.Transform = orgTransform;
 
             base.Draw(ds);
-
         }
 
         /// <summary>

@@ -8,12 +8,12 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    class DraggableWindowUIElement : WindowUIElement
+    public class DraggableWindowUIElement : WindowUIElement
     {
         /// <summary>
         /// True if the window is currently be dragged false otherwise. Set in the DraggableWindowUIElement_Pressed method.
         /// </summary>
-        private bool _dragging;
+        protected bool _dragging { get; private set; }
 
         /// <summary>
         /// Set this to true to support Dragging the DraggableWindowUIElement around the screen using the top bar.
