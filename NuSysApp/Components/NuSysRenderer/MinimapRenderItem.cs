@@ -22,25 +22,34 @@ namespace NuSysApp
         private Rect _bb;
         private CanvasRenderTarget _renderTarget;
         private CollectionRenderItem _collection;
-        private CanvasControl _canvasControl;
+        private CanvasAnimatedControl _canvasControl;
         public Size RenderTargetSize => _renderTarget.Size;
 
         private bool _isDisposed;
 
-        public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasControl resourceCreator)
+        public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator)
         {
             _collection = collection;
             _canvasControl = resourceCreator;
             _canvasControl.Draw += CanvasControlOnDraw;
+            //_canvasControl.Draw += CanvasControlOnDraw;
         }
 
-        private void CanvasControlOnDraw(CanvasControl sender, CanvasDrawEventArgs args)
+        private void CanvasControlOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
             using (var ds = args.DrawingSession)
             {
                 Draw(ds);
             }
         }
+
+        //private void CanvasControlOnDraw(CanvasControl sender, CanvasDrawEventArgs args)
+        //{
+        //    using (var ds = args.DrawingSession)
+        //    {
+        //        Draw(ds);
+        //    }
+        //}
 
         public void SwitchCollection(CollectionRenderItem collection)
         {

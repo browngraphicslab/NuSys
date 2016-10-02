@@ -30,7 +30,7 @@
             </Canvas>
             
 
-            <xaml:CanvasControl x:Name="xMinimapCanvas" Visibility="Visible" />
+            <!--<xaml:CanvasControl x:Name="xMinimapCanvas" Visibility="Visible" />-->
             
             
             <Canvas x:Name="xMultimediaCanvas" HorizontalAlignment="Left">
