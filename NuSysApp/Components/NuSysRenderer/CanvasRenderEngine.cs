@@ -76,30 +76,20 @@ namespace NuSysApp
                 childElements.Reverse();
                 foreach (var childItem in childElements)
                 {
-                    var childCollection = childItem as CollectionRenderItem;
-                    if (childCollection != null)
+                    if (currentLevel + 1 < maxLevel)
                     {
-
-                        if (currentLevel + 1 < maxLevel)
+                        var result = _GetRenderItemAt(childItem, screenPoint, currentLevel + 1, maxLevel);
+                        if (result != null && result != item)
+                            return result;
+                    }
+                    else
+                    {
+                        if (childItem.HitTest(screenPoint) != null)
                         {
-                            var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
-                            if (result != item)
-                                return result;
-                        }
-                        else
-                        {
-                            if (childCollection.HitTest(screenPoint) != null)
-                            {
-                                return childCollection;
-                            }
+                            return childItem;
                         }
                     }
-
-
-                    if (childItem.HitTest(screenPoint) != null)
-                    {
-                        return childItem;
-                    }
+                   
                 }
             }
 
