@@ -119,6 +119,15 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Returns the bounds within which child objects should exist
+        /// </summary>
+        /// <returns></returns>
+        public override Vector4 ReturnBounds()
+        {
+            return new Vector4(BorderWidth, BorderWidth, Width*2- BorderWidth, Height*2- BorderWidth);
+        }
+
+        /// <summary>
         /// The initializer method for the ellipse
         /// </summary>
         /// <returns></returns>

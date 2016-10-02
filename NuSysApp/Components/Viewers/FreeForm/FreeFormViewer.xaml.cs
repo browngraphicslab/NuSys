@@ -136,7 +136,7 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var _resizableWindow = new SnappableWindowUIElement(null, RenderCanvas)
+            var _resizableWindow = new SnappableWindowUIElement(_renderRoot, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
@@ -150,10 +150,13 @@ namespace NuSysApp
                 IsDraggable = true,
                 IsSnappable = true,
                 SnapMargin = 10f,
+                KeepAspectRatio = true,
                 PreviewColor = Color.FromArgb(196, 196, 196, 100),
                 InitialOffset =
                     new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                        (float) SessionController.Instance.ScreenHeight/2)
+                        (float) SessionController.Instance.ScreenHeight/2),
+                GetParentScreenToLocalMatrix = () =>  Matrix3x2.Identity,
+                GetParentBounds = () => new Vector4(0,0, (float) SessionController.Instance.ScreenWidth, (float) SessionController.Instance.ScreenHeight)
             };
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(_resizableWindow);
@@ -172,7 +175,9 @@ namespace NuSysApp
                 IsSnappable = true,
                 SnapMargin = 10f,
                 PreviewColor = Color.FromArgb(196, 196, 196, 100),
-                InitialOffset = new Vector2(30,30)
+                InitialOffset = new Vector2(30,30),
+                GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
+                GetParentBounds = _resizableWindow.ReturnBounds
             });
             RenderEngine.Start();
 

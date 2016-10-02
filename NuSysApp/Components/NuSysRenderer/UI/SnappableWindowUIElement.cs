@@ -41,11 +41,6 @@ namespace NuSysApp
         public bool IsSnappable { get; set; }
 
         /// <summary>
-        /// The parent of the SnappableWindowUIElement, used for calculating bounds
-        /// </summary>
-        private RectangleUIElement _parent;
-
-        /// <summary>
         /// The size of the _preview window, private variable stored for draw calls
         /// </summary>
         private Vector2 _previewSize;
@@ -61,11 +56,8 @@ namespace NuSysApp
         private bool _isPreviewVisible;
 
         
-        public SnappableWindowUIElement(RectangleUIElement parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public SnappableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            // set the parent to a RectangleUIElement because snapping is only supported on rectangular dimensions for now
-            // if this is null then we assume we are a child of the screen
-            _parent = parent;
 
         }
 
@@ -127,6 +119,7 @@ namespace NuSysApp
         {
             Released -= SnappableWindowUIElement_Released;
             Dragged -= SnappableWindowUIElement_Dragged;
+            GetParentBounds = null;
             base.Dispose();
         }
 
@@ -165,26 +158,26 @@ namespace NuSysApp
 
             
             Vector2 currentPoint;
-            currentPoint = _parent == null ? pointer.CurrentPoint : Vector2.Transform(pointer.CurrentPoint, _parent.Transform.ScreenToLocalMatrix);
-            Vector2 bounds = GetBounds();
+            currentPoint = Vector2.Transform(pointer.CurrentPoint, GetParentScreenToLocalMatrix.Invoke());
+            Vector4 bounds = GetParentBounds.Invoke();
 
             // the pointer is on the right bound
-            if (currentPoint.X > bounds.X - SnapMargin)
+            if (currentPoint.X > bounds.Z - SnapMargin)
             {
                 right = true;
             }
             // else if the pointer is on the bottom bound
-            if (currentPoint.Y > bounds.Y - SnapMargin)
+            if (currentPoint.Y > bounds.W - SnapMargin)
             {
                 bottom = true;
             }
             // if the pointer is on the left bound
-            if (currentPoint.X < 0 + SnapMargin)
+            if (currentPoint.X < bounds.X + SnapMargin)
             {
                 left = true;
             }
             // else if the pointer is on the top bound
-            if (currentPoint.Y < 0 + SnapMargin)
+            if (currentPoint.Y < bounds.Y + SnapMargin)
             {
                 top = true;
             }
@@ -246,36 +239,36 @@ namespace NuSysApp
             switch (position)
             {
                 case SnapPosition.Top:
-                    size = NormalizedToBounds(1, 1);
-                    offset = NormalizedToBounds(0, 0);
+                    size = NormalizedToParentSize(1, 1);
+                    offset = NormalizedToParentOffset(0, 0);
                     break;
                 case SnapPosition.Left:
-                    size = NormalizedToBounds(.5f, 1);
-                    offset = NormalizedToBounds(0, 0);
+                    size = NormalizedToParentSize(.5f, 1);
+                    offset = NormalizedToParentOffset(0, 0);
                     break;
                 case SnapPosition.Right:
-                    size = NormalizedToBounds(.5f, 1);
-                    offset = NormalizedToBounds(.5f, 0);
+                    size = NormalizedToParentSize(.5f, 1);
+                    offset = NormalizedToParentOffset(.5f, 0);
                     break;
                 case SnapPosition.TopLeft:
-                    size = NormalizedToBounds(.5f, .5f);
-                    offset = NormalizedToBounds(0, 0);
+                    size = NormalizedToParentSize(.5f, .5f);
+                    offset = NormalizedToParentOffset(0, 0);
                     break;
                 case SnapPosition.TopRight:
-                    size = NormalizedToBounds(.5f, .5f);
-                    offset = NormalizedToBounds(.5f, 0);
+                    size = NormalizedToParentSize(.5f, .5f);
+                    offset = NormalizedToParentOffset(.5f, 0);
                     break;
                 case SnapPosition.BottomLeft:
-                    size = NormalizedToBounds(.5f, .5f);
-                    offset = NormalizedToBounds(0, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
+                    offset = NormalizedToParentOffset(0, .5f);
                     break;
                 case SnapPosition.BottomRight:
-                    size = NormalizedToBounds(.5f, .5f);
-                    offset = NormalizedToBounds(.5f, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
+                    offset = NormalizedToParentOffset(.5f, .5f);
                     break;
                 case SnapPosition.Center:
-                    size = NormalizedToBounds(.5f, .5f);
-                    offset = NormalizedToBounds(.5f, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
+                    offset = NormalizedToParentOffset(.5f, .5f);
                     break;
                 default:
                     // if we hit this, then we probably do not have support for some SnapPosition
@@ -314,35 +307,35 @@ namespace NuSysApp
             switch (position)
             {
                 case SnapPosition.Top:
-                    size = NormalizedToBounds(1, 1);
+                    size = NormalizedToParentSize(1, 1);
                     offset = InverseNormalizedPosition(0, 0);
                     break;
                 case SnapPosition.Left:
-                    size = NormalizedToBounds(.5f, 1);
+                    size = NormalizedToParentSize(.5f, 1);
                     offset = InverseNormalizedPosition(0, 0);
                     break;
                 case SnapPosition.Right:
-                    size = NormalizedToBounds(.5f, 1);
+                    size = NormalizedToParentSize(.5f, 1);
                     offset = InverseNormalizedPosition(.5f, 0);
                     break;
                 case SnapPosition.TopLeft:
-                    size = NormalizedToBounds(.5f, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
                     offset = InverseNormalizedPosition(0, 0);
                     break;
                 case SnapPosition.TopRight:
-                    size = NormalizedToBounds(.5f, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
                     offset = InverseNormalizedPosition(.5f, 0);
                     break;
                 case SnapPosition.BottomLeft:
-                    size = NormalizedToBounds(.5f, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
                     offset = InverseNormalizedPosition(0, .5f);
                     break;
                 case SnapPosition.BottomRight:
-                    size = NormalizedToBounds(.5f, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
                     offset = InverseNormalizedPosition(.5f, .5f);
                     break;
                 case SnapPosition.Center:
-                    size = NormalizedToBounds(.5f, .5f);
+                    size = NormalizedToParentSize(.5f, .5f);
                     offset = InverseNormalizedPosition(.5f, .5f);
                     break;
                 default:
@@ -373,55 +366,69 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns the bounds of the parent (height and width) or the screen size if the parent is null
-        /// </summary>
-        /// <returns></returns>
-        private Vector2 GetBounds()
-        {
-            Vector2 bounds;
-            if (_parent == null)
-            {
-                bounds.X = (float)SessionController.Instance.ScreenWidth;
-                bounds.Y = (float)SessionController.Instance.ScreenHeight;
-            }
-            else
-            {
-                bounds.X = _parent.Width;
-                bounds.Y = _parent.Height;
-            }
-            return bounds;
-        }
-
-        /// <summary>
-        /// Takes normalized floats x and y and returns the coordinates at that normalized dimension
+        /// Takes in normalized coordinates and outputs the size of the parents bounds corresponding to those coordinates
+        /// for example 1, 1 produces the entire parent's bounds, while .5 .5 returns half the parents bounds.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        private Vector2 NormalizedToBounds(float X, float Y)
+        private Vector2 NormalizedToParentSize(float X, float Y)
         {
             Debug.Assert(X <= 1 && X >= 0);
             Debug.Assert(Y <= 1 && Y >= 0);
 
-            var bounds = GetBounds();
+            var bounds = GetParentBounds.Invoke();
 
-            bounds.X *= X;
-            bounds.Y *= Y;
+            var boundsWidth = bounds.Z - bounds.X;
+            var boundsHeight = bounds.W - bounds.Y;
 
-            return bounds;
+            var output = new Vector2(boundsWidth, boundsHeight);
+
+            output.X *= X;
+            output.Y *= Y;
+
+            return output;
         }
 
         /// <summary>
-        /// Takes normalized floats x and y and returns the coordinates of the offset to draw that point
-        /// on the parent relative to the current LocalTransform
+        /// Takes in normalized coordinates and returns the offset necessary to move the local transform to
+        /// those pixels in the parents bounds. For example .5, .5 will return an offset that would move
+        /// the local transform to the center of the paren'ts bounds
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <returns></returns>
+        private Vector2 NormalizedToParentOffset(float X, float Y)
+        {
+            Debug.Assert(X <= 1 && X >= 0);
+            Debug.Assert(Y <= 1 && Y >= 0);
+
+            var bounds = GetParentBounds.Invoke();
+
+            var boundsWidth = bounds.Z - bounds.X;
+            var boundsHeight = bounds.W - bounds.Y;
+
+            var output = new Vector2(boundsWidth, boundsHeight);
+
+            output.X *= X;
+            output.Y *= Y;
+
+            output.X += bounds.X;
+            output.Y += bounds.Y;
+            return output;
+        }
+
+        /// <summary>
+        /// Takes in normalized coordinates and returns the offset necessary to draw an item at that point
+        /// on the parent's bounds without moving the local transform.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
         private Vector2 InverseNormalizedPosition(float X, float Y)
         {
-            Vector2 NormalizedPostion = NormalizedToBounds(X, Y);
-            return NormalizedPostion - Transform.LocalPosition;
+            Vector2 NormalizedParentOffset = NormalizedToParentOffset(X, Y);
+            return NormalizedParentOffset - Transform.LocalPosition;
         }
     }
 }

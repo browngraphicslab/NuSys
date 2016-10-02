@@ -332,14 +332,12 @@
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\RectangleButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SnappableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\Window\CreateNewBaseWindowRenderItemArgs.cs" />
-    <Compile Include="Components\NuSysRenderer\Window\WindowSnapPreviewRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\Window\WindowBaseRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\PdfDetailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRenderItem.cs" />
@@ -372,9 +370,6 @@
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
-    <Compile Include="Components\NuSysRenderer\Window\WindowResizerBorderRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\Window\WindowResizerRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\Window\WindowTopBarRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
       <DependentUpon>AudioRegionBound.xaml</DependentUpon>

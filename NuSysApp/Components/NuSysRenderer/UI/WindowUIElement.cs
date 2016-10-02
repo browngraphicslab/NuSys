@@ -70,6 +70,17 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Returns the bounds within which child elements should exist. Child elements should exist 
+        /// in the margins of the window and below the top bar. Bounds are defined as
+        /// upper left x, upper left y, lower right x, lower right y
+        /// </summary>
+        /// <returns></returns>
+        public override Vector4 ReturnBounds()
+        {
+            return new Vector4(0 + BorderWidth,TopBarHeight, Width - BorderWidth, Height - BorderWidth);
+        }
+
+        /// <summary>
         /// Calculates the LocalBounds of the window by returning a Rect with coordinates relative
         /// to the LocalTransform. The override here is to provide support for the ErrorMargin.
         /// </summary>

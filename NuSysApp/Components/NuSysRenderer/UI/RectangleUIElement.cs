@@ -125,6 +125,16 @@ namespace NuSysApp
         public override Vector2 InitialOffset { get; set; }
 
         /// <summary>
+        /// Returns the bounds of the rectangle in which objects can be contained.
+        /// The vector 4 has upper left x, upper left y, lower right x, lower right y
+        /// </summary>
+        /// <returns></returns>
+        public override Vector4 ReturnBounds()
+        {
+            return new Vector4(BorderWidth,BorderWidth,Width - BorderWidth, Height - BorderWidth);
+        }
+
+        /// <summary>
         /// Returns the LocalBounds of the base render item, used for hit testing. The bounds are given with the offset
         /// of the local matrix assumed to be zero. If the matrix is offset, then the local bounds must be offset accordingly
         /// </summary>

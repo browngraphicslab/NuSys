@@ -24,6 +24,12 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         public bool IsResizeable;
 
         /// <summary>
+        /// True if the window should maintain the aspect ratio of its width and height when resizing
+        /// false otherwise.
+        /// </summary>
+        public bool KeepAspectRatio;
+
+        /// <summary>
         /// The maximum width of the resizable window. Must be a value
         /// Greater than or equal to MinWidth. Must be a value greater than
         /// or equal to zero. Is float.MaxValue if set to null, otherwise
@@ -274,14 +280,48 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                     return;
             }
 
+            // get the old width and height for calculating the ratio
+            var oldWidth = Width;
+            var oldHeight = Height;
 
-            Width += sizeDelta.X;
-            Height += sizeDelta.Y;
-            // check the offset otherwise resizing the window below minwidth will just move the window across the screen
-            if (Width != MinWidth)
+            // if we are keeping the aspect ratio do this code
+            if (KeepAspectRatio)
             {
-                Transform.LocalPosition += offsetDelta;
+                // if we only change the x direction 
+                if (Math.Abs(sizeDelta.Y) < .001)
+                {
+                    Width += sizeDelta.X;
+                    Height = oldHeight*Width/oldWidth;
+                    // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+                    if (Width != MinWidth)
+                    {
+                        Transform.LocalPosition += offsetDelta;
+                    }
+                }
+                else
+                // otherwise if we change the x and y direction or just the y direction
+                {
+                    Height += sizeDelta.Y;
+                    Width = oldWidth * Height/oldHeight;
+                    // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+                    if (Width != MinWidth && (_resizePosition == ResizerBorderPosition.BottomLeft || _resizePosition == ResizerBorderPosition.Left))
+                    {
+                        Transform.LocalPosition += new Vector2(oldWidth - Width, 0);
+                    }
+                } 
             }
+            // otherwise just use simple code
+            else
+            {
+                Width += sizeDelta.X;
+                Height += sizeDelta.Y;
+                // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+                if (Width != MinWidth)
+                {
+                    Transform.LocalPosition += offsetDelta;
+                }
+            }
+
 
 
         }
@@ -317,7 +357,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 bottom = true;
             }
             // the pointer is on the left bound of the window
-            if (currentPoint.X < 0 + BorderWidth && currentPoint.Y > TopBarHeight)
+            if (currentPoint.X < 0 + BorderWidth  && currentPoint.Y > TopBarHeight)
             {
                 left = true;
             }
