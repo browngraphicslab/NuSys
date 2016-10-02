@@ -221,6 +221,7 @@
     <Content Include="Assets\logos\StoreLogo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\map_of_paris.jpg" />
     <Content Include="Assets\menububble.png" />
     <Content Include="Assets\menububble2.png" />
     <Content Include="Assets\menububblebtm.png" />
