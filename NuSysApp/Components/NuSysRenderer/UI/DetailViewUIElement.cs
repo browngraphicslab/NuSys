@@ -12,5 +12,7 @@ namespace NuSysApp
         public DetailViewUIElement(RectangleUIElement parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
         }
+
+
     }
 }
