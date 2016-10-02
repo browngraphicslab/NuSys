@@ -151,7 +151,7 @@ namespace NuSysApp
                 IsSnappable = true,
                 SnapMargin = 10f,
                 KeepAspectRatio = true,
-                PreviewColor = Color.FromArgb(196, 196, 196, 100),
+                PreviewColor = Color.FromArgb(100, 100, 100, 160),
                 InitialOffset =
                     new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                         (float) SessionController.Instance.ScreenHeight/2),
@@ -160,21 +160,13 @@ namespace NuSysApp
             };
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(_resizableWindow);
-            _resizableWindow.AddChild(new SnappableWindowUIElement(_resizableWindow, RenderCanvas)
+            _resizableWindow.AddChild(new TextBoxUIElement(_resizableWindow, RenderCanvas)
             {
-                Background = Colors.Azure,
-                Bordercolor = Colors.Yellow,
+                Background = Colors.White,
+                Bordercolor = Colors.Black,
                 BorderWidth = 5,
                 Height = 100,
                 Width = 100,
-                TopBarColor = Colors.Red,
-                TopBarHeight = 25,
-                ErrorMargin = 15,
-                IsResizeable = true,
-                IsDraggable = true,
-                IsSnappable = true,
-                SnapMargin = 10f,
-                PreviewColor = Color.FromArgb(196, 196, 196, 100),
                 InitialOffset = new Vector2(30,30),
                 GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
                 GetParentBounds = _resizableWindow.ReturnBounds
