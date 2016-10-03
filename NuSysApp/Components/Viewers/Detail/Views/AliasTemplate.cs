@@ -34,7 +34,12 @@ namespace NuSysApp
             CollectionID = model.ParentCollectionId;
             
             var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(CollectionID);
-            
+
+            if (collectionController == null)
+            {
+                return;
+            }
+
             Debug.Assert(collectionController != null);
             CollectionTitle = collectionController.Title;
             collectionController.TitleChanged += Controller_TitleChanged;
