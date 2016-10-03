@@ -95,6 +95,11 @@ namespace NuSysApp
         /// </summary>
         public Color TextColor { get; set; }
 
+        /// <summary>
+        /// True if selection is enabled false otherwise
+        /// </summary>
+        public bool SelectionEnabled;
+
         public TextBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             
@@ -119,7 +124,10 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void TextBoxUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SelectionEndIndex = GetHitIndex(pointer);
+            if (SelectionEnabled)
+            {
+                SelectionEndIndex = GetHitIndex(pointer);
+            }
         }
 
         /// <summary>
@@ -129,8 +137,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void TextBoxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SelectionStartIndex = GetHitIndex(pointer);
-            SelectionEndIndex = SelectionStartIndex;
+            if (SelectionEnabled)
+            {
+                SelectionStartIndex = GetHitIndex(pointer);
+                SelectionEndIndex = SelectionStartIndex;
+            }
         }
 
         /// <summary>
@@ -154,19 +165,31 @@ namespace NuSysApp
             // create the TextLayout before every draw call //todo find a way to cache this its not very smart to do it here
             CreateTextLayout(Canvas, _textLayoutWidth, _textLayoutHeight);
 
-
-            if (HasSelection)
+            // if we currently have selection enabled
+            if (SelectionEnabled && HasSelection)
             {
+                // shift the drawing session transform to conform to the textlayout bounds
+                ds.Transform = ds.Transform *
+                    Matrix3x2.CreateTranslation(_textLayoutBounds.X, _textLayoutBounds.Y);
+                // set the first index and length of the selection
                 int firstIndex = Math.Min(SelectionStartIndex, SelectionEndIndex);
                 int length = Math.Abs(SelectionEndIndex - SelectionStartIndex) + 1;
+                // get the CanvasTextLayoutRegion for each of the characters in the selction
                 CanvasTextLayoutRegion[] descriptions = _textLayout.GetCharacterRegions(firstIndex, length);
                 foreach (CanvasTextLayoutRegion description in descriptions)
                 {
+                    // draw a SelectionHighlight colored Rectangle in the selection
                     ds.FillRectangle(InflateRect(description.LayoutBounds), new CanvasSolidColorBrush(Canvas, SelectionHighlight));
                 }
+                // change the brush of the text in the Selection to SelectionColor
                 _textLayout.SetBrush(firstIndex, length, new CanvasSolidColorBrush(Canvas, SelectionColor));
+
+                // rever the transform to conform to the local bounds
+                ds.Transform = ds.Transform *
+                    Matrix3x2.CreateTranslation( -_textLayoutBounds.X,-_textLayoutBounds.Y);
             }
 
+            // draw the text layout on the screen
             ds.DrawTextLayout(_textLayout, Margin + BorderWidth, Margin + BorderWidth, TextColor );
 
             ds.Transform = orgTransform;
@@ -215,10 +238,11 @@ namespace NuSysApp
             // convert the point from screen to local coordinates
             var currentPosition = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
-            // add the offset to shift the pointer's position relative to the _textLayoutBounds
-            currentPosition.X += _textLayoutBounds.X;
-            currentPosition.Y += _textLayoutBounds.Y;
+            // subtract the offset to shift the pointer's position relative to the _textLayoutBounds
+            currentPosition.X -= _textLayoutBounds.X;
+            currentPosition.Y -= _textLayoutBounds.Y;
 
+            // hit test the text layout to determine if you are on a character
             HasSelection = _textLayout.HitTest(
                 currentPosition.X,
                 currentPosition.Y,
@@ -236,6 +260,11 @@ namespace NuSysApp
             SelectionEndIndex = 0;
         }
 
+        /// <summary>
+        /// Rounds the Rect to a integer values, takes care of pixel offsets
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         Rect InflateRect(Rect r)
         {
             return new Rect(
