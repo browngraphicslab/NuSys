@@ -11,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
 using Windows.UI;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
@@ -160,7 +161,7 @@ namespace NuSysApp
             };
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(_resizableWindow);
-            _resizableWindow.AddChild(new TextBoxUIElement(_resizableWindow, RenderCanvas)
+            _resizableWindow.AddChild(new RectangleButtonUIElement(_resizableWindow, RenderCanvas)
             {
                 Background = Colors.White,
                 Bordercolor = Colors.Black,
@@ -168,6 +169,25 @@ namespace NuSysApp
                 Height = 100,
                 Width = 100,
                 InitialOffset = new Vector2(30,30),
+                SelectedBackground = Colors.Blue,
+                SelectedBorder = Colors.Purple,
+                GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
+                GetParentBounds = _resizableWindow.ReturnBounds
+            });
+            _resizableWindow.AddChild(new TextBoxUIElement(_resizableWindow, RenderCanvas)
+            {
+                Background = Colors.White,
+                Bordercolor = Colors.Black,
+                BorderWidth = 5,
+                Height = 100,
+                Width = 100,
+                TextColor = Colors.Black,
+                SelectionHighlight = Colors.Blue,
+                SelectionColor = Colors.White,
+                HorizontalTextAlignment = CanvasHorizontalAlignment.Center,
+                VerticalTextAlignment = CanvasVerticalAlignment.Center,
+                TextBoxText = "Test this text",
+                InitialOffset = new Vector2(30, 180),
                 GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
                 GetParentBounds = _resizableWindow.ReturnBounds
             });
