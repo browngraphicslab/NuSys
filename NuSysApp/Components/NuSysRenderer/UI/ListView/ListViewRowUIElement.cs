@@ -16,10 +16,19 @@ namespace NuSysApp
 
         private bool _isSelected;
 
-
+        /// <summary>
+        /// event fired when the row is selected
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
         public delegate void SelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
         public event SelectedEventHandler Selected;
 
+        /// <summary>
+        /// event fired when row is deselected
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
         public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
         public event DeSelectedEventHandler Deselected;
 
