@@ -109,6 +109,7 @@ namespace NuSysApp
 
         }
 
+
         /// <summary>
         /// Draws the border in the Ellipse
         /// </summary>
@@ -136,6 +137,9 @@ namespace NuSysApp
             // shift the ellipse by its width and height so its center point is draw on the upper
             // let corner of the parent initially
             Transform.LocalPosition -= new Vector2(Width, Height);
+
+            // shift over by the initial offset
+            Transform.LocalPosition += InitialOffset;
             return base.Load();
         }
 

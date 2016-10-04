@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuSysApp
+namespace NuSysApp.Components.NuSysRenderer.UI
 {
-    public class TabButtonUIElement<T> : RectangleUIElement
+    class Button
     {
     }
 }

@@ -81,6 +81,17 @@ namespace NuSysApp
         /// </summary>
         public override Color Bordercolor { get; set; }
 
+        /// <summary>
+        /// the initializer method add event handlers here
+        /// </summary>
+        /// <returns></returns>
+        public override Task Load()
+        {
+            Transform.LocalPosition += InitialOffset;
+
+            return base.Load();
+        }
+
 
         /// <summary>
         /// Draws the background and the border

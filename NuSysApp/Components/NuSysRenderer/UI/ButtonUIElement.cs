@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
@@ -12,71 +13,93 @@ namespace NuSysApp
 {
     public class ButtonUIElement : BaseInteractiveUIElement
     {
-        /// <summary>
-        /// The Color of the button when the button is selected
-        /// </summary>
-        public Color? SelectedBackground;
 
         /// <summary>
-        /// The Color of the button border when the button is selected
+        /// The shape of the button. Can be one of Rectangle/Ellipse/RoudedRectangleUIElement.
         /// </summary>
-        public Color? SelectedBorder;
-
-        /// <summary>
-        /// Save the original color of the background of the button to reset when the button is no longer selected
-        /// </summary>
+        private BaseInteractiveUIElement _shape;
         private Color _orgBackground;
-
-        /// <summary>
-        /// Save the original color of the border of the button to reset when the button is no longer selected
-        /// </summary>
         private Color _orgBorder;
 
+        /// <summary>
+        /// The Background Color of the UI Element
+        /// </summary>
+        public override Color Background {
+            get { return _shape.Background; }
+            set { _shape.Background = value; } }
 
         /// <summary>
-        /// The width of the Button
+        /// The color of the Border of the UI Element;
         /// </summary>
-        private float _width;
+        public override Color Bordercolor {
+            get { return _shape.Bordercolor; }
+            set { _shape.Bordercolor = value; } }
+
+        /// <summary>
+        /// The InitialOffset of the UIElement from the parent's upper left corner.
+        /// Offsets from the top left of the screen if the parent is null.
+        /// </summary>
+        public override Vector2 InitialOffset {
+            get { return _shape.InitialOffset; }
+            set { _shape.InitialOffset = value; } }
+
+        /// <summary>
+        /// A func that calls a function which gets the bounds of the parent of the UIElement
+        /// </summary>
+        public Func<Vector4> GetParentBounds
+        {
+            get { return _shape.GetParentBounds; }
+            set { _shape.GetParentBounds = value; }
+        }
+
+        /// <summary>
+        /// A method which will return a vector containing the bounds of the element.
+        /// The bounds are defined as the bounding box in which items can be contained.
+        /// The Vector4 has the upper left x, upper left y, and lower right x, lower right y
+        /// </summary>
+        /// <returns></returns>
+        public override Vector4 ReturnBounds()
+        {
+            return _shape.ReturnBounds();
+        }
+
+
+        /// <summary>
+        /// Returns the parent's screen to local matrix
+        /// </summary>
+        public Func<Matrix3x2> GetParentScreenToLocalMatrix
+        {
+            get { return _shape.GetParentScreenToLocalMatrix; }
+            set { _shape.GetParentScreenToLocalMatrix = value; }
+        }
+
+        
 
         /// <summary>
         /// The width of the Button. Must be greater than or equal to zero.
         /// </summary>
         public override float Width
         {
-            get { return _width; }
+            get { return _shape.Width; }
             set
             {
                 Debug.Assert(value >= 0);
-                _width = value >= 0 ? value : 0;
+                _shape.Width = value >= 0 ? value : 0;
             }
         }
 
-        /// <summary>
-        /// The height of the Button
-        /// </summary>
-        private float _height;
         /// <summary>
         /// The height of the Button. Must be greater than or equal to zero.
         /// </summary>
         public override float Height
         {
-            get { return _height; }
+            get { return _shape.Height; }
             set
             {
                 Debug.Assert(value >= 0);
-                _height = value >= 0 ? value : 0;
+                _shape.Height = value >= 0 ? value : 0;
             }
         }
-
-        /// <summary>
-        /// The background of the Button
-        /// </summary>
-        public override Color Background { get; set; }
-
-        /// <summary>
-        /// The width of the border of the Button
-        /// </summary>
-        private float _borderWidth;
 
         /// <summary>
         /// The Width of the Border of the Button. Extends into the Button.
@@ -84,34 +107,22 @@ namespace NuSysApp
         /// </summary>
         public override float BorderWidth
         {
-            get { return _borderWidth; }
+            get { return _shape.BorderWidth; }
             set
             {
                 Debug.Assert(value >= 0);
-                _borderWidth = value >= 0 ? value : 0;
+                _shape.BorderWidth = value >= 0 ? value : 0;
             }
         }
 
-        /// <summary>
-        /// The BorderColor of the Button
-        /// </summary>
-        public override Color Bordercolor { get; set; }
+        public Color? SelectedBackground { get; set; }
 
+        public Color? SelectedBorder { get; set; }
 
-        protected override void DrawBorder(CanvasDrawingSession ds)
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
-            // should be allocated to the passed in ui elemnt
-        }
-
-        public override Vector2 InitialOffset { get; set; }
-
-        public override Vector4 ReturnBounds()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
-        {
+            _shape = shapeElement;
+            AddChild(_shape);
         }
 
 
@@ -122,8 +133,8 @@ namespace NuSysApp
         /// <returns></returns>
         public override Task Load()
         {
-            Pressed += RectangleButtonUIElement_Pressed;
-            Released += RectangleButtonUIElement_Released;
+            _shape.Pressed += RectangleButtonUIElement_Pressed;
+            _shape.Released += RectangleButtonUIElement_Released;
             return base.Load();
         }
 
@@ -156,13 +167,42 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Draws the shape the button is modeled as.
+        /// </summary>
+        /// <param name="ds"></param>
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            // return if the item is disposed or is not visible
+            if (IsDisposed || !IsVisible)
+                return;
+
+            _shape.Draw(ds);
+            base.Draw(ds);
+        }
+
+        protected override void DrawBorder(CanvasDrawingSession ds)
+        {
+            ;
+        }
+
+        /// <summary>
         /// The dispose method. Remove Handlers here
         /// </summary>
         public override void Dispose()
         {
-            Pressed -= RectangleButtonUIElement_Pressed;
-            Released -= RectangleButtonUIElement_Released;
+            _shape.Pressed -= RectangleButtonUIElement_Pressed;
+            _shape.Released -= RectangleButtonUIElement_Released;
             base.Dispose();
+        }
+
+        /// <summary>
+        /// Returns the LocalBounds of the shape, used for hit testing. The bounds are given with the offset
+        /// of the local matrix assumed to be zero. If the matrix is offset, then the local bounds must be offset accordingly
+        /// </summary>
+        /// <returns></returns>
+        public override Rect GetLocalBounds()
+        {
+            return _shape.GetLocalBounds();
         }
     }
 }
