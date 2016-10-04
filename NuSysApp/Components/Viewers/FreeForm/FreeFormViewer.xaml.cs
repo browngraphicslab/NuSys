@@ -161,7 +161,7 @@ namespace NuSysApp
             };
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(_resizableWindow);
-            _resizableWindow.AddChild(new RectangleButtonUIElement(_resizableWindow, RenderCanvas)
+            _resizableWindow.AddChild(new ButtonUIElement(_resizableWindow, RenderCanvas)
             {
                 Background = Colors.White,
                 Bordercolor = Colors.Black,

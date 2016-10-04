@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -8,7 +10,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    class RectangleButtonUIElement : RectangleUIElement
+    public class ButtonUIElement : BaseInteractiveUIElement
     {
         /// <summary>
         /// The Color of the button when the button is selected
@@ -30,9 +32,89 @@ namespace NuSysApp
         /// </summary>
         private Color _orgBorder;
 
-        public RectangleButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+
+        /// <summary>
+        /// The width of the Button
+        /// </summary>
+        private float _width;
+
+        /// <summary>
+        /// The width of the Button. Must be greater than or equal to zero.
+        /// </summary>
+        public override float Width
+        {
+            get { return _width; }
+            set
+            {
+                Debug.Assert(value >= 0);
+                _width = value >= 0 ? value : 0;
+            }
+        }
+
+        /// <summary>
+        /// The height of the Button
+        /// </summary>
+        private float _height;
+        /// <summary>
+        /// The height of the Button. Must be greater than or equal to zero.
+        /// </summary>
+        public override float Height
+        {
+            get { return _height; }
+            set
+            {
+                Debug.Assert(value >= 0);
+                _height = value >= 0 ? value : 0;
+            }
+        }
+
+        /// <summary>
+        /// The background of the Button
+        /// </summary>
+        public override Color Background { get; set; }
+
+        /// <summary>
+        /// The width of the border of the Button
+        /// </summary>
+        private float _borderWidth;
+
+        /// <summary>
+        /// The Width of the Border of the Button. Extends into the Button.
+        /// Must be greater than or equal to zero.
+        /// </summary>
+        public override float BorderWidth
+        {
+            get { return _borderWidth; }
+            set
+            {
+                Debug.Assert(value >= 0);
+                _borderWidth = value >= 0 ? value : 0;
+            }
+        }
+
+        /// <summary>
+        /// The BorderColor of the Button
+        /// </summary>
+        public override Color Bordercolor { get; set; }
+
+
+        protected override void DrawBorder(CanvasDrawingSession ds)
+        {
+            // should be allocated to the passed in ui elemnt
+        }
+
+        public override Vector2 InitialOffset { get; set; }
+
+        public override Vector4 ReturnBounds()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
         }
+
+
 
         /// <summary>
         /// Initializer method. Add handlers here
