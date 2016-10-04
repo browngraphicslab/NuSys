@@ -13,7 +13,6 @@ namespace NuSysApp
 {
     public class ButtonUIElement : BaseInteractiveUIElement
     {
-
         /// <summary>
         /// The shape of the button. Can be one of Rectangle/Ellipse/RoudedRectangleUIElement.
         /// </summary>
@@ -65,7 +64,7 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// Returns the parent's screen to local matrix
+        /// Returns the shape's screen to local matrix
         /// </summary>
         public Func<Matrix3x2> GetParentScreenToLocalMatrix
         {
@@ -115,13 +114,25 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// The background color to be set while the button is in the pressed state.
+        /// </summary>
         public Color? SelectedBackground { get; set; }
 
+        /// <summary>
+        /// The border color to be set while the button is in the pressed state.
+        /// </summary>
         public Color? SelectedBorder { get; set; }
+
+        public delegate void ButtonClickedHandler(ButtonUIElement item, CanvasPointer pointer);
+
+        public event ButtonClickedHandler Clicked;
 
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
             _shape = shapeElement;
+
+            // Add the shape that was passed in as a child of the button.
             AddChild(_shape);
         }
 
@@ -164,6 +175,9 @@ namespace NuSysApp
             // set the Background and Border to SelectedBackground and SelectedBorder if either of those is not null
             Background = SelectedBackground ?? Background;
             Bordercolor = SelectedBorder ?? Background;
+
+            // Fire the button's Clicked event. 
+            Clicked?.Invoke(this, pointer);
         }
 
         /// <summary>
@@ -176,13 +190,14 @@ namespace NuSysApp
             if (IsDisposed || !IsVisible)
                 return;
 
+            // Delegate drawing to the shape.
             _shape.Draw(ds);
             base.Draw(ds);
         }
 
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
-            ;
+            //This has been left empty as the shape draws it's own border. 
         }
 
         /// <summary>
