@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
@@ -17,6 +18,8 @@ namespace NuSysApp
         public event PointerHandler DoubleTapped;
         public event PointerHandler Tapped;
         public event PointerHandler Dragged;
+
+        public event KeyEventHandler KeyPressed;
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -45,6 +48,11 @@ namespace NuSysApp
         public virtual void OnDragged(CanvasPointer pointer)
         {
             Dragged?.Invoke(this, pointer);
+        }
+
+        public virtual void OnKeyPressed(KeyRoutedEventArgs e)
+        {
+            KeyPressed?.Invoke(this, e);
         }
     }
 }

@@ -19,6 +19,8 @@ namespace NuSysApp
         public ICanvasResourceCreatorWithDpi ResourceCreator;
         public bool IsDirty { get; set; } = true;
 
+        public bool IsFocusable { get; set; } = true;
+
         public BaseRenderItem Parent { get; set; }
 
         protected List<BaseRenderItem> _children = new List<BaseRenderItem>();
@@ -171,6 +173,26 @@ namespace NuSysApp
         public virtual Rect GetScreenBounds()
         {
             return Win2dUtil.TransformRect(GetLocalBounds(), Transform.LocalToScreenMatrix);
+        }
+
+        public virtual void OnFocusGained()
+        {
+
+        }
+
+        public virtual void OnFocusLost()
+        {
+
+        }
+
+        public virtual void GotFocus()
+        {
+
+        }
+
+        public virtual void LostFocus()
+        {
+
         }
     }
 }
