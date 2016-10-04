@@ -282,42 +282,14 @@ namespace NuSysApp
                 {
                    
                     if (_canvasBitmap != null)
-                    {
-                        
-
-                       
-                        // TODO NEXT TIME: look at image render item to see how the ds.DrawImage is used
+                    {                                   
+                        // TODO ask Phil about transforms
                        
                         var imageBrush = new CanvasImageBrush(_canvas, _canvasBitmap);
-                        //imageBrush.Transform = Transform.LocalToScreenMatrix;
                         imageBrush.ExtendX = imageBrush.ExtendY = CanvasEdgeBehavior.Wrap;
-                        //imageBrush.SourceRectangle=new Rect(ViewModel.X,ViewModel.Y,500,500);
-                        var foo = ds.Transform;
-                        var foo2 = imageBrush.Transform;
-                        imageBrush.Transform = ds.Transform;
-                        //imageBrush.Transform = ds.Transform;
                         ds.FillGeometry(_shape, imageBrush);
-                        ds.DrawImage(_canvasBitmap);
 
-                        /*
-                        using (ds.CreateLayer(1, _mask))
-                        {
-                            if (_bmp != null)
-                                ds.DrawImage(_bmp, _croppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
-                            else
-                                ds.FillRectangle(_croppedImageTarget, Colors.Gray);
 
-                            if (_activeRegion != null && _croppy != null)
-                            {s
-                                ds.FillGeometry(_croppy, Color.FromArgb(0x88, 0, 0, 0));
-                            }
-                            ds.Transform = orgTransform;
-
-                            if (IsRegionsVisible)
-                                base.Draw(ds);
-
-                            ds.Transform = orgTransform;
-                        }*/
                     }
                    
                     //ds.FillGeometry(_shape, ViewModel.ShapeColor); //NOTE: ORIGINAL
