@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
@@ -17,12 +18,12 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// The X Radius of the ellipse
+        /// The X Diameter of the ellipse
         /// </summary>
         private float _width;
 
         /// <summary>
-        /// The X radius of the ellipse. Must be greater than or equal to 0.
+        /// The X Diameter of the ellipse. Must be greater than or equal to 0.
         /// </summary>
         public override float Width {
             get { return _width; }
@@ -34,12 +35,12 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// The Y Radius of the ellipse
+        /// The Y Diameter of the ellipse
         /// </summary>
         private float _height;
 
         /// <summary>
-        /// The Y Radius of the ellipse. Must be greater than or equal to 0.
+        /// The Y Diameter of the ellipse. Must be greater than or equal to 0.
         /// </summary>
         public override float Height
         {
@@ -50,6 +51,17 @@ namespace NuSysApp
                 _height = value >= 0 ? value : 0;
             }
         }
+
+        /// <summary>
+        /// The x radius of the ellipse
+        /// </summary>
+        private float _radiusX => Width/2;
+
+        /// <summary>
+        /// The y radius of the ellipse
+        /// </summary>
+        private float _radiusY => Height/2;
+
         /// <summary>
         /// The background color of the ellipse
         /// </summary>
@@ -97,7 +109,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             // draw the background of the ellipse
-            ds.FillEllipse(CenterPoint, Width, Height, Background);
+            ds.FillEllipse(CenterPoint, _radiusX, _radiusY, Background);
 
             // draw the border in the ellipse
             DrawBorder(ds);
@@ -116,7 +128,7 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
-            ds.DrawEllipse(CenterPoint, Width - BorderWidth / 2, Height - BorderWidth / 2, Bordercolor, BorderWidth);
+            ds.DrawEllipse(CenterPoint, _radiusX - BorderWidth / 2, _radiusY - BorderWidth / 2, Bordercolor, BorderWidth);
         }
 
         /// <summary>
@@ -125,7 +137,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override Vector4 ReturnBounds()
         {
-            return new Vector4(BorderWidth, BorderWidth, Width*2- BorderWidth, Height*2- BorderWidth);
+            return new Vector4(BorderWidth, BorderWidth, _radiusX*2- BorderWidth, _radiusY*2- BorderWidth);
         }
 
         /// <summary>
@@ -136,7 +148,7 @@ namespace NuSysApp
         {
             // shift the ellipse by its width and height so its center point is draw on the upper
             // let corner of the parent initially
-            Transform.LocalPosition -= new Vector2(Width, Height);
+            Transform.LocalPosition -= new Vector2(_radiusX, _radiusY);
 
             // shift over by the initial offset
             Transform.LocalPosition += InitialOffset;
@@ -148,5 +160,15 @@ namespace NuSysApp
         /// Offsets the cetner point from the upper left corner of the screen if the parent is null.
         /// </summary>
         public override Vector2 InitialOffset { get; set; }
+
+        /// <summary>
+        /// Returns the LocalBounds of the base render item, used for hit testing. The bounds are given with the offset
+        /// of the local matrix assumed to be zero. If the matrix is offset, then the local bounds must be offset accordingly
+        /// </summary>
+        /// <returns></returns>
+        public override Rect GetLocalBounds()
+        {
+            return new Rect(0, 0, Width, Height);
+        }
     }
 }
