@@ -184,6 +184,7 @@ namespace NuSysApp
                 TextColor = Colors.Black,
                 SelectionHighlight = Colors.Blue,
                 SelectionColor = Colors.White,
+                SelectionEnabled = true,
                 HorizontalTextAlignment = CanvasHorizontalAlignment.Center,
                 VerticalTextAlignment = CanvasVerticalAlignment.Center,
                 TextBoxText = "Test this text",
