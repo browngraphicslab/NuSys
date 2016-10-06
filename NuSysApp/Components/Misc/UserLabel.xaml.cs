@@ -35,21 +35,14 @@ namespace NuSysApp
                 _user = user;
                 UserButton.Background = new SolidColorBrush(_user.Color);
                 var content = _user.DisplayName ?? _user.UserID;
-                if (content != "Me")
+                if (content.Length == 0)
                 {
-                    if (content.Length == 0)
-                    {
-                        _userName = "_";
-                    }
-                    else
-                    {
-                        
-                        _userName = content.TrimStart().Substring(0, 1).ToUpper();
-                    }
+                    _userName = "_";
                 }
                 else
                 {
-                    _userName = "Me";
+                        
+                    _userName = content.TrimStart().Substring(0, 1).ToUpper();
                 }
                 UserBubbleText.Text = _userName;
                 UserButton.Foreground = new SolidColorBrush(Constants.foreground6);
@@ -58,6 +51,7 @@ namespace NuSysApp
                 UserBubbleText.Text = _userName;
 
                 UserButton.Click += UserButton_Click;
+                Width = 60;
             });
         }
 

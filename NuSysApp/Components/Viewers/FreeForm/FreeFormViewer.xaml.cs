@@ -667,7 +667,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
-            _transform = CurrentCollection.Camera.LocalToScreenMatrix;
+            //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
             _transformables.Clear();
         }
 
