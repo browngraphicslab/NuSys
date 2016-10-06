@@ -862,9 +862,21 @@ namespace NuSysApp
 
             if (item is ElementRenderItem)
             {
-                var libraryModel = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel;
-                if (libraryModel.Creator == WaitingRoomView.UserName && WaitingRoomView.UserName.ToLower() == "rms")
-                    return;
+                try
+                {
+                    var loginName =
+                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[
+                            WaitingRoomView.UserID];
+                    var creator =
+                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
+                            ].Values[0];
+                    if (!(creator == loginName && creator.ToLower() == "rms"))
+                        return;
+                }
+                catch (Exception e)
+                {
+                    // do nothing.
+                }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
                 SessionController.Instance.SessionView.ShowDetailView(controller);
