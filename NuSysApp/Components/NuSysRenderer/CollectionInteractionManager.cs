@@ -316,8 +316,10 @@ namespace NuSysApp
                 }
                 else
                 {
-                    if (hit != currentCollection && hit != _selectedRenderItem)
-                        ElementAddedToCollection?.Invoke((ElementRenderItem)_selectedRenderItem, hit, pointer);
+                    if (hit != currentCollection && hit != _selectedRenderItem && hit.ViewModel.Model.ParentCollectionId == currentCollection.ViewModel.Model.LibraryId)
+                    {
+                        ElementAddedToCollection?.Invoke((ElementRenderItem) _selectedRenderItem, hit, pointer);
+                    }
                 }
             }       
         }
