@@ -111,12 +111,6 @@ namespace NuSysApp
                     _returnedElementModels.Add(ElementModelFactory.DeserializeFromString(elementString));
                 }
 
-                var thisId = _message.GetString(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY);
-                var modelsOfInterest =
-                    _returnedElementModels.Where(model => model.ParentCollectionId == thisId)
-                        .OfType<CollectionElementModel>();
-                var count = modelsOfInterest.Count();
-
                 //create the content data models from the returned args strings
                 _returnedContentDataModels = new List<ContentDataModel>();
                 foreach (var contentString in args?.ContentMessages ?? new List<string>())

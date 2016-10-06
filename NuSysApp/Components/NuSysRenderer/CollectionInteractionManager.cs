@@ -311,7 +311,7 @@ namespace NuSysApp
                 {
                     var renderitems = selectedCollection.GetChildren();
                     if (hit != currentCollection && hit != _selectedRenderItem && renderitems != null &&
-                        !renderitems.Contains(hit))
+                        !renderitems.Contains(hit) && hit.ViewModel.Model.ParentCollectionId == currentCollection.ViewModel.Model.LibraryId)
                         ElementAddedToCollection?.Invoke((ElementRenderItem) _selectedRenderItem, hit, pointer);
                 }
                 else
