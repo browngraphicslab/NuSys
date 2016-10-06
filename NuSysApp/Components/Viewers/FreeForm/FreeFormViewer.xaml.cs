@@ -870,7 +870,7 @@ namespace NuSysApp
                     var creator =
                         (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
                             ].Values[0];
-                    if (!(creator == loginName && creator.ToLower() == "rms"))
+                    if (loginName != "rms" && creator.ToLower() == "rms")
                         return;
                 }
                 catch (Exception e)
