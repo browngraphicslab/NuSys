@@ -282,12 +282,34 @@ namespace NuSysApp
                 {
                    
                     if (_canvasBitmap != null)
-                    {                                   
-                        // TODO ask Phil about transforms
-                       
+                    {
                         var imageBrush = new CanvasImageBrush(_canvas, _canvasBitmap);
-                        imageBrush.ExtendX = imageBrush.ExtendY = CanvasEdgeBehavior.Wrap;
+
+                        var orgTransform = ds.Transform;
+                        ds.Transform = Transform.LocalToScreenMatrix; //draws relative to current object, the collection render item
+
+                        // Maintaining aspect ratio
+                        float newWidth;
+                        float newHeight;
+                        if (_canvasBitmap.Size.Width / _elementSize.Width < _canvasBitmap.Size.Height / _elementSize.Height)
+                        {
+                            var ratio = _elementSize.Width / _canvasBitmap.Size.Width;
+                            newWidth = (float)_elementSize.Width;
+                            newHeight = (float)(_canvasBitmap.Size.Height * ratio);
+                        }
+                        else
+                        {
+                            var ratio = _elementSize.Height / _canvasBitmap.Size.Height;
+                            newWidth = (float)(_canvasBitmap.Size.Width * ratio);
+                            newHeight = (float)_elementSize.Height;
+                        }
+
+                        // Draw image to fit bounding rectangle of shape
+                        Rect r = new Rect(0, 0, newWidth, newHeight);
                         ds.FillGeometry(_shape, imageBrush);
+                        ds.DrawImage(_canvasBitmap, r);
+
+                        ds.Transform = orgTransform;
 
 
                     }
