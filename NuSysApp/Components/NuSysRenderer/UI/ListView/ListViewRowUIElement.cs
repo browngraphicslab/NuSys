@@ -12,6 +12,7 @@ namespace NuSysApp
         private T _item;
         public T Item {
             get { return _item; }
+            set { _item = value; }
         }
 
         private bool _isSelected;
@@ -90,6 +91,7 @@ namespace NuSysApp
         /// </summary>
         public void DeleteCell(int index)
         {
+            //NOT FINISHED AT ALL!!!
             var cell = _cells[index];
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
