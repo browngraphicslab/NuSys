@@ -151,6 +151,10 @@ namespace NuSysApp
             _renderRoot.AddChild(tabContainer);
             tabContainer.AddTab("hello world", "Title 1");
             tabContainer.AddTab("test", "title 2");
+            tabContainer.AddTab("test3", "title 3");
+            tabContainer.AddTab("test4", "title 4");
+            tabContainer.AddTab("test5", "title 5");
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

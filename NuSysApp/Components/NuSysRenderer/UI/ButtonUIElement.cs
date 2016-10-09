@@ -219,6 +219,14 @@ namespace NuSysApp
             // Delegate drawing to the shape.
             base.Draw(ds);
 
+
+
+            // draw the text on the button
+            DrawButtonText(ds);
+        }
+
+        public virtual void DrawButtonText(CanvasDrawingSession ds)
+        {
             // save the current transform of the drawing session
             var orgTransform = ds.Transform;
             ds.Transform = Shape.Transform.LocalToScreenMatrix;
@@ -229,15 +237,15 @@ namespace NuSysApp
                 var textFormat = new CanvasTextFormat
                 {
                     HorizontalAlignment = ButtonTextHorizontalAlignment,
-                    VerticalAlignment = ButtonTextVerticalAlignment, 
+                    VerticalAlignment = ButtonTextVerticalAlignment,
                     WordWrapping = CanvasWordWrapping.NoWrap,
                     TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis                           
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis
                 };
 
                 // get the bounds of the shape which represents the button
                 var shapeBounds = ReturnBounds();
-                
+
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created textFormat
                 ds.DrawText(ButtonText,

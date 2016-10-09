@@ -184,6 +184,7 @@ namespace NuSysApp
         /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
+            // store the tabWidth and tabOffset for drawing
             var tabWidth = Math.Min((Width - 2 * BorderWidth) /_tabList.Count, TabMaxWidth);
             var tabOffset = BorderWidth;
 
@@ -193,6 +194,7 @@ namespace NuSysApp
             // set the new transform to local to screen
             ds.Transform = Transform.LocalToScreenMatrix;
 
+            // set the tabWidth and tabOffset
             foreach (var tab in _tabList)
             {
                 tab.Width = tabWidth;
