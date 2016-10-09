@@ -159,7 +159,7 @@ namespace NuSysApp
             Shape = shapeElement;
 
             // Add the shape that was passed in as a child of the button.
-            AddChild(Shape);
+            base.AddChild(Shape);
         }
 
 
@@ -217,7 +217,12 @@ namespace NuSysApp
                 return;
 
             // Delegate drawing to the shape.
-            Shape.Draw(ds);
+            base.Draw(ds);
+
+            // save the current transform of the drawing session
+            var orgTransform = ds.Transform;
+            ds.Transform = Shape.Transform.LocalToScreenMatrix;
+
             if (ButtonText != null)
             {
                 // create a text format object
@@ -228,7 +233,7 @@ namespace NuSysApp
                 };
 
                 // get the bounds of the shape which represents the button
-                var shapeBounds = Shape.ReturnBounds();
+                var shapeBounds = ReturnBounds();
                 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created textFormat
@@ -237,7 +242,7 @@ namespace NuSysApp
                     ButtonTextColor, textFormat);
             }
 
-            base.Draw(ds);
+            ds.Transform = orgTransform;
         }
 
         protected override void DrawBorder(CanvasDrawingSession ds)
@@ -272,6 +277,15 @@ namespace NuSysApp
         public override void AddChild(BaseRenderItem child)
         {
             Shape.AddChild(child);
+        }
+
+        /// <summary>
+        /// Removes a child from the button
+        /// </summary>
+        /// <param name="child"></param>
+        public override void RemoveChild(BaseRenderItem child)
+        {
+            Shape.RemoveChild(child);
         }
     }
 }

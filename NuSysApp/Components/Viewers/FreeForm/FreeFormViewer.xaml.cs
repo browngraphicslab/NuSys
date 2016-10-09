@@ -169,6 +169,10 @@ namespace NuSysApp
             {
                 Background = Colors.Brown,
                 Bordercolor = Colors.Black,
+                ButtonText = "Hello World",
+                ButtonTextColor = Colors.Black,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 BorderWidth = 5,
                 Height = 100,
                 Width = 100,

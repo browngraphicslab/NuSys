@@ -9,17 +9,17 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class TabContainerUIElement<T, T1> : RectangleUIElement where T : ITabType<T1> where T1 : IEqualityComparer<T1>
+    public class TabContainerUIElement<T> : RectangleUIElement where T : IComparable<T>
     {
         /// <summary>
         /// List of TabButtons that are currently being shown by the TabContainer
         /// </summary>
-        private List<TabButtonUIElement<T, T1>> _tabList;
+        private List<TabButtonUIElement<T>> _tabList;
 
         /// <summary>
         /// The tab that is currently selected in the tab container
         /// </summary>
-        public TabButtonUIElement<T, T1> CurrentlySelectedTab { get; private set; } //todo make the setter method do something
+        public TabButtonUIElement<T> CurrentlySelectedTab { get; private set; } //todo make the setter method do something
 
         /// <summary>
         /// The height of the tabs in the tab container
@@ -48,21 +48,21 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Adds a new tab of tabType to the tab container. If there is already a tab of tabtype
-        /// it does nothing
+        /// Adds a new tab to the tab container. If there is already a tab of tab
+        /// it does nothing. Optional title argument.
         /// </summary>
         /// <param name="tabType"></param>
-        public void AddTab(T tabType)
+        public void AddTab(T tab, string title = "")
         {
             // if any Tab in the tablist has the same tabType as the one we are trying to add
             // then return
-            if (_tabList.Any(tabButton => IsEqual(tabType, tabButton.TabType)))
+            if (_tabList.Any(tabButton => IsEqual(tab, tabButton.Tab)))
             {
                 return;
             }
 
             // add the new button to the tablist
-            var button = InitializeNewTab();
+            var button = InitializeNewTab(tab, title);
             _tabList.Add(button);
 
             // add the handlers for the button getting selected and closed
@@ -77,9 +77,11 @@ namespace NuSysApp
         /// Initializes a new Tab and return a TabButtonUIElement
         /// </summary>
         /// <returns></returns>
-        private TabButtonUIElement<T, T1> InitializeNewTab()
+        private TabButtonUIElement<T> InitializeNewTab(T tab, string title)
         {
-            throw new NotImplementedException();
+            var button = new TabButtonUIElement<T>(this, Canvas, new RectangleUIElement(this, Canvas), tab);
+            button.ButtonText = title;
+            return button;
         }
 
         /// <summary>
@@ -89,14 +91,14 @@ namespace NuSysApp
         public void RemoveTab(T tabType)
         {
             // get the tab which is going to be removed from the list of tabs
-            var tabToBeRemoved = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.TabType));
+            var tabToBeRemoved = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.Tab));
             Debug.Assert(tabToBeRemoved != null);
 
             // get the index of the tab that is going to be removed
             var index = _tabList.IndexOf(tabToBeRemoved);
 
             // if the tabToBeRemoved is the CurrentlySelectedTab
-            if (IsEqual(_tabList[index].TabType, CurrentlySelectedTab.TabType))
+            if (IsEqual(_tabList[index].Tab, CurrentlySelectedTab.Tab))
             {
                 // remove it
                 _tabList.RemoveAt(index);
@@ -141,7 +143,7 @@ namespace NuSysApp
         private void Button_OnSelected(T tabType)
         {
             // get the tab which just got selected
-            var tabToBeSelected = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.TabType));
+            var tabToBeSelected = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.Tab));
             Debug.Assert(tabToBeSelected != null);
 
             // set the currently selected tab to the tab which was selected

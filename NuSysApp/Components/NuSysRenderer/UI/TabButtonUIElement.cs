@@ -9,15 +9,14 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class TabButtonUIElement<T, T1> : ButtonUIElement where T : ITabType<T1> where T1 : IEqualityComparer<T1>
+    public class TabButtonUIElement<T> : ButtonUIElement where T : IComparable<T>
     {
 
         /// <summary>
-        /// The type of the tab
+        /// The tab the event was fired on
         /// </summary>
-        public T TabType { get; private set; }
-
-        public delegate void TabEventHandler(T tabType);
+        /// <param name="tab"></param>
+        public delegate void TabEventHandler(T tab);
 
         /// <summary>
         /// Fired when the tab is selected
@@ -34,8 +33,13 @@ namespace NuSysApp
         /// </summary>
         private ButtonUIElement _closeButton;
 
+        /// <summary>
+        /// The current tab associated with the TabButton
+        /// </summary>
+        public T Tab { get; private set; }
+
         public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
-            BaseInteractiveUIElement shapeElement, T tabType) : base(parent, resourceCreator, shapeElement)
+            BaseInteractiveUIElement shapeElement, T tab) : base(parent, resourceCreator, shapeElement)
         {
             // create a close button
             _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
@@ -49,8 +53,8 @@ namespace NuSysApp
                 InitialOffset = new Vector2((Width/5)*4, 0),
             };
 
-            // set the text of the button
-            ButtonText = tabType.Title;
+            // set the current tab
+            Tab = tab;
 
             // add the close button as a child of the _shape of the tab butotn
             AddChild(_closeButton);
@@ -85,7 +89,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void TabButtonUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            OnSelected?.Invoke(TabType);
+            OnSelected?.Invoke(Tab);
         }
 
         /// <summary>
@@ -95,7 +99,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _closeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            OnClosed?.Invoke(TabType);
+            OnClosed?.Invoke(Tab);
         }
 
         public override void Draw(CanvasDrawingSession ds)
