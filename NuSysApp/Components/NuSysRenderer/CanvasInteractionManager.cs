@@ -121,7 +121,6 @@ namespace NuSysApp
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
         {
-            //find which baserenderitem got pressed?
             if (!_isEnabled)
                 return;
             OnPointerTouchPressed(sender, args);

@@ -60,9 +60,12 @@ namespace NuSysApp
         // Changes the focus from the currently focused item to the one passed in. Sets this as the ActiveFocusElement
         public void ChangeFocus(BaseRenderItem newBaseRenderItem)
         {
-            ActiveFocusElement?.LostFocus();
-            newBaseRenderItem.GotFocus();
-            ActiveFocusElement = newBaseRenderItem;
+            if (newBaseRenderItem.IsFocusable)
+            {
+                ActiveFocusElement?.LostFocus();
+                newBaseRenderItem.GotFocus();
+                ActiveFocusElement = newBaseRenderItem;
+            }     
         }
 
         // Prevent memory leaks by disposing of resources
