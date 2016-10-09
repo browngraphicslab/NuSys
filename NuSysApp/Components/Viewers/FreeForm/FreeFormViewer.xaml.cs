@@ -70,11 +70,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
 
-            SizeChanged += OnSizeChanged;
-            xMinimapCanvas.IsHitTestVisible = false;
-            xMinimapCanvas.Width = 300;
-            xMinimapCanvas.Height = 300;
-
             _renderRoot = new BaseRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
      
@@ -82,8 +77,6 @@ namespace NuSysApp
 
         public void Clear()
         {
-           // vm.Controller.Disposed -= ControllerOnDisposed;
-          //  vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
             InitialCollection?.Dispose();
             xRenderCanvas.Invalidate();
             _minimap?.Dispose();
@@ -94,12 +87,6 @@ namespace NuSysApp
         {
             xUndoButton.MoveTo(location);
             xUndoButton.Activate(action);
-        }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
-        {
-            Canvas.SetLeft(xMinimapCanvas, sizeChangedEventArgs.NewSize.Width-xMinimapCanvas.Width);
-            Canvas.SetTop(xMinimapCanvas, sizeChangedEventArgs.NewSize.Height- xMinimapCanvas.Height);
         }
 
         public async Task LoadInitialCollection(FreeFormViewerViewModel vm)
@@ -136,7 +123,7 @@ namespace NuSysApp
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
             RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
 
-            _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+            _minimap = new MinimapRenderItem(InitialCollection, null, xRenderCanvas);
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -903,7 +890,6 @@ namespace NuSysApp
 
         private void ClearSelections()
         {
-            // SessionController.Instance.SessionView.FreeFormViewer.VideoPlayer.Visibility = Visibility.Collapsed;
             foreach (var selection in Selections)
             {
                 if (selection.ViewModel != null)
