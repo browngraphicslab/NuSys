@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -16,7 +17,7 @@ namespace NuSysApp
         /// <summary>
         /// The shape of the button. Can be one of Rectangle/Ellipse/RoudedRectangleUIElement.
         /// </summary>
-        private BaseInteractiveUIElement _shape;
+        protected BaseInteractiveUIElement Shape;
         private Color _orgBackground;
         private Color _orgBorder;
 
@@ -24,31 +25,31 @@ namespace NuSysApp
         /// The Background Color of the UI Element
         /// </summary>
         public override Color Background {
-            get { return _shape.Background; }
-            set { _shape.Background = value; } }
+            get { return Shape.Background; }
+            set { Shape.Background = value; } }
 
         /// <summary>
         /// The color of the Border of the UI Element;
         /// </summary>
         public override Color Bordercolor {
-            get { return _shape.Bordercolor; }
-            set { _shape.Bordercolor = value; } }
+            get { return Shape.Bordercolor; }
+            set { Shape.Bordercolor = value; } }
 
         /// <summary>
         /// The InitialOffset of the UIElement from the parent's upper left corner.
         /// Offsets from the top left of the screen if the parent is null.
         /// </summary>
         public override Vector2 InitialOffset {
-            get { return _shape.InitialOffset; }
-            set { _shape.InitialOffset = value; } }
+            get { return Shape.InitialOffset; }
+            set { Shape.InitialOffset = value; } }
 
         /// <summary>
         /// A func that calls a function which gets the bounds of the parent of the UIElement
         /// </summary>
         public Func<Vector4> GetParentBounds
         {
-            get { return _shape.GetParentBounds; }
-            set { _shape.GetParentBounds = value; }
+            get { return Shape.GetParentBounds; }
+            set { Shape.GetParentBounds = value; }
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override Vector4 ReturnBounds()
         {
-            return _shape.ReturnBounds();
+            return Shape.ReturnBounds();
         }
 
 
@@ -68,8 +69,8 @@ namespace NuSysApp
         /// </summary>
         public Func<Matrix3x2> GetParentScreenToLocalMatrix
         {
-            get { return _shape.GetParentScreenToLocalMatrix; }
-            set { _shape.GetParentScreenToLocalMatrix = value; }
+            get { return Shape.GetParentScreenToLocalMatrix; }
+            set { Shape.GetParentScreenToLocalMatrix = value; }
         }
 
         
@@ -79,11 +80,11 @@ namespace NuSysApp
         /// </summary>
         public override float Width
         {
-            get { return _shape.Width; }
+            get { return Shape.Width; }
             set
             {
                 Debug.Assert(value >= 0);
-                _shape.Width = value >= 0 ? value : 0;
+                Shape.Width = value >= 0 ? value : 0;
             }
         }
 
@@ -92,11 +93,11 @@ namespace NuSysApp
         /// </summary>
         public override float Height
         {
-            get { return _shape.Height; }
+            get { return Shape.Height; }
             set
             {
                 Debug.Assert(value >= 0);
-                _shape.Height = value >= 0 ? value : 0;
+                Shape.Height = value >= 0 ? value : 0;
             }
         }
 
@@ -106,11 +107,11 @@ namespace NuSysApp
         /// </summary>
         public override float BorderWidth
         {
-            get { return _shape.BorderWidth; }
+            get { return Shape.BorderWidth; }
             set
             {
                 Debug.Assert(value >= 0);
-                _shape.BorderWidth = value >= 0 ? value : 0;
+                Shape.BorderWidth = value >= 0 ? value : 0;
             }
         }
 
@@ -124,16 +125,41 @@ namespace NuSysApp
         /// </summary>
         public Color? SelectedBorder { get; set; }
 
+        /// <summary>
+        /// The string of text to be displayed on the button
+        /// </summary>
+        public string ButtonText { get; set; }
+        
+        /// <summary>
+        /// The color of the text on the button
+        /// </summary>
+        public Color ButtonTextColor { get; set; }
+
+        /// <summary>
+        /// The horizontal alignment of the text on the button
+        /// </summary>
+        public CanvasHorizontalAlignment ButtonTextHorizontalAlignment;
+
+        /// <summary>
+        /// The vertical alignment of the text on the button
+        /// </summary>
+        public CanvasVerticalAlignment ButtonTextVerticalAlignment;
+
+        //todo both this and the click handler feel extraneous here, we already have a tapped event which
+        //todo (cont.) exists throughout the entire ui. No need to unecessarily emulate xaml although we do that already :)
         public delegate void ButtonClickedHandler(ButtonUIElement item, CanvasPointer pointer);
 
+        /// <summary>
+        /// Fired when the Button is Clicked
+        /// </summary>
         public event ButtonClickedHandler Clicked;
 
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
-            _shape = shapeElement;
+            Shape = shapeElement;
 
             // Add the shape that was passed in as a child of the button.
-            AddChild(_shape);
+            AddChild(Shape);
         }
 
 
@@ -144,8 +170,8 @@ namespace NuSysApp
         /// <returns></returns>
         public override Task Load()
         {
-            _shape.Pressed += RectangleButtonUIElement_Pressed;
-            _shape.Released += RectangleButtonUIElement_Released;
+            Shape.Pressed += RectangleButtonUIElement_Pressed;
+            Shape.Released += RectangleButtonUIElement_Released;
             return base.Load();
         }
 
@@ -191,7 +217,26 @@ namespace NuSysApp
                 return;
 
             // Delegate drawing to the shape.
-            _shape.Draw(ds);
+            Shape.Draw(ds);
+            if (ButtonText != null)
+            {
+                // create a text format object
+                var textFormat = new CanvasTextFormat
+                {
+                    HorizontalAlignment = ButtonTextHorizontalAlignment,
+                    VerticalAlignment = ButtonTextVerticalAlignment, 
+                };
+
+                // get the bounds of the shape which represents the button
+                var shapeBounds = Shape.ReturnBounds();
+                
+                // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
+                // just created textFormat
+                ds.DrawText(ButtonText,
+                    new Rect(shapeBounds.X, shapeBounds.Y, shapeBounds.Z - shapeBounds.X, shapeBounds.W - shapeBounds.Y),
+                    ButtonTextColor, textFormat);
+            }
+
             base.Draw(ds);
         }
 
@@ -205,8 +250,8 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
-            _shape.Pressed -= RectangleButtonUIElement_Pressed;
-            _shape.Released -= RectangleButtonUIElement_Released;
+            Shape.Pressed -= RectangleButtonUIElement_Pressed;
+            Shape.Released -= RectangleButtonUIElement_Released;
             base.Dispose();
         }
 
@@ -217,7 +262,16 @@ namespace NuSysApp
         /// <returns></returns>
         public override Rect GetLocalBounds()
         {
-            return _shape.GetLocalBounds();
+            return Shape.GetLocalBounds();
+        }
+
+        /// <summary>
+        /// Adds a child to the button
+        /// </summary>
+        /// <param name="child"></param>
+        public override void AddChild(BaseRenderItem child)
+        {
+            Shape.AddChild(child);
         }
     }
 }
