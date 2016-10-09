@@ -230,6 +230,9 @@ namespace NuSysApp
                 {
                     HorizontalAlignment = ButtonTextHorizontalAlignment,
                     VerticalAlignment = ButtonTextVerticalAlignment, 
+                    WordWrapping = CanvasWordWrapping.NoWrap,
+                    TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis                           
                 };
 
                 // get the bounds of the shape which represents the button

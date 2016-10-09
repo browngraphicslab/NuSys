@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -45,6 +46,8 @@ namespace NuSysApp
 
         public TabContainerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            // initialize the _tabList
+            _tabList = new List<TabButtonUIElement<T>>();
         }
 
         /// <summary>
@@ -80,7 +83,9 @@ namespace NuSysApp
         private TabButtonUIElement<T> InitializeNewTab(T tab, string title)
         {
             var button = new TabButtonUIElement<T>(this, Canvas, new RectangleUIElement(this, Canvas), tab);
+            button.Background = Colors.Beige;
             button.ButtonText = title;
+            button.ButtonTextColor = Colors.Black;
             return button;
         }
 
@@ -192,7 +197,7 @@ namespace NuSysApp
             {
                 tab.Width = tabWidth;
                 tab.Height = TabHeight;
-                tab.Transform.LocalPosition = new Vector2(tabOffset, 0);
+                tab.Transform.LocalPosition = new Vector2(tabOffset, BorderWidth);
                 tabOffset += tabWidth;
             }
 

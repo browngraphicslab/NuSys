@@ -42,22 +42,13 @@ namespace NuSysApp
             BaseInteractiveUIElement shapeElement, T tab) : base(parent, resourceCreator, shapeElement)
         {
             // create a close button
-            _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Background = Colors.Red,
-                BorderWidth = 0,
-                GetParentBounds = ReturnBounds,
-                GetParentScreenToLocalMatrix = ReturnScreenToLocalMatrix,
-                Height = Height,
-                Width = Width/5,
-                InitialOffset = new Vector2((Width/5)*4, 0),
-            };
+            _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
 
             // set the current tab
             Tab = tab;
 
             // add the close button as a child of the _shape of the tab butotn
-            AddChild(_closeButton);
+            base.AddChild(_closeButton);
 
         }
 
@@ -108,11 +99,25 @@ namespace NuSysApp
             if (IsDisposed || !IsVisible)
                 return;
 
-            // Delegate drawing to the shape.
-            Shape.Draw(ds);
+            // set the parameters for the close button
+            SetCloseButtonParams();
 
-            //todo add a child that will draw the text
             base.Draw(ds);
+        }
+
+        /// <summary>
+        /// Sets the parameters on the close button
+        /// </summary>
+        public void SetCloseButtonParams()
+        {
+
+            _closeButton.Background = Colors.Red;
+            _closeButton.BorderWidth = 0;
+            _closeButton.GetParentBounds = ReturnBounds;
+            _closeButton.GetParentScreenToLocalMatrix = ReturnScreenToLocalMatrix;
+            _closeButton.Height = base.Height;
+            _closeButton.Width = base.Width/5;
+            _closeButton.Transform.LocalPosition = new Vector2((base.Width/5)*4, 0);
         }
     }
 }
