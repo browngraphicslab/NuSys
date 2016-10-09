@@ -43,7 +43,7 @@ namespace NuSysApp
         /// This should be used to determine what elements are needed and what collections to keep track of.
         /// The Ids are the Library element model Ids.
         /// </summary>
-        public HashSet<string> CollectionIdsInUse { get; private set; }  = new HashSet<string>();
+        public HashSet<string> CollectionIdsInUse { get; private set; } = new HashSet<string>();
 
         private CapturedStateModel _capturedState;
 
@@ -80,7 +80,7 @@ namespace NuSysApp
         {
             get { return _contentController; }
         }
-        
+
         public RegionsController RegionsController
         {
             get { return _regionsController; }
@@ -89,6 +89,9 @@ namespace NuSysApp
         {
             get { return _linksController; }
         }
+
+        public FocusManager FocusManager { get; set; }
+
         public SpeechRecognizer Recognizer { get; set; }
 
 

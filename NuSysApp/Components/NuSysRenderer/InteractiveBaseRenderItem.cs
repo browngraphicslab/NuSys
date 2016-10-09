@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Core;
 
 namespace NuSysApp
 {
@@ -19,7 +20,10 @@ namespace NuSysApp
         public event PointerHandler Tapped;
         public event PointerHandler Dragged;
 
-        public event KeyEventHandler KeyPressed;
+        // Delegate for the KeyPressed event
+        public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
+
+        public event KeyPressedDelegate KeyPressed;
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -50,9 +54,23 @@ namespace NuSysApp
             Dragged?.Invoke(this, pointer);
         }
 
-        public virtual void OnKeyPressed(KeyRoutedEventArgs e)
+        public virtual void OnKeyPressed(KeyEventArgs e)
         {
-            KeyPressed?.Invoke(this, e);
+            KeyPressed?.Invoke(e);
+        }
+
+        // Partial override of BaseRenderItem GotFocus in order to add KeyPressed event
+        public override void GotFocus()
+        {
+            SessionController.Instance.FocusManager.OnKeyPressed += OnKeyPressed;
+            base.GotFocus();
+        }
+
+        // Partial override of BaseRenderItem LostFocus in order to remove KeyPressed event
+        public override void LostFocus()
+        {
+            SessionController.Instance.FocusManager.OnKeyPressed -= OnKeyPressed;
+            base.LostFocus();
         }
     }
 }
