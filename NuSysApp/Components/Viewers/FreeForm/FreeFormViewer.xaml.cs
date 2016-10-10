@@ -11,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
 using Windows.UI;
+using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
@@ -137,60 +138,37 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var _resizableWindow = new SnappableWindowUIElement(_renderRoot, RenderCanvas)
+            var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas, new List<string>() {"test","fdsa","fdsaf"})
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
                 BorderWidth = 5,
                 Height = 500,
                 Width = 300,
-                TopBarColor = Colors.CadetBlue,
-                TopBarHeight = 25,
-                ErrorMargin = 15,
-                IsResizeable = true,
-                IsDraggable = true,
-                IsSnappable = true,
-                SnapMargin = 10f,
-                KeepAspectRatio = true,
-                PreviewColor = Color.FromArgb(100, 100, 100, 160),
                 InitialOffset =
                     new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                         (float) SessionController.Instance.ScreenHeight/2),
                 GetParentScreenToLocalMatrix = () =>  Matrix3x2.Identity,
                 GetParentBounds = () => new Vector4(0,0, (float) SessionController.Instance.ScreenWidth, (float) SessionController.Instance.ScreenHeight)
             };
+            var listColumn = new ListColumn<string>();
+            listColumn.Title = "testing";
+            listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            {
+                var rect = new RectangleUIElement(item, resourceCreator);
+                rect.Background = Colors.Red;
+                rect.BorderWidth = 2;
+                rect.Bordercolor = Colors.Green;
+                rect.Width = 500;
+                rect.Height = 40;
+                return rect;
+            };
+            listView.AddColumn(listColumn);
+            listView.PopulateListView();
+
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(_resizableWindow);
-            _resizableWindow.AddChild(new RectangleButtonUIElement(_resizableWindow, RenderCanvas)
-            {
-                Background = Colors.White,
-                Bordercolor = Colors.Black,
-                BorderWidth = 5,
-                Height = 100,
-                Width = 100,
-                InitialOffset = new Vector2(30,30),
-                SelectedBackground = Colors.Blue,
-                SelectedBorder = Colors.Purple,
-                GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
-                GetParentBounds = _resizableWindow.ReturnBounds
-            });
-            _resizableWindow.AddChild(new TextBoxUIElement(_resizableWindow, RenderCanvas)
-            {
-                Background = Colors.White,
-                Bordercolor = Colors.Black,
-                BorderWidth = 5,
-                Height = 100,
-                Width = 100,
-                TextColor = Colors.Black,
-                SelectionHighlight = Colors.Blue,
-                SelectionColor = Colors.White,
-                HorizontalTextAlignment = CanvasHorizontalAlignment.Center,
-                VerticalTextAlignment = CanvasVerticalAlignment.Center,
-                TextBoxText = "Test this text",
-                InitialOffset = new Vector2(30, 180),
-                GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
-                GetParentBounds = _resizableWindow.ReturnBounds
-            });
+            RenderEngine.Root.AddChild(listView);
+            
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

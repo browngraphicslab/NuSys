@@ -4,8 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using SharpDX;
+using Vector2 = System.Numerics.Vector2;
+
 namespace NuSysApp
 {
     public class ListViewUIElement<T> : RectangleUIElement
@@ -18,12 +22,13 @@ namespace NuSysApp
         public ListViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<T> itemsSource = null) : base(parent, resourceCreator)
         {
             _itemsSource = new List<T>();
-
-            if (itemsSource == null)
+            _listColumns = new List<ListColumn<T>>();
+            _listViewRowUIElements = new List<ListViewRowUIElement<T>>();
+            _selectedElements = new HashSet<ListViewRowUIElement<T>>();
+            if (itemsSource != null)
             {
                 AddItems(itemsSource);
             }
-            _listColumns = new List<ListColumn<T>>();
         }
 
         /// <summary>
@@ -33,24 +38,7 @@ namespace NuSysApp
         {
             _listViewRowUIElements.Clear();
             _selectedElements.Clear();
-            foreach (var itemSource in _itemsSource)
-            {
-                if (itemSource == null)
-                {
-                    continue;
-                }
-                var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
-                listViewRowUIElement.Item = itemSource;
-                foreach (var column in _listColumns)
-                {
-                    Debug.Assert(column != null);
-                    var cell = column.ColumnFunction(itemSource);
-                    Debug.Assert(cell != null);
-                    listViewRowUIElement.AddCell(cell);
-                }
-                _listViewRowUIElements.Add(listViewRowUIElement);
-
-            }
+            CreateListViewRowUIElements(_itemsSource);
         }
 
         /// <summary>
@@ -68,21 +56,39 @@ namespace NuSysApp
             //Add items to the item source
             _itemsSource.AddRange(itemsToAdd);
 
-            //set up all the new ListViewRowUIElements
-            foreach (var item in itemsToAdd)
+            CreateListViewRowUIElements(itemsToAdd);
+        }
+
+        /// <summary>
+        /// This simply creates new list view row ui elements for each of the 
+        /// items passed in.
+        /// </summary>
+        /// <param name="itemsToCreateRow"></param>
+        public void CreateListViewRowUIElements(List<T> itemsToCreateRow)
+        {
+            foreach (var itemSource in _itemsSource)
             {
-                if (item != null)
+                if (itemSource == null)
                 {
                     continue;
                 }
-                var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, item);
+                var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
+                listViewRowUIElement.Item = itemSource;
+                listViewRowUIElement.Background = Colors.Purple;
+                listViewRowUIElement.Bordercolor = Colors.White;
+                listViewRowUIElement.BorderWidth = 2;
+                listViewRowUIElement.Width = 400;
+                listViewRowUIElement.Height = 100;
                 foreach (var column in _listColumns)
                 {
                     Debug.Assert(column != null);
-                    var cell = column.ColumnFunction(item);
+                    var cell = column.ColumnFunction(itemSource, listViewRowUIElement, ResourceCreator);
+                    Debug.Assert(cell != null);
                     listViewRowUIElement.AddCell(cell);
                 }
                 _listViewRowUIElements.Add(listViewRowUIElement);
+                _children.Add(listViewRowUIElement);
+
             }
         }
 
@@ -118,7 +124,7 @@ namespace NuSysApp
             _listColumns.Add(listColumn);
             foreach (var row in _listViewRowUIElements)
             {
-                var cell = listColumn.ColumnFunction(row.Item);
+                var cell = listColumn.ColumnFunction(row.Item, row, ResourceCreator);
                 row.AddCell(cell);
             }
         }
@@ -165,11 +171,66 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// This method will select the row corresponding to the item passed in
+        /// </summary>
+        public void SelectItem(T item)
+        {
+            if (item == null)
+            {
+                Debug.Write("Trying to select a null item idiot");
+                return;
+            }
+            var rowToSelect = _listViewRowUIElements.First(row => row.Item.Equals(item));
+            if (rowToSelect == null)
+            {
+                Debug.Write("Could not find the row corresponding to the item you with to select");
+                return;
+            }
+            _selectedElements.Add(rowToSelect);
+            rowToSelect.Select();
+        }
+
+        /// <summary>
+        /// This method will deselect the row corresponding 
+        /// </summary>
+        /// <param name="item"></param>
+        public void DeselectItem(T item)
+        {
+            if (item == null)
+            {
+                Debug.Write("Trying to deselect a null item idiot");
+                return;
+            }
+            var rowToSelect = _selectedElements.First(row => row.Item.Equals(item));
+            if (rowToSelect == null)
+            {
+                Debug.Write("Could not find the row corresponding to the item you with to deselect");
+                return;
+            }
+            _selectedElements.Remove(rowToSelect);
+            rowToSelect.Deselect();
+        }
+
+
+
+        /// <summary>
         /// Returns the items (not the row element) selected.
         /// </summary>
         public IEnumerable<T> GetSelectedItems()
         {
             return _selectedElements.Select(row => row.Item);
+        }
+
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            var cellVerticalOffset = BorderWidth;
+            foreach (var row in _listViewRowUIElements)
+            {
+                row.Transform.LocalPosition = new Vector2(cellVerticalOffset, BorderWidth);
+                cellVerticalOffset += row.Height;
+            }
+            base.Draw(ds);
+
         }
 
     }

@@ -9,13 +9,13 @@ using NusysIntermediate;
 namespace NuSysApp
 {
 
-    public abstract class ListColumn<T>
+    public class ListColumn<T>
     {
         /// <summary>
         /// This function takes in a generic item, and returns the rectangle UI element
         /// that will be placed in the list. 
         /// </summary>
-        public Func<T, RectangleUIElement> ColumnFunction { get; set; }
+        public Func<T, BaseRenderItem, ICanvasResourceCreatorWithDpi, RectangleUIElement> ColumnFunction { get; set; }
 
         /// <summary>
         /// Title of the column

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 
@@ -33,8 +35,6 @@ namespace NuSysApp
         public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
         public event DeSelectedEventHandler Deselected;
 
-
-
         /// <summary>
         /// These are the cells that will be placed on this row. The order is from left to right.
         /// Index 0 is left most.
@@ -52,9 +52,16 @@ namespace NuSysApp
         /// </summary>
         /// <param name="index"></param>
         /// <param name="cell"></param>
-        public void SwitchCell(int index1, int index2)
+        public void SwapCell(int index1, int index2)
         {
-            
+            if (index1 < 0 || index1 > _cells.Count || index2 < 0 || index2 > _cells.Count)
+            {
+                Debug.Write("You are trying to swap the cells of a listview row ui element but one of your indices is out of bounds you idiot");
+                return;
+            }
+            var tmpCell = _cells[index1];
+            _cells[index1] = _cells[index2];
+            _cells[index2] = tmpCell;
         }
 
         /// <summary>
@@ -63,8 +70,31 @@ namespace NuSysApp
         /// <param name="cell"></param>
         public void AddCell(RectangleUIElement cell)
         {
+            if (cell == null)
+            {
+                Debug.Write("Your trying to add a null cell to a listviewrowuielement you idiot");
+                return;
+            }
+            _cells.Add(cell);
+            _children.Add(cell);
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
+        }
+
+        /// <summary>
+        /// This simply changes the background color of the row to the selected color
+        /// </summary>
+        public void Select()
+        {
+            
+        }
+
+        /// <summary>
+        /// This simply changes the bacakground color of the row to the deselected color
+        /// </summary>
+        public void Deselect()
+        {
+            
         }
 
         /// <summary>
@@ -91,10 +121,14 @@ namespace NuSysApp
         /// </summary>
         public void DeleteCell(int index)
         {
-            //NOT FINISHED AT ALL!!!
+            if (index < 0 || index > _cells.Count)
+            {
+                Debug.Write("Your trying to delete a cell at an out of bounds index you idiot");
+            }
             var cell = _cells[index];
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
+            _cells.RemoveAt(index);
         }
 
         /// <summary>
@@ -109,6 +143,15 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+
+            var cellHorizontalOffset = BorderWidth;
+
+            foreach (var cell in _cells)
+            {
+                cell.Transform.LocalPosition = new Vector2(cellHorizontalOffset, BorderWidth);
+                cellHorizontalOffset += cell.Width;
+            }
+
             base.Draw(ds);
         }
 
