@@ -137,7 +137,22 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var tabContainer = new TabContainerUIElement<string>(_renderRoot, RenderCanvas)
+            var resizeableWindow = new SnappableWindowUIElement(_renderRoot, RenderCanvas)
+            {
+                Background = Colors.Red,
+                Bordercolor = Colors.Yellow,
+                TopBarHeight = 25,
+                TopBarColor = Colors.Blue,
+                IsSnappable = true,
+                IsDraggable = true,
+                IsResizeable = true,
+                BorderWidth = 5,
+                Width = 500,
+                Height = 500,
+                GetParentBounds = () => new Vector4(0, 0, (float)SessionController.Instance.ScreenWidth, (float)SessionController.Instance.ScreenHeight),
+                GetParentScreenToLocalMatrix = () => Matrix3x2.Identity,
+            };
+            var tabContainer = new TabContainerUIElement<string>(resizeableWindow, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
@@ -145,10 +160,13 @@ namespace NuSysApp
                 BorderWidth = 5f,
                 Width = 300,
                 Height = 500,
-                TabMaxWidth = 50,
-                InitialOffset = new Vector2((float) (SessionController.Instance.ScreenWidth / 2), (float) SessionController.Instance.ScreenHeight / 2)
+                TabMaxWidth = 100,
+                GetParentBounds = resizeableWindow.ReturnBounds,
+                GetParentScreenToLocalMatrix = resizeableWindow.ReturnScreenToLocalMatrix,
+                InitialOffset = new Vector2(resizeableWindow.BorderWidth,resizeableWindow.TopBarHeight)
             };
-            _renderRoot.AddChild(tabContainer);
+            _renderRoot.AddChild(resizeableWindow);
+            resizeableWindow.AddChild(tabContainer);
             tabContainer.AddTab("hello world", "Title 1");
             tabContainer.AddTab("test", "title 2");
             tabContainer.AddTab("test3", "title 3");

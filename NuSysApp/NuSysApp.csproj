@@ -343,6 +343,7 @@
     <Compile Include="Components\NuSysRenderer\UI\TabButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TabContainerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TextBoxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\PdfDetailRenderItem.cs" />

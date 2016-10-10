@@ -38,8 +38,7 @@ namespace NuSysApp
         /// </summary>
         public T Tab { get; private set; }
 
-        public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
-            BaseInteractiveUIElement shapeElement, T tab) : base(parent, resourceCreator, shapeElement)
+        public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T tab) : base(parent, resourceCreator, new RectangleUIElement(parent, resourceCreator))
         {
             // create a close button
             _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
@@ -90,6 +89,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _closeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            Dispose();
             OnClosed?.Invoke(Tab);
         }
 
@@ -110,14 +110,19 @@ namespace NuSysApp
         /// </summary>
         public void SetCloseButtonParams()
         {
-
             _closeButton.Background = Colors.Red;
+            _closeButton.ButtonTextColor = Colors.Black;
             _closeButton.BorderWidth = 0;
             _closeButton.GetParentBounds = ReturnBounds;
             _closeButton.GetParentScreenToLocalMatrix = ReturnScreenToLocalMatrix;
-            _closeButton.Height = base.Height;
+            _closeButton.Height = base.Height/3;
             _closeButton.Width = base.Width/5;
-            _closeButton.Transform.LocalPosition = new Vector2((base.Width/5)*4, 0);
+            _closeButton.Transform.LocalPosition = new Vector2((base.Width/5)*4, base.Height/3);
+        }
+
+        public override Vector4 ReturnBounds()
+        {
+            return new Vector4(BorderWidth, BorderWidth, Width - BorderWidth - _closeButton.Width, Height - BorderWidth);
         }
     }
 }

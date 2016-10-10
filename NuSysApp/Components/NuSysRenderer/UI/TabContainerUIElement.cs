@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
@@ -37,6 +38,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="tabType"></param>
         public delegate void CurrentTabChangedHandler(T tabType);
+
+        /// <summary>
+        /// The color of the tabs in the tab container
+        /// </summary>
+        public Color TabColor { get; set; }
 
         /// <summary>
         /// Invoked whenever the current tab is changed
@@ -74,6 +80,9 @@ namespace NuSysApp
 
             // and the button as a child
             AddChild(button);
+
+            // set the currently selected tab to the new tab
+            CurrentlySelectedTab = button;
         }
 
         /// <summary>
@@ -82,10 +91,11 @@ namespace NuSysApp
         /// <returns></returns>
         private TabButtonUIElement<T> InitializeNewTab(T tab, string title)
         {
-            var button = new TabButtonUIElement<T>(this, Canvas, new RectangleUIElement(this, Canvas), tab);
+            var button = new TabButtonUIElement<T>(this, Canvas, tab);
             button.Background = Colors.Beige;
             button.ButtonText = title;
             button.ButtonTextColor = Colors.Black;
+            button.Background = TabColor;
             return button;
         }
 
@@ -113,10 +123,20 @@ namespace NuSysApp
                 {
                     CloseTabContainer();
                 }
-                // otherwise set the CurrentlySelectedTab to the tab after the one that was just removed
+                // otherwise set the CurrentlySelectedTab to the tab after the one that was just removed unless the tab was the list in the list
                 else
                 {
-                    CurrentlySelectedTab = _tabList[index];
+                    // check if the tab was the last in the list
+                    if (_tabList.Count == index)
+                    {
+                        CurrentlySelectedTab = _tabList[index - 1];
+                    }
+                    else
+                    {
+                        // if it isn't set the tab to the tab after the one that was just removed
+                        CurrentlySelectedTab = _tabList[index];
+
+                    }
                 }
 
             }
@@ -175,7 +195,10 @@ namespace NuSysApp
         /// </summary>
         public void CloseTabContainer()
         {
-            throw new NotImplementedException();
+            foreach (var tabButton in _tabList)
+            {             
+                RemoveTab(tabButton.Tab);
+            }
         }
 
         /// <summary>
@@ -205,6 +228,15 @@ namespace NuSysApp
 
             // draw the background and the border and the tabs
             base.Draw(ds);
+
+            var index = _tabList.IndexOf(CurrentlySelectedTab);
+
+            var lineWidth = 4f;
+
+            // draw the line under the tabs up to the currently selected tab
+            ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(index * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
+            // draw the line after the currently selected tab to the end of the list
+            ds.DrawLine(new Vector2((index + 1) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Width - BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
 
             ds.Transform = orgTransform;
         }

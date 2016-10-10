@@ -147,12 +147,12 @@ namespace NuSysApp
 
         //todo both this and the click handler feel extraneous here, we already have a tapped event which
         //todo (cont.) exists throughout the entire ui. No need to unecessarily emulate xaml although we do that already :)
-        public delegate void ButtonClickedHandler(ButtonUIElement item, CanvasPointer pointer);
+        public delegate void ButtonTappedHandler(ButtonUIElement item, CanvasPointer pointer);
 
         /// <summary>
         /// Fired when the Button is Clicked
         /// </summary>
-        public event ButtonClickedHandler Clicked;
+        public event ButtonTappedHandler Tapped;
 
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
@@ -203,7 +203,7 @@ namespace NuSysApp
             Bordercolor = SelectedBorder ?? Background;
 
             // Fire the button's Clicked event. 
-            Clicked?.Invoke(this, pointer);
+            Tapped?.Invoke(this, pointer);
         }
 
         /// <summary>

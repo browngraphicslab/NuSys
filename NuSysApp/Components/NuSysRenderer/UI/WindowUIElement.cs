@@ -90,6 +90,5 @@ namespace NuSysApp
             return new Rect(-ErrorMargin, 0, Width + ErrorMargin * 2, Height + ErrorMargin);
         }
 
-
     }
 }
