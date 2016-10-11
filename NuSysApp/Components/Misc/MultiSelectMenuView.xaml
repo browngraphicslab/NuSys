@@ -14,10 +14,11 @@
     </UserControl.Resources>
 
     <Canvas>
-        <Grid x:Name="GroupSettings" BorderBrush="{StaticResource color2}" BorderThickness="2"  Height="150" Width="200" Visibility="Collapsed" Background="{StaticResource color1}">
+        <Grid x:Name="GroupSettings" BorderBrush="{StaticResource color2}" BorderThickness="2"  Height="200" Width="200" Visibility="Collapsed" Background="{StaticResource color1}">
             <StackPanel Margin="10">
                 <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="FiniteCheck" OnContent="Bounded" OffContent="Unbounded" ></ToggleSwitch>
                 <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ShapeCheck" OnContent="Has Shape" OffContent="No Shape"></ToggleSwitch>
+                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ImageCheck" OnContent="Add Image" OffContent="No Image"></ToggleSwitch>
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}"  Content="Finite"></CheckBox>-->
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}" Content="Shaped"></CheckBox>-->
             </StackPanel>

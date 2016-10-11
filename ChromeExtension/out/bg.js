@@ -174,7 +174,9 @@ function setActive(active) {
             chrome.tabs.query({}, function (tabs) {
                 tabs.forEach(function(tab) {
                     var selections = cTedStorage.selections.filter(function(obj) {
-                        return obj.url === tab.url;
+                        return obj.url 
+
+ tab.url;
                     });
                     chrome.tabs.sendMessage(tab.id, { msg: "set_selections", data: selections });
                     
