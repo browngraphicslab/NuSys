@@ -155,20 +155,33 @@ namespace NuSysApp
             listColumn.Title = "testing";
             listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
-                var rect = new RectangleButtonUIElement(item, resourceCreator);
+                var rect = new RectangleUIElement(item, resourceCreator);
                 rect.Background = Colors.Red;
                 rect.BorderWidth = 2;
                 rect.Bordercolor = Colors.Green;
-                rect.Width = 500;
+                rect.Width = 50;
                 rect.Height = 40;
                 return rect;
             };
             listView.AddColumn(listColumn);
+
+            var listColumn2 = new ListColumn<string>();
+            listColumn2.Title = "testing1";
+            listColumn2.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            {
+                var rect = new RectangleUIElement(item, resourceCreator);
+                rect.Background = Colors.Blue;
+                rect.BorderWidth = 2;
+                rect.Bordercolor = Colors.Green;
+                rect.Width = 100;
+                rect.Height = 40;
+                return rect;
+            };
+            listView.AddColumn(listColumn2);
             listView.PopulateListView();
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(listView);
-            
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

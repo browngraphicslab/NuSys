@@ -16,14 +16,14 @@ namespace NuSysApp
     {
         private List<T> _itemsSource;
         private List<ListColumn<T>> _listColumns;
-        private List<ListViewRowUIElement<T>> _listViewRowUIElements;
+        //private List<ListViewRowUIElement<T>> _listViewRowUIElements;
         private HashSet<ListViewRowUIElement<T>> _selectedElements;
         private bool _multipleSelections;
         public ListViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<T> itemsSource = null) : base(parent, resourceCreator)
         {
             _itemsSource = new List<T>();
             _listColumns = new List<ListColumn<T>>();
-            _listViewRowUIElements = new List<ListViewRowUIElement<T>>();
+            //_listViewRowUIElements = new List<ListViewRowUIElement<T>>();
             _selectedElements = new HashSet<ListViewRowUIElement<T>>();
             if (itemsSource != null)
             {
@@ -36,7 +36,7 @@ namespace NuSysApp
         /// </summary>
         public void PopulateListView()
         {
-            _listViewRowUIElements.Clear();
+            //_listViewRowUIElements.Clear();
             ClearChildren();
             _selectedElements.Clear();
             CreateListViewRowUIElements(_itemsSource);
@@ -75,10 +75,10 @@ namespace NuSysApp
                 }
                 var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                 listViewRowUIElement.Item = itemSource;
-                listViewRowUIElement.Background = Colors.Purple;
-                listViewRowUIElement.Bordercolor = Colors.White;
+                listViewRowUIElement.Background = Colors.White;
+                listViewRowUIElement.Bordercolor = Colors.Blue;
                 listViewRowUIElement.BorderWidth = 2;
-                listViewRowUIElement.Width = 400;
+                listViewRowUIElement.Width = 300;
                 listViewRowUIElement.Height = 100;
                 foreach (var column in _listColumns)
                 {
@@ -87,11 +87,30 @@ namespace NuSysApp
                     Debug.Assert(cell != null);
                     listViewRowUIElement.AddCell(cell);
                 }
-                _listViewRowUIElements.Add(listViewRowUIElement);
+                //_listViewRowUIElements.Add(listViewRowUIElement);
+                listViewRowUIElement.Selected += ListViewRowUIElement_Selected;
+                listViewRowUIElement.Deselected += ListViewRowUIElement_Deselected;
                 _children.Add(listViewRowUIElement);
 
             }
         }
+
+        private void ListViewRowUIElement_Deselected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
+        {
+            _selectedElements.Remove(rowUIElement);
+        }
+
+        /// <summary>
+        /// This just adds the row UI element to the selected list
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
+        {
+            _selectedElements.Add(rowUIElement);
+        }
+
+
 
         /// <summary>
         /// Removes things from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
@@ -105,7 +124,13 @@ namespace NuSysApp
                 return;
             }
             _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
-            _listViewRowUIElements.RemoveAll(row => itemsToRemove.Contains(row.Item));
+            var rowsToRemove = _children.Where(row => row is ListViewRowUIElement<T> && itemsToRemove.Contains((row as ListViewRowUIElement<T>).Item));
+            foreach (ListViewRowUIElement<T> row in rowsToRemove)
+            {
+                row.Selected -= ListViewRowUIElement_Selected;
+                row.Deselected -= ListViewRowUIElement_Deselected;
+            }
+            _children.RemoveAll(child => rowsToRemove.Contains(child));
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row.Item));
         }
 
@@ -123,8 +148,13 @@ namespace NuSysApp
                 return;
             }
             _listColumns.Add(listColumn);
-            foreach (var row in _listViewRowUIElements)
+            foreach (var child in _children)
             {
+                var row = child as ListViewRowUIElement<T>;
+                if (row == null)
+                {
+                    continue;
+                }
                 var cell = listColumn.ColumnFunction(row.Item, row, ResourceCreator);
                 row.AddCell(cell);
             }
@@ -156,8 +186,13 @@ namespace NuSysApp
                 Debug.Write("You tried to remove a column from a list view that doesnt exist");
                 return;
             }
-            foreach (var row in _listViewRowUIElements)
+            foreach (var child in _children)
             {
+                var row = child as ListViewRowUIElement<T>;
+                if (row == null)
+                {
+                    continue;
+                }
                 row.DeleteCell(columnIndex);
             }
         }
@@ -181,13 +216,12 @@ namespace NuSysApp
                 Debug.Write("Trying to select a null item idiot");
                 return;
             }
-            var rowToSelect = _listViewRowUIElements.First(row => row.Item.Equals(item));
+            var rowToSelect = _children.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
             if (rowToSelect == null)
             {
                 Debug.Write("Could not find the row corresponding to the item you with to select");
                 return;
             }
-            _selectedElements.Add(rowToSelect);
             rowToSelect.Select();
         }
 
@@ -208,7 +242,6 @@ namespace NuSysApp
                 Debug.Write("Could not find the row corresponding to the item you with to deselect");
                 return;
             }
-            _selectedElements.Remove(rowToSelect);
             rowToSelect.Deselect();
         }
 
@@ -225,8 +258,13 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             var cellVerticalOffset = BorderWidth;
-            foreach (var row in _listViewRowUIElements)
+            foreach (var child in _children)
             {
+                var row = child as ListViewRowUIElement<T>;
+                if (row == null)
+                {
+                    continue;
+                }
                 row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset);
                 cellVerticalOffset += row.Height;
             }

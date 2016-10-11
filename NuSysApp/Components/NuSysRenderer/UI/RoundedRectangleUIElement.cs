@@ -133,13 +133,22 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
-            using (ds)
-            {
-                // draw the border inside the rectangle
-                ds.DrawRoundedRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Radius, Radius, Bordercolor);
-            }
-
+            // draw the border inside the rectangle
+            ds.DrawRoundedRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Radius, Radius, Bordercolor);
+            
         }
+
+        /// <summary>
+        /// the initializer method add event handlers here
+        /// </summary>
+        /// <returns></returns>
+        public override Task Load()
+        {
+            Transform.LocalPosition += InitialOffset;
+
+            return base.Load();
+        }
+
 
         /// <summary>
         /// The InitialOffset of the Upper Left Corner of the Rectangle

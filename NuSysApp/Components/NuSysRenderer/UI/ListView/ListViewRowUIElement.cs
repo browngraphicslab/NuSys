@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Tasks;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -82,19 +83,26 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This simply changes the background color of the row to the selected color
+        /// This simply changes the background color of the row to the selected color, and 
+        /// sets the isSelected bool to true. 
         /// </summary>
-        public void Select()
+        public void Select(InteractiveBaseRenderItem cell = null)
         {
-            
+            Background = Colors.CadetBlue;
+            _isSelected = true;
+            Selected?.Invoke(this, cell as RectangleUIElement);
         }
 
         /// <summary>
-        /// This simply changes the bacakground color of the row to the deselected color
+        /// This simply changes the bacakground color of the row to the deselected color, and sets the 
+        /// is Selected bool to true
         /// </summary>
-        public void Deselect()
+        public void Deselect(InteractiveBaseRenderItem cell = null)
         {
-            
+            Background = Colors.White;
+            _isSelected = false;
+            Deselected?.Invoke(this, cell as RectangleUIElement);
+
         }
 
         /// <summary>
@@ -104,7 +112,14 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            throw new System.NotImplementedException();
+            if (_isSelected == true)
+            {
+                Deselect();
+            }
+            else
+            {
+                Select();
+            }
         }
 
 
@@ -113,7 +128,7 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         /// <summary>

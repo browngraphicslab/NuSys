@@ -88,12 +88,5 @@ namespace NuSysApp
         {
             return Transform.ScreenToLocalMatrix;
         }
-
-        public override async Task Load()
-        {
-            Transform.LocalPosition += InitialOffset;
-            base.Load();
-        }
-
     }
 }
