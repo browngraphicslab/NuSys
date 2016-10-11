@@ -137,60 +137,42 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var _resizableWindow = new SnappableWindowUIElement(_renderRoot, RenderCanvas)
+            var resizeableWindow = new SnappableWindowUIElement(_renderRoot, RenderCanvas)
+            {
+                Background = Colors.Red,
+                Bordercolor = Colors.Yellow,
+                TopBarHeight = 25,
+                TopBarColor = Colors.Blue,
+                IsSnappable = true,
+                IsDraggable = true,
+                IsResizeable = true,
+                BorderWidth = 5,
+                Width = 500,
+                Height = 500,
+                GetParentBounds = () => new Vector4(0, 0, (float)SessionController.Instance.ScreenWidth, (float)SessionController.Instance.ScreenHeight),
+                GetParentScreenToLocalMatrix = () => Matrix3x2.Identity,
+            };
+            var tabContainer = new TabContainerUIElement<string>(resizeableWindow, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
-                BorderWidth = 5,
-                Height = 500,
+                TabHeight = 25,
+                BorderWidth = 5f,
                 Width = 300,
-                TopBarColor = Colors.CadetBlue,
-                TopBarHeight = 25,
-                ErrorMargin = 15,
-                IsResizeable = true,
-                IsDraggable = true,
-                IsSnappable = true,
-                SnapMargin = 10f,
-                KeepAspectRatio = true,
-                PreviewColor = Color.FromArgb(100, 100, 100, 160),
-                InitialOffset =
-                    new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                        (float) SessionController.Instance.ScreenHeight/2),
-                GetParentScreenToLocalMatrix = () =>  Matrix3x2.Identity,
-                GetParentBounds = () => new Vector4(0,0, (float) SessionController.Instance.ScreenWidth, (float) SessionController.Instance.ScreenHeight)
+                Height = 500,
+                TabMaxWidth = 100,
+                GetParentBounds = resizeableWindow.ReturnBounds,
+                GetParentScreenToLocalMatrix = resizeableWindow.ReturnScreenToLocalMatrix,
+                InitialOffset = new Vector2(resizeableWindow.BorderWidth,resizeableWindow.TopBarHeight)
             };
-            // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(_resizableWindow);
-            _resizableWindow.AddChild(new RectangleButtonUIElement(_resizableWindow, RenderCanvas)
-            {
-                Background = Colors.White,
-                Bordercolor = Colors.Black,
-                BorderWidth = 5,
-                Height = 100,
-                Width = 100,
-                InitialOffset = new Vector2(30,30),
-                SelectedBackground = Colors.Blue,
-                SelectedBorder = Colors.Purple,
-                GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
-                GetParentBounds = _resizableWindow.ReturnBounds
-            });
-            _resizableWindow.AddChild(new TextBoxUIElement(_resizableWindow, RenderCanvas)
-            {
-                Background = Colors.White,
-                Bordercolor = Colors.Black,
-                BorderWidth = 5,
-                Height = 100,
-                Width = 100,
-                TextColor = Colors.Black,
-                SelectionHighlight = Colors.Blue,
-                SelectionColor = Colors.White,
-                HorizontalTextAlignment = CanvasHorizontalAlignment.Center,
-                VerticalTextAlignment = CanvasVerticalAlignment.Center,
-                TextBoxText = "Test this text",
-                InitialOffset = new Vector2(30, 180),
-                GetParentScreenToLocalMatrix = _resizableWindow.ReturnScreenToLocalMatrix,
-                GetParentBounds = _resizableWindow.ReturnBounds
-            });
+            _renderRoot.AddChild(resizeableWindow);
+            resizeableWindow.AddChild(tabContainer);
+            tabContainer.AddTab("hello world", "Title 1");
+            tabContainer.AddTab("test", "title 2");
+            tabContainer.AddTab("test3", "title 3");
+            tabContainer.AddTab("test4", "title 4");
+            tabContainer.AddTab("test5", "title 5");
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
