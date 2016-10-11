@@ -37,6 +37,7 @@ namespace NuSysApp
         public void PopulateListView()
         {
             _listViewRowUIElements.Clear();
+            ClearChildren();
             _selectedElements.Clear();
             CreateListViewRowUIElements(_itemsSource);
         }
@@ -226,7 +227,7 @@ namespace NuSysApp
             var cellVerticalOffset = BorderWidth;
             foreach (var row in _listViewRowUIElements)
             {
-                row.Transform.LocalPosition = new Vector2(cellVerticalOffset, BorderWidth);
+                row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset);
                 cellVerticalOffset += row.Height;
             }
             base.Draw(ds);

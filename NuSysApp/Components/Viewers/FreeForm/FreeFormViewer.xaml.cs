@@ -138,7 +138,7 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas, new List<string>() {"test","fdsa","fdsaf"})
+            var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas, new List<string>() {"test", "fdsa", "s"})
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
@@ -155,7 +155,7 @@ namespace NuSysApp
             listColumn.Title = "testing";
             listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
-                var rect = new RectangleUIElement(item, resourceCreator);
+                var rect = new RectangleButtonUIElement(item, resourceCreator);
                 rect.Background = Colors.Red;
                 rect.BorderWidth = 2;
                 rect.Bordercolor = Colors.Green;
