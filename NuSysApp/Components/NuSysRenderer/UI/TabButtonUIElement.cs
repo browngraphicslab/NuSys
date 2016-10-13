@@ -113,16 +113,10 @@ namespace NuSysApp
             _closeButton.Background = Colors.Red;
             _closeButton.ButtonTextColor = Colors.Black;
             _closeButton.BorderWidth = 0;
-            _closeButton.GetParentBounds = ReturnBounds;
-            _closeButton.GetParentScreenToLocalMatrix = ReturnScreenToLocalMatrix;
             _closeButton.Height = base.Height/3;
             _closeButton.Width = base.Width/5;
             _closeButton.Transform.LocalPosition = new Vector2((base.Width/5)*4, base.Height/3);
         }
 
-        public override Vector4 ReturnBounds()
-        {
-            return new Vector4(BorderWidth, BorderWidth, Width - BorderWidth - _closeButton.Width, Height - BorderWidth);
-        }
     }
 }

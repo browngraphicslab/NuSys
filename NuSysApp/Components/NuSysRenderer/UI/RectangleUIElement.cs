@@ -81,17 +81,6 @@ namespace NuSysApp
         /// </summary>
         public override Color Bordercolor { get; set; }
 
-        /// <summary>
-        /// the initializer method add event handlers here
-        /// </summary>
-        /// <returns></returns>
-        public override Task Load()
-        {
-            Transform.LocalPosition += InitialOffset;
-
-            return base.Load();
-        }
-
 
         /// <summary>
         /// Draws the background and the border
@@ -126,23 +115,6 @@ namespace NuSysApp
             // draw the border inside the rectangle
             ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Bordercolor, BorderWidth);
 
-        }
-
-        /// <summary>
-        /// The InitialOffset of the Upper Left Corner of the Rectangle
-        /// From the parentss upper left corner. Offsets from the UpperLeft corner of
-        /// the screen if the parent is null.
-        /// </summary>
-        public override Vector2 InitialOffset { get; set; }
-
-        /// <summary>
-        /// Returns the bounds of the rectangle in which objects can be contained.
-        /// The vector 4 has upper left x, upper left y, lower right x, lower right y
-        /// </summary>
-        /// <returns></returns>
-        public override Vector4 ReturnBounds()
-        {
-            return new Vector4(BorderWidth,BorderWidth,Width - BorderWidth, Height - BorderWidth);
         }
 
         /// <summary>

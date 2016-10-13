@@ -34,45 +34,6 @@ namespace NuSysApp
         public override Color Bordercolor {
             get { return Shape.Bordercolor; }
             set { Shape.Bordercolor = value; } }
-
-        /// <summary>
-        /// The InitialOffset of the UIElement from the parent's upper left corner.
-        /// Offsets from the top left of the screen if the parent is null.
-        /// </summary>
-        public override Vector2 InitialOffset {
-            get { return Shape.InitialOffset; }
-            set { Shape.InitialOffset = value; } }
-
-        /// <summary>
-        /// A func that calls a function which gets the bounds of the parent of the UIElement
-        /// </summary>
-        public Func<Vector4> GetParentBounds
-        {
-            get { return Shape.GetParentBounds; }
-            set { Shape.GetParentBounds = value; }
-        }
-
-        /// <summary>
-        /// A method which will return a vector containing the bounds of the element.
-        /// The bounds are defined as the bounding box in which items can be contained.
-        /// The Vector4 has the upper left x, upper left y, and lower right x, lower right y
-        /// </summary>
-        /// <returns></returns>
-        public override Vector4 ReturnBounds()
-        {
-            return Shape.ReturnBounds();
-        }
-
-
-        /// <summary>
-        /// Returns the shape's screen to local matrix
-        /// </summary>
-        public Func<Matrix3x2> GetParentScreenToLocalMatrix
-        {
-            get { return Shape.GetParentScreenToLocalMatrix; }
-            set { Shape.GetParentScreenToLocalMatrix = value; }
-        }
-
         
 
         /// <summary>
@@ -243,13 +204,10 @@ namespace NuSysApp
                     TrimmingSign = CanvasTrimmingSign.Ellipsis
                 };
 
-                // get the bounds of the shape which represents the button
-                var shapeBounds = ReturnBounds();
-
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created textFormat
                 ds.DrawText(ButtonText,
-                    new Rect(shapeBounds.X, shapeBounds.Y, shapeBounds.Z - shapeBounds.X, shapeBounds.W - shapeBounds.Y),
+                    new Rect(BorderWidth, BorderWidth, Width, Height),
                     ButtonTextColor, textFormat);
             }
 

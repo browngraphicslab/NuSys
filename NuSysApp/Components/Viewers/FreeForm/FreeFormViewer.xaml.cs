@@ -137,20 +137,17 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var resizeableWindow = new SnappableWindowUIElement(_renderRoot, RenderCanvas)
+            var resizeableWindow = new ResizeableWindowUIElement(_renderRoot, RenderCanvas)
             {
                 Background = Colors.Red,
                 Bordercolor = Colors.Yellow,
                 TopBarHeight = 25,
                 TopBarColor = Colors.Blue,
-                IsSnappable = true,
                 IsDraggable = true,
                 IsResizeable = true,
                 BorderWidth = 5,
                 Width = 500,
                 Height = 500,
-                GetParentBounds = () => new Vector4(0, 0, (float)SessionController.Instance.ScreenWidth, (float)SessionController.Instance.ScreenHeight),
-                GetParentScreenToLocalMatrix = () => Matrix3x2.Identity,
             };
             var tabContainer = new TabContainerUIElement<string>(resizeableWindow, RenderCanvas)
             {
@@ -161,10 +158,9 @@ namespace NuSysApp
                 Width = 300,
                 Height = 500,
                 TabMaxWidth = 100,
-                GetParentBounds = resizeableWindow.ReturnBounds,
-                GetParentScreenToLocalMatrix = resizeableWindow.ReturnScreenToLocalMatrix,
-                InitialOffset = new Vector2(resizeableWindow.BorderWidth,resizeableWindow.TopBarHeight)
             };
+            tabContainer.Transform.LocalPosition = new Vector2(5, 25);
+
             _renderRoot.AddChild(resizeableWindow);
             resizeableWindow.AddChild(tabContainer);
             tabContainer.AddTab("hello world", "Title 1");
