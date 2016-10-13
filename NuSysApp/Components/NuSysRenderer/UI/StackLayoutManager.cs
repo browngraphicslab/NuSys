@@ -12,33 +12,65 @@ namespace NuSysApp
     {
         private List<BaseInteractiveUIElement> _elements;
 
+        /// <summary>
+        /// The spacing between the elements in the stack.
+        /// </summary>
         public float Spacing { get; set; }
 
+        /// <summary>
+        /// The margin in pixels between the left side of the stack and the left side of the parent
+        /// </summary>
         public float LeftMargin { get; set; }
+
+        /// <summary>
+        /// The margin in pixels between the top side of the stack and the top side of the parent
+        /// </summary>
         public float TopMargin { get; set; }
+
+        /// <summary>
+        /// The margin in pixels between the right side of the stack and the right side of the parent
+        /// </summary>
         public float RightMargin { get; set; }
+
+        /// <summary>
+        /// The margin in pixels between the bottom side of the stack and the bottom side of the parent
+        /// </summary>
         public float BottomMargin { get; set; }
 
+        /// <summary>
+        /// The width of each individual item in the stack
+        /// </summary>
         public float ItemWidth { get; set; }
+
+        /// <summary>
+        /// The height of each individual item in the stack
+        /// </summary>
         public float ItemHeight { get; set; }
 
-
+        /// <summary>
+        /// The horizontal alignment of the items in the stack
+        /// </summary>
         public HorizontalAlignment HorizontalAlignment { get; set; }
 
+        /// <summary>
+        /// The vertical alignment of the items in the stack
+        /// </summary>
         public VerticalAlignment VerticalAlignment { get; set; }
 
-        private StackAlignment _stackAlignment;
+        /// <summary>
+        /// The alignment of the entire stack.
+        /// </summary>
+        public StackAlignment StackAlignment;
 
-
-        public enum StackAlignment
-        {
-            Horizontal, Vertical
-        }
-
+        
+        /// <summary>
+        /// Create a new StackLayoutManager with the desired alignment
+        /// </summary>
+        /// <param name="alignment"></param>
         public StackLayoutManager(StackAlignment alignment = StackAlignment.Horizontal)
         {
             _elements = new List<BaseInteractiveUIElement>();
-            _stackAlignment = alignment;
+            StackAlignment = alignment;
         }
          
         public override void ArrangeItems(Vector2 offset)
@@ -48,7 +80,7 @@ namespace NuSysApp
             float elementHeight;
             Vector2 itemOffset = new Vector2();
 
-            switch (_stackAlignment)
+            switch (StackAlignment)
             {
 
                 //VERTICAL STACK
@@ -235,21 +267,42 @@ namespace NuSysApp
             ItemHeight = elementHeight;
         }
 
+        /// <summary>
+        /// Add the element to the stack
+        /// </summary>
+        /// <param name="element"></param>
         public void AddElement(BaseInteractiveUIElement element)
         {
             _elements.Add(element);
         }
 
+        /// <summary>
+        /// Remove the element from the stack
+        /// </summary>
+        /// <param name="element"></param>
         public void Remove(BaseInteractiveUIElement element)
         {
             _elements.Remove(element);
         }
 
+        /// <summary>
+        /// Remove the element from the stack at the requested index
+        /// </summary>
+        /// <param name="index"></param>
         public void RemoveAt(int index)
         {
             _elements.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Set the margins of the stack. If one margin given sets left, top, right, bottom, to that margin
+        /// if two margins given sets left, right to first margin, top, bottom to second margin
+        /// if four margins given sets left, top, right, bottom to each margin respectively.
+        /// </summary>
+        /// <param name="m1"></param>
+        /// <param name="m2"></param>
+        /// <param name="m3"></param>
+        /// <param name="m4"></param>
         public void SetMargins(float m1, float? m2 = null, float? m3 = null, float? m4 = null)
         {
             if (m2 == null)

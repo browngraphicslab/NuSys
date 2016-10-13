@@ -212,24 +212,11 @@ namespace NuSysApp
         /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-            // store the tabWidth and tabOffset for drawing
-            //var tabWidth = Math.Min((Width - 2 * BorderWidth) /_tabList.Count, TabMaxWidth);
-            //var tabOffset = BorderWidth;
-
             // save the old transform
             var orgTransform = ds.Transform;
 
             // set the new transform to local to screen
             ds.Transform = Transform.LocalToScreenMatrix;
-
-            //// set the tabWidth and tabOffset
-            //foreach (var tab in _tabList)
-            //{
-            //    tab.Width = tabWidth;
-            //    tab.Height = TabHeight;
-            //    tab.Transform.LocalPosition = new Vector2(tabOffset, BorderWidth);
-            //    tabOffset += tabWidth;
-            //}
 
             // draw the background and the border and the tabs
             base.Draw(ds);
@@ -241,13 +228,17 @@ namespace NuSysApp
             var tabWidth = _stackLayoutManager.ItemWidth;
 
             // draw the line under the tabs up to the currently selected tab
-            ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(index * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
+            ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Math.Max(index, 0) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
             // draw the line after the currently selected tab to the end of the list
             ds.DrawLine(new Vector2((index + 1) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Width - BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
 
             ds.Transform = orgTransform;
         }
 
+        /// <summary>
+        /// Updates the layout of the tabs
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             _stackLayoutManager.SetMargins(BorderWidth);
