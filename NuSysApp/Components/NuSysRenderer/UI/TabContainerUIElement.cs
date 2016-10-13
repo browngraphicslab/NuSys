@@ -49,11 +49,14 @@ namespace NuSysApp
         /// </summary>
         public event CurrentTabChangedHandler OnCurrentTabChanged;
 
+        private StackLayoutManager _stackLayoutManager;
+
 
         public TabContainerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // initialize the _tabList
             _tabList = new List<TabButtonUIElement<T>>();
+            _stackLayoutManager = new StackLayoutManager();
         }
 
         /// <summary>
@@ -73,6 +76,7 @@ namespace NuSysApp
             // add the new button to the tablist
             var button = InitializeNewTab(tab, title);
             _tabList.Add(button);
+            _stackLayoutManager.AddElement(button);
 
             // add the handlers for the button getting selected and closed
             button.OnSelected += Button_OnSelected;
@@ -152,6 +156,7 @@ namespace NuSysApp
 
             // remove the tab as a child
             RemoveChild(tabToBeRemoved);
+            _stackLayoutManager.Remove(tabToBeRemoved);
         }
 
         /// <summary>
@@ -208,8 +213,8 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             // store the tabWidth and tabOffset for drawing
-            var tabWidth = Math.Min((Width - 2 * BorderWidth) /_tabList.Count, TabMaxWidth);
-            var tabOffset = BorderWidth;
+            //var tabWidth = Math.Min((Width - 2 * BorderWidth) /_tabList.Count, TabMaxWidth);
+            //var tabOffset = BorderWidth;
 
             // save the old transform
             var orgTransform = ds.Transform;
@@ -217,14 +222,14 @@ namespace NuSysApp
             // set the new transform to local to screen
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            // set the tabWidth and tabOffset
-            foreach (var tab in _tabList)
-            {
-                tab.Width = tabWidth;
-                tab.Height = TabHeight;
-                tab.Transform.LocalPosition = new Vector2(tabOffset, BorderWidth);
-                tabOffset += tabWidth;
-            }
+            //// set the tabWidth and tabOffset
+            //foreach (var tab in _tabList)
+            //{
+            //    tab.Width = tabWidth;
+            //    tab.Height = TabHeight;
+            //    tab.Transform.LocalPosition = new Vector2(tabOffset, BorderWidth);
+            //    tabOffset += tabWidth;
+            //}
 
             // draw the background and the border and the tabs
             base.Draw(ds);
@@ -233,12 +238,27 @@ namespace NuSysApp
 
             var lineWidth = 4f;
 
+            var tabWidth = _stackLayoutManager.ItemWidth;
+
             // draw the line under the tabs up to the currently selected tab
             ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(index * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
             // draw the line after the currently selected tab to the end of the list
             ds.DrawLine(new Vector2((index + 1) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Width - BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
 
             ds.Transform = orgTransform;
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _stackLayoutManager.SetMargins(BorderWidth);
+            _stackLayoutManager.ItemHeight = TabHeight;
+            _stackLayoutManager.ItemWidth = Math.Min((Width - 2*BorderWidth)/_tabList.Count, TabMaxWidth);
+            _stackLayoutManager.Width = Width;
+            _stackLayoutManager.Height = Height;
+            _stackLayoutManager.HorizontalAlignment = HorizontalAlignment.Left;
+            _stackLayoutManager.VerticalAlignment = VerticalAlignment.Top;
+            _stackLayoutManager.ArrangeItems(new Vector2(0,0));
+            base.Update(parentLocalToScreenTransform);
         }
     }
 }
