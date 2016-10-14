@@ -30,6 +30,7 @@ namespace NuSysApp
                 AddItems(itemsSource);
             }
         }
+        
 
         /// <summary>
         /// This method will populate the list view using the functions of the columns and the item source.
