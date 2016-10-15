@@ -152,7 +152,22 @@ namespace NuSysApp
             return base.Load();
         }
 
-        
+        /// <summary>
+        /// This sets the width of the cell at the specified index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="width"></param>
+        public void SetCellWidth(int index, float width)
+        {
+            if (index < 0 || index >= _children.Count)
+            {
+                Debug.WriteLine("Pass in a non negative or in bound index you idiot.");
+                return;
+            }
+            var cell = _children[index] as RectangleUIElement;
+            Debug.Assert(cell != null);
+            cell.Width = width;
+        }
 
         public override void Draw(CanvasDrawingSession ds)
         {

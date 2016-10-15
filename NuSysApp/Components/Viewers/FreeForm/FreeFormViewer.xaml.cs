@@ -154,7 +154,7 @@ namespace NuSysApp
 
             var listColumn = new ListColumn<string>();
             listColumn.Title = "testing";
-            listColumn.Width = 50;
+            listColumn.Width = 60;
             listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
@@ -169,12 +169,12 @@ namespace NuSysApp
 
             var listColumn2 = new ListColumn<string>();
             listColumn2.Title = "testing1";
-            listColumn2.Width = 50;
+            listColumn2.Width = 100;
             listColumn2.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
                 rect.Background = Colors.Blue;
-                rect.BorderWidth = 2;
+                rect.BorderWidth = 3;
                 rect.Bordercolor = Colors.HotPink;
                 rect.Width = 100;
                 rect.Height = 40;
@@ -186,12 +186,12 @@ namespace NuSysApp
 
             var listColumn3 = new ListColumn<string>();
             listColumn3.Title = "testing3";
-            listColumn3.Width = 50;
+            listColumn3.Width = 30;
             listColumn3.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
                 rect.Background = Colors.Blue;
-                rect.BorderWidth = 1;
+                rect.BorderWidth = 3;
                 rect.Bordercolor = Colors.Red;
                 rect.Width = 100;
                 rect.Height = 40;

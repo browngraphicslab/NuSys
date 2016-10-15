@@ -38,6 +38,18 @@ namespace NuSysApp
         private float _lastColumnWidth;
 
         /// <summary>
+        /// This is here so its easier to debug (i can set breakpoint at setter so i can see when it changes.)
+        /// </summary>
+        private float LastColumnWidth
+        {
+            get { return _lastColumnWidth; }
+            set
+            {
+                _lastColumnWidth = value;
+            }
+        }
+
+        /// <summary>
         /// Whether the list can have multiple or only single selections
         /// </summary>
         public bool MultipleSelections { get; set; }
@@ -64,7 +76,7 @@ namespace NuSysApp
                 float diff = value - base.Width - (BorderWidth * 2 + RowBorderThickness * 2);
                 if (_lastColumnWidth + diff > 0)
                 {
-                    _lastColumnWidth = _lastColumnWidth + diff;
+                    LastColumnWidth = LastColumnWidth + diff;
                     base.Width = value;
                 }
                 else
@@ -242,8 +254,8 @@ namespace NuSysApp
             {
                 Debug.Write("You are trying to add a null column to the list view");
                 return;
-            } 
-            _lastColumnWidth = _lastColumnWidth - (_listColumns.Count != 0 ?  _listColumns.Last().Width : 0);
+            }
+            LastColumnWidth = _lastColumnWidth - (_listColumns.Count != 0 ?  _listColumns.Last().Width : 0);
             foreach (var child in _children)
             {
                 var row = child as ListViewRowUIElement<T>;
@@ -285,7 +297,6 @@ namespace NuSysApp
                 if (_listColumns[i].Title.Equals(columnTitle))
                 {
                     columnIndex = i;
-                    _listColumns.RemoveAt(i);
                 }
             }
             if (columnIndex == -1)
@@ -302,7 +313,9 @@ namespace NuSysApp
                 }
                 row.DeleteCell(columnIndex);
             }
-            _lastColumnWidth = _lastColumnWidth + _listColumns[columnIndex].Width;
+            LastColumnWidth = _lastColumnWidth + _listColumns[columnIndex].Width;
+            _listColumns.RemoveAt(columnIndex);
+
         }
 
         /// <summary>
@@ -386,11 +399,55 @@ namespace NuSysApp
 
         public void SwapColumns(int columnAIndex, int columnBIndex)
         {
-            //Swap the columns in the column 
-            if (columnAIndex == _listColumns.Count - 1 || columnBIndex == _listColumns.Count - 1)
+            if (columnAIndex == columnBIndex || columnAIndex < 0 || columnBIndex < 0 ||
+                columnAIndex >= _listColumns.Count || columnBIndex >= _listColumns.Count)
             {
-                
+                Debug.WriteLine("Pass in proper indices for swapping columns");
+                return;
             }
+            bool AIndexIsLast = false;
+            bool BIndexIsLast = false;
+            //if either columns is the last column
+            if (columnAIndex == _listColumns.Count - 1)
+            {
+                //adjust the last column size accordingly
+                AIndexIsLast = true;
+                LastColumnWidth = _lastColumnWidth + _listColumns[columnBIndex].Width -
+                                   _listColumns[columnAIndex].Width;
+            }
+            else if (columnBIndex == _listColumns.Count - 1)
+            {
+                BIndexIsLast = true;
+                LastColumnWidth = _lastColumnWidth + _listColumns[columnAIndex].Width -
+                                   _listColumns[columnBIndex].Width;
+            }
+            foreach (var child in _children)
+            {
+                var row = child as ListViewRowUIElement<T>;
+                if (row == null)
+                {
+                    continue;
+                }
+                //If either of the cell is the last you need to change the sizes of the cells before you swap them
+                if (AIndexIsLast)
+                {
+                    row.SetCellWidth(columnAIndex, _listColumns[columnAIndex].Width);
+                    row.SetCellWidth(columnBIndex, _lastColumnWidth);
+                }
+                else if (BIndexIsLast)
+                {
+                    row.SetCellWidth(columnBIndex, _listColumns[columnBIndex].Width);
+                    row.SetCellWidth(columnAIndex, _lastColumnWidth);
+                }
+                row.SwapCell(columnAIndex, columnBIndex);
+            }
+
+            //swaps the columns in the list of columns
+            var tmpCol = _listColumns[columnAIndex];
+            _listColumns[columnAIndex] = _listColumns[columnBIndex];
+            _listColumns[columnBIndex] = tmpCol;
+
+
         }
 
 
