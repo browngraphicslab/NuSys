@@ -153,6 +153,7 @@ namespace NuSysApp
             };
             var listColumn = new ListColumn<string>();
             listColumn.Title = "testing";
+            listColumn.Width = 50;
             listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
@@ -167,17 +168,34 @@ namespace NuSysApp
 
             var listColumn2 = new ListColumn<string>();
             listColumn2.Title = "testing1";
+            listColumn2.Width = 50;
             listColumn2.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
                 rect.Background = Colors.Blue;
                 rect.BorderWidth = 2;
-                rect.Bordercolor = Colors.Green;
+                rect.Bordercolor = Colors.HotPink;
                 rect.Width = 100;
                 rect.Height = 40;
                 return rect;
             };
             listView.AddColumn(listColumn2);
+            listView.RemoveColumn("testing");
+            listView.AddColumn(listColumn);
+            var listColumn3 = new ListColumn<string>();
+            listColumn3.Title = "testing3";
+            listColumn3.Width = 50;
+            listColumn3.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            {
+                var rect = new RectangleUIElement(item, resourceCreator);
+                rect.Background = Colors.Blue;
+                rect.BorderWidth = 2;
+                rect.Bordercolor = Colors.Red;
+                rect.Width = 100;
+                rect.Height = 40;
+                return rect;
+            };
+            listView.AddColumn(listColumn3);
             listView.PopulateListView();
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection

@@ -18,11 +18,43 @@ namespace NuSysApp
         private List<ListColumn<T>> _listColumns;
         //private List<ListViewRowUIElement<T>> _listViewRowUIElements;
         private HashSet<ListViewRowUIElement<T>> _selectedElements;
-        private bool _multipleSelections;
-        public ListViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<T> itemsSource = null) : base(parent, resourceCreator)
+        public bool MultipleSelections { get; set; }
+        private float _rowHeight;
+
+        /// <summary>
+        /// The width of the last column should always fill up the remaining space in the row.
+        /// </summary>
+        private float _lastColumnWidth;
+
+        public override float Width
+        {
+            get { return base.Width; }
+            set
+            {
+                float diff = value - base.Width;
+                if (_lastColumnWidth + diff > 0)
+                {
+                    _lastColumnWidth = _lastColumnWidth + diff;
+                    base.Width = value;
+                }
+                else
+                {
+                    Debug.WriteLine("Your trying to adjust the width of the list view, but doing so would cut the cells off so i'm not letting you adjust it");
+                }
+
+            }
+        }
+
+        public ListViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<T> itemsSource = null, float rowHeight = 30) : base(parent, resourceCreator)
         {
             _itemsSource = new List<T>();
             _listColumns = new List<ListColumn<T>>();
+            MultipleSelections = false;
+            if (rowHeight <= 0)
+            {
+                Debug.Write("You tried to give a negative or 0 row height to the list view ui element, idiot. I'm just taking the absolute value of it");
+            }
+            _rowHeight = Math.Abs(rowHeight);
             //_listViewRowUIElements = new List<ListViewRowUIElement<T>>();
             _selectedElements = new HashSet<ListViewRowUIElement<T>>();
             if (itemsSource != null)
@@ -80,11 +112,22 @@ namespace NuSysApp
                 listViewRowUIElement.Bordercolor = Colors.Blue;
                 listViewRowUIElement.BorderWidth = 2;
                 listViewRowUIElement.Width = 300;
-                listViewRowUIElement.Height = 100;
+                listViewRowUIElement.Height = _rowHeight;
                 foreach (var column in _listColumns)
                 {
                     Debug.Assert(column != null);
-                    var cell = column.ColumnFunction(itemSource, listViewRowUIElement, ResourceCreator);
+                    RectangleUIElement cell;
+                    if (column == _listColumns.Last())
+                    {
+                        cell = column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator, _rowHeight, _lastColumnWidth);
+
+
+                    }
+                    else
+                    {
+                        cell = column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator, _rowHeight);
+
+                    }
                     Debug.Assert(cell != null);
                     listViewRowUIElement.AddCell(cell);
                 }
@@ -98,7 +141,7 @@ namespace NuSysApp
 
         private void ListViewRowUIElement_Deselected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
         {
-            _selectedElements.Remove(rowUIElement);
+            DeselectRow(rowUIElement);
         }
 
         /// <summary>
@@ -108,7 +151,7 @@ namespace NuSysApp
         /// <param name="cell"></param>
         private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
         {
-            _selectedElements.Add(rowUIElement);
+            SelectRow(rowUIElement);
         }
 
 
@@ -147,7 +190,8 @@ namespace NuSysApp
             {
                 Debug.Write("You are trying to add a null column to the list view");
                 return;
-            }
+            } 
+            _lastColumnWidth = _lastColumnWidth - (_listColumns.Count != 0 ?  _listColumns.Last().Width : 0);
             _listColumns.Add(listColumn);
             foreach (var child in _children)
             {
@@ -156,7 +200,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var cell = listColumn.ColumnFunction(row.Item, row, ResourceCreator);
+                var cell = listColumn.GetColumnCellFromItem(row.Item, row, ResourceCreator, _rowHeight);
                 row.AddCell(cell);
             }
         }
@@ -196,6 +240,7 @@ namespace NuSysApp
                 }
                 row.DeleteCell(columnIndex);
             }
+            _lastColumnWidth = _lastColumnWidth + _listColumns[columnIndex].Width;
         }
 
         /// <summary>
@@ -208,7 +253,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This method will select the row corresponding to the item passed in
+        /// This method will select the row corresponding to the item passed in. This is what users will call when you 
+        /// want to select an item in the list.
         /// </summary>
         public void SelectItem(T item)
         {
@@ -218,16 +264,36 @@ namespace NuSysApp
                 return;
             }
             var rowToSelect = _children.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
+            SelectRow(rowToSelect);
+
+        }
+
+        /// <summary>
+        /// This actually moves the row to the selected list and selects the row.
+        /// </summary>
+        /// <param name="rowToSelect"></param>
+        private void SelectRow(ListViewRowUIElement<T> rowToSelect)
+        {
             if (rowToSelect == null)
             {
                 Debug.Write("Could not find the row corresponding to the item you with to select");
                 return;
             }
+            if (MultipleSelections == false)
+            {
+                foreach (var selectedRow in _selectedElements)
+                {
+                    selectedRow.Deselect();
+                }
+                _selectedElements.Clear();
+            }
             rowToSelect.Select();
+            _selectedElements.Add(rowToSelect);
         }
 
         /// <summary>
-        /// This method will deselect the row corresponding 
+        /// This method will deselect the row corresponding to the item. This is what users will call when they 
+        /// want to deselect a row corresponding to an item
         /// </summary>
         /// <param name="item"></param>
         public void DeselectItem(T item)
@@ -237,14 +303,25 @@ namespace NuSysApp
                 Debug.Write("Trying to deselect a null item idiot");
                 return;
             }
-            var rowToSelect = _selectedElements.First(row => row.Item.Equals(item));
-            if (rowToSelect == null)
+            var rowToDeselect = _selectedElements.First(row => row.Item.Equals(item));
+            DeselectRow(rowToDeselect);
+        }
+
+        /// <summary>
+        /// This removes the row from the selected list and calls deselect on the row.
+        /// </summary>
+        /// <param name="rowToDeselect"></param>
+        public void DeselectRow(ListViewRowUIElement<T> rowToDeselect)
+        {
+            if (rowToDeselect == null)
             {
                 Debug.Write("Could not find the row corresponding to the item you with to deselect");
                 return;
             }
-            rowToSelect.Deselect();
+            rowToDeselect.Deselect();
+            _selectedElements.Remove(rowToDeselect);
         }
+
 
 
 

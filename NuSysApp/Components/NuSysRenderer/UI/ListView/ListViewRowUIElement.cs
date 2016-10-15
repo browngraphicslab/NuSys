@@ -90,7 +90,6 @@ namespace NuSysApp
         {
             Background = Colors.CadetBlue;
             _isSelected = true;
-            Selected?.Invoke(this, cell as RectangleUIElement);
         }
 
         /// <summary>
@@ -101,8 +100,6 @@ namespace NuSysApp
         {
             Background = Colors.White;
             _isSelected = false;
-            Deselected?.Invoke(this, cell as RectangleUIElement);
-
         }
 
         /// <summary>
@@ -114,11 +111,12 @@ namespace NuSysApp
         {
             if (_isSelected == true)
             {
-                Deselect();
+                Deselected?.Invoke(this, item as RectangleUIElement);
+
             }
             else
             {
-                Select();
+                Selected?.Invoke(this, item as RectangleUIElement);
             }
         }
 
