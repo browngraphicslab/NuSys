@@ -138,8 +138,7 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas, new List<string>() {"test", "fdsa", "s"})
-            {
+            var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas){
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
                 BorderWidth = 5,
@@ -151,6 +150,8 @@ namespace NuSysApp
                 GetParentScreenToLocalMatrix = () =>  Matrix3x2.Identity,
                 GetParentBounds = () => new Vector4(0,0, (float) SessionController.Instance.ScreenWidth, (float) SessionController.Instance.ScreenHeight)
             };
+            listView.AddItems(new List<string>() {"f", "d","e"});
+
             var listColumn = new ListColumn<string>();
             listColumn.Title = "testing";
             listColumn.Width = 50;
@@ -158,8 +159,8 @@ namespace NuSysApp
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
                 rect.Background = Colors.Red;
-                rect.BorderWidth = 2;
-                rect.Bordercolor = Colors.Green;
+                rect.BorderWidth = 3;
+                rect.Bordercolor = Colors.Yellow;
                 rect.Width = 50;
                 rect.Height = 40;
                 return rect;
@@ -182,6 +183,7 @@ namespace NuSysApp
             listView.AddColumn(listColumn2);
             listView.RemoveColumn("testing");
             listView.AddColumn(listColumn);
+
             var listColumn3 = new ListColumn<string>();
             listColumn3.Title = "testing3";
             listColumn3.Width = 50;
@@ -189,14 +191,14 @@ namespace NuSysApp
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
                 rect.Background = Colors.Blue;
-                rect.BorderWidth = 2;
+                rect.BorderWidth = 1;
                 rect.Bordercolor = Colors.Red;
                 rect.Width = 100;
                 rect.Height = 40;
                 return rect;
             };
             listView.AddColumn(listColumn3);
-            listView.PopulateListView();
+            //listView.PopulateListView();
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(listView);

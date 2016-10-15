@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Media.Import;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
@@ -14,24 +15,53 @@ namespace NuSysApp
 {
     public class ListViewUIElement<T> : RectangleUIElement
     {
+        /// <summary>
+        /// The list of items (e.g library element models)
+        /// </summary>
         private List<T> _itemsSource;
+
+        /// <summary>
+        /// The list of columns. This graphical order of the columns in ListView is the same order as this order
+        /// </summary>
         private List<ListColumn<T>> _listColumns;
+
         //private List<ListViewRowUIElement<T>> _listViewRowUIElements;
+
+        /// <summary>
+        /// A hashset of the selected rows
+        /// </summary>
         private HashSet<ListViewRowUIElement<T>> _selectedElements;
-        public bool MultipleSelections { get; set; }
-        private float _rowHeight;
 
         /// <summary>
         /// The width of the last column should always fill up the remaining space in the row.
         /// </summary>
         private float _lastColumnWidth;
 
+        /// <summary>
+        /// Whether the list can have multiple or only single selections
+        /// </summary>
+        public bool MultipleSelections { get; set; }
+
+        /// <summary>
+        /// THis is the heigh of each of the rows
+        /// </summary>
+        public float RowHeight { get; set; }
+
+        /// <summary>
+        /// This is the thickness of row ui element border
+        /// </summary>
+        public float RowBorderThickness { get; set; }
+        
+        /// <summary>
+        /// This overrides the setter for the width property. It calculates the width of the last column so that
+        /// all the space is filled up
+        /// </summary>
         public override float Width
         {
             get { return base.Width; }
             set
             {
-                float diff = value - base.Width;
+                float diff = value - base.Width - (BorderWidth * 2 + RowBorderThickness * 2);
                 if (_lastColumnWidth + diff > 0)
                 {
                     _lastColumnWidth = _lastColumnWidth + diff;
@@ -45,22 +75,22 @@ namespace NuSysApp
             }
         }
 
-        public ListViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<T> itemsSource = null, float rowHeight = 30) : base(parent, resourceCreator)
+        /// <summary>
+        /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
+        /// <param name="itemsSource"></param>
+        /// <param name="rowHeight"></param>
+        public ListViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _itemsSource = new List<T>();
             _listColumns = new List<ListColumn<T>>();
             MultipleSelections = false;
-            if (rowHeight <= 0)
-            {
-                Debug.Write("You tried to give a negative or 0 row height to the list view ui element, idiot. I'm just taking the absolute value of it");
-            }
-            _rowHeight = Math.Abs(rowHeight);
+            RowBorderThickness = 5;
+            RowHeight = 40;
             //_listViewRowUIElements = new List<ListViewRowUIElement<T>>();
             _selectedElements = new HashSet<ListViewRowUIElement<T>>();
-            if (itemsSource != null)
-            {
-                AddItems(itemsSource);
-            }
         }
         
 
@@ -110,23 +140,20 @@ namespace NuSysApp
                 listViewRowUIElement.Item = itemSource;
                 listViewRowUIElement.Background = Colors.White;
                 listViewRowUIElement.Bordercolor = Colors.Blue;
-                listViewRowUIElement.BorderWidth = 2;
-                listViewRowUIElement.Width = 300;
-                listViewRowUIElement.Height = _rowHeight;
+                listViewRowUIElement.BorderWidth = RowBorderThickness;
+                listViewRowUIElement.Width = Width - BorderWidth * 2;
+                listViewRowUIElement.Height = RowHeight;
                 foreach (var column in _listColumns)
                 {
                     Debug.Assert(column != null);
                     RectangleUIElement cell;
                     if (column == _listColumns.Last())
                     {
-                        cell = column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator, _rowHeight, _lastColumnWidth);
-
-
+                        cell = CreateCell(column, itemSource, listViewRowUIElement, true);
                     }
                     else
                     {
-                        cell = column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator, _rowHeight);
-
+                        cell = CreateCell(column, itemSource, listViewRowUIElement);
                     }
                     Debug.Assert(cell != null);
                     listViewRowUIElement.AddCell(cell);
@@ -139,13 +166,39 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// This creates a cell that will fit into the listview row ui element. It uses the function of the column passed in along with the item source passed in 
+        /// to create the cell.
+        /// </summary>
+        /// <param name="column"></param>
+        /// <param name="itemSource"></param>
+        /// <param name="listViewRowUIElement"></param>
+        /// <returns></returns>
+        private RectangleUIElement CreateCell(ListColumn<T> column, T itemSource, ListViewRowUIElement<T> listViewRowUIElement, bool lastColumn = false)
+        {
+            if (lastColumn == false)
+            {
+                return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
+                    RowHeight - RowBorderThickness * 2);
+            }
+            else
+            {
+                return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator, RowHeight - RowBorderThickness * 2, _lastColumnWidth);
+            }
+        }
+
+        /// <summary>
+        /// This is called when a list view row ui element fires its deselected event. It simply calls the select row method.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
         private void ListViewRowUIElement_Deselected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
         {
             DeselectRow(rowUIElement);
         }
 
         /// <summary>
-        /// This just adds the row UI element to the selected list
+        /// This is called when a list view row ui element fires its selected event. It simply calls the select row method.
         /// </summary>
         /// <param name="rowUIElement"></param>
         /// <param name="cell"></param>
@@ -179,8 +232,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This should add the listColumn to the _listColumns.
-        /// This should also update all the ListViewRowUIElements apprpriately by adding the proper cells.
+        /// This should add the listColumn to the _listColumns. You should call populate list after this.
         /// This method will not graphically reload the entire list.
         /// </summary>
         /// <param name="column"></param>
@@ -192,7 +244,6 @@ namespace NuSysApp
                 return;
             } 
             _lastColumnWidth = _lastColumnWidth - (_listColumns.Count != 0 ?  _listColumns.Last().Width : 0);
-            _listColumns.Add(listColumn);
             foreach (var child in _children)
             {
                 var row = child as ListViewRowUIElement<T>;
@@ -200,9 +251,20 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var cell = listColumn.GetColumnCellFromItem(row.Item, row, ResourceCreator, _rowHeight);
+                //This part adjust what was previously the last cell to be its normal size, so the new list column will fill up the rest of the space
+                if (_listColumns.Any())
+                {
+                    row.DeleteCell(_listColumns.Count - 1);
+                    var oldLastColumn = _listColumns.Last();
+                    var oldLastCell = CreateCell(oldLastColumn, row.Item, row);
+                    row.AddCell(oldLastCell);
+                }
+
+                var cell = CreateCell(listColumn, row.Item, row, true);
                 row.AddCell(cell);
             }
+            _listColumns.Add(listColumn);
+
         }
 
         /// <summary>
@@ -322,6 +384,15 @@ namespace NuSysApp
             _selectedElements.Remove(rowToDeselect);
         }
 
+        public void SwapColumns(int columnAIndex, int columnBIndex)
+        {
+            //Swap the columns in the column 
+            if (columnAIndex == _listColumns.Count - 1 || columnBIndex == _listColumns.Count - 1)
+            {
+                
+            }
+        }
+
 
 
 
@@ -347,7 +418,6 @@ namespace NuSysApp
                 cellVerticalOffset += row.Height;
             }
             base.Draw(ds);
-
         }
 
     }

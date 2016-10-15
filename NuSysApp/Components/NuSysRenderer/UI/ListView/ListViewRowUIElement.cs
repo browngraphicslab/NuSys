@@ -40,12 +40,12 @@ namespace NuSysApp
         /// These are the cells that will be placed on this row. The order is from left to right.
         /// Index 0 is left most.
         /// </summary>
-        private List<RectangleUIElement> _cells;
+        //private List<RectangleUIElement> _cells;
 
         public ListViewRowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T item) : base(parent, resourceCreator)
         {
             _isSelected = false;
-            _cells = new List<RectangleUIElement>();
+            //_cells = new List<RectangleUIElement>();
             _item = item;
         }
         /// <summary>
@@ -55,14 +55,14 @@ namespace NuSysApp
         /// <param name="cell"></param>
         public void SwapCell(int index1, int index2)
         {
-            if (index1 < 0 || index1 > _cells.Count || index2 < 0 || index2 > _cells.Count)
+            if (index1 < 0 || index1 > _children.Count || index2 < 0 || index2 > _children.Count)
             {
                 Debug.Write("You are trying to swap the cells of a listview row ui element but one of your indices is out of bounds you idiot");
                 return;
             }
-            var tmpCell = _cells[index1];
-            _cells[index1] = _cells[index2];
-            _cells[index2] = tmpCell;
+            var tmpCell = _children[index1];
+            _children[index1] = _children[index2];
+            _children[index2] = tmpCell;
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace NuSysApp
                 Debug.Write("Your trying to add a null cell to a listviewrowuielement you idiot");
                 return;
             }
-            _cells.Add(cell);
+            //_cells.Add(cell);
             _children.Add(cell);
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
@@ -112,7 +112,6 @@ namespace NuSysApp
             if (_isSelected == true)
             {
                 Deselected?.Invoke(this, item as RectangleUIElement);
-
             }
             else
             {
@@ -134,14 +133,15 @@ namespace NuSysApp
         /// </summary>
         public void DeleteCell(int index)
         {
-            if (index < 0 || index > _cells.Count)
+            if (index < 0 || index > _children.Count)
             {
                 Debug.Write("Your trying to delete a cell at an out of bounds index you idiot");
             }
-            var cell = _cells[index];
+            var cell = _children[index] as RectangleUIElement;
+            Debug.Assert(cell != null);
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
-            _cells.RemoveAt(index);
+            _children.RemoveAt(index);
         }
 
         /// <summary>
@@ -159,8 +159,10 @@ namespace NuSysApp
 
             var cellHorizontalOffset = BorderWidth;
 
-            foreach (var cell in _cells)
+            foreach (var child in _children)
             {
+                var cell = child as RectangleUIElement;
+                Debug.Assert(cell != null);
                 cell.Transform.LocalPosition = new Vector2(cellHorizontalOffset, BorderWidth);
                 cellHorizontalOffset += cell.Width;
             }
