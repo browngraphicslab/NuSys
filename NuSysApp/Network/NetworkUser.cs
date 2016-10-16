@@ -23,6 +23,7 @@ namespace NuSysApp
         private Color _color;
         private bool _colorSet = false;
         private LibraryElementController _controller = null;
+        private string _currEditingControllerId = null;
         #endregion Private Variables
 
 
@@ -53,6 +54,23 @@ namespace NuSysApp
                     controller.SetNetworkUser(this);
                 }
                 _controller = controller;
+            }
+        }
+
+        public void SetNodeCurrentlyEditing(string controllerId)
+        {
+            if (controllerId != _currEditingControllerId)
+            {
+                if (_currEditingControllerId != null)
+                {
+                    SessionController.Instance.UserController.RemoveUser(_currEditingControllerId, this.UserID);
+                    //SessionController.Instance.ControllerIdToUserIdList[controllerId].Remove(this.UserID);
+                }
+                //if (controllerId != null)
+                //{
+                //    SessionController.Instance.ControllerIdToUserIdList[controllerId].Remove(this.UserID);
+                //}
+                _currEditingControllerId = controllerId;
             }
         }
     }

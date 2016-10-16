@@ -58,6 +58,8 @@ namespace NuSysApp
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
+        public UserController UserController = new UserController();
+
         public double ScreenWidth => ActiveFreeFormViewer.Width;
 
         public double ScreenHeight => ActiveFreeFormViewer.Height;
