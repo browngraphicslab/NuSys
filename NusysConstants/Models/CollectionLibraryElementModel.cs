@@ -47,6 +47,11 @@ namespace NusysIntermediate
         public ColorModel ShapeColor { get; set; }
 
         /// <summary>
+        /// The image url of the background of the collection if it exists.  
+        /// </summary>
+        public String ImageBackground { get; set; }
+
+        /// <summary>
         /// The double aspect ratio of a shaped collection. 
         /// This should only be used shapepoints is not null and three or more shapepoints exist.
         /// Should be calculated as width/height.
@@ -86,6 +91,10 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_COLOR_KEY))
             {
                 ShapeColor = message.Get<ColorModel>(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_COLOR_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND))
+            {
+                ImageBackground = message.Get(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND);
             }
         }
     }

@@ -44,6 +44,7 @@ namespace NuSysApp
         public bool IsShaped { get; set; }
         public double AspectRatio { get; set; }
         public Color ShapeColor { get; set; } = Colors.Black;
+        public String ImageBackground { get; set; }
 
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
@@ -63,7 +64,15 @@ namespace NuSysApp
             AspectRatio = model.AspectRatio;
 
             if (model.ShapeColor != null)
+            {
                 ShapeColor = model.ShapeColor.ToColor();
+            }
+
+            if (model.ImageBackground != null)
+            {
+                ImageBackground = model.ImageBackground;
+            }
+
 
             foreach (var childId in model.Children)
             {

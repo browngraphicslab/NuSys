@@ -26,7 +26,7 @@ namespace NuSysApp
 {
     public sealed partial class MultiSelectMenuView : UserControl
     {
-        public delegate void CreateCollectionHandler(bool finite, bool shaped);
+        public delegate void CreateCollectionHandler(bool finite, bool shaped, bool image);
 
         public event CreateCollectionHandler CreateCollection;
 
@@ -100,7 +100,7 @@ namespace NuSysApp
                 return;
             }
 
-            CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn);
+            CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn, ImageCheck.IsOn);
             Visibility = Visibility.Collapsed;
             return;
             var transform = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(selections.First());

@@ -478,11 +478,12 @@ namespace NuSysApp
             _minimap.Invalidate();
         }
 
-        private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
+        private async void MultiMenuOnCreateCollection(bool finite, bool shaped, bool image)
         {
             var selections = Selections.ToArray();
             Selections.Clear();
-           
+
+            String backgroundUrl = null;
 
             List<PointModel> shapePoints = null;
             double offsetX;
@@ -526,6 +527,11 @@ namespace NuSysApp
                 };
             }
 
+            if (shaped && image)
+            {
+                backgroundUrl = "http://www.nyctourist.com/images/subwaymap/subway-map-big.gif";
+            }
+
 
             var createNewContentRequestArgs = new CreateNewContentRequestArgs
             {
@@ -538,6 +544,7 @@ namespace NuSysApp
                     LibraryElementId = SessionController.Instance.GenerateId(),
                     IsFiniteCollection = finite,
                     ShapePoints = shapePoints,
+                    CollectionImageBackground = backgroundUrl,
                     AspectRatio = targetRectInCollection.Width/ targetRectInCollection.Height,
                     Color = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
 

@@ -36,6 +36,12 @@ namespace NuSysApp
         public List<PointModel> ShapePoints { get; set; }
 
         /// <summary>
+        /// URL for image for collection background.
+        /// If null - won't be included in request.
+        /// </summary>
+        public string CollectionImageBackground { get; set; }
+
+        /// <summary>
         /// the double aspect ratio of the collection if it is shaped.  
         /// This is not requiresd, but should be used if the ShapePoints list is used.
         /// will only be included in the request if this nullable double is not null.
@@ -73,6 +79,10 @@ namespace NuSysApp
             if(Color != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_COLOR_KEY] = Color;
+            }
+            if(CollectionImageBackground != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_IMAGE_BACKGROUND_KEY] = CollectionImageBackground;
             }
             return message;
         }

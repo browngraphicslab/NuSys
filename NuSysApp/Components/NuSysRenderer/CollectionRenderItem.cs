@@ -123,10 +123,13 @@ namespace NuSysApp
                     return;
                 
                 await base.Load();
-                
-                _canvasBitmap=await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("http://www.parisdigest.com/photos/paris_map_arrondissements.jpg"),
-                            ResourceCreator.Dpi);
 
+                var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
+                if(!String.IsNullOrEmpty(model.ImageBackground)) {
+                    _canvasBitmap = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(model.ImageBackground),
+                                ResourceCreator.Dpi);
+                }
+                
                 var collectionController = (ElementCollectionController) ViewModel.Controller;
                 if (!collectionController.LibraryElementController.ContentLoaded)
                 {
@@ -312,11 +315,10 @@ namespace NuSysApp
                         ds.Transform = orgTransform;
 
 
+                    } else
+                    {
+                        ds.FillGeometry(_shape, ViewModel.ShapeColor); //NOTE: ORIGINAL
                     }
-                   
-                    //ds.FillGeometry(_shape, ViewModel.ShapeColor); //NOTE: ORIGINAL
-
-
                 }
 
                 foreach (var item in _renderItems0.ToArray())

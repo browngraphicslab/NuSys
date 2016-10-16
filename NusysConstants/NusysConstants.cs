@@ -450,6 +450,11 @@ namespace NusysIntermediate
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_COLOR_KEY = "shaped_points_color";
 
+        /// <summary>
+        /// The key that will hold the image url of the collection image background.
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_IMAGE_BACKGROUND_KEY = "collection_image_background";    
+
                 /// <summary>
                 /// The key that will hold the double aspect ratio for a new image library element request.
                 /// This should not be a column title in any database. 
@@ -1442,16 +1447,21 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_COLOR_KEY = "shape_color";
 
-            #endregion Collection 
-
-            #region Video
-
             /// <summary>
-            /// the key used to store the video ratio double in the properties table.
-            /// /// This ratio will be calculated as width/height.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// this key is used to hold the colorModel class which represents the color of the background shape for this collection.
             /// </summary>
-            public static readonly string VIDEO_LIBRARY_ELEMENT_MODEL_RATIO_KEY = "video_ratio";
+            public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND = "collection_background";
+
+        #endregion Collection 
+
+        #region Video
+
+        /// <summary>
+        /// the key used to store the video ratio double in the properties table.
+        /// /// This ratio will be calculated as width/height.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string VIDEO_LIBRARY_ELEMENT_MODEL_RATIO_KEY = "video_ratio";
 
                 #endregion Video
 
