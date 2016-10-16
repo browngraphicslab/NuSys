@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
 
-namespace NuSysApp.Components.NuSysRenderer.UI
+namespace NuSysApp
 {
     public class ResizeableWindowUIElement : DraggableWindowUIElement
     {

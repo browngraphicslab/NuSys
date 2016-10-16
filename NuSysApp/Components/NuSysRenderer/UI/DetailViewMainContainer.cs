@@ -9,13 +9,16 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class DetailViewRenderItem : RectangleUIElement
+    public class DetailViewRenderItem : ResizeableWindowUIElement
     {
         /// <summary>
         /// The main tab container of the detail view
         /// </summary>
         private TabContainerUIElement<string> _mainTabContainer;
 
+        /// <summary>
+        /// The page displayed in the main tab container
+        /// </summary>
         private DetailViewPageContainer _pageContainer;
 
 
