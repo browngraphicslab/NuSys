@@ -4,19 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Text;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
-    public class UIDefaults
+    public static class UIDefaults
     {
-        public float Width = 100;
-        public float Height = 100;
-        public float Borderwidth = 100;
-        public Color Background = Colors.Azure;
-        public Color Bordercolor = Colors.Black;
-        public float TopBarHeight = 25;
-        public Color TopBarColor = Colors.Blue;
-        public float ErrorMargin = 15;
+        public static  float Width = 100;
+        public static float Height = 100;
+        public static float Borderwidth = 5;
+        public static Color Background = Colors.White;
+        public static Color Bordercolor = Colors.Black;
+        public static float TopBarHeight = 25;
+        public static Color TopBarColor = Colors.Blue;
+        public static float ErrorMargin = 15;
+        public static string FontFamily = "/Assets/fonts/freightsans.ttf#FreightSans BookSC";
 
+        public static CanvasHorizontalAlignment TextHorizontalAlignment = CanvasHorizontalAlignment.Left;
+
+        public static CanvasVerticalAlignment TextVerticalAlignment  = CanvasVerticalAlignment.Center;
+
+        public static Color TextColor = Colors.Black;
+
+        public static FontStyle FontStyle = FontStyle.Normal;
+
+        public static float FontSize = 14;
+        public static CanvasWordWrapping Wrapping = CanvasWordWrapping.Wrap;
+
+        public static CanvasTrimmingSign TrimmingSign = CanvasTrimmingSign.Ellipsis;
+
+        public static CanvasTextTrimmingGranularity TrimmingGranularity = CanvasTextTrimmingGranularity.Character;
+        public static float TabHeight = 25;
+
+        public static Color TabColor = Colors.LightGray;
+        public static float TabMaxWidth = 100;
+        public static bool TabIsCloseable = true;
     }
 }

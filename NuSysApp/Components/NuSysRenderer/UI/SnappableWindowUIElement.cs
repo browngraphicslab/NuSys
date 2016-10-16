@@ -119,7 +119,6 @@ namespace NuSysApp
         {
             Released -= SnappableWindowUIElement_Released;
             Dragged -= SnappableWindowUIElement_Dragged;
-            GetParentBounds = null;
             base.Dispose();
         }
 
@@ -158,7 +157,7 @@ namespace NuSysApp
 
             
             Vector2 currentPoint;
-            currentPoint = Vector2.Transform(pointer.CurrentPoint, GetParentScreenToLocalMatrix.Invoke());
+            currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.Parent.ScreenToLocalMatrix);
             Vector4 bounds = GetParentBounds.Invoke();
 
             // the pointer is on the right bound

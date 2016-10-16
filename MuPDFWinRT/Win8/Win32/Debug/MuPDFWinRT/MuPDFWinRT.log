@@ -5,4 +5,8 @@ Document.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' sp
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
   Finished generating code
+<<<<<<< HEAD
   MuPDFWinRT.vcxproj -> C:\Users\leandro\Downloads\NuSys\NuSys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll
+=======
+  MuPDFWinRT.vcxproj -> C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NuSys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll
+>>>>>>> 20b707c246fc4e73504e6622578a2a480a2257e1
