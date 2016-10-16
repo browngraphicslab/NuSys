@@ -71,6 +71,7 @@ namespace NuSysApp
 
         public static WaitingRoomView Instance;//singleton now
 
+
         public WaitingRoomView() //TODO make this private, like an actual singleton
         {
             Instance = this;
