@@ -121,19 +121,9 @@ namespace NuSysApp
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
-        }
 
-
-
-        /// <summary>
-        /// Initializer method. Add handlers here
-        /// </summary>
-        /// <returns></returns>
-        public override Task Load()
-        {
             Shape.Pressed += RectangleButtonUIElement_Pressed;
             Shape.Released += RectangleButtonUIElement_Released;
-            return base.Load();
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace NuSysApp
             Height = height;
         }
 
-        public abstract void ArrangeItems(Vector2 offset);
+        public abstract void ArrangeItems();
 
     }
 }

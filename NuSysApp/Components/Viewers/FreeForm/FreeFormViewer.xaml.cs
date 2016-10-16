@@ -69,6 +69,8 @@ namespace NuSysApp
         public NuSysRenderer RenderEngine { get; private set; }
 
 
+        public DetailViewRenderItem DetailViewer { get; set; }
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -80,7 +82,6 @@ namespace NuSysApp
 
             _renderRoot = new BaseRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
-     
         }
 
         public void Clear()
@@ -137,37 +138,19 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var resizeableWindow = new ResizeableWindowUIElement(_renderRoot, RenderCanvas)
-            {
-                Background = Colors.Red,
-                Bordercolor = Colors.Yellow,
-                TopBarHeight = 25,
-                TopBarColor = Colors.Blue,
-                IsDraggable = true,
-                IsResizeable = true,
-                BorderWidth = 5,
-                Width = 500,
-                Height = 500,
-            };
-            var tabContainer = new TabContainerUIElement<string>(resizeableWindow, RenderCanvas)
-            {
-                Background = Colors.Azure,
-                Bordercolor = Colors.Black,
-                TabHeight = 25,
-                BorderWidth = 5f,
-                Width = 300,
-                Height = 500,
-                TabMaxWidth = 100,
-            };
-            tabContainer.Transform.LocalPosition = new Vector2(5, 25);
 
-            _renderRoot.AddChild(resizeableWindow);
-            resizeableWindow.AddChild(tabContainer);
-            tabContainer.AddTab("hello world", "Title 1");
-            tabContainer.AddTab("test", "title 2");
-            tabContainer.AddTab("test3", "title 3");
-            tabContainer.AddTab("test4", "title 4");
-            tabContainer.AddTab("test5", "title 5");
+            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
+            button.ButtonText = "Hello World";
+
+            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
+            {
+                Width = 500,
+                Height = 500
+            };
+
+            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
+
+            _renderRoot.AddChild(DetailViewer);
 
             RenderEngine.Start();
 
@@ -899,12 +882,14 @@ namespace NuSysApp
             {
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //SessionController.Instance.SessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //SessionController.Instance.SessionView.ShowDetailView(controller);
             }
 
         }

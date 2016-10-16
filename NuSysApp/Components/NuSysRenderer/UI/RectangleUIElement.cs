@@ -15,6 +15,12 @@ namespace NuSysApp
     {
         public RectangleUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            // set default values
+            Width = UIDefaults.Width;
+            Height = UIDefaults.Height;
+            Background = UIDefaults.Background;
+            BorderWidth = UIDefaults.Borderwidth;
+            Bordercolor = UIDefaults.Bordercolor;
         }
 
         /// <summary>

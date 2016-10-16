@@ -73,7 +73,7 @@ namespace NuSysApp
             StackAlignment = alignment;
         }
          
-        public override void ArrangeItems(Vector2 offset)
+        public override void ArrangeItems()
         {
 
             float elementWidth;

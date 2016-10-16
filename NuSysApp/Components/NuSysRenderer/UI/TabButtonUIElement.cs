@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class TabButtonUIElement<T> : ButtonUIElement where T : IComparable<T>
+    public class TabButtonUIElement<T> : RectangleUIElement where T : IEquatable<T>
     {
 
         /// <summary>
@@ -34,32 +34,52 @@ namespace NuSysApp
         private ButtonUIElement _closeButton;
 
         /// <summary>
+        /// Private variable that stores the background button the TabButton is made up of
+        /// </summary>
+        private ButtonUIElement _backgroundButton;
+
+        /// <summary>
+        /// The Title of the tab
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// The color of the title of the tab
+        /// </summary>
+        public Color TitleColor { get; set; }
+
+        /// <summary>
+        /// True if the tab is closeable false otherwise
+        /// </summary>
+        public bool IsCloseable;
+
+        /// <summary>
         /// The current tab associated with the TabButton
         /// </summary>
         public T Tab { get; private set; }
 
-        public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T tab) : base(parent, resourceCreator, new RectangleUIElement(parent, resourceCreator))
+        public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T tab) : base(parent, resourceCreator)
         {
             // create a close button
             _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
 
+            // create a background button
+            _backgroundButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(parent, resourceCreator));
+
             // set the current tab
             Tab = tab;
 
-            // add the close button as a child of the _shape of the tab butotn
+            BorderWidth = 0;
+            IsCloseable = UIDefaults.TabIsCloseable;
+
+            // add the background button as a child
+            base.AddChild(_backgroundButton);
+            // add the close button as a child
             base.AddChild(_closeButton);
 
-        }
-
-        /// <summary>
-        /// The initializer method put event handlers here
-        /// </summary>
-        /// <returns></returns>
-        public override Task Load()
-        {
             _closeButton.Tapped += _closeButton_Tapped;
-            Tapped += TabButtonUIElement_Tapped;
-            return base.Load();
+            _backgroundButton.Tapped += TabButtonUIElement_Tapped;
+
         }
 
         /// <summary>
@@ -68,7 +88,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             _closeButton.Tapped -= _closeButton_Tapped;
-            Tapped -= TabButtonUIElement_Tapped;
+            _backgroundButton.Tapped -= TabButtonUIElement_Tapped;
             base.Dispose();
         }
 
@@ -100,23 +120,42 @@ namespace NuSysApp
                 return;
 
             // set the parameters for the close button
-            SetCloseButtonParams();
+            SetBackgroundAndCloseButtonParams();
 
             base.Draw(ds);
         }
 
         /// <summary>
-        /// Sets the parameters on the close button
+        /// Sets the parameters on the close button and background button
         /// </summary>
-        public void SetCloseButtonParams()
+        public void SetBackgroundAndCloseButtonParams()
         {
-            _closeButton.Background = Colors.Red;
-            _closeButton.ButtonTextColor = Colors.Black;
-            _closeButton.BorderWidth = 0;
-            _closeButton.Height = base.Height/3;
-            _closeButton.Width = base.Width/5;
-            _closeButton.Transform.LocalPosition = new Vector2((base.Width/5)*4, base.Height/3);
+            if (IsCloseable)
+            {
+                _closeButton.IsVisible = true;
+                _closeButton.Background = Colors.Red;
+                _closeButton.BorderWidth = 0;
+                _closeButton.Height = Height/3;
+                _closeButton.Width = Height/3;
+                _closeButton.Transform.LocalPosition = new Vector2(Width - 2*(Height/3), Height/3);
+            }
+            else
+            {
+                _closeButton.IsVisible = false;
+                _closeButton.Height = 0;
+                _closeButton.Width = 0;
+            }
+
+
+            _backgroundButton.ButtonText = Title;
+            _backgroundButton.ButtonTextColor = TitleColor;
+            _backgroundButton.Background = Background;
+            _backgroundButton.BorderWidth = 0;
+            _backgroundButton.Width = Width - _closeButton.Width * 3;
+            _backgroundButton.Height = Height;
         }
+
+
 
     }
 }
