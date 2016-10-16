@@ -11,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
 using Windows.UI;
+using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
@@ -137,42 +138,70 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var resizeableWindow = new SnappableWindowUIElement(_renderRoot, RenderCanvas)
-            {
-                Background = Colors.Red,
-                Bordercolor = Colors.Yellow,
-                TopBarHeight = 25,
-                TopBarColor = Colors.Blue,
-                IsSnappable = true,
-                IsDraggable = true,
-                IsResizeable = true,
-                BorderWidth = 5,
-                Width = 500,
-                Height = 500,
-                GetParentBounds = () => new Vector4(0, 0, (float)SessionController.Instance.ScreenWidth, (float)SessionController.Instance.ScreenHeight),
-                GetParentScreenToLocalMatrix = () => Matrix3x2.Identity,
-            };
-            var tabContainer = new TabContainerUIElement<string>(resizeableWindow, RenderCanvas)
-            {
+            var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas){
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
-                TabHeight = 25,
-                BorderWidth = 5f,
-                Width = 300,
+                BorderWidth = 5,
                 Height = 500,
-                TabMaxWidth = 100,
-                GetParentBounds = resizeableWindow.ReturnBounds,
-                GetParentScreenToLocalMatrix = resizeableWindow.ReturnScreenToLocalMatrix,
-                InitialOffset = new Vector2(resizeableWindow.BorderWidth,resizeableWindow.TopBarHeight)
+                Width = 300,
+                InitialOffset =
+                    new Vector2((float) (SessionController.Instance.ScreenWidth/2),
+                        (float) SessionController.Instance.ScreenHeight/2),
+                GetParentScreenToLocalMatrix = () =>  Matrix3x2.Identity,
+                GetParentBounds = () => new Vector4(0,0, (float) SessionController.Instance.ScreenWidth, (float) SessionController.Instance.ScreenHeight)
             };
-            _renderRoot.AddChild(resizeableWindow);
-            resizeableWindow.AddChild(tabContainer);
-            tabContainer.AddTab("hello world", "Title 1");
-            tabContainer.AddTab("test", "title 2");
-            tabContainer.AddTab("test3", "title 3");
-            tabContainer.AddTab("test4", "title 4");
-            tabContainer.AddTab("test5", "title 5");
+            listView.AddItems(new List<string>() {"f", "d","e"});
 
+            var listColumn = new ListColumn<string>();
+            listColumn.Title = "testing";
+            listColumn.Width = 60;
+            listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            {
+                var rect = new RectangleUIElement(item, resourceCreator);
+                rect.Background = Colors.Red;
+                rect.BorderWidth = 3;
+                rect.Bordercolor = Colors.Yellow;
+                rect.Width = 50;
+                rect.Height = 40;
+                return rect;
+            };
+            listView.AddColumn(listColumn);
+
+            var listColumn2 = new ListColumn<string>();
+            listColumn2.Title = "testing1";
+            listColumn2.Width = 100;
+            listColumn2.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            {
+                var rect = new RectangleUIElement(item, resourceCreator);
+                rect.Background = Colors.Blue;
+                rect.BorderWidth = 3;
+                rect.Bordercolor = Colors.HotPink;
+                rect.Width = 100;
+                rect.Height = 40;
+                return rect;
+            };
+            listView.AddColumn(listColumn2);
+            listView.RemoveColumn("testing");
+            listView.AddColumn(listColumn);
+
+            var listColumn3 = new ListColumn<string>();
+            listColumn3.Title = "testing3";
+            listColumn3.Width = 30;
+            listColumn3.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            {
+                var rect = new RectangleUIElement(item, resourceCreator);
+                rect.Background = Colors.Blue;
+                rect.BorderWidth = 3;
+                rect.Bordercolor = Colors.Red;
+                rect.Width = 100;
+                rect.Height = 40;
+                return rect;
+            };
+            listView.AddColumn(listColumn3);
+            //listView.PopulateListView();
+
+            // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
+            RenderEngine.Root.AddChild(listView);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

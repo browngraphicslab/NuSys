@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Numerics;
 using System.Threading.Tasks;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -12,6 +15,7 @@ namespace NuSysApp
         private T _item;
         public T Item {
             get { return _item; }
+            set { _item = value; }
         }
 
         private bool _isSelected;
@@ -32,18 +36,16 @@ namespace NuSysApp
         public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
         public event DeSelectedEventHandler Deselected;
 
-
-
         /// <summary>
         /// These are the cells that will be placed on this row. The order is from left to right.
         /// Index 0 is left most.
         /// </summary>
-        private List<RectangleUIElement> _cells;
+        //private List<RectangleUIElement> _cells;
 
         public ListViewRowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T item) : base(parent, resourceCreator)
         {
             _isSelected = false;
-            _cells = new List<RectangleUIElement>();
+            //_cells = new List<RectangleUIElement>();
             _item = item;
         }
         /// <summary>
@@ -51,9 +53,16 @@ namespace NuSysApp
         /// </summary>
         /// <param name="index"></param>
         /// <param name="cell"></param>
-        public void SwitchCell(int index1, int index2)
+        public void SwapCell(int index1, int index2)
         {
-            
+            if (index1 < 0 || index1 > _children.Count || index2 < 0 || index2 > _children.Count)
+            {
+                Debug.Write("You are trying to swap the cells of a listview row ui element but one of your indices is out of bounds you idiot");
+                return;
+            }
+            var tmpCell = _children[index1];
+            _children[index1] = _children[index2];
+            _children[index2] = tmpCell;
         }
 
         /// <summary>
@@ -62,8 +71,35 @@ namespace NuSysApp
         /// <param name="cell"></param>
         public void AddCell(RectangleUIElement cell)
         {
+            if (cell == null)
+            {
+                Debug.Write("Your trying to add a null cell to a listviewrowuielement you idiot");
+                return;
+            }
+            //_cells.Add(cell);
+            _children.Add(cell);
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
+        }
+
+        /// <summary>
+        /// This simply changes the background color of the row to the selected color, and 
+        /// sets the isSelected bool to true. 
+        /// </summary>
+        public void Select(InteractiveBaseRenderItem cell = null)
+        {
+            Background = Colors.CadetBlue;
+            _isSelected = true;
+        }
+
+        /// <summary>
+        /// This simply changes the bacakground color of the row to the deselected color, and sets the 
+        /// is Selected bool to true
+        /// </summary>
+        public void Deselect(InteractiveBaseRenderItem cell = null)
+        {
+            Background = Colors.White;
+            _isSelected = false;
         }
 
         /// <summary>
@@ -73,7 +109,14 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            throw new System.NotImplementedException();
+            if (_isSelected == true)
+            {
+                Deselected?.Invoke(this, item as RectangleUIElement);
+            }
+            else
+            {
+                Selected?.Invoke(this, item as RectangleUIElement);
+            }
         }
 
 
@@ -82,7 +125,7 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         /// <summary>
@@ -90,9 +133,15 @@ namespace NuSysApp
         /// </summary>
         public void DeleteCell(int index)
         {
-            var cell = _cells[index];
+            if (index < 0 || index > _children.Count)
+            {
+                Debug.Write("Your trying to delete a cell at an out of bounds index you idiot");
+            }
+            var cell = _children[index] as RectangleUIElement;
+            Debug.Assert(cell != null);
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
+            _children.RemoveAt(index);
         }
 
         /// <summary>
@@ -103,10 +152,36 @@ namespace NuSysApp
             return base.Load();
         }
 
-        
+        /// <summary>
+        /// This sets the width of the cell at the specified index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="width"></param>
+        public void SetCellWidth(int index, float width)
+        {
+            if (index < 0 || index >= _children.Count)
+            {
+                Debug.WriteLine("Pass in a non negative or in bound index you idiot.");
+                return;
+            }
+            var cell = _children[index] as RectangleUIElement;
+            Debug.Assert(cell != null);
+            cell.Width = width;
+        }
 
         public override void Draw(CanvasDrawingSession ds)
         {
+
+            var cellHorizontalOffset = BorderWidth;
+
+            foreach (var child in _children)
+            {
+                var cell = child as RectangleUIElement;
+                Debug.Assert(cell != null);
+                cell.Transform.LocalPosition = new Vector2(cellHorizontalOffset, BorderWidth);
+                cellHorizontalOffset += cell.Width;
+            }
+
             base.Draw(ds);
         }
 
