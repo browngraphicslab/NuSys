@@ -70,6 +70,8 @@ namespace NuSysApp
         public NuSysRenderer RenderEngine { get; private set; }
 
 
+        public DetailViewRenderItem DetailViewer { get; set; }
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -81,7 +83,6 @@ namespace NuSysApp
 
             _renderRoot = new BaseRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
-     
         }
 
         public void Clear()
@@ -143,26 +144,24 @@ namespace NuSysApp
                 Bordercolor = Colors.Black,
                 BorderWidth = 5,
                 Height = 500,
-                Width = 300,
-                InitialOffset =
-                    new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                        (float) SessionController.Instance.ScreenHeight/2),
-                GetParentScreenToLocalMatrix = () =>  Matrix3x2.Identity,
-                GetParentBounds = () => new Vector4(0,0, (float) SessionController.Instance.ScreenWidth, (float) SessionController.Instance.ScreenHeight)
+                Width = 300
             };
-            listView.AddItems(new List<string>() {"f", "d","e"});
+            listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
+                (float) SessionController.Instance.ScreenHeight/2);
+            listView.AddItems(new List<string>() {"Leandro", "Luke","Betty","Trent","Miranda", "Harsh", "Nicolas"});
 
             var listColumn = new ListColumn<string>();
             listColumn.Title = "testing";
             listColumn.Width = 60;
             listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
-                var rect = new RectangleUIElement(item, resourceCreator);
+                var rect = new TextboxUIElement(item, resourceCreator);
                 rect.Background = Colors.Red;
                 rect.BorderWidth = 3;
                 rect.Bordercolor = Colors.Yellow;
                 rect.Width = 50;
                 rect.Height = 40;
+                rect.Text = s;
                 return rect;
             };
             listView.AddColumn(listColumn);
@@ -198,7 +197,22 @@ namespace NuSysApp
                 return rect;
             };
             listView.AddColumn(listColumn3);
-            //listView.PopulateListView();
+//            //listView.PopulateListView();
+//=======
+
+//            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
+//            button.ButtonText = "Hello World";
+
+//            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
+//            {
+//                Width = 500,
+//                Height = 500
+//            };
+
+//            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
+
+//            _renderRoot.AddChild(DetailViewer);
+//>>>>>>> 20b707c246fc4e73504e6622578a2a480a2257e1
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(listView);
@@ -932,12 +946,14 @@ namespace NuSysApp
             {
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //SessionController.Instance.SessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //SessionController.Instance.SessionView.ShowDetailView(controller);
             }
 
         }

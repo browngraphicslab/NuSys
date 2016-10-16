@@ -300,7 +300,7 @@ namespace NuSysApp
             var tagContent = new TextBlock() { Text = text };
             tagContent.Foreground = new SolidColorBrush(Constants.foreground6);
             tagContent.FontStyle = FontStyle.Italic;
-            tagContent.HorizontalAlignment = HorizontalAlignment.Stretch;
+            tagContent.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Stretch;
 
             var stackPanel = new Grid();
             stackPanel.ColumnDefinitions.Add(new ColumnDefinition{Width = new GridLength(20)});
@@ -329,7 +329,7 @@ namespace NuSysApp
             var tagContent = new TextBlock() { Text = text };
             tagContent.Foreground = new SolidColorBrush(Constants.color3);
             tagContent.FontStyle = FontStyle.Italic;
-            tagContent.HorizontalAlignment = HorizontalAlignment.Stretch;
+            tagContent.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Stretch;
 
             var stackPanel = new Grid();
             stackPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });

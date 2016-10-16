@@ -247,7 +247,7 @@ namespace NuSysApp
             marker.Opacity = 0.1;
             marker.Height = Inker.Height;
             marker.Width = 30;
-            marker.HorizontalAlignment = HorizontalAlignment.Left;
+            marker.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
             curr.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
             marker.Stroke = new SolidColorBrush(Colors.LightSlateGray);
 

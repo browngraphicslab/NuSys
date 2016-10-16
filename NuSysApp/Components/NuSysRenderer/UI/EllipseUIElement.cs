@@ -132,15 +132,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns the bounds within which child objects should exist
-        /// </summary>
-        /// <returns></returns>
-        public override Vector4 ReturnBounds()
-        {
-            return new Vector4(BorderWidth, BorderWidth, _radiusX*2- BorderWidth, _radiusY*2- BorderWidth);
-        }
-
-        /// <summary>
         /// The initializer method for the ellipse
         /// </summary>
         /// <returns></returns>
@@ -150,16 +141,8 @@ namespace NuSysApp
             // let corner of the parent initially
             Transform.LocalPosition -= new Vector2(_radiusX, _radiusY);
 
-            // shift over by the initial offset
-            Transform.LocalPosition += InitialOffset;
             return base.Load();
         }
-
-        /// <summary>
-        /// The Initial Offset of the Ellipses center point from the parent's upper left corner. 
-        /// Offsets the cetner point from the upper left corner of the screen if the parent is null.
-        /// </summary>
-        public override Vector2 InitialOffset { get; set; }
 
         /// <summary>
         /// Returns the LocalBounds of the base render item, used for hit testing. The bounds are given with the offset
