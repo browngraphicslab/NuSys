@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    enum DetailViewPageType
+    public enum DetailViewPageType
     {
         Home, Metadata, Region, Aliases, Links,
     }

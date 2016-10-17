@@ -59,7 +59,11 @@ namespace NuSysApp
         /// <param name="tabType"></param>
         private void _pageTabContainer_OnCurrentTabChanged(DetailViewPageTabType tabType)
         {
-            throw new NotImplementedException();
+            var rect = DetailViewPageFactory.GetPage(tabType.Type, _currentController);
+            if (rect != null)
+            {
+                _pageTabContainer.SetPage(rect);
+            }
         }
 
         /// <summary>
@@ -77,15 +81,15 @@ namespace NuSysApp
             _pageTabContainer.ClearTabs();
 
             // all types have a home and metadata
-            _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Home), "Home");
-            _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Metadata), "Metadata");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Home), "Home");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Metadata), "Metadata");
 
             switch (_currentController.LibraryElementModel.Type)
             {
                 case NusysConstants.ElementType.Text:
                     break;
                 case NusysConstants.ElementType.Image:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
 
                     break;
                 case NusysConstants.ElementType.Word:
@@ -95,15 +99,15 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Collection:
                     break;
                 case NusysConstants.ElementType.PDF:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
 
                     break;
                 case NusysConstants.ElementType.Audio:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
 
                     break;
                 case NusysConstants.ElementType.Video:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
                     break;
                 case NusysConstants.ElementType.Tag:
                     break;
@@ -121,8 +125,8 @@ namespace NuSysApp
                     throw new ArgumentOutOfRangeException();
             }
 
-            _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Links), "Links");
-            _pageTabContainer.AddTab(new DetailViewPageTabType(libraryElementModelId, DetailViewPageType.Aliases), "Aliases");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Links), "Links");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Aliases), "Aliases");
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

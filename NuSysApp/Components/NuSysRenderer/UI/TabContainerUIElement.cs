@@ -125,7 +125,7 @@ namespace NuSysApp
         /// Sets the page to be displayed in the tab container
         /// </summary>
         /// <param name="newPage"></param>
-        public void setPage(RectangleUIElement newPage)
+        public void SetPage(RectangleUIElement newPage)
         {
             if (Page != null)
             {

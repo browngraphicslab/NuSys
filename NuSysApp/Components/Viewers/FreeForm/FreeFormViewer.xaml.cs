@@ -139,9 +139,6 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
 
-            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
-            button.ButtonText = "Hello World";
-
             DetailViewer = new DetailViewMainContainer(_renderRoot, RenderCanvas)
             {
                 Width = 500,

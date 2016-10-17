@@ -6,24 +6,23 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    class DetailViewPageUIElement : IComparable<DetailViewPageUIElement>
+    public class DetailViewPageTabType : IComparable<DetailViewPageTabType>
     {
+
 
         public DetailViewPageType Type;
 
-        public string LibraryElementId;
 
-        public DetailViewPageUIElement(string libraryElementId, DetailViewPageType type)
+        public DetailViewPageTabType(DetailViewPageType type)
         {
             Type = type;
-            LibraryElementId = libraryElementId;
         }
 
 
 
-        public int CompareTo(DetailViewPageUIElement other)
+        public int CompareTo(DetailViewPageTabType other)
         {
-            if (Type == other.Type && LibraryElementId == other.LibraryElementId)
+            if (Type == other.Type)
             {
                 return 0;
             }

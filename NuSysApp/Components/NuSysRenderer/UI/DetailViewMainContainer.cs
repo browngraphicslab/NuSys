@@ -36,7 +36,7 @@ namespace NuSysApp
 
             _mainTabLayoutManager = new StackLayoutManager();
 
-            _mainTabContainer.setPage(_pageContainer);
+            _mainTabContainer.SetPage(_pageContainer);
 
             AddChild(_mainTabContainer);
             _mainTabLayoutManager.AddElement(_mainTabContainer);
