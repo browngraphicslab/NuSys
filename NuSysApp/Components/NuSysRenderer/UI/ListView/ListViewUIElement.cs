@@ -87,6 +87,11 @@ namespace NuSysApp
             }
         }
 
+        public List<ListColumn<T>> ListColumns
+        {
+            get { return _listColumns; }   
+        }
+
         /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
         /// </summary>
@@ -218,8 +223,6 @@ namespace NuSysApp
         {
             SelectRow(rowUIElement);
         }
-
-
 
         /// <summary>
         /// Removes things from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.

@@ -139,16 +139,29 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
+
+            var listViewContainer = new ListViewUIElementContainer<string>(_renderRoot, RenderCanvas)
+            {
+                Background = Colors.LightGray,
+                Bordercolor = Colors.Black,
+                BorderWidth = 2,
+                Width = 400,
+                Height = 600
+            };
+            listViewContainer.Transform.LocalPosition = new Vector2((float)(SessionController.Instance.ScreenWidth / 2),
+                (float)SessionController.Instance.ScreenHeight / 4);
+
             var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas){
                 Background = Colors.Azure,
-                Bordercolor = Colors.Black,
+                Bordercolor = Colors.Gray,
                 BorderWidth = 5,
                 Height = 500,
                 Width = 300
             };
-            listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                (float) SessionController.Instance.ScreenHeight/2);
-            listView.AddItems(new List<string>() {"Leandro", "Luke","Betty","Trent","Miranda", "Harsh", "Nicolas"});
+            listView.AddItems(new List<string>() {"Leandro", "Luke","Betty","Trent"});
+            listViewContainer.ListView = listView;
+            listViewContainer.HeaderHeight = listView.RowHeight + 10;
+            listViewContainer.Width = listView.Width;
 
             var listColumn = new ListColumn<string>();
             listColumn.Title = "testing";
@@ -197,25 +210,28 @@ namespace NuSysApp
                 return rect;
             };
             listView.AddColumn(listColumn3);
-//            //listView.PopulateListView();
-//=======
 
-//            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
-//            button.ButtonText = "Hello World";
+            listViewContainer.GenerateHeader();
 
-//            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
-//            {
-//                Width = 500,
-//                Height = 500
-//            };
+            //            //listView.PopulateListView();
+            //=======
 
-//            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
+            //            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
+            //            button.ButtonText = "Hello World";
 
-//            _renderRoot.AddChild(DetailViewer);
-//>>>>>>> 20b707c246fc4e73504e6622578a2a480a2257e1
+            //            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
+            //            {
+            //                Width = 500,
+            //                Height = 500
+            //            };
+
+            //            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
+
+            //            _renderRoot.AddChild(DetailViewer);
+            //>>>>>>> 20b707c246fc4e73504e6622578a2a480a2257e1
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(listView);
+            RenderEngine.Root.AddChild(listViewContainer);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
