@@ -210,8 +210,6 @@ namespace NuSysApp
         {
             if (_capturedState != null)
             {
-                var state = _capturedState;
-                _capturedState = null;
                 var tup = await WaitingRoomView.AttemptLogin(WaitingRoomView.UserName, WaitingRoomView.HashedPass, "", false);
                 Debug.Assert(tup.Item1);
                 SessionView?.ClearUsers();
@@ -246,7 +244,12 @@ namespace NuSysApp
                     
 
                     SessionView.ShowBlockingScreen(false);
+
+                    _capturedState = null;
                 });
+
+               
+
             }
         }
 

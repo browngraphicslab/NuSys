@@ -79,7 +79,7 @@ namespace NuSysApp
         /// </summary>
         public void CloseConnection()
         {
-            _serverClient.CloseConnection();
+            _serverClient?.CloseConnection();
         }
 
         #region Requests

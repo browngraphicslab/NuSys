@@ -53,33 +53,11 @@ namespace NuSysApp
             }
         }
 
-        public Matrix3x2 GetTransformUntilOf(BaseRenderItem item)
-        {
-            var transforms = new List<I2dTransformable>();
-
-            var parent = item.Parent;
-            while (parent != null)
-            {
-                transforms.Add(parent.Transform);
-                parent = parent.Parent;
-            }
-
-            transforms.Reverse();
-
-            return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.C) * t.S * t.C * t.T * current);
-        }
-
         public virtual BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue)
         {
-
-            var r = Root.HitTest(sp);
-            if (!(r is CollectionRenderItem))
-                return r;
-
             item = item ?? Root;
-            var rr = _GetRenderItemAt(item, sp, 0, maxLevel);
-
-            return rr;
+            var hit = _GetRenderItemAt(item, sp, 0, maxLevel);
+            return hit;
         }
 
         public virtual List<BaseRenderItem> GetRenderItemsAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue)
@@ -90,12 +68,6 @@ namespace NuSysApp
             return output;
         }
 
-        public virtual BaseRenderItem GetRenderItemAt(Point sp, CollectionRenderItem item = null, int maxLevel = int.MaxValue)
-        {
-            var result = GetRenderItemAt(new Vector2((float)sp.X, (float)sp.Y), item, maxLevel);
-            return result;
-        }
-
         protected virtual BaseRenderItem _GetRenderItemAt(BaseRenderItem item, Vector2 screenPoint, int currentLevel, int maxLevel)
         {
             if (currentLevel < maxLevel)
@@ -104,30 +76,20 @@ namespace NuSysApp
                 childElements.Reverse();
                 foreach (var childItem in childElements)
                 {
-                    var childCollection = childItem as CollectionRenderItem;
-                    if (childCollection != null)
+                    if (currentLevel + 1 < maxLevel)
                     {
-
-                        if (currentLevel + 1 < maxLevel)
+                        var result = _GetRenderItemAt(childItem, screenPoint, currentLevel + 1, maxLevel);
+                        if (result != null && result != item)
+                            return result;
+                    }
+                    else
+                    {
+                        if (childItem.HitTest(screenPoint) != null)
                         {
-                            var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
-                            if (result != item)
-                                return result;
-                        }
-                        else
-                        {
-                            if (childCollection.HitTest(screenPoint) != null)
-                            {
-                                return childCollection;
-                            }
+                            return childItem;
                         }
                     }
-
-
-                    if (childItem.HitTest(screenPoint) != null)
-                    {
-                        return childItem;
-                    }
+                   
                 }
             }
 

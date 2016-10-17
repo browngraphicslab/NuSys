@@ -685,7 +685,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
-            _transform = CurrentCollection.Camera.LocalToScreenMatrix;
+            //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
             _transformables.Clear();
         }
 
@@ -700,6 +700,9 @@ namespace NuSysApp
             {
                 xVideoPlayer.Visibility = Visibility.Collapsed;
             }
+
+           // collection.ViewModel.Controller.SetSize(500,500);
+          //  collection.ViewModel.Controller.SetPosition(50000,50000);
 
             var targetPoint = RenderEngine.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
             var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f, targetPoint.Y - (float) element.ViewModel.Height/2f);
@@ -877,6 +880,21 @@ namespace NuSysApp
 
             if (item is ElementRenderItem)
             {
+                try
+                {
+                    var loginName =
+                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[
+                            WaitingRoomView.UserID];
+                    var creator =
+                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
+                            ].Values[0];
+                    if (loginName != "rms" && creator.ToLower() == "rms")
+                        return;
+                }
+                catch (Exception e)
+                {
+                    // do nothing.
+                }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
                 DetailViewer.ShowLibraryElement(libraryElementModelId);
