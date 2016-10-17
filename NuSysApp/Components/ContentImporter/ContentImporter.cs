@@ -55,8 +55,7 @@ namespace NuSysApp
                 var text = await FileIO.ReadTextAsync(file);
 
 
-                var json = JsonConvert.DeserializeObject < List<string
-                (text);
+                var json = JsonConvert.DeserializeObject<List<string>>(text);
                 foreach (var htmltext in json)
                 {
                     

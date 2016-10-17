@@ -70,6 +70,9 @@ namespace NuSysApp
             vm.Links.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
+
+            var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
+            Debug.WriteLine(model.ImageBackground); 
         }
 
         public override void Dispose()
