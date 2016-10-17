@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class DetailViewRenderItem : RectangleUIElement
+    public class DetailViewMainContainer : RectangleUIElement
     {
         /// <summary>
         /// The main tab container of the detail view
@@ -19,7 +19,7 @@ namespace NuSysApp
         private DetailViewPageContainer _pageContainer;
 
 
-        public DetailViewRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // create the _mainTabContainer
             _mainTabContainer = new TabContainerUIElement<string>(this, Canvas);

@@ -101,7 +101,7 @@ namespace NuSysApp
             _tabStackLayoutManager = new StackLayoutManager();
             _pageStackLayoutManager = new StackLayoutManager();
 
-            Page = new RectangleUIElement(this, Canvas);
+            Page = new BaseHomePage(this, Canvas);
             Page.Background = Colors.Red;
             _pageStackLayoutManager.AddElement(Page);
             AddChild(Page);

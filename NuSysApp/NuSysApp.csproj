@@ -331,6 +331,7 @@
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewer Pages\BaseHomePage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewMainContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
