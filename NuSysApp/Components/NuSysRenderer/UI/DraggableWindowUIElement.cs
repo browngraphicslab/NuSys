@@ -22,6 +22,7 @@ namespace NuSysApp
 
         public DraggableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            IsDraggable = UIDefaults.WindowIsDraggable;
         }
 
         /// <summary>

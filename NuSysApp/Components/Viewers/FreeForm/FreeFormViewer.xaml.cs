@@ -69,7 +69,7 @@ namespace NuSysApp
         public NuSysRenderer RenderEngine { get; private set; }
 
 
-        public DetailViewRenderItem DetailViewer { get; set; }
+        public DetailViewMainContainer DetailViewer { get; set; }
 
         public FreeFormViewer()
         {
@@ -142,7 +142,7 @@ namespace NuSysApp
             var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
             button.ButtonText = "Hello World";
 
-            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
+            DetailViewer = new DetailViewMainContainer(_renderRoot, RenderCanvas)
             {
                 Width = 500,
                 Height = 500

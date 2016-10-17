@@ -46,6 +46,9 @@ namespace NuSysApp
 
         public WindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            TopBarColor = UIDefaults.TopBarColor;
+            TopBarHeight = UIDefaults.TopBarHeight;
+            ErrorMargin = UIDefaults.ErrorMargin;
         }
 
         /// <summary>

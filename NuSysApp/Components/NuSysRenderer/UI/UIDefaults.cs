@@ -40,5 +40,12 @@ namespace NuSysApp
         public static Color TabColor = Colors.LightGray;
         public static float TabMaxWidth = 100;
         public static bool TabIsCloseable = true;
+        public static bool WindowIsResizeable = true;
+        public static bool WindowKeepsAspectRatio = true;
+        public static bool WindowIsDraggable = true;
+        public static float? WindowMaxWidth = (float?) SessionController.Instance.ScreenWidth;
+        public static float? WindowMaxHeight = (float?)SessionController.Instance.ScreenHeight;
+        public static float? WindowMinWidth = 25;
+        public static float? WindowMinHeight = 25;
     }
 }

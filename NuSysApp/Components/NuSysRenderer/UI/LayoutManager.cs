@@ -12,7 +12,7 @@ namespace NuSysApp
         public float Height { get; set; }
         public float Width { get; set; }
 
-        public virtual void SetSize(float height, float width)
+        public virtual void SetSize(float width, float height)
         {
             Width = width;
             Height = height;

@@ -77,6 +77,7 @@ namespace NuSysApp
             Wrapping = UIDefaults.Wrapping;
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
+            BorderWidth = 0;
         }
 
         /// <summary>

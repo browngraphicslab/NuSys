@@ -54,5 +54,47 @@ namespace NuSysApp
         /// </summary>
         /// <param name="ds"></param>
         protected abstract void DrawBorder(CanvasDrawingSession ds);
+
+
+        public override void OnPressed(CanvasPointer pointer)
+        {
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+            {
+                base.OnPressed(pointer);
+            });
+        }
+
+        public override void OnReleased(CanvasPointer pointer)
+        {
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+            {
+                base.OnReleased(pointer);
+            });
+        }
+
+        public override void OnDoubleTapped(CanvasPointer pointer)
+        {
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+            {
+                base.OnDoubleTapped(pointer);
+            });
+        }
+
+        public override void OnTapped(CanvasPointer pointer)
+        {
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+            {
+                base.OnTapped(pointer);
+            });
+        }
+
+        public override void OnDragged(CanvasPointer pointer)
+        {
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+            {
+                base.OnDragged(pointer);
+            });
+        }
+
     }
 }

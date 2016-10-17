@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class DetailViewRenderItem : ResizeableWindowUIElement
+    public class DetailViewMainContainer : ResizeableWindowUIElement
     {
         /// <summary>
         /// The main tab container of the detail view
@@ -21,8 +21,12 @@ namespace NuSysApp
         /// </summary>
         private DetailViewPageContainer _pageContainer;
 
+        /// <summary>
+        /// the layout manager for the _mainTabContainer
+        /// </summary>
+        private StackLayoutManager _mainTabLayoutManager;
 
-        public DetailViewRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // create the _mainTabContainer
             _mainTabContainer = new TabContainerUIElement<string>(this, Canvas);
@@ -30,9 +34,12 @@ namespace NuSysApp
             // add the page to the _mainTabContainer, the page
             _pageContainer = new DetailViewPageContainer(this, Canvas);
 
+            _mainTabLayoutManager = new StackLayoutManager();
+
             _mainTabContainer.setPage(_pageContainer);
 
             AddChild(_mainTabContainer);
+            _mainTabLayoutManager.AddElement(_mainTabContainer);
 
             IsVisible = false;
         }
@@ -43,8 +50,19 @@ namespace NuSysApp
         /// <returns></returns>
         public override Task Load()
         {
+            _mainTabContainer.TabContainerClosed += _mainTabContainer_TabContainerClosed;
             _mainTabContainer.OnCurrentTabChanged += _mainTabContainer_OnCurrentTabChanged;
             return base.Load();
+        }
+
+        /// <summary>
+        /// fired when the mainTabContainer is closed (i.e. has no more tabs to display)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _mainTabContainer_TabContainerClosed(object sender, EventArgs e)
+        {
+            IsVisible = false;
         }
 
         /// <summary>
@@ -53,6 +71,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             _mainTabContainer.OnCurrentTabChanged -= _mainTabContainer_OnCurrentTabChanged;
+            _mainTabContainer.TabContainerClosed -= _mainTabContainer_TabContainerClosed;
             base.Dispose();
         }
 
@@ -83,10 +102,19 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Updates all the layout managers
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _mainTabContainer.Width = Width;
-            _mainTabContainer.Height = Height;
+            _mainTabLayoutManager.SetMargins(BorderWidth);
+            _mainTabLayoutManager.TopMargin = TopBarHeight;
+            _mainTabLayoutManager.SetSize(Width, Height);
+            _mainTabLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
+            _mainTabLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _mainTabLayoutManager.ArrangeItems();
+
             base.Update(parentLocalToScreenTransform);
         }
     }

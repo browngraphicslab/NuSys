@@ -11,7 +11,7 @@ using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
-    public class TabContainerUIElement<T> : RectangleUIElement where T : IEquatable<T>
+    public class TabContainerUIElement<T> : RectangleUIElement where T : IComparable<T>
     {
         /// <summary>
         /// List of TabButtons that are currently being shown by the TabContainer
@@ -47,6 +47,11 @@ namespace NuSysApp
         /// The maximum width of the tabs in the tab container
         /// </summary>
         public float TabMaxWidth { get; set; }
+
+        /// <summary>
+        /// Fired when all the tabs in the tab container are closed
+        /// </summary>
+        public event EventHandler TabContainerClosed;
 
         /// <summary>
         /// delegate for when the current tab is changed
@@ -269,11 +274,11 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Closes the TabContainer
+        /// Closes the TabContainer. Called when the tab container is empty
         /// </summary>
         public void CloseTabContainer()
         {
-            
+            TabContainerClosed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -326,8 +331,7 @@ namespace NuSysApp
             _tabStackLayoutManager.SetMargins(BorderWidth);
             _tabStackLayoutManager.ItemHeight = TabHeight;
             _tabStackLayoutManager.ItemWidth = Math.Min((Width - 2*BorderWidth)/_tabList.Count, TabMaxWidth);
-            _tabStackLayoutManager.Width = Width;
-            _tabStackLayoutManager.Height = Height;
+            _tabStackLayoutManager.SetSize(Width, Height);
             _tabStackLayoutManager.HorizontalAlignment = HorizontalAlignment.Left;
             _tabStackLayoutManager.VerticalAlignment = VerticalAlignment.Top;
             _tabStackLayoutManager.ArrangeItems();

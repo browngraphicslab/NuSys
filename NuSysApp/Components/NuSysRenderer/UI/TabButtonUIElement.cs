@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class TabButtonUIElement<T> : RectangleUIElement where T : IEquatable<T>
+    public class TabButtonUIElement<T> : RectangleUIElement where T : IComparable<T>
     {
 
         /// <summary>

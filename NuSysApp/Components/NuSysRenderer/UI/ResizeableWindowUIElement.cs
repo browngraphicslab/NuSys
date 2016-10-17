@@ -198,6 +198,12 @@ namespace NuSysApp
 
         public ResizeableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            IsResizeable = UIDefaults.WindowIsResizeable;
+            KeepAspectRatio = UIDefaults.WindowKeepsAspectRatio;
+            MaxWidth = UIDefaults.WindowMaxWidth;
+            MaxHeight = UIDefaults.WindowMaxHeight;
+            MinWidth = UIDefaults.WindowMinWidth;
+            MinHeight = UIDefaults.WindowMinHeight;
         }
 
         /// <summary>
@@ -347,17 +353,17 @@ namespace NuSysApp
             var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
             // the pointer is on the right bound of the window
-            if (currentPoint.X > Width - BorderWidth && currentPoint.Y > TopBarHeight)
+            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin) && currentPoint.Y > TopBarHeight)
             {
                 right = true;
             }
             // the pointer is on the bottom bound of the window
-            if (currentPoint.Y > Height - BorderWidth)
+            if (currentPoint.Y > Height - Math.Max(BorderWidth, ErrorMargin))
             {
                 bottom = true;
             }
             // the pointer is on the left bound of the window
-            if (currentPoint.X < 0 + BorderWidth  && currentPoint.Y > TopBarHeight)
+            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin) && currentPoint.Y > TopBarHeight)
             {
                 left = true;
             }
