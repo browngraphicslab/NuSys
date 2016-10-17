@@ -33,6 +33,7 @@ namespace NuSysApp
 
             user.SetNodeCurrentlyEditing(null);
             // do something to make bubble disappear on screen
+            // maybe have elementrenderitem constantly updating the bubbles
         }
 
         private void UserController_UserAdded(string controllerId, string userId)

@@ -125,6 +125,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            // have this get the list of users currently editing the node from the usercontroller
             if (IsDisposed)
                 return;
 
