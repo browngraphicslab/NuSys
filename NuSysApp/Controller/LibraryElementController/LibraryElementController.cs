@@ -737,6 +737,21 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Sets if the collection is finite
+        /// </summary>
+        /// <param name="imageUrl"></param>
+        public void SetImageBackground(String imageUrl)
+        {
+            if (LibraryElementModel is CollectionLibraryElementModel)
+            {
+                var collectionModel = LibraryElementModel as CollectionLibraryElementModel;
+                collectionModel.ImageBackground = imageUrl;
+
+            }
+
+        }
+
+        /// <summary>
         /// creates a new element of this controller's libraryElementModel.  
         /// It creates it at the passed in X and Y location, and on the given collection Id.
         /// If the given collection ID is null, it will default to the Session's current workspace.

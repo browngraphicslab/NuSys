@@ -126,6 +126,10 @@ namespace NuSysApp
             {
                 libModel.ShapePoints = message.GetList<PointModel>("shape_points");
             }
+            if (message.ContainsKey("collection_background"))
+            {
+                libModel.ImageBackground = message.GetString("collection_background");
+            }
             base.UnPack(message);
         }
 

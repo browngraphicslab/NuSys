@@ -555,7 +555,7 @@ namespace NuSysApp
             // execute the content request
             var contentRequest = new CreateNewContentRequest(createNewContentRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
-            contentRequest.AddReturnedLibraryElementToLibrary();
+            contentRequest.AddReturnedLibraryElementToLibrary(); //SUCCESSFULLY CONTAINS IMAGE BG
 
 
             // create a new add element to collection request
