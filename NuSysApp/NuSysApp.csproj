@@ -363,7 +363,7 @@
     <Compile Include="Components\NuSysRenderer\UI\StackLayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TabButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TabContainerUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\TextBoxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\TextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />
     <Compile Include="Components\NuSysRenderer\UI\VerticalAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElement.cs" />
