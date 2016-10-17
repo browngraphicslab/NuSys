@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuSysApp.Components.NuSysRenderer.UI
+namespace NuSysApp
 {
     public class UserBubbles : RectangleUIElement
     {

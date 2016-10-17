@@ -28,6 +28,7 @@ namespace NuSysApp
         public ElementViewModel ViewModel => _vm;
         private bool _needsTitleUpdate = true;
         private CanvasTextFormat _format;
+        private UserBubbles _userBubbles;
 
         public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
         {
@@ -39,6 +40,9 @@ namespace NuSysApp
                 _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
                 _tagRenderItem = new WrapRenderItem((float)_vm.Width, parent, resourceCreator);
                 _vm.Tags.CollectionChanged += TagsOnCollectionChanged;
+
+                _vm.Controller.UserAdded += Controller_UserAdded;
+                _vm.Controller.UserDropped += Controller_UserDropped;
 
                 _format = new CanvasTextFormat
                 {
@@ -54,7 +58,22 @@ namespace NuSysApp
                 }
 
                 AddChild(_tagRenderItem);
+
+                _userBubbles = new UserBubbles(this, ResourceCreator);
+                AddChild(_userBubbles);
             }
+        }
+
+        private void Controller_UserDropped(object sender, string e)
+        {
+            // remove bubble thing
+            // string is the user id
+        }
+
+        private void Controller_UserAdded(object sender, string e)
+        {
+            // add bubble thing
+            // string is the user id
         }
 
         public override void Dispose()
@@ -74,6 +93,9 @@ namespace NuSysApp
 
                 _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
                 _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+
+                _vm.Controller.UserAdded -= Controller_UserAdded;
+                _vm.Controller.UserDropped -= Controller_UserDropped;
             }
             _vm = null;
 
@@ -137,6 +159,8 @@ namespace NuSysApp
 
             Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
+
+            _userBubbles.Transform.LocalPosition = new Vector2((float)_vm.Width + 10f, 0);
 
             base.Update(parentLocalToScreenTransform);
 

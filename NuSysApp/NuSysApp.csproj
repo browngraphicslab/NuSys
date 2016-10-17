@@ -331,6 +331,7 @@
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\UserBubbles.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewTabUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
@@ -750,6 +751,7 @@
     <Compile Include="Undo\DeleteElementAction.cs" />
     <Compile Include="Undo\DeleteLibraryElementAction.cs" />
     <Compile Include="Undo\MoveToCollectionAction.cs" />
+    <Compile Include="UserController.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Util\CapturedStateModel.cs" />
