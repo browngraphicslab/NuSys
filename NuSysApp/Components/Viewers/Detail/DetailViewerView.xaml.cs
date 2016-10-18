@@ -578,7 +578,7 @@ namespace NuSysApp
                 {
                     xReadOnlyRadioButton.IsChecked = true;
                 }  
-            }
+            } 
             else
             {
                 xReadOnlyRadioButton.Visibility = Visibility.Collapsed;
@@ -600,6 +600,11 @@ namespace NuSysApp
             AccessPopup.IsOpen = false;
         }
 
+        private void OnSaveCollectionSettingsClick(object sender, RoutedEventArgs e)
+        {
+            CollectionSettingsPopup.IsOpen = false;
+        }
+
         private void XPrivateRadioButton_OnChecked(object sender, RoutedEventArgs e)
         {
             _currentDetailViewable.SetAccessType(NusysConstants.AccessType.Private);
@@ -613,6 +618,11 @@ namespace NuSysApp
         private void XReadOnlyRadioButton_OnChecked(object sender, RoutedEventArgs e)
         {
             _currentDetailViewable.SetAccessType(NusysConstants.AccessType.ReadOnly);
+        }
+
+        private void OnChangeCollectionSettingsClick(object sender, RoutedEventArgs e)
+        {
+            CollectionSettingsPopup.IsOpen = true;
         }
 
         private void OnMakeCopyClick(object sender, RoutedEventArgs e)

@@ -278,15 +278,27 @@ namespace NuSysApp
                 ds.FillRectangle(GetLocalBounds(), Colors.White);
 
                 ds.Transform = Camera.LocalToScreenMatrix;
+                //var c = currentCollection.ViewModel.Model.LibraryId;
+                //var d = currentCollection.ViewModel.Model.Id;
+                //var e = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                 if (ViewModel.IsShaped)
                 {
+
+                    //var foo = SessionController.Instance.ActiveFreeFormViewer.Model.Id;
+                    
+                    //var a = currentCollection.ViewModel.Id;
+                    //var b = currentCollection.ViewModel.LibraryElementId;
+                   
                    
                     if (_canvasBitmap != null)
+                    //if(false)
                     {
                         var imageBrush = new CanvasImageBrush(_canvas, _canvasBitmap);
 
                         var orgTransform = ds.Transform;
                         ds.Transform = Transform.LocalToScreenMatrix; //draws relative to current object, the collection render item
+
+                        var zach1 = _elementSize;
 
                         // Maintaining aspect ratio
                         float newWidth;
@@ -305,17 +317,32 @@ namespace NuSysApp
                         }
 
                         // Draw image to fit bounding rectangle of shape
-                        Rect r = new Rect(0, 0, newWidth, newHeight);
-                        ds.FillGeometry(_shape, imageBrush);
-                        ds.DrawImage(_canvasBitmap, r);
+                        var id1 = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                        var id2 = currentCollection.ViewModel.LibraryElementId;
+                        
+                        //if (String.Equals(id1, id2))
+                        //{
+                        //    ds.Transform = orgTransform;
+                        //    ds.FillGeometry(_shape, ViewModel.ShapeColor);
+                        //}
+                        //else {
+                            var r = new Rect(0, 0, newWidth, newHeight);
+                            ds.FillGeometry(_shape, imageBrush);
+                            ds.DrawImage(_canvasBitmap, r);
+                        //}
+                        
 
                         ds.Transform = orgTransform;
 
 
                     }
-                   
-                    //ds.FillGeometry(_shape, ViewModel.ShapeColor); //NOTE: ORIGINAL
 
+                    else if (ViewModel.IsShaped)
+                    {
+                        //ds.FillGeometry(_shape,ViewModel.ShapeColor);
+                    }
+                   
+                   
 
                 }
 
