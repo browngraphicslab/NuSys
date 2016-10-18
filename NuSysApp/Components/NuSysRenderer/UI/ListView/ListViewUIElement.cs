@@ -83,7 +83,11 @@ namespace NuSysApp
                 RepopulateExistingListRows();
             }
         }
-
+        
+        public List<ListColumn<T>> ListColumns
+        {
+            get { return _listColumns; }   
+        }
 
         /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
@@ -234,14 +238,14 @@ namespace NuSysApp
         {
             SelectRow(rowUIElement);
         }
-
+        
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
         {
             RowDragged?.Invoke(rowUIElement.Item,
                 cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
         }
 
-
+        
         /// <summary>
         /// Removes things from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
         /// </summary>

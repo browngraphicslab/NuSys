@@ -140,12 +140,14 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
             var listView = new ListViewUIElement<LibraryElementModel>(_renderRoot, RenderCanvas){
+
                 Background = Colors.Azure,
-                Bordercolor = Colors.Black,
+                Bordercolor = Colors.Gray,
                 BorderWidth = 5,
                 Height = 500,
                 Width = 300
             };
+
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                 (float) SessionController.Instance.ScreenHeight/2);
             listView.AddItems(
@@ -196,9 +198,6 @@ namespace NuSysApp
             listView.AddColumns(new List<ListColumn<LibraryElementModel>>() {listColumn, listColumn2, listColumn3});
             listView.RemoveColumn("Last Edited Timestamp");
             listView.AddColumn(listColumn3);
-            //listView.AddColumn(listColumn3);
-            //            //listView.PopulateListView();
-            //=======
 
             //            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
             //            button.ButtonText = "Hello World";
