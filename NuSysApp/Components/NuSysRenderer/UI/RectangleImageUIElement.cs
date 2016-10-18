@@ -82,10 +82,14 @@ namespace NuSysApp
         //todo say what this is
         private CanvasGeometry _mask;
 
-        //todo say what this is
+        /// <summary>
+        /// Boolean which determines whether or not to show the crop gray background effect while moving regions
+        /// </summary>
         private bool _showCroppy;
 
-        //todo say what this is
+        /// <summary>
+        /// The rectangle used to show the croppy effect while moving regions
+        /// </summary>
         private CanvasGeometry _croppy;
 
         /// <summary>
@@ -98,17 +102,11 @@ namespace NuSysApp
         /// </summary>
         public bool IsRegionsModifiable { get; set; }
 
-        public delegate void RegionUpdatedHandler();
-
         /// <summary>
         /// Determines if the regions are visible. True by default
         /// </summary>
         public bool IsRegionsVisible { get; set; }
 
-        /// <summary>
-        /// Fired when a region is updated
-        /// </summary>
-        public event RegionUpdatedHandler NeedsRedraw;
 
         public RectangleImageUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller) : base(parent, resourceCreator)
         {
@@ -294,10 +292,9 @@ namespace NuSysApp
             }
 
             SortChildren((a, b) => {
-                var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds(); return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? 1 : -1;
+                var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds(); return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? -1 : 1;
             });
 
-            NeedsRedraw?.Invoke();
         }
 
 
@@ -313,9 +310,6 @@ namespace NuSysApp
 
             // set active region to null
             _activeRegion = null;
-
-
-            NeedsRedraw?.Invoke();
         }
 
         /// <summary>
@@ -329,7 +323,6 @@ namespace NuSysApp
 
             // set the activeRegion to th ecurrent region
             _activeRegion = region;
-            NeedsRedraw?.Invoke();
         }
 
         private void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
@@ -341,8 +334,6 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetWidth(rx);
             controller.SetHeight(ry);
-
-            NeedsRedraw?.Invoke();
         }
 
         private void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
@@ -354,8 +345,6 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetXLocation(rx);
             controller.SetYLocation(ry);
-
-            NeedsRedraw?.Invoke();
         }
 
         private void RecomputeSize()
