@@ -92,9 +92,9 @@ namespace NusysIntermediate
             {
                 ShapeColor = message.Get<ColorModel>(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_COLOR_KEY);
             }
-            if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND))
+            if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND_KEY))
             {
-                ImageBackground = message.Get(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND);
+                ImageBackground = message.Get(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND_KEY);
             }
         }
     }

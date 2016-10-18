@@ -58,6 +58,7 @@ namespace NuSysApp
             libElemController.OnTrailAdded += LibElemControllerOnOnTrailAdded;
             libElemController.OnTrailRemoved += LibElemControllerOnOnTrailRemoved;
 
+
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
             IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;

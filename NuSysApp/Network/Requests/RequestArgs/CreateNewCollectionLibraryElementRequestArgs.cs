@@ -39,7 +39,7 @@ namespace NuSysApp
         /// URL for image for collection background.
         /// If null - won't be included in request.
         /// </summary>
-        public string CollectionImageBackground { get; set; }
+        public String CollectionImageBackground { get; set; }
 
         /// <summary>
         /// the double aspect ratio of the collection if it is shaped.  

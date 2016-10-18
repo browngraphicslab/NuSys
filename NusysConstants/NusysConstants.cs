@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -1450,7 +1450,7 @@ namespace NusysIntermediate
             /// <summary>
             /// this key is used to hold the colorModel class which represents the color of the background shape for this collection.
             /// </summary>
-            public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND = "collection_background";
+            public static readonly string COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND_KEY = "collection_background";
 
         #endregion Collection 
 

@@ -125,6 +125,24 @@ namespace NuSysApp
             }
         }
 
+
+        /// <summary>
+        /// this method is used to set the CollectionLibraryElementModel's ImageBackground property.
+        /// This method will set the model, send a server call with the update, and also will eventually fire an event.
+        /// </summary>
+        /// <param name="imageUrl"></param>
+        public void SetImageBackground(String imageUrl)
+        {
+            //tODO add in the event firing
+            Debug.Assert(CollectionModel != null);//check the state of values being used
+
+            CollectionModel.ImageBackground = imageUrl;
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_IMAGE_BACKGROUND_KEY, imageUrl);
+            }
+        }
+
         /// <summary>
         /// this method is used to update the collection library element model's IsFinite boolean.
         /// This will set the model's property, update the server, and eventually will fire an event for this change
