@@ -55,8 +55,6 @@ namespace NuSysApp
                     var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[(string)_message["sender_user_id"]];
                     user?.SetUserController(controller.LibraryElementController);
                     user?.SetNodeCurrentlyEditing(id);
-
-                    SessionController.Instance.UserController.AddUser(id, user.UserID);
                 }
             }
         }

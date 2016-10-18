@@ -68,12 +68,14 @@ namespace NuSysApp
         {
             // remove bubble thing
             // string is the user id
+            _userBubbles.RemoveBubble(e);
         }
 
         private void Controller_UserAdded(object sender, string e)
         {
             // add bubble thing
             // string is the user id
+            _userBubbles.InstantiateBubble(e);
         }
 
         public override void Dispose()
@@ -161,6 +163,7 @@ namespace NuSysApp
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
 
             _userBubbles.Transform.LocalPosition = new Vector2((float)_vm.Width + 10f, 0);
+            _userBubbles.Height = (float)_vm.Height;
 
             base.Update(parentLocalToScreenTransform);
 

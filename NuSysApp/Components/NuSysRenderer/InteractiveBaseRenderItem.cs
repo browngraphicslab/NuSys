@@ -19,6 +19,8 @@ namespace NuSysApp
         public event PointerHandler Tapped;
         public event PointerHandler Dragged;
 
+
+
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             

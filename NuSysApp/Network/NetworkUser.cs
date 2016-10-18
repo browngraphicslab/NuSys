@@ -64,12 +64,11 @@ namespace NuSysApp
                 if (_currEditingControllerId != null)
                 {
                     SessionController.Instance.UserController.RemoveUser(_currEditingControllerId, this.UserID);
-                    //SessionController.Instance.ControllerIdToUserIdList[controllerId].Remove(this.UserID);
                 }
-                //if (controllerId != null)
-                //{
-                //    SessionController.Instance.ControllerIdToUserIdList[controllerId].Remove(this.UserID);
-                //}
+                if (controllerId != null)
+                {
+                    SessionController.Instance.UserController.AddUser(_currEditingControllerId, this.UserID);
+                }
                 _currEditingControllerId = controllerId;
             }
         }

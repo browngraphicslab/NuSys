@@ -19,9 +19,24 @@ namespace NuSysApp
         private List<TabButtonUIElement<T>> _tabList;
 
         /// <summary>
+        /// private helper variable for public property CurrentlySelectedTab
+        /// </summary>
+        private TabButtonUIElement<T> _currentlySelectedTab;
+
+        /// <summary>
         /// The tab that is currently selected in the tab container
         /// </summary>
-        public TabButtonUIElement<T> CurrentlySelectedTab { get; private set; } //todo make the setter method do something
+        public TabButtonUIElement<T> CurrentlySelectedTab
+        {
+            get { return _currentlySelectedTab; }
+            set
+            {
+                _currentlySelectedTab = value;
+
+                // fire the event for when the tab changes
+                OnCurrentTabChanged?.Invoke(_currentlySelectedTab.Tab);
+            }
+        } 
 
         /// <summary>
         /// The height of the tabs in the tab container
@@ -32,6 +47,11 @@ namespace NuSysApp
         /// The maximum width of the tabs in the tab container
         /// </summary>
         public float TabMaxWidth { get; set; }
+
+        /// <summary>
+        /// Fired when all the tabs in the tab container are closed
+        /// </summary>
+        public event EventHandler TabContainerClosed;
 
         /// <summary>
         /// delegate for when the current tab is changed
@@ -49,11 +69,73 @@ namespace NuSysApp
         /// </summary>
         public event CurrentTabChangedHandler OnCurrentTabChanged;
 
+        /// <summary>
+        /// The Tab container's _stackLayoutManager
+        /// </summary>
+        private StackLayoutManager _tabStackLayoutManager;
+
+        /// <summary>
+        /// The layout manager for the current page
+        /// </summary>
+        private StackLayoutManager _pageStackLayoutManager;
+
+        private bool _tabsIsCloseable;
+
+        public bool TabsIsCloseable
+        {
+            get { return _tabsIsCloseable; }
+            set
+            {
+                _tabsIsCloseable = value;
+                foreach (var tab in _tabList)
+                {
+                    tab.IsCloseable = _tabsIsCloseable;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The current page to display in the tab container
+        /// </summary>
+        public RectangleUIElement Page { get; set; }
 
         public TabContainerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // initialize the _tabList
             _tabList = new List<TabButtonUIElement<T>>();
+            _tabStackLayoutManager = new StackLayoutManager();
+            _pageStackLayoutManager = new StackLayoutManager();
+
+            Page = new RectangleUIElement(this, Canvas);
+            Page.Background = Colors.Red;
+            _pageStackLayoutManager.AddElement(Page);
+            AddChild(Page);
+
+            // initialize defaults
+            TabHeight = UIDefaults.TabHeight;
+            TabColor = UIDefaults.TabColor;
+            TabMaxWidth = UIDefaults.TabMaxWidth;
+            BorderWidth = 0;
+            TabsIsCloseable = UIDefaults.TabIsCloseable;
+
+            Background = Colors.Yellow;
+        }
+
+        /// <summary>
+        /// Sets the page to be displayed in the tab container
+        /// </summary>
+        /// <param name="newPage"></param>
+        public void setPage(RectangleUIElement newPage)
+        {
+            if (Page != null)
+            {
+                RemoveChild(Page);
+                _pageStackLayoutManager.Remove(Page);
+            }
+
+            Page = newPage;
+            _pageStackLayoutManager.AddElement(Page);
+            AddChild(Page);
         }
 
         /// <summary>
@@ -73,6 +155,7 @@ namespace NuSysApp
             // add the new button to the tablist
             var button = InitializeNewTab(tab, title);
             _tabList.Add(button);
+            _tabStackLayoutManager.AddElement(button);
 
             // add the handlers for the button getting selected and closed
             button.OnSelected += Button_OnSelected;
@@ -92,10 +175,12 @@ namespace NuSysApp
         private TabButtonUIElement<T> InitializeNewTab(T tab, string title)
         {
             var button = new TabButtonUIElement<T>(this, Canvas, tab);
-            button.Background = Colors.Beige;
-            button.ButtonText = title;
-            button.ButtonTextColor = Colors.Black;
+            button.Title = title;
+            button.TitleColor = Colors.Black;
             button.Background = TabColor;
+            button.Height = TabHeight;
+            button.Width = Math.Min((Width - 2 * BorderWidth) / _tabList.Count, TabMaxWidth);
+            button.IsCloseable = TabsIsCloseable;
             return button;
         }
 
@@ -152,6 +237,7 @@ namespace NuSysApp
 
             // remove the tab as a child
             RemoveChild(tabToBeRemoved);
+            _tabStackLayoutManager.Remove(tabToBeRemoved);
         }
 
         /// <summary>
@@ -173,9 +259,6 @@ namespace NuSysApp
 
             // set the currently selected tab to the tab which was selected
             CurrentlySelectedTab = tabToBeSelected;
-
-            // fire the event for when the tab changes
-            OnCurrentTabChanged?.Invoke(tabType);
         }
 
         /// <summary>
@@ -191,13 +274,21 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Closes the TabContainer
+        /// Closes the TabContainer. Called when the tab container is empty
         /// </summary>
         public void CloseTabContainer()
         {
-            foreach (var tabButton in _tabList)
-            {             
-                RemoveTab(tabButton.Tab);
+            TabContainerClosed?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Clear all the tabs from the tab container
+        /// </summary>
+        public void ClearTabs()
+        {
+            while (_tabList.Count != 0)
+            {
+                RemoveTab(_tabList[0].Tab);
             }
         }
 
@@ -207,24 +298,11 @@ namespace NuSysApp
         /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-            // store the tabWidth and tabOffset for drawing
-            var tabWidth = Math.Min((Width - 2 * BorderWidth) /_tabList.Count, TabMaxWidth);
-            var tabOffset = BorderWidth;
-
             // save the old transform
             var orgTransform = ds.Transform;
 
             // set the new transform to local to screen
             ds.Transform = Transform.LocalToScreenMatrix;
-
-            // set the tabWidth and tabOffset
-            foreach (var tab in _tabList)
-            {
-                tab.Width = tabWidth;
-                tab.Height = TabHeight;
-                tab.Transform.LocalPosition = new Vector2(tabOffset, BorderWidth);
-                tabOffset += tabWidth;
-            }
 
             // draw the background and the border and the tabs
             base.Draw(ds);
@@ -233,12 +311,41 @@ namespace NuSysApp
 
             var lineWidth = 4f;
 
+            var tabWidth = _tabStackLayoutManager.ItemWidth;
+
             // draw the line under the tabs up to the currently selected tab
-            ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(index * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
+            ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Math.Max(index, 0) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
             // draw the line after the currently selected tab to the end of the list
             ds.DrawLine(new Vector2((index + 1) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Width - BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
 
             ds.Transform = orgTransform;
+        }
+
+        /// <summary>
+        /// Updates the layout of the tabs
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            // arrange the tabs
+            _tabStackLayoutManager.SetMargins(BorderWidth);
+            _tabStackLayoutManager.ItemHeight = TabHeight;
+            _tabStackLayoutManager.ItemWidth = Math.Min((Width - 2*BorderWidth)/_tabList.Count, TabMaxWidth);
+            _tabStackLayoutManager.SetSize(Width, Height);
+            _tabStackLayoutManager.HorizontalAlignment = HorizontalAlignment.Left;
+            _tabStackLayoutManager.VerticalAlignment = VerticalAlignment.Top;
+            _tabStackLayoutManager.ArrangeItems();
+
+            // arrange the page
+            _pageStackLayoutManager.SetMargins(BorderWidth);
+            _pageStackLayoutManager.TopMargin = TabHeight;
+            _pageStackLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _pageStackLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
+            _pageStackLayoutManager.Width = Width;
+            _pageStackLayoutManager.Height = Height;
+            _pageStackLayoutManager.ArrangeItems();
+
+            base.Update(parentLocalToScreenTransform);
         }
     }
 }
