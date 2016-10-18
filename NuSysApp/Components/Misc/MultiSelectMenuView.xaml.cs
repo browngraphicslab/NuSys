@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
@@ -14,11 +18,14 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NusysIntermediate;
 using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.Geometries;
+using Newtonsoft.Json;
+using WinRTXamlToolkit.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

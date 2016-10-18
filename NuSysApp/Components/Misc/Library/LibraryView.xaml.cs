@@ -148,6 +148,68 @@ namespace NuSysApp
             }
         }
 
+        public async void AddSingleImageAndReturn()
+        {
+            var vm = SessionController.Instance.ActiveFreeFormViewer;
+            var imageFile = await FileManager.PromptUserForFiles(Constants.ImageFileTypes, false);
+
+            var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;  // get the fileAddedAclsPopup from the session view    
+            var tempfileIdToAccessMaps = await fileAddedAclsPopup.GetAcls(imageFile); // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
+
+            if (tempfileIdToAccessMaps == null) return;  // Check if the user canceled the document import
+
+            _fileIdToAccessMap.Add(tempfileIdToAccessMaps.First().Key, tempfileIdToAccessMaps.First().Value);
+           
+            if (_fileIdToAccessMap == null) return;  // check if the user has canceled the upload
+
+            var storageFile = imageFile.First(); 
+            if (storageFile == null) return; // Check if single file is null 
+
+            var fileType = storageFile.FileType.ToLower();
+            if (!Constants.ImageFileTypes.Contains(fileType)) return; // Check if file type is valid
+
+            // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
+            var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
+            thumbnails[NusysConstants.ThumbnailSize.Small] = string.Empty;
+            thumbnails[NusysConstants.ThumbnailSize.Medium] = string.Empty;
+            thumbnails[NusysConstants.ThumbnailSize.Large] = string.Empty;
+            thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile); // *************** is this line needed?
+
+            CreateNewContentRequestArgs args = new CreateNewContentRequestArgs();
+            args.ContentId = SessionController.Instance.GenerateId();
+            args.DataBytes = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+            args.FileExtension = fileType;
+
+            var imageArgs = new CreateNewImageLibraryElementRequestArgs();
+            var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
+            imageArgs.AspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+            args.LibraryElementArgs = imageArgs;
+
+            //add the three thumbnails
+            args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+            args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+            args.LibraryElementArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+            args.LibraryElementArgs.Title = storageFile.DisplayName;
+            args.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Image;
+
+            // add the acls from the map, default to private instead of throwing an error on release
+            Debug.Assert(_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId), "The mapping from the fileAddedPopup is not being output or set correctly");
+            if (_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
+            {
+                args.LibraryElementArgs.AccessType = _fileIdToAccessMap[storageFile.FolderRelativeId];
+            }
+            else
+            {
+                args.LibraryElementArgs.AccessType = NusysConstants.AccessType.Private;
+            }
+
+            var request = new CreateNewContentRequest(args);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
+
+            vm.ClearSelection();
+            _fileIdToAccessMap.Remove(storageFile.FolderRelativeId);
+        }
 
 
         private async void AddFile()
