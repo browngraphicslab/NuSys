@@ -656,6 +656,10 @@ namespace NuSysApp
                 var selection = (PdfElementRenderItem)Selections[0];
                 selection.GotoPage(selection.CurrentPage + 1);
             }
+            if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
+            {
+                // Do the layout
+            }
         }
 
         private async void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer,
