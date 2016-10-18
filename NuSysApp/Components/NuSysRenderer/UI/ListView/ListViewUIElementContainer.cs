@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
-using SharpDX;
-using Vector2 = System.Numerics.Vector2;
 
 namespace NuSysApp
 {
@@ -22,19 +22,14 @@ namespace NuSysApp
         private ListViewUIElement<T> _listview;
 
         /// <summary>
-        /// header for the listview - should be treated differently from a listview row
+        /// instance variable for resourcecreator so it can make UI elements
         /// </summary>
-        private ListViewHeader<T> _header;
+        private ICanvasResourceCreatorWithDpi _resourceCreator;
 
         /// <summary>
-        /// header size for header
+        /// where listview will draw itself
         /// </summary>
-        private float _headerHeight;
-
-        /// <summary>
-        /// setter for header size
-        /// </summary>
-        public float HeaderHeight { set { _headerHeight = value; } }
+        private float _listYPos;
 
         /// <summary>
         /// setter and getter for listview
@@ -55,18 +50,26 @@ namespace NuSysApp
 
         public ListViewUIElementContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            _header = new ListViewHeader<T>(parent, resourceCreator);
-            _headerHeight = 0;
+            _resourceCreator = resourceCreator;
+            _listYPos = 0;
         }
 
         /// <summary>
-        /// generate the titles/columns for the header
+        /// makes a header if you want a header
         /// </summary>
-        public void GenerateHeader()
+        public void GenerateHeader(ICanvasResourceCreatorWithDpi resourceCreator)
         {
             if (_listview != null)
             {
-                
+                ListViewHeader<T> header = new ListViewHeader<T>(this, resourceCreator);
+                header.Transform.LocalPosition = new Vector2(0,0);
+                header.BorderWidth = 0;
+                header.Background = Colors.DarkSlateGray;
+                header.Width = this.Width;
+                header.Height = _listview.RowHeight + 10;
+                _listYPos = header.Height;
+                header.MakeTitles(_listview, resourceCreator);
+                this.AddChild(header);
             }
         }
 
@@ -78,7 +81,7 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             //draw the listview below the header
-            _listview.Transform.LocalPosition = new Vector2(0, _headerHeight);
+            _listview.Transform.LocalPosition = new Vector2(0, _listYPos);
             base.Draw(ds);
         }
     }

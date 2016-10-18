@@ -160,12 +160,11 @@ namespace NuSysApp
             };
             listView.AddItems(new List<string>() {"Leandro", "Luke","Betty","Trent"});
             listViewContainer.ListView = listView;
-            listViewContainer.HeaderHeight = listView.RowHeight + 10;
             listViewContainer.Width = listView.Width;
 
             var listColumn = new ListColumn<string>();
             listColumn.Title = "testing";
-            listColumn.Width = 60;
+            listColumn.Width = 100;
             listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new TextboxUIElement(item, resourceCreator);
@@ -193,12 +192,10 @@ namespace NuSysApp
                 return rect;
             };
             listView.AddColumn(listColumn2);
-            listView.RemoveColumn("testing");
-            listView.AddColumn(listColumn);
 
             var listColumn3 = new ListColumn<string>();
             listColumn3.Title = "testing3";
-            listColumn3.Width = 30;
+            listColumn3.Width = 100;
             listColumn3.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new RectangleUIElement(item, resourceCreator);
@@ -210,8 +207,8 @@ namespace NuSysApp
                 return rect;
             };
             listView.AddColumn(listColumn3);
-
-            listViewContainer.GenerateHeader();
+            
+            listViewContainer.GenerateHeader(RenderCanvas);
 
             //            //listView.PopulateListView();
             //=======
