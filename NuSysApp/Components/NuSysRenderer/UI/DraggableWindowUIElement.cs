@@ -23,18 +23,8 @@ namespace NuSysApp
         public DraggableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             IsDraggable = UIDefaults.WindowIsDraggable;
-        }
-
-        /// <summary>
-        /// Called when the DraggableWindowUIElement is initialized.
-        /// Add event handlers here.
-        /// </summary>
-        /// <returns></returns>
-        public override Task Load()
-        {
             Dragged += DraggableWindowUIElement_Dragged;
             Pressed += DraggableWindowUIElement_Pressed;
-            return base.Load();
         }
 
         /// <summary>
