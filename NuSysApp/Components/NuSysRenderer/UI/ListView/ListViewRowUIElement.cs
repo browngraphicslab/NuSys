@@ -36,6 +36,11 @@ namespace NuSysApp
         public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
         public event DeSelectedEventHandler Deselected;
 
+        public delegate void DraggedEventHandler(
+            ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer);
+
+        public event DraggedEventHandler Dragged;
+
         /// <summary>
         /// These are the cells that will be placed on this row. The order is from left to right.
         /// Index 0 is left most.
@@ -80,6 +85,7 @@ namespace NuSysApp
             _children.Add(cell);
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
+            cell.Dragged += Cell_Dragged;
         }
 
         /// <summary>
@@ -119,6 +125,28 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// This function is called when the cell ui element has been dragged. 
+        /// This method will fire either the dragged event handler that the listview
+        /// will be listening to
+        /// </summary>
+        private void Cell_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var cell = item as RectangleUIElement;
+            Debug.Assert(cell != null);
+            Dragged?.Invoke(this, cell, pointer);
+        }
+
+        /// <summary>
+        /// This returns the column index of the cell passed in.
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        public int GetColumnIndex(RectangleUIElement cell)
+        {
+            return _children.IndexOf(cell);
+        }
+
 
         /// <summary>
         /// This function is called when the cell ui element has been pressed.
@@ -136,12 +164,27 @@ namespace NuSysApp
             if (index < 0 || index > _children.Count)
             {
                 Debug.Write("Your trying to delete a cell at an out of bounds index you idiot");
+                return;
             }
             var cell = _children[index] as RectangleUIElement;
             Debug.Assert(cell != null);
+            RemoveHandlers(cell);
+            _children.RemoveAt(index);
+        }
+
+        /// <summary>
+        /// This removes all the handlers for the cell
+        /// </summary>
+        /// <param name="cell"></param>
+        private void RemoveHandlers(RectangleUIElement cell)
+        {
+            if (cell == null)
+            {
+                return;
+            }
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
-            _children.RemoveAt(index);
+            cell.Dragged -= Cell_Dragged;
         }
 
         /// <summary>
@@ -167,6 +210,18 @@ namespace NuSysApp
             var cell = _children[index] as RectangleUIElement;
             Debug.Assert(cell != null);
             cell.Width = width;
+        }
+
+        /// <summary>
+        /// Removes all cells in this row. It just clears the children list
+        /// </summary>
+        public void RemoveAllCells()
+        {
+            foreach (var cell in _children)
+            {
+                RemoveHandlers(cell as RectangleUIElement);
+            }
+            _children.Clear();
         }
 
         public override void Draw(CanvasDrawingSession ds)

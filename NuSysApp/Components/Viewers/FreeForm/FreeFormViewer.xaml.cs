@@ -139,7 +139,7 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var listView = new ListViewUIElement<string>(_renderRoot, RenderCanvas){
+            var listView = new ListViewUIElement<LibraryElementModel>(_renderRoot, RenderCanvas){
                 Background = Colors.Azure,
                 Bordercolor = Colors.Black,
                 BorderWidth = 5,
@@ -148,71 +148,71 @@ namespace NuSysApp
             };
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                 (float) SessionController.Instance.ScreenHeight/2);
-            listView.AddItems(new List<string>() {"Leandro", "Luke","Betty","Trent","Miranda", "Harsh", "Nicolas"});
+            listView.AddItems(
+                SessionController.Instance.ContentController.ContentValues.Where(
+                    q => q.Type == NusysConstants.ElementType.Audio).ToList());
 
-            var listColumn = new ListColumn<string>();
-            listColumn.Title = "testing";
-            listColumn.Width = 60;
-            listColumn.ColumnFunction = delegate(string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            var listColumn = new ListColumn<LibraryElementModel>();
+            listColumn.Title = "Title";
+            listColumn.RelativeWidth = 1;
+            listColumn.ColumnFunction = delegate(LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
                 var rect = new TextboxUIElement(item, resourceCreator);
-                rect.Background = Colors.Red;
-                rect.BorderWidth = 3;
-                rect.Bordercolor = Colors.Yellow;
+                rect.BorderWidth = 1;
+                rect.Bordercolor = Colors.Black;
                 rect.Width = 50;
                 rect.Height = 40;
-                rect.Text = s;
+                rect.Text = s.Title;
                 return rect;
             };
-            listView.AddColumn(listColumn);
 
-            var listColumn2 = new ListColumn<string>();
-            listColumn2.Title = "testing1";
-            listColumn2.Width = 100;
-            listColumn2.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            var listColumn2 = new ListColumn<LibraryElementModel>();
+            listColumn2.Title = "Creator";
+            listColumn2.RelativeWidth = 2;
+            listColumn2.ColumnFunction = delegate (LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
-                var rect = new RectangleUIElement(item, resourceCreator);
-                rect.Background = Colors.Blue;
-                rect.BorderWidth = 3;
-                rect.Bordercolor = Colors.HotPink;
+                var rect = new TextboxUIElement(item, resourceCreator);
+                rect.BorderWidth = 1;
+                rect.Bordercolor = Colors.Black;
                 rect.Width = 100;
                 rect.Height = 40;
+                rect.Text = s.Creator;
                 return rect;
             };
-            listView.AddColumn(listColumn2);
-            listView.RemoveColumn("testing");
-            listView.AddColumn(listColumn);
 
-            var listColumn3 = new ListColumn<string>();
-            listColumn3.Title = "testing3";
-            listColumn3.Width = 30;
-            listColumn3.ColumnFunction = delegate (string s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
+            var listColumn3 = new ListColumn<LibraryElementModel>();
+            listColumn3.Title = "Last Edited Timestamp";
+            listColumn3.RelativeWidth = 3;
+            listColumn3.ColumnFunction = delegate (LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
             {
-                var rect = new RectangleUIElement(item, resourceCreator);
-                rect.Background = Colors.Blue;
-                rect.BorderWidth = 3;
-                rect.Bordercolor = Colors.Red;
+                var rect = new TextboxUIElement(item, resourceCreator);
+                rect.BorderWidth = 1;
+                rect.Bordercolor = Colors.Black;
                 rect.Width = 100;
                 rect.Height = 40;
+                rect.Text = s.LastEditedTimestamp;
                 return rect;
             };
+            listView.AddColumns(new List<ListColumn<LibraryElementModel>>() {listColumn, listColumn2, listColumn3});
+            listView.RemoveColumn("Last Edited Timestamp");
             listView.AddColumn(listColumn3);
-//            //listView.PopulateListView();
-//=======
+            //listView.AddColumn(listColumn3);
+            //            //listView.PopulateListView();
+            //=======
 
-//            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
-//            button.ButtonText = "Hello World";
+            //            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
+            //            button.ButtonText = "Hello World";
 
-//            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
-//            {
-//                Width = 500,
-//                Height = 500
-//            };
+            //            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
+            //            {
+            //                Width = 500,
+            //                Height = 500
+            //            };
 
-//            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
+            //            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
 
-//            _renderRoot.AddChild(DetailViewer);
-//>>>>>>> 20b707c246fc4e73504e6622578a2a480a2257e1
+            //            _renderRoot.AddChild(DetailViewer);
+            //>>>>>>> 20b707c246fc4e73504e6622578a2a480a2257e1
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(listView);
@@ -223,7 +223,7 @@ namespace NuSysApp
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
-
+        
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             _minimap?.Invalidate();
