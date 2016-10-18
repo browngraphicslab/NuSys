@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         public static  float Width = 100;
         public static float Height = 100;
-        public static float Borderwidth = 5;
+        public static float Borderwidth = 0;
         public static Color Background = Colors.White;
         public static Color Bordercolor = Colors.Black;
         public static float TopBarHeight = 25;

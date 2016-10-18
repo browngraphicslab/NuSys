@@ -93,7 +93,7 @@ namespace NuSysApp
                             elementWidth = ItemWidth;
                             break;
                         case HorizontalAlignment.Center:
-                            itemOffset.X = (Width - LeftMargin)/2;
+                            itemOffset.X = (Width - ItemWidth)/2;
                             elementWidth = ItemWidth;
                             break;
                         case HorizontalAlignment.Right:
@@ -265,6 +265,15 @@ namespace NuSysApp
             // set the height and width so function calls after this have the right value
             ItemWidth = elementWidth;
             ItemHeight = elementHeight;
+        }
+
+        /// <summary>
+        /// The dispose method fore the stack layout manager
+        /// </summary>
+        public override void Dispose()
+        {
+            _elements.RemoveRange(0, _elements.Count);
+
         }
 
         /// <summary>

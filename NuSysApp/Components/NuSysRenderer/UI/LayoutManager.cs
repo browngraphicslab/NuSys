@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public abstract class LayoutManager
+    public abstract class LayoutManager : IDisposable
     {
         public float Height { get; set; }
         public float Width { get; set; }
@@ -20,5 +20,6 @@ namespace NuSysApp
 
         public abstract void ArrangeItems();
 
+        public abstract void Dispose();
     }
 }

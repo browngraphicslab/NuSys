@@ -209,6 +209,11 @@ namespace NuSysApp
             //This has been left empty as the shape draws it's own border. 
         }
 
+        protected override void DrawBackground(CanvasDrawingSession ds)
+        {
+            // This has been left empty as the shape draws its own background
+        }
+
         /// <summary>
         /// The dispose method. Remove Handlers here
         /// </summary>

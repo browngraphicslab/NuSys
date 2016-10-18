@@ -57,9 +57,9 @@ namespace NuSysApp
         /// Called whenever the current tab is changed in the page container
         /// </summary>
         /// <param name="tabType"></param>
-        private void _pageTabContainer_OnCurrentTabChanged(DetailViewPageTabType tabType)
+        private async void _pageTabContainer_OnCurrentTabChanged(DetailViewPageTabType tabType)
         {
-            var rect = DetailViewPageFactory.GetPage(tabType.Type, _currentController);
+            var rect = await DetailViewPageFactory.GetPage(this, Canvas, tabType.Type, _currentController);
             if (rect != null)
             {
                 _pageTabContainer.SetPage(rect);

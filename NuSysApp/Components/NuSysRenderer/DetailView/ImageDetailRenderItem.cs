@@ -70,7 +70,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            if (!IsDisposed)
+            if (IsDisposed)
                 return;
 
             _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
@@ -133,7 +133,7 @@ namespace NuSysApp
         public override async Task Load()
         {
             _isLoading = true;
-               _bmp?.Dispose();
+            _bmp?.Dispose();
             await Task.Run(async () =>
             {
                 _bmp =

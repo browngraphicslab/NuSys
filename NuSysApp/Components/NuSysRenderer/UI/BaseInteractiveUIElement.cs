@@ -55,6 +55,12 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected abstract void DrawBorder(CanvasDrawingSession ds);
 
+        /// <summary>
+        /// Draws the Background of the UI Element
+        /// </summary>
+        /// <param name="ds"></param>
+        protected abstract void DrawBackground(CanvasDrawingSession ds);
+
 
         public override void OnPressed(CanvasPointer pointer)
         {
