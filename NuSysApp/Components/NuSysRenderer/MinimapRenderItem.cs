@@ -16,7 +16,7 @@ using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
-    public class MinimapRenderItem
+    public class MinimapRenderItem : BaseRenderItem
     {
         private Rect _rect;
         private Rect _bb;
@@ -27,35 +27,16 @@ namespace NuSysApp
 
         private bool _isDisposed;
 
-        public MinimapRenderItem(CollectionRenderItem collection, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator)
+        public MinimapRenderItem(CollectionRenderItem collection, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             _collection = collection;
             _canvasControl = resourceCreator;
-            _canvasControl.Draw += CanvasControlOnDraw;
-            //_canvasControl.Draw += CanvasControlOnDraw;
         }
-
-        private void CanvasControlOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
-        {
-            using (var ds = args.DrawingSession)
-            {
-                Draw(ds);
-            }
-        }
-
-        //private void CanvasControlOnDraw(CanvasControl sender, CanvasDrawEventArgs args)
-        //{
-        //    using (var ds = args.DrawingSession)
-        //    {
-        //        Draw(ds);
-        //    }
-        //}
 
         public void SwitchCollection(CollectionRenderItem collection)
         {
             _collection = collection;
             _renderTarget = null;
-            Invalidate();
         }
 
         public void Dispose()
@@ -66,10 +47,7 @@ namespace NuSysApp
             }
 
             _collection = null;
-            if (_canvasControl != null)
-            {
-                _canvasControl.Draw -= CanvasControlOnDraw;
-            }
+
             _isDisposed = true;
         }
         
@@ -98,12 +76,7 @@ namespace NuSysApp
 
         }
 
-        public void Invalidate()
-        {
-            _canvasControl.Invalidate();
-        }
-
-        public void Draw(CanvasDrawingSession ds)
+        public override void Draw(CanvasDrawingSession ds)
         {
             if (_isDisposed)
             {

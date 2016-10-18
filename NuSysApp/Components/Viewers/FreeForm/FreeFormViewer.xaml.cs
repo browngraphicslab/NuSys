@@ -117,18 +117,22 @@ namespace NuSysApp
             RenderEngine.Root.ClearChildren();
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
+            // THE INITIAL COLLECTION MUST BE THE FIRST CHILD
             RenderEngine.Root.AddChild(InitialCollection);
+
+            // ADD ADITIONAL CHILDREN BELOW THIS COMMENT
+            _minimap = new MinimapRenderItem(InitialCollection, _renderRoot, xRenderCanvas);
+            _renderRoot.AddChild(_minimap);
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
             RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
 
-            _minimap = new MinimapRenderItem(InitialCollection, null, xRenderCanvas);
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            _minimap?.Invalidate();
         }
 
         private void SwitchCollection(CollectionRenderItem collection)
@@ -341,7 +345,6 @@ namespace NuSysApp
                 }
             }
 
-            _minimap.Invalidate();
         }
 
         private async void CollectionInteractionManagerOnTrailCreated(ElementRenderItem element1,
@@ -462,7 +465,6 @@ namespace NuSysApp
                 }
             }
 
-            _minimap.Invalidate();
         }
 
         private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
@@ -687,7 +689,6 @@ namespace NuSysApp
             
             ActivateUndo(action, oldLocationScreen);
 
-            _minimap.Invalidate();
         }
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
@@ -776,7 +777,6 @@ namespace NuSysApp
                 }
             }
 
-            _minimap.Invalidate();
             UpdateMediaPlayer();
         }
 
@@ -806,7 +806,6 @@ namespace NuSysApp
             }
 
             UpdateNonWin2dElements();
-            _minimap.Invalidate();
         }
 
         private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
@@ -823,15 +822,12 @@ namespace NuSysApp
             }
 
             UpdateNonWin2dElements();
-            _minimap.Invalidate();
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()
         {
             if (!_inkPressed)
                 ClearSelections();
-
-            _minimap.Invalidate();
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -870,7 +866,6 @@ namespace NuSysApp
         {
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
-            _minimap.Invalidate();
         }
 
         private void ClearSelections()
