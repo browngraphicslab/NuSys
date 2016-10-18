@@ -25,34 +25,28 @@ namespace NuSysApp
         public string Title { get; set; }
 
         /// <summary>
-        /// This width will override whatever width the rectangle UI element had in the column function passed above
+        /// This width will override whatever width the rectangle UI element had in the column function passed above. This is relative to all other column widths in the list.
+        /// E.G. If col1 relativewidths is 1, and col2 is 2, and the total list width is 300, then col1 width will be 100 wide, and col will be 300 wide
         /// </summary>
-        public float Width { get; set; }
+        public float RelativeWidth { get; set; }
 
         /// <summary>
         /// This function will return the cell based on the column function you you give. It will first run the column function,
-        /// then set the width, heigh, and transparancy appropriately. Use this function when creating the cell to place in the row.
-        /// You can also override the cell width (for example if you have to make the last cell larger to fill the entire row), but by default
-        /// the Width instance variable will be used.
+        /// then set the width, heigh, and transparancy appropriately. Use this function when creating the cell to place in the row.You must pass in the total sum of all 
+        /// column relativewidths.
         /// </summary>
         /// <param name="itemSource"></param>
         /// <param name="baseRenderItem"></param>
         /// <param name="resourceCreator"></param>
         /// <param name="RowHeight"></param>
         /// <returns></returns>
-        public RectangleUIElement GetColumnCellFromItem(T itemSource, BaseRenderItem baseRenderItem,
-            ICanvasResourceCreatorWithDpi resourceCreator, float RowHeight, float cellWidthOverride = -1)
+        public RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement,
+            ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
         {
-            var cell = ColumnFunction(itemSource, baseRenderItem, resourceCreator);
-            if (cellWidthOverride < 0)
-            {
-                cell.Width = Width;
-            }
-            else
-            {
-                cell.Width = cellWidthOverride;
-            }
-            cell.Height = RowHeight;
+            var cell = ColumnFunction(itemSource, listViewRowUIElement, resourceCreator);
+            cell.Width = (RelativeWidth / sumOfAllColumnRelativeWidths) * listViewRowUIElement.Width;
+
+            cell.Height = rowHeight;
             cell.Background = Colors.Transparent;
             return cell;
         }

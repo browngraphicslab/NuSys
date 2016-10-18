@@ -64,7 +64,8 @@ namespace NuSysApp
                 ListViewHeader<T> header = new ListViewHeader<T>(this, resourceCreator);
                 header.Transform.LocalPosition = new Vector2(0,0);
                 header.BorderWidth = 0;
-                header.Background = Colors.DarkSlateGray;
+                header.Bordercolor = Colors.Black;
+                header.Background = Colors.Black;
                 header.Width = this.Width;
                 header.Height = _listview.RowHeight + 10;
                 _listYPos = header.Height;

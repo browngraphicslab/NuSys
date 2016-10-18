@@ -42,11 +42,12 @@ namespace NuSysApp
             foreach (ListColumn<T> c in _listview.ListColumns)
             {
                 var title = new TextboxUIElement(this, resourceCreator);
-                title.Background = Colors.LightCyan;
-                title.TextColor = Colors.DarkSlateGray;
+                title.BorderWidth = 2;
+                title.Background = Colors.LightGray;
+                title.TextColor = Colors.Black;
                 title.FontSize = 15;
                 title.Text = c.Title;
-                title.Width = c.Width;
+                title.Width = c.RelativeWidth / listview.SumOfColRelWidths * listview.Width;
                 title.Height = Height;
                 title.Transform.LocalPosition = new Vector2(indexPointer, 0);
                 this.AddChild(title);
