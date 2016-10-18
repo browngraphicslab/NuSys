@@ -58,7 +58,7 @@
             <Button Visibility="Collapsed" x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
                 <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             </Button>
-            <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
+            <StackPanel Name="Users"  Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70" >
             </StackPanel>
 
             <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">
