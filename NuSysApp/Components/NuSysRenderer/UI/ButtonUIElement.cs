@@ -90,6 +90,11 @@ namespace NuSysApp
         /// The string of text to be displayed on the button
         /// </summary>
         public string ButtonText { get; set; }
+
+        /// <summary>
+        /// The image to be displayed on the button
+        /// </summary>
+        public CanvasBitmap Image { get; set;  }
         
         /// <summary>
         /// The color of the text on the button
@@ -174,6 +179,20 @@ namespace NuSysApp
 
             // draw the text on the button
             DrawButtonText(ds);
+            DrawButtonImage(ds);
+        }
+
+        public virtual void DrawButtonImage(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Shape.Transform.LocalToScreenMatrix;
+
+            if (Image != null)
+            {
+                ds.DrawImage(Image, GetLocalBounds());
+            }
+
+            ds.Transform = orgTransform;
         }
 
         public virtual void DrawButtonText(CanvasDrawingSession ds)

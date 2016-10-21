@@ -663,6 +663,8 @@ namespace NuSysApp
 
                 layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
                 RenderEngine.Root.AddChild(layoutWindow);
+
+                // Do the layout
             }
         }
 
