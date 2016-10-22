@@ -96,6 +96,8 @@ namespace NuSysApp
         /// </summary>
         public Color ButtonTextColor { get; set; }
 
+        public float ButtonFontSize { get; set; }
+
         /// <summary>
         /// The horizontal alignment of the text on the button
         /// </summary>
@@ -191,7 +193,8 @@ namespace NuSysApp
                     VerticalAlignment = ButtonTextVerticalAlignment,
                     WordWrapping = CanvasWordWrapping.NoWrap,
                     TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
+                    FontSize = ButtonFontSize
                 };
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the

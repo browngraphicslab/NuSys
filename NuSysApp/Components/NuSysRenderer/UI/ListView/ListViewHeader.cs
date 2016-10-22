@@ -41,17 +41,29 @@ namespace NuSysApp
             _listview = listview;
             foreach (ListColumn<T> c in _listview.ListColumns)
             {
-                var title = new TextboxUIElement(this, resourceCreator);
-                title.BorderWidth = 2;
-                title.Background = Colors.LightGray;
-                title.TextColor = Colors.Black;
-                title.FontSize = 15;
-                title.Text = c.Title;
-                title.Width = c.RelativeWidth / listview.SumOfColRelWidths * listview.Width;
-                title.Height = Height;
-                title.Transform.LocalPosition = new Vector2(indexPointer, 0);
-                this.AddChild(title);
-                indexPointer += title.Width;
+                var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+                headerItem.BorderWidth = 2;
+                headerItem.Background = Colors.LightGray;
+                headerItem.ButtonTextColor = Colors.Black;
+                headerItem.ButtonText = c.Title;
+                headerItem.ButtonFontSize = 15;
+                headerItem.Width = c.RelativeWidth / listview.SumOfColRelWidths * listview.Width;
+                headerItem.Height = Height;
+                headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
+                this.AddChild(headerItem);
+                indexPointer += headerItem.Width;
+
+                //var title = new TextboxUIElement(this, resourceCreator);
+                //title.BorderWidth = 2;
+                //title.Background = Colors.LightGray;
+                //title.TextColor = Colors.Black;
+                //title.FontSize = 15;
+                //title.Text = c.Title;
+                //title.Width = c.RelativeWidth / listview.SumOfColRelWidths * listview.Width;
+                //title.Height = Height;
+                //title.Transform.LocalPosition = new Vector2(indexPointer, 0);
+                //this.AddChild(title);
+                //indexPointer += title.Width;
             }
         }
     }
