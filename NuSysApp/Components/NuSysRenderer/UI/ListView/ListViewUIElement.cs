@@ -523,7 +523,20 @@ namespace NuSysApp
                     {
                         continue;
                     }
-                    child.Draw(ds);
+
+                    
+                    //Position is the position of the bottom of the row
+                    var position = cellVerticalOffset - _scrollOffset + RowHeight;
+
+                    //Set visibility based on if the row is at all visible.
+                    if (position > 0 && position < Height + RowHeight)
+                    {
+                        row.IsVisible = true;
+                    }
+                    else
+                    {
+                        row.IsVisible = false;
+                    }
                     row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset - _scrollOffset);
                     cellVerticalOffset += row.Height;
    
