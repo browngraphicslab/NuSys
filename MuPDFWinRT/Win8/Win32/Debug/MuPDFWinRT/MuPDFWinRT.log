@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  Document.cpp
   LinkInfoInternal.cpp
   LinkInfoRemote.cpp
@@ -14,3 +15,6 @@ LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; us
   Generating code
   Finished generating code
   MuPDFWinRT.vcxproj -> C:\Users\nico\Documents\Nu_Nusys_repo\nusys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll
+=======
+﻿  MuPDFWinRT.vcxproj -> C:\Users\nusys\Documents\miranda\NuSys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll
+>>>>>>> f83c7cb321f35f49cb4d7b9be62aefcdf01f3246

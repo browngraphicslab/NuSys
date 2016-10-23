@@ -262,6 +262,7 @@ namespace NuSysApp
         
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
         {
+
             RowDragged?.Invoke(rowUIElement.Item,
                 cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
         }
@@ -454,6 +455,8 @@ namespace NuSysApp
             rowToDeselect.Deselect();
             _selectedElements.Remove(rowToDeselect);
         }
+
+
 
         public void SwapColumns(int columnAIndex, int columnBIndex)
         {

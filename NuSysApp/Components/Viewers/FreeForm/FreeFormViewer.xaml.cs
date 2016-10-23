@@ -139,8 +139,9 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
-            var listView = new ListViewUIElement<LibraryElementModel>(_renderRoot, RenderCanvas){
 
+            var listViewContainer = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
+            {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Gray,
                 BorderWidth = 5,
@@ -148,11 +149,18 @@ namespace NuSysApp
                 Width = 300
             };
 
+            var listView = new ListViewUIElement<LibraryElementModel>(_renderRoot, RenderCanvas){
+                Background = Colors.Azure,
+                BorderWidth = 0,
+                Height = 500,
+                Width = 300
+            };
+
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                (float) SessionController.Instance.ScreenHeight/5);
-            var l = SessionController.Instance.ContentController.ContentValues.Where(
-                    q => q.Type == NusysConstants.ElementType.Audio).ToList();
-            listView.AddItems(l.GetRange(0, 16));
+                (float) SessionController.Instance.ScreenHeight/2);
+            listView.AddItems(
+                SessionController.Instance.ContentController.ContentValues.Where(
+                    q => q.Type == NusysConstants.ElementType.Audio).ToList());
 
             var listColumn = new ListColumn<LibraryElementModel>();
             listColumn.Title = "Title";
@@ -199,22 +207,10 @@ namespace NuSysApp
             listView.RemoveColumn("Last Edited Timestamp");
             listView.AddColumn(listColumn3);
 
-            //            var button = new ButtonUIElement(_renderRoot, RenderCanvas, new RectangleUIElement(_renderRoot, RenderCanvas));
-            //            button.ButtonText = "Hello World";
-
-            //            DetailViewer = new DetailViewRenderItem(_renderRoot, RenderCanvas)
-            //            {
-            //                Width = 500,
-            //                Height = 500
-            //            };
-
-            //            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
-
-            //            _renderRoot.AddChild(DetailViewer);
-            //>>>>>>> 20b707c246fc4e73504e6622578a2a480a2257e1
+            listViewContainer.GenerateHeader(RenderCanvas);
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(listView);
+            RenderEngine.Root.AddChild(listViewContainer);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
