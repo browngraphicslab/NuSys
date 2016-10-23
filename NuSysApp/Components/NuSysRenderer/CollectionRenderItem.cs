@@ -276,61 +276,63 @@ namespace NuSysApp
             {
                 ds.Transform = Transform.LocalToScreenMatrix;
                 ds.FillRectangle(GetLocalBounds(), Colors.White);
-
                 ds.Transform = Camera.LocalToScreenMatrix;
-                //var c = currentCollection.ViewModel.Model.LibraryId;
-                //var d = currentCollection.ViewModel.Model.Id;
-                //var e = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                
                 if (ViewModel.IsShaped)
                 {
-
-                    //var foo = SessionController.Instance.ActiveFreeFormViewer.Model.Id;
-                    
-                    //var a = currentCollection.ViewModel.Id;
-                    //var b = currentCollection.ViewModel.LibraryElementId;
                    
-                   
-                    if (_canvasBitmap != null)
-                    //if(false)
+                    if (_canvasBitmap != null) 
                     {
                         var imageBrush = new CanvasImageBrush(_canvas, _canvasBitmap);
 
                         var orgTransform = ds.Transform;
                         ds.Transform = Transform.LocalToScreenMatrix; //draws relative to current object, the collection render item
 
-                        var zach1 = _elementSize;
-
-                        // Maintaining aspect ratio
-                        float newWidth;
-                        float newHeight;
-                        if (_canvasBitmap.Size.Width / _elementSize.Width < _canvasBitmap.Size.Height / _elementSize.Height)
+                   
+                        // If we're dealing with an internal adornment, we don't need to be doing all this bs
+                        if (_elementSize.Width == SessionController.Instance.ActiveFreeFormViewer.Width && _elementSize.Height == SessionController.Instance.ActiveFreeFormViewer.Height)
                         {
-                            var ratio = _elementSize.Width / _canvasBitmap.Size.Width;
-                            newWidth = (float)_elementSize.Width;
-                            newHeight = (float)(_canvasBitmap.Size.Height * ratio);
+                            ds.Transform = orgTransform;
+                            //ds.FillGeometry(_shape, ViewModel.ShapeColor);
+                            
+                            ds.FillGeometry(_shape, imageBrush);
+                         
+                            ds.DrawImage(_canvasBitmap, SessionController.Instance.ActiveFreeFormViewer.GetBoundingRect());
                         }
                         else
                         {
-                            var ratio = _elementSize.Height / _canvasBitmap.Size.Height;
-                            newWidth = (float)(_canvasBitmap.Size.Width * ratio);
-                            newHeight = (float)_elementSize.Height;
-                        }
+                            // Maintaining aspect ratio
+                            float newWidth;
+                            float newHeight;
+                            if (_canvasBitmap.Size.Width/_elementSize.Width <
+                                _canvasBitmap.Size.Height/_elementSize.Height)
+                            {
+                                var ratio = _elementSize.Width/_canvasBitmap.Size.Width;
+                                newWidth = (float) _elementSize.Width;
+                                newHeight = (float) (_canvasBitmap.Size.Height*ratio);
+                            }
+                            else
+                            {
+                                var ratio = _elementSize.Height/_canvasBitmap.Size.Height;
+                                newWidth = (float) (_canvasBitmap.Size.Width*ratio);
+                                newHeight = (float) _elementSize.Height;
+                            }
 
-                        // Draw image to fit bounding rectangle of shape
-                        var id1 = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-                        var id2 = currentCollection.ViewModel.LibraryElementId;
-                        
-                        //if (String.Equals(id1, id2))
-                        //{
-                        //    ds.Transform = orgTransform;
-                        //    ds.FillGeometry(_shape, ViewModel.ShapeColor);
-                        //}
-                        //else {
+                            // Draw image to fit bounding rectangle of shape
+                            var id1 = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                            var id2 = currentCollection.ViewModel.LibraryElementId;
+
+                            //if (String.Equals(id1, id2))
+                            //{
+                            //    ds.Transform = orgTransform;
+                            //    ds.FillGeometry(_shape, ViewModel.ShapeColor);
+                            //}
+                            //else {
                             var r = new Rect(0, 0, newWidth, newHeight);
                             ds.FillGeometry(_shape, imageBrush);
                             ds.DrawImage(_canvasBitmap, r);
-                        //}
-                        
+                            //}
+                        }
 
                         ds.Transform = orgTransform;
 
