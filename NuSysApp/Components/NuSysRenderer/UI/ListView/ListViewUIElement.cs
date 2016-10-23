@@ -10,10 +10,13 @@ using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 using SharpDX;
 using Vector2 = System.Numerics.Vector2;
+using System.Numerics;
+using Windows.Foundation;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
-    public class ListViewUIElement<T> : RectangleUIElement
+    public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
         public delegate void RowSelectedEventHandler(T item, String columnName);
         /// <summary>
@@ -44,6 +47,20 @@ namespace NuSysApp
         /// A hashset of the selected rows
         /// </summary>
         private HashSet<ListViewRowUIElement<T>> _selectedElements;
+        /// <summary>
+        /// A clipping rectangle the size of the list view
+        /// </summary>
+        private CanvasGeometry _clippingRect;
+        /// <summary>
+        /// Denormalized vertical offset -- makes sure the position of the list view
+        /// reflects the position of the slider in the scroll bar.
+        /// </summary>
+        private float _scrollOffset;
+
+        /// <summary>
+        /// The combined height of every listviewuielementrow
+        /// </summary>
+        private float _heightOfAllRows { get { return _itemsSource.Count * RowHeight; } }
 
         private float _sumOfColumnRelativeWidths;
 
@@ -69,6 +86,7 @@ namespace NuSysApp
                 
             }
         }
+
 
         public float Width
         {
@@ -100,9 +118,11 @@ namespace NuSysApp
         {
             _itemsSource = new List<T>();
             _listColumns = new List<ListColumn<T>>();
+            _scrollOffset = 0;
             MultipleSelections = false;
             //RowBorderThickness = 5;
             RowHeight = 40;
+            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             //_listViewRowUIElements = new List<ListViewRowUIElement<T>>();
             _selectedElements = new HashSet<ListViewRowUIElement<T>>();
         }
@@ -178,11 +198,12 @@ namespace NuSysApp
             foreach (var child in _children)
             {
                 var row = child as ListViewRowUIElement<T>;
-                row.Width = Width - BorderWidth * 2;
                 if (row == null)
                 {
                     continue;
                 }
+                row.Width = Width - BorderWidth * 2;
+
                 row.RemoveAllCells();
                 PopulateListRow(row);
             }
@@ -321,6 +342,7 @@ namespace NuSysApp
             _listColumns.Add(listColumn);
             RepopulateExistingListRows();
         }
+
 
         /// <summary>
         /// This should remove the column with the name from _listColumns.
@@ -462,8 +484,6 @@ namespace NuSysApp
         }
 
 
-
-
         /// <summary>
         /// Returns the items (not the row element) selected.
         /// </summary>
@@ -472,20 +492,46 @@ namespace NuSysApp
             return _selectedElements.Select(row => row.Item);
         }
 
+        public override void ScrollBarPositionChanged(object source, double position)
+        {
+            _scrollOffset = (float) position * (_heightOfAllRows);
+        }
+        public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
+        {
+            ScrollBar.Range = (double)(Height - BorderWidth - 2) / (_heightOfAllRows);
+            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
+
+            base.Update(parentLocalToScreenTransform);
+        }
         public override void Draw(CanvasDrawingSession ds)
         {
-            var cellVerticalOffset = BorderWidth;
-            foreach (var child in _children)
-            {
-                var row = child as ListViewRowUIElement<T>;
-                if (row == null)
-                {
-                    continue;
-                }
-                row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset);
-                cellVerticalOffset += row.Height;
-            }
             base.Draw(ds);
+
+            var orgTransform = ds.Transform;
+            //Is this necessary?
+            //ds.Transform = Transform.LocalToScreenMatrix;
+
+            //Clipping in this way does not work...
+            using (ds.CreateLayer(1f, _clippingRect))
+            {
+
+                var cellVerticalOffset = BorderWidth;
+                foreach (var child in _children)
+                {
+                    var row = child as ListViewRowUIElement<T>;
+                    if (row == null)
+                    {
+                        continue;
+                    }
+                    child.Draw(ds);
+                    row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset - _scrollOffset);
+                    cellVerticalOffset += row.Height;
+   
+                }
+            }
+            ds.Transform = orgTransform;
+
+
         }
 
     }

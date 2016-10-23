@@ -346,6 +346,8 @@
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollableRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollBarUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackLayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TabButtonUIElement.cs" />
