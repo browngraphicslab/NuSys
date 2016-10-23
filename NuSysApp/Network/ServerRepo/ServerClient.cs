@@ -158,6 +158,7 @@ namespace NuSysApp
 
         public async Task SendMessageToServer(Message message)
         {
+            message["system_sender_ip"] = WaitingRoomView.UserID;
             var serialized = message.GetSerialized();
             await SendToServer(serialized);
         }

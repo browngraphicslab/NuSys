@@ -31,7 +31,6 @@ namespace NuSysApp
             NetworkUser user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[userId];
             ElementController controller = SessionController.Instance.IdToControllers[controllerId];
 
-            user.SetNodeCurrentlyEditing(null);
             controller.DropUser(userId);
             // do something to make bubble disappear on screen
             // maybe have elementrenderitem constantly updating the bubbles
@@ -42,9 +41,7 @@ namespace NuSysApp
             NetworkUser user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[userId];
             ElementController controller = SessionController.Instance.IdToControllers[controllerId];
 
-            user.SetNodeCurrentlyEditing(controllerId);
             controller.AddUser(userId);
-            // do something to make bubble appear on screen
         }
 
         public void AddUser(string controllerId, string userId)

@@ -67,7 +67,7 @@ namespace NuSysApp
                 }
                 if (controllerId != null)
                 {
-                    SessionController.Instance.UserController.AddUser(_currEditingControllerId, this.UserID);
+                    SessionController.Instance.UserController.AddUser(controllerId, this.UserID);
                 }
                 _currEditingControllerId = controllerId;
             }

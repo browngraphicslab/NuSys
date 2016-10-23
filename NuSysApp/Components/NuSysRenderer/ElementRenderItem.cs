@@ -66,15 +66,11 @@ namespace NuSysApp
 
         private void Controller_UserDropped(object sender, string e)
         {
-            // remove bubble thing
-            // string is the user id
             _userBubbles.RemoveBubble(e);
         }
 
         private void Controller_UserAdded(object sender, string e)
         {
-            // add bubble thing
-            // string is the user id
             _userBubbles.InstantiateBubble(e);
         }
 

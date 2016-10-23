@@ -9,6 +9,10 @@ using Windows.UI;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// Class which represents the rectangle area to the right of the node which houses the bubbles which show
+    /// which users are editing the node
+    /// </summary>
     public class UserBubbles : RectangleUIElement
     {
         private Dictionary<string, ButtonUIElement> Bubbles;
@@ -19,13 +23,10 @@ namespace NuSysApp
         {
             base.Width = 50;
 
+            base.BorderWidth = 0;
+
             Bubbles = new Dictionary<string, ButtonUIElement>();
             _bubbleLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
-
-            //var bubble = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas));
-            //bubble.Background = Colors.Red;
-            //AddChild(bubble);
-            //_bubbleLayoutManager.AddElement(bubble);
 
         }
 
@@ -38,7 +39,8 @@ namespace NuSysApp
             // todo make values nice
 
             // set this to be user name
-            bubble.ButtonText = displayName;
+            bubble.ButtonText = displayName[0].ToString().ToUpper();
+            bubble.ButtonTextColor = Colors.White;
             bubble.Background = user.Color;
 
             // ellipses location may be set from center
