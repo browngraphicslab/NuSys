@@ -498,7 +498,7 @@ namespace NuSysApp
         }
         public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
         {
-            ScrollBar.Range = (double)(Height - BorderWidth - 2) / (_heightOfAllRows);
+            ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
 
             base.Update(parentLocalToScreenTransform);

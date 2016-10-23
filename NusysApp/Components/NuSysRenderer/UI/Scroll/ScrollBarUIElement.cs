@@ -35,7 +35,7 @@ namespace NuSysApp
         private bool _isdragging;
 
         #endregion private members
-
+        #region public members
         /// <summary>
         /// TODO: Support horizontal scroll bars.
         /// </summary>
@@ -46,27 +46,42 @@ namespace NuSysApp
         /// </summary>
         public Color ScrollBarColor = Colors.Gray;
 
-
+        /// <summary>
+        /// Invoked when the user slides the scroll bar to a new position. Position is
+        /// double from 0 to 1. It repreesents the "start" of the scroll bar.
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
         public delegate void ScrollBarPositionChangedHandler(object source, double position);
         public event ScrollBarPositionChangedHandler ScrollBarPositionChanged;
 
+        /// <summary>
+        /// Range is the normalized length of the slider. The end position - start position.
+        /// </summary>
         public double Range
         {
             set
             {
-                _range = value;
+                _range = Math.Min(1, value);
+                if (_range == 1)
+                {
+                    IsVisible = false;
+                }
             }
             get
             {
                 return _range;
             }
         }
+        /// <summary>
+        /// Position of the (start of the) slider bar
+        /// </summary>
         public double Position
         {
             set
             {
                 _position = value;
-
                 ScrollBarPositionChanged?.Invoke(this, Position);
             }
             get
@@ -76,6 +91,7 @@ namespace NuSysApp
 
         }
 
+        #endregion public members
         /// <summary>
         /// 
         /// </summary>
@@ -104,7 +120,6 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
             // draw the slide bar onto the rectangle
             ds.FillRectangle(new Rect(0, Position * Height, Width, Height * Range), ScrollBarColor);
-
             ds.Transform = orgTransform;
 
 
@@ -155,6 +170,11 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Helper method checks whether you actually hit the slider of the scroll bar.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         private bool SlideBarHit(Vector2 point)
         {
             if (point.Y / Height >= Position && point.Y / Height < Position + Range)
@@ -163,6 +183,8 @@ namespace NuSysApp
             }
             return false;
         }
+
+
         private void ScrollBarUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             //Checks to make sure it is the actual bar that is being dragged
@@ -181,12 +203,15 @@ namespace NuSysApp
 
             if (deltaY < 0)
             {
-                Position = (Position + deltaY < 0) ? 0 : Position + deltaY;
+                //If you're going up (position going down), set position + delta, with 0 as min.
+                Position = Math.Max(0, Position + deltaY);
             }
 
             if (deltaY > 0)
             {
+                //If you're going down (position going up), set position + delta, with 1-range being maximum.
                 Position = (Position + deltaY + Range > 1) ? 1 - Range : Position + deltaY;
+                
             }
 
 

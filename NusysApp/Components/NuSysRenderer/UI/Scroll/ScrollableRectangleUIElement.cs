@@ -9,6 +9,9 @@ using System.Numerics;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// RectangleUIElement with a scroll bar on the right-hand side
+    /// </summary>
     public class ScrollableRectangleUIElement : RectangleUIElement
     {
         private BaseRenderItem _parent;
@@ -27,6 +30,10 @@ namespace NuSysApp
 
 
         }
+
+        /// <summary>
+        /// Creates the scrollbar and adds it as a child of the RectangleUIElement
+        /// </summary>
         public void MakeScrollBar()
         {
             var scrollbarwidth = 10;
