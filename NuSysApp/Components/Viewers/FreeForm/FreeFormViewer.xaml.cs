@@ -156,11 +156,12 @@ namespace NuSysApp
                 Width = 300
             };
 
-            listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
+            listViewContainer.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                 (float) SessionController.Instance.ScreenHeight/2);
             listView.AddItems(
                 SessionController.Instance.ContentController.ContentValues.Where(
                     q => q.Type == NusysConstants.ElementType.Audio).ToList());
+            listViewContainer.ListView = listView;
 
             var listColumn = new ListColumn<LibraryElementModel>();
             listColumn.Title = "Title";

@@ -62,7 +62,15 @@ namespace NuSysApp
         /// </summary>
         private float _heightOfAllRows { get { return _itemsSource.Count * RowHeight; } }
 
+        /// <summary>
+        /// sum of column relative widths
+        /// </summary>
         private float _sumOfColumnRelativeWidths;
+
+        public float SumOfColRelWidths
+        {
+            get { return _sumOfColumnRelativeWidths; }
+        }
 
         /// <summary>
         /// Whether the list can have multiple or only single selections
