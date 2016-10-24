@@ -140,7 +140,7 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
 
-            var listViewContainer = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
+            var listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Gray,
@@ -148,69 +148,38 @@ namespace NuSysApp
                 Height = 500,
                 Width = 300
             };
-
-            var listView = new ListViewUIElement<LibraryElementModel>(_renderRoot, RenderCanvas){
-                Background = Colors.Azure,
-                BorderWidth = 0,
-                Height = 500,
-                Width = 300
-            };
+            
 
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                 (float) SessionController.Instance.ScreenHeight/2);
             listView.AddItems(
                 SessionController.Instance.ContentController.ContentValues.Where(
                     q => q.Type == NusysConstants.ElementType.Audio).ToList());
+            listView.RowBorderThickness = 1;
 
-            var listColumn = new ListColumn<LibraryElementModel>();
+            var listColumn = new ListTextColumn<LibraryElementModel>();
             listColumn.Title = "Title";
             listColumn.RelativeWidth = 1;
-            listColumn.ColumnFunction = delegate(LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
-            {
-                var rect = new TextboxUIElement(item, resourceCreator);
-                rect.BorderWidth = 1;
-                rect.Bordercolor = Colors.Black;
-                rect.Width = 50;
-                rect.Height = 40;
-                rect.Text = s.Title;
-                return rect;
-            };
+            listColumn.ColumnFunction = model => model.Title; 
 
-            var listColumn2 = new ListColumn<LibraryElementModel>();
+            var listColumn2 = new ListTextColumn<LibraryElementModel>();
             listColumn2.Title = "Creator";
             listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction = delegate (LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
-            {
-                var rect = new TextboxUIElement(item, resourceCreator);
-                rect.BorderWidth = 1;
-                rect.Bordercolor = Colors.Black;
-                rect.Width = 100;
-                rect.Height = 40;
-                rect.Text = s.Creator;
-                return rect;
-            };
+            listColumn2.ColumnFunction = model => model.Creator;
 
-            var listColumn3 = new ListColumn<LibraryElementModel>();
+            var listColumn3 = new ListTextColumn<LibraryElementModel>();
             listColumn3.Title = "Last Edited Timestamp";
             listColumn3.RelativeWidth = 3;
-            listColumn3.ColumnFunction = delegate (LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
-            {
-                var rect = new TextboxUIElement(item, resourceCreator);
-                rect.BorderWidth = 1;
-                rect.Bordercolor = Colors.Black;
-                rect.Width = 100;
-                rect.Height = 40;
-                rect.Text = s.LastEditedTimestamp;
-                return rect;
-            };
+            listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
+
             listView.AddColumns(new List<ListColumn<LibraryElementModel>>() {listColumn, listColumn2, listColumn3});
             listView.RemoveColumn("Last Edited Timestamp");
             listView.AddColumn(listColumn3);
 
-            listViewContainer.GenerateHeader(RenderCanvas);
+            listView.GenerateHeader(RenderCanvas);
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(listViewContainer);
+            RenderEngine.Root.AddChild(listView);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
