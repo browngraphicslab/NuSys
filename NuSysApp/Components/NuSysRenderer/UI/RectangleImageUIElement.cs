@@ -392,8 +392,8 @@ namespace NuSysApp
                 }
             }
 
-            var offsetX = (float)(ImageMaxWidth - _croppedImageTarget.Width) / 2f;
-            var offsetY = (float)(ImageMaxHeight - _croppedImageTarget.Height) / 2f;
+            var offsetX = Transform.LocalPosition.X + (float)(ImageMaxWidth - _croppedImageTarget.Width) / 2f;
+            var offsetY = Transform.LocalPosition.Y + (float)(ImageMaxHeight - _croppedImageTarget.Height) / 2f;
             Transform.LocalPosition = new Vector2(offsetX, offsetY);
             base.Update(parentLocalToScreenTransform);
         }

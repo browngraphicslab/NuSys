@@ -204,19 +204,10 @@ namespace NuSysApp
             MaxHeight = UIDefaults.WindowMaxHeight;
             MinWidth = UIDefaults.WindowMinWidth;
             MinHeight = UIDefaults.WindowMinHeight;
-        }
-
-        /// <summary>
-        /// The initializer method of the ResizeableWindowUIElement. Add events here if possible.
-        /// </summary>
-        /// <returns></returns>
-        public override Task Load()
-        {
             // add manipulation events
             Dragged += ResizeableWindowUIElement_Dragged;
             Pressed += ResizeableWindowUIElement_Pressed;
 
-            return base.Load();
         }
 
         /// <summary>
