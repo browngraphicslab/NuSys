@@ -331,6 +331,7 @@
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewMainContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
@@ -341,6 +342,7 @@
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\HorizontalAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
