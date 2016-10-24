@@ -157,7 +157,7 @@ namespace NuSysApp
             };
 
             listViewContainer.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                (float) SessionController.Instance.ScreenHeight/2);
+                (float) SessionController.Instance.ScreenHeight/4);
             listView.AddItems(
                 SessionController.Instance.ContentController.ContentValues.Where(
                     q => q.Type == NusysConstants.ElementType.Audio).ToList());

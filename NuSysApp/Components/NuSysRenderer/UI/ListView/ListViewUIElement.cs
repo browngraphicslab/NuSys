@@ -116,6 +116,21 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// x and y positions necessary to see if canvas pointer is moving within the listview.
+        /// these should be set by the listviewcontainer.
+        /// </summary>
+        private float _x;
+        private float _y;
+        public float X
+        {
+            set { _x = value; }
+        }
+        public float Y
+        {
+            set { _y = value; }
+        }
+
+        /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
         /// </summary>
         /// <param name="parent"></param>
@@ -268,11 +283,39 @@ namespace NuSysApp
             SelectRow(rowUIElement);
         }
         
+        /// <summary>
+        /// event that fires when you drag on the list. 
+        /// if the pointer stays within the bounds of the list, this will scroll. 
+        /// if not, then the row will fire a dragged event so the user can drag the row out of the listview.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        /// <param name="pointer"></param>
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
         {
+            //calculate bounds of listview
+            var minX = this.Transform.Parent.LocalX;
+            var maxX = minX + Width;
+            var minY = this.Transform.Parent.LocalY;
+            var maxY = minY + Height;
 
-            RowDragged?.Invoke(rowUIElement.Item,
-                cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
+            //check within bounds of listview
+            if (pointer.CurrentPoint.X < minX || pointer.CurrentPoint.X > maxX || pointer.CurrentPoint.Y < minY ||
+                pointer.CurrentPoint.Y > maxY)
+            {
+                //if out of bounds, invoke row drag out
+                RowDragged?.Invoke(rowUIElement.Item,
+                    cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null,
+                    pointer);
+            }
+            else
+            {
+                //scroll if in bounds
+                var position = pointer.DeltaSinceLastUpdate.Y;
+                _scrollOffset = (float)position;
+            }
+            
+            
         }
 
         

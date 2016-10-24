@@ -68,6 +68,7 @@ namespace NuSysApp
                 header.Background = Colors.Black;
                 header.Width = this.Width;
                 header.Height = _listview.RowHeight + 10;
+                _listview.Height = _listview.Height + header.Height;
                 _listYPos = header.Height;
                 header.MakeTitles(_listview, resourceCreator);
                 this.AddChild(header);
