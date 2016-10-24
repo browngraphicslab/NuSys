@@ -50,7 +50,7 @@ namespace NuSysApp
         /// setter and getter for listview
         /// adds the listview to the container's children so it can draw it relative to the container
         /// </summary>
-        private ListViewUIElement<T> ListView
+        public ListViewUIElement<T> ListView
         {
             get
             {

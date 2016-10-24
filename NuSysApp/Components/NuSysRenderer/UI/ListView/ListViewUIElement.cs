@@ -67,6 +67,9 @@ namespace NuSysApp
         /// </summary>
         private float _heightOfAllRows { get { return _itemsSource.Count * RowHeight; } }
 
+        /// <summary>
+        /// sum of column relative widths
+        /// </summary>
         private float _sumOfColumnRelativeWidths;
 
         public float SumOfColRelWidths
