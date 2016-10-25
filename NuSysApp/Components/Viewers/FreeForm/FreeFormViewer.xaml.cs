@@ -141,7 +141,7 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
 
-            var listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
+            listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Gray,
@@ -194,8 +194,8 @@ namespace NuSysApp
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
-        
 
+        private ListViewUIElementContainer<LibraryElementModel> listView;
         private RectangleUIElement rect;
 
         private void ListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
@@ -211,6 +211,7 @@ namespace NuSysApp
         private void ListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
             rect.IsVisible = false;
+            listView.SortByCol(0);
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)

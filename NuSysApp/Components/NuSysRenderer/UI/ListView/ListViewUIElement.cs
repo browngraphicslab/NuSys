@@ -398,7 +398,25 @@ namespace NuSysApp
             }
         }
 
-        
+        /// <summary>
+        /// You gotta fix this shit!!!!!
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        public void SortByCol(int columnIndex)
+        {
+            Debug.Assert(columnIndex < _listColumns.Count);
+            _children.Sort(delegate(BaseRenderItem row1, BaseRenderItem row2)
+            {
+                var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                if (str1 == null || str2 == null)
+                {
+                    return 0;
+                }
+                return str1.CompareTo(str2);
+            });
+        }
+
         /// <summary>
         /// Removes things from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
         /// </summary>

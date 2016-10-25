@@ -233,6 +233,24 @@ namespace NuSysApp
             _children.Clear();
         }
 
+        /// <summary>
+        /// If the column is a text column, then this function will return the string held in that cell. This is used for sorting
+        /// </summary>
+        /// <returns></returns>
+        public string GetStringValueOfCell(int colIndex)
+        {
+            Debug.Assert(colIndex < _children.Count);
+            var textCell = _children[colIndex] as TextboxUIElement;
+            if (textCell == null)
+            {
+                return null;
+            }
+            else
+            {
+                return textCell.Text;
+            }
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
 

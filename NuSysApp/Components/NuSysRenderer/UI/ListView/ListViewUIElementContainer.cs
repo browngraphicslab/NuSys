@@ -81,7 +81,7 @@ namespace NuSysApp
         /// setter and getter for listview
         /// adds the listview to the container's children so it can draw it relative to the container
         /// </summary>
-        public ListViewUIElement<T> ListView
+        private ListViewUIElement<T> ListView
         {
             get
             {
@@ -294,6 +294,11 @@ namespace NuSysApp
         public IEnumerable<T> GetSelectedItems()
         {
             return ListView.GetSelectedItems();
+        }
+
+        public void SortByCol(int colIndex)
+        {
+            _listview.SortByCol(colIndex);
         }
 
         /// <summary>
