@@ -28,6 +28,7 @@ namespace NuSysApp
         public ElementViewModel ViewModel => _vm;
         private bool _needsTitleUpdate = true;
         private CanvasTextFormat _format;
+        // Controls the bubbles showing what users are currently editing this node
         private UserBubbles _userBubbles;
 
         public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
@@ -64,11 +65,21 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Fired when a user stops editing this node
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">UserId of the user who stopped editing this node</param>
         private void Controller_UserDropped(object sender, string e)
         {
             _userBubbles.RemoveBubble(e);
         }
 
+        /// <summary>
+        /// Fire when a user starts editing this node
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">UserId of user who is editing this node</param>
         private void Controller_UserAdded(object sender, string e)
         {
             _userBubbles.InstantiateBubble(e);
