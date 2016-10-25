@@ -13,6 +13,8 @@ using Vector2 = System.Numerics.Vector2;
 using System.Numerics;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas.Geometry;
+using NetTopologySuite.GeometriesGraph;
+using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 namespace NuSysApp
 {
@@ -328,8 +330,24 @@ namespace NuSysApp
             else
             {
                 //scroll if in bounds
-                var position = pointer.DeltaSinceLastUpdate.Y;
-                _scrollOffset = (float)position;
+                var deltaY = pointer.DeltaSinceLastUpdate.Y / Height;
+
+                if (deltaY > 0)
+                {
+                    //If you're going up (position going down), set position + delta, with 0 as min.
+                    ScrollBar.Position = Math.Max(0, ScrollBar.Position - deltaY);
+                }
+
+                if (deltaY < 0)
+                {
+                    //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                    ScrollBar.Position = (ScrollBar.Position - deltaY + ScrollBar.Range > 1)
+                        ? 1 - ScrollBar.Range
+                        : ScrollBar.Position - deltaY;
+
+                }
+                //ScrollBarPositionChanged(pointer, deltaY);
+                
             }
             
             

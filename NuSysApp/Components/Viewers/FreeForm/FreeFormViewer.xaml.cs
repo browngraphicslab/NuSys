@@ -149,21 +149,8 @@ namespace NuSysApp
                 Width = 300
             };
             
-
-<<<<<<< HEAD
-            var listView = new ListViewUIElement<LibraryElementModel>(_renderRoot, RenderCanvas){
-                Background = Colors.Azure,
-                BorderWidth = 0,
-                Height = 500,
-                Width = 300
-            };
-
-            listViewContainer.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                (float) SessionController.Instance.ScreenHeight/4);
-=======
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                (float) SessionController.Instance.ScreenHeight/2);
->>>>>>> 2433216731f393fba275c5cd50c0485c8b17538b
+                (float) SessionController.Instance.ScreenHeight/4);
             listView.AddItems(
                 SessionController.Instance.ContentController.ContentValues.Where(
                     q => q.Type == NusysConstants.ElementType.Audio).ToList());
