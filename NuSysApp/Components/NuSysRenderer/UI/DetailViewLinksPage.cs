@@ -20,9 +20,15 @@ namespace NuSysApp
         private RectangleUIElement _tagsSearchBar;
         private ButtonUIElement _createLinkButton;
 
-        public DetailViewLinksPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) 
+        public DetailViewLinksPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) 
             : base(parent, resourceCreator)
         {
+            // Is this the right content id?
+            HashSet<string> links = SessionController.Instance.LinksController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
+
+            //extract the link information from the link id to put in the list view
+
+
             _linkList = new RectangleUIElement(parent, resourceCreator);
             _linkTitleSearchBar = new RectangleUIElement(parent, resourceCreator);
             _linkToSearchBar = new RectangleUIElement(parent, resourceCreator);
@@ -38,7 +44,7 @@ namespace NuSysApp
             _layoutManager = new StackLayoutManager(StackAlignment.Vertical);
             _searchBarLayout = new StackLayoutManager(StackAlignment.Vertical);
 
-            //AddChild(_linkList);
+            AddChild(_linkList);
             AddChild(_linkTitleSearchBar);
             AddChild(_linkToSearchBar);
             AddChild(_tagsSearchBar);
@@ -59,19 +65,19 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _layoutManager.SetSize(Width, Height * (2 / 3));
+            _layoutManager.SetSize(Width, 2*(Height/3));
             _layoutManager.VerticalAlignment = VerticalAlignment.Center;
             _layoutManager.HorizontalAlignment = HorizontalAlignment.Center;
             _layoutManager.ItemWidth = Width - 20;
-            _layoutManager.ItemHeight = (Height*(2/3));
-            _layoutManager.TopMargin = Height * (1 / 3);
+            _layoutManager.ItemHeight = 2*(Height/3);
+            _layoutManager.TopMargin = Height/3;
             _layoutManager.ArrangeItems();
 
-            _searchBarLayout.SetSize(Width, Height * (1 / 3));
+            _searchBarLayout.SetSize(Width, Height/3);
             _searchBarLayout.VerticalAlignment = VerticalAlignment.Center;
             _searchBarLayout.HorizontalAlignment = HorizontalAlignment.Center;
             _searchBarLayout.ItemWidth = Width - 20;
-            _searchBarLayout.ItemHeight = (Height*(1/3))/4;
+            _searchBarLayout.ItemHeight = (Height/3)/4;
             //_searchBarLayout.Spacing = 5;
             _searchBarLayout.ArrangeItems();
 

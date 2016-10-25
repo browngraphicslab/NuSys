@@ -106,7 +106,7 @@ namespace NuSysApp
                     }
                     break;
                 case DetailViewPageType.Links:
-                    rectangle = new DetailViewLinksPage(parent, resourceCreator);
+                    rectangle = new DetailViewLinksPage(parent, resourceCreator, controller);
                     await rectangle.Load();
                     break;
                 default:
