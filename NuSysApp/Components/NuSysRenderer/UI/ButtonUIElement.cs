@@ -118,6 +118,9 @@ namespace NuSysApp
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
             Shape = shapeElement;
+            ButtonTextColor = UIDefaults.TextColor;
+            ButtonTextHorizontalAlignment = UIDefaults.ButtonTextHorizontalAlignment;
+            ButtonTextVerticalAlignment = UIDefaults.ButtonTextVerticalAlignment;
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);

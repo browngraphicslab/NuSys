@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -30,7 +33,7 @@ namespace NuSysApp
         /// Delegate for when a region with acls is added, boolean of whether it is public or private
         /// </summary>
         /// <param name="isPublic"></param>
-        public delegate void AddRegionWithAcls(bool isPublic);
+        public delegate void AddRegionWithAcls(NusysConstants.AccessType access);
 
         /// <summary>
         /// The event fired when a region is added using the ui element
@@ -79,8 +82,8 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void AddButtonTapped(ButtonUIElement item, CanvasPointer pointer)
         {
-            // invoke with public true if public button was tapped
-            OnRegionAdded?.Invoke(item == _addPublicButton);
+            // invoke with public if public button was tapped else private
+            OnRegionAdded?.Invoke(item == _addPublicButton ? NusysConstants.AccessType.Public : NusysConstants.AccessType.Private);
         }
 
         /// <summary>

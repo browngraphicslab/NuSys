@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
-    class DetailViewImageRegionPage : RectangleUIElement
+    class DetailViewImageRegionPage : DetailViewRegionPage
     {
         /// <summary>
         /// Rectangle holding the content of the image
@@ -42,8 +43,23 @@ namespace NuSysApp
         /// </summary>
         private float _addRegionButtonLeftRightMargin = 10;
 
+        /// <summary>
+        /// The rectangle containing the buttons which are used to add public or private regions. Made visisble when the add region button is pressed
+        /// </summary>
+        private AddRegionPublicPrivateUIElement _addRegionUIElement;
+
+        /// <summary>
+        /// The library element controller associated with this image region page
+        /// </summary>
+        private ImageLibraryElementController _controller;
+
+        /// <summary>
+        /// The Image analysis model for the region
+        /// </summary>
+        private NusysImageAnalysisModel _analysisModel;
+
         public DetailViewImageRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
-            ImageLibraryElementController controller) : base(parent, resourceCreator)
+            ImageLibraryElementController controller) : base(parent, resourceCreator, controller)
         {
             // initialize the image rectangle and the _imageLayoutManager
             _imageRect = new RectangleImageUIElement(this, Canvas, controller);
@@ -63,7 +79,21 @@ namespace NuSysApp
             AddChild(_addRegionButton);
             _addRegionButtonLayoutManager.AddElement(_addRegionButton);
 
+            // initialize the add region ui element
+            _addRegionUIElement = new AddRegionPublicPrivateUIElement(this, resourceCreator);
+            _addRegionUIElement.IsVisible = false;
+            AddChild(_addRegionUIElement);
+
+            // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
+
+            Task.Run(async delegate
+            {
+                _analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(vm.LibraryElementController.LibraryElementModel.ContentDataModelId) as NusysImageAnalysisModel;
+                UITask.Run(async delegate {
+                    SetImageAnalysis();
+                });
+            });
         }
 
         /// <summary>
@@ -73,8 +103,17 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void AddRegionButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
         {
-            throw new NotImplementedException();
+            _addRegionUIElement.IsVisible = true;
+            _addRegionUIElement.OnRegionAdded += OnRegionAdded;
         }
+
+        private void OnRegionAdded(NusysConstants.AccessType access)
+        {
+            _addRegionUIElement.OnRegionAdded -= OnRegionAdded;
+            _addRegionUIElement.IsVisible = false;
+            AddRegion(access);
+        }
+
 
         /// <summary>
         /// The dispose method, remove events here, dispose of objects here
@@ -119,6 +158,10 @@ namespace NuSysApp
             _addRegionButtonLayoutManager.ItemWidth = _addRegionButtonWidth;
             _addRegionButtonLayoutManager.ItemHeight = _addRegionButtonWidth;
             _addRegionButtonLayoutManager.ArrangeItems();
+
+            _addRegionUIElement.Height = 100;
+            _addRegionUIElement.Width = 100;
+            _addRegionUIElement.Transform.LocalPosition = new Vector2(_addRegionButton.Transform.LocalX, _addRegionButton.Transform.LocalY - 100);
 
             _imageLayoutManager.SetSize(Width - _addRegionButtonLayoutManager.Width, Height);
             _imageLayoutManager.VerticalAlignment = VerticalAlignment.Center;

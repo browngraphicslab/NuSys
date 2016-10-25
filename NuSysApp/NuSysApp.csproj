@@ -344,6 +344,7 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AddRegionPublicPrivateUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionPage.cs" />
@@ -352,6 +353,8 @@
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageTabType.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewRegionPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
