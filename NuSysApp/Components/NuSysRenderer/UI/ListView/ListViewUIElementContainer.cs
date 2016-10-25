@@ -351,7 +351,6 @@ namespace NuSysApp
                 _header.Height = _listview.RowHeight + 10;
                 _listYPos = _header.Height;
                 _header.MakeTitles(_listview, _resourceCreator);
-                //this.AddChild(_header);
             }
         }
 

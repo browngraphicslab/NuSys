@@ -150,7 +150,6 @@ namespace NuSysApp
                 Width = 300
             };
             
-
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                 100);
             listView.AddItems(

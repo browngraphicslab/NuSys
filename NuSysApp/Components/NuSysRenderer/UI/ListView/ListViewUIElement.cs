@@ -13,6 +13,8 @@ using Vector2 = System.Numerics.Vector2;
 using System.Numerics;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas.Geometry;
+using NetTopologySuite.GeometriesGraph;
+using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 namespace NuSysApp
 {
@@ -137,6 +139,21 @@ namespace NuSysApp
         public List<ListColumn<T>> ListColumns
         {
             get { return _listColumns; }   
+        }
+
+        /// <summary>
+        /// x and y positions necessary to see if canvas pointer is moving within the listview.
+        /// these should be set by the listviewcontainer.
+        /// </summary>
+        private float _x;
+        private float _y;
+        public float X
+        {
+            set { _x = value; }
+        }
+        public float Y
+        {
+            set { _y = value; }
         }
 
         /// <summary>
@@ -322,13 +339,63 @@ namespace NuSysApp
                 _isDragging = false;
             }
         }
-
+        
+        /// <summary>
+        /// This is called when a list view row ui element fires its selected event. It simply calls the select row method.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
+        {
+            SelectRow(rowUIElement);
+        }
+        
+        /// <summary>
+        /// event that fires when you drag on the list. 
+        /// if the pointer stays within the bounds of the list, this will scroll. 
+        /// if not, then the row will fire a dragged event so the user can drag the row out of the listview.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        /// <param name="pointer"></param>
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
         {
-              RowDragged?.Invoke(rowUIElement.Item,
-                    cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
-            _isDragging = true;
+            //calculate bounds of listview
+            var minX = this.Transform.Parent.LocalX;
+            var maxX = minX + Width;
+            var minY = this.Transform.Parent.LocalY;
+            var maxY = minY + Height;
 
+            //check within bounds of listview
+            if (pointer.CurrentPoint.X < minX || pointer.CurrentPoint.X > maxX || pointer.CurrentPoint.Y < minY ||
+                pointer.CurrentPoint.Y > maxY)
+            {
+                //if out of bounds, invoke row drag out
+                RowDragged?.Invoke(rowUIElement.Item,
+                    cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
+                _isDragging = true;
+            }
+            else
+            {
+                //scroll if in bounds
+                var deltaY = pointer.DeltaSinceLastUpdate.Y / Height;
+
+                if (deltaY > 0)
+                {
+                    //If you're going up (position going down), set position + delta, with 0 as min.
+                    ScrollBar.Position = Math.Max(0, ScrollBar.Position - deltaY);
+                }
+
+                if (deltaY < 0)
+                {
+                    //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                    ScrollBar.Position = (ScrollBar.Position - deltaY + ScrollBar.Range > 1)
+                        ? 1 - ScrollBar.Range
+                        : ScrollBar.Position - deltaY;
+
+                }
+                
+            }
         }
 
         
