@@ -48,10 +48,34 @@ namespace NuSysApp
         /// </summary>
         private ICanvasResourceCreatorWithDpi _resourceCreator;
 
+        private bool _showHeader;
+
+        public bool ShowHeader {
+            get { return _showHeader; } set {
+            if (value != _showHeader)
+            {
+                if (value == true)
+                {
+                    AddChild(_header);
+                }
+                else
+                {
+                    RemoveChild(_header);
+                }
+                _showHeader = value;
+            }
+        } }
+
         /// <summary>
         /// where listview will draw itself
         /// </summary>
         private float _listYPos;
+
+        /// <summary>
+        /// This is the header ui element
+        /// </summary>
+        private ListViewHeader<T> _header;
+
 
         /// <summary>
         /// setter and getter for listview
@@ -160,7 +184,8 @@ namespace NuSysApp
             ListView.RowSelected += ListView_RowSelected;
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
-
+            _header = new ListViewHeader<T>(this, resourceCreator);
+            ShowHeader = true;
         }
 
         
@@ -193,6 +218,10 @@ namespace NuSysApp
         public void AddColumns(IEnumerable<ListColumn<T>> listColumns)
         {
             ListView.AddColumns(listColumns);
+            if (ShowHeader)
+            {
+                GenerateHeader();
+            }
         }
 
         /// <summary>
@@ -203,6 +232,10 @@ namespace NuSysApp
         public void AddColumn(ListColumn<T> listColumn)
         {
             ListView.AddColumn(listColumn);
+            if (ShowHeader)
+            {
+                GenerateHeader();
+            }
         }
 
         /// <summary>
@@ -212,6 +245,10 @@ namespace NuSysApp
         public void RemoveColumn(string columnTitle)
         {
             ListView.RemoveColumn(columnTitle);
+            if (ShowHeader)
+            {
+                GenerateHeader();
+            }
         }
 
         /// <summary>
@@ -302,20 +339,19 @@ namespace NuSysApp
         /// <summary>
         /// makes a header if you want a header
         /// </summary>
-        public void GenerateHeader(ICanvasResourceCreatorWithDpi resourceCreator)
+        public void GenerateHeader()
         {
             if (_listview != null)
             {
-                ListViewHeader<T> header = new ListViewHeader<T>(this, resourceCreator);
-                header.Transform.LocalPosition = new Vector2(0,0);
-                header.BorderWidth = 0;
-                header.Bordercolor = Colors.Black;
-                header.Background = Colors.Black;
-                header.Width = this.Width;
-                header.Height = _listview.RowHeight + 10;
-                _listYPos = header.Height;
-                header.MakeTitles(_listview, resourceCreator);
-                this.AddChild(header);
+                _header.Transform.LocalPosition = new Vector2(0,0);
+                _header.BorderWidth = 0;
+                _header.Bordercolor = Colors.Black;
+                _header.Background = Colors.Black;
+                _header.Width = this.Width;
+                _header.Height = _listview.RowHeight + 10;
+                _listYPos = _header.Height;
+                _header.MakeTitles(_listview, _resourceCreator);
+                //this.AddChild(_header);
             }
         }
 
