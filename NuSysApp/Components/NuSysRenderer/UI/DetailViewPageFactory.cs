@@ -106,26 +106,8 @@ namespace NuSysApp
                     }
                     break;
                 case DetailViewPageType.Links:
-                    switch (elementType)
-                    {
-                        case NusysConstants.ElementType.Text:
-                            break;
-                        case NusysConstants.ElementType.Image:
-                            break;
-                        case NusysConstants.ElementType.Collection:
-                            break;
-                        case NusysConstants.ElementType.PDF:
-                            break;
-                        case NusysConstants.ElementType.Audio:
-                            break;
-                        case NusysConstants.ElementType.Video:
-                            break;
-                        case NusysConstants.ElementType.Link:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(elementType),
-                                $"No links page support for {elementType} yet");
-                    }
+                    rectangle = new DetailViewLinksPage(parent, resourceCreator);
+                    await rectangle.Load();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pageType), pageType, null);

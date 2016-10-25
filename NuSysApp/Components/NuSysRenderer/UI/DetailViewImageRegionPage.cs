@@ -56,11 +56,17 @@ namespace NuSysApp
                 return;
             }
 
+            // save the old drawing session transform
             var orgTransform = ds.Transform;
 
+            // set drawing session transform to draw using local coordinates on the screen
             ds.Transform = Transform.LocalToScreenMatrix;
 
+
+            // resest to old drawing session transform
             ds.Transform = orgTransform;
+
+            // draw all the children (regions etc)
             base.Draw(ds);
         }
 
