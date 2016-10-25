@@ -121,24 +121,27 @@ namespace NuSysApp
             _arrangeByLabel.Transform.LocalPosition = ARRANGE_BY_TEXT_POSITION;
             AddChild(_arrangeByLabel);
 
+            // dropdown menu button
+            _dropdownButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+            _dropdownButton.ButtonText = _layoutStyleText;
+            _dropdownButton.Width = PANEL_WIDTH - 2 * DROPDOWN_INSET;
+            _dropdownButton.Height = 40.0f;
+            _dropdownButton.ButtonTextColor = Colors.Black;
+            _dropdownButton.SelectedBorder = Colors.Black;
+            _dropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
+            _dropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+            _dropdownButton.Tapped += _viewListButton_Tapped;
+            _dropdownButton.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, ARRANGE_BY_TEXT_POSITION.Y + _arrangeByLabel.Height);
+            AddChild(_dropdownButton);
+
             // dropdown menu
             _dropdown = new DropdownUIElement(this, resourceCreator, PANEL_WIDTH - 2 * DROPDOWN_INSET);
             _dropdown.AddOption("title", _listButton_Tapped);
             _dropdown.AddOption("date", _listButton_Tapped);
             _dropdown.Layout();
-            _dropdown.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, ARRANGE_BY_TEXT_POSITION.Y + _arrangeByLabel.Height);
+            _dropdown.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, _dropdownButton.Transform.LocalPosition.Y + _dropdownButton.Height);
+            _dropdown.IsVisible = false;
             AddChild(_dropdown);
-
-            // dropdown menu button
-            _dropdownButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
-            _dropdownButton.ButtonText = _layoutStyleText;
-            _dropdownButton.Width = PANEL_WIDTH - 2 * DROPDOWN_INSET;
-            _dropdownButton.Height = 30.0f;
-            _dropdownButton.ButtonTextColor = Colors.Black;
-            _dropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
-            _dropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-            _dropdownButton.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, ARRANGE_BY_TEXT_POSITION.Y + _arrangeByLabel.Height);
-            AddChild(_dropdownButton);
         }
 
         private async void AddImageToButton(ICanvasResourceCreatorWithDpi resourceCreator, string uri, ButtonUIElement button)
@@ -149,7 +152,7 @@ namespace NuSysApp
 
         private void _arrangeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-          
+            
         }
 
         private void _horizontalButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -183,6 +186,12 @@ namespace NuSysApp
             _layoutStyle = LayoutStyle.Custom;
         }
 
+        private void _viewListButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _dropdown.IsVisible = true;
+            _dropdownButton.Background = Colors.Gray;
+        }
+
         private void ResetButtonColors()
         {
             _horizontalLayoutButton.Background = Colors.White;
@@ -205,6 +214,8 @@ namespace NuSysApp
                 default:
                     break;
             }
+            _dropdown.IsVisible = false;
+            _dropdownButton.Background = Colors.White;
         }
 
         public override void Dispose()
