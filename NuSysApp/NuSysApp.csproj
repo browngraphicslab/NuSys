@@ -361,7 +361,7 @@
     <Compile Include="Components\NuSysRenderer\UI\HorizontalAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\RectangleImageUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewerImageRegionPageContentElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
