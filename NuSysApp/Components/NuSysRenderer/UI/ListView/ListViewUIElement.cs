@@ -214,7 +214,7 @@ namespace NuSysApp
         /// <param name="itemsToCreateRow"></param>
         private void CreateListViewRowUIElements(List<T> itemsToCreateRow)
         {
-            foreach (var itemSource in _itemsSource)
+            foreach (var itemSource in itemsToCreateRow)
             {
                 if (itemSource == null)
                 {
