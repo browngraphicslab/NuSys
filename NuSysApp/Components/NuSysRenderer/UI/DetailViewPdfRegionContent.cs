@@ -27,6 +27,8 @@ namespace NuSysApp
         /// </summary>
         private DetailViewPdfRegionRenderItem _pdfContent;
 
+        public int CurrentPage => _pdfContent.CurrentPage;
+
         /// <summary>
         /// The pdf content data model associated with this pdf, used for changing pages
         /// </summary>

@@ -28,7 +28,7 @@ namespace NuSysApp
                 // set value to zero if we are negative, no negative pages
                 value = value < 0 ? 0 : value;
                 // set value to last page if we are greater than last page
-                value = value > _pdfContentDataModel.PageCount ? _pdfContentDataModel.PageCount : value;
+                value = value >= _pdfContentDataModel.PageCount ? _pdfContentDataModel.PageCount - 1 : value;
 
                 // set the current page correctly
                 _currentPage = value;

@@ -12,6 +12,7 @@ namespace NuSysApp
 
         private DetailViewPdfRegionContent _content;
 
+
         public DetailViewPdfRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PdfLibraryElementController controller) : base(parent, resourceCreator, controller)
         {
             _content = new DetailViewPdfRegionContent(this, resourceCreator, controller);

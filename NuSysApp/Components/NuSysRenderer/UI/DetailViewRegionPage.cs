@@ -254,15 +254,20 @@ namespace NuSysApp
                 // pdfs are initialized at (.25, .25) with half width half height
                 case NusysConstants.ElementType.PDF:
                     var pdfLibraryElement = (_controller as PdfLibraryElementController)?.PdfLibraryElementModel;
+
+
+                    var currPage = (_contentRect as DetailViewPdfRegionContent)?.CurrentPage;
+                    Debug.Assert(currPage != null);
+
                     Debug.Assert(pdfLibraryElement != null);
                     var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs
                     {
-                        PdfPageEnd = 0, //todo make these the curr page
-                        PdfPageStart = 0,
-                        NormalizedX = .25*pdfLibraryElement.NormalizedX,
-                        NormalizedY = .25*pdfLibraryElement.NormalizedY,
-                        NormalizedHeight = .5*pdfLibraryElement.NormalizedHeight,
-                        NormalizedWidth = .5*pdfLibraryElement.NormalizedWidth
+                        PdfPageEnd = currPage,
+                        PdfPageStart = currPage,
+                        NormalizedX = pdfLibraryElement.NormalizedX + .25 * pdfLibraryElement.NormalizedWidth,
+                        NormalizedY = pdfLibraryElement.NormalizedY + .25 * pdfLibraryElement.NormalizedHeight,
+                        NormalizedHeight = .5 * pdfLibraryElement.NormalizedHeight,
+                        NormalizedWidth = .5 * pdfLibraryElement.NormalizedWidth,
                     };
                     return pdfArgs;
 
