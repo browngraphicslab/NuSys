@@ -269,7 +269,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Assets\paragraph.nusys" />
-    <None Include="ClassDiagram1.cd" />
+    <None Include="Network\ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="project.json" />

@@ -148,7 +148,7 @@ namespace NuSysApp
             }
         }
 
-        public async void AddSingleImageAndReturn()
+        public async Task<String> AddSingleImageAndReturn()
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
             var imageFile = await FileManager.PromptUserForFiles(Constants.ImageFileTypes, false);
@@ -156,17 +156,17 @@ namespace NuSysApp
             var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;  // get the fileAddedAclsPopup from the session view    
             var tempfileIdToAccessMaps = await fileAddedAclsPopup.GetAcls(imageFile); // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
 
-            if (tempfileIdToAccessMaps == null) return;  // Check if the user canceled the document import
+            if (tempfileIdToAccessMaps == null) return "";  // Check if the user canceled the document import
 
             _fileIdToAccessMap.Add(tempfileIdToAccessMaps.First().Key, tempfileIdToAccessMaps.First().Value);
            
-            if (_fileIdToAccessMap == null) return;  // check if the user has canceled the upload
+            if (_fileIdToAccessMap == null) return "";  // check if the user has canceled the upload
 
             var storageFile = imageFile.First(); 
-            if (storageFile == null) return; // Check if single file is null 
+            if (storageFile == null) return ""; // Check if single file is null 
 
             var fileType = storageFile.FileType.ToLower();
-            if (!Constants.ImageFileTypes.Contains(fileType)) return; // Check if file type is valid
+            if (!Constants.ImageFileTypes.Contains(fileType)) return ""; // Check if file type is valid
 
             // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
             var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
@@ -209,6 +209,9 @@ namespace NuSysApp
 
             vm.ClearSelection();
             _fileIdToAccessMap.Remove(storageFile.FolderRelativeId);
+
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId);
+            return controller.ContentDataController.ContentDataModel.Data;
         }
 
 

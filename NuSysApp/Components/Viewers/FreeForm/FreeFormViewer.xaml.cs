@@ -478,7 +478,7 @@ namespace NuSysApp
             _minimap.Invalidate();
         }
 
-        private async void MultiMenuOnCreateCollection(bool finite, bool shaped, bool image)
+        private async void MultiMenuOnCreateCollection(bool finite, bool shaped, String image)
         {
             var selections = Selections.ToArray();
             Selections.Clear();
@@ -527,9 +527,9 @@ namespace NuSysApp
                 };
             }
 
-            if (shaped && image)
+            if (shaped && String.IsNullOrEmpty(image))
             {
-                backgroundUrl = "http://www.nyctourist.com/images/subwaymap/subway-map-big.gif";
+                backgroundUrl = image;
             }
 
 

@@ -18,7 +18,10 @@
             <StackPanel Margin="10">
                 <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="FiniteCheck" OnContent="Bounded" OffContent="Unbounded" ></ToggleSwitch>
                 <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ShapeCheck" OnContent="Has Shape" OffContent="No Shape"></ToggleSwitch>
-                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ImageCheck" OnContent="Add Image" OffContent="No Image"></ToggleSwitch>
+                <!--<ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ImageCheck" OnContent="Add Image" OffContent="No Image"></ToggleSwitch>-->
+                <Button HorizontalAlignment="Left" Margin="0,0,0,3" Tapped="AddImage_OnTapped"  Height="40" Width="50" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
+                    <Image Source="ms-appx:/Assets/add from file dark.png" Height="25" Margin="0,0.333,0,-0.667" VerticalAlignment="Top"></Image>
+                </Button>
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}"  Content="Finite"></CheckBox>-->
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}" Content="Shaped"></CheckBox>-->
             </StackPanel>
