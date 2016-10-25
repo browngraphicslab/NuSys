@@ -347,8 +347,8 @@ namespace NuSysApp
         /// <param name="delta"></param>
         protected void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay); ;
-            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop * _scaleOrgToDisplay); ;
+            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop * _scaleOrgToDisplay);
             rx = Math.Max(0, Math.Min(_normalizedCroppedRect.Width - (region.LibraryElementModel.NormalizedX - _normalizedCroppedRect.X), rx));
             ry = Math.Max(0, Math.Min(_normalizedCroppedRect.Height - (region.LibraryElementModel.NormalizedY - _normalizedCroppedRect.Y), ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
