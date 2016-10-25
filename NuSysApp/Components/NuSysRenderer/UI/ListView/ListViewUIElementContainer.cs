@@ -36,6 +36,13 @@ namespace NuSysApp
         /// </summary>
         public event RowDraggedEventHandler RowDragged;
 
+        public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
+
+        /// <summary>
+        /// If a row was dragged outisde the list this event will fire.
+        /// </summary>
+        public event RowDragCompletedEventHandler RowDragCompleted;
+
         /// <summary>
         /// instance variable for resourcecreator so it can make UI elements
         /// </summary>
@@ -152,8 +159,11 @@ namespace NuSysApp
 
             ListView.RowSelected += ListView_RowSelected;
             ListView.RowDragged += ListView_RowDragged;
+            ListView.RowDragCompleted += ListView_RowDragCompleted;
 
         }
+
+        
 
         #region RouterFunctions
 
@@ -259,6 +269,17 @@ namespace NuSysApp
         private void ListView_RowDragged(T item, string columnName, CanvasPointer pointer)
         {
             RowDragged?.Invoke(item, columnName, pointer);
+        }
+
+        /// <summary>
+        /// This fires when the dragging of a row has been completed
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void ListView_RowDragCompleted(T item, string columnName, CanvasPointer pointer)
+        {
+            RowDragCompleted?.Invoke(item, columnName, pointer);
         }
 
         /// <summary>
