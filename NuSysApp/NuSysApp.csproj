@@ -353,7 +353,9 @@
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageTabType.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionContent.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewRegionPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
@@ -361,7 +363,7 @@
     <Compile Include="Components\NuSysRenderer\UI\HorizontalAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\DetailViewerImageRegionPageContentElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionContent.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />

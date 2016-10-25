@@ -205,7 +205,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected async void AddRegion(NusysConstants.AccessType access)
+        protected async void AddRegion(NusysConstants.AccessType access, int? currPage = null)
         { 
 
             // get appropriate new region message based on the current controller
@@ -257,8 +257,8 @@ namespace NuSysApp
                     Debug.Assert(pdfLibraryElement != null);
                     var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs
                     {
-                        PdfPageEnd = 1, //todo these should be set to current page numbers
-                        PdfPageStart = 1,
+                        PdfPageEnd = 0, //todo make these the curr page
+                        PdfPageStart = 0,
                         NormalizedX = .25*pdfLibraryElement.NormalizedX,
                         NormalizedY = .25*pdfLibraryElement.NormalizedY,
                         NormalizedHeight = .5*pdfLibraryElement.NormalizedHeight,

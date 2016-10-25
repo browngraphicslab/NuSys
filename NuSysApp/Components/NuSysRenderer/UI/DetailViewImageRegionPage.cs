@@ -13,13 +13,13 @@ namespace NuSysApp
 {
     class DetailViewImageRegionPage : DetailViewRegionPage
     {
-        private DetailViewerImageRegionPageContentElement _content;
+        private DetailViewImageRegionContent _content;
 
         public DetailViewImageRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
             ImageLibraryElementController controller) : base(parent, resourceCreator, controller)
         {
             // initialize the image rectangle and the _imageLayoutManager
-            _content = new DetailViewerImageRegionPageContentElement(this, Canvas, controller);
+            _content = new DetailViewImageRegionContent(this, Canvas, controller);
 
             SetContent(_content);
             

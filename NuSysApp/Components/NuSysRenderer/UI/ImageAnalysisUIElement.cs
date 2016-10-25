@@ -103,10 +103,8 @@ namespace NuSysApp
             {
                 // fetch the image analysis model
                 _analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(controller.LibraryElementModel.ContentDataModelId) as NusysImageAnalysisModel;
-                UITask.Run(async delegate {
-                    // set the image analysis variables using the fetched image analysis model
-                    SetImageAnalysis();
-                });
+                // set the image analysis variables using the fetched image analysis model
+                SetImageAnalysis();
             });
         }
 
@@ -141,9 +139,11 @@ namespace NuSysApp
         /// </summary>
         private void SetImageAnalysis()
         {
-            Debug.Assert(_analysisModel != null,
-                "This should never be called with a null analysis model, we await in the constructor follow that pattern");
-
+            if (_analysisModel == null)
+            {
+                _descriptionText.Text = "No image analysis supported for this element";
+                return;
+            }
 
             //set description to caption with highest confidence
             var descriptionlist = _analysisModel.Description.Captions.ToList();
