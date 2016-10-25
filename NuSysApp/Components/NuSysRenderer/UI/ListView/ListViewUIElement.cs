@@ -16,6 +16,10 @@ using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// Guys You should never be instatiating this class. Use the ListViewUIElementContainer!
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
         public delegate void RowSelectedEventHandler(T item, String columnName);
@@ -41,16 +45,17 @@ namespace NuSysApp
         /// </summary>
         private List<ListColumn<T>> _listColumns;
 
-        //private List<ListViewRowUIElement<T>> _listViewRowUIElements;
 
         /// <summary>
         /// A hashset of the selected rows
         /// </summary>
         private HashSet<ListViewRowUIElement<T>> _selectedElements;
+
         /// <summary>
         /// A clipping rectangle the size of the list view
         /// </summary>
         private CanvasGeometry _clippingRect;
+
         /// <summary>
         /// Denormalized vertical offset -- makes sure the position of the list view
         /// reflects the position of the slider in the scroll bar.
@@ -91,7 +96,7 @@ namespace NuSysApp
             get { return _rowBorderThickness; }
             set{
                 _rowBorderThickness = value;
-                
+                UpdateRowBorder();
             }
         }
 
@@ -143,6 +148,7 @@ namespace NuSysApp
             _listColumns = new List<ListColumn<T>>();
             _scrollOffset = 0;
             MultipleSelections = false;
+            BorderWidth = 0;
             //RowBorderThickness = 5;
             RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
@@ -185,7 +191,7 @@ namespace NuSysApp
         /// items passed in.
         /// </summary>
         /// <param name="itemsToCreateRow"></param>
-        public void CreateListViewRowUIElements(List<T> itemsToCreateRow)
+        private void CreateListViewRowUIElements(List<T> itemsToCreateRow)
         {
             foreach (var itemSource in _itemsSource)
             {
@@ -196,7 +202,7 @@ namespace NuSysApp
                 var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                 listViewRowUIElement.Item = itemSource;
                 listViewRowUIElement.Background = Colors.White;
-                listViewRowUIElement.Bordercolor = Colors.Blue;
+                listViewRowUIElement.Bordercolor = Colors.Black;
                 listViewRowUIElement.BorderWidth = RowBorderThickness;
                 listViewRowUIElement.Width = Width - BorderWidth * 2;
                 listViewRowUIElement.Height = RowHeight;
@@ -210,7 +216,18 @@ namespace NuSysApp
             }
         }
 
-
+        /// <summary>
+        /// This just changes all the border widths of the rows to be the rowborderthickness variable
+        /// </summary>
+        private void UpdateRowBorder()
+        {
+            foreach (var child in _children)
+            {
+                var row = child as ListViewRowUIElement<T>;
+                Debug.Assert(row != null);
+                row.BorderWidth = RowBorderThickness;
+            }
+        }
 
         /// <summary>
         /// This method simply clears all the cells in each of the rows and repopulates each row using the list of columns
@@ -351,6 +368,10 @@ namespace NuSysApp
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row.Item));
         }
 
+        /// <summary>
+        /// Stops listening to events from the row
+        /// </summary>
+        /// <param name="rowToRemoveHandlersFrom"></param>
         private void RemoveRowHandlers(ListViewRowUIElement<T> rowToRemoveHandlersFrom)
         {
             rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
@@ -394,7 +415,6 @@ namespace NuSysApp
             _listColumns.Add(listColumn);
             RepopulateExistingListRows();
         }
-
 
         /// <summary>
         /// This should remove the column with the name from _listColumns.
@@ -496,7 +516,7 @@ namespace NuSysApp
         /// This removes the row from the selected list and calls deselect on the row.
         /// </summary>
         /// <param name="rowToDeselect"></param>
-        public void DeselectRow(ListViewRowUIElement<T> rowToDeselect)
+        private void DeselectRow(ListViewRowUIElement<T> rowToDeselect)
         {
             if (rowToDeselect == null)
             {
@@ -507,8 +527,11 @@ namespace NuSysApp
             _selectedElements.Remove(rowToDeselect);
         }
 
-
-
+        /// <summary>
+        /// This swaps the places of the two different columns
+        /// </summary>
+        /// <param name="columnAIndex"></param>
+        /// <param name="columnBIndex"></param>
         public void SwapColumns(int columnAIndex, int columnBIndex)
         {
             if (columnAIndex == columnBIndex || columnAIndex < 0 || columnBIndex < 0 ||
@@ -537,7 +560,6 @@ namespace NuSysApp
 
         }
 
-
         /// <summary>
         /// Returns the items (not the row element) selected.
         /// </summary>
@@ -550,6 +572,7 @@ namespace NuSysApp
         {
             _scrollOffset = (float) position * (_heightOfAllRows);
         }
+
         public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
         {
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
@@ -557,6 +580,7 @@ namespace NuSysApp
 
             base.Update(parentLocalToScreenTransform);
         }
+
         public override void Draw(CanvasDrawingSession ds)
         {
             base.Draw(ds);

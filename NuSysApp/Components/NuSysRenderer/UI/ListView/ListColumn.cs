@@ -10,14 +10,14 @@ using NusysIntermediate;
 namespace NuSysApp
 {
 
-    public class ListColumn<T>
+    public abstract class ListColumn<T>
     {
         /// <summary>
         /// This function takes in a generic item, and returns the rectangle UI element
         /// that will be placed in the list. The height will always fill the row completely. The width will be set based on the
         /// width parameter of the list column. The opacity will also be overwritten.
         /// </summary>
-        public Func<T, BaseRenderItem, ICanvasResourceCreatorWithDpi, RectangleUIElement> ColumnFunction { private get; set; }
+        public virtual Func<T, object> ColumnFunction { private get; set; }
 
         /// <summary>
         /// Title of the column
@@ -31,6 +31,16 @@ namespace NuSysApp
         public float RelativeWidth { get; set; }
 
         /// <summary>
+        /// This is the width of the border of the cells in this column
+        /// </summary>
+        public float BorderWidth { get; set; }
+
+        /// <summary>
+        /// This is the color of the border of the cells in this column
+        /// </summary>
+        public Color BorderColor { get; set; }
+
+        /// <summary>
         /// This function will return the cell based on the column function you you give. It will first run the column function,
         /// then set the width, heigh, and transparancy appropriately. Use this function when creating the cell to place in the row.You must pass in the total sum of all 
         /// column relativewidths.
@@ -40,15 +50,8 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         /// <param name="RowHeight"></param>
         /// <returns></returns>
-        public RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement,
-            ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
-        {
-            var cell = ColumnFunction(itemSource, listViewRowUIElement, resourceCreator);
-            cell.Width = (RelativeWidth / sumOfAllColumnRelativeWidths) * listViewRowUIElement.Width;
-
-            cell.Height = rowHeight;
-            cell.Background = Colors.Transparent;
-            return cell;
-        }
+        public abstract RectangleUIElement GetColumnCellFromItem(T itemSource,
+            ListViewRowUIElement<T> listViewRowUIElement,
+            ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths);
     }
 }
