@@ -502,7 +502,24 @@ namespace NuSysApp
         {
             return _selectedElements.Select(row => row.Item);
         }
+        public override void ScrollableRectanglePointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            //Normalized vertical change
+            var deltaY = pointer.DeltaSinceLastUpdate.Y / Height;
 
+            if (deltaY < 0)
+            {
+                //If you're going up (position going down), set position + delta, with 0 as min.
+                ScrollBar.Position = Math.Max(0, ScrollBar.Position + deltaY);
+            }
+
+            if (deltaY > 0)
+            {
+                //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                ScrollBar.Position = (ScrollBar.Position + deltaY + ScrollBar.Range > 1) ? 1 - ScrollBar.Range : ScrollBar.Position + deltaY;
+
+            }
+        }
         public override void ScrollBarPositionChanged(object source, double position)
         {
             _scrollOffset = (float) position * (_heightOfAllRows);

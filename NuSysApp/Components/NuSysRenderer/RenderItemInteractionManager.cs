@@ -23,6 +23,12 @@ namespace NuSysApp
             ItemDoubleTapped += OnItemDoubleTapped;
             PointerReleased += OnPointerReleased;
             AllPointersReleased += OnAllPointersReleased;
+            PointerWheelChanged += OnPointerWheelChanged;
+        }
+
+        private void OnPointerWheelChanged(CanvasPointer pointer, float delta)
+        {
+            _hit?.OnPointerWheelChanged(pointer, delta);
         }
 
         private void OnPointerReleased(CanvasPointer pointer)

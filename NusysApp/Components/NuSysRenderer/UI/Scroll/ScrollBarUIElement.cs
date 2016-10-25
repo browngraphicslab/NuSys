@@ -130,7 +130,14 @@ namespace NuSysApp
             Dragged += ScrollBarUIElement_Dragged;
             Pressed += ScrollBarUIElement_Pressed;
             Released += ScrollBarUIElement_Released;
+            PointerWheelChanged += ScrollBarUIElement_PointerWheelChanged;
+            
             return base.Load();
+        }
+
+        private void ScrollBarUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            
         }
 
         public override void Dispose()
@@ -138,7 +145,7 @@ namespace NuSysApp
             Dragged -= ScrollBarUIElement_Dragged;
             Pressed -= ScrollBarUIElement_Pressed;
             Released -= ScrollBarUIElement_Released;
-
+            PointerWheelChanged -= ScrollBarUIElement_PointerWheelChanged;
 
             base.Dispose();
         }
@@ -184,7 +191,7 @@ namespace NuSysApp
             return false;
         }
 
-
+        
         private void ScrollBarUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             //Checks to make sure it is the actual bar that is being dragged
