@@ -53,11 +53,6 @@ namespace NuSysApp
         /// </summary>
         private ImageLibraryElementController _controller;
 
-        /// <summary>
-        /// The Image analysis model for the region
-        /// </summary>
-        private NusysImageAnalysisModel _analysisModel;
-
         public DetailViewImageRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
             ImageLibraryElementController controller) : base(parent, resourceCreator, controller)
         {
@@ -86,14 +81,6 @@ namespace NuSysApp
 
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
-
-            Task.Run(async delegate
-            {
-                _analysisModel = await SessionController.Instance.NuSysNetworkSession.FetchAnalysisModelAsync(vm.LibraryElementController.LibraryElementModel.ContentDataModelId) as NusysImageAnalysisModel;
-                UITask.Run(async delegate {
-                    SetImageAnalysis();
-                });
-            });
         }
 
         /// <summary>
@@ -172,6 +159,8 @@ namespace NuSysApp
 
             base.Update(parentLocalToScreenTransform);
         }
+
+
 
 
     }
