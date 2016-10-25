@@ -359,6 +359,7 @@
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\HorizontalAlignment.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleImageUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />

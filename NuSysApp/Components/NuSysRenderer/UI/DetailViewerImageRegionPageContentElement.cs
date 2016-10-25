@@ -15,7 +15,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class RectangleImageUIElement : RectangleUIElement
+    public class DetailViewerImageRegionPageContentElement : RectangleUIElement
     {
         /// <summary>
         /// The url of the image, this is just a helper for the public property ImageUrl
@@ -108,7 +108,7 @@ namespace NuSysApp
         public bool IsRegionsVisible { get; set; }
 
 
-        public RectangleImageUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller) : base(parent, resourceCreator)
+        public DetailViewerImageRegionPageContentElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
             ImageUrl = controller.ContentDataController.ContentDataModel.Data;
@@ -325,6 +325,11 @@ namespace NuSysApp
             _activeRegion = region;
         }
 
+        /// <summary>
+        /// Called when a region is resized
+        /// </summary>
+        /// <param name="region"></param>
+        /// <param name="delta"></param>
         private void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
             var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
@@ -336,6 +341,11 @@ namespace NuSysApp
             controller.SetHeight(ry);
         }
 
+        /// <summary>
+        /// Called when a region is moved
+        /// </summary>
+        /// <param name="region"></param>
+        /// <param name="delta"></param>
         private void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
             var rx = region.LibraryElementModel.NormalizedX + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;

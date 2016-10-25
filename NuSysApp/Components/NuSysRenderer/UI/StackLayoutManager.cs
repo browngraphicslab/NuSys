@@ -156,7 +156,7 @@ namespace NuSysApp
                             }
                             break;
                         case VerticalAlignment.Stretch:
-                            elementHeight = Height - TopMargin - BottomMargin - (_elements.Count - 1) * Spacing;
+                            elementHeight = (Height - TopMargin - BottomMargin - (_elements.Count - 1) * Spacing) / _elements.Count;
                             itemOffset.Y = itemOffset.Y + TopMargin;
                             foreach (var element in _elements)
                             {
@@ -240,7 +240,7 @@ namespace NuSysApp
                             break;
                         case HorizontalAlignment.Stretch:
                             // for k elements, k - 1 spacing, and left margin, and right margin
-                            elementWidth = Width - LeftMargin - RightMargin - (_elements.Count - 1)*Spacing;
+                            elementWidth = (Width - LeftMargin - RightMargin - (_elements.Count - 1)*Spacing) / _elements.Count;
                             itemOffset.X = itemOffset.X + LeftMargin;
 
                             foreach (var element in _elements)
