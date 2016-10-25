@@ -20,21 +20,29 @@ namespace NuSysApp
 
         private bool _isSelected;
 
-        /// <summary>
-        /// event fired when the row is selected
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        public delegate void SelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
-        public event SelectedEventHandler Selected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+        }
 
-        /// <summary>
-        /// event fired when row is deselected
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
-        public event DeSelectedEventHandler Deselected;
+        ///// <summary>
+        ///// event fired when the row is selected
+        ///// </summary>
+        ///// <param name="rowUIElement"></param>
+        ///// <param name="cell"></param>
+        //public delegate void SelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
+        //public event SelectedEventHandler Selected;
+
+        ///// <summary>
+        ///// event fired when row is deselected
+        ///// </summary>
+        ///// <param name="rowUIElement"></param>
+        ///// <param name="cell"></param>
+        //public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
+        //public event DeSelectedEventHandler Deselected;
+
+        public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer);
+        public event PointerReleasedEventHandler PointerReleased;
 
         public delegate void DraggedEventHandler(
             ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer);
@@ -115,14 +123,15 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_isSelected == true)
-            {
-                Deselected?.Invoke(this, item as RectangleUIElement);
-            }
-            else
-            {
-                Selected?.Invoke(this, item as RectangleUIElement);
-            }
+            PointerReleased?.Invoke(this, item as RectangleUIElement, pointer);
+            //if (_isSelected == true)
+            //{
+            //    Deselected?.Invoke(this, item as RectangleUIElement);
+            //}
+            //else
+            //{
+            //    Selected?.Invoke(this, item as RectangleUIElement);
+            //}
         }
 
         /// <summary>

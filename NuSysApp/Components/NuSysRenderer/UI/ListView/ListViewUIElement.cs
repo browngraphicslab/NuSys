@@ -34,6 +34,25 @@ namespace NuSysApp
 
         public event RowDraggedEventHandler RowDragged;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
+
+        /// <summary>
+        /// This event will fire when you release after dragging a row
+        /// </summary>
+        public event RowDragCompletedEventHandler RowDragCompleted;
+
+        /// <summary>
+        /// This is set to true when dragging to that when a pointer released event is fired, we 
+        /// can fire the drag completed event if necessary
+        /// </summary>
+        private bool _isDragging;
+
 
         /// <summary>
         /// The list of items (e.g library element models)
@@ -193,13 +212,15 @@ namespace NuSysApp
                 listViewRowUIElement.Height = RowHeight;
                 PopulateListRow(listViewRowUIElement);
                 //_listViewRowUIElements.Add(listViewRowUIElement);
-                listViewRowUIElement.Selected += ListViewRowUIElement_Selected;
-                listViewRowUIElement.Deselected += ListViewRowUIElement_Deselected;
+                //listViewRowUIElement.Selected += ListViewRowUIElement_Selected;
+                //listViewRowUIElement.Deselected += ListViewRowUIElement_Deselected;
+                listViewRowUIElement.PointerReleased += ListViewRowUIElement_PointerReleased;
                 listViewRowUIElement.Dragged += ListViewRowUIElement_Dragged;
                 _children.Add(listViewRowUIElement);
 
             }
         }
+        
 
         /// <summary>
         /// This just changes all the border widths of the rows to be the rowborderthickness variable
@@ -265,31 +286,49 @@ namespace NuSysApp
 
         }
 
-        /// <summary>
-        /// This is called when a list view row ui element fires its deselected event. It simply calls the select row method.
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        private void ListViewRowUIElement_Deselected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
+        ///// <summary>
+        ///// This is called when a list view row ui element fires its deselected event. It simply calls the select row method.
+        ///// </summary>
+        ///// <param name="rowUIElement"></param>
+        ///// <param name="cell"></param>
+        //private void ListViewRowUIElement_Deselected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
+        //{
+        //    DeselectRow(rowUIElement);
+        //}
+
+        ///// <summary>
+        ///// This is called when a list view row ui element fires its selected event. It simply calls the select row method.
+        ///// </summary>
+        ///// <param name="rowUIElement"></param>
+        ///// <param name="cell"></param>
+        //private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
+        //{
+        //    SelectRow(rowUIElement);
+        //}
+
+        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
         {
-            DeselectRow(rowUIElement);
+            if (rowUIElement.IsSelected)
+            {
+                DeselectRow(rowUIElement);
+            }
+            else
+            {
+                SelectRow(rowUIElement);
+            }
+            if (_isDragging)
+            {
+                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[rowUIElement.GetColumnIndex(cell)].Title, pointer);
+                _isDragging = false;
+            }
         }
 
-        /// <summary>
-        /// This is called when a list view row ui element fires its selected event. It simply calls the select row method.
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
-        {
-            SelectRow(rowUIElement);
-        }
-        
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
         {
+              RowDragged?.Invoke(rowUIElement.Item,
+                    cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
+            _isDragging = true;
 
-            RowDragged?.Invoke(rowUIElement.Item,
-                cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
         }
 
         
@@ -305,16 +344,17 @@ namespace NuSysApp
                 return;
             }
             _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
-            var rowsToRemove = _children.Where(row => row is ListViewRowUIElement<T> && itemsToRemove.Contains((row as ListViewRowUIElement<T>).Item));
-            foreach (ListViewRowUIElement<T> row in rowsToRemove)
-            {
-                row.Selected -= ListViewRowUIElement_Selected;
-                row.Deselected -= ListViewRowUIElement_Deselected;
-            }
+            //var rowsToRemove = _children.Where(row => row is ListViewRowUIElement<T> && itemsToRemove.Contains((row as ListViewRowUIElement<T>).Item));
+            //foreach (ListViewRowUIElement<T> row in rowsToRemove)
+            //{
+            //    RemoveRowHandlers(row);
+            //    //row.Selected -= ListViewRowUIElement_Selected;
+            //    //row.Deselected -= ListViewRowUIElement_Deselected;
+            //}
             _children.RemoveAll(delegate(BaseRenderItem item)
             {
                 var cell = item as ListViewRowUIElement<T>;
-                if (cell != null && rowsToRemove.Contains(cell))
+                if (cell != null && itemsToRemove.Contains(cell.Item))
                 {
                     RemoveRowHandlers(cell);
                     return true;
@@ -331,8 +371,10 @@ namespace NuSysApp
         /// <param name="rowToRemoveHandlersFrom"></param>
         private void RemoveRowHandlers(ListViewRowUIElement<T> rowToRemoveHandlersFrom)
         {
-            rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
-            rowToRemoveHandlersFrom.Deselected -= ListViewRowUIElement_Deselected;
+            //rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
+            //rowToRemoveHandlersFrom.Deselected -= ListViewRowUIElement_Deselected;
+            rowToRemoveHandlersFrom.PointerReleased -= ListViewRowUIElement_PointerReleased;
+
             rowToRemoveHandlersFrom.Dragged -= ListViewRowUIElement_Dragged;
         }
 

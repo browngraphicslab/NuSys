@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
@@ -151,12 +152,13 @@ namespace NuSysApp
             
 
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                (float) SessionController.Instance.ScreenHeight/2);
+                100);
             listView.AddItems(
-                SessionController.Instance.ContentController.ContentValues.Where(
-                    q => q.Type == NusysConstants.ElementType.Audio).ToList());
+                SessionController.Instance.ContentController.ContentValues.ToList());
             listView.RowBorderThickness = 1;
-
+            listView.RowDragged += ListView_RowDragged;
+            listView.RowDragCompleted += ListView_RowDragCompleted;
+            
             var listColumn = new ListTextColumn<LibraryElementModel>();
             listColumn.Title = "Title";
             listColumn.RelativeWidth = 1;
@@ -177,6 +179,15 @@ namespace NuSysApp
             listView.AddColumn(listColumn3);
 
             listView.GenerateHeader(RenderCanvas);
+            if (rect == null)
+            {
+                rect = new RectangleUIElement(_renderRoot, RenderCanvas);
+                rect.Width = 100;
+                rect.Height = 100;
+                rect.Background = Colors.Red;
+            }
+
+            RenderEngine.Root.AddChild(rect);
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(listView);
@@ -187,7 +198,26 @@ namespace NuSysApp
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
+
         
+
+        private RectangleUIElement rect;
+
+        private void ListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            if (!rect.IsVisible)
+            {
+                rect.IsVisible = true;
+            }
+            rect.Transform.LocalPosition = pointer.CurrentPoint;
+            
+        }
+
+        private void ListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            rect.IsVisible = false;
+        }
+
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             _minimap?.Invalidate();
