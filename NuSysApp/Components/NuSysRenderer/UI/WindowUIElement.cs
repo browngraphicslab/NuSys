@@ -49,6 +49,7 @@ namespace NuSysApp
             TopBarColor = UIDefaults.TopBarColor;
             TopBarHeight = UIDefaults.TopBarHeight;
             ErrorMargin = UIDefaults.ErrorMargin;
+            BorderWidth = UIDefaults.WindowBorderWidth;
         }
 
         /// <summary>

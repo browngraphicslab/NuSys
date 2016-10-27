@@ -97,6 +97,11 @@ namespace NuSysApp
         public Color ButtonTextColor { get; set; }
 
         /// <summary>
+        /// The size of the text on the button
+        /// </summary>
+        public float ButtonFontSize { get; set; }
+
+        /// <summary>
         /// The horizontal alignment of the text on the button
         /// </summary>
         public CanvasHorizontalAlignment ButtonTextHorizontalAlignment;
@@ -118,6 +123,10 @@ namespace NuSysApp
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
             Shape = shapeElement;
+            ButtonTextColor = UIDefaults.TextColor;
+            ButtonTextHorizontalAlignment = UIDefaults.ButtonTextHorizontalAlignment;
+            ButtonTextVerticalAlignment = UIDefaults.ButtonTextVerticalAlignment;
+            ButtonFontSize = UIDefaults.FontSize;
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -191,7 +200,8 @@ namespace NuSysApp
                     VerticalAlignment = ButtonTextVerticalAlignment,
                     WordWrapping = CanvasWordWrapping.NoWrap,
                     TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
+                    FontSize = ButtonFontSize
                 };
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the

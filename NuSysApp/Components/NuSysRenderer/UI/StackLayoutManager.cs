@@ -72,13 +72,18 @@ namespace NuSysApp
             _elements = new List<BaseInteractiveUIElement>();
             StackAlignment = alignment;
         }
-         
-        public override void ArrangeItems()
+
+        public void ArrangeItems()
+        {
+            ArrangeItems(new Vector2());
+        }
+
+        public override void ArrangeItems(Vector2 offset)
         {
 
             float elementWidth;
             float elementHeight;
-            Vector2 itemOffset = new Vector2();
+            Vector2 itemOffset = offset;
 
             switch (StackAlignment)
             {
@@ -89,19 +94,19 @@ namespace NuSysApp
                     switch (HorizontalAlignment)
                     {
                         case HorizontalAlignment.Left:
-                            itemOffset.X = LeftMargin;
+                            itemOffset.X = itemOffset.X + LeftMargin;
                             elementWidth = ItemWidth;
                             break;
                         case HorizontalAlignment.Center:
-                            itemOffset.X = (Width - ItemWidth)/2;
+                            itemOffset.X = itemOffset.X + (Width - ItemWidth)/2;
                             elementWidth = ItemWidth;
                             break;
                         case HorizontalAlignment.Right:
-                            itemOffset.X = Width - RightMargin - ItemWidth;
+                            itemOffset.X = itemOffset.X + Width - RightMargin - ItemWidth;
                             elementWidth = ItemWidth;
                             break;
                         case HorizontalAlignment.Stretch:
-                            itemOffset.X = LeftMargin;
+                            itemOffset.X = itemOffset.X + LeftMargin;
                             elementWidth = Width - LeftMargin - RightMargin;
                             break;
                         default:
@@ -111,7 +116,7 @@ namespace NuSysApp
                     switch (VerticalAlignment)
                     {
                         case VerticalAlignment.Top:
-                            itemOffset.Y = TopMargin;
+                            itemOffset.Y = itemOffset.Y + TopMargin;
                             elementHeight = ItemHeight;
 
                             foreach (var element in _elements)
@@ -121,12 +126,11 @@ namespace NuSysApp
                                 element.Height = elementHeight;
 
                                 itemOffset.Y += elementHeight + Spacing;
-                                Debug.Assert(itemOffset.Y <= Height, "The offset has overflown the size of the parent container");
 
                             }
                             break;
                         case VerticalAlignment.Bottom:
-                            itemOffset.Y = Height - BottomMargin - _elements.Count*ItemHeight -
+                            itemOffset.Y = itemOffset.Y + Height - BottomMargin - _elements.Count*ItemHeight -
                                            (_elements.Count - 1)*Spacing;
                             elementHeight = ItemHeight;
 
@@ -137,11 +141,10 @@ namespace NuSysApp
                                 element.Height = elementHeight;
 
                                 itemOffset.Y += elementHeight + Spacing;
-                                Debug.Assert(itemOffset.Y <= Height, "The offset has overflown the size of the parent container");
                             }
                             break;
                         case VerticalAlignment.Center:
-                            itemOffset.Y = (Height - _elements.Count * ItemHeight - (_elements.Count - 1) * Spacing) / 2;
+                            itemOffset.Y = itemOffset.Y + (Height - _elements.Count * ItemHeight - (_elements.Count - 1) * Spacing) / 2;
                             elementHeight = ItemHeight;
                             foreach (var element in _elements)
                             {
@@ -150,12 +153,11 @@ namespace NuSysApp
                                 element.Height = elementHeight;
 
                                 itemOffset.Y += elementHeight + Spacing;
-                                Debug.Assert(itemOffset.Y <= Height, "The offset has overflown the size of the parent container");
                             }
                             break;
                         case VerticalAlignment.Stretch:
-                            elementHeight = Height - TopMargin - BottomMargin - (_elements.Count - 1) * Spacing;
-                            itemOffset.Y = TopMargin;
+                            elementHeight = (Height - TopMargin - BottomMargin - (_elements.Count - 1) * Spacing) / _elements.Count;
+                            itemOffset.Y = itemOffset.Y + TopMargin;
                             foreach (var element in _elements)
                             {
                                 element.Transform.LocalPosition = itemOffset;
@@ -163,7 +165,6 @@ namespace NuSysApp
                                 element.Height = elementHeight;
 
                                 itemOffset.Y += elementHeight + Spacing;
-                                Debug.Assert(itemOffset.Y <= Height, "The offset has overflown the size of the parent container");
                             }
                             break;
                         default:
@@ -178,20 +179,20 @@ namespace NuSysApp
                     switch (VerticalAlignment)
                     {
                         case VerticalAlignment.Top:
-                            itemOffset.Y = TopMargin;
+                            itemOffset.Y = itemOffset.Y + TopMargin;
                             elementHeight = ItemHeight;
                             break;
                         case VerticalAlignment.Bottom:
-                            itemOffset.Y = Height - BottomMargin - ItemHeight;
+                            itemOffset.Y = itemOffset.Y + Height - BottomMargin - ItemHeight;
                             elementHeight = ItemHeight;
                             break;
                         case VerticalAlignment.Center:
-                            itemOffset.Y = (Height - ItemHeight)/2;
+                            itemOffset.Y = itemOffset.Y + (Height - ItemHeight)/2;
                             elementHeight = ItemHeight;
                             break;
                         case VerticalAlignment.Stretch:
                             elementHeight = Height - TopMargin - BottomMargin;
-                            itemOffset.Y = TopMargin;
+                            itemOffset.Y = itemOffset.Y + TopMargin;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -201,7 +202,7 @@ namespace NuSysApp
                     switch (HorizontalAlignment)
                     {
                         case HorizontalAlignment.Left:
-                            itemOffset.X = LeftMargin;
+                            itemOffset.X = itemOffset.X + LeftMargin;
                             elementWidth = ItemWidth;
 
                             foreach (var element in _elements)
@@ -210,12 +211,11 @@ namespace NuSysApp
                                 element.Width = elementWidth;
                                 element.Height = elementHeight;
                                 itemOffset.X = itemOffset.X + ItemWidth + Spacing;
-                                Debug.Assert(itemOffset.X <= Width, "The offset has overflown the size of the parent container");
                             }
                             break;
                         case HorizontalAlignment.Center:
                             // for k elements, k * itemWidth, k - 1 * spacing, then divide by 2
-                            itemOffset.X = (Width - _elements.Count*ItemWidth - (_elements.Count - 1)*Spacing)/2;
+                            itemOffset.X = itemOffset.X + (Width - _elements.Count*ItemWidth - (_elements.Count - 1)*Spacing)/2;
                             elementWidth = ItemWidth;
 
                             foreach (var element in _elements)
@@ -224,11 +224,10 @@ namespace NuSysApp
                                 element.Width = elementWidth;
                                 element.Height = elementHeight;
                                 itemOffset.X = itemOffset.X + ItemWidth + Spacing;
-                                Debug.Assert(itemOffset.X <= Width, "The offset has overflown the size of the parent container");
                             }
                             break;
                         case HorizontalAlignment.Right:
-                            itemOffset.X = Width - RightMargin - _elements.Count*ItemWidth - (_elements.Count - 1)*Spacing;
+                            itemOffset.X = itemOffset.X + Width - RightMargin - _elements.Count*ItemWidth - (_elements.Count - 1)*Spacing;
                             elementWidth = ItemWidth;
 
                             foreach (var element in _elements)
@@ -237,13 +236,12 @@ namespace NuSysApp
                                 element.Width = elementWidth;
                                 element.Height = elementHeight;
                                 itemOffset.X = itemOffset.X + ItemWidth + Spacing;
-                                Debug.Assert(itemOffset.X <= Width, "The offset has overflown the size of the parent container");
                             }
                             break;
                         case HorizontalAlignment.Stretch:
                             // for k elements, k - 1 spacing, and left margin, and right margin
-                            elementWidth = Width - LeftMargin - RightMargin - (_elements.Count - 1)*Spacing;
-                            itemOffset.X = LeftMargin;
+                            elementWidth = (Width - LeftMargin - RightMargin - (_elements.Count - 1)*Spacing) / _elements.Count;
+                            itemOffset.X = itemOffset.X + LeftMargin;
 
                             foreach (var element in _elements)
                             {
@@ -251,7 +249,6 @@ namespace NuSysApp
                                 element.Width = elementWidth;
                                 element.Height = elementHeight;
                                 itemOffset.X = itemOffset.X + elementWidth + Spacing;
-                                Debug.Assert(itemOffset.X <= Width, "The offset has overflown the size of the parent container");
                             }
                             break;
                         default:

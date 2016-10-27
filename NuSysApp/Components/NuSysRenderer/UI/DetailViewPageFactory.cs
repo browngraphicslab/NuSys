@@ -73,6 +73,8 @@ namespace NuSysApp
                             await rectangle.Load();
                             break;
                         case NusysConstants.ElementType.PDF:
+                            rectangle = new DetailViewPdfRegionPage(parent, resourceCreator, controller as PdfLibraryElementController);
+                            await rectangle.Load();
                             break;
                         case NusysConstants.ElementType.Audio:
                             break;

@@ -47,5 +47,8 @@ namespace NuSysApp
         public static float? WindowMaxHeight = (float?)SessionController.Instance.ScreenHeight;
         public static float? WindowMinWidth = 25;
         public static float? WindowMinHeight = 25;
+        public static float WindowBorderWidth = 3;
+        public static CanvasHorizontalAlignment ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+        public static CanvasVerticalAlignment ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
     }
 }

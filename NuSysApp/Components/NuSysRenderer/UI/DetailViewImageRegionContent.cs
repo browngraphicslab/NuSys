@@ -15,7 +15,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class RectangleImageUIElement : RectangleUIElement
+    public class DetailViewImageRegionContent : RectangleUIElement
     {
         /// <summary>
         /// The url of the image, this is just a helper for the public property ImageUrl
@@ -38,79 +38,82 @@ namespace NuSysApp
         /// <summary>
         /// The CanvasBitmap to hold the image
         /// </summary>
-        private CanvasBitmap _imageBitmap;
+        protected CanvasBitmap _imageBitmap;
 
         /// <summary>
         /// The image library element controller for the RectangleImageUIElements
         /// </summary>
-        private ImageLibraryElementController _controller;
+        protected ImageLibraryElementController _controller;
 
         /// <summary>
         /// Rect of the normalized coordinates which are cropped to display the image
         /// </summary>
-        private Rect _normalizedCroppedRect;
+        protected Rect _normalizedCroppedRect;
 
         /// <summary>
         /// Rect of the normalized DPI of the cropping used to display the image
         /// </summary>
-        private Rect _rectToCropFromContent;
+        protected Rect _rectToCropFromContent;
 
         /// <summary>
         /// True if the mask needs to be refreshed for the regions
         /// </summary>
-        private bool _needsMaskRefresh;
+        protected bool _needsMaskRefresh;
 
         /// <summary>
         /// The maximum width that the image can be displayed
         /// </summary>
-        private float ImageMaxWidth;
+        protected float ImageMaxWidth;
 
         /// <summary>
         /// The maximum height that the image can be displayed
         /// </summary>
-        private float ImageMaxHeight;
+        protected float ImageMaxHeight;
 
         //todo say what this is
-        private Rect _croppedImageTarget;
+        protected Rect _croppedImageTarget;
 
         //todo say what this is
-        private float _scaleOrgToDisplay;
-        
-        //todo say what this is
-        private float _scaleDisplayToCrop;
+        protected float _scaleOrgToDisplay;
 
         //todo say what this is
-        private CanvasGeometry _mask;
+        protected float _scaleDisplayToCrop;
 
         //todo say what this is
-        private bool _showCroppy;
+        protected CanvasGeometry _mask;
 
-        //todo say what this is
-        private CanvasGeometry _croppy;
+        /// <summary>
+        /// Boolean which determines whether or not to show the crop gray background effect while moving regions
+        /// </summary>
+        protected bool _showCroppy;
+
+        /// <summary>
+        /// The rectangle used to show the croppy effect while moving regions
+        /// </summary>
+        protected CanvasGeometry _croppy;
 
         /// <summary>
         /// The region that is currently getting manipulated
         /// </summary>
-        private ImageDetailRegionRenderItem _activeRegion;
+        protected ImageDetailRegionRenderItem _activeRegion;
+
+        /// <summary>
+        /// True when the bitmap is being drawn
+        /// </summary>
+        private bool DrawingBitmap;
 
         /// <summary>
         /// Determines if the regions are able to be moved. True by default
         /// </summary>
         public bool IsRegionsModifiable { get; set; }
 
-        public delegate void RegionUpdatedHandler();
-
         /// <summary>
         /// Determines if the regions are visible. True by default
         /// </summary>
         public bool IsRegionsVisible { get; set; }
 
-        /// <summary>
-        /// Fired when a region is updated
-        /// </summary>
-        public event RegionUpdatedHandler NeedsRedraw;
 
-        public RectangleImageUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller) : base(parent, resourceCreator)
+        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
             ImageUrl = controller.ContentDataController.ContentDataModel.Data;
@@ -126,11 +129,18 @@ namespace NuSysApp
             _controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
+        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
+            PdfLibraryElementController controller) : base(parent, resourceCreator)
+        {
+            // do nothing handled in the extended class DetailViewPdfRegionRenderItem
+        }
+
+
         /// <summary>
         /// Called when a region is removed, recomputes the regions for the entire image
         /// </summary>
         /// <param name="regionlibraryelementmodelid"></param>
-        private void ContentDataModelOnOnRegionRemoved(string regionlibraryelementmodelid)
+        protected void ContentDataModelOnOnRegionRemoved(string regionlibraryelementmodelid)
         {
             ComputeRegions();
         }
@@ -139,7 +149,7 @@ namespace NuSysApp
         /// Called when a region is added, recomputes the regions for the entire image
         /// </summary>
         /// <param name="regionlibraryelementmodelid"></param>
-        private void ContentDataModelOnOnRegionAdded(string regionlibraryelementmodelid)
+        protected void ContentDataModelOnOnRegionAdded(string regionlibraryelementmodelid)
         {
             ComputeRegions();
         }
@@ -150,7 +160,7 @@ namespace NuSysApp
         /// <param name="sender"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        private void ControllerOnSizeChanged(object sender, double width, double height)
+        protected void ControllerOnSizeChanged(object sender, double width, double height)
         {
             ReRender();
         }
@@ -160,7 +170,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="topleft"></param>
-        private void ControllerOnLocationChanged(object sender, Point topleft)
+        protected void ControllerOnLocationChanged(object sender, Point topleft)
         {
             ReRender();
         }
@@ -168,10 +178,10 @@ namespace NuSysApp
         /// <summary>
         /// Loads the image bitmap
         /// </summary>
-        private async void LoadImageBitmap()
+        protected async void LoadImageBitmap()
         {
             _imageBitmap?.Dispose();
-
+            DrawingBitmap = true;
             if (ImageUrl == null)
             {
                 return;
@@ -184,9 +194,12 @@ namespace NuSysApp
                         CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
                             ResourceCreator.Dpi);
             });
+            DrawingBitmap = false;
 
             ReRender();
         }
+
+
 
         /// <summary>
         /// Draw the image as the background
@@ -194,7 +207,7 @@ namespace NuSysApp
         /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed)
+            if (IsDisposed || DrawingBitmap)
                 return;
             
             // if no _imageBitmap is set just treat this like a normal rectangle and draw the background
@@ -294,10 +307,9 @@ namespace NuSysApp
             }
 
             SortChildren((a, b) => {
-                var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds(); return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? 1 : -1;
+                var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds(); return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? -1 : 1;
             });
 
-            NeedsRedraw?.Invoke();
         }
 
 
@@ -305,7 +317,7 @@ namespace NuSysApp
         /// Called when a region being manipulated is released
         /// </summary>
         /// <param name="region"></param>
-        private void RegionOnRegionReleased(ImageDetailRegionRenderItem region)
+        protected void RegionOnRegionReleased(ImageDetailRegionRenderItem region)
         {
             // dont show the gray background
             _showCroppy = false;
@@ -313,52 +325,54 @@ namespace NuSysApp
 
             // set active region to null
             _activeRegion = null;
-
-
-            NeedsRedraw?.Invoke();
         }
 
         /// <summary>
         /// Called when a region is pressed
         /// </summary>
         /// <param name="region"></param>
-        private void RegionOnRegionPressed(ImageDetailRegionRenderItem region)
+        protected void RegionOnRegionPressed(ImageDetailRegionRenderItem region)
         {
             // show the gray background
             _showCroppy = true;
 
             // set the activeRegion to th ecurrent region
             _activeRegion = region;
-            NeedsRedraw?.Invoke();
         }
 
-        private void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
+        /// <summary>
+        /// Called when a region is resized
+        /// </summary>
+        /// <param name="region"></param>
+        /// <param name="delta"></param>
+        protected void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
-            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _croppedImageTarget.Height / _scaleDisplayToCrop;
+            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop * _scaleOrgToDisplay);
             rx = Math.Max(0, Math.Min(_normalizedCroppedRect.Width - (region.LibraryElementModel.NormalizedX - _normalizedCroppedRect.X), rx));
             ry = Math.Max(0, Math.Min(_normalizedCroppedRect.Height - (region.LibraryElementModel.NormalizedY - _normalizedCroppedRect.Y), ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetWidth(rx);
             controller.SetHeight(ry);
-
-            NeedsRedraw?.Invoke();
         }
 
-        private void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
+        /// <summary>
+        /// Called when a region is moved
+        /// </summary>
+        /// <param name="region"></param>
+        /// <param name="delta"></param>
+        protected void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedX + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
-            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _croppedImageTarget.Height / _scaleDisplayToCrop;
+            var rx = region.LibraryElementModel.NormalizedX + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop *_scaleOrgToDisplay);
             rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth, rx));
             ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight, ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetXLocation(rx);
             controller.SetYLocation(ry);
-
-            NeedsRedraw?.Invoke();
         }
 
-        private void RecomputeSize()
+        protected void RecomputeSize()
         {
             if (_imageBitmap == null)
                 return;
@@ -403,8 +417,8 @@ namespace NuSysApp
                 }
             }
 
-            var offsetX = (float)(ImageMaxWidth - _croppedImageTarget.Width) / 2f;
-            var offsetY = (float)(ImageMaxHeight - _croppedImageTarget.Height) / 2f;
+            var offsetX = Transform.LocalPosition.X + (float)(ImageMaxWidth - _croppedImageTarget.Width) / 2f;
+            var offsetY = Transform.LocalPosition.Y + (float)(ImageMaxHeight - _croppedImageTarget.Height) / 2f;
             Transform.LocalPosition = new Vector2(offsetX, offsetY);
             base.Update(parentLocalToScreenTransform);
         }
