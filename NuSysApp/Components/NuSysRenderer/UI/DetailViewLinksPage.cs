@@ -1,4 +1,5 @@
 ﻿using Microsoft.Graphics.Canvas;
+using NuSysApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace NuSysApp
     {
         private StackLayoutManager _layoutManager;
         private StackLayoutManager _searchBarLayout;
+        private StackLayoutManager _topSearchBars;
 
         private RectangleUIElement _linkList;
         private RectangleUIElement _linkTitleSearchBar;
@@ -24,9 +26,41 @@ namespace NuSysApp
             : base(parent, resourceCreator)
         {
             // Is this the right content id?
+            // Returns the list of LinkLibraryElement ID's for links attached to the LibraryElementModel of the passed in id
             HashSet<string> links = SessionController.Instance.LinksController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
 
-            //extract the link information from the link id to put in the list view
+            ListViewUIElementContainer<string> listView = new ListViewUIElementContainer<string>(parent, resourceCreator);
+            listView.Height = Height;
+            listView.Width = Width;
+            listView.Transform.LocalPosition = new Vector2(0, 0);
+            listView.AddItems(links.ToList<string>());
+
+            ListTextColumn<string> title = new ListTextColumn<string>();
+            title.RelativeWidth = 1;
+            title.ColumnFunction = delegate (string link)
+            {
+                //var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(link);
+                //return linkController.LinkLibraryElementModel.Title;
+                return "title";
+
+            };
+
+            ListTextColumn<string> linkedTo = new ListTextColumn<string>();
+            linkedTo.RelativeWidth = 1;
+            linkedTo.ColumnFunction = delegate (string link)
+            {
+                //var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(link);
+                //var opposite = SessionController.Instance.LinksController.GetOppositeLibraryElementModel(link, linkController);
+                //return opposite.Title;
+                return "opposite";
+            };
+
+            List<ListColumn<string>> cols = new List<ListColumn<string>>();
+            cols.Add(title);
+            cols.Add(linkedTo);
+            listView.AddColumns(cols);
+
+            
 
 
             _linkList = new RectangleUIElement(parent, resourceCreator);
@@ -43,6 +77,7 @@ namespace NuSysApp
 
             _layoutManager = new StackLayoutManager(StackAlignment.Vertical);
             _searchBarLayout = new StackLayoutManager(StackAlignment.Vertical);
+            _topSearchBars = new StackLayoutManager(StackAlignment.Horizontal);
 
             AddChild(_linkList);
             AddChild(_linkTitleSearchBar);
@@ -52,10 +87,12 @@ namespace NuSysApp
 
             _layoutManager.AddElement(_linkList);
 
-            _searchBarLayout.AddElement(_linkTitleSearchBar);
-            _searchBarLayout.AddElement(_linkToSearchBar);
+            _topSearchBars.AddElement(_linkTitleSearchBar);
+            _topSearchBars.AddElement(_linkToSearchBar);
             _searchBarLayout.AddElement(_tagsSearchBar);
             _searchBarLayout.AddElement(_createLinkButton);
+
+            AddChild(listView);
 
         }
 
@@ -70,16 +107,25 @@ namespace NuSysApp
             _layoutManager.HorizontalAlignment = HorizontalAlignment.Center;
             _layoutManager.ItemWidth = Width - 20;
             _layoutManager.ItemHeight = 2*(Height/3);
-            _layoutManager.TopMargin = Height/3;
-            _layoutManager.ArrangeItems();
+            _layoutManager.ArrangeItems(new Vector2(0, Height/3));
 
-            _searchBarLayout.SetSize(Width, Height/3);
+            _searchBarLayout.SetSize(Width, 2*(Height/3)/3);
             _searchBarLayout.VerticalAlignment = VerticalAlignment.Center;
             _searchBarLayout.HorizontalAlignment = HorizontalAlignment.Center;
             _searchBarLayout.ItemWidth = Width - 20;
-            _searchBarLayout.ItemHeight = (Height/3)/4;
-            //_searchBarLayout.Spacing = 5;
-            _searchBarLayout.ArrangeItems();
+            _searchBarLayout.ItemHeight = (Height/3)/3-5;
+            _searchBarLayout.Spacing = 5;
+            _searchBarLayout.ArrangeItems(new Vector2(0, (Height/3)/3));
+
+            _topSearchBars.SetSize(Width, (Height / 3)/3);
+            _topSearchBars.VerticalAlignment = VerticalAlignment.Top;
+            _topSearchBars.HorizontalAlignment = HorizontalAlignment.Center;
+            _topSearchBars.ItemWidth = (Width - 20)/2;
+            _topSearchBars.ItemHeight = (Height / 3) / 3 - 5;
+            _topSearchBars.Spacing = 5;
+            _topSearchBars.ArrangeItems();
+
+
 
             base.Update(parentLocalToScreenTransform);
         }
