@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 using NuSysApp;
 
@@ -80,26 +81,8 @@ namespace NuSysApp
                     }
                     break;
                 case DetailViewPageType.Aliases:
-                    switch (elementType)
-                    {
-                        case NusysConstants.ElementType.Text:
-                            break;
-                        case NusysConstants.ElementType.Image:
-                            break;
-                        case NusysConstants.ElementType.Collection:
-                            break;
-                        case NusysConstants.ElementType.PDF:
-                            break;
-                        case NusysConstants.ElementType.Audio:
-                            break;
-                        case NusysConstants.ElementType.Video:
-                            break;
-                        case NusysConstants.ElementType.Link:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(elementType),
-                                $"No alias page support for {nameof(elementType)} yet");
-                    }
+                    rectangle = new DetailViewAliasesPage(parent, resourceCreator);
+                    await rectangle.Load();
                     break;
                 case DetailViewPageType.Links:
                     switch (elementType)

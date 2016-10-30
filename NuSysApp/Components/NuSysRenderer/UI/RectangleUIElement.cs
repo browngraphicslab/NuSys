@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using SharpDX;
 
 namespace NuSysApp
 {
@@ -41,6 +42,11 @@ namespace NuSysApp
             }
         }
 
+        internal void Update(SharpDX.Matrix3x2 parentLocalToScreenTransform)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// The height of the rectangle
         /// </summary>
@@ -61,7 +67,7 @@ namespace NuSysApp
         /// <summary>
         /// The background of the rectangle
         /// </summary>
-        public override Color Background { get; set; }
+        public override Windows.UI.Color Background { get; set; }
 
         /// <summary>
         /// The width of the border of the rectangle
