@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
@@ -140,7 +141,7 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
 
-            var listViewContainer = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
+            var listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Gray,
@@ -148,70 +149,43 @@ namespace NuSysApp
                 Height = 500,
                 Width = 300
             };
-
-            var listView = new ListViewUIElement<LibraryElementModel>(_renderRoot, RenderCanvas){
-                Background = Colors.Azure,
-                BorderWidth = 0,
-                Height = 500,
-                Width = 300
-            };
-
-            listViewContainer.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                (float) SessionController.Instance.ScreenHeight/2);
+            
+            listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
+                100);
             listView.AddItems(
-                SessionController.Instance.ContentController.ContentValues.Where(
-                    q => q.Type == NusysConstants.ElementType.Audio).ToList());
-            listViewContainer.ListView = listView;
-
-            var listColumn = new ListColumn<LibraryElementModel>();
+                SessionController.Instance.ContentController.ContentValues.ToList());
+            listView.RowBorderThickness = 1;
+            listView.RowDragged += ListView_RowDragged;
+            listView.RowDragCompleted += ListView_RowDragCompleted;
+            
+            var listColumn = new ListTextColumn<LibraryElementModel>();
             listColumn.Title = "Title";
             listColumn.RelativeWidth = 1;
-            listColumn.ColumnFunction = delegate(LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
-            {
-                var rect = new TextboxUIElement(item, resourceCreator);
-                rect.BorderWidth = 1;
-                rect.Bordercolor = Colors.Black;
-                rect.Width = 50;
-                rect.Height = 40;
-                rect.Text = s.Title;
-                return rect;
-            };
+            listColumn.ColumnFunction = model => model.Title; 
 
-            var listColumn2 = new ListColumn<LibraryElementModel>();
+            var listColumn2 = new ListTextColumn<LibraryElementModel>();
             listColumn2.Title = "Creator";
             listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction = delegate (LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
-            {
-                var rect = new TextboxUIElement(item, resourceCreator);
-                rect.BorderWidth = 1;
-                rect.Bordercolor = Colors.Black;
-                rect.Width = 100;
-                rect.Height = 40;
-                rect.Text = s.Creator;
-                return rect;
-            };
+            listColumn2.ColumnFunction = model => model.Creator;
 
-            var listColumn3 = new ListColumn<LibraryElementModel>();
+            var listColumn3 = new ListTextColumn<LibraryElementModel>();
             listColumn3.Title = "Last Edited Timestamp";
             listColumn3.RelativeWidth = 3;
-            listColumn3.ColumnFunction = delegate (LibraryElementModel s, BaseRenderItem item, ICanvasResourceCreatorWithDpi resourceCreator)
-            {
-                var rect = new TextboxUIElement(item, resourceCreator);
-                rect.BorderWidth = 1;
-                rect.Bordercolor = Colors.Black;
-                rect.Width = 100;
-                rect.Height = 40;
-                rect.Text = s.LastEditedTimestamp;
-                return rect;
-            };
+            listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
+
             listView.AddColumns(new List<ListColumn<LibraryElementModel>>() {listColumn, listColumn2, listColumn3});
             listView.RemoveColumn("Last Edited Timestamp");
             listView.AddColumn(listColumn3);
+            
+            rect = new RectangleUIElement(_renderRoot, RenderCanvas);
+            rect.Width = 100;
+            rect.Height = 100;
+            rect.Background = Colors.Red;
 
-            listViewContainer.GenerateHeader(RenderCanvas);
+            RenderEngine.Root.AddChild(rect);
 
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
-            RenderEngine.Root.AddChild(listViewContainer);
+            RenderEngine.Root.AddChild(listView);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
@@ -219,7 +193,26 @@ namespace NuSysApp
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
+
         
+
+        private RectangleUIElement rect;
+
+        private void ListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            if (!rect.IsVisible)
+            {
+                rect.IsVisible = true;
+            }
+            rect.Transform.LocalPosition = pointer.CurrentPoint;
+            
+        }
+
+        private void ListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            rect.IsVisible = false;
+        }
+
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             _minimap?.Invalidate();

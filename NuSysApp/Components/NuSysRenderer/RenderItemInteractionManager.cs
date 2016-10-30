@@ -28,6 +28,7 @@ namespace NuSysApp
 
         private void OnPointerWheelChanged(CanvasPointer pointer, float delta)
         {
+            _hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
             _hit?.OnPointerWheelChanged(pointer, delta);
         }
 

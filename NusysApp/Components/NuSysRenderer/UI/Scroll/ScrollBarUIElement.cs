@@ -135,7 +135,23 @@ namespace NuSysApp
             return base.Load();
         }
 
-        private void ScrollBarUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        public void ChangePosition(double delta)
+        {
+
+            if (delta < 0)
+            {
+                //If you're going up (position going down), set position + delta, with 0 as min.
+                Position = Math.Max(0, Position + delta);
+            }
+
+            if (delta > 0)
+            {
+                //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                Position = (Position + delta + Range > 1) ? 1 - Range : Position + delta;
+
+            }
+        }
+        private void ScrollBarUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
         {
             
         }
@@ -208,18 +224,7 @@ namespace NuSysApp
             //Normalized vertical change
             var deltaY = pointer.DeltaSinceLastUpdate.Y / Height;
 
-            if (deltaY < 0)
-            {
-                //If you're going up (position going down), set position + delta, with 0 as min.
-                Position = Math.Max(0, Position + deltaY);
-            }
-
-            if (deltaY > 0)
-            {
-                //If you're going down (position going up), set position + delta, with 1-range being maximum.
-                Position = (Position + deltaY + Range > 1) ? 1 - Range : Position + deltaY;
-                
-            }
+            ChangePosition(deltaY);
 
 
         }

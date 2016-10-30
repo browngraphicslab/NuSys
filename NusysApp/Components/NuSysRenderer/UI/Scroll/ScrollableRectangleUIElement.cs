@@ -33,7 +33,7 @@ namespace NuSysApp
             
         }
 
-        public virtual void ScrollableRectanglePointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        public virtual void ScrollableRectanglePointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
         {
 
         }

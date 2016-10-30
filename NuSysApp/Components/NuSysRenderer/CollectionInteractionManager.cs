@@ -116,6 +116,11 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnPointerWheelChanged(CanvasPointer pointer, float delta)
         {
+            var item = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+            if (item is RectangleUIElement)
+            {
+                return;
+            }
             var zoomspeed = delta < 0 ? 0.8f : 1.2f;
             PanZoomed?.Invoke(pointer.CurrentPoint, Vector2.Zero, zoomspeed);
         }

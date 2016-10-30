@@ -20,26 +20,37 @@ namespace NuSysApp
 
         private bool _isSelected;
 
-        /// <summary>
-        /// event fired when the row is selected
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        public delegate void SelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
-        public event SelectedEventHandler Selected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+        }
 
-        /// <summary>
-        /// event fired when row is deselected
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
-        public event DeSelectedEventHandler Deselected;
+        ///// <summary>
+        ///// event fired when the row is selected
+        ///// </summary>
+        ///// <param name="rowUIElement"></param>
+        ///// <param name="cell"></param>
+        //public delegate void SelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
+        //public event SelectedEventHandler Selected;
+
+        ///// <summary>
+        ///// event fired when row is deselected
+        ///// </summary>
+        ///// <param name="rowUIElement"></param>
+        ///// <param name="cell"></param>
+        //public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
+        //public event DeSelectedEventHandler Deselected;
+
+        public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer);
+        public event PointerReleasedEventHandler PointerReleased;
 
         public delegate void DraggedEventHandler(
             ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer);
 
         public event DraggedEventHandler Dragged;
+
+        public delegate void PointerWheelChangedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta);
+        public event PointerWheelChangedEventHandler PointerWheelChanged;
 
         /// <summary>
         /// These are the cells that will be placed on this row. The order is from left to right.
@@ -86,6 +97,14 @@ namespace NuSysApp
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
             cell.Dragged += Cell_Dragged;
+            cell.PointerWheelChanged += Cell_PointerWheelChanged;
+        }
+
+        private void Cell_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
+        {
+            var cell = item as RectangleUIElement;
+            Debug.Assert(cell != null);
+            PointerWheelChanged?.Invoke(this, cell, pointer, delta);
         }
 
         /// <summary>
@@ -115,14 +134,15 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_isSelected == true)
-            {
-                Deselected?.Invoke(this, item as RectangleUIElement);
-            }
-            else
-            {
-                Selected?.Invoke(this, item as RectangleUIElement);
-            }
+            PointerReleased?.Invoke(this, item as RectangleUIElement, pointer);
+            //if (_isSelected == true)
+            //{
+            //    Deselected?.Invoke(this, item as RectangleUIElement);
+            //}
+            //else
+            //{
+            //    Selected?.Invoke(this, item as RectangleUIElement);
+            //}
         }
 
         /// <summary>
@@ -185,6 +205,7 @@ namespace NuSysApp
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
             cell.Dragged -= Cell_Dragged;
+            cell.PointerWheelChanged -= Cell_PointerWheelChanged;
         }
 
         /// <summary>
