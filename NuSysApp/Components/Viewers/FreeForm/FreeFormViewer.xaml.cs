@@ -527,9 +527,9 @@ namespace NuSysApp
                 };
             }
 
-            if (shaped && String.IsNullOrEmpty(image))
+            if (shaped && !String.IsNullOrEmpty(image))
             {
-                backgroundUrl = image;
+                backgroundUrl = "http://www.hot-map.com/images/tn/Landeskarte-Marokko-7476.jpg";
             }
 
 

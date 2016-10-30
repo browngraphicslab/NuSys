@@ -35,8 +35,8 @@ namespace NuSysApp
     public sealed partial class MultiSelectMenuView : UserControl
     {
 
-        private StorageFile storageFile;
-        private NusysConstants.AccessType imageAccess;
+      
+        private LibraryElementController _imageController;
         public delegate void CreateCollectionHandler(bool finite, bool shaped, String image);
 
         public event CreateCollectionHandler CreateCollection;
@@ -111,10 +111,8 @@ namespace NuSysApp
                 Visibility = Visibility.Collapsed;
                 return;
             }
-
-            CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn, imageUrl);
+            CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn, _imageController.ContentDataController.ContentDataModel.Data);
             Visibility = Visibility.Collapsed;
-            imageUrl = await AddSingleImageAndReturn(); //returns null :(
             return;
             var transform = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(selections.First());
             
@@ -232,42 +230,6 @@ namespace NuSysApp
             Visibility = Visibility.Collapsed;
         }
 
-        public async Task<String> AddSingleImageAndReturn()
-        {
-
-            // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
-            var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
-            thumbnails[NusysConstants.ThumbnailSize.Small] = string.Empty;
-            thumbnails[NusysConstants.ThumbnailSize.Medium] = string.Empty;
-            thumbnails[NusysConstants.ThumbnailSize.Large] = string.Empty;
-            thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile); // *************** is this line needed?
-
-            CreateNewContentRequestArgs args = new CreateNewContentRequestArgs();
-            args.ContentId = SessionController.Instance.GenerateId();
-            args.DataBytes = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
-            args.FileExtension = storageFile.FileType.ToLower();
-
-            var imageArgs = new CreateNewImageLibraryElementRequestArgs();
-            var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
-            imageArgs.AspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
-            args.LibraryElementArgs = imageArgs;
-
-            //add the three thumbnails
-            args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
-            args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
-            args.LibraryElementArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
-            args.LibraryElementArgs.Title = storageFile.DisplayName;
-            args.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Image;
-            args.LibraryElementArgs.AccessType = imageAccess;
-
-            var request = new CreateNewContentRequest(args);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            request.AddReturnedLibraryElementToLibrary();
-
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId);
-            return controller.ContentDataController.ContentDataModel.Data;
-        }
-
         public Button Delete
         {
             get { return DeleteButton; }
@@ -322,20 +284,55 @@ namespace NuSysApp
         }
 
         private async void AddImage_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
+        { 
             var vm = SessionController.Instance.ActiveFreeFormViewer;
             var imageFile = await FileManager.PromptUserForFiles(Constants.ImageFileTypes, false);
 
             var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;  // get the fileAddedAclsPopup from the session view    
             var fileToAccessMap = await fileAddedAclsPopup.GetAcls(imageFile);
-            imageAccess = fileToAccessMap.First().Value;
+            var imageAccess = fileToAccessMap.First().Value;
             if (fileToAccessMap == null) return;  // Check if the user canceled the document import
 
-            storageFile = imageFile.First();
+            var storageFile = imageFile.First();
             if (storageFile == null) return; // Check if single file is null 
 
             var fileType = storageFile.FileType.ToLower();
             if (!Constants.ImageFileTypes.Contains(fileType)) return; // Check if file type is valid
+
+            var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
+            thumbnails[NusysConstants.ThumbnailSize.Small] = string.Empty;
+            thumbnails[NusysConstants.ThumbnailSize.Medium] = string.Empty;
+            thumbnails[NusysConstants.ThumbnailSize.Large] = string.Empty;
+            thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile); // *************** is this line needed?
+
+            CreateNewContentRequestArgs args = new CreateNewContentRequestArgs();
+            args.ContentId = SessionController.Instance.GenerateId();
+            args.DataBytes = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+            args.FileExtension = storageFile.FileType.ToLower();
+
+            var imageArgs = new CreateNewImageLibraryElementRequestArgs();
+            var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
+            imageArgs.AspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+            args.LibraryElementArgs = imageArgs;
+            args.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
+
+            //add the three thumbnails
+            args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+            args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+            args.LibraryElementArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+            args.LibraryElementArgs.Title = storageFile.DisplayName;
+            args.LibraryElementArgs.LibraryElementType = NusysConstants.ElementType.Image;
+            args.LibraryElementArgs.AccessType = imageAccess;
+
+            var request = new CreateNewContentRequest(args);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
+
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(args.ContentId);
+
+            _imageController = SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId);
+            //_imageUrl = controller.ContentDataController.ContentDataModel.Data;
+
             vm.ClearSelection();
         }
     }
