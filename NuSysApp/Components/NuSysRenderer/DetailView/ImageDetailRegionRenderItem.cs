@@ -40,12 +40,20 @@ namespace NuSysApp
 
         private bool _isModifiable;
 
-        public bool IsModifiable { get; set; }
+        public bool IsModifiable
+        {
+            get { return _isModifiable; }
+            set
+            {
+                _isModifiable = value;
+                IsHitTestVisible = _isModifiable;
+            }
+        }
 
         public ImageDetailRegionRenderItem(ImageLibraryElementModel libraryElementModel, Rect cropAreaNormalized, Rect bitmap, double totalScale, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, bool isModifiable = true) : base(parent, resourceCreator)
         {
             _totalScale = totalScale;
-            _isModifiable = isModifiable;
+            IsModifiable = isModifiable;
             _bitmap = bitmap;
             _cropAreaNormalized = cropAreaNormalized;
             LibraryElementModel = libraryElementModel;
@@ -56,8 +64,8 @@ namespace NuSysApp
                                 LibraryElementModel.NormalizedWidth,
                                 LibraryElementModel.NormalizedHeight);
 
-            _isModifiable = _isModifiable && IsFullyContained(rect);
-            if (_isModifiable) { 
+            IsModifiable = IsModifiable && IsFullyContained(rect);
+            if (IsModifiable) { 
                 _resizer = new ImageDetailRegionResizerRenderItem(this, ResourceCreator);
                 _resizer.ResizerDragged += ResizerOnResizerDragged;
                 _resizer.ResizerDragStarted += ResizerOnResizerDragStarted;
@@ -129,7 +137,7 @@ namespace NuSysApp
 
         private void ResizerOnResizerDragged(Vector2 delta)
         {
-            if (!_isModifiable)
+            if (!IsModifiable)
                 return;
             RegionResized?.Invoke(this, delta);
         }
@@ -164,23 +172,29 @@ namespace NuSysApp
 
         public override void OnDragged(CanvasPointer pointer)
         {
-            if (!_isModifiable)
+            if (!IsModifiable)
                 return;         
             RegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate);
         }
 
         public override void OnPressed(CanvasPointer pointer)
         {
+            if (!IsModifiable)
+                return;
             RegionPressed?.Invoke(this);
         }
 
         public override void OnReleased(CanvasPointer pointer)
         {
+            if (!IsModifiable)
+                return;
             RegionReleased?.Invoke(this);
         }
 
         public override void OnDoubleTapped(CanvasPointer pointer)
         {
+            if (!IsModifiable)
+                return;
             SessionController.Instance.SessionView.ShowDetailView(_controller);
         }
 

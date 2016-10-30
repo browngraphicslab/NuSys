@@ -108,7 +108,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             // draw the background of the rectangle
-            ds.FillRectangle(new Rect(0, 0, Width, Height), Background);
+            DrawBackground(ds);
 
             // draw the border in the rectangle
             DrawBorder(ds);
@@ -124,9 +124,28 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
             // draw the border inside the rectangle
             ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Bordercolor, BorderWidth);
 
+            ds.Transform = orgTransform;
+        }
+
+        /// <summary>
+        /// Draws the background of the UI Eelents
+        /// </summary>
+        /// <param name="ds"></param>
+        protected override void DrawBackground(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            // draw the background of the rectangle
+            ds.FillRectangle(new Rect(0, 0, Width, Height), Background);
+
+            ds.Transform = orgTransform;
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         public static  float Width = 100;
         public static float Height = 100;
-        public static float Borderwidth = 5;
+        public static float Borderwidth = 0;
         public static Color Background = Colors.White;
         public static Color Bordercolor = Colors.Black;
         public static float TopBarHeight = 25;
@@ -47,5 +47,8 @@ namespace NuSysApp
         public static float? WindowMaxHeight = (float?)SessionController.Instance.ScreenHeight;
         public static float? WindowMinWidth = 25;
         public static float? WindowMinHeight = 25;
+        public static float WindowBorderWidth = 3;
+        public static CanvasHorizontalAlignment ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+        public static CanvasVerticalAlignment ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
     }
 }

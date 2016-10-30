@@ -11,7 +11,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    class EllipseUIElement : BaseInteractiveUIElement
+    public class EllipseUIElement : BaseInteractiveUIElement
     {
         public EllipseUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -109,7 +109,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             // draw the background of the ellipse
-            ds.FillEllipse(CenterPoint, _radiusX, _radiusY, Background);
+            DrawBackground(ds);
 
             // draw the border in the ellipse
             DrawBorder(ds);
@@ -128,7 +128,26 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
             ds.DrawEllipse(CenterPoint, _radiusX - BorderWidth / 2, _radiusY - BorderWidth / 2, Bordercolor, BorderWidth);
+
+            ds.Transform = orgTransform;
+        }
+
+        /// <summary>
+        /// Draw the background in the ellipse
+        /// </summary>
+        /// <param name="ds"></param>
+        protected override void DrawBackground(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            ds.FillEllipse(CenterPoint, _radiusX, _radiusY, Background);
+
+            ds.Transform = orgTransform;
         }
 
         /// <summary>

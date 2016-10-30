@@ -147,8 +147,11 @@ namespace NuSysApp
         {
             // if any Tab in the tablist has the same tabType as the one we are trying to add
             // then return
-            if (_tabList.Any(tabButton => IsEqual(tab, tabButton.Tab)))
+            var equivalentTab = _tabList.FirstOrDefault(e => IsEqual(e.Tab, tab));
+
+            if (equivalentTab != null)
             {
+                CurrentlySelectedTab = equivalentTab;
                 return;
             }
 
