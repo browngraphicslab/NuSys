@@ -667,7 +667,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
-            _transform = CurrentCollection.Camera.LocalToScreenMatrix;
+            //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
             _transformables.Clear();
         }
 
@@ -862,6 +862,21 @@ namespace NuSysApp
 
             if (item is ElementRenderItem)
             {
+                try
+                {
+                    var loginName =
+                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[
+                            WaitingRoomView.UserID];
+                    var creator =
+                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
+                            ].Values[0];
+                    if (loginName != "rms" && creator.ToLower() == "rms")
+                        return;
+                }
+                catch (Exception e)
+                {
+                    // do nothing.
+                }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
                 SessionController.Instance.SessionView.ShowDetailView(controller);
