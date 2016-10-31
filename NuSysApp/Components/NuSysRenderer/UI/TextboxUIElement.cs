@@ -1,140 +1,275 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
-    public class TextboxUIElement : RectangleUIElement
+    public class TextBoxUIElement : RectangleUIElement
     {
-
         /// <summary>
-        /// The text to be displayed in the textbox
+        /// Object that controls font and layout options for drawing text
         /// </summary>
-        public string Text { get; set; }
+        private CanvasTextFormat _format;
 
         /// <summary>
-        /// The horizontal alignment of the text within the textbox
+        /// A drawabble piece of formatted text
         /// </summary>
-        public CanvasHorizontalAlignment TextHorizontalAlignment { get; set; }
+        private CanvasTextLayout _textLayout;
 
         /// <summary>
-        /// The vertical alignment of the text within the textbox
+        /// The text in the textbox
         /// </summary>
-        public CanvasVerticalAlignment TextVerticalAlignment { get; set; }
+        public string TextBoxText { get; set; }
 
         /// <summary>
-        /// The color of the text within the text box
+        /// The Horizontal Alignment of the text
+        /// </summary>
+        public CanvasHorizontalAlignment HorizontalTextAlignment { get; set; }
+
+        /// <summary>
+        /// The Vertical Alignment of the text
+        /// </summary>
+        public CanvasVerticalAlignment VerticalTextAlignment { get; set; }
+
+        /// <summary>
+        /// The distance in pixels between the border and the start of the texts
+        /// </summary>
+        public float Margin { get; set; }
+
+        /// <summary>
+        ///  The index of the first character in selection
+        /// </summary>
+        public int SelectionStartIndex { get; private set; }
+
+        /// <summary>
+        /// The index of the last character in selection
+        /// </summary>
+        public int SelectionEndIndex { get; private set; }
+
+        /// <summary>
+        /// True if the TextboxUIElement currently has text selected
+        /// </summary>
+        public bool HasSelection { get; private set; }
+
+        /// <summary>
+        /// The Color of Selected Text
+        /// </summary>
+        public Color SelectionColor { get; set; }
+
+        /// <summary>
+        /// The Highlight of Selected Text
+        /// </summary>
+        public Color SelectionHighlight { get; set; }
+
+        /// <summary>
+        /// Contains the bounds the text should exist in. The upper left x is contained in x.
+        /// The upper left y is contained in y. The lower right x is contained in z. The lower right
+        /// y is contained in w.
+        /// </summary>
+        private Vector4 _textLayoutBounds => new Vector4(
+            BorderWidth + Margin, // accounts for borderwidth and margin padding
+            BorderWidth + Margin, 
+            Width - Margin - BorderWidth,
+            Height - Margin - BorderWidth);
+
+        /// <summary>
+        /// The width of the text layout. Bottom right x minus top left x
+        /// </summary>
+        private float _textLayoutWidth => _textLayoutBounds.Z - _textLayoutBounds.X;
+
+        /// <summary>
+        /// The height of the text layout. Bottom right y minus top left y
+        /// </summary>
+        private float _textLayoutHeight => _textLayoutBounds.W - _textLayoutBounds.Y;
+
+        /// <summary>
+        /// The color of the text
         /// </summary>
         public Color TextColor { get; set; }
 
         /// <summary>
-        /// The style of the text within the text box, normal or italic. oblique is not bold. 
+        /// True if selection is enabled false otherwise
         /// </summary>
-        public FontStyle FontStyle { get; set; }
+        public bool SelectionEnabled;
 
-        /// <summary>
-        /// The size of the text in the textbox. 
-        /// </summary>
-        public float FontSize { get; set; }
-
-        /// <summary>
-        /// The font of the text in the textbox
-        /// </summary>
-        public string FontFamily { get; set; }
-
-        /// <summary>
-        /// The default break point at which text moves to a new line to avoid overflow
-        /// </summary>
-        public CanvasWordWrapping Wrapping { get; set; }
-
-        /// <summary>
-        /// The sign used to show that text has overflown the end of the text box
-        /// </summary>
-        public CanvasTrimmingSign TrimmingSign { get; set; }
-
-        /// <summary>
-        /// The granularity chosen to break off the end of text if text has overflown the end of the text box
-        /// </summary>
-        public CanvasTextTrimmingGranularity TrimmingGranularity { get; set; }
-
-        public TextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public TextBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            // set default values
-            TextHorizontalAlignment = UIDefaults.TextHorizontalAlignment;
-            TextVerticalAlignment = UIDefaults.TextVerticalAlignment;
-            TextColor = UIDefaults.TextColor;
-            FontStyle = UIDefaults.FontStyle;
-            FontSize = UIDefaults.FontSize;
-            FontFamily = UIDefaults.FontFamily;
-            Wrapping = UIDefaults.Wrapping;
-            TrimmingSign = UIDefaults.TrimmingSign;
-            TrimmingGranularity = UIDefaults.TrimmingGranularity;
+            
+
         }
 
         /// <summary>
-        /// Draws the background and the border and the text
+        /// The Load event. Add event handlers here.
         /// </summary>
-        /// <param name="ds"></param>
+        /// <returns></returns>
+        public override Task Load()
+        {
+            Pressed += TextBoxUIElement_Pressed;
+            Dragged += TextBoxUIElement_Dragged;
+            return base.Load();
+        }
+
+        /// <summary>
+        /// Fired when a pointer is dragged on the TextBoxUIElement
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void TextBoxUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (SelectionEnabled)
+            {
+                SelectionEndIndex = GetHitIndex(pointer);
+            }
+        }
+
+        /// <summary>
+        /// Fired when a pointer is pressed on the TextBoxUIElement
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void TextBoxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (SelectionEnabled)
+            {
+                SelectionStartIndex = GetHitIndex(pointer);
+                SelectionEndIndex = SelectionStartIndex;
+            }
+        }
+
+        /// <summary>
+        /// The dispose event. Remove Event handlers here.
+        /// </summary>
+        public override void Dispose()
+        {
+            Pressed -= TextBoxUIElement_Pressed;
+            Dragged -= TextBoxUIElement_Dragged;
+            base.Dispose();
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
-            // return if the item is disposed or is not visible
-            if (IsDisposed || !IsVisible)
-                return;
-            
-            // draw the background and borders
+
             base.Draw(ds);
 
-            // draw the text
-            DrawText(ds);
-        }
-
-        /// <summary>
-        /// Draws the text within the textbox
-        /// </summary>
-        /// <param name="ds"></param>
-        public void DrawText(CanvasDrawingSession ds)
-        {
-            // save the current transform of the drawing session
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            if (Text != null)
+            // create the TextLayout before every draw call //todo find a way to cache this its not very smart to do it here
+            CreateTextLayout(Canvas, _textLayoutWidth, _textLayoutHeight);
+
+            // if we currently have selection enabled
+            if (SelectionEnabled && HasSelection)
             {
-                // create a text format object
-                var textFormat = new CanvasTextFormat
+                // shift the drawing session transform to conform to the textlayout bounds
+                ds.Transform = ds.Transform *
+                    Matrix3x2.CreateTranslation(_textLayoutBounds.X, _textLayoutBounds.Y);
+                // set the first index and length of the selection
+                int firstIndex = Math.Min(SelectionStartIndex, SelectionEndIndex);
+                int length = Math.Abs(SelectionEndIndex - SelectionStartIndex) + 1;
+                // get the CanvasTextLayoutRegion for each of the characters in the selction
+                CanvasTextLayoutRegion[] descriptions = _textLayout.GetCharacterRegions(firstIndex, length);
+                foreach (CanvasTextLayoutRegion description in descriptions)
                 {
-                    HorizontalAlignment = TextHorizontalAlignment,
-                    VerticalAlignment = TextVerticalAlignment,
-                    WordWrapping = Wrapping,
-                    TrimmingGranularity = TrimmingGranularity,
-                    TrimmingSign = TrimmingSign,
-                    FontFamily = FontFamily,
-                    FontSize = FontSize,
-                    FontStyle = FontStyle,
-                };
+                    // draw a SelectionHighlight colored Rectangle in the selection
+                    ds.FillRectangle(InflateRect(description.LayoutBounds), new CanvasSolidColorBrush(Canvas, SelectionHighlight));
+                }
+                // change the brush of the text in the Selection to SelectionColor
+                _textLayout.SetBrush(firstIndex, length, new CanvasSolidColorBrush(Canvas, SelectionColor));
 
-
-                Debug.Assert(Width - 2*BorderWidth > 0 && Height - 2*BorderWidth > 0, "these must be greater than zero or drawText crashes below");
-
-                // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
-                // just created textFormat
-                ds.DrawText(Text,
-                    new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth),
-                    TextColor, textFormat);
+                // rever the transform to conform to the local bounds
+                ds.Transform = ds.Transform *
+                    Matrix3x2.CreateTranslation( -_textLayoutBounds.X,-_textLayoutBounds.Y);
             }
 
+            // draw the text layout on the screen
+            ds.DrawTextLayout(_textLayout, Margin + BorderWidth, Margin + BorderWidth, TextColor );
+
             ds.Transform = orgTransform;
+
         }
 
 
+        /// <summary>
+        /// Called to create the text layouts
+        /// </summary>
+        /// <param name="resourceCreator"></param>
+        /// <param name="canvasWidth"></param>
+        /// <param name="canvasHeight"></param>
+        /// <returns></returns>
+        private CanvasTextLayout CreateTextLayout(ICanvasResourceCreator resourceCreator, float textLayoutWidth,
+            float textLayoutHeight)
+        {
+            // create a new CanvasTextFormat
+            _format = new CanvasTextFormat();
 
+            // set the vertical and horizontal alignment of the text
+            _format.HorizontalAlignment = HorizontalTextAlignment;
+            _format.VerticalAlignment = VerticalTextAlignment;
+            // set the Trim to trim on words so trimming occurs on words and words don't split on the line
+            _format.TrimmingGranularity = CanvasTextTrimmingGranularity.Word;
+
+            //todo set the font family
+            //_format.FontFamily = 
+
+            // create the text layout, the width is the bottom right x  minus the top left x, and the height is bottom right y
+            // minus top left y
+            _textLayout = new CanvasTextLayout(Canvas, TextBoxText, _format, textLayoutWidth, textLayoutHeight);
+
+            return _textLayout;
+        }
+
+        /// <summary>
+        /// Returns the index of the character the pointer is currently over
+        /// </summary>
+        /// <param name="pointer"></param>
+        /// <returns></returns>
+        private int GetHitIndex(CanvasPointer pointer)
+        {
+            CanvasTextLayoutRegion textLayoutRegion;
+
+            // convert the point from screen to local coordinates
+            var currentPosition = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+
+            // subtract the offset to shift the pointer's position relative to the _textLayoutBounds
+            currentPosition.X -= _textLayoutBounds.X;
+            currentPosition.Y -= _textLayoutBounds.Y;
+
+            // hit test the text layout to determine if you are on a character
+            HasSelection = _textLayout.HitTest(
+                currentPosition.X,
+                currentPosition.Y,
+                out textLayoutRegion);
+            return textLayoutRegion.CharacterIndex;
+        }
+
+        /// <summary>
+        /// Clears the currently selected text
+        /// </summary>
+        private void ClearSelection()
+        {
+            HasSelection = false;
+            SelectionStartIndex = 0;
+            SelectionEndIndex = 0;
+        }
+
+        /// <summary>
+        /// Rounds the Rect to a integer values, takes care of pixel offsets
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        Rect InflateRect(Rect r)
+        {
+            return new Rect(
+                new Point(Math.Floor(r.Left), Math.Floor(r.Top)),
+                new Point(Math.Ceiling(r.Right), Math.Ceiling(r.Bottom)));
+        }
     }
 }

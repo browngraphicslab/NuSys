@@ -14,6 +14,7 @@ namespace NuSysApp
         public delegate void PointerHandler(InteractiveBaseRenderItem item, CanvasPointer pointer);
 
         public event PointerHandler Pressed;
+        public event PointerHandler RightPressed;
         public event PointerHandler Released;
         public event PointerHandler DoubleTapped;
         public event PointerHandler Tapped;
@@ -25,7 +26,15 @@ namespace NuSysApp
         }
         public virtual void OnPressed(CanvasPointer pointer)
         {
-            Pressed?.Invoke(this, pointer);
+            if (pointer.Properties.IsLeftButtonPressed)
+            {
+                Pressed?.Invoke(this, pointer);
+            }
+            if (pointer.Properties.IsRightButtonPressed)
+            {
+                RightPressed?.Invoke(this, pointer);
+            }
+
         }
 
         public virtual void OnReleased(CanvasPointer pointer)
