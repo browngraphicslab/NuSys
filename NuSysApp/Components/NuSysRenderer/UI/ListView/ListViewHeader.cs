@@ -28,7 +28,17 @@ namespace NuSysApp
 
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            RightPressed += ListViewHeader_RightPressed;
+        }
 
+        /// <summary>
+        /// brings up popup on right click
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ListViewHeader_RightPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -52,18 +62,6 @@ namespace NuSysApp
                 headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
                 this.AddChild(headerItem);
                 indexPointer += headerItem.Width;
-
-                //var title = new TextboxUIElement(this, resourceCreator);
-                //title.BorderWidth = 2;
-                //title.Background = Colors.LightGray;
-                //title.TextColor = Colors.Black;
-                //title.FontSize = 15;
-                //title.Text = c.Title;
-                //title.Width = c.RelativeWidth / listview.SumOfColRelWidths * listview.Width;
-                //title.Height = Height;
-                //title.Transform.LocalPosition = new Vector2(indexPointer, 0);
-                //this.AddChild(title);
-                //indexPointer += title.Width;
             }
         }
     }

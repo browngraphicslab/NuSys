@@ -76,7 +76,7 @@ namespace NuSysApp
 
         private string GetUserCredentials()
         {
-            return WaitingRoomView.ServerSessionID.ToString();
+            return WaitingRoomView.ServerSessionID?.ToString();
         }
 
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
