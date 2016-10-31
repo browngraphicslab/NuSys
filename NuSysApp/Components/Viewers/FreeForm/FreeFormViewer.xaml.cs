@@ -211,7 +211,6 @@ namespace NuSysApp
         private void ListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
             rect.IsVisible = false;
-            listView.SortByCol(0);
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)

@@ -41,11 +41,11 @@ namespace NuSysApp
         //public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
         //public event DeSelectedEventHandler Deselected;
 
-        public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer);
+        public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
         public event PointerReleasedEventHandler PointerReleased;
 
         public delegate void DraggedEventHandler(
-            ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer);
+            ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
 
         public event DraggedEventHandler Dragged;
 
@@ -123,7 +123,8 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            PointerReleased?.Invoke(this, item as RectangleUIElement, pointer);
+
+            PointerReleased?.Invoke(this, _children.IndexOf(item), pointer);
             //if (_isSelected == true)
             //{
             //    Deselected?.Invoke(this, item as RectangleUIElement);
@@ -143,7 +144,7 @@ namespace NuSysApp
         {
             var cell = item as RectangleUIElement;
             Debug.Assert(cell != null);
-            Dragged?.Invoke(this, cell, pointer);
+            Dragged?.Invoke(this, _children.IndexOf(cell), pointer);
         }
 
         /// <summary>
@@ -226,7 +227,7 @@ namespace NuSysApp
         /// </summary>
         public void RemoveAllCells()
         {
-            foreach (var cell in _children)
+            foreach (var cell in GetChildren())
             {
                 RemoveHandlers(cell as RectangleUIElement);
             }
@@ -234,7 +235,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// If the column is a text column, then this function will return the string held in that cell. This is used for sorting
+        /// If the column is a text column, then this function will return the string held in that cell. If the cell is not a textbox ui element it just returns null.
+        ///  This is used for sorting
         /// </summary>
         /// <returns></returns>
         public string GetStringValueOfCell(int colIndex)
@@ -256,7 +258,7 @@ namespace NuSysApp
 
             var cellHorizontalOffset = BorderWidth;
 
-            foreach (var child in _children)
+            foreach (var child in GetChildren())
             {
                 var cell = child as RectangleUIElement;
                 Debug.Assert(cell != null);

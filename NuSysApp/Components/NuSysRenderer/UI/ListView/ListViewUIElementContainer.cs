@@ -123,8 +123,13 @@ namespace NuSysApp
                 if (ListView != null)
                 {
                     ListView.Width = value;
+                    if (_header != null)
+                    {
+                        _header.RefreshTitles(ListView.ListColumns, ListView.Width, ListView.SumOfColRelWidths, _resourceCreator);
+                    }
                 }
                 base.Width = value;
+                
             }
         }
 
@@ -185,10 +190,28 @@ namespace NuSysApp
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
             _header = new ListViewHeader<T>(this, resourceCreator);
+            _header.HeaderDragged += Header_HeaderDragged;
+            _header.HeaderDragCompleted += Header_HeaderDragCompleted;
+            _header.HeaderTapped += Header_HeaderTapped;
             ShowHeader = true;
         }
 
-        
+        private void Header_HeaderDragCompleted(ButtonUIElement header, int colIndex, CanvasPointer pointer)
+        {
+            
+        }
+
+        private void Header_HeaderDragged(ButtonUIElement header, int colIndex, CanvasPointer pointer)
+        {
+            header.Transform.LocalX += pointer.Delta.X;
+        }
+
+        private void Header_HeaderTapped(int columnIndex)
+        {
+            _listview.SortByCol(columnIndex);
+        }
+
+
 
         #region RouterFunctions
 
@@ -355,7 +378,7 @@ namespace NuSysApp
                 _header.Width = this.Width;
                 _header.Height = _listview.RowHeight + 10;
                 _listYPos = _header.Height;
-                _header.MakeTitles(_listview, _resourceCreator);
+                _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
         }
 
