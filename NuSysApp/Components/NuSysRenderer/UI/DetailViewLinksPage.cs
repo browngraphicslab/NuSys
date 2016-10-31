@@ -74,6 +74,7 @@ namespace NuSysApp
             HashSet<string> links = SessionController.Instance.LinksController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
 
             _listView = new ListViewUIElementContainer<string>(parent, resourceCreator);
+            _listView.ShowHeader = false;
             _listView.AddItems(links.ToList<string>());
             _listView.Width = Width;
             _listView.Background = Colors.CadetBlue;
@@ -125,7 +126,7 @@ namespace NuSysApp
             _layoutManager.ItemHeight = 2*(Height/3)-5;
             _layoutManager.ArrangeItems(new Vector2(0, Height/3));
 
-            _searchBarLayout.SetSize(Width, 2*(Height/3)/3);
+            _searchBarLayout.SetSize(Width, 2*((Height/3)/3));
             _searchBarLayout.VerticalAlignment = VerticalAlignment.Center;
             _searchBarLayout.HorizontalAlignment = HorizontalAlignment.Center;
             _searchBarLayout.ItemWidth = Width - 20;
