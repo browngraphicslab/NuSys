@@ -12,30 +12,30 @@ namespace NuSysApp
 {
     class DetailViewLinksPage : RectangleUIElement
     {
+        // All the layout managers to format the links page
         private StackLayoutManager _layoutManager;
         private StackLayoutManager _searchBarLayout;
         private StackLayoutManager _topSearchBars;
 
-        private RectangleUIElement _linkList;
+        // The rectangles that will be turned into textboxes and buttons later
         private RectangleUIElement _linkTitleSearchBar;
         private RectangleUIElement _linkToSearchBar;
         private RectangleUIElement _tagsSearchBar;
         private ButtonUIElement _createLinkButton;
 
+        // List of link information
         private ListViewUIElementContainer<string> _listView;
 
         public DetailViewLinksPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) 
             : base(parent, resourceCreator)
         {
             // Create all necessary rectangles
-            _linkList = new RectangleUIElement(parent, resourceCreator);
             _linkTitleSearchBar = new RectangleUIElement(parent, resourceCreator);
             _linkToSearchBar = new RectangleUIElement(parent, resourceCreator);
             _tagsSearchBar = new RectangleUIElement(parent, resourceCreator);
             _createLinkButton = new ButtonUIElement(parent, resourceCreator, new RoundedRectangleUIElement(parent, resourceCreator));
 
             // Set Background colors
-            //_linkList.Background = Colors.OliveDrab;
             _linkTitleSearchBar.Background = Colors.Aquamarine;
             _linkToSearchBar.Background = Colors.SlateBlue;
             _tagsSearchBar.Background = Colors.BlueViolet;
@@ -45,14 +45,13 @@ namespace NuSysApp
             _searchBarLayout = new StackLayoutManager(StackAlignment.Vertical);
             _topSearchBars = new StackLayoutManager(StackAlignment.Horizontal);
 
-            AddChild(_linkList);
+            // Add rectangles as children of the class
             AddChild(_linkTitleSearchBar);
             AddChild(_linkToSearchBar);
             AddChild(_tagsSearchBar);
             AddChild(_createLinkButton);
 
-            //_layoutManager.AddElement(_linkList);
-
+            // Add elements to layout managers
             _topSearchBars.AddElement(_linkTitleSearchBar);
             _topSearchBars.AddElement(_linkToSearchBar);
             _searchBarLayout.AddElement(_tagsSearchBar);
@@ -69,7 +68,6 @@ namespace NuSysApp
         /// <param name="controller"></param>
         private void SetUpList(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller)
         {
-            // Is this the right content id?
             // Returns the list of LinkLibraryElement ID's for links attached to the LibraryElementModel of the passed in id
             HashSet<string> links = SessionController.Instance.LinksController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
 
@@ -79,6 +77,7 @@ namespace NuSysApp
             _listView.Width = Width;
             _listView.Background = Colors.CadetBlue;
 
+            // Create the title column
             ListTextColumn<string> title = new ListTextColumn<string>();
             title.Title = "TITLE:";
             title.RelativeWidth = 1;
@@ -88,6 +87,7 @@ namespace NuSysApp
                 return linkController.LinkLibraryElementModel.Title;
             };
 
+            // Create the column holding the linked to information
             ListTextColumn<string> linkedTo = new ListTextColumn<string>();
             linkedTo.Title = "LINKED TO:";
             linkedTo.RelativeWidth = 1;
@@ -118,7 +118,7 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            // Update all layout managers
+            // Update all layout managers to stay consistent with the container size
             _layoutManager.SetSize(Width, 2*(Height/3)-5);
             _layoutManager.VerticalAlignment = VerticalAlignment.Center;
             _layoutManager.HorizontalAlignment = HorizontalAlignment.Center;
