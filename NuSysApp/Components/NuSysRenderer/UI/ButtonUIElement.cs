@@ -90,16 +90,16 @@ namespace NuSysApp
         /// The string of text to be displayed on the button
         /// </summary>
         public string ButtonText { get; set; }
+
+        /// <summary>
+        /// The image to be displayed on the button
+        /// </summary>
+        public CanvasBitmap Image { get; set;  }
         
         /// <summary>
         /// The color of the text on the button
         /// </summary>
         public Color ButtonTextColor { get; set; }
-
-        /// <summary>
-        /// The size of the text on the button
-        /// </summary>
-        public float ButtonFontSize { get; set; }
 
         /// <summary>
         /// The horizontal alignment of the text on the button
@@ -123,10 +123,6 @@ namespace NuSysApp
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
             Shape = shapeElement;
-            ButtonTextColor = UIDefaults.TextColor;
-            ButtonTextHorizontalAlignment = UIDefaults.ButtonTextHorizontalAlignment;
-            ButtonTextVerticalAlignment = UIDefaults.ButtonTextVerticalAlignment;
-            ButtonFontSize = UIDefaults.FontSize;
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -183,6 +179,20 @@ namespace NuSysApp
 
             // draw the text on the button
             DrawButtonText(ds);
+            DrawButtonImage(ds);
+        }
+
+        public virtual void DrawButtonImage(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Shape.Transform.LocalToScreenMatrix;
+
+            if (Image != null)
+            {
+                ds.DrawImage(Image, GetLocalBounds());
+            }
+
+            ds.Transform = orgTransform;
         }
 
         public virtual void DrawButtonText(CanvasDrawingSession ds)
@@ -200,14 +210,13 @@ namespace NuSysApp
                     VerticalAlignment = ButtonTextVerticalAlignment,
                     WordWrapping = CanvasWordWrapping.NoWrap,
                     TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
-                    FontSize = ButtonFontSize
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis
                 };
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created textFormat
                 ds.DrawText(ButtonText,
-                    new Rect(BorderWidth, BorderWidth, Width, Height),
+                    new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth),
                     ButtonTextColor, textFormat);
             }
 
@@ -221,7 +230,7 @@ namespace NuSysApp
 
         protected override void DrawBackground(CanvasDrawingSession ds)
         {
-            // This has been left empty as the shape draws its own background
+            //This has been left empty as the shape draws it's own background. 
         }
 
         /// <summary>

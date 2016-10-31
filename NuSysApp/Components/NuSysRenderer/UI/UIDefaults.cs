@@ -50,5 +50,16 @@ namespace NuSysApp
         public static float WindowBorderWidth = 3;
         public static CanvasHorizontalAlignment ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
         public static CanvasVerticalAlignment ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+        public static Color ThumbColor = Colors.LightGray;
+        public static Color SliderHighlightColor = Colors.DodgerBlue;
+        public static Color SliderBackground = Colors.LightGray;
+        public static float SliderPosition = 1;
+        public static bool IsSliderTooltipEnabled = true;
+        public static Color ScrubBarHighlightColor = Colors.IndianRed;
+        public static Color ScrubBarBackgroundColor = Colors.LightGray;
+        public static float ScrubberPosition = 0;
+        public static Color ScrubberBarColor = Colors.Yellow;
+        public static float MediaPlayerSliderBarHeight = 25;
+        public static float MediaPlayerButtonBarHeight = 100;
     }
 }

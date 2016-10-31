@@ -13,6 +13,10 @@ namespace NuSysApp
 {
     public class SliderUIElement : RectangleUIElement
     {
+        public delegate void OnSliderMovedHandler(SliderUIElement sender, double currSliderPosition);
+
+        public event OnSliderMovedHandler OnSliderMoved;
+
         /// <summary>
         /// Minimum value that the slider can represent
         /// </summary>
@@ -45,6 +49,11 @@ namespace NuSysApp
                 _thumb.Background = _thumbColor;
             }
         }
+
+        /// <summary>
+        /// Get the current value of the slider
+        /// </summary>
+        public Double CurrentValue => SliderPosition*MaxValue - MinValue;
 
         /// <summary>
         /// The helper value for the slider highlight color, the color showing what has currently been set, like the red color on a youtube player
@@ -102,6 +111,7 @@ namespace NuSysApp
                     value = 1;
                 }
                 _sliderPosition = value;
+                OnSliderMoved?.Invoke(this, SliderPosition);
             }
         }
 

@@ -344,6 +344,7 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\BaseMediaPlayerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\AddRegionPublicPrivateUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
@@ -367,6 +368,8 @@
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrubBarUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackLayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TabButtonUIElement.cs" />

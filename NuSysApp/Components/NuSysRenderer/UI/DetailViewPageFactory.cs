@@ -70,15 +70,15 @@ namespace NuSysApp
                     {
                         case NusysConstants.ElementType.Image:
                             rectangle = new DetailViewImageRegionPage(parent, resourceCreator, controller as ImageLibraryElementController);
-                            await rectangle.Load();
                             break;
                         case NusysConstants.ElementType.PDF:
                             rectangle = new DetailViewPdfRegionPage(parent, resourceCreator, controller as PdfLibraryElementController);
-                            await rectangle.Load();
                             break;
                         case NusysConstants.ElementType.Audio:
+                            rectangle = new BaseMediaPlayerUIElement(parent, resourceCreator, controller as AudioLibraryElementController);
                             break;
                         case NusysConstants.ElementType.Video:
+                            rectangle = new BaseMediaPlayerUIElement(parent, resourceCreator, controller as AudioLibraryElementController);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementType),
@@ -132,7 +132,8 @@ namespace NuSysApp
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pageType), pageType, null);
             }
-
+            var load = rectangle?.Load();
+            if (load != null) await load;
             return rectangle;
         }
     }
