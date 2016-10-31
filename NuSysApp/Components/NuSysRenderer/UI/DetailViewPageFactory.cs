@@ -86,26 +86,8 @@ namespace NuSysApp
                     }
                     break;
                 case DetailViewPageType.Aliases:
-                    switch (elementType)
-                    {
-                        case NusysConstants.ElementType.Text:
-                            break;
-                        case NusysConstants.ElementType.Image:
-                            break;
-                        case NusysConstants.ElementType.Collection:
-                            break;
-                        case NusysConstants.ElementType.PDF:
-                            break;
-                        case NusysConstants.ElementType.Audio:
-                            break;
-                        case NusysConstants.ElementType.Video:
-                            break;
-                        case NusysConstants.ElementType.Link:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(elementType),
-                                $"No alias page support for {elementType} yet");
-                    }
+                    rectangle = new DetailViewAliasesPage(parent, resourceCreator, controller);
+                    await rectangle.Load();
                     break;
                 case DetailViewPageType.Links:
                     switch (elementType)
@@ -136,5 +118,4 @@ namespace NuSysApp
             return rectangle;
         }
     }
-
 }
