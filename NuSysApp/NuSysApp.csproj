@@ -344,6 +344,8 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\ListViewRowContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\ListViewUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\AddRegionPublicPrivateUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
@@ -365,9 +367,18 @@
     <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListViewHeaderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListTextColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewHeader.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewRowUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElementContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrollableRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrollBarUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackLayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TabButtonUIElement.cs" />
@@ -407,6 +418,7 @@
     <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\Win2dListViewItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
