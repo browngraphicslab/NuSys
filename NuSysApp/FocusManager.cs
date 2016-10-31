@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,17 +16,24 @@ namespace NuSysApp
         // BaseRenderItem that is currently in focus
         public BaseRenderItem ActiveFocusElement { get; set; }
 
+        // Used to set the pointerpressed event of the canvas to fire the
+        // pointer pressed function
         private CanvasInteractionManager _canvasInteractionManager;
 
+        // Used to get the element that the pointer press point lands on
         private CanvasRenderEngine _canvasRenderEngine;
 
         // Delegate to handle KeyPressed events
         public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
         
+        // Fired when a key is pressed on the application anywhere
         public event KeyPressedDelegate OnKeyPressed; 
 
         public FocusManager(CanvasInteractionManager cim, CanvasRenderEngine cre)
         {
+            Debug.Assert(cim != null);
+            Debug.Assert(cre != null);
+
             _canvasInteractionManager = cim;
             _canvasRenderEngine = cre;
 
@@ -36,7 +44,7 @@ namespace NuSysApp
         // Fired whenever a key is pressed on the application - Invokes OnKeyPressed
         private void FireKeyPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
-            OnKeyPressed.Invoke(args);    
+            OnKeyPressed?.Invoke(args);    
         }
 
         /// <summary>

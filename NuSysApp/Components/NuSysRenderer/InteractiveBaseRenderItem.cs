@@ -22,7 +22,7 @@ namespace NuSysApp
 
         // Delegate for the KeyPressed event
         public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
-
+        // Event that fires when a key is pressed on this render item
         public event KeyPressedDelegate KeyPressed;
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -54,6 +54,8 @@ namespace NuSysApp
             Dragged?.Invoke(this, pointer);
         }
 
+        // Function fired when key is pressed on this render item
+        // Invokes the KeyPressed event if possible
         public virtual void OnKeyPressed(KeyEventArgs e)
         {
             KeyPressed?.Invoke(e);
