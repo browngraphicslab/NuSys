@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -9,76 +10,90 @@ namespace NuSysApp
 {
     internal class DetailViewAliasesPage : RectangleUIElement
     {
-        private StackLayoutManager _layoutManager;
-        private RectangleUIElement _aliasesList;
-        private LibraryElementController _controller;
+        private ListViewUIElementContainer<ElementModel> _listView;
+        private readonly BaseRenderItem _parent;
+        private readonly ICanvasResourceCreatorWithDpi _resourceCreator;
+        private readonly LibraryElementController _controller;
+
         private List<ElementModel> _aliasList;
+        private bool _isLoading;
 
         public DetailViewAliasesPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) :
             base(parent, resourceCreator)
         {
-
+            _isLoading = true;
+            _parent = parent;
+            _resourceCreator = resourceCreator;
             _controller = controller;
+        }
+        
+        public override async Task Load()
+        {
+            GetAliasesOfLibraryElementRequest req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
+            _aliasList = req.GetReturnedElementModels();
+            CreateAliasList(_parent, _resourceCreator);
+            base.Load();
+        }
 
-            ListViewUIElementContainer<ElementModel> listView = new ListViewUIElementContainer<ElementModel>(parent, resourceCreator);
-            listView.Height = Height;
-            listView.Width = Width;
-            listView.Transform.LocalPosition = new Vector2(0, 0);
-            listView.AddItems(_aliasList);
+        private void CreateAliasList(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
+        {
+            _listView = new ListViewUIElementContainer<ElementModel>(parent, resourceCreator);
+            _listView.Height = Height;
+            _listView.Width = Width;
+            _listView.Transform.LocalPosition = new Vector2(0, 0);
+            _listView.AddItems(_aliasList);
+            _listView.Background = Colors.CadetBlue;
 
             ListTextColumn<ElementModel> title = new ListTextColumn<ElementModel>();
+            title.Title = "Collection Title";
             title.RelativeWidth = 1;
-            title.ColumnFunction = delegate(ElementModel e)
+            title.ColumnFunction = delegate (ElementModel el)
             {
-                return e.Title;
+                string CollectionId = el.ParentCollectionId;
+                var collectionController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
+                return collectionController.Title;
             };
 
-            //ListTextColumn<string> creator = new ListTextColumn<string>();
-            //creator.RelativeWidth = 1;
-            //creator.ColumnFunction = delegate(string creatorString)
-            //{
-            //    return "creator";
-            //};
+            ListTextColumn<ElementModel> creator = new ListTextColumn<ElementModel>();
+            creator.Title = "Creator";
+            creator.RelativeWidth = 1;
+            creator.ColumnFunction = delegate (ElementModel el)
+            {
+                string CollectionId = el.ParentCollectionId;
+
+                var collectionController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
+                return
+                   SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(el?.CreatorId);
+            };
+
+            ListTextColumn<ElementModel> lastEdited = new ListTextColumn<ElementModel>();
+            lastEdited.Title = "Last Edited";
+            lastEdited.RelativeWidth = 1;
+            lastEdited.ColumnFunction = delegate (ElementModel el)
+            {
+                string CollectionId = el.ParentCollectionId;
+
+                var collectionController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
+                return collectionController.LibraryElementModel.LastEditedTimestamp;
+            };
 
             List<ListColumn<ElementModel>> cols = new List<ListColumn<ElementModel>>();
             cols.Add(title);
-            //cols.Add(creator);
-            listView.AddColumns(cols);
-                
-                
-                
-                _aliasesList = new RectangleUIElement(parent, resourceCreator);
-            _aliasesList.Background = Colors.Aqua;
-            _layoutManager = new StackLayoutManager(StackAlignment.Vertical);
-            AddChild(_aliasesList);
-            _layoutManager.AddElement(_aliasesList);
+            cols.Add(creator);
+            cols.Add(lastEdited);
+            _listView.AddColumns(cols);
 
-            AddChild(listView);
-
-        }
-
-        public override Task Load()
-        {
-            List<ElementModel> aliasList = GetAliases(_controller).Result;
-            return base.Load();
-        }
-
-        private async Task<List<ElementModel>> GetAliases(LibraryElementController controller)
-        {
-            GetAliasesOfLibraryElementRequest req = new GetAliasesOfLibraryElementRequest(controller.LibraryElementModel.LibraryElementId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
-            return req.GetReturnedElementModels();
-           
+            AddChild(_listView);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _layoutManager.SetSize(Width, Height);
-            _layoutManager.VerticalAlignment = VerticalAlignment.Center;
-            _layoutManager.HorizontalAlignment = HorizontalAlignment.Center;
-            _layoutManager.ItemHeight = Height - 20;
-            _layoutManager.ItemWidth = Width - 20;
-            _layoutManager.ArrangeItems();
+            _listView.Height = Height;
+            _listView.Width = Width;
             base.Update(parentLocalToScreenTransform);
         }
     }
