@@ -149,6 +149,10 @@
     <Content Include="Assets\image icon.png" />
     <Content Include="Assets\info.png" />
     <Content Include="Assets\ink.png" />
+    <Content Include="Assets\layout_icons\grid_layout_icon.png" />
+    <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
+    <Content Include="Assets\layout_icons\layout_icon.png" />
+    <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
     <Content Include="Assets\library_thumbnails\audio.png" />
     <Content Include="Assets\library_thumbnails\collection_1.png" />
     <Content Include="Assets\library_thumbnails\link.png" />

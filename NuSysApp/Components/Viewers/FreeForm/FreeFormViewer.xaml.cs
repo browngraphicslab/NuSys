@@ -71,6 +71,8 @@ namespace NuSysApp
 
         public DetailViewMainContainer DetailViewer { get; set; }
 
+        private LayoutWindowUIElement _layoutWindow;
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -659,12 +661,28 @@ namespace NuSysApp
             if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
             {
                 // Show the layout panel
-                var layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                _layoutWindow.DoLayout += _arrangeCallback;
+                _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
+                RenderEngine.Root.AddChild(_layoutWindow);
+                Selections[0].Parent.Transform.LocalPosition = new Vector2(0, 0);
+            }
+        }
 
-                layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
-                RenderEngine.Root.AddChild(layoutWindow);
+        private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
+        {
+            if (Selections.Count == 0)
+            {
+                //return;
+            }
 
-                // Do the layout
+            float x = Selections[0].Transform.LocalX;
+            float y = Selections[0].Transform.LocalY;
+            // Do the layout
+            foreach (var elementRenderItem in Selections)
+            {
+                elementRenderItem.Transform.LocalPosition = new Vector2(0, 0);
+                //x += (float) elementRenderItem.Transform.Size.Width;
             }
         }
 
@@ -870,6 +888,12 @@ namespace NuSysApp
                 ClearSelections();
 
             _minimap.Invalidate();
+
+            if (_layoutWindow != null)
+            {
+                RenderEngine.Root.RemoveChild(_layoutWindow);
+                _layoutWindow = null;
+            }
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)

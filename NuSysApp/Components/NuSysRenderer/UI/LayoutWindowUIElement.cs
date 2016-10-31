@@ -42,9 +42,12 @@ namespace NuSysApp
         private static Vector2 GRID_BUTTON_POSITION = new Vector2(PANEL_INSET + BUTTON_PADDING, HORIZONTAL_BUTTON_POSITION.Y + BUTTON_SIZE + BUTTON_PADDING);
         private static Vector2 CUSTOM_BUTTON_POSITION = new Vector2(VERTICAL_BUTTON_POSITION.X, GRID_BUTTON_POSITION.Y);
         private static float DROPDOWN_INSET = 2.0f * PANEL_INSET;
-        private LayoutStyle _layoutStyle = LayoutStyle.Horizontal;
-        private string _layoutStyleText = "title";
-        private LayoutSorting _layoutSorting = LayoutSorting.Title;
+        private static LayoutStyle _layoutStyle = LayoutStyle.Horizontal;
+        private static LayoutSorting _layoutSorting = LayoutSorting.Title;
+        private static string LAYOUT_STYLE_TITLE_TEXT = "title";
+        private static string LAYOUT_STYLE_DATE_TEXT = "date";
+        private static string CLOSE_BUTTON_TEXT = "X X X X X";
+        private static float CLOSE_BUTTON_SIZE = 100.0f;
 
         // Buttons
         private ButtonUIElement _arrangeButton;
@@ -53,6 +56,7 @@ namespace NuSysApp
         private ButtonUIElement _gridLayoutButton;
         private ButtonUIElement _customLayoutButton;
         private ButtonUIElement _dropdownButton;
+        private ButtonUIElement _closePanelButton;
 
         // Labels
         private TextboxUIElement _arrangeByLabel;
@@ -60,6 +64,10 @@ namespace NuSysApp
 
         // Dropdown
         private DropdownUIElement _dropdown;
+
+        // Layout handler
+        public delegate void LayoutHandler(LayoutStyle style, LayoutSorting sorting);
+        public event LayoutHandler DoLayout;
 
         public LayoutWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -78,36 +86,46 @@ namespace NuSysApp
             _arrangeButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             _arrangeButton.Transform.LocalPosition = ARRANGE_BUTTON_POSITION;
 
-            _arrangeButton.Tapped += _arrangeButton_Tapped;
+            _arrangeButton.OnPressed += _arrangeButton_Tapped;
             AddChild(_arrangeButton);
             
             // horizontal layout button
             _horizontalLayoutButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(parent, resourceCreator));
-            AddImageToButton(resourceCreator, "ms-appx:///Assets/node icons/icon_enter.png", _horizontalLayoutButton);
+            AddImageToButton(resourceCreator, "ms-appx:///Assets/layout_icons/horizontal_layout_icon.png", _horizontalLayoutButton);
+            _horizontalLayoutButton.SelectedBackground = Colors.LightGray;
+            _horizontalLayoutButton.SelectedBorder = Colors.LightGray;
             _horizontalLayoutButton.Transform.LocalPosition = HORIZONTAL_BUTTON_POSITION;
-            _horizontalLayoutButton.Tapped += _horizontalButton_Tapped;
+            _horizontalLayoutButton.OnReleased += _horizontalButton_Tapped;
             AddChild(_horizontalLayoutButton);
 
             // vertical layout button
             _verticalLayoutButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(parent, resourceCreator));
-            AddImageToButton(resourceCreator, "ms-appx:///Assets/node icons/icon_enter.png", _verticalLayoutButton);
+            AddImageToButton(resourceCreator, "ms-appx:///Assets/layout_icons/vertical_layout_icon.png", _verticalLayoutButton);
+            _verticalLayoutButton.SelectedBackground = Colors.LightGray;
+            _verticalLayoutButton.SelectedBorder = Colors.LightGray;
             _verticalLayoutButton.Transform.LocalPosition = VERTICAL_BUTTON_POSITION;
-            _verticalLayoutButton.Tapped += _verticalButton_Tapped;
+            _verticalLayoutButton.OnReleased += _verticalButton_Tapped;
             AddChild(_verticalLayoutButton);
 
             // grid layout button
             _gridLayoutButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(parent, resourceCreator));
-            AddImageToButton(resourceCreator, "ms-appx:///Assets/node icons/icon_enter.png", _gridLayoutButton);
+            AddImageToButton(resourceCreator, "ms-appx:///Assets/layout_icons/grid_layout_icon.png", _gridLayoutButton);
+            _gridLayoutButton.SelectedBackground = Colors.LightGray;
+            _gridLayoutButton.SelectedBorder = Colors.LightGray;
             _gridLayoutButton.Transform.LocalPosition = GRID_BUTTON_POSITION;
-            _gridLayoutButton.Tapped += _gridButton_Tapped;
+            _gridLayoutButton.OnReleased += _gridButton_Tapped;
             AddChild(_gridLayoutButton);
 
             // custom layout button
             _customLayoutButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(parent, resourceCreator));
             AddImageToButton(resourceCreator, "ms-appx:///Assets/node icons/icon_enter.png", _customLayoutButton);
+            _customLayoutButton.SelectedBackground = Colors.LightGray;
+            _customLayoutButton.SelectedBorder = Colors.LightGray;
             _customLayoutButton.Transform.LocalPosition = CUSTOM_BUTTON_POSITION;
-            _customLayoutButton.Tapped += _customButton_Tapped;
+            _customLayoutButton.OnReleased += _customButton_Tapped;
             AddChild(_customLayoutButton);
+
+            ResetButtonColors();
 
             // labels
             _arrangeByLabel = new TextboxUIElement(this, resourceCreator);
@@ -123,14 +141,14 @@ namespace NuSysApp
 
             // dropdown menu button
             _dropdownButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
-            _dropdownButton.ButtonText = _layoutStyleText;
+            _dropdownButton.ButtonText = LAYOUT_STYLE_TITLE_TEXT;
             _dropdownButton.Width = PANEL_WIDTH - 2 * DROPDOWN_INSET;
             _dropdownButton.Height = 40.0f;
             _dropdownButton.ButtonTextColor = Colors.Black;
             _dropdownButton.SelectedBorder = Colors.Black;
             _dropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _dropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-            _dropdownButton.Tapped += _viewListButton_Tapped;
+            _dropdownButton.OnPressed += _viewListButton_Tapped;
             _dropdownButton.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, ARRANGE_BY_TEXT_POSITION.Y + _arrangeByLabel.Height);
             AddChild(_dropdownButton);
 
@@ -142,6 +160,18 @@ namespace NuSysApp
             _dropdown.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, _dropdownButton.Transform.LocalPosition.Y + _dropdownButton.Height);
             _dropdown.IsVisible = false;
             AddChild(_dropdown);
+
+            // close button
+            _closePanelButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+            _closePanelButton.ButtonText = CLOSE_BUTTON_TEXT;
+            _closePanelButton.Width = CLOSE_BUTTON_SIZE;
+            _closePanelButton.Height = CLOSE_BUTTON_SIZE;
+            _closePanelButton.ButtonTextColor = Colors.Black;
+            _closePanelButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
+            _closePanelButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+            _closePanelButton.OnReleased += _closeButton_Tapped;
+            _closePanelButton.Transform.LocalPosition = new Vector2(0.0f, 0.0f);
+            //AddChild(_closePanelButton);
         }
 
         private async void AddImageToButton(ICanvasResourceCreatorWithDpi resourceCreator, string uri, ButtonUIElement button)
@@ -152,7 +182,7 @@ namespace NuSysApp
 
         private void _arrangeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            
+            DoLayout?.Invoke(_layoutStyle, _layoutSorting);
         }
 
         private void _horizontalButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -194,10 +224,10 @@ namespace NuSysApp
 
         private void ResetButtonColors()
         {
-            _horizontalLayoutButton.Background = Colors.White;
-            _verticalLayoutButton.Background = Colors.White;
-            _gridLayoutButton.Background = Colors.White;
-            _customLayoutButton.Background = Colors.White;
+            _horizontalLayoutButton.Background = Colors.Black;
+            _verticalLayoutButton.Background = Colors.Black;
+            _gridLayoutButton.Background = Colors.Black;
+            _customLayoutButton.Background = Colors.Black;
         }
 
         private void _listButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -207,9 +237,11 @@ namespace NuSysApp
             {
                 case "title":
                     _layoutSorting = LayoutSorting.Title;
+                    _dropdownButton.ButtonText = LAYOUT_STYLE_TITLE_TEXT;
                     break; 
                 case "date":
                     _layoutSorting = LayoutSorting.Date;
+                    _dropdownButton.ButtonText = LAYOUT_STYLE_DATE_TEXT;
                     break;
                 default:
                     break;
@@ -218,9 +250,14 @@ namespace NuSysApp
             _dropdownButton.Background = Colors.White;
         }
 
+        private void _closeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+
+        }
+
         public override void Dispose()
         {
-            _arrangeButton.Tapped -= _arrangeButton_Tapped;
+            _arrangeButton.OnPressed -= _arrangeButton_Tapped;
             base.Dispose();
         }
     }

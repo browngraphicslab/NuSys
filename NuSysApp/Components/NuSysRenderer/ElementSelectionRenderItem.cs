@@ -42,7 +42,7 @@ namespace NuSysApp
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
             BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
-            BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
+            BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
