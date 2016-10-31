@@ -63,6 +63,24 @@ namespace NuSysApp
         public ListViewHeaderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator, shapeElement)
         {
             Tapped += ListViewHeaderItem_Tapped;
+            Shape.RightPressed += ListViewHeaderItem_RightPressed;
+        }
+
+        /// <summary>
+        /// popup for add or delete columns, shows up on right button pressed.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ListViewHeaderItem_RightPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Dispose()
+        {
+            Tapped -= ListViewHeaderItem_Tapped;
+            Shape.RightPressed -= ListViewHeaderItem_RightPressed;
+            base.Dispose();
         }
 
         /// <summary>

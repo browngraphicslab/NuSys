@@ -34,7 +34,6 @@ namespace NuSysApp
             {
                 RightPressed?.Invoke(this, pointer);
             }
-            
         }
 
         public virtual void OnReleased(CanvasPointer pointer)

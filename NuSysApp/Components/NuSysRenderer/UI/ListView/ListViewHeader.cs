@@ -49,21 +49,7 @@ namespace NuSysApp
 
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-<<<<<<< HEAD
-            RightPressed += ListViewHeader_RightPressed;
-        }
 
-        /// <summary>
-        /// brings up popup on right click
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void ListViewHeader_RightPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            throw new NotImplementedException();
-=======
-            _headerBeingDragged = false;
->>>>>>> a16ed0ac7e6b70ee64bf7d7d6157277ef04fb0fe
         }
 
         /// <summary>
@@ -94,8 +80,6 @@ namespace NuSysApp
                 AddHeaderHandlers(headerItem);
                 this.AddChild(headerItem);
                 indexPointer += headerItem.Width;
-<<<<<<< HEAD
-=======
             }
         }
 
@@ -143,7 +127,6 @@ namespace NuSysApp
                 var index = _children.IndexOf(header);
                 Debug.Assert(index >= 0);
                 HeaderDragged?.Invoke(header, index, pointer);
->>>>>>> a16ed0ac7e6b70ee64bf7d7d6157277ef04fb0fe
             }
         }
 

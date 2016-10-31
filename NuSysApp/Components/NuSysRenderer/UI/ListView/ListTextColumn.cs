@@ -18,13 +18,13 @@ namespace NuSysApp
             ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
 
         {
-            var cell = new TextboxUIElement(listViewRowUIElement, resourceCreator);
+            var cell = new TextBoxUIElement(listViewRowUIElement, resourceCreator);
             cell.Width = (RelativeWidth / sumOfAllColumnRelativeWidths) * listViewRowUIElement.Width;
             cell.BorderWidth = BorderWidth;
             cell.Bordercolor = BorderColor;
             cell.Height = rowHeight;
             cell.Background = Colors.Transparent;
-            cell.Text = ColumnFunction(itemSource);
+            cell.TextBoxText = ColumnFunction(itemSource);
             return cell;
         }
     }

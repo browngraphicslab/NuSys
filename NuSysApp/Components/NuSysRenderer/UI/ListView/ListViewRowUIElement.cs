@@ -242,14 +242,14 @@ namespace NuSysApp
         public string GetStringValueOfCell(int colIndex)
         {
             Debug.Assert(colIndex < _children.Count);
-            var textCell = _children[colIndex] as TextboxUIElement;
+            var textCell = _children[colIndex] as TextBoxUIElement;
             if (textCell == null)
             {
                 return null;
             }
             else
             {
-                return textCell.Text;
+                return textCell.TextBoxText;
             }
         }
 
