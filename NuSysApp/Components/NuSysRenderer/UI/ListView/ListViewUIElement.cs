@@ -37,11 +37,11 @@ namespace NuSysApp
         public event RowDraggedEventHandler RowDragged;
 
         /// <summary>
-        /// 
+        /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
+        /// this is -1.
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="columnName"></param>
-        /// <param name="pointer"></param>
+        private int _columnIndexSortedBy;
+        
         public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
 
         /// <summary>
@@ -170,6 +170,7 @@ namespace NuSysApp
             _scrollOffset = 0;
             MultipleSelections = false;
             BorderWidth = 0;
+            _columnIndexSortedBy = -1;
             //RowBorderThickness = 5;
             RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
@@ -214,7 +215,7 @@ namespace NuSysApp
         /// <param name="itemsToCreateRow"></param>
         private void CreateListViewRowUIElements(List<T> itemsToCreateRow)
         {
-            foreach (var itemSource in _itemsSource)
+            foreach (var itemSource in itemsToCreateRow)
             {
                 if (itemSource == null)
                 {
@@ -323,7 +324,7 @@ namespace NuSysApp
         //    SelectRow(rowUIElement);
         //}
 
-        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
+        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
         {
             if (rowUIElement.IsSelected)
             {
@@ -335,19 +336,9 @@ namespace NuSysApp
             }
             if (_isDragging)
             {
-                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[rowUIElement.GetColumnIndex(cell)].Title, pointer);
+                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
                 _isDragging = false;
             }
-        }
-        
-        /// <summary>
-        /// This is called when a list view row ui element fires its selected event. It simply calls the select row method.
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
-        {
-            SelectRow(rowUIElement);
         }
         
         /// <summary>
@@ -358,7 +349,7 @@ namespace NuSysApp
         /// <param name="rowUIElement"></param>
         /// <param name="cell"></param>
         /// <param name="pointer"></param>
-        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
+        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
         {
             //calculate bounds of listview
             var minX = this.Transform.Parent.LocalX;
@@ -372,7 +363,7 @@ namespace NuSysApp
             {
                 //if out of bounds, invoke row drag out
                 RowDragged?.Invoke(rowUIElement.Item,
-                    cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
+                     rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
                 _isDragging = true;
             }
             else
@@ -398,7 +389,46 @@ namespace NuSysApp
             }
         }
 
-        
+        /// <summary>
+        /// This will sort the list by the column index
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        public void SortByCol(int columnIndex)
+        {
+            Debug.Assert(columnIndex < _listColumns.Count);
+            //If it isn't sorted by this index then just sort it normally
+            if (columnIndex != _columnIndexSortedBy)
+            {
+                _children.Sort(delegate(BaseRenderItem row1, BaseRenderItem row2)
+                {
+                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    if (str1 == null || str2 == null)
+                    {
+                        return 0;
+                    }
+                    return str1.CompareTo(str2);
+                });
+                _columnIndexSortedBy = columnIndex;    
+            }
+            //If it is sorted by this index then sort it with reverse order
+            else
+            {
+                _children.Sort(delegate (BaseRenderItem row1, BaseRenderItem row2)
+                {
+                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    if (str1 == null || str2 == null)
+                    {
+                        return 0;
+                    }
+                    return str1.CompareTo(str2) * -1;
+                });
+                _columnIndexSortedBy = -1;
+            }
+            
+        }
+
         /// <summary>
         /// Removes things from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
         /// </summary>
@@ -656,8 +686,8 @@ namespace NuSysApp
             //ds.Transform = Transform.LocalToScreenMatrix;
 
             //Clipping in this way does not work...
-            using (ds.CreateLayer(1f, _clippingRect))
-            {
+            //using (ds.CreateLayer(1f, _clippingRect))
+            //{
 
                 var cellVerticalOffset = BorderWidth;
                 foreach (var child in _children)
@@ -685,7 +715,7 @@ namespace NuSysApp
                     cellVerticalOffset += row.Height;
    
                 }
-            }
+            //}
             ds.Transform = orgTransform;
 
 

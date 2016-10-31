@@ -48,16 +48,40 @@ namespace NuSysApp
         /// </summary>
         private ICanvasResourceCreatorWithDpi _resourceCreator;
 
+        private bool _showHeader;
+
+        public bool ShowHeader {
+            get { return _showHeader; } set {
+            if (value != _showHeader)
+            {
+                if (value == true)
+                {
+                    AddChild(_header);
+                }
+                else
+                {
+                    RemoveChild(_header);
+                }
+                _showHeader = value;
+            }
+        } }
+
         /// <summary>
         /// where listview will draw itself
         /// </summary>
         private float _listYPos;
 
         /// <summary>
+        /// This is the header ui element
+        /// </summary>
+        private ListViewHeader<T> _header;
+
+
+        /// <summary>
         /// setter and getter for listview
         /// adds the listview to the container's children so it can draw it relative to the container
         /// </summary>
-        public ListViewUIElement<T> ListView
+        private ListViewUIElement<T> ListView
         {
             get
             {
@@ -99,8 +123,13 @@ namespace NuSysApp
                 if (ListView != null)
                 {
                     ListView.Width = value;
+                    if (_header != null)
+                    {
+                        _header.RefreshTitles(ListView.ListColumns, ListView.Width, ListView.SumOfColRelWidths, _resourceCreator);
+                    }
                 }
                 base.Width = value;
+                
             }
         }
 
@@ -160,10 +189,29 @@ namespace NuSysApp
             ListView.RowSelected += ListView_RowSelected;
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
-
+            _header = new ListViewHeader<T>(this, resourceCreator);
+            _header.HeaderDragged += Header_HeaderDragged;
+            _header.HeaderDragCompleted += Header_HeaderDragCompleted;
+            _header.HeaderTapped += Header_HeaderTapped;
+            ShowHeader = true;
         }
 
-        
+        private void Header_HeaderDragCompleted(ButtonUIElement header, int colIndex, CanvasPointer pointer)
+        {
+            
+        }
+
+        private void Header_HeaderDragged(ButtonUIElement header, int colIndex, CanvasPointer pointer)
+        {
+            header.Transform.LocalX += pointer.Delta.X;
+        }
+
+        private void Header_HeaderTapped(int columnIndex)
+        {
+            _listview.SortByCol(columnIndex);
+        }
+
+
 
         #region RouterFunctions
 
@@ -193,6 +241,10 @@ namespace NuSysApp
         public void AddColumns(IEnumerable<ListColumn<T>> listColumns)
         {
             ListView.AddColumns(listColumns);
+            if (ShowHeader)
+            {
+                GenerateHeader();
+            }
         }
 
         /// <summary>
@@ -203,6 +255,10 @@ namespace NuSysApp
         public void AddColumn(ListColumn<T> listColumn)
         {
             ListView.AddColumn(listColumn);
+            if (ShowHeader)
+            {
+                GenerateHeader();
+            }
         }
 
         /// <summary>
@@ -212,6 +268,10 @@ namespace NuSysApp
         public void RemoveColumn(string columnTitle)
         {
             ListView.RemoveColumn(columnTitle);
+            if (ShowHeader)
+            {
+                GenerateHeader();
+            }
         }
 
         /// <summary>
@@ -259,6 +319,11 @@ namespace NuSysApp
             return ListView.GetSelectedItems();
         }
 
+        public void SortByCol(int colIndex)
+        {
+            _listview.SortByCol(colIndex);
+        }
+
         /// <summary>
         /// When the listview  ui element fires its row dragged event, the container will fires it's row dragged
         /// which the user should be listening to
@@ -302,21 +367,18 @@ namespace NuSysApp
         /// <summary>
         /// makes a header if you want a header
         /// </summary>
-        public void GenerateHeader(ICanvasResourceCreatorWithDpi resourceCreator)
+        public void GenerateHeader()
         {
             if (_listview != null)
             {
-                ListViewHeader<T> header = new ListViewHeader<T>(this, resourceCreator);
-                header.Transform.LocalPosition = new Vector2(0,0);
-                header.BorderWidth = 0;
-                header.Bordercolor = Colors.Black;
-                header.Background = Colors.Black;
-                header.Width = this.Width;
-                header.Height = _listview.RowHeight + 10;
-                _listview.Height = _listview.Height + header.Height;
-                _listYPos = header.Height;
-                header.MakeTitles(_listview, resourceCreator);
-                this.AddChild(header);
+                _header.Transform.LocalPosition = new Vector2(0,0);
+                _header.BorderWidth = 0;
+                _header.Bordercolor = Colors.Black;
+                _header.Background = Colors.Black;
+                _header.Width = this.Width;
+                _header.Height = _listview.RowHeight + 10;
+                _listYPos = _header.Height;
+                _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
         }
 
