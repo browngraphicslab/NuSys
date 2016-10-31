@@ -347,11 +347,10 @@ namespace NuSysApp
         /// <param name="delta"></param>
         protected void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var s = _scaleDisplayToCrop;
-            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _scaleDisplayToCrop / _imageBitmap.Size.Width;
-            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _scaleDisplayToCrop / _imageBitmap.Size.Height;
-           // rx = Math.Max(0, Math.Min(_normalizedCroppedRect.Width - (region.LibraryElementModel.NormalizedX - _normalizedCroppedRect.X), rx));
-            //ry = Math.Max(0, Math.Min(_normalizedCroppedRect.Height - (region.LibraryElementModel.NormalizedY - _normalizedCroppedRect.Y), ry));
+            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            rx = Math.Max(0, Math.Min(_normalizedCroppedRect.Width - (region.LibraryElementModel.NormalizedX - _normalizedCroppedRect.X), rx));
+            ry = Math.Max(0, Math.Min(_normalizedCroppedRect.Height - (region.LibraryElementModel.NormalizedY - _normalizedCroppedRect.Y), ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetWidth(rx);
             controller.SetHeight(ry);
@@ -364,8 +363,8 @@ namespace NuSysApp
         /// <param name="delta"></param>
         protected void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedX + delta.X / _imageBitmap.Size.Width;
-            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _imageBitmap.Size.Height;
+            var rx = region.LibraryElementModel.NormalizedX + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop *_scaleOrgToDisplay);
             rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth, rx));
             ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight, ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
