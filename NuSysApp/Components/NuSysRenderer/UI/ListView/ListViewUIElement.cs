@@ -652,8 +652,6 @@ namespace NuSysApp
             var tmpCol = _listColumns[columnAIndex];
             _listColumns[columnAIndex] = _listColumns[columnBIndex];
             _listColumns[columnBIndex] = tmpCol;
-
-
         }
 
         /// <summary>

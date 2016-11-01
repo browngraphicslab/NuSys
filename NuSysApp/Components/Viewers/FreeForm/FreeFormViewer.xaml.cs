@@ -166,7 +166,7 @@ namespace NuSysApp
             var listColumn2 = new ListTextColumn<LibraryElementModel>();
             listColumn2.Title = "Creator";
             listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction = model => model.Creator;
+            listColumn2.ColumnFunction = model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
 
             var listColumn3 = new ListTextColumn<LibraryElementModel>();
             listColumn3.Title = "Last Edited Timestamp";

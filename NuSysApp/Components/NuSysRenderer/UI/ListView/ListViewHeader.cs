@@ -84,14 +84,28 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// This just repositions all the titles.
+        /// </summary>
+        public void RefreshTitles()
+        {
+            var indexPointer = 0f;
+            foreach (var child in _children)
+            {
+                var headerItem = child as ButtonUIElement;
+                headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
+                indexPointer += headerItem.Width;
+            }
+        }
+
+        /// <summary>
         /// Adds the necessary handlers to the header passed in
         /// </summary>
         /// <param name="header"></param>
         public void AddHeaderHandlers(ListViewHeaderItem<T> header)
         {
             header.Tapped += Header_Tapped;
-            header.Dragged += Header_Dragged;
-            header.Released += Header_Released;
+            header.Dragging += Header_Dragged;
+            header.DragCompleted += Header_DragCompleted;
         }
 
         /// <summary>
@@ -99,17 +113,69 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void Header_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void Header_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_headerBeingDragged)
+            var header = item as ButtonUIElement;
+            if (header != null)
             {
-                var header = item as ButtonUIElement;
-                if (header != null)
-                {
-                    var index = _children.IndexOf(header);
-                    Debug.Assert(index >= 0);
-                    HeaderDragCompleted?.Invoke(header, index, pointer);
-                }
+                var index = _children.IndexOf(header);
+                Debug.Assert(index >= 0);
+                HeaderDragCompleted?.Invoke(header, index, pointer);
+            }
+        }
+
+        /// <summary>
+        /// Returns the local position of the center of the specified column header.
+        /// Used for dynamically rearranging column. Returns -1 if the index is less than 0 and 
+        /// returns positive inifinity if column index is greater than the number of columns
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        /// <returns></returns>
+        public float GetColumnHeaderCenter(int columnIndex)
+        {
+            if (columnIndex < 0)
+            {
+                return -1;
+            }
+            else if (columnIndex >= _children.Count)
+            {
+                return float.PositiveInfinity;
+            }
+            var column = _children[columnIndex] as ButtonUIElement;
+            Debug.Assert(column != null);
+            return column.Transform.LocalX + column.Width/2;
+        }
+
+        /// <summary>
+        /// Swap Headers will move the header at headerToMoveIndex to where 
+        /// the header at dragged index starts.
+        /// </summary>
+        /// <param name="headingBeingDraggedIndex"></param>
+        /// <param name="headerToMove"></param>
+        public void SwapHeaders(int draggedIndex, int headerToMoveIndex)
+        {
+            if (draggedIndex == headerToMoveIndex || draggedIndex < 0 || headerToMoveIndex < 0 ||
+                draggedIndex >= _children.Count || headerToMoveIndex >= _children.Count)
+            {
+                Debug.WriteLine("Pass in proper indices for swapping column headers");
+                return;
+            }
+            var headerToMove = _children[headerToMoveIndex] as ButtonUIElement;
+            var headerBeingDragged = _children[draggedIndex] as ButtonUIElement;
+            Debug.Assert(headerToMove != null && headerBeingDragged != null);
+
+            //Swaps headers in children
+            _children[headerToMoveIndex] = _children[draggedIndex];
+            _children[draggedIndex] = headerToMove;
+
+            //Moves x position of the header to move
+            if (draggedIndex < headerToMoveIndex)
+            {
+                headerToMove.Transform.LocalX -= headerBeingDragged.Width;
+            }
+            else if (draggedIndex > headerToMoveIndex)
+            {
+                headerToMove.Transform.LocalX += headerBeingDragged.Width;
             }
         }
 
@@ -120,12 +186,16 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void Header_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _headerBeingDragged = true;
+            //_headerBeingDragged = true;
             var header = item as ButtonUIElement;
             if (header != null)
             {
                 var index = _children.IndexOf(header);
                 Debug.Assert(index >= 0);
+                if (index == 2)
+                {
+                    var x = 4;
+                }
                 HeaderDragged?.Invoke(header, index, pointer);
             }
         }
@@ -137,6 +207,8 @@ namespace NuSysApp
         public void RemoveHeaderHandlers(ListViewHeaderItem<T> header)
         {
             header.Tapped -= Header_Tapped;
+            header.Dragged -= Header_Dragged;
+            header.DragCompleted -= Header_DragCompleted;
         }
 
         /// <summary>

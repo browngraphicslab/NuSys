@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -196,16 +197,57 @@ namespace NuSysApp
             ShowHeader = true;
         }
 
+        /// <summary>
+        /// This fires when the header has just finished being dragged. It will refresh the positions of the titles so it looks nice since you may not have left the header
+        /// in the correct spot when dragging.
+        /// 
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
         private void Header_HeaderDragCompleted(ButtonUIElement header, int colIndex, CanvasPointer pointer)
         {
-            
+            _header.RefreshTitles();
         }
 
+        /// <summary>
+        /// Is called when header is currently being dragged. Checks if you should swap the columns depending on the position of the header that is being dragged,
+        ///  and if you should then it swaps both the columns and the headers
+        /// 
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
         private void Header_HeaderDragged(ButtonUIElement header, int colIndex, CanvasPointer pointer)
         {
-            header.Transform.LocalX += pointer.Delta.X;
+            var newX = header.Transform.LocalX + pointer.DeltaSinceLastUpdate.X;
+
+            if (newX > 0 && newX + header.Width < Width)
+            {
+                header.Transform.LocalX = newX;
+                var centerX = newX + header.Width/2;
+
+                float centerOfNextHeader = _header.GetColumnHeaderCenter(colIndex + 1);
+                float centerOfPreviousHeader = _header.GetColumnHeaderCenter(colIndex - 1);
+
+                if (centerX > centerOfNextHeader)
+                {
+                    _header.SwapHeaders(colIndex, colIndex + 1);
+                    _listview.SwapColumns(colIndex, colIndex + 1);
+                }
+                else if (centerX < centerOfPreviousHeader)
+                {
+                    _header.SwapHeaders(colIndex, colIndex -1);
+                    _listview.SwapColumns(colIndex, colIndex - 1);
+                }
+            }
+
         }
 
+        /// <summary>
+        /// Whenever a header is tapped just sort the list by that column
+        /// </summary>
+        /// <param name="columnIndex"></param>
         private void Header_HeaderTapped(int columnIndex)
         {
             _listview.SortByCol(columnIndex);
