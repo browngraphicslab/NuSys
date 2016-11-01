@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -98,6 +99,10 @@ namespace NuSysApp
         /// </summary>
         private float _scrubberPosition = UIDefaults.ScrubberPosition;
 
+        private double _durationInMillis;
+        private double _startTimeInMillis;
+        private AudioLibraryElementController _controller;
+
         /// <summary>
         /// The position the scrubberBar is set to on the scrubber, this is normalized, so set to between 0 and 1.
         /// </summary>
@@ -119,25 +124,55 @@ namespace NuSysApp
         }
 
 
-        public ScrubBarUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, MediaElement mediaElement) : base(parent, resourceCreator)
+        public ScrubBarUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, MediaElement mediaElement) : base(parent, resourceCreator)
         {
+            _controller = controller;
             _mediaElement = mediaElement;
-
-            _highlightRect = new RectangleUIElement(this, resourceCreator);
-            InitializeHighlightRectUI(_highlightRect);
-            AddChild(_highlightRect);
+            _mediaElement.MediaOpened += MediaElementOnMediaOpened;
 
             _backgroundRect = new RectangleUIElement(this, resourceCreator);
             InitializeBackgroundRectUI(_backgroundRect);
             AddChild(_backgroundRect);
 
+            _highlightRect = new RectangleUIElement(this, resourceCreator);
+            InitializeHighlightRectUI(_highlightRect);
+            _highlightRect.IsHitTestVisible = false;
+            AddChild(_highlightRect);
+
             _scrubberBar = new RectangleUIElement(this, resourceCreator);
             InitializeScubberBarUI(_scrubberBar);
+            _scrubberBar.IsHitTestVisible = false;
             AddChild(_scrubberBar);
 
             // add manipulation events
-            _scrubberBar.Dragged += OnScrubberBarDragged;
+            _backgroundRect.Dragged += OnScrubberDragged;
+            _backgroundRect.Tapped += OnScrubberTapped;
 
+        }
+
+        private void MediaElementOnMediaOpened(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            _durationInMillis = _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            _startTimeInMillis = _controller.AudioLibraryElementModel.NormalizedStartTime *
+                                 _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+        }
+
+
+        /// <summary>
+        /// Seeks to the point that was tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnScrubberTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var currPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            ScrubberPosition = currPoint.X/Width;
+
+            UITask.Run(() =>
+            {
+                SetMediaElementToCurrentScrubPosition(_mediaElement);
+
+            });
         }
 
         /// <summary>
@@ -145,7 +180,10 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
-            _scrubberBar.Dragged -= OnScrubberBarDragged;
+            _scrubberBar.Dragged -= OnScrubberDragged;
+            _backgroundRect.Tapped -= OnScrubberTapped;
+            _highlightRect.Tapped -= OnScrubberTapped;
+            _mediaElement.MediaOpened -= MediaElementOnMediaOpened;
         }
 
         /// <summary>
@@ -153,10 +191,15 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnScrubberBarDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnScrubberDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _scrubberPosition += pointer.DeltaSinceLastUpdate.X/Width;
-            SetMediaElementToCurrentScrubPosition(_mediaElement);
+            var currPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            ScrubberPosition = currPoint.X / Width;
+            UITask.Run(() =>
+            {
+                SetMediaElementToCurrentScrubPosition(_mediaElement);
+
+            });
         }
 
         /// <summary>
@@ -191,29 +234,36 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             // set the scrubber position based on the current position of the media player
-            ScrubberPosition = (float) _mediaElement.Position.TotalMilliseconds/
-                               (float) _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            UITask.Run(() =>
+            {
+                ScrubberPosition = (float)_mediaElement.Position.TotalMilliseconds /
+                                  (float)_mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
 
+            });
+
+            if (float.IsNaN(ScrubberPosition))
+            {
+                return;
+            }
 
             // get helper values for setting the offsets and position of elements
-            var scrubberHeight = Height * 2/3;
-            var scrubberVerticalOffset = (Height - scrubberHeight)/2;
+            var scrubberHeight = Height * 2 / 3;
+            var scrubberVerticalOffset = (Height - scrubberHeight) / 2;
 
             // set the highlighted portion of the scrubber so that it is to the left of the scrubbar
-            _highlightRect.Width = ScrubberPosition * Width;
+            _highlightRect.Width = Math.Max(0, Math.Min(ScrubberPosition, 1))*Width;
             _highlightRect.Height = scrubberHeight;
             _highlightRect.Transform.LocalPosition = new Vector2(0, scrubberVerticalOffset);
 
             // set the unhighlited portion of the scrubber so that it is to the rigth of the scrubbar
-            _backgroundRect.Width = (1 - ScrubberPosition) * Width;
+
+            _backgroundRect.Width = Width;
             _backgroundRect.Height = scrubberHeight;
-            _backgroundRect.Transform.LocalPosition = new Vector2(ScrubberPosition * Width, scrubberVerticalOffset);
+            _backgroundRect.Transform.LocalPosition = new Vector2(0, scrubberVerticalOffset);
 
             // set the scrubberbar size and position based on the slider position
             _scrubberBar.Height = Height;
-            _scrubberBar.Transform.LocalPosition = new Vector2(ScrubberPosition * Width - _scrubberBarWidth / 2, 0);
-
-            
+            _scrubberBar.Transform.LocalPosition = new Vector2(Math.Max(0, Math.Min(ScrubberPosition, 1)) * Width - _scrubberBarWidth / 2, 0);
 
             base.Update(parentLocalToScreenTransform);
         }
@@ -224,7 +274,7 @@ namespace NuSysApp
         /// <param name="mediaElement"></param>
         private void SetMediaElementToCurrentScrubPosition(MediaElement mediaElement)
         {
-            var currPositionInMilliSeconds = mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds * ScrubberPosition;
+            var currPositionInMilliSeconds = _durationInMillis * ScrubberPosition + _startTimeInMillis;
             var ts = new TimeSpan(0,0,0,0, (int) currPositionInMilliSeconds);
             mediaElement.Position = ts;
         }

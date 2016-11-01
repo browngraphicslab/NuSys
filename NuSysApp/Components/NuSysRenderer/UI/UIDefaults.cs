@@ -59,7 +59,8 @@ namespace NuSysApp
         public static Color ScrubBarBackgroundColor = Colors.LightGray;
         public static float ScrubberPosition = 0;
         public static Color ScrubberBarColor = Colors.Yellow;
-        public static float MediaPlayerSliderBarHeight = 25;
-        public static float MediaPlayerButtonBarHeight = 100;
+        public static float MediaPlayerScrubBarHeight = 100;
+        public static float MediaPlayerButtonBarHeight = 50;
+        public static Color ShadowColor = Color.FromArgb(50, 0, 0, 0);
     }
 }

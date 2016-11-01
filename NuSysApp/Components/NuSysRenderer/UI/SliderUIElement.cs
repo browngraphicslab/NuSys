@@ -87,7 +87,7 @@ namespace NuSysApp
             set
             {
                 _sliderBackgroundColor = value;
-                _unhighlightedSlider.Background = value;
+                _backgroundSlider.Background = value;
             }
         }
 
@@ -123,7 +123,7 @@ namespace NuSysApp
         /// <summary>
         /// The rectangle representing the left portion of the slider before the thumb
         /// </summary>
-        private RectangleUIElement _unhighlightedSlider;
+        private RectangleUIElement _backgroundSlider;
 
         /// <summary>
         /// The rectangle representing the right portion of the slider after the thumb
@@ -165,9 +165,9 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         public SliderUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, int minValue, int maxValue) : base(parent, resourceCreator)
         {
-            _unhighlightedSlider = new RectangleUIElement(this, resourceCreator);
-            InitializeUnhighlightedSliderUI(_unhighlightedSlider);
-            AddChild(_unhighlightedSlider);
+            _backgroundSlider = new RectangleUIElement(this, resourceCreator);
+            InitializeBackgroundSliderUI(_backgroundSlider);
+            AddChild(_backgroundSlider);
 
             _highlightSlider = new RectangleUIElement(this, resourceCreator);
             InitializeHighlightSliderUI(_highlightSlider);
@@ -264,7 +264,7 @@ namespace NuSysApp
         /// Initialize the UI for the unhighlighted slider
         /// </summary>
         /// <param name="unhighlightSlider"></param>
-        private void InitializeUnhighlightedSliderUI(RectangleUIElement unhighlightSlider)
+        private void InitializeBackgroundSliderUI(RectangleUIElement unhighlightSlider)
         {
             unhighlightSlider.Background = SliderBackgroundColor;
         }
@@ -294,9 +294,9 @@ namespace NuSysApp
             _highlightSlider.Transform.LocalPosition = new Vector2(0, sliderVerticalOffset);
 
             // set the unhighlited portion of the slider so that it is to the rigth of the thumb
-            _unhighlightedSlider.Width = (1 - SliderPosition)*Width;
-            _unhighlightedSlider.Height = sliderHeight;
-            _unhighlightedSlider.Transform.LocalPosition = new Vector2(SliderPosition * Width, sliderVerticalOffset);
+            _backgroundSlider.Width = Width;
+            _backgroundSlider.Height = sliderHeight;
+            _backgroundSlider.Transform.LocalPosition = new Vector2(0, sliderVerticalOffset);
 
             // set the thumb size and position based on the slider position
             _thumb.Width = thumbDiameter;
