@@ -190,11 +190,71 @@ namespace NuSysApp
             ListView.RowSelected += ListView_RowSelected;
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
+
             _header = new ListViewHeader<T>(this, resourceCreator);
             _header.HeaderDragged += Header_HeaderDragged;
             _header.HeaderDragCompleted += Header_HeaderDragCompleted;
             _header.HeaderTapped += Header_HeaderTapped;
+            _header.HeaderResizing += Header_HeaderResizing;
+            _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
             ShowHeader = true;
+        }
+
+        /// <summary>
+        /// This gets called when the user completes dragging of the a header's edge to resize a column. It changes the relative column widths
+        /// of the columns who's size was changed.
+        /// </summary>
+        /// <param name="leftHeaderWidth"></param>
+        /// <param name="rightHeaderWidth"></param>
+        /// <param name="leftHeaderIndex"></param>
+        private void Header_HeaderResizeCompleted(double leftHeaderWidth, double rightHeaderWidth, int leftHeaderIndex)
+        {
+            _listview.ChangeRelativeColumnWidths(leftHeaderWidth, rightHeaderWidth, leftHeaderIndex);
+        }
+
+        /// <summary>
+        /// This is called when the user is still currently draggint the headers edge to resize a column. This function calls the moveborderaftercell function
+        /// which adjust the size of the cells in a col at colIndex and colIndex +/- 1 depending on which edge is being dragged. (e.g. dragging left edge of button resizes the button being dragged and the one 
+        /// that comes before it.) 
+        /// </summary>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
+        /// <param name="edgeBeingDragged"></param>
+        private void Header_HeaderResizing(int colIndex, CanvasPointer pointer, ListViewHeaderItem<T>.Edge edgeBeingDragged)
+        {
+            if (colIndex < 0 || colIndex > _children.Count - 1)
+            {
+                return;
+            }
+            if (edgeBeingDragged == ListViewHeaderItem<T>.Edge.Right)
+            {
+                _listview.MoveBorderAfterCell(colIndex, pointer.DeltaSinceLastUpdate.X);
+            }
+            else
+            {
+                if (colIndex - 1 < 0)
+                {
+                    return;  
+                }
+                _listview.MoveBorderAfterCell(colIndex - 1, pointer.DeltaSinceLastUpdate.X);
+            }
+        }
+
+        /// <summary>
+        /// Removes all listeners
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
+            ListView.RowSelected -= ListView_RowSelected;
+            ListView.RowDragged -= ListView_RowDragged;
+            ListView.RowDragCompleted -= ListView_RowDragCompleted;
+
+            _header.HeaderDragged -= Header_HeaderDragged;
+            _header.HeaderDragCompleted -= Header_HeaderDragCompleted;
+            _header.HeaderTapped -= Header_HeaderTapped;
+            _header.HeaderResizing -= Header_HeaderResizing;
+            _header.HeaderResizeCompleted -= Header_HeaderResizeCompleted;
         }
 
         /// <summary>
@@ -225,17 +285,17 @@ namespace NuSysApp
             if (newX > 0 && newX + header.Width < Width)
             {
                 header.Transform.LocalX = newX;
-                var centerX = newX + header.Width/2;
+                var pointerX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
 
                 float centerOfNextHeader = _header.GetColumnHeaderCenter(colIndex + 1);
                 float centerOfPreviousHeader = _header.GetColumnHeaderCenter(colIndex - 1);
 
-                if (centerX > centerOfNextHeader)
+                if (pointerX > centerOfNextHeader)
                 {
                     _header.SwapHeaders(colIndex, colIndex + 1);
                     _listview.SwapColumns(colIndex, colIndex + 1);
                 }
-                else if (centerX < centerOfPreviousHeader)
+                else if (pointerX < centerOfPreviousHeader)
                 {
                     _header.SwapHeaders(colIndex, colIndex -1);
                     _listview.SwapColumns(colIndex, colIndex - 1);

@@ -551,6 +551,22 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// This changes the column relative widths for the column at leftHeaderIndex and the column at leftHeaderIndex + 1. This is used for resizing, since
+        /// you can only resize 2 cols at the same time.
+        /// </summary>
+        /// <param name="leftHeaderWidth"></param>
+        /// <param name="rightHeaderWidth"></param>
+        /// <param name="leftColWidth"></param>
+        public void ChangeRelativeColumnWidths(double leftHeaderWidth, double rightHeaderWidth, int leftHeaderIndex)
+        {
+            var leftCol = _listColumns[leftHeaderIndex];
+            var rightCol = _listColumns[leftHeaderIndex + 1];
+            float sumRelativeWidths = leftCol.RelativeWidth + rightCol.RelativeWidth;
+            leftCol.RelativeWidth = (float)(leftHeaderWidth/(rightHeaderWidth + leftHeaderWidth)*sumRelativeWidths);
+            rightCol.RelativeWidth = (float)(rightHeaderWidth / (rightHeaderWidth + leftHeaderWidth) * sumRelativeWidths);
+        }
+
+        /// <summary>
         /// This method will select the row corresponding to the item passed in. This is what users will call when you 
         /// want to select an item in the list.
         /// </summary>
@@ -590,6 +606,24 @@ namespace NuSysApp
             RowSelected?.Invoke(rowToSelect.Item,
                 cell != null && rowToSelect != null ? _listColumns[rowToSelect.GetColumnIndex(cell)].Title : null);
             
+        }
+
+        /// <summary>
+        /// This function adds the sizeChange to the width of cell at leftColIndex, and subtracts sizeChange from cell at (leftColIndex + 1) width and adds sizeChanged to the position of the (leftColIndex + 1) cell
+        /// </summary>
+        /// <param name="leftColIndex"></param>
+        /// <param name="rightColIndex"></param>
+        /// <param name="distanceToMove"></param>
+        public void MoveBorderAfterCell(int leftColIndex, float sizeChange)
+        {
+            foreach (var child in _children)
+            {
+                var row = child as ListViewRowUIElement<T>;
+                if (row != null)
+                {
+                    row.MoveBorderAfterCell(leftColIndex, sizeChange);
+                }
+            }
         }
 
         /// <summary>
@@ -688,7 +722,7 @@ namespace NuSysApp
             //{
 
                 var cellVerticalOffset = BorderWidth;
-                foreach (var child in _children)
+                foreach (var child in _children.ToArray())
                 {
                     var row = child as ListViewRowUIElement<T>;
                     if (row == null)

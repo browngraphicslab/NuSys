@@ -134,7 +134,7 @@ namespace NuSysApp
         /// <summary>
         /// This is true when the shape is being dragged
         /// </summary>
-        private bool _beingDragged;
+        protected bool _beingDragged;
 
 
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
@@ -155,7 +155,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RectangleButtonUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void RectangleButtonUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _beingDragged = true;
             Dragging?.Invoke(this, pointer);
@@ -166,7 +166,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RectangleButtonUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void RectangleButtonUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // Fire the button's tapped event. 
             Tapped?.Invoke(this, pointer);
@@ -174,11 +174,10 @@ namespace NuSysApp
 
         /// <summary>
         /// Fired when the button is released. Changes the appearance of the button to reflect unselected appearance. Also fires the drag completed event if
-        /// you were dragging.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RectangleButtonUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void RectangleButtonUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // reset the Background and Bordercolor to the original colors
             Background = _orgBackground;
@@ -186,6 +185,7 @@ namespace NuSysApp
             if (_beingDragged)
             {
                 DragCompleted?.Invoke(this, pointer);
+                _beingDragged = false;
             }
         }
 
@@ -194,7 +194,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RectangleButtonUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void RectangleButtonUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // save the Background and Bordercolor to reset them when the button is no longer pressed
             _orgBackground = Background;
@@ -203,8 +203,6 @@ namespace NuSysApp
             // set the Background and Border to SelectedBackground and SelectedBorder if either of those is not null
             Background = SelectedBackground ?? Background;
             Bordercolor = SelectedBorder ?? Background;
-
-            
         }
 
         /// <summary>

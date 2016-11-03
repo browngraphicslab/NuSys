@@ -41,6 +41,19 @@ namespace NuSysApp
 
         private bool _headerBeingDragged;
 
+        public delegate void ResizeHeaderEventHandler(int colIndex, CanvasPointer pointer, ListViewHeaderItem<T>.Edge edgeBeingDragged);
+
+        /// <summary>
+        /// When left or right borders are dragged, this event will fire
+        /// </summary>
+        public event ResizeHeaderEventHandler HeaderResizing;
+
+        public delegate void ResizeHeaderCompletedEventHandler(double leftHeaderWidth, double rightHeaderWidth, int leftHeaderIndex);
+
+        /// <summary>
+        /// Once the dragging of the border has completed (pointer has been released) this event will fire.
+        /// </summary>
+        public event ResizeHeaderCompletedEventHandler HeaderResizeCompleted;
 
         /// <summary>
         /// store resource creator in instance variable so we can pass it to new textboxUIElement later
@@ -97,16 +110,6 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        /// Adds the necessary handlers to the header passed in
-        /// </summary>
-        /// <param name="header"></param>
-        public void AddHeaderHandlers(ListViewHeaderItem<T> header)
-        {
-            header.Tapped += Header_Tapped;
-            header.Dragging += Header_Dragged;
-            header.DragCompleted += Header_DragCompleted;
-        }
 
         /// <summary>
         /// When the header is released, fire the dragcompleted event 
@@ -209,7 +212,128 @@ namespace NuSysApp
             header.Tapped -= Header_Tapped;
             header.Dragged -= Header_Dragged;
             header.DragCompleted -= Header_DragCompleted;
+            header.HeaderResizing -= HeaderItemResizing;
+            header.HeaderResizeCompleted -= HeaderItemResizeCompleted;
         }
+        
+        /// <summary>
+        /// Adds the necessary handlers to the header passed in
+        /// </summary>
+        /// <param name="header"></param>
+        public void AddHeaderHandlers(ListViewHeaderItem<T> header)
+        {
+            header.Tapped += Header_Tapped;
+            header.Dragging += Header_Dragged;
+            header.DragCompleted += Header_DragCompleted;
+            header.HeaderResizing += HeaderItemResizing;
+            header.HeaderResizeCompleted += HeaderItemResizeCompleted;
+        }
+
+        /// <summary>
+        /// This function is called when the headerItem edge has stopped being dragged. This function figures out which of the two headers for the 
+        /// is the left header and fires the header resize completed event which the list view ui element container will be listening to
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="pointer"></param>
+        /// <param name="edgeBeingDragged"></param>
+        private void HeaderItemResizeCompleted(ListViewHeaderItem<T> header, CanvasPointer pointer, ListViewHeaderItem<T>.Edge edgeBeingDragged)
+        {
+            var col1Index = _children.IndexOf(header);
+            Debug.Assert(col1Index != -1);
+            if ((col1Index == 0 && edgeBeingDragged == ListViewHeaderItem<T>.Edge.Left) ||
+                (col1Index == _children.Count - 1 && edgeBeingDragged == ListViewHeaderItem<T>.Edge.Right))
+            {
+                return;
+            }
+
+            int col2Index;
+            if (edgeBeingDragged == ListViewHeaderItem<T>.Edge.Right)
+            {
+                col2Index = col1Index + 1;
+                var col1Header = _children[col1Index] as ListViewHeaderItem<T>;
+                Debug.Assert(col1Header != null);
+                var col2Header = _children[col2Index] as ListViewHeaderItem<T>;
+                Debug.Assert(col2Header != null);
+                HeaderResizeCompleted?.Invoke(col1Header.Width, col2Header.Width, col1Index);
+            }
+            else
+            {
+                col2Index = col1Index - 1;
+                var col1Header = _children[col1Index] as ListViewHeaderItem<T>;
+                Debug.Assert(col1Header != null);
+                var col2Header = _children[col2Index] as ListViewHeaderItem<T>;
+                Debug.Assert(col2Header != null);
+                HeaderResizeCompleted?.Invoke(col2Header.Width, col1Header.Width, col2Index);
+            }
+
+
+        }
+
+        /// <summary>
+        /// This function is called when the header item edge is currently being dragged. This adjusts the size of
+        ///  the headers accordingly and fires the headerresizing event which the listViewUIElementContainer will be listening
+        /// to so that it can adjust the size of the cells in the columns.
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="pointer"></param>
+        /// <param name="edgeBeingDragged"></param>
+        private void HeaderItemResizing(ListViewHeaderItem<T> header, CanvasPointer pointer, ListViewHeaderItem<T>.Edge edgeBeingDragged)
+        {
+            if (header == null)
+            {
+                return;
+            }
+            var index = _children.IndexOf(header);
+            if (index < 0 || index > _children.Count - 1)
+            {
+                return;
+            }
+            if ((index == 0 && edgeBeingDragged == ListViewHeaderItem<T>.Edge.Left) ||
+                (index == _children.Count - 1 && edgeBeingDragged == ListViewHeaderItem<T>.Edge.Right))
+            {
+                return;
+            }
+            var deltaX = pointer.DeltaSinceLastUpdate.X;
+            Debug.Assert(index != -1);
+            ListViewHeaderItem<T> left;
+            ListViewHeaderItem<T> right;
+
+            if (edgeBeingDragged == ListViewHeaderItem<T>.Edge.Right)
+            {
+                if (index + 1 < 0 || index + 1 > _children.Count - 1)
+                {
+                    return;
+                }
+                left = _children[index] as ListViewHeaderItem<T>;
+                right = _children[index + 1] as ListViewHeaderItem<T>;
+                Debug.Assert(left != null && right != null);
+            }
+            else
+            {
+                if (index - 1 < 0 || index - 1 > _children.Count - 1)
+                {
+                    return;
+                }
+                left = _children[index - 1] as ListViewHeaderItem<T>;
+                right = _children[index] as ListViewHeaderItem<T>;
+                Debug.Assert(left != null && right != null);
+            }
+            if (left.Width + deltaX < 10)
+            {
+                return;
+            }
+            if (right.Width - deltaX < 10)
+            {
+                return;
+            }
+            left.Width += deltaX;
+            right.Width -= deltaX;
+            right.Transform.LocalX += deltaX;
+            HeaderResizing?.Invoke(index, pointer, edgeBeingDragged);
+
+
+        }
+
 
         /// <summary>
         /// When a header is tapped this class will fire the header tapped event which the listview ui element container should be listening to

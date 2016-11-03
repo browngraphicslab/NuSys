@@ -25,22 +25,6 @@ namespace NuSysApp
             get { return _isSelected; }
         }
 
-        ///// <summary>
-        ///// event fired when the row is selected
-        ///// </summary>
-        ///// <param name="rowUIElement"></param>
-        ///// <param name="cell"></param>
-        //public delegate void SelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
-        //public event SelectedEventHandler Selected;
-
-        ///// <summary>
-        ///// event fired when row is deselected
-        ///// </summary>
-        ///// <param name="rowUIElement"></param>
-        ///// <param name="cell"></param>
-        //public delegate void DeSelectedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell);
-        //public event DeSelectedEventHandler Deselected;
-
         public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
         public event PointerReleasedEventHandler PointerReleased;
 
@@ -48,12 +32,7 @@ namespace NuSysApp
             ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
 
         public event DraggedEventHandler Dragged;
-
-        /// <summary>
-        /// These are the cells that will be placed on this row. The order is from left to right.
-        /// Index 0 is left most.
-        /// </summary>
-        //private List<RectangleUIElement> _cells;
+        
 
         public ListViewRowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T item) : base(parent, resourceCreator)
         {
@@ -203,6 +182,24 @@ namespace NuSysApp
         public override Task Load()
         {
             return base.Load();
+        }
+
+
+        /// <summary>
+        /// This function adds the sizeChange to the width of cell at leftColIndex, and subtracts sizeChange from cell at (leftColIndex + 1) width and adds sizeChanged to the position of the (leftColIndex + 1) cell
+        /// </summary>
+        /// <param name="leftColIndex"></param>
+        /// <param name="rightColIndex"></param>
+        /// <param name="distanceToMove"></param>
+        public void MoveBorderAfterCell(int leftColIndex, float sizeChange)
+        {
+            Debug.Assert(leftColIndex < _children.Count - 1);
+            var left = _children[leftColIndex] as RectangleUIElement;
+            var right = _children[leftColIndex + 1] as RectangleUIElement;
+            Debug.Assert(left != null && right != null);
+            left.Width += sizeChange;
+            right.Width -= sizeChange;
+            right.Transform.LocalX += sizeChange;
         }
 
         /// <summary>
