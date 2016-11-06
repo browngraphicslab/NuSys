@@ -16,7 +16,7 @@ namespace NuSysApp
         private DetailViewImageRegionContent _content;
 
         public DetailViewImageRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
-            ImageLibraryElementController controller) : base(parent, resourceCreator, controller)
+            ImageLibraryElementController controller) : base(parent, resourceCreator, controller, true)
         {
             // initialize the image rectangle and the _imageLayoutManager
             _content = new DetailViewImageRegionContent(this, Canvas, controller);

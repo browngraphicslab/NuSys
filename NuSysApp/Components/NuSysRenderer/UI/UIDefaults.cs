@@ -62,5 +62,6 @@ namespace NuSysApp
         public static float MediaPlayerScrubBarHeight = 100;
         public static float MediaPlayerButtonBarHeight = 50;
         public static Color ShadowColor = Color.FromArgb(50, 0, 0, 0);
+        public static Color AudioRegionColor = Color.FromArgb(125, 72, 182, 111);
     }
 }

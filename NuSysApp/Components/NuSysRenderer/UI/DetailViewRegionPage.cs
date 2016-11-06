@@ -64,13 +64,18 @@ namespace NuSysApp
         /// </summary>
         private StackLayoutManager _imageAnalysisLayoutManager;
 
-        protected DetailViewRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
+        private bool _supportsImageAnalysis;
+
+        protected DetailViewRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool supportsImageAnalysis) : base(parent, resourceCreator)
         {
             // set the controller properly
             _controller = controller;
 
             // initialize _contentLayoutManager
             _contentLayoutManager = new StackLayoutManager();
+
+            // set image analysis support
+            _supportsImageAnalysis = supportsImageAnalysis;
 
             // initialize the add region button and the _addRegionButtonLayoutManager
             _addRegionButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
@@ -89,13 +94,19 @@ namespace NuSysApp
             _addRegionUIElement.IsVisible = false;
             AddChild(_addRegionUIElement);
 
-            // initialize the layout manager for the analysis ui element
-            _imageAnalysisLayoutManager = new StackLayoutManager();
+            /// add the analysis stuff only if it is supported
+            if (_supportsImageAnalysis)
+            {
+                // initialize the layout manager for the analysis ui element
+                _imageAnalysisLayoutManager = new StackLayoutManager();
 
-            // initialize the analysis ui element
-            _analysisUIElement = new ImageAnalysisUIElement(this, resourceCreator, controller);
-            AddChild(_analysisUIElement);
-            _imageAnalysisLayoutManager.AddElement(_analysisUIElement);
+                // initialize the analysis ui element
+                _analysisUIElement = new ImageAnalysisUIElement(this, resourceCreator, controller);
+                AddChild(_analysisUIElement);
+                _imageAnalysisLayoutManager.AddElement(_analysisUIElement);
+            }
+
+
 
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
@@ -134,7 +145,12 @@ namespace NuSysApp
 
             _contentLayoutManager.Dispose();
             _addRegionButtonLayoutManager.Dispose();
-            _imageAnalysisLayoutManager.Dispose();
+
+            if (_supportsImageAnalysis)
+            {
+                _imageAnalysisLayoutManager.Dispose();
+            }
+
             base.Dispose();
         }
 
@@ -169,11 +185,16 @@ namespace NuSysApp
             _contentLayoutManager.TopMargin = 20;
             _contentLayoutManager.ArrangeItems(new Vector2(_addRegionButtonLayoutManager.Width, 0));
 
-            // set the image analysis
-            _imageAnalysisLayoutManager.SetSize(Width, Height - imageHeight);
-            _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, imageHeight));
+
+            if (_supportsImageAnalysis)
+            {
+                // set the image analysis
+                _imageAnalysisLayoutManager.SetSize(Width, Height - imageHeight);
+                _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
+                _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
+                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, imageHeight));
+            }
+
 
             base.Update(parentLocalToScreenTransform);
         }

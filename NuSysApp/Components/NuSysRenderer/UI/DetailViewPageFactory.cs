@@ -75,7 +75,7 @@ namespace NuSysApp
                             rectangle = new DetailViewPdfRegionPage(parent, resourceCreator, controller as PdfLibraryElementController);
                             break;
                         case NusysConstants.ElementType.Audio:
-                            rectangle = new BaseMediaPlayerUIElement(parent, resourceCreator, controller as AudioLibraryElementController);
+                            rectangle = new DetailViewAudioRegionPage(parent, resourceCreator, controller as AudioLibraryElementController);
                             break;
                         case NusysConstants.ElementType.Video:
                             rectangle = new BaseMediaPlayerUIElement(parent, resourceCreator, controller as AudioLibraryElementController);
