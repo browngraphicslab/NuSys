@@ -90,8 +90,10 @@ namespace NuSysApp
             get { return _linksController; }
         }
 
-        // Manages the focus of the render items, instantiated in constructor
-        public FocusManager FocusManager { get; set; }
+        public FocusManager FocusManager
+        {
+            get { return SessionView.FreeFormViewer.FocusManager; }
+        }
 
         public SpeechRecognizer Recognizer { get; set; }
 

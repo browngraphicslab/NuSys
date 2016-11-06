@@ -65,6 +65,9 @@ namespace NuSysApp
         private BaseRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
+        // Manages the focus of the render items, instantiated in constructor
+        public FocusManager FocusManager { get; private set; }
+
 
         public FreeFormViewer()
         {
@@ -77,7 +80,8 @@ namespace NuSysApp
 
             _renderRoot = new BaseRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
-     
+            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+
         }
 
         public void Clear()
@@ -177,6 +181,8 @@ namespace NuSysApp
                 _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
 
                 _collectionInteractionManager.Dispose();
+                //Remove focus from FocusManager
+                FocusManager.ClearFocus();
             }
 
             CurrentCollection = collection;
@@ -207,6 +213,12 @@ namespace NuSysApp
                 _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = false;
+            } else
+            {
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = true;
             }
 
             _collectionInteractionManager.RenderItemPressed += OnRenderItemPressed;

@@ -13,6 +13,8 @@ namespace NuSysApp
     /// </summary>
     public class FocusManager : IDisposable
     {
+        public Boolean InReadOnly { get; set; }
+
         // BaseRenderItem that is currently in focus
         public BaseRenderItem ActiveFocusElement { get; set; }
 
@@ -34,6 +36,8 @@ namespace NuSysApp
             Debug.Assert(cim != null);
             Debug.Assert(cre != null);
 
+            InReadOnly = false;
+
             _canvasInteractionManager = cim;
             _canvasRenderEngine = cre;
 
@@ -54,8 +58,11 @@ namespace NuSysApp
         /// <param name="pointer">Where the pointer was pressed</param>
         private void _canvasInteractionManager_PointerPressed(CanvasPointer pointer)
         {
-            BaseRenderItem curr = _canvasRenderEngine.GetRenderItemAt(pointer.CurrentPoint);
-            ChangeFocus(curr);
+            if (!InReadOnly)
+            {
+                BaseRenderItem curr = _canvasRenderEngine.GetRenderItemAt(pointer.CurrentPoint);
+                ChangeFocus(curr);
+            }
         }
 
         // Clears the focus of the current BaseRenderItem in focus
@@ -68,7 +75,7 @@ namespace NuSysApp
         // Changes the focus from the currently focused item to the one passed in. Sets this as the ActiveFocusElement
         public void ChangeFocus(BaseRenderItem newBaseRenderItem)
         {
-            if (newBaseRenderItem.IsFocusable)
+            if (!InReadOnly && newBaseRenderItem.IsFocusable)
             {
                 ActiveFocusElement?.LostFocus();
                 newBaseRenderItem.GotFocus();
