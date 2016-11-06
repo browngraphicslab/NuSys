@@ -665,7 +665,6 @@ namespace NuSysApp
                 _layoutWindow.DoLayout += _arrangeCallback;
                 _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
                 RenderEngine.Root.AddChild(_layoutWindow);
-                Selections[0].Parent.Transform.LocalPosition = new Vector2(0, 0);
             }
         }
 
@@ -673,16 +672,15 @@ namespace NuSysApp
         {
             if (Selections.Count == 0)
             {
-                //return;
+                return;
             }
 
-            float x = Selections[0].Transform.LocalX;
-            float y = Selections[0].Transform.LocalY;
+            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
+            Vector2 start = RenderEngine.ElementSelectionRect.Transform.LocalPosition + transform.Translation / transform.M11;
             // Do the layout
             foreach (var elementRenderItem in Selections)
             {
-                elementRenderItem.Transform.LocalPosition = new Vector2(0, 0);
-                //x += (float) elementRenderItem.Transform.Size.Width;
+                elementRenderItem.ViewModel.Controller.SetPosition(start.X, start.Y);
             }
         }
 
