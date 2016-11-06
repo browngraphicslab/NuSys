@@ -74,6 +74,7 @@ namespace NuSysApp
 
         public virtual void RemoveChild(BaseRenderItem child)
         {
+            child.Dispose();
             _children.Remove(child);
         }
 
@@ -85,11 +86,11 @@ namespace NuSysApp
         public virtual void ClearChildren()
         {
             var children = GetChildren();
-            _children.Clear();
             foreach (var child in children)
             {
                 child.Dispose();
             }
+            _children.Clear();
         }
 
         public virtual void SortChildren(Comparison<BaseRenderItem> comparison)

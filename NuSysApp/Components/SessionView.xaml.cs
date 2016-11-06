@@ -578,7 +578,7 @@ namespace NuSysApp
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
 
-            await xDetailViewer.ShowElement(viewable, tabToOpenTo);
+            FreeFormViewer.DetailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
 
         }
 

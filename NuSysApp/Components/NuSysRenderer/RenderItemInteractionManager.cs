@@ -48,7 +48,9 @@ namespace NuSysApp
         private void OnTranslated(CanvasPointer pointer, Vector2 point, Vector2 delta)
         {
             if (_isPressed && _hit != null)
+            {
                 _hit.OnDragged(pointer);
+            }
         }
 
         public override void Dispose()

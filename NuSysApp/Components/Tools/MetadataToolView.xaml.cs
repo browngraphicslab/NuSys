@@ -739,8 +739,8 @@ namespace NuSysApp
 
             button.Background = new SolidColorBrush(Colors.Orange);
             button.Content = "0 %";
-            button.HorizontalContentAlignment = HorizontalAlignment.Center;
-            button.VerticalContentAlignment = VerticalAlignment.Center;
+            button.HorizontalContentAlignment = Windows.UI.Xaml.HorizontalAlignment.Center;
+            button.VerticalContentAlignment = Windows.UI.Xaml.VerticalAlignment.Center;
 
             Task.Run(async delegate
             {

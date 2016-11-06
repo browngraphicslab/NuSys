@@ -215,7 +215,7 @@ namespace NuSysApp
             _curr.Height = 100;
             _marker.Height = 100;
             _marker.Width = 30;
-            _marker.HorizontalAlignment = HorizontalAlignment.Left;
+            _marker.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
             _curr.Fill = new SolidColorBrush(Color.FromArgb(1, 242, 242, 242));
             _marker.Stroke = new SolidColorBrush(Colors.LightSlateGray);
             _marker.Fill = new SolidColorBrush(Color.FromArgb(1, 242, 242, 242));

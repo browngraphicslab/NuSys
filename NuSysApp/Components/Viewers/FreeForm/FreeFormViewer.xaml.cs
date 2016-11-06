@@ -11,9 +11,11 @@ using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
 using Windows.UI;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
 
@@ -30,6 +32,7 @@ namespace NuSysApp
         private List<PointModel> _latestStroke;
         private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
+
         private FreeFormViewerViewModel _vm;
 
         private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
@@ -68,6 +71,7 @@ namespace NuSysApp
         // Manages the focus of the render items, instantiated in constructor
         public FocusManager FocusManager { get; private set; }
 
+        public DetailViewMainContainer DetailViewer { get; set; }
 
         public FreeFormViewer()
         {
@@ -115,9 +119,12 @@ namespace NuSysApp
             _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
+            // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
+            {
                 _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
-
+            }
+       
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -135,6 +142,17 @@ namespace NuSysApp
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
+
+            DetailViewer = new DetailViewMainContainer(_renderRoot, RenderCanvas)
+            {
+                Width = 500,
+                Height = 500
+            };
+
+            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
+
+            _renderRoot.AddChild(DetailViewer);
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
@@ -891,12 +909,14 @@ namespace NuSysApp
                 }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //SessionController.Instance.SessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //SessionController.Instance.SessionView.ShowDetailView(controller);
             }
 
         }
