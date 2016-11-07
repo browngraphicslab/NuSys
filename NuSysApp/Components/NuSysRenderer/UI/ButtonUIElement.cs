@@ -102,6 +102,11 @@ namespace NuSysApp
         public Color ButtonTextColor { get; set; }
 
         /// <summary>
+        /// The size of the text on the button
+        /// </summary>
+        public float ButtonTextSize { get; set; } = UIDefaults.ButtonTextSize;
+
+        /// <summary>
         /// The horizontal alignment of the text on the button
         /// </summary>
         public CanvasHorizontalAlignment ButtonTextHorizontalAlignment;
@@ -210,7 +215,8 @@ namespace NuSysApp
                     VerticalAlignment = ButtonTextVerticalAlignment,
                     WordWrapping = CanvasWordWrapping.NoWrap,
                     TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
+                    FontSize = ButtonTextSize
                 };
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
@@ -222,6 +228,8 @@ namespace NuSysApp
 
             ds.Transform = orgTransform;
         }
+
+        
 
         protected override void DrawBorder(CanvasDrawingSession ds)
         {

@@ -72,6 +72,12 @@ namespace NuSysApp
         /// <param name="libraryElementModelId"></param>
         public void ShowLibraryElement(string libraryElementModelId)
         {
+            // if we are already showing the library elment model that was selected then just return
+            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId)
+            {
+                return;
+            }
+
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
 

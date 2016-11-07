@@ -91,8 +91,6 @@ namespace NuSysApp
 
             // initialize the add region ui element
             _addRegionUIElement = new AddRegionPublicPrivateUIElement(this, resourceCreator);
-            _addRegionUIElement.IsVisible = false;
-            AddChild(_addRegionUIElement);
 
             /// add the analysis stuff only if it is supported
             if (_supportsImageAnalysis)
@@ -119,7 +117,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void AddRegionButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
         {
-            _addRegionUIElement.IsVisible = true;
+            AddChild(_addRegionUIElement);
             _addRegionUIElement.OnRegionAdded += OnRegionAdded;
         }
 
@@ -130,7 +128,7 @@ namespace NuSysApp
         private void OnRegionAdded(NusysConstants.AccessType access)
         {
             _addRegionUIElement.OnRegionAdded -= OnRegionAdded;
-            _addRegionUIElement.IsVisible = false;
+            RemoveChild(_addRegionUIElement);
             AddRegion(access);
         }
 

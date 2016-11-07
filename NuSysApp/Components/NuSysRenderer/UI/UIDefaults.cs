@@ -67,5 +67,6 @@ namespace NuSysApp
         public static Color AudioResizerHandleColor = Colors.SlateGray;
         public static float AudioResizerConnectingLineWidth = 5;
         public static Color AudioRegionMaskColor = Color.FromArgb(160, 0, 0, 0);
+        public static float ButtonTextSize = 14;
     }
 }

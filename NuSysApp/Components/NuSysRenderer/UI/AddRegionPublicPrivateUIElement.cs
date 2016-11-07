@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -44,7 +45,8 @@ namespace NuSysApp
         {
             // set default ui values
             Background = Colors.AliceBlue;
-            Bordercolor = Colors.LightGray;
+            Bordercolor = Colors.DarkGray;
+            BorderWidth = 2;
 
             // initialize the layout manager
             _buttonLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
@@ -53,7 +55,7 @@ namespace NuSysApp
             // initialize the private button
             _addPrivateButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
             {
-                ButtonText = "Add Private"
+                ButtonText = "Add Private",
             };
             InitializeButtonValues(_addPrivateButton);
             AddChild(_addPrivateButton);
@@ -96,6 +98,8 @@ namespace NuSysApp
             button.Width = 100;
             button.ButtonTextColor = Colors.WhiteSmoke;
             button.Background = Colors.DarkSlateGray;
+            button.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+            button.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
         }
 
         public override void Dispose()
@@ -111,7 +115,8 @@ namespace NuSysApp
             _buttonLayoutManager.SetSize(Width, Height);
             _buttonLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _buttonLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _buttonLayoutManager.Spacing = 20;
+            _buttonLayoutManager.SetMargins(10);
+            _buttonLayoutManager.Spacing = 5;
             _buttonLayoutManager.ArrangeItems();
 
             base.Update(parentLocalToScreenTransform);
