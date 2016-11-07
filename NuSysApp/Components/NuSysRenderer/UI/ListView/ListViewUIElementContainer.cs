@@ -178,7 +178,9 @@ namespace NuSysApp
             get { return ListView.RowBorderThickness; }
             set { ListView.RowBorderThickness = value; }
         }
-        
+
+        //popup for adding/removing columns
+        private FlyoutPopup _columnMenu;
 
         public ListViewUIElementContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -194,6 +196,14 @@ namespace NuSysApp
             _header.HeaderDragCompleted += Header_HeaderDragCompleted;
             _header.HeaderTapped += Header_HeaderTapped;
             ShowHeader = true;
+
+            _columnMenu = new FlyoutPopup(this, resourceCreator);
+            _columnMenu.IsVisible = false;
+            _columnMenu.Width = this.Width/4;
+            _columnMenu.Height = 200;
+            _columnMenu.Background = Colors.White;
+            _columnMenu.BorderWidth = 1;
+            _columnMenu.Bordercolor = Constants.color2;
         }
 
         private void Header_HeaderDragCompleted(ButtonUIElement header, int colIndex, CanvasPointer pointer)

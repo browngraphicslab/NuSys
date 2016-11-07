@@ -73,7 +73,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ListViewHeaderItem_RightPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void Dispose()

@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
 using Windows.UI.Xaml.Media;
+using MyToolkit.UI;
 
 namespace NuSysApp
 {
@@ -30,6 +31,8 @@ namespace NuSysApp
         public delegate void PointerWheelHandler(CanvasPointer pointer, float delta);
         public delegate void TranslateHandler(CanvasPointer pointer, Vector2 point, Vector2 delta );
         public delegate void PanZoomHandler(Vector2 center, Vector2 deltaTranslation, float deltaZoom);
+        
+
         public event TranslateHandler Translated;
         public event PanZoomHandler PanZoomed;
         public event MarkingMenuPointerReleasedHandler AllPointersReleased;
@@ -41,7 +44,10 @@ namespace NuSysApp
         public event PointerPressedHandler ItemDoubleTapped;
         public event PointerWheelHandler PointerWheelChanged;
         public event TwoPointerPressedHandler TwoPointerPressed;
-        public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
+       public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
+
+        public delegate void ScreenPointerPressedHandler(CanvasPointer pointer);
+       public event ScreenPointerPressedHandler ScreenPointerPressed;
 
         private CanvasPointer _lastTappedPointer = new CanvasPointer();
         private Vector2 _centerPoint;
@@ -63,10 +69,10 @@ namespace NuSysApp
             _canvas.PointerCaptureLost += CanvasOnPointerExited;
             _canvas.PointerCanceled += CanvasOnPointerExited;
             _canvas.PointerExited += CanvasOnPointerExited;
+            
             AllPointersReleased += OnAllPointersReleased;
             SetEnabled(true);
         }
-
 
         public virtual void Dispose()
        {
@@ -124,6 +130,7 @@ namespace NuSysApp
             if (!_isEnabled)
                 return;
             OnPointerTouchPressed(sender, args);
+            ScreenPointerPressed?.Invoke(new CanvasPointer(args.GetCurrentPoint(_canvas)));
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
@@ -259,5 +266,20 @@ namespace NuSysApp
             }
            
         }
+
+        ///// <summary>
+        ///// adds handler for when a popup is opened. this only gets added when there is a popup present, and should 
+        ///// get disposed of immediately after the popup is hidden.
+        ///// 
+        ///// this should be called by whatever is opening the popup.
+        ///// </summary>
+        ///// <param name="pointer"></param>
+        //public void PopupOpened(PopupUIElement popup)
+        //{
+        //    ClosePopup += CanvasInteractionManager_ClosePopup;
+        //    _popups.Add(popup);
+        //}
+
+
     }
 }

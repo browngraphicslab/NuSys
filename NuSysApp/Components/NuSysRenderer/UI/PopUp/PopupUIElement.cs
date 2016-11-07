@@ -22,6 +22,11 @@ namespace NuSysApp
         /// </summary>
         private bool _dismissable;
 
+        public bool Dismissable
+        {
+            get { return _dismissable; }
+        }
+
         private string _dismissText;
         /// <summary>
         /// if there is a dismiss button, use this to set the text of the button
@@ -64,6 +69,33 @@ namespace NuSysApp
             _dismissable = true;
             _parent = null;
             _dismissText = "";
+
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed +=
+                CanvasInteractionManager_ClosePopup;
+        }
+
+        /// <summary>
+        /// this closes the popup if the pointer is not within the popup's bounds, and disposes of the handler for close popup.
+        /// </summary>
+        /// <param name="pointer"></param>
+        /// <param name="popup"></param>
+        private void CanvasInteractionManager_ClosePopup(CanvasPointer pointer)
+        {
+            var hittest = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
+            if (hittest != this && _dismissable)
+            {
+                DismissPopup();
+            }
+            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed -=
+            //    CanvasInteractionManager_ClosePopup;
+        }
+
+        /// <summary>
+        /// shows popup. usually triggered by some sort of action.
+        /// </summary>
+        public void ShowPopup()
+        {
+            this.IsVisible = true;
         }
 
         /// <summary>
@@ -73,7 +105,7 @@ namespace NuSysApp
         /// </summary>
         public void DismissPopup()
         {
-            throw new NotImplementedException();
+            this.IsVisible = false;
         }
 
         /// <summary>
@@ -153,6 +185,8 @@ namespace NuSysApp
             {
                 _dismissButton.Tapped -= DismissButton_OnTapped;
             }
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed -=
+                CanvasInteractionManager_ClosePopup;
             base.Dispose(); 
         }
     }
