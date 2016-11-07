@@ -71,7 +71,10 @@ namespace NuSysApp
             _volumeButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
             AddChild(_volumeButton);
 
-            _volumeSlider = new SliderUIElement(this, resourceCreator, 0, 100);
+            _volumeSlider = new SliderUIElement(this, resourceCreator, 0, 100)
+            {
+                IsTooltipEnabled = false
+            };
             AddChild(_volumeSlider);
 
             _currTimeAndDurationDisplay = new TextboxUIElement(this, resourceCreator);

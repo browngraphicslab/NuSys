@@ -70,6 +70,41 @@ namespace NuSysApp
         public event OnRegionMovedHandler OnRegionMoved;
 
         /// <summary>
+        /// Handler for the on region selected event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="deltaX"></param>
+        public delegate void OnRegionSelectedHandler(AudioRegionRenderItem sender);
+
+        /// <summary>
+        /// The event fired when the region is selected
+        /// </summary>
+        public event OnRegionSelectedHandler OnRegionSelected;
+
+        /// <summary>
+        /// Handler for the on region unselected event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="deltaX"></param>
+        public delegate void OnRegionUnSelectedHandler(AudioRegionRenderItem sender);
+
+        /// <summary>
+        /// The event fired when the region is selected
+        /// </summary>
+        public event OnRegionSelectedHandler OnRegionUnselected;
+
+        /// <summary>
+        /// The handler for the on region resized event
+        /// </summary>
+        /// <param name="sneder"></param>
+        public delegate void OnRegionManualResizedHandler(AudioRegionRenderItem sender);
+
+        /// <summary>
+        /// The event fired when the region is resized manually
+        /// </summary>
+        public event OnRegionManualResizedHandler OnRegionManualResize;
+
+        /// <summary>
         /// The AudioLibraryElementModel associated with this region
         /// </summary>
         public AudioLibraryElementModel LibraryElementModel => _controller.AudioLibraryElementModel;
@@ -77,12 +112,12 @@ namespace NuSysApp
         /// <summary>
         /// the resizer handle on the left of the audio region
         /// </summary>
-        private AudioRegionResizeUIElement _leftResizer;
+        private AudioRegionResizerUIElement _leftResizer;
 
         /// <summary>
         /// the resizer handle on the right of the audio region
         /// </summary>
-        private AudioRegionResizeUIElement _rightResizer;
+        private AudioRegionResizerUIElement _rightResizer;
 
         public AudioRegionRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, double normalizedCropStart, double normalizedCropDuration, double totalWidth ) : base(parent, resourceCreator)
         {
@@ -93,11 +128,15 @@ namespace NuSysApp
             _controller = controller;
 
             // Add the resizers and handlers
-            _leftResizer = new AudioRegionResizeUIElement(this, Canvas);
+            _leftResizer = new AudioRegionResizerUIElement(this, Canvas);
             _leftResizer.Dragged += OnResizerDragged;
+            _leftResizer.Pressed += OnResizerPressed;
+            _leftResizer.Released += OnResizerReleased;
             AddChild(_leftResizer);
-            _rightResizer = new AudioRegionResizeUIElement(this, Canvas);
+            _rightResizer = new AudioRegionResizerUIElement(this, Canvas);
             _rightResizer.Dragged += OnResizerDragged;
+            _rightResizer.Pressed += OnResizerPressed;
+            _rightResizer.Released += OnResizerReleased;
             AddChild(_rightResizer);
 
 
@@ -117,6 +156,48 @@ namespace NuSysApp
             // add events for when the region is dragged
             Dragged += RegionOnDragged;
             DoubleTapped += RegionOnDoubleTapped;
+            Pressed += RegionOnPressed;
+            Released += RegionOnReleased;
+        }
+
+        /// <summary>
+        /// Fired whenver the region resizer is released, deselects the region
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnResizerReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            RegionOnReleased(item, pointer);
+        }
+
+        /// <summary>
+        /// fired whenver the region resizer is pressed, selects the region
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnResizerPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            RegionOnPressed(item, pointer);
+        }
+
+        /// <summary>
+        /// Fired whenver the region is released, unselected the region
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void RegionOnReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            OnRegionUnselected?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Fired whenever the region is pressed, selects the region
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void RegionOnPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            OnRegionSelected?.Invoke(this);
         }
 
         /// <summary>
@@ -157,6 +238,9 @@ namespace NuSysApp
             {
                 _controller.SetDuration(currNormDurr + normalizedDelta);
             }
+
+            //The region has been resized so invoke the event
+            OnRegionManualResize?.Invoke(this);
         }
 
         private void RegionOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -174,6 +258,12 @@ namespace NuSysApp
             _leftResizer.Dragged -= OnResizerDragged;
             _rightResizer.Dragged -= OnResizerDragged;
             Dragged -= RegionOnDragged;
+            Pressed -= RegionOnPressed;
+            Released -= RegionOnReleased;
+            _leftResizer.Pressed -= OnResizerPressed;
+            _leftResizer.Released -= OnResizerReleased;
+            _rightResizer.Pressed -= OnResizerPressed;
+            _rightResizer.Released -= OnResizerReleased;
 
             base.Dispose();
         }

@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    class AudioRegionResizeUIElement : InteractiveBaseRenderItem
+    class AudioRegionResizerUIElement : InteractiveBaseRenderItem
     {
         /// <summary>
         /// The top ball used to resize the audio region
@@ -31,7 +31,7 @@ namespace NuSysApp
         /// </summary>
         public float Height;
 
-        public AudioRegionResizeUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public AudioRegionResizerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // initialize all the geometries
             _connectingLine = new RectangleUIElement(this, resourceCreator);
@@ -47,7 +47,40 @@ namespace NuSysApp
             // add dragging event handlers
             _topHandle.Dragged += HandleDragged;
             _botHandle.Dragged += HandleDragged;
+            _connectingLine.Dragged += HandleDragged;
 
+            // add pressed event handlers
+            _topHandle.Pressed += HandleSelected;
+            _botHandle.Pressed += HandleSelected;
+            _connectingLine.Pressed += HandleSelected;
+
+            // add released event handlers
+            _topHandle.Released += HandleUnselected;
+            _botHandle.Released += HandleUnselected;
+            _connectingLine.Released += HandleUnselected;
+
+
+        }
+
+        /// <summary>
+        /// Called whenever the handle is selected
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void HandleSelected(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            OnPressed(pointer);
+        }
+
+
+        /// <summary>
+        /// Called whenever the handle is unsleected
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void HandleUnselected(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            OnReleased(pointer);
         }
 
         /// <summary>
@@ -58,6 +91,15 @@ namespace NuSysApp
 
             _topHandle.Dragged -= HandleDragged;
             _botHandle.Dragged -= HandleDragged;
+            _connectingLine.Dragged -= HandleDragged;
+
+            _topHandle.Pressed -= HandleSelected;
+            _botHandle.Pressed -= HandleSelected;
+            _connectingLine.Pressed -= HandleSelected;
+
+            _topHandle.Released -= HandleUnselected;
+            _botHandle.Released -= HandleUnselected;
+            _connectingLine.Released -= HandleUnselected;
 
             base.Dispose();
         }

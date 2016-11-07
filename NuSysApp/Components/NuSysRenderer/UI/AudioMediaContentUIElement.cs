@@ -10,6 +10,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Effects;
+using Microsoft.Graphics.Canvas.Geometry;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -34,6 +35,23 @@ namespace NuSysApp
         /// True if we need to rerender
         /// </summary>
         private bool _reRender;
+
+        /// <summary>
+        /// The currently selected region
+        /// </summary>
+        private AudioRegionRenderItem _activeRegion;
+
+        /// <summary>
+        /// True if we need to refresh the crop mask, the dark rectangle around the active region
+        /// </summary>
+        private bool _refreshMask;
+
+        /// <summary>
+        /// The mask use to darken the background around the active region
+        /// </summary>
+        private CanvasGeometry _mask;
+
+        private Color _maskColor = UIDefaults.AudioRegionMaskColor;
 
         public override float Width
         {
@@ -94,6 +112,9 @@ namespace NuSysApp
             ComputeRegions();
         }
 
+        /// <summary>
+        /// Rerenders the image if the size of the region has changed
+        /// </summary>
         protected void ReRender()
         {
             // we cannot render while the image is loading
@@ -112,7 +133,7 @@ namespace NuSysApp
 
             Image = croppy;
 
-            //ComputeRegions();
+            UpdateRegionBounds();
 
         }
 
@@ -136,6 +157,16 @@ namespace NuSysApp
             ReRender();
         }
 
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            base.Draw(ds);
+            if (_mask == null) return; // only draw the mask if it isn't null
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+            ds.FillGeometry(_mask, _maskColor);
+            ds.Transform = orgTransform;
+        }
+
         public override void Dispose()
         {
             UITask.Run(() =>
@@ -156,6 +187,10 @@ namespace NuSysApp
                 var region = child as AudioRegionRenderItem;
                 if (region == null) continue;
                 region.OnRegionMoved -= RegionOnRegionMoved;
+                region.OnRegionSelected -= RegionOnRegionSelected;
+                region.OnRegionUnselected -= RegionOnRegionUnselected;
+                region.OnRegionManualResize -= RegionOnRegionManualResize;
+
             }
             base.Dispose();
         }
@@ -237,6 +272,12 @@ namespace NuSysApp
                 _updateRegions = false;
             }
 
+            if (_refreshMask)
+            {
+                ComputeMask();
+                _refreshMask = false;
+            }
+
             if (float.IsNaN(_currentShadowPosition))
             {
                 _currentShadowPosition = 0;
@@ -253,12 +294,52 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
+        /// <summary>
+        /// Computes the mask for the audio regions
+        /// </summary>
+        private void ComputeMask()
+        {
+            // if there is no active region there is no mask so just return
+            if (_activeRegion == null)
+            {
+                _mask = null;
+                return;
+            }
+            
+
+            // otherwise calculate the mask based off the active region
+            var fullRect = CanvasGeometry.CreateRectangle(Canvas, 0, 0, Width, Height);
+            var activeRect = CanvasGeometry.CreateRectangle(Canvas, _activeRegion.Transform.LocalX,
+                _activeRegion.Transform.LocalY, _activeRegion.Width, _activeRegion.Height);
+            _mask = fullRect.CombineWith(activeRect, Matrix3x2.Identity, CanvasGeometryCombine.Xor);
+
+        }
+
+        /// <summary>
+        /// Gets the normalized position of the audio being played. for example if we were 1/3 of the way through the audio region
+        /// this would return .33 If the audio had finished and had reached the end of the region this would return 1
+        /// </summary>
+        /// <returns></returns>
         private float GetShadowPosition()
         {
             var startTime = (float)(_mediaElement.Position.TotalMilliseconds - _controller.AudioLibraryElementModel.NormalizedStartTime * _durationInMillis);
             var endTime = (float)(startTime + _controller.AudioLibraryElementModel.NormalizedDuration * _durationInMillis);
             var duration = endTime - startTime;
             return startTime / duration;
+        }
+
+        /// <summary>
+        /// Call this to update the widths of the regions, basically when the current region being displayed changes start time or duration.
+        /// should probably only be called in rerender
+        /// </summary>
+        protected void UpdateRegionBounds()
+        {
+            var children = GetChildren();
+            foreach (var child in children)
+            {
+                var region = child as AudioRegionRenderItem;
+                region?.UpdateAudioRegionBounds(_controller.AudioLibraryElementModel.NormalizedStartTime, _controller.AudioLibraryElementModel.NormalizedDuration, Width);
+            }
         }
 
         protected virtual void ComputeRegions()
@@ -270,6 +351,10 @@ namespace NuSysApp
                 var region = child as AudioRegionRenderItem;
                 if (region == null) continue;
                 region.OnRegionMoved -= RegionOnRegionMoved;
+                region.OnRegionSelected -= RegionOnRegionSelected;
+                region.OnRegionUnselected -= RegionOnRegionUnselected;
+                region.OnRegionManualResize -= RegionOnRegionManualResize;
+
                 RemoveChild(region);
             }
 
@@ -287,7 +372,11 @@ namespace NuSysApp
                 {
                     Height = Height // set the hight to the height of the content
                 };
-                region.OnRegionMoved += RegionOnRegionMoved;
+                region.OnRegionMoved += RegionOnRegionMoved; // if you add region events here remove them earlier in this method and in the dispose event
+                region.OnRegionSelected += RegionOnRegionSelected;
+                region.OnRegionUnselected += RegionOnRegionUnselected;
+                region.OnRegionManualResize += RegionOnRegionManualResize;
+
                 AddChild(region);
             }
 
@@ -307,6 +396,36 @@ namespace NuSysApp
                 var areaB = b.GetLocalBounds();
                 return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? -1 : 1;
             });
+        }
+
+        /// <summary>
+        /// When a region is resized manually we need to refresh the mask
+        /// </summary>
+        /// <param name="sender"></param>
+        private void RegionOnRegionManualResize(AudioRegionRenderItem sender)
+        {
+            _refreshMask = true;
+        }
+
+        /// <summary>
+        /// Fired whenever a region is unselected
+        /// </summary>
+        /// <param name="sender"></param>
+        private void RegionOnRegionUnselected(AudioRegionRenderItem sender)
+        {
+            _activeRegion = null;
+            _refreshMask = true;
+        }
+
+        /// <summary>
+        /// Fired whenever a region is selected
+        /// </summary>
+        /// <param name="sender"></param>
+        private void RegionOnRegionSelected(AudioRegionRenderItem sender)
+        {
+            _activeRegion = sender;
+            _refreshMask = true;
+
         }
 
         private void RegionOnRegionMoved(AudioRegionRenderItem region, float deltax)
@@ -341,6 +460,9 @@ namespace NuSysApp
 
             // set the start time based on the calculated start time
             controller.SetStartTime(newRegionStart);
+
+            // since the region being dragged is the one we are masking, we must reset the mask
+            _refreshMask = true;
         }
     }
 }
