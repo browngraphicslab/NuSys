@@ -149,11 +149,10 @@ namespace NuSysApp
                 Height = 500,
                 Width = 300
             };
-            
+            listView.ShowHeader = false;
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                 100);
-            listView.AddItems(
-                SessionController.Instance.ContentController.ContentValues.ToList());
+
             listView.RowBorderThickness = 1;
             listView.RowDragged += ListView_RowDragged;
             listView.RowDragCompleted += ListView_RowDragCompleted;
@@ -176,7 +175,11 @@ namespace NuSysApp
             listView.AddColumns(new List<ListColumn<LibraryElementModel>>() {listColumn, listColumn2, listColumn3});
             listView.RemoveColumn("Last Edited Timestamp");
             listView.AddColumn(listColumn3);
-            
+
+
+            listView.AddItems(
+    SessionController.Instance.ContentController.ContentValues.ToList());
+
             rect = new RectangleUIElement(_renderRoot, RenderCanvas);
             rect.Width = 100;
             rect.Height = 100;

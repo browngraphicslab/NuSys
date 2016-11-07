@@ -169,7 +169,7 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// This function is called when the cell ui element has been pressed.
+        /// This method is called when the cell ui element has been pressed.
         /// </summary>
         private void Cell_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {

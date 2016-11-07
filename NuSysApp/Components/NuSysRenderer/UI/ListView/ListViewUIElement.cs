@@ -70,7 +70,7 @@ namespace NuSysApp
         /// <summary>
         /// A hashset of the selected rows
         /// </summary>
-        private HashSet<ListViewRowUIElement<T>> _selectedElements;
+        private HashSet<T> _selectedElements;
 
         /// <summary>
         /// A clipping rectangle the size of the list view
@@ -136,6 +136,7 @@ namespace NuSysApp
             }
         }
         
+        public List<ListViewRowUIElement<T>> DrawableRows { set; get; }
         public List<ListColumn<T>> ListColumns
         {
             get { return _listColumns; }   
@@ -171,22 +172,23 @@ namespace NuSysApp
             MultipleSelections = false;
             BorderWidth = 0;
             //RowBorderThickness = 5;
+            DrawableRows = new List<ListViewRowUIElement<T>>();
             RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
-            //_listViewRowUIElements = new List<ListViewRowUIElement<T>>();
-            _selectedElements = new HashSet<ListViewRowUIElement<T>>();
+            _selectedElements = new HashSet<T>();
+
         }
-        
+
+
 
         /// <summary>
         /// This method will populate the list view using the functions of the columns and the item source.
         /// </summary>
         public void PopulateListView()
         {
-            //_listViewRowUIElements.Clear();
             ClearChildren();
             _selectedElements.Clear();
-            CreateListViewRowUIElements(_itemsSource);
+            CreateListViewRowUIElements();
         }
 
         /// <summary>
@@ -204,22 +206,25 @@ namespace NuSysApp
             //Add items to the item source
             _itemsSource.AddRange(itemsToAdd);
 
-            CreateListViewRowUIElements(itemsToAdd);
+            CreateListViewRowUIElements();
+            //CreateListViewRowUIElements(itemsToAdd);
         }
 
-        /// <summary>
-        /// This simply creates new list view row ui elements for each of the 
-        /// items passed in.
-        /// </summary>
-        /// <param name="itemsToCreateRow"></param>
-        private void CreateListViewRowUIElements(List<T> itemsToCreateRow)
+        private void CreateListViewRowUIElements()
         {
-            foreach (var itemSource in itemsToCreateRow)
+            Debug.Assert(_itemsSource != null);
+
+            //Clear the rows.
+            DrawableRows.Clear();
+
+            //Number of rows needed to cover the screen at all times
+            var numberOfRows = (int) Math.Ceiling(Height / RowHeight) + 1;
+
+            //Creates the row UI elements and adds them to the list.
+            var startingList = _itemsSource.GetRange(0, numberOfRows);
+
+            foreach (var itemSource in startingList)
             {
-                if (itemSource == null)
-                {
-                    continue;
-                }
                 var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                 listViewRowUIElement.Item = itemSource;
                 listViewRowUIElement.Background = Colors.White;
@@ -228,16 +233,14 @@ namespace NuSysApp
                 listViewRowUIElement.Width = Width - BorderWidth * 2;
                 listViewRowUIElement.Height = RowHeight;
                 PopulateListRow(listViewRowUIElement);
-                //_listViewRowUIElements.Add(listViewRowUIElement);
-                //listViewRowUIElement.Selected += ListViewRowUIElement_Selected;
-                //listViewRowUIElement.Deselected += ListViewRowUIElement_Deselected;
                 listViewRowUIElement.PointerReleased += ListViewRowUIElement_PointerReleased;
                 listViewRowUIElement.Dragged += ListViewRowUIElement_Dragged;
                 listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
-                _children.Add(listViewRowUIElement);
-
+                DrawableRows.Add(listViewRowUIElement);
             }
+
         }
+
 
         private void ListViewRowUIElement_PointerWheelChanged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta)
         {
@@ -269,15 +272,39 @@ namespace NuSysApp
         /// </summary>
         private void RepopulateExistingListRows()
         {
-            foreach (var child in _children)
+            if (ScrollBar == null)
             {
-                var row = child as ListViewRowUIElement<T>;
+                return;
+            }
+            var startIndex = (int) Math.Floor(ScrollBar.Position * _itemsSource.Count);
+            var items = _itemsSource.ToArray();
+            
+            foreach (var row in DrawableRows)
+            {
                 if (row == null)
                 {
                     continue;
                 }
-                row.Width = Width - BorderWidth * 2;
 
+                var index = startIndex + DrawableRows.IndexOf(row);
+                //Accounts for the last, empty row.
+                if (index == _itemsSource.Count)
+                {
+                    continue;
+                }
+                row.Item = items[index];
+
+                if (_selectedElements.Contains(row.Item))
+                {
+                    row.Select();
+                }
+                else
+                {
+                    row.Deselect();
+                }
+
+                row.Width = Width - BorderWidth * 2;
+                
                 row.RemoveAllCells();
                 PopulateListRow(row);
             }
@@ -428,7 +455,7 @@ namespace NuSysApp
                 return false;
             });
             //Do I also need to remove handlers here?
-            _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row.Item));
+            _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
         }
 
         /// <summary>
@@ -531,7 +558,7 @@ namespace NuSysApp
                 return;
             }
             var rowToSelect = _children.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
-            SelectRow(rowToSelect);
+            //SelectRow(rowToSelect);
             
         }
 
@@ -548,16 +575,11 @@ namespace NuSysApp
             }
             if (MultipleSelections == false)
             {
-                foreach (var selectedRow in _selectedElements)
-                {
-                    selectedRow.Deselect();
-                }
                 _selectedElements.Clear();
             }
-            rowToSelect.Select();
-            _selectedElements.Add(rowToSelect);
-            RowSelected?.Invoke(rowToSelect.Item,
-                cell != null && rowToSelect != null ? _listColumns[rowToSelect.GetColumnIndex(cell)].Title : null);
+            //rowToSelect.Select();
+            _selectedElements.Add(rowToSelect.Item);
+            //RowSelected?.Invoke(rowToSelect.Item, cell != null && rowToSelect != null ? _listColumns[rowToSelect.GetColumnIndex(cell)].Title : null);
             
         }
 
@@ -573,8 +595,11 @@ namespace NuSysApp
                 Debug.Write("Trying to deselect a null item idiot");
                 return;
             }
-            var rowToDeselect = _selectedElements.First(row => row.Item.Equals(item));
-            DeselectRow(rowToDeselect);
+            if (_selectedElements.Contains(item))
+            {
+                _selectedElements.Remove(item);
+
+            }
         }
 
         /// <summary>
@@ -588,8 +613,7 @@ namespace NuSysApp
                 Debug.Write("Could not find the row corresponding to the item you with to deselect");
                 return;
             }
-            rowToDeselect.Deselect();
-            _selectedElements.Remove(rowToDeselect);
+            _selectedElements.Remove(rowToDeselect.Item);
         }
 
         /// <summary>
@@ -630,7 +654,7 @@ namespace NuSysApp
         /// </summary>
         public IEnumerable<T> GetSelectedItems()
         {
-            return _selectedElements.Select(row => row.Item);
+            return _selectedElements;
         }
 
         public override void ScrollBarPositionChanged(object source, double position)
@@ -642,7 +666,11 @@ namespace NuSysApp
         {
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
-
+            RepopulateExistingListRows();
+            foreach (var row in DrawableRows.ToArray())
+            {
+                row?.Update(parentLocalToScreenTransform);
+            }
             base.Update(parentLocalToScreenTransform);
         }
 
@@ -652,42 +680,40 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             //Is this necessary?
-            //ds.Transform = Transform.LocalToScreenMatrix;
+            ds.Transform = Transform.LocalToScreenMatrix;
 
             //Clipping in this way does not work...
             using (ds.CreateLayer(1f, _clippingRect))
             {
-
                 var cellVerticalOffset = BorderWidth;
-                foreach (var child in _children)
+
+                foreach (var row in DrawableRows.ToArray())
                 {
-                    var row = child as ListViewRowUIElement<T>;
-                    if (row == null)
-                    {
-                        continue;
-                    }
-
-                    
                     //Position is the position of the bottom of the row
-                    var position = cellVerticalOffset - _scrollOffset + RowHeight;
+                    var position = cellVerticalOffset - _scrollOffset%RowHeight + RowHeight;
+                    row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset - (_scrollOffset% RowHeight));
+                    row.Draw(ds);
 
-                    //Set visibility based on if the row is at all visible.
-                    if (position > 0 && position < Height + RowHeight)
-                    {
-                        row.IsVisible = true;
-                    }
-                    else
-                    {
-                        row.IsVisible = false;
-                    }
-                    row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset - _scrollOffset);
                     cellVerticalOffset += row.Height;
-   
                 }
+
             }
             ds.Transform = orgTransform;
 
 
+        }
+
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
+        {
+            foreach(var row in DrawableRows)
+            {
+                var ht = row.HitTest(screenPoint);
+                if (ht != null)
+                {
+                    return ht;
+                }
+            }
+            return base.HitTest(screenPoint);
         }
 
     }
