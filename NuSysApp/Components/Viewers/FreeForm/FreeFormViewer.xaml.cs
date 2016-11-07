@@ -715,7 +715,7 @@ namespace NuSysApp
                         maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
                         if (i % rows == rows - 1)
                         {
-                            nextPosition.Y = (float)(nextPosition.Y + maxHeight + elementRenderItem.ViewModel.Height);
+                            nextPosition.Y = (float)(nextPosition.Y + 35.0f + maxHeight);
                             nextPosition.X = start.X;
                             maxHeight = 0.0f;
                         }
