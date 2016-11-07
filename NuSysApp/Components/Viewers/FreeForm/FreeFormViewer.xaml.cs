@@ -670,17 +670,62 @@ namespace NuSysApp
 
         private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
         {
-            if (Selections.Count == 0)
+            Collection<ElementRenderItem> LocalSelections = new Collection<ElementRenderItem>(Selections);
+            ObservableCollection<ElementRenderItem> SortedSelections = new ObservableCollection<ElementRenderItem>();
+
+            if (sorting == LayoutSorting.Title)
+            {
+                foreach (var e in LocalSelections.OrderBy(n => n.ViewModel.Model.Title))
+                {
+                    SortedSelections.Add(e);
+                }
+            }
+
+            if (LocalSelections.Count <= 1)
             {
                 return;
             }
 
             var transform = RenderEngine.GetCollectionTransform(InitialCollection);
-            Vector2 start = RenderEngine.ElementSelectionRect.Transform.LocalPosition + transform.Translation / transform.M11;
+            Vector2 start = -transform.Translation / transform.M11;
+            start = new Vector2(float.MaxValue, float.MaxValue);
+
             // Do the layout
-            foreach (var elementRenderItem in Selections)
+            foreach (var elementRenderItem in LocalSelections)
             {
-                elementRenderItem.ViewModel.Controller.SetPosition(start.X, start.Y);
+                start = new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, start.X), (float) Math.Min(elementRenderItem.ViewModel.Y, start.Y));
+            }
+
+            Vector2 nextPosition = start;
+            int rows = (int) Math.Round(Math.Sqrt(SortedSelections.Count));
+            int i = 0;
+            foreach (var elementRenderItem in SortedSelections)
+            {
+                elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
+                switch (style)
+                {
+                    case LayoutStyle.Horizontal:
+                        nextPosition.X = (float)(nextPosition.X + 25.0f + elementRenderItem.ViewModel.Width);
+                        break;
+                    case LayoutStyle.Vertical:
+                        nextPosition.Y = (float)(nextPosition.Y + 25.0f + elementRenderItem.ViewModel.Height);
+                        break;
+                    case LayoutStyle.Grid:
+                        if (i % rows == rows - 1)
+                        {
+                            nextPosition.Y = (float)(nextPosition.Y + 25.0f + elementRenderItem.ViewModel.Height);
+                            nextPosition.X = start.X;
+                        }
+                        else
+                        {
+                            nextPosition.X = (float)(nextPosition.X + 25.0f + elementRenderItem.ViewModel.Width);
+                        }
+
+                        i++;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 

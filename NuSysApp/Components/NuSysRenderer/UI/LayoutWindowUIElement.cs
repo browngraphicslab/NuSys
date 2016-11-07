@@ -127,6 +127,8 @@ namespace NuSysApp
 
             ResetButtonColors();
 
+            _horizontalLayoutButton.Background = Colors.LightGray;
+
             // labels
             _arrangeByLabel = new TextboxUIElement(this, resourceCreator);
             _arrangeByLabel.Text = ARRANGE_BY_TEXT;
