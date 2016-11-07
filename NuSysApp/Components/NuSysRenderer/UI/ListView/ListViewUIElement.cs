@@ -136,7 +136,7 @@ namespace NuSysApp
             }
         }
         
-        public List<ListViewRowUIElement<T>> DrawableRows { set; get; }
+        public List<ListViewRowUIElement<T>> Rows { set; get; }
         public List<ListColumn<T>> ListColumns
         {
             get { return _listColumns; }   
@@ -172,23 +172,11 @@ namespace NuSysApp
             MultipleSelections = false;
             BorderWidth = 0;
             //RowBorderThickness = 5;
-            DrawableRows = new List<ListViewRowUIElement<T>>();
+            Rows = new List<ListViewRowUIElement<T>>();
             RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
 
-        }
-
-
-
-        /// <summary>
-        /// This method will populate the list view using the functions of the columns and the item source.
-        /// </summary>
-        public void PopulateListView()
-        {
-            ClearChildren();
-            _selectedElements.Clear();
-            CreateListViewRowUIElements();
         }
 
         /// <summary>
@@ -205,25 +193,41 @@ namespace NuSysApp
             }
             //Add items to the item source
             _itemsSource.AddRange(itemsToAdd);
-
+            //Make RowUIElements
             CreateListViewRowUIElements();
-            //CreateListViewRowUIElements(itemsToAdd);
         }
 
+        /// <summary>
+        /// Method that creates the ListViewRowUIElements necessary to cover the screen. 
+        /// 
+        /// This should be called somewhere in the constructor, as well as whenever the number of
+        /// rows necessary to cover the screen changes (e.g., height changes)
+        /// </summary>
         private void CreateListViewRowUIElements()
         {
             Debug.Assert(_itemsSource != null);
 
+            //Remove handlers of rows
+            foreach(var row in Rows)
+            {
+                RemoveRowHandlers(row);
+            }
             //Clear the rows.
-            DrawableRows.Clear();
+            Rows.Clear();
+
+
+            var position = (ScrollBar == null) ? 0 : ScrollBar.Position; 
+            var startIndex = (int)Math.Floor(position * _itemsSource.Count);
+            var items = _itemsSource.ToArray();
 
             //Number of rows needed to cover the screen at all times
             var numberOfRows = (int) Math.Ceiling(Height / RowHeight) + 1;
 
+            
             //Creates the row UI elements and adds them to the list.
-            var startingList = _itemsSource.GetRange(0, numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
 
-            foreach (var itemSource in startingList)
+            foreach (var itemSource in rowList)
             {
                 var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                 listViewRowUIElement.Item = itemSource;
@@ -236,7 +240,7 @@ namespace NuSysApp
                 listViewRowUIElement.PointerReleased += ListViewRowUIElement_PointerReleased;
                 listViewRowUIElement.Dragged += ListViewRowUIElement_Dragged;
                 listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
-                DrawableRows.Add(listViewRowUIElement);
+                Rows.Add(listViewRowUIElement);
             }
 
         }
@@ -258,9 +262,8 @@ namespace NuSysApp
         /// </summary>
         private void UpdateRowBorder()
         {
-            foreach (var child in _children)
+            foreach (var row in Rows)
             {
-                var row = child as ListViewRowUIElement<T>;
                 Debug.Assert(row != null);
                 row.BorderWidth = RowBorderThickness;
             }
@@ -279,19 +282,20 @@ namespace NuSysApp
             var startIndex = (int) Math.Floor(ScrollBar.Position * _itemsSource.Count);
             var items = _itemsSource.ToArray();
             
-            foreach (var row in DrawableRows)
+            foreach (var row in Rows)
             {
                 if (row == null)
                 {
                     continue;
                 }
 
-                var index = startIndex + DrawableRows.IndexOf(row);
+                var index = startIndex + Rows.IndexOf(row);
                 //Accounts for the last, empty row.
                 if (index == _itemsSource.Count)
                 {
                     continue;
                 }
+
                 row.Item = items[index];
 
                 if (_selectedElements.Contains(row.Item))
@@ -363,18 +367,20 @@ namespace NuSysApp
 
         private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
         {
-            if (rowUIElement.IsSelected)
-            {
-                DeselectRow(rowUIElement);
-            }
-            else
-            {
-                SelectRow(rowUIElement);
-            }
             if (_isDragging)
             {
                 RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[rowUIElement.GetColumnIndex(cell)].Title, pointer);
                 _isDragging = false;
+            }else
+            {
+                if (rowUIElement.IsSelected)
+                {
+                    DeselectRow(rowUIElement);
+                }
+                else
+                {
+                    SelectRow(rowUIElement);
+                }
             }
         }
         
@@ -437,23 +443,7 @@ namespace NuSysApp
                 return;
             }
             _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
-            //var rowsToRemove = _children.Where(row => row is ListViewRowUIElement<T> && itemsToRemove.Contains((row as ListViewRowUIElement<T>).Item));
-            //foreach (ListViewRowUIElement<T> row in rowsToRemove)
-            //{
-            //    RemoveRowHandlers(row);
-            //    //row.Selected -= ListViewRowUIElement_Selected;
-            //    //row.Deselected -= ListViewRowUIElement_Deselected;
-            //}
-            _children.RemoveAll(delegate(BaseRenderItem item)
-            {
-                var cell = item as ListViewRowUIElement<T>;
-                if (cell != null && itemsToRemove.Contains(cell.Item))
-                {
-                    RemoveRowHandlers(cell);
-                    return true;
-                }
-                return false;
-            });
+
             //Do I also need to remove handlers here?
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
         }
@@ -557,7 +547,7 @@ namespace NuSysApp
                 Debug.Write("Trying to select a null item idiot");
                 return;
             }
-            var rowToSelect = _children.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
+            var rowToSelect = Rows.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
             //SelectRow(rowToSelect);
             
         }
@@ -631,13 +621,8 @@ namespace NuSysApp
             }
             bool AIndexIsLast = false;
             bool BIndexIsLast = false;
-            foreach (var child in _children)
+            foreach (var row in Rows)
             {
-                var row = child as ListViewRowUIElement<T>;
-                if (row == null)
-                {
-                    continue;
-                }
                 row.SwapCell(columnAIndex, columnBIndex);
             }
 
@@ -667,7 +652,7 @@ namespace NuSysApp
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             RepopulateExistingListRows();
-            foreach (var row in DrawableRows.ToArray())
+            foreach (var row in Rows.ToArray())
             {
                 row?.Update(parentLocalToScreenTransform);
             }
@@ -687,7 +672,7 @@ namespace NuSysApp
             {
                 var cellVerticalOffset = BorderWidth;
 
-                foreach (var row in DrawableRows.ToArray())
+                foreach (var row in Rows.ToArray())
                 {
                     //Position is the position of the bottom of the row
                     var position = cellVerticalOffset - _scrollOffset%RowHeight + RowHeight;
@@ -705,7 +690,7 @@ namespace NuSysApp
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
-            foreach(var row in DrawableRows)
+            foreach(var row in Rows)
             {
                 var ht = row.HitTest(screenPoint);
                 if (ht != null)

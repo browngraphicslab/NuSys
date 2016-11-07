@@ -187,9 +187,10 @@ namespace NuSysApp
             {
                 return;
             }
-
-            //TODO: If point is not on the slide bar, go to that point with the scroll velocity
-
+            var newPosition = currentPoint.Y / Height;
+            Position = (newPosition + Range > 1) ? 1 - Range : newPosition;
+            //Sets the position to the point you clicked.
+            ScrollBarPositionChanged?.Invoke(this, newPosition);
 
         }
 

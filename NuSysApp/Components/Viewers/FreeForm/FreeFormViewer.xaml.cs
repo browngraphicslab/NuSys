@@ -149,7 +149,7 @@ namespace NuSysApp
                 Height = 500,
                 Width = 300
             };
-            listView.ShowHeader = false;
+            listView.ShowHeader = true;
             listView.Transform.LocalPosition = new Vector2((float) (SessionController.Instance.ScreenWidth/2),
                 100);
 
