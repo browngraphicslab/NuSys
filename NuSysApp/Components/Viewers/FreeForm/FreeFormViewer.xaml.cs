@@ -699,28 +699,30 @@ namespace NuSysApp
             Vector2 nextPosition = start;
             int rows = (int) Math.Round(Math.Sqrt(SortedSelections.Count));
             int i = 0;
+            float maxHeight = 0;
             foreach (var elementRenderItem in SortedSelections)
             {
                 elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
                 switch (style)
                 {
                     case LayoutStyle.Horizontal:
-                        nextPosition.X = (float)(nextPosition.X + 25.0f + elementRenderItem.ViewModel.Width);
+                        nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
                         break;
                     case LayoutStyle.Vertical:
-                        nextPosition.Y = (float)(nextPosition.Y + 25.0f + elementRenderItem.ViewModel.Height);
+                        nextPosition.Y = (float)(nextPosition.Y + 35.0f + elementRenderItem.ViewModel.Height);
                         break;
                     case LayoutStyle.Grid:
+                        maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
                         if (i % rows == rows - 1)
                         {
-                            nextPosition.Y = (float)(nextPosition.Y + 25.0f + elementRenderItem.ViewModel.Height);
+                            nextPosition.Y = (float)(nextPosition.Y + maxHeight + elementRenderItem.ViewModel.Height);
                             nextPosition.X = start.X;
+                            maxHeight = 0.0f;
                         }
                         else
                         {
-                            nextPosition.X = (float)(nextPosition.X + 25.0f + elementRenderItem.ViewModel.Width);
+                            nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
                         }
-
                         i++;
                         break;
                     default:
