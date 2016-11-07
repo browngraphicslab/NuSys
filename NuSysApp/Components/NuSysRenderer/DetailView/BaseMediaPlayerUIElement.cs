@@ -60,6 +60,7 @@ namespace NuSysApp
         private double _durationInMillis;
 
         private AudioLibraryElementController _controller;
+        private float _mediaContentPaddingToScrubBar = 10;
 
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -95,24 +96,36 @@ namespace NuSysApp
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, VideoLibraryElementController controller) : this(parent, resourceCreator)
         {
             _controller = controller;
-            InitializeMediaElement(controller);
 
-            _scrubBar = new ScrubBarUIElement(this, resourceCreator, controller, _mediaElement);
-            AddChild(_scrubBar);
+            UITask.Run(() =>
+            {
+                InitializeMediaElement(controller);
+
+                _scrubBar = new ScrubBarUIElement(this, resourceCreator, controller, _mediaElement);
+                AddChild(_scrubBar);
+
+            });
+
         }
 
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller) : this(parent, resourceCreator)
         {
             _controller = controller;
-            InitializeMediaElement(controller);
+
+            UITask.Run(() =>
+            {
+                InitializeMediaElement(controller);
 
 
-            _mediaContent = new AudioMediaContentUIElement(this, resourceCreator, controller, _mediaElement);
-            AddChild(_mediaContent);
+                _mediaContent = new AudioMediaContentUIElement(this, resourceCreator, controller, _mediaElement);
+                AddChild(_mediaContent);
 
 
-            _scrubBar = new ScrubBarUIElement(this, resourceCreator, controller, _mediaElement);
-            AddChild(_scrubBar);
+                _scrubBar = new ScrubBarUIElement(this, resourceCreator, controller, _mediaElement);
+                AddChild(_scrubBar);
+
+            });
+
         }
 
         public void InitializeMediaElement(AudioLibraryElementController controller)
@@ -124,6 +137,7 @@ namespace NuSysApp
             AddMediaElementToVisualTree(_mediaElement);
 
             _mediaElement.MediaOpened += OnMediaElementOpened;
+
         }
 
         private void OnMediaElementOpened(object sender, RoutedEventArgs e)
@@ -214,8 +228,13 @@ namespace NuSysApp
             _playPauseButton.Tapped -= _playPauseButton_Tapped;
             _volumeButton.Tapped -= OnVolumeButtonTapped;
             _volumeSlider.OnSliderMoved -= VolumeSliderOnSliderMoved;
-            _mediaElement.MediaOpened -= OnMediaElementOpened;
-            RemoveMediaElementFromVisualTree(_mediaElement);
+
+            UITask.Run(() =>
+            {
+                _mediaElement.MediaOpened -= OnMediaElementOpened;
+                RemoveMediaElementFromVisualTree(_mediaElement);
+            });
+
             base.Dispose();
         }
 
@@ -321,7 +340,7 @@ namespace NuSysApp
             _scrubBar.Transform.LocalPosition = new Vector2(0, Height - _buttonsBarHeight - _scubBarHeight);
 
             _mediaContent.Width = Width;
-            _mediaContent.Height = Height - _buttonsBarHeight - _scubBarHeight;
+            _mediaContent.Height = Height - _buttonsBarHeight - _scubBarHeight - _mediaContentPaddingToScrubBar;
             
 
 

@@ -574,7 +574,11 @@ namespace NuSysApp
             });
         }
 
-
+        /// <summary>
+        /// Takes in the library element controller of whatever you want to show in the detail view. (this is the current method)
+        /// </summary>
+        /// <param name="viewable"></param>
+        /// <param name="tabToOpenTo"></param>
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
 

@@ -18,6 +18,10 @@ namespace NuSysApp
         /// The multiplier of the parent regions scale to fit the full width of the audio player
         /// </summary>
         private double _scaleMultiplier;
+
+        /// <summary>
+        /// controller for this region
+        /// </summary>
         private AudioLibraryElementController _controller;
 
         /// <summary>
@@ -36,9 +40,22 @@ namespace NuSysApp
         private double _totalWidth;
 
         /// <summary>
+        /// boolean helper for whether or not the region is modifiable
+        /// </summary>
+        private bool _isModifiable;
+
+        /// <summary>
         /// True if the region can be resized or interacted with, false if it can only be displayed
         /// </summary>
-        public bool IsModifiable { get; set; } //todo set isVisible on resizer based on this value, and isHitTestVisible
+        public bool IsModifiable
+        {
+            get { return _isModifiable; }
+            set
+            {
+                _isModifiable = value;
+                IsVisible = _isModifiable;
+            }
+        }
 
         /// <summary>
         /// Handler for the on region moved event. sender is the audio region render item that was moved, deltaX is the distance it was moved in on screen coordinates
@@ -57,6 +74,16 @@ namespace NuSysApp
         /// </summary>
         public AudioLibraryElementModel LibraryElementModel => _controller.AudioLibraryElementModel;
 
+        /// <summary>
+        /// the resizer handle on the left of the audio region
+        /// </summary>
+        private AudioRegionResizeUIElement _leftResizer;
+
+        /// <summary>
+        /// the resizer handle on the right of the audio region
+        /// </summary>
+        private AudioRegionResizeUIElement _rightResizer;
+
         public AudioRegionRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, double normalizedCropStart, double normalizedCropDuration, double totalWidth ) : base(parent, resourceCreator)
         {
             // set all the class variables, do this first since methods rely on them later
@@ -64,6 +91,15 @@ namespace NuSysApp
             _normalizedCropDuration = normalizedCropDuration;
             _totalWidth = totalWidth;
             _controller = controller;
+
+            // Add the resizers and handlers
+            _leftResizer = new AudioRegionResizeUIElement(this, Canvas);
+            _leftResizer.Dragged += OnResizerDragged;
+            AddChild(_leftResizer);
+            _rightResizer = new AudioRegionResizeUIElement(this, Canvas);
+            _rightResizer.Dragged += OnResizerDragged;
+            AddChild(_rightResizer);
+
 
             // the region is only modifiable if it is fully contained by the parent
             IsModifiable = IsFullyContained(_normalizedCropStart, _normalizedCropDuration);
@@ -80,8 +116,48 @@ namespace NuSysApp
 
             // add events for when the region is dragged
             Dragged += RegionOnDragged;
+            DoubleTapped += RegionOnDoubleTapped;
         }
 
+        /// <summary>
+        /// Show the region in the detail view  when it is double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void RegionOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionView.ShowDetailView(_controller);
+        }
+
+        /// <summary>
+        /// Called whenever one of the resizers is dragged
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnResizerDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // get the normalized delta for the region
+            var normalizedDelta = pointer.DeltaSinceLastUpdate.X/_totalWidth * _normalizedCropDuration;
+
+            // get the curr normalized start and duration for the region
+            var currNormStartTime = _controller.AudioLibraryElementModel.NormalizedStartTime;
+            var currNormDurr = _controller.AudioLibraryElementModel.NormalizedDuration;
+
+            // set the new start and duration based on which resizer was dragged
+            if (item == _leftResizer)
+            {
+                var newStartTime = currNormStartTime + normalizedDelta;
+                if (newStartTime > _normalizedCropStart)
+                {
+                    _controller.SetStartTime(currNormStartTime + normalizedDelta);
+                    _controller.SetDuration(currNormDurr - normalizedDelta);
+                }
+
+            } else if (item == _rightResizer)
+            {
+                _controller.SetDuration(currNormDurr + normalizedDelta);
+            }
+        }
 
         private void RegionOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
@@ -95,7 +171,9 @@ namespace NuSysApp
         {
             _controller.TimeChanged -= ControllerOnStartTimeChanged;
             _controller.DurationChanged -= ControllerOnDurationChanged; //todo why is this unpredictable?????
-            Dragged += RegionOnDragged;
+            _leftResizer.Dragged -= OnResizerDragged;
+            _rightResizer.Dragged -= OnResizerDragged;
+            Dragged -= RegionOnDragged;
 
             base.Dispose();
         }
@@ -137,15 +215,13 @@ namespace NuSysApp
             _totalWidth = totalWidth;
 
             // set the width based on duration times scale
-            Width = (float) (_controller.AudioLibraryElementModel.NormalizedDuration*_scaleMultiplier);
+            Width = (float) (_controller.AudioLibraryElementModel.NormalizedDuration * _scaleMultiplier);
 
             // figure out how much the parent start is offset from the base content start
-            var parentOffsetX = normalizedCropStart*_scaleMultiplier;
+            var parentOffsetX = (_controller.AudioLibraryElementModel.NormalizedStartTime - normalizedCropStart) * _scaleMultiplier;
 
             // set the offset based on startTime times scale. but subtract the offset from the base content start
-            Transform.LocalPosition =
-                new Vector2((float) (_controller.AudioLibraryElementModel.NormalizedStartTime*_scaleMultiplier - parentOffsetX),
-                    Transform.LocalPosition.Y);
+            Transform.LocalPosition = new Vector2((float) parentOffsetX , Transform.LocalPosition.Y);
 
            // check to see if the region is still modifiable i.e. fully contained in the parent
             IsModifiable = IsFullyContained(_normalizedCropStart, _normalizedCropDuration);
@@ -172,12 +248,20 @@ namespace NuSysApp
                 // then it is fully contained
                 return true;
             }
-            else
-            {
-                // otherwise it is not
-                return false;
-            }
+            // otherwise it is not
+            return false;
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            // offset the right resizer to the right side of the rectangle
+            _rightResizer.Transform.LocalPosition = new Vector2(Width, 0);
+
+            // set the resizer heights to the height of the rectangle
+            _leftResizer.Height = Height;
+            _rightResizer.Height = Height;
+
+            base.Update(parentLocalToScreenTransform);
+        }
     }
 }

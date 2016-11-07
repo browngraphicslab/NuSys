@@ -100,7 +100,6 @@ namespace NuSysApp
         private float _scrubberPosition = UIDefaults.ScrubberPosition;
 
         private double _durationInMillis;
-        private double _startTimeInMillis;
         private AudioLibraryElementController _controller;
 
         /// <summary>
@@ -153,8 +152,6 @@ namespace NuSysApp
         private void MediaElementOnMediaOpened(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _durationInMillis = _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-            _startTimeInMillis = _controller.AudioLibraryElementModel.NormalizedStartTime *
-                                 _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
         }
 
 
@@ -183,7 +180,10 @@ namespace NuSysApp
             _scrubberBar.Dragged -= OnScrubberDragged;
             _backgroundRect.Tapped -= OnScrubberTapped;
             _highlightRect.Tapped -= OnScrubberTapped;
-            _mediaElement.MediaOpened -= MediaElementOnMediaOpened;
+            UITask.Run(() =>
+            {
+                _mediaElement.MediaOpened -= MediaElementOnMediaOpened;
+            });
         }
 
         /// <summary>
@@ -236,22 +236,17 @@ namespace NuSysApp
             // set the scrubber position based on the current position of the media player
             UITask.Run(() =>
             {
-                ScrubberPosition = (float)_mediaElement.Position.TotalMilliseconds /
-                                  (float)_mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                ScrubberPosition = GetScrubberPosition();
 
             });
-
-            if (float.IsNaN(ScrubberPosition))
-            {
-                return;
-            }
 
             // get helper values for setting the offsets and position of elements
             var scrubberHeight = Height * 2 / 3;
             var scrubberVerticalOffset = (Height - scrubberHeight) / 2;
 
             // set the highlighted portion of the scrubber so that it is to the left of the scrubbar
-            _highlightRect.Width = Math.Max(0, Math.Min(ScrubberPosition, 1))*Width;
+            var w = Math.Max(0, Math.Min(ScrubberPosition, 1))*Width;
+            _highlightRect.Width = float.IsNaN(w) ? 0 : w; // check for isNan because ui task threading for scrubber position
             _highlightRect.Height = scrubberHeight;
             _highlightRect.Transform.LocalPosition = new Vector2(0, scrubberVerticalOffset);
 
@@ -269,12 +264,27 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Gets the position of the scrubber
+        /// </summary>
+        /// <returns></returns>
+        private float GetScrubberPosition()
+        {
+            var startTime = (float) (_mediaElement.Position.TotalMilliseconds - _controller.AudioLibraryElementModel.NormalizedStartTime* _durationInMillis);
+            var endTime = (float)(startTime+  _controller.AudioLibraryElementModel.NormalizedDuration * _durationInMillis);
+            var duration = endTime - startTime;
+            return startTime/duration;
+        }
+
+        /// <summary>
         /// Sets the media element to the current scrub position
         /// </summary>
         /// <param name="mediaElement"></param>
         private void SetMediaElementToCurrentScrubPosition(MediaElement mediaElement)
         {
-            var currPositionInMilliSeconds = _durationInMillis * ScrubberPosition + _startTimeInMillis;
+            var startTime = (float)(_controller.AudioLibraryElementModel.NormalizedStartTime * _durationInMillis);
+            var endTime = (float)(startTime + _controller.AudioLibraryElementModel.NormalizedDuration * _durationInMillis);
+            var duration = endTime - startTime;
+            var currPositionInMilliSeconds = duration * ScrubberPosition + startTime;
             var ts = new TimeSpan(0,0,0,0, (int) currPositionInMilliSeconds);
             mediaElement.Position = ts;
         }

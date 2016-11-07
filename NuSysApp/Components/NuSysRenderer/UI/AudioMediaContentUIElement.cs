@@ -5,9 +5,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Effects;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -22,7 +24,29 @@ namespace NuSysApp
         private Color _shadowColor = UIDefaults.ShadowColor;
         private float _currentShadowPosition;
         private double _durationInMillis;
-        private double _startTimeInMillis;
+
+        /// <summary>
+        /// True if we we need to update the regions
+        /// </summary>
+        private bool _updateRegions;
+
+        /// <summary>
+        /// True if we need to rerender
+        /// </summary>
+        private bool _reRender;
+
+        public override float Width
+        {
+            get { return base.Width; }
+            set
+            {
+                if (Math.Abs(base.Width - value) > .001)
+                {
+                    _updateRegions = true;
+                }
+                base.Width = value;
+            }
+        }
 
         public AudioMediaContentUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, MediaElement mediaElement) : base(parent, resourceCreator)
         {
@@ -70,6 +94,28 @@ namespace NuSysApp
             ComputeRegions();
         }
 
+        protected void ReRender()
+        {
+            // we cannot render while the image is loading
+            if (_isLoading) return;
+
+            var croppy = new CropEffect()
+            {
+                Source = _audioWaveImage
+            };
+
+            var lib = (_controller.LibraryElementModel as AudioLibraryElementModel);
+            var x = lib.NormalizedStartTime* _audioWaveImage.Size.Width;
+            var w = lib.NormalizedDuration * _audioWaveImage.Size.Width;
+
+            croppy.SourceRectangle = new Rect(x, 0, w, _audioWaveImage.Size.Height);
+
+            Image = croppy;
+
+            //ComputeRegions();
+
+        }
+
         /// <summary>
         /// Fired whenever the duration of this audio element changes
         /// </summary>
@@ -77,7 +123,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void OnDurationChanged(object sender, double e)
         {
-            throw new NotImplementedException();
+            ReRender();
         }
 
         /// <summary>
@@ -87,25 +133,28 @@ namespace NuSysApp
         /// <param name="start"></param>
         private void OnStartTimeChanged(object sender, double start)
         {
-            throw new NotImplementedException();
+            ReRender();
         }
 
         public override void Dispose()
         {
-            _mediaElement.MediaOpened -= MediaElementOnMediaOpened;
+            UITask.Run(() =>
+            {
+                _mediaElement.MediaOpened -= MediaElementOnMediaOpened;
+            });
             Tapped -= AudioMediaContentUIElement_Tapped;
             Dragged -= AudioMediaContentUIElement_Dragged;
-            _controller.TimeChanged += OnStartTimeChanged;
-            _controller.DurationChanged += OnDurationChanged;
+            _controller.TimeChanged -= OnStartTimeChanged;
+            _controller.DurationChanged -= OnDurationChanged; //todo find out why this is unpredictable
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded += OnRegionRemoved;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved += OnRegionAdded;
+            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= OnRegionRemoved;
+            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= OnRegionAdded;
 
             var children = GetChildren();
             foreach (var child in children)
             {
                 var region = child as AudioRegionRenderItem;
-                Debug.Assert(region != null);
+                if (region == null) continue;
                 region.OnRegionMoved -= RegionOnRegionMoved;
             }
             base.Dispose();
@@ -114,8 +163,6 @@ namespace NuSysApp
         private void MediaElementOnMediaOpened(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _durationInMillis = _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-            _startTimeInMillis = _controller.AudioLibraryElementModel.NormalizedStartTime *
-                                 _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
         }
 
         private void AudioMediaContentUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -124,14 +171,21 @@ namespace NuSysApp
             _currentShadowPosition = currPoint.X / Width;
             UITask.Run(() =>
             {
-                SetMediaElementToCurrentScrubPosition(_mediaElement);
+                SetMediaElementToCurrentShadowPosition(_mediaElement);
 
             });
         }
 
-        private void SetMediaElementToCurrentScrubPosition(MediaElement mediaElement)
+        /// <summary>
+        /// Set the Media Element to the current shadow position
+        /// </summary>
+        /// <param name="mediaElement"></param>
+        private void SetMediaElementToCurrentShadowPosition(MediaElement mediaElement)
         {
-            var currPositionInMilliSeconds = _durationInMillis * _currentShadowPosition + _startTimeInMillis;
+            var startTime = (float)(_controller.AudioLibraryElementModel.NormalizedStartTime * _durationInMillis);
+            var endTime = (float)(startTime + _controller.AudioLibraryElementModel.NormalizedDuration * _durationInMillis);
+            var duration = endTime - startTime;
+            var currPositionInMilliSeconds = duration * _currentShadowPosition + startTime;
             var ts = new TimeSpan(0, 0, 0, 0, (int)currPositionInMilliSeconds);
             mediaElement.Position = ts;
         }
@@ -143,7 +197,7 @@ namespace NuSysApp
 
             UITask.Run(() =>
             {
-                SetMediaElementToCurrentScrubPosition(_mediaElement);
+                SetMediaElementToCurrentShadowPosition(_mediaElement);
 
             });
         }
@@ -159,6 +213,7 @@ namespace NuSysApp
             Image = _audioWaveImage;
             _isLoading = false;
 
+            ReRender();
             base.Load();
         }
 
@@ -172,21 +227,38 @@ namespace NuSysApp
             // set the scrubber position based on the current position of the media player
             UITask.Run(() =>
             {
-                _currentShadowPosition = (float)_mediaElement.Position.TotalMilliseconds /
-                                  (float)_mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                _currentShadowPosition = GetShadowPosition();
 
             });
 
-            if (float.IsNaN(_currentShadowPosition))
+            if (_updateRegions)
             {
-                return;
+                ComputeRegions();
+                _updateRegions = false;
             }
 
-            _shadowRect.Width = Math.Min(1, Math.Max(_currentShadowPosition, 0))*Width;
+            if (float.IsNaN(_currentShadowPosition))
+            {
+                _currentShadowPosition = 0;
+                _shadowRect.Width = 0;
+            }
+            else
+            {
+                _shadowRect.Width = Math.Min(1, Math.Max(_currentShadowPosition, 0)) * Width;
+            }
+            
             _shadowRect.Height = Height;
 
 
             base.Update(parentLocalToScreenTransform);
+        }
+
+        private float GetShadowPosition()
+        {
+            var startTime = (float)(_mediaElement.Position.TotalMilliseconds - _controller.AudioLibraryElementModel.NormalizedStartTime * _durationInMillis);
+            var endTime = (float)(startTime + _controller.AudioLibraryElementModel.NormalizedDuration * _durationInMillis);
+            var duration = endTime - startTime;
+            return startTime / duration;
         }
 
         protected virtual void ComputeRegions()
@@ -198,19 +270,20 @@ namespace NuSysApp
                 var region = child as AudioRegionRenderItem;
                 if (region == null) continue;
                 region.OnRegionMoved -= RegionOnRegionMoved;
-                region.Dispose();
                 RemoveChild(region);
             }
 
             // get all the other library elment models that are assoicated with this content data model
             var others = SessionController.Instance.ContentController.AllLibraryElementModels.Where(l => l.ContentDataModelId == _controller.ContentDataController.ContentDataModel.ContentId).Cast<AudioLibraryElementModel>();
-            others = others.Where(l => l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId);
+            others = others.Where(l => l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId); // dont include this audio library element
 
             // for each library elmeent model instantiate a new region
             foreach (var l in others)
             {
-                var region = new AudioRegionRenderItem(this, Canvas, _controller, l.NormalizedStartTime,
-                    l.NormalizedDuration, Width)
+                var regionController = SessionController.Instance.ContentController.GetLibraryElementController(l.LibraryElementId) as AudioLibraryElementController;
+                Debug.Assert(regionController != null);
+                var region = new AudioRegionRenderItem(this, Canvas, regionController, _controller.AudioLibraryElementModel.NormalizedStartTime,
+                    _controller.AudioLibraryElementModel.NormalizedDuration, Width)
                 {
                     Height = Height // set the hight to the height of the content
                 };
@@ -222,16 +295,17 @@ namespace NuSysApp
             SortChildren((a, b) => {
                 if (a is AudioRegionRenderItem && !(b is AudioRegionRenderItem))
                 {
-                    return -1; // regions should be on top of non regions
+                    return 1; // regions should be on top of non regions
                 } 
                 if (!(a is AudioRegionRenderItem) && b is AudioRegionRenderItem)
                 {
-                    return 1; // non regions should be below regions
+                    return -1; // non regions should be below regions
                 }
 
                 // otherwise put the larger region after the smaller region
-                var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds();
-                return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? 1 : -1;
+                var areaA = a.GetLocalBounds();
+                var areaB = b.GetLocalBounds();
+                return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? -1 : 1;
             });
         }
 
@@ -254,9 +328,10 @@ namespace NuSysApp
             // make sure the new region end is less than the end of the current region being displayed
             var normalizedEndOfCurrentRegion = _controller.AudioLibraryElementModel.NormalizedStartTime +
                                                _controller.AudioLibraryElementModel.NormalizedDuration;
-            if (newRegionStart > normalizedEndOfCurrentRegion)
+            var newRegionEnd = newRegionStart + region.LibraryElementModel.NormalizedDuration;
+            if (newRegionEnd > normalizedEndOfCurrentRegion)
             {
-                newRegionStart = normalizedEndOfCurrentRegion - region.LibraryElementModel.NormalizedStartTime;
+                newRegionStart = normalizedEndOfCurrentRegion - region.LibraryElementModel.NormalizedDuration;
             }
             
             // get the controller for the region

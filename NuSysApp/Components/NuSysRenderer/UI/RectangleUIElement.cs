@@ -44,7 +44,7 @@ namespace NuSysApp
         /// <summary>
         /// The image to be displayed on the rectangle
         /// </summary>
-        public CanvasBitmap Image { get; set; }
+        public ICanvasImage Image { get; set; }
 
         /// <summary>
         /// The height of the rectangle
@@ -145,7 +145,7 @@ namespace NuSysApp
 
             if (Image != null)
             {
-                ds.DrawImage(Image, GetLocalBounds());
+                ds.DrawImage(Image, GetLocalBounds(), Image.GetBounds(Canvas));
             }
 
             ds.Transform = orgTransform;
