@@ -236,7 +236,7 @@ namespace NuSysApp
             }
             _selections.Clear();
             SelectionChanged?.Invoke(this);
-            FocusManager.TryMoveFocus(FocusNavigationDirection.Next);
+            //FocusManager.TryMoveFocus(FocusNavigationDirection.Next);
         }
         
 

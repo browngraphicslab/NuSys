@@ -84,7 +84,6 @@ namespace NuSysApp
 
             _renderRoot = new BaseRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
-            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
 
         }
 
@@ -124,7 +123,9 @@ namespace NuSysApp
             {
                 _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
             }
-       
+
+            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -152,6 +153,17 @@ namespace NuSysApp
             DetailViewer.Transform.LocalPosition = new Vector2(300,300);
 
             _renderRoot.AddChild(DetailViewer);
+
+            EditableTextboxUIElement tb = new EditableTextboxUIElement(_renderRoot, RenderCanvas)
+            {
+                Width = 300,
+                Height = 200,
+                Background = Colors.Aqua
+            };
+
+            tb.Transform.LocalPosition = new Vector2(500, 500);
+
+            _renderRoot.AddChild(tb);
 
             RenderEngine.Start();
 
