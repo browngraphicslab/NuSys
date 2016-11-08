@@ -113,26 +113,20 @@ namespace NuSysApp
         public bool IsRegionsVisible { get; set; }
 
 
-        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller) : base(parent, resourceCreator)
+        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller, bool showRegions) : base(parent, resourceCreator)
         {
             _controller = controller;
             ImageUrl = controller.ContentDataController.ContentDataModel.Data;
 
             // set defaults
             IsRegionsModifiable = true;
-            IsRegionsVisible = true;
+            IsRegionsVisible = showRegions;
 
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
             _controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
-        }
-
-        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
-            PdfLibraryElementController controller) : base(parent, resourceCreator)
-        {
-            // do nothing handled in the extended class DetailViewPdfRegionRenderItem
         }
 
 
@@ -280,6 +274,12 @@ namespace NuSysApp
 
         protected virtual void ComputeRegions()
         {
+            // don't compute regions if they are not visible
+            if (!IsRegionsVisible)
+            {
+                return;
+            }
+
             var children = GetChildren();
             ClearChildren();
             foreach (var child in children)

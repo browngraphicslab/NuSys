@@ -96,13 +96,15 @@ namespace NuSysApp
             _currTimeAndDurationDisplay.TextVerticalAlignment = CanvasVerticalAlignment.Center;
         }
 
-        public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, VideoLibraryElementController controller) : this(parent, resourceCreator)
+        public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, VideoLibraryElementController controller, bool showRegions) : this(parent, resourceCreator)
         {
             _controller = controller;
 
             UITask.Run(() =>
             {
                 InitializeMediaElement(controller);
+
+                //todo add video content as _mediaContent
 
                 _scrubBar = new ScrubBarUIElement(this, resourceCreator, controller, _mediaElement);
                 AddChild(_scrubBar);
@@ -111,7 +113,7 @@ namespace NuSysApp
 
         }
 
-        public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller) : this(parent, resourceCreator)
+        public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, bool showRegions) : this(parent, resourceCreator)
         {
             _controller = controller;
 
@@ -120,7 +122,7 @@ namespace NuSysApp
                 InitializeMediaElement(controller);
 
 
-                _mediaContent = new AudioMediaContentUIElement(this, resourceCreator, controller, _mediaElement);
+                _mediaContent = new AudioMediaContentUIElement(this, resourceCreator, controller, _mediaElement, showRegions);
                 AddChild(_mediaContent);
 
 

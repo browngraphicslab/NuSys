@@ -26,12 +26,15 @@ namespace NuSysApp
                         case NusysConstants.ElementType.Text:
                             break;
                         case NusysConstants.ElementType.Image:
+                            rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Collection:
                             break;
                         case NusysConstants.ElementType.PDF:
+                            rectangle = new DetailViewPdfPage(parent, resourceCreator, controller as PdfLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Audio:
+                            rectangle = new DetailViewAudioPage(parent, resourceCreator, controller as AudioLibraryElementController, false);
                             break;
                         case NusysConstants.ElementType.Video:
                             break;
@@ -69,16 +72,15 @@ namespace NuSysApp
                     switch (elementType)
                     {
                         case NusysConstants.ElementType.Image:
-                            rectangle = new DetailViewImageRegionPage(parent, resourceCreator, controller as ImageLibraryElementController);
+                            rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, false, true);
                             break;
                         case NusysConstants.ElementType.PDF:
-                            rectangle = new DetailViewPdfRegionPage(parent, resourceCreator, controller as PdfLibraryElementController);
+                            rectangle = new DetailViewPdfPage(parent, resourceCreator, controller as PdfLibraryElementController, false, true);
                             break;
                         case NusysConstants.ElementType.Audio:
-                            rectangle = new DetailViewAudioRegionPage(parent, resourceCreator, controller as AudioLibraryElementController);
+                            rectangle = new DetailViewAudioPage(parent, resourceCreator, controller as AudioLibraryElementController, true);
                             break;
                         case NusysConstants.ElementType.Video:
-                            rectangle = new BaseMediaPlayerUIElement(parent, resourceCreator, controller as AudioLibraryElementController);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementType),

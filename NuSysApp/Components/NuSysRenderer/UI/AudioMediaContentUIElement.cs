@@ -53,6 +53,11 @@ namespace NuSysApp
 
         private Color _maskColor = UIDefaults.AudioRegionMaskColor;
 
+        /// <summary>
+        /// True if regions are visible false otherwise
+        /// </summary>
+        public bool IsRegionsVisible { get; set; }
+
         public override float Width
         {
             get { return base.Width; }
@@ -66,7 +71,7 @@ namespace NuSysApp
             }
         }
 
-        public AudioMediaContentUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, MediaElement mediaElement) : base(parent, resourceCreator)
+        public AudioMediaContentUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, MediaElement mediaElement, bool showRegions) : base(parent, resourceCreator)
         {
             _controller = controller;
             _mediaElement = mediaElement;
@@ -76,6 +81,8 @@ namespace NuSysApp
             InitializeShadowRectUI(_shadowRect);
             _shadowRect.IsHitTestVisible = false;
             AddChild(_shadowRect);
+
+            IsRegionsVisible = showRegions;
 
             Tapped += AudioMediaContentUIElement_Tapped;
             Dragged += AudioMediaContentUIElement_Dragged;
@@ -159,6 +166,11 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (_isLoading)
+            {
+                return;
+            }
+
             base.Draw(ds);
             if (_mask == null) return; // only draw the mask if it isn't null
             var orgTransform = ds.Transform;
@@ -344,6 +356,12 @@ namespace NuSysApp
 
         protected virtual void ComputeRegions()
         {
+            // if regions are not visible then return
+            if (!IsRegionsVisible)
+            {
+                return;
+            }
+
             // remove all the current regions and dispose of their events and everything properly
             var children = GetChildren();         
             foreach (var child in children)

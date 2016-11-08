@@ -12,7 +12,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public abstract class DetailViewRegionPage : RectangleUIElement
+    public abstract class DetailViewPage : RectangleUIElement
     {
         /// <summary>
         /// The library element controller associated with this region page
@@ -64,9 +64,17 @@ namespace NuSysApp
         /// </summary>
         private StackLayoutManager _imageAnalysisLayoutManager;
 
-        private bool _supportsImageAnalysis;
+        /// <summary>
+        /// True if the page should show image analysis, false otherwise
+        /// </summary>
+        private bool _showsImageAnalysis;
 
-        protected DetailViewRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool supportsImageAnalysis) : base(parent, resourceCreator)
+        /// <summary>
+        /// True if page should should regions, false otherwise
+        /// </summary>
+        private bool _showRegions;
+
+        protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
             // set the controller properly
             _controller = controller;
@@ -75,7 +83,7 @@ namespace NuSysApp
             _contentLayoutManager = new StackLayoutManager();
 
             // set image analysis support
-            _supportsImageAnalysis = supportsImageAnalysis;
+            _showsImageAnalysis = showsImageAnalysis;
 
             // initialize the add region button and the _addRegionButtonLayoutManager
             _addRegionButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
@@ -93,7 +101,7 @@ namespace NuSysApp
             _addRegionUIElement = new AddRegionPublicPrivateUIElement(this, resourceCreator);
 
             /// add the analysis stuff only if it is supported
-            if (_supportsImageAnalysis)
+            if (_showsImageAnalysis)
             {
                 // initialize the layout manager for the analysis ui element
                 _imageAnalysisLayoutManager = new StackLayoutManager();
@@ -144,7 +152,7 @@ namespace NuSysApp
             _contentLayoutManager.Dispose();
             _addRegionButtonLayoutManager.Dispose();
 
-            if (_supportsImageAnalysis)
+            if (_showsImageAnalysis)
             {
                 _imageAnalysisLayoutManager.Dispose();
             }
@@ -158,33 +166,45 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            // set the add region button
-            _addRegionButtonLayoutManager.SetSize(_addRegionButtonLeftRightMargin * 2 + _addRegionButtonWidth, Height);
-            _addRegionButtonLayoutManager.VerticalAlignment = VerticalAlignment.Center;
-            _addRegionButtonLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
-            _addRegionButtonLayoutManager.ItemWidth = _addRegionButtonWidth;
-            _addRegionButtonLayoutManager.ItemHeight = _addRegionButtonWidth;
-            _addRegionButtonLayoutManager.ArrangeItems();
+            if (_showRegions)
+            {
+                // set the add region button
+                _addRegionButtonLayoutManager.SetSize(_addRegionButtonLeftRightMargin*2 + _addRegionButtonWidth, Height);
+                _addRegionButtonLayoutManager.VerticalAlignment = VerticalAlignment.Center;
+                _addRegionButtonLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
+                _addRegionButtonLayoutManager.ItemWidth = _addRegionButtonWidth;
+                _addRegionButtonLayoutManager.ItemHeight = _addRegionButtonWidth;
+                _addRegionButtonLayoutManager.ArrangeItems();
 
-            // set the addRegionUIElement so that it shows up on the addregionbutton
-            _addRegionUIElement.Height = 100;
-            _addRegionUIElement.Width = 100;
-            _addRegionUIElement.Transform.LocalPosition = new Vector2(_addRegionButton.Transform.LocalX, _addRegionButton.Transform.LocalY - 100);
+                // set the addRegionUIElement so that it shows up on the addregionbutton
+                _addRegionUIElement.Height = 100;
+                _addRegionUIElement.Width = 100;
+                _addRegionUIElement.Transform.LocalPosition = new Vector2(_addRegionButton.Transform.LocalX,
+                    _addRegionButton.Transform.LocalY - 100);
+
+                // set visibility of add region button
+                _addRegionButton.IsVisible = true;
+            }
+            else
+            {
+                _addRegionButton.IsVisible = false;
+            }
 
             // get the image height for use in laying out the image on top of the image analysis
             var imageHeight = Height * .75f;
 
             // set the image
-            _contentLayoutManager.SetSize(Width - _addRegionButtonLayoutManager.Width, imageHeight);
+            var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
+            _contentLayoutManager.SetSize(Width - imageOffsetFromRegionButton, imageHeight);
             _contentLayoutManager.VerticalAlignment = VerticalAlignment.Top;
             _contentLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
-            _contentLayoutManager.ItemWidth = Width - _addRegionButtonLayoutManager.Width - 20;
+            _contentLayoutManager.ItemWidth = Width - imageOffsetFromRegionButton - 20;
             _contentLayoutManager.ItemHeight = imageHeight;
             _contentLayoutManager.TopMargin = 20;
-            _contentLayoutManager.ArrangeItems(new Vector2(_addRegionButtonLayoutManager.Width, 0));
+            _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
 
 
-            if (_supportsImageAnalysis)
+            if (_showsImageAnalysis)
             {
                 // set the image analysis
                 _imageAnalysisLayoutManager.SetSize(Width, Height - imageHeight);

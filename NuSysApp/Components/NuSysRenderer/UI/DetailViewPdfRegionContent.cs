@@ -40,10 +40,10 @@ namespace NuSysApp
 
         private StackLayoutManager _contentLayoutManager;
 
-        public DetailViewPdfRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PdfLibraryElementController controller) : base(parent, resourceCreator)
+        public DetailViewPdfRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PdfLibraryElementController controller, bool showRegions) : base(parent, resourceCreator)
         {
             // initialize the pdf content
-            _pdfContent = new DetailViewPdfRegionRenderItem(this, resourceCreator, controller);
+            _pdfContent = new DetailViewPdfRegionRenderItem(this, resourceCreator, controller, showRegions);
             _contentLayoutManager = new StackLayoutManager();
             _contentLayoutManager.AddElement(_pdfContent);
             AddChild(_pdfContent);
