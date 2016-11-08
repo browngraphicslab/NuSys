@@ -50,8 +50,14 @@ namespace NuSysApp
             // otherwise check for arrow keys to move cursor, enter to make newline, backspace/delete
             // to remove characters (tab functionality?)
 
-            Text += GetCharsFromKeys(args.VirtualKey, false, false);
-
+            //Text += GetCharsFromKeys(args.VirtualKey, false, false);
+            if (args.VirtualKey == VirtualKey.Back)
+            {
+                Text = Text.Remove(Text.Length - 1);
+            } else
+            {
+                Text += KeyCodeToUnicode(args.VirtualKey);
+            }
         }
 
         private void EditableTextboxUIElement_OnFocusLost(BaseRenderItem item)
@@ -64,6 +70,7 @@ namespace NuSysApp
         {
             // show blinking cursor at end of text
             BorderWidth = 2;
+
         }
 
         private void EditableTextboxUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -115,26 +122,40 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        [DllImport("user32.dll")]
-        private static extern int ToUnicode(uint virtualKeyCode, uint scanCode,
-            byte[] keyboardState,
-            [Out, MarshalAs(UnmanagedType.LPWStr, SizeConst = 64)]
-            StringBuilder receivingBuffer,
-            int bufferSize, uint flags);
-
-        static string GetCharsFromKeys(VirtualKey keys, bool shift, bool altGr)
+        public string KeyCodeToUnicode(VirtualKey key)
         {
-            var buf = new StringBuilder(256);
-            var keyboardState = new byte[256];
-            if (shift)
-                keyboardState[(int)VirtualKey.Shift] = 0xff;
-            if (altGr)
+            byte[] keyboardState = new byte[255];
+            bool keyboardStateStatus = GetKeyboardState(keyboardState);
+
+            if (!keyboardStateStatus)
             {
-                keyboardState[(int)VirtualKey.Control] = 0xff;
-                keyboardState[(int)VirtualKey.Menu] = 0xff;
+                return "";
             }
-            ToUnicode((uint)keys, 0, keyboardState, buf, 256, 0);
-            return buf.ToString();
+
+            uint virtualKeyCode = (uint)key;
+            uint scanCode = MapVirtualKey(virtualKeyCode, 0);
+            IntPtr inputLocaleIdentifier = GetKeyboardLayout(0);
+
+            StringBuilder result = new StringBuilder();
+            ToUnicodeEx(virtualKeyCode, scanCode, keyboardState, result, (int)5, (uint)0, inputLocaleIdentifier);
+
+            return result.ToString();
         }
+
+        [DllImport("user32.dll")]
+        static extern bool GetKeyboardState(byte[] lpKeyState);
+
+        [DllImport("user32.dll")]
+        static extern uint MapVirtualKey(uint uCode, uint uMapType);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetKeyboardLayout(uint idThread);
+
+        [DllImport("user32.dll")]
+        static extern int ToUnicodeEx(uint wVirtKey, 
+            uint wScanCode, byte[] lpKeyState, 
+            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszBuff, 
+            int cchBuff, uint wFlags, IntPtr dwhkl);
+
     }
 }
