@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Input;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 
@@ -179,9 +181,6 @@ namespace NuSysApp
             set { ListView.RowBorderThickness = value; }
         }
 
-        //popup for adding/removing columns
-        private FlyoutPopup _columnMenu;
-
         public ListViewUIElementContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _resourceCreator = resourceCreator;
@@ -196,14 +195,6 @@ namespace NuSysApp
             _header.HeaderDragCompleted += Header_HeaderDragCompleted;
             _header.HeaderTapped += Header_HeaderTapped;
             ShowHeader = true;
-
-            _columnMenu = new FlyoutPopup(this, resourceCreator);
-            _columnMenu.IsVisible = false;
-            _columnMenu.Width = this.Width/4;
-            _columnMenu.Height = 200;
-            _columnMenu.Background = Colors.White;
-            _columnMenu.BorderWidth = 1;
-            _columnMenu.Bordercolor = Constants.color2;
         }
 
         private void Header_HeaderDragCompleted(ButtonUIElement header, int colIndex, CanvasPointer pointer)
@@ -384,7 +375,7 @@ namespace NuSysApp
                 _header.Transform.LocalPosition = new Vector2(0,0);
                 _header.BorderWidth = 0;
                 _header.Bordercolor = Colors.Black;
-                _header.Background = Colors.Black;
+                _header.Background = Colors.LightGray;
                 _header.Width = this.Width;
                 _header.Height = _listview.RowHeight + 10;
                 _listYPos = _header.Height;
@@ -402,6 +393,22 @@ namespace NuSysApp
             //draw the listview below the header
             _listview.Transform.LocalPosition = new Vector2(0, _listYPos);
             base.Draw(ds);
+        }
+
+        public void ShowFlyout(CanvasPointer pointer)
+        {
+            FlyoutPopup columnMenu = new FlyoutPopup(this, _resourceCreator);
+            columnMenu.Width = 200;
+            columnMenu.Height = 100;
+            columnMenu.Parent = this;
+            columnMenu.Transform.LocalPosition = pointer.CurrentPoint;
+            //columnMenu.Transform.LocalPosition = new Vector2(0,0);
+            columnMenu.Background = Colors.White;
+            columnMenu.BorderWidth = 1;
+            columnMenu.Bordercolor = Constants.color2;
+            columnMenu.ShowPopup();
+            AddChild(columnMenu);
+
         }
     }
 }

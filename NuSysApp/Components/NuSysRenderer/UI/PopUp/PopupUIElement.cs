@@ -54,11 +54,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// instance variable for resource creator so we can make ui elements
-        /// </summary>
-        private ICanvasResourceCreatorWithDpi _resourceCreator;
-
-        /// <summary>
         /// constructor for popup ui element. more information in class header.
         /// initially dismissable is set to true and parent is set to null, this can be changed with the properties Dismissable and Parent.
         /// </summary>
@@ -167,11 +162,6 @@ namespace NuSysApp
         /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds) 
         {
-            //draw on top of parent element
-            if (_parent != null)
-            {
-                
-            }
             //draw on top of freeform viewer if parent is null
             base.Draw(ds);
         }

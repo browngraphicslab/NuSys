@@ -41,6 +41,7 @@ namespace NuSysApp
 
         private bool _headerBeingDragged;
 
+        private ListViewUIElementContainer<T> _listview;
 
         /// <summary>
         /// store resource creator in instance variable so we can pass it to new textboxUIElement later
@@ -49,7 +50,7 @@ namespace NuSysApp
 
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-
+            _listview = parent as ListViewUIElementContainer<T>;
         }
 
         /// <summary>
@@ -77,6 +78,7 @@ namespace NuSysApp
                 headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
                 headerItem.Height = Height;
                 headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
+                headerItem.ListviewContainer = _listview;
                 AddHeaderHandlers(headerItem);
                 this.AddChild(headerItem);
                 indexPointer += headerItem.Width;
@@ -93,6 +95,7 @@ namespace NuSysApp
             header.Dragged += Header_Dragged;
             header.Released += Header_Released;
         }
+
 
         /// <summary>
         /// When the header is released, fire the dragcompleted event 

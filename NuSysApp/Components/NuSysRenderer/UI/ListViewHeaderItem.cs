@@ -21,6 +21,16 @@ namespace NuSysApp
         private List<ListViewRowUIElement<T>> _rowElements;
 
         /// <summary>
+        /// reference to listview container so popups can be brought up
+        /// </summary>
+        private ListViewUIElementContainer<T> _listview;
+
+        public ListViewUIElementContainer<T> ListviewContainer
+        {
+            set { _listview = value; }
+        }
+
+        /// <summary>
         /// accessor for rowelement list
         /// </summary>
         public List<ListViewRowUIElement<T>> RowElements
@@ -63,23 +73,18 @@ namespace NuSysApp
         public ListViewHeaderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator, shapeElement)
         {
             Tapped += ListViewHeaderItem_Tapped;
-            Shape.RightPressed += ListViewHeaderItem_RightPressed;
+            Shape.RightPressed += ShapeOnRightPressed;
         }
 
-        /// <summary>
-        /// popup for add or delete columns, shows up on right button pressed.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void ListViewHeaderItem_RightPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ShapeOnRightPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            
+            _listview.ShowFlyout(pointer);
         }
 
         public override void Dispose()
         {
             Tapped -= ListViewHeaderItem_Tapped;
-            Shape.RightPressed -= ListViewHeaderItem_RightPressed;
+            Shape.RightPressed -= ShapeOnRightPressed;
             base.Dispose();
         }
 
