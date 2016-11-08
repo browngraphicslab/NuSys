@@ -27,6 +27,7 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
+        public NodeMenuButtonRenderItem BtnLayoutTool;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
@@ -41,7 +42,8 @@ namespace NuSysApp
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
             BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
-            
+            BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
@@ -52,12 +54,13 @@ namespace NuSysApp
                 BtnDelete,
                 BtnGroup,
                 BtnPresent,
+                BtnLayoutTool,
                 BtnPdfLeft,
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer
             };
-            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnEnterCollection};
+            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -70,8 +73,6 @@ namespace NuSysApp
             AddChild(Resizer);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
-
-
         }
 
  
@@ -110,6 +111,8 @@ namespace NuSysApp
 
             BtnDelete.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
             BtnGroup.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
+            // Layout tool only available when editing more than one node
+            BtnLayoutTool.IsVisible = !SessionController.Instance.SessionView.IsReadonly && _selectedItems.Count > 1;
             Resizer.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
 
             IsDirty = true;

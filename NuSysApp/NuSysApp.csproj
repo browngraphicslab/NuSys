@@ -149,6 +149,10 @@
     <Content Include="Assets\image icon.png" />
     <Content Include="Assets\info.png" />
     <Content Include="Assets\ink.png" />
+    <Content Include="Assets\layout_icons\grid_layout_icon.png" />
+    <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
+    <Content Include="Assets\layout_icons\layout_icon.png" />
+    <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
     <Content Include="Assets\library_thumbnails\audio.png" />
     <Content Include="Assets\library_thumbnails\collection_1.png" />
     <Content Include="Assets\library_thumbnails\link.png" />
@@ -350,6 +354,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewMainContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
@@ -366,6 +371,7 @@
     <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />

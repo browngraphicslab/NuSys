@@ -77,8 +77,8 @@ namespace NuSysApp
             // add the close button as a child
             base.AddChild(_closeButton);
 
-            _closeButton.Tapped += _closeButton_Tapped;
-            _backgroundButton.Tapped += TabButtonUIElement_Tapped;
+            _closeButton.OnPressed += _closeButton_Tapped;
+            _backgroundButton.OnPressed += TabButtonUIElement_Tapped;
 
         }
 
@@ -87,8 +87,8 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
-            _closeButton.Tapped -= _closeButton_Tapped;
-            _backgroundButton.Tapped -= TabButtonUIElement_Tapped;
+            _closeButton.OnPressed -= _closeButton_Tapped;
+            _backgroundButton.OnPressed -= TabButtonUIElement_Tapped;
             base.Dispose();
         }
 

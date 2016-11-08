@@ -116,9 +116,14 @@ namespace NuSysApp
         public delegate void ButtonTappedHandler(ButtonUIElement item, CanvasPointer pointer);
 
         /// <summary>
-        /// Fired when the Button is Clicked
+        /// Fired when the Button is pressed
         /// </summary>
-        public event ButtonTappedHandler Tapped;
+        public event ButtonTappedHandler OnPressed;
+
+        /// <summary>
+        /// Fired when the Button is released
+        /// </summary>
+        public event ButtonTappedHandler OnReleased;
 
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
@@ -141,6 +146,8 @@ namespace NuSysApp
             // reset the Background and Bordercolor to the original colors
             Background = _orgBackground;
             Bordercolor = _orgBorder;
+
+            OnReleased?.Invoke(this, pointer);
         }
 
         /// <summary>
@@ -159,7 +166,7 @@ namespace NuSysApp
             Bordercolor = SelectedBorder ?? Background;
 
             // Fire the button's Clicked event. 
-            Tapped?.Invoke(this, pointer);
+            OnPressed?.Invoke(this, pointer);
         }
 
         /// <summary>
@@ -178,9 +185,10 @@ namespace NuSysApp
 
 
             // draw the text on the button
-            DrawButtonText(ds);
             DrawButtonImage(ds);
+            DrawButtonText(ds);
         }
+        
 
         public virtual void DrawButtonImage(CanvasDrawingSession ds)
         {
@@ -189,7 +197,7 @@ namespace NuSysApp
 
             if (Image != null)
             {
-                ds.DrawImage(Image, GetLocalBounds());
+                ds.DrawImage(Image, new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth));
             }
 
             ds.Transform = orgTransform;

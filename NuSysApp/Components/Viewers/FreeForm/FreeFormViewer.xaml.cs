@@ -71,6 +71,8 @@ namespace NuSysApp
 
         public DetailViewMainContainer DetailViewer { get; set; }
 
+        private LayoutWindowUIElement _layoutWindow;
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -666,6 +668,76 @@ namespace NuSysApp
                 var selection = (PdfElementRenderItem)Selections[0];
                 selection.GotoPage(selection.CurrentPage + 1);
             }
+            if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
+            {
+                // Show the layout panel
+                _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                _layoutWindow.DoLayout += _arrangeCallback;
+                _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
+                RenderEngine.Root.AddChild(_layoutWindow);
+            }
+        }
+
+        private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
+        {
+            var SortedSelections = new List<ElementRenderItem>(Selections);
+
+            if (sorting == LayoutSorting.Title)
+            {
+                SortedSelections.Sort((x, y) => String.Compare(x.ViewModel.Model.Title, y.ViewModel.Model.Title, StringComparison.CurrentCultureIgnoreCase));
+            } else if (sorting == LayoutSorting.Date)
+            {
+                SortedSelections.OrderBy(x => SessionController.Instance.ContentController.GetLibraryElementModel(x.ViewModel.Model.LibraryId).LastEditedTimestamp).ThenBy(x => x.ViewModel.Model.Title);
+            }
+
+            if (SortedSelections.Count <= 1)
+            {
+                return;
+            }
+
+            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
+            Vector2 start = -transform.Translation / transform.M11;
+            start = new Vector2(float.MaxValue, float.MaxValue);
+
+            // Do the layout
+            foreach (var elementRenderItem in SortedSelections)
+            {
+                start = new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, start.X), (float) Math.Min(elementRenderItem.ViewModel.Y, start.Y));
+            }
+
+            Vector2 nextPosition = start;
+            int rows = (int) Math.Round(Math.Sqrt(SortedSelections.Count));
+            int i = 0;
+            float maxHeight = 0;
+            foreach (var elementRenderItem in SortedSelections)
+            {
+                elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
+                switch (style)
+                {
+                    case LayoutStyle.Horizontal:
+                        nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
+                        break;
+                    case LayoutStyle.Vertical:
+                        nextPosition.Y = (float)(nextPosition.Y + 35.0f + elementRenderItem.ViewModel.Height);
+                        break;
+                    case LayoutStyle.Grid:
+                        maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
+                        if (i % rows == rows - 1)
+                        {
+                            nextPosition.Y = (float)(nextPosition.Y + 35.0f + maxHeight);
+                            nextPosition.X = start.X;
+                            maxHeight = 0.0f;
+                        }
+                        else
+                        {
+                            nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
+                        }
+                        i++;
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         private async void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer,
@@ -873,6 +945,12 @@ namespace NuSysApp
                 ClearSelections();
 
             _minimap.Invalidate();
+
+            if (_layoutWindow != null)
+            {
+                RenderEngine.Root.RemoveChild(_layoutWindow);
+                _layoutWindow = null;
+            }
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
