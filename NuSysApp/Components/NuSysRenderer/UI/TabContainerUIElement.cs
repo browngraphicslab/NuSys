@@ -60,14 +60,25 @@ namespace NuSysApp
         public delegate void CurrentTabChangedHandler(T tabType);
 
         /// <summary>
-        /// The color of the tabs in the tab container
-        /// </summary>
-        public Color TabColor { get; set; }
-
-        /// <summary>
         /// Invoked whenever the current tab is changed
         /// </summary>
         public event CurrentTabChangedHandler OnCurrentTabChanged;
+
+        /// <summary>
+        /// delegate for when a tab is removed
+        /// </summary>
+        /// <param name="tabType"></param>
+        public delegate void OnTabRemovedHandler(T tabType);
+
+        /// <summary>
+        /// Invoked whenever a tab is removed from the tab container
+        /// </summary>
+        public event OnTabRemovedHandler OnTabRemoved;
+
+        /// <summary>
+        /// The color of the tabs in the tab container
+        /// </summary>
+        public Color TabColor { get; set; }
 
         /// <summary>
         /// The Tab container's _stackLayoutManager
@@ -241,6 +252,7 @@ namespace NuSysApp
             // remove the tab as a child
             RemoveChild(tabToBeRemoved);
             _tabStackLayoutManager.Remove(tabToBeRemoved);
+            OnTabRemoved?.Invoke(tabType);
         }
 
         /// <summary>

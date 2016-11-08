@@ -85,6 +85,9 @@ namespace NuSysApp
             // set image analysis support
             _showsImageAnalysis = showsImageAnalysis;
 
+            // set region support
+            _showRegions = showRegions;
+
             // initialize the add region button and the _addRegionButtonLayoutManager
             _addRegionButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
             {
@@ -191,7 +194,8 @@ namespace NuSysApp
             }
 
             // get the image height for use in laying out the image on top of the image analysis
-            var imageHeight = Height * .75f;
+            var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
+            var imageHeight = Height * heightMultiplier;
 
             // set the image
             var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;

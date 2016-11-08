@@ -130,6 +130,16 @@ namespace NuSysApp
         }
 
 
+        public override void Dispose()
+        {
+            IsDisposed = true;
+
+            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+
+            base.Dispose();
+        }
+
         /// <summary>
         /// Called when a region is removed, recomputes the regions for the entire image
         /// </summary>
@@ -275,7 +285,7 @@ namespace NuSysApp
         protected virtual void ComputeRegions()
         {
             // don't compute regions if they are not visible
-            if (!IsRegionsVisible)
+            if (!IsRegionsVisible || IsDisposed)
             {
                 return;
             }
@@ -310,7 +320,7 @@ namespace NuSysApp
                 var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds(); return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? -1 : 1;
             });
 
-        }
+        }  
 
 
         /// <summary>
