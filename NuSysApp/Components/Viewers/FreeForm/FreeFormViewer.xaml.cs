@@ -670,18 +670,17 @@ namespace NuSysApp
 
         private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
         {
-            Collection<ElementRenderItem> LocalSelections = new Collection<ElementRenderItem>(Selections);
-            ObservableCollection<ElementRenderItem> SortedSelections = new ObservableCollection<ElementRenderItem>();
+            var SortedSelections = new List<ElementRenderItem>(Selections);
 
             if (sorting == LayoutSorting.Title)
             {
-                foreach (var e in LocalSelections.OrderBy(n => n.ViewModel.Model.Title))
-                {
-                    SortedSelections.Add(e);
-                }
+                SortedSelections.Sort((x, y) => String.Compare(x.ViewModel.Model.Title, y.ViewModel.Model.Title, StringComparison.CurrentCultureIgnoreCase));
+            } else if (sorting == LayoutSorting.Date)
+            {
+                SortedSelections.OrderBy(x => SessionController.Instance.ContentController.GetLibraryElementModel(x.ViewModel.Model.LibraryId).LastEditedTimestamp).ThenBy(x => x.ViewModel.Model.Title);
             }
 
-            if (LocalSelections.Count <= 1)
+            if (SortedSelections.Count <= 1)
             {
                 return;
             }
@@ -691,7 +690,7 @@ namespace NuSysApp
             start = new Vector2(float.MaxValue, float.MaxValue);
 
             // Do the layout
-            foreach (var elementRenderItem in LocalSelections)
+            foreach (var elementRenderItem in SortedSelections)
             {
                 start = new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, start.X), (float) Math.Min(elementRenderItem.ViewModel.Y, start.Y));
             }
