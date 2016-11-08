@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -28,7 +29,7 @@ namespace NuSysApp
         public ElementViewModel ViewModel => _vm;
         private bool _needsTitleUpdate = true;
         private CanvasTextFormat _format;
-
+   
         public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;

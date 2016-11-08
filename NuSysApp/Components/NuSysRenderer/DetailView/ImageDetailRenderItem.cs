@@ -70,13 +70,16 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            if (!IsDisposed)
+            if (IsDisposed)
                 return;
 
             _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             _controller.LocationChanged -= ControllerOnLocationChanged;
             _controller.SizeChanged -= ControllerOnSizeChanged;
+
+            _activeRegion?.Dispose();
+            _bmp?.Dispose();
 
             foreach (var child in GetChildren())
             {
@@ -132,6 +135,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
+            
             _isLoading = true;
                _bmp?.Dispose();
             await Task.Run(async () =>

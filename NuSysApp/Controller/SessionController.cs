@@ -405,6 +405,7 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task EnterCollection(string collectionLibraryId)
         {
+            SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
             SessionView.ShowBlockingScreen(true);
 
             EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
@@ -505,6 +506,7 @@ namespace NuSysApp
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
         {
+
             var made = new HashSet<string>();
             while (elementsLeft.Any())
             {
