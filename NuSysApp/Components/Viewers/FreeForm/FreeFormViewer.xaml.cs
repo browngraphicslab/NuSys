@@ -148,7 +148,17 @@ namespace NuSysApp
             DetailViewer.Transform.LocalPosition = new Vector2(300,300);
 
             _renderRoot.AddChild(DetailViewer);
+            ToolWindow tool = new ToolWindow(_renderRoot, RenderCanvas)
+            {
+                Width = 500,
+                Height = 500,
+                Background = Colors.Blue,
+                BorderWidth = 5,
+                Bordercolor = Colors.Black
+            };
+            tool.Transform.LocalPosition = new Vector2(300, 300);
 
+            _renderRoot.AddChild(tool);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
