@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using MyToolkit.Mathematics;
 using NusysIntermediate;
 using Wintellect.PowerCollections;
 
@@ -277,6 +278,8 @@ namespace NuSysApp
      
                 }
 
+                var screenRect = GetScreenRect();
+
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 
@@ -284,7 +287,14 @@ namespace NuSysApp
                     item.Draw(ds);
 
                 foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
-                    item.Draw(ds);
+                {
+                    var element = item as ElementRenderItem;
+                    if (element == null)
+                        return;
+
+                    if (screenRect.Intersects(element.GetScreenRect()))
+                        item.Draw(ds);
+                 }
 
                 foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
