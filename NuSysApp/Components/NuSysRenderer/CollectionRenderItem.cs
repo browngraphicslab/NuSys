@@ -429,7 +429,7 @@ namespace NuSysApp
         private async Task AddItem(object vm)
         {
             BaseRenderItem item = null;
-            if (vm is ToolFilterView || vm is BaseToolView)
+            if (vm is ToolFilterView || vm is BaseToolView || vm is MetadataToolView)
             {
                 await UITask.Run(async delegate
                 {

@@ -24,7 +24,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class MetadataToolView : AnimatableUserControl
+    public sealed partial class MetadataToolView : AnimatableUserControl, ITool
     {
         private Image _dragItem;
         private enum DragMode { Collection, Key, Value, Scroll };
@@ -41,6 +41,8 @@ namespace NuSysApp
         private double _x;
 
         private double _y;
+
+        public event EventHandler<Point2d> ToolAnchorChanged;
 
         public MetadataToolView(MetadataToolViewModel vm, double x, double y)
         {
@@ -382,6 +384,7 @@ namespace NuSysApp
             {
                 vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
+            ToolAnchorChanged?.Invoke(this, new Point2d(vm.X + x, vm.Y + y));
         }
 
         /// <summary>
@@ -448,6 +451,8 @@ namespace NuSysApp
             {
                 vm.Controller.SetSize(this.Width, height);
             }
+            ToolAnchorChanged?.Invoke(this, new Point2d(_x, _y));
+
         }
 
         /// <summary>

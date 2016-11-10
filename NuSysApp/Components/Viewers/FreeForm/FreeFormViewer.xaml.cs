@@ -65,7 +65,6 @@ namespace NuSysApp
         private BaseRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
-
         public FreeFormViewer()
         {
             this.InitializeComponent();
