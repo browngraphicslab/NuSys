@@ -292,7 +292,7 @@ namespace NuSysApp
                     if (element == null)
                         return;
 
-                    if (screenRect.Intersects(element.GetScreenRect()))
+                    if (element is PseudoElementRenderItem || screenRect.Intersects(element.GetScreenRect()))
                         item.Draw(ds);
                  }
 
