@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -15,6 +17,36 @@ namespace NuSysApp
     /// </summary>
     public class ListViewHeaderItem<T> : ButtonUIElement
     {
+        public enum Edge
+        {
+            Right,
+            Left
+        };
+
+        /// <summary>
+        /// This is the edge that is being dragged. (either left or right). This is used by the listviewheader to see which other column should be resized. 
+        /// (E.g if left edge is being dragged, the header before is also resized)
+        /// </summary>
+        private Edge _edgeBeingDragged;
+
+        public delegate void ResizeHeaderEventHandler(ListViewHeaderItem<T> header, CanvasPointer pointer, Edge edgeBeingDragged);
+
+        /// <summary>
+        /// When left or right borders are dragged, this event will fire
+        /// </summary>
+        public event ResizeHeaderEventHandler HeaderResizing;
+
+        public delegate void ResizeHeaderCompletedEventHandler(ListViewHeaderItem<T> header, CanvasPointer pointer, Edge edgeBeingDragged);
+
+        /// <summary>
+        /// Once the dragging of the border has completed (pointer has been released) this event will fire.
+        /// </summary>
+        public event ResizeHeaderCompletedEventHandler HeaderResizeCompleted;
+
+        /// <summary>
+        /// The boolean for the border being dragged so we can fire drag completed events when you release the pointer.
+        /// </summary>
+        public bool _borderBeingDragged;
         /// <summary>
         /// list of the row elements that it will need to access
         /// </summary>
@@ -62,22 +94,79 @@ namespace NuSysApp
         /// <param name="shapeElement"></param>
         public ListViewHeaderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator, shapeElement)
         {
-            Tapped += ListViewHeaderItem_Tapped;
+            _borderBeingDragged = false;
         }
 
         /// <summary>
-        /// calls sort when button is tapped
+        /// This overrides the dragged event of the button so that if you are dragging the edge, the headerResizing event is invoked instead of the regular dragging event.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ListViewHeaderItem_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        protected override void RectangleButtonUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SortElementsinColumn();
+            var startX = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix).X;
+
+            if (_borderBeingDragged == false && _beingDragged == false)
+            {
+                if (startX < BorderWidth)
+                {
+                    _edgeBeingDragged = Edge.Left;
+                    _borderBeingDragged = true;
+
+                }
+                else if (startX > Width - BorderWidth)
+                {
+                    _edgeBeingDragged = Edge.Right;
+                    _borderBeingDragged = true;
+                }
+            }
+
+            if (_borderBeingDragged)
+            {
+                Debug.Assert(_edgeBeingDragged != null);
+                HeaderResizing?.Invoke(this, pointer, _edgeBeingDragged);
+            }
+            else
+            {
+                base.RectangleButtonUIElement_Dragged(item, pointer);
+
+            }
         }
 
-        public void SortElementsinColumn()
+        /// <summary>
+        /// This overrides the released handler of the button. If you were dragging the edge of a button, the headerresizeCompleted is invoked instead. 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected override void RectangleButtonUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (_borderBeingDragged)
+            {
+                _borderBeingDragged = false;
+                Debug.Assert(_edgeBeingDragged != null);
+                HeaderResizeCompleted?.Invoke(this, pointer, _edgeBeingDragged);
+                return;
+            }
+            else
+            {
+                base.RectangleButtonUIElement_Released(item, pointer);
+            }
+        }
 
+        /// <summary>
+        /// Overrides the pressed handler of the button. iIt does nothing if the edge of the button is pressed, and calls the base handler otherwise.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected override void RectangleButtonUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var currentX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
+
+            if (_beingDragged == false && currentX > BorderWidth && currentX < Width - BorderWidth)
+            {
+                base.RectangleButtonUIElement_Pressed(item, pointer);
+                return;
+            }
         }
 
     }

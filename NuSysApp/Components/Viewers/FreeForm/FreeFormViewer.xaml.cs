@@ -141,7 +141,7 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
 
-            var listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
+            listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
             {
                 Background = Colors.Azure,
                 Bordercolor = Colors.Gray,
@@ -165,7 +165,7 @@ namespace NuSysApp
             var listColumn2 = new ListTextColumn<LibraryElementModel>();
             listColumn2.Title = "Creator";
             listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction = model => model.Creator;
+            listColumn2.ColumnFunction = model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
 
             var listColumn3 = new ListTextColumn<LibraryElementModel>();
             listColumn3.Title = "Last Edited Timestamp";
@@ -197,8 +197,8 @@ namespace NuSysApp
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
-        
 
+        private ListViewUIElementContainer<LibraryElementModel> listView;
         private RectangleUIElement rect;
 
         private void ListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)

@@ -29,7 +29,7 @@ namespace NuSysApp
             _parent = parent;
             _resourceCreator = resourceCreator;
 
-            PointerWheelChanged += ScrollableRectanglePointerWheelChanged;
+            //PointerWheelChanged += ScrollableRectanglePointerWheelChanged;
             
         }
 
@@ -83,7 +83,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             _scrollBar.ScrollBarPositionChanged -= ScrollBarPositionChanged;
-            PointerWheelChanged -= ScrollableRectanglePointerWheelChanged;
+            //PointerWheelChanged -= ScrollableRectanglePointerWheelChanged;
             base.Dispose();
         }
 
