@@ -12,7 +12,7 @@ namespace NusysServer
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
 
-        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
+        public static string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
 
         public static string WWW_ROOT {
             get
@@ -99,26 +99,24 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "http://localhost:2776/" : NusysConstants.ServerName;
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2776/" : NusysConstants.ServerName;
                     case "harsh":
-                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
                     case "miranda":
-                        return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
                     case "sahil":
-                        return Directory.Exists("C:/Users/nusys/Documents/Sahil8/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
-                    case "zach":
-                        return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil8/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
                     case "book":
-                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
                     case "luke1":
-                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
                     case "nico":
-                        return Directory.Exists("C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
 
                     default:
-                        return "http://nusysrepo.azurewebsites.net/";
+                        return NusysConstants.ServerName;
                 }
             }
         }
