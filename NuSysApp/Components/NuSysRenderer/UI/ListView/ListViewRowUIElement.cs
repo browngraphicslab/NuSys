@@ -26,7 +26,7 @@ namespace NuSysApp
             get { return _isSelected; }
         }
 
-        public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
+        public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
         public event PointerReleasedEventHandler RowPointerReleased;
 
         public delegate void DraggedEventHandler(
@@ -116,7 +116,7 @@ namespace NuSysApp
         private void Cell_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
 
-            RowPointerReleased?.Invoke(this, _children.IndexOf(item), pointer);
+            RowPointerReleased?.Invoke(this, _children.IndexOf(item), pointer, Item);
             //if (_isSelected == true)
             //{
             //    Deselected?.Invoke(this, item as RectangleUIElement);
@@ -289,9 +289,9 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public void UpdateContent<T>(ListColumn<T> column, int index)
+        public void UpdateContent(ListColumn<T> column, int index)
         {
-            column.UpdateColumnCellFromItem(item, _children[index] as RectangleUIElement);
+            column.UpdateColumnCellFromItem(Item, _children[index] as RectangleUIElement);
         }
     }
 }

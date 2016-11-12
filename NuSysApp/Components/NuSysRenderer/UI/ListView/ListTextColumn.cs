@@ -28,9 +28,11 @@ namespace NuSysApp
             return cell;
         }
 
-        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rect)
+
+
+        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rectangleUIElement)
         {
-            var cell = rect as TextboxUIElement;
+            var cell = rectangleUIElement as TextboxUIElement;
             cell.Text = ColumnFunction(itemSource);
         }
     }

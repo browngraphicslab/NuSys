@@ -300,11 +300,11 @@ namespace NuSysApp
 
                 if (_selectedElements.Contains(row.Item))
                 {
-                    row.Select();
+                    SelectRow(row);
                 }
                 else
                 {
-                    row.Deselect();
+                    DeselectRow(row);
                 }
 
                 foreach (var column in _listColumns)
@@ -365,7 +365,7 @@ namespace NuSysApp
 
         
 
-        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
+        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
         {
             if (_isDragging)
             {
@@ -373,6 +373,22 @@ namespace NuSysApp
                 _isDragging = false;
             }else
             {
+                var t = Transform.ScreenToLocalMatrix;
+                var np = Vector2.Transform(pointer.CurrentPoint, t);
+                if (rowUIElement.HitTest(pointer.CurrentPoint) == null)
+                {
+                    return;
+                }
+                if (_selectedElements.Contains(item))
+                {
+                    DeselectItem(item);
+                }else
+                {
+                    SelectItem(item);
+                }
+
+                
+                /*
                 if (rowUIElement.IsSelected)
                 {
                     DeselectRow(rowUIElement);
@@ -381,6 +397,9 @@ namespace NuSysApp
                 {
                     SelectRow(rowUIElement);
                 }
+                */
+
+
             }
         }
         
@@ -592,7 +611,12 @@ namespace NuSysApp
                 Debug.Write("Trying to select a null item idiot");
                 return;
             }
-            var rowToSelect = Rows.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
+            if (MultipleSelections == false)
+            {
+                _selectedElements.Clear();
+            }
+            _selectedElements.Add(item);
+            //var rowToSelect = Rows.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
             //SelectRow(rowToSelect);
             
         }
@@ -608,13 +632,8 @@ namespace NuSysApp
                 Debug.Write("Could not find the row corresponding to the item you with to select");
                 return;
             }
-            if (MultipleSelections == false)
-            {
-                _selectedElements.Clear();
-            }
-            //rowToSelect.Select();
-            _selectedElements.Add(rowToSelect.Item);
-            //RowSelected?.Invoke(rowToSelect.Item, cell != null && rowToSelect != null ? _listColumns[rowToSelect.GetColumnIndex(cell)].Title : null);
+
+            rowToSelect.Select();
             
         }
 
@@ -648,11 +667,13 @@ namespace NuSysApp
                 Debug.Write("Trying to deselect a null item idiot");
                 return;
             }
+
             if (_selectedElements.Contains(item))
             {
                 _selectedElements.Remove(item);
 
             }
+            
         }
 
         /// <summary>
@@ -666,7 +687,7 @@ namespace NuSysApp
                 Debug.Write("Could not find the row corresponding to the item you with to deselect");
                 return;
             }
-            _selectedElements.Remove(rowToDeselect.Item);
+            rowToDeselect.Deselect();
         }
 
         /// <summary>
