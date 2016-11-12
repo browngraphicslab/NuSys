@@ -32,7 +32,7 @@ namespace NuSysApp
 
         public BasicToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            
+            SetUpBottomButtons();
         }
 
         private void SetUpBottomButtons()
@@ -82,9 +82,22 @@ namespace NuSysApp
             base.Draw(ds);
 
             //Arrange the buttons at the bottom
-            _listToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
-            _pieToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
-            _barToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
+            if (_listToolViewButton != null)
+            {
+                _listToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
+
+            }
+
+            if(_pieToolViewButton != null)
+            {
+                _pieToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
+
+            }
+
+            if (_barToolViewButton != null)
+            {
+                _barToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
+            }
 
         }
     }

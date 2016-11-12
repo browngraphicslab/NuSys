@@ -72,7 +72,7 @@ namespace NuSysApp
         public DetailViewMainContainer DetailViewer { get; set; }
 
         private LayoutWindowUIElement _layoutWindow;
-
+        
         public FreeFormViewer()
         {
             this.InitializeComponent();
