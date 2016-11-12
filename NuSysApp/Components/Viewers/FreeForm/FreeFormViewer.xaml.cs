@@ -150,7 +150,7 @@ namespace NuSysApp
             DetailViewer.Transform.LocalPosition = new Vector2(300,300);
 
             _renderRoot.AddChild(DetailViewer);
-            ToolWindow tool = new ToolWindow(_renderRoot, RenderCanvas)
+            BasicToolWindow tool = new BasicToolWindow(_renderRoot, RenderCanvas)
             {
                 Width = 500,
                 Height = 500,

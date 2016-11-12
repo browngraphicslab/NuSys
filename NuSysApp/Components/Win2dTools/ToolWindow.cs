@@ -8,7 +8,7 @@ using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
-    public class ToolWindow : ResizeableWindowUIElement
+    public abstract class ToolWindow : ResizeableWindowUIElement
     {
         /// <summary>
         /// The delete to delete the tool
@@ -44,14 +44,37 @@ namespace NuSysApp
         /// <summary>
         /// The height of the rows and button for the filter chooser dropdown menu
         /// </summary>
-        private const int FILTER_CHOOSER_HEIGHT = 60;
-        
+        protected const int FILTER_CHOOSER_HEIGHT = 60;
+
+        /// <summary>
+        ///Height of the button bar at the bottom of the tool
+        /// </summary>
+        private const int BUTTON_BAR_HEIGHT = 60;
+
+        /// <summary>
+        /// The rectangle at the bottom of the tool window
+        /// </summary>
+        protected RectangleUIElement ButtonBarRectangle;
+
         private const int BUTTON_MARGIN = 10;
         public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             SetUpButtons();
             SetUpFilterDropDown();
             SetUpDraggableIcons();
+            SetUpBottomButtonBar();
+        }
+
+        private void SetUpBottomButtonBar()
+        {
+            ButtonBarRectangle = new RectangleUIElement(this, ResourceCreator)
+            {
+                Background = Colors.Azure,
+                Height = BUTTON_BAR_HEIGHT,
+                Width = this.Width
+            };
+            ButtonBarRectangle.Transform.LocalPosition = new Vector2(0, this.Height - BUTTON_BAR_HEIGHT);
+            AddChild(ButtonBarRectangle);
         }
 
         /// <summary>
@@ -117,7 +140,11 @@ namespace NuSysApp
             _filterChooserDropdownButton.OnPressed -= _dropdownButton_OnPressed;
         }
 
-
+        /// <summary>
+        /// When the dropdown button is pressed either show or hide the dropdown list filter chooser
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void _dropdownButton_OnPressed(ButtonUIElement item, CanvasPointer pointer)
         {
             if (_filterChooser.IsVisible)
@@ -130,11 +157,15 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// The handler for when a filter is chosen
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void FilterChooserItem_Clicked(ButtonUIElement item, CanvasPointer pointer)
         {
             _filterChooser.IsVisible = false;
             _filterChooserDropdownButton.ButtonText = item.ButtonText;
-
         }
 
         /// <summary>
@@ -174,10 +205,14 @@ namespace NuSysApp
                 _filterChooser.Layout();
             }
             _filterChooserDropdownButton.Width = Width;
+
+            //Set up draggable collection and stack elements local position.
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN), _draggableCollectionElement.Height / 2 + BUTTON_MARGIN);
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN), _draggableCollectionElement.Transform.LocalY + _draggableCollectionElement.Height + BUTTON_MARGIN);
 
-
+            //Set up button bar at the bottom of tool
+            ButtonBarRectangle.Transform.LocalY = this.Height - BUTTON_BAR_HEIGHT;
+            ButtonBarRectangle.Width = Width;
         }
     }
 }
