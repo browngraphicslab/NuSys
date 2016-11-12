@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -81,7 +82,7 @@ namespace NuSysApp
         /// setter and getter for listview
         /// adds the listview to the container's children so it can draw it relative to the container
         /// </summary>
-        public ListViewUIElement<T> ListView
+        private ListViewUIElement<T> ListView
         {
             get
             {
@@ -123,8 +124,13 @@ namespace NuSysApp
                 if (ListView != null)
                 {
                     ListView.Width = value;
+                    if (_header != null)
+                    {
+                        _header.RefreshTitles(ListView.ListColumns, ListView.Width, ListView.SumOfColRelWidths, _resourceCreator);
+                    }
                 }
                 base.Width = value;
+                
             }
         }
 
@@ -184,11 +190,130 @@ namespace NuSysApp
             ListView.RowSelected += ListView_RowSelected;
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
+
             _header = new ListViewHeader<T>(this, resourceCreator);
+            _header.HeaderDragged += Header_HeaderDragged;
+            _header.HeaderDragCompleted += Header_HeaderDragCompleted;
+            _header.HeaderTapped += Header_HeaderTapped;
+            _header.HeaderResizing += Header_HeaderResizing;
+            _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
             ShowHeader = true;
         }
 
-        
+        /// <summary>
+        /// This gets called when the user completes dragging of the a header's edge to resize a column. It changes the relative column widths
+        /// of the columns who's size was changed.
+        /// </summary>
+        /// <param name="leftHeaderWidth"></param>
+        /// <param name="rightHeaderWidth"></param>
+        /// <param name="leftHeaderIndex"></param>
+        private void Header_HeaderResizeCompleted(double leftHeaderWidth, double rightHeaderWidth, int leftHeaderIndex)
+        {
+            _listview.ChangeRelativeColumnWidths(leftHeaderWidth, rightHeaderWidth, leftHeaderIndex);
+        }
+
+        /// <summary>
+        /// This is called when the user is still currently draggint the headers edge to resize a column. This function calls the moveborderaftercell function
+        /// which adjust the size of the cells in a col at colIndex and colIndex +/- 1 depending on which edge is being dragged. (e.g. dragging left edge of button resizes the button being dragged and the one 
+        /// that comes before it.) 
+        /// </summary>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
+        /// <param name="edgeBeingDragged"></param>
+        private void Header_HeaderResizing(int colIndex, CanvasPointer pointer, ListViewHeaderItem<T>.Edge edgeBeingDragged)
+        {
+            if (colIndex < 0 || colIndex > _listview.ListColumns.Count - 1)
+            {
+                return;
+            }
+            if (edgeBeingDragged == ListViewHeaderItem<T>.Edge.Right)
+            {
+                _listview.MoveBorderAfterCell(colIndex, pointer.DeltaSinceLastUpdate.X);
+            }
+            else
+            {
+                if (colIndex - 1 < 0)
+                {
+                    return;  
+                }
+                _listview.MoveBorderAfterCell(colIndex - 1, pointer.DeltaSinceLastUpdate.X);
+            }
+        }
+
+        /// <summary>
+        /// Removes all listeners
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
+            ListView.RowSelected -= ListView_RowSelected;
+            ListView.RowDragged -= ListView_RowDragged;
+            ListView.RowDragCompleted -= ListView_RowDragCompleted;
+
+            _header.HeaderDragged -= Header_HeaderDragged;
+            _header.HeaderDragCompleted -= Header_HeaderDragCompleted;
+            _header.HeaderTapped -= Header_HeaderTapped;
+            _header.HeaderResizing -= Header_HeaderResizing;
+            _header.HeaderResizeCompleted -= Header_HeaderResizeCompleted;
+        }
+
+        /// <summary>
+        /// This fires when the header has just finished being dragged. It will refresh the positions of the titles so it looks nice since you may not have left the header
+        /// in the correct spot when dragging.
+        /// 
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
+        private void Header_HeaderDragCompleted(ButtonUIElement header, int colIndex, CanvasPointer pointer)
+        {
+            _header.RefreshTitles();
+        }
+
+        /// <summary>
+        /// Is called when header is currently being dragged. Checks if you should swap the columns depending on the position of the header that is being dragged,
+        ///  and if you should then it swaps both the columns and the headers
+        /// 
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
+        private void Header_HeaderDragged(ButtonUIElement header, int colIndex, CanvasPointer pointer)
+        {
+            var newX = header.Transform.LocalX + pointer.DeltaSinceLastUpdate.X;
+
+            if (newX > 0 && newX + header.Width < Width)
+            {
+                header.Transform.LocalX = newX;
+                var pointerX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
+
+                float centerOfNextHeader = _header.GetColumnHeaderCenter(colIndex + 1);
+                float centerOfPreviousHeader = _header.GetColumnHeaderCenter(colIndex - 1);
+
+                if (pointerX > centerOfNextHeader)
+                {
+                    _header.SwapHeaders(colIndex, colIndex + 1);
+                    _listview.SwapColumns(colIndex, colIndex + 1);
+                }
+                else if (pointerX < centerOfPreviousHeader)
+                {
+                    _header.SwapHeaders(colIndex, colIndex -1);
+                    _listview.SwapColumns(colIndex, colIndex - 1);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Whenever a header is tapped just sort the list by that column
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        private void Header_HeaderTapped(int columnIndex)
+        {
+            _listview.SortByCol(columnIndex);
+        }
+
+
 
         #region RouterFunctions
 
@@ -296,6 +421,11 @@ namespace NuSysApp
             return ListView.GetSelectedItems();
         }
 
+        public void SortByCol(int colIndex)
+        {
+            _listview.SortByCol(colIndex);
+        }
+
         /// <summary>
         /// When the listview  ui element fires its row dragged event, the container will fires it's row dragged
         /// which the user should be listening to
@@ -350,7 +480,7 @@ namespace NuSysApp
                 _header.Width = this.Width;
                 _header.Height = _listview.RowHeight + 10;
                 _listYPos = _header.Height;
-                _header.MakeTitles(_listview, _resourceCreator);
+                _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
         }
 

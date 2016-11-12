@@ -80,7 +80,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 button.Background = Colors.LightSkyBlue;
             }
 
-            button.OnPressed += handler;
+            button.Tapped += handler;
             button.BorderWidth = 0.0f;
             button.Width = Width;
             button.Height = ButtonHeight;

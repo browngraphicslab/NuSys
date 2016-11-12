@@ -70,8 +70,8 @@ namespace NuSysApp
             _buttonLayoutManager.AddElement(_addPublicButton);
 
             // add event handlers
-            _addPrivateButton.OnPressed += AddButtonTapped;
-            _addPublicButton.OnPressed += AddButtonTapped;
+            _addPrivateButton.Tapped += AddButtonTapped;
+            _addPublicButton.Tapped += AddButtonTapped;
 
         }
 
@@ -100,8 +100,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _addPrivateButton.OnPressed -= AddButtonTapped;
-            _addPublicButton.OnPressed -= AddButtonTapped;
+            _addPrivateButton.Tapped -= AddButtonTapped;
+            _addPublicButton.Tapped -= AddButtonTapped;
 
             base.Dispose();
         }

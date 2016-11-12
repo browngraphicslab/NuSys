@@ -116,7 +116,7 @@ namespace NuSysApp
             _filterChooserDropdownButton.Bordercolor = Colors.Black;
             _filterChooserDropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _filterChooserDropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-            _filterChooserDropdownButton.OnPressed += _dropdownButton_OnPressed; ;
+            _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed; ;
             _filterChooserDropdownButton.Transform.LocalPosition = new Vector2(0, TopBarHeight);
             AddChild(_filterChooserDropdownButton);
             _filterChooser = new DropdownUIElement(this, ResourceCreator, Width);
@@ -137,7 +137,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             base.Dispose();
-            _filterChooserDropdownButton.OnPressed -= _dropdownButton_OnPressed;
+            _filterChooserDropdownButton.Tapped -= _dropdownButton_OnPressed;
         }
 
         /// <summary>

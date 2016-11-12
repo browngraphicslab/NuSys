@@ -141,32 +141,87 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
             RenderEngine.Root.AddChild(InitialCollection);
 
-            DetailViewer = new DetailViewMainContainer(_renderRoot, RenderCanvas)
+            //        DetailViewer = new DetailViewMainContainer(_renderRoot, RenderCanvas);
+            //        DetailViewer.Transform.LocalPosition = new Vector2(300, 300);
+
+            //        //_renderRoot.AddChild(DetailViewer);
+            listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
             {
                 Width = 500,
                 Height = 500
             };
+            listView.ShowHeader = true;
+            listView.Transform.LocalPosition = new Vector2((float)(SessionController.Instance.ScreenWidth / 2),
+                100);
 
-            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
+            listView.RowBorderThickness = 1;
+            listView.RowDragged += ListView_RowDragged;
+            listView.RowDragCompleted += ListView_RowDragCompleted;
 
-            _renderRoot.AddChild(DetailViewer);
-            BasicToolWindow tool = new BasicToolWindow(_renderRoot, RenderCanvas)
-            {
-                Width = 500,
-                Height = 500,
-                Background = Colors.Blue,
-                BorderWidth = 5,
-                Bordercolor = Colors.Black
-            };
-            tool.Transform.LocalPosition = new Vector2(300, 300);
+            var listColumn = new ListTextColumn<LibraryElementModel>();
+            listColumn.Title = "Title";
+            listColumn.RelativeWidth = 1;
+            listColumn.ColumnFunction = model => model.Title;
 
-            _renderRoot.AddChild(tool);
+            var listColumn2 = new ListTextColumn<LibraryElementModel>();
+            listColumn2.Title = "Creator";
+            listColumn2.RelativeWidth = 2;
+            listColumn2.ColumnFunction = model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
+
+            var listColumn3 = new ListTextColumn<LibraryElementModel>();
+            listColumn3.Title = "Last Edited Timestamp";
+            listColumn3.RelativeWidth = 3;
+            listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
+
+            listView.AddColumns(new List<ListColumn<LibraryElementModel>>() { listColumn, listColumn2, listColumn3 });
+            //listView.RemoveColumn("Last Edited Timestamp");
+            //listView.AddColumn(listColumn3);
+
+
+            listView.AddItems(
+    SessionController.Instance.ContentController.ContentValues.ToList());
+
+            //        rect = new RectangleUIElement(_renderRoot, RenderCanvas);
+            //        rect.Width = 100;
+            //        rect.Height = 100;
+            //        rect.Background = Colors.Red;
+
+
+            //        BasicToolWindow tool = new BasicToolWindow(_renderRoot, RenderCanvas)
+            //        {
+            //            Width = 500,
+            //            Height = 500,
+            //            Background = Colors.Blue,
+            //            BorderWidth = 5,
+            //            Bordercolor = Colors.Black
+            //        };
+            //tool.Transform.LocalPosition = new Vector2(300, 300);
+
+            _renderRoot.AddChild(listView);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
             RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+        }
+        
+        private ListViewUIElementContainer<LibraryElementModel> listView;
+        private RectangleUIElement rect;
+
+        private void ListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            if (!rect.IsVisible)
+            {
+                rect.IsVisible = true;
+            }
+            rect.Transform.LocalPosition = pointer.CurrentPoint;
+            
+        }
+
+        private void ListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            rect.IsVisible = false;
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)

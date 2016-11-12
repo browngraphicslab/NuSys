@@ -23,11 +23,18 @@ namespace NuSysApp
             get { return _scrollBar; }
         }
 
+
         public ScrollableRectangleUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _parent = parent;
             _resourceCreator = resourceCreator;
 
+            //PointerWheelChanged += ScrollableRectanglePointerWheelChanged;
+            
+        }
+
+        public virtual void ScrollableRectanglePointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
+        {
 
         }
 
@@ -76,7 +83,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             _scrollBar.ScrollBarPositionChanged -= ScrollBarPositionChanged;
-
+            //PointerWheelChanged -= ScrollableRectanglePointerWheelChanged;
             base.Dispose();
         }
 

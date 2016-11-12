@@ -98,7 +98,7 @@ namespace NuSysApp
             _imageAnalysisLayoutManager.AddElement(_analysisUIElement);
 
             // set the tapped method on the addRegionButton
-            _addRegionButton.OnPressed += AddRegionButton_Tapped;
+            _addRegionButton.Tapped += AddRegionButton_Tapped;
         }
 
         /// <summary>

@@ -77,8 +77,8 @@ namespace NuSysApp
             InitializeCurrTimeAndDurationDisplay(_currTimeAndDurationDisplay);
             AddChild(_currTimeAndDurationDisplay);
 
-            _playPauseButton.OnPressed += _playPauseButton_Tapped;
-            _volumeButton.OnPressed += OnVolumeButtonTapped;
+            _playPauseButton.Tapped += _playPauseButton_Tapped;
+            _volumeButton.Tapped += OnVolumeButtonTapped;
             _volumeSlider.OnSliderMoved += VolumeSliderOnSliderMoved;
 
             _isLoading = true;
@@ -211,8 +211,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _playPauseButton.OnPressed -= _playPauseButton_Tapped;
-            _volumeButton.OnPressed -= OnVolumeButtonTapped;
+            _playPauseButton.Tapped -= _playPauseButton_Tapped;
+            _volumeButton.Tapped -= OnVolumeButtonTapped;
             _volumeSlider.OnSliderMoved -= VolumeSliderOnSliderMoved;
             _mediaElement.MediaOpened -= OnMediaElementOpened;
             RemoveMediaElementFromVisualTree(_mediaElement);
