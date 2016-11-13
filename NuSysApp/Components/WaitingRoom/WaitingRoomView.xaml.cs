@@ -41,7 +41,7 @@ namespace NuSysApp
         public FreeFormViewer _freeFormViewer;
 
         public static string InitialWorkspaceId { get; private set; }
-        public static string ServerName { get; private set; }
+        
         public static string UserID { get; private set; }
 
         public static string UserName { get; private set; }
@@ -81,10 +81,9 @@ namespace NuSysApp
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             //ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
-            ServerName = NusysConstants.TEST_LOCAL_BOOLEAN ? "localhost:2776" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
-            ServerNameText.Text = ServerName;
+            ServerNameText.Text = NusysConstants.ServerName;
             //ServerNameText.TextChanged += delegate
             //{
             //    ServerName = ServerNameText.Text;
@@ -643,7 +642,7 @@ namespace NuSysApp
                 cred["display_name"] = displayname ?? "MIRANDA PUT THE DISLPAY NAME HEEERRE";
                 cred["new_user"] = "";
             }
-            var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";
+            var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + NusysConstants.ServerName + "/api/nusyslogin/";
             var client = new HttpClient(
              new HttpClientHandler
              {
@@ -1023,6 +1022,25 @@ namespace NuSysApp
        
                     break;
             }   
+        }
+
+        private void ServerNameText_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        {
+            switch (ServerNameText.Text.ToLower())
+            {
+                case "local":
+                    NusysConstants.ServerName = "localhost: 2776";
+                    break;
+                case "test":
+                    NusysConstants.ServerName = "nusystest.azurewebsites.net";
+                    break;
+                case "live":
+                    NusysConstants.ServerName = "nusysrepo.azurewebsites.net";
+                    break;
+                default:
+                    NusysConstants.ServerName = ServerNameText.Text;
+                    break;
+            }
         }
     }
 }

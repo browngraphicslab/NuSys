@@ -61,7 +61,7 @@ namespace NuSysApp
         {
             _socket = new MessageWebSocket();
 
-            ServerBaseURI = "://" + WaitingRoomView.ServerName + "/api/";
+            ServerBaseURI = "://" + NusysConstants.ServerName + "/api/";
             var credentials = GetUserCredentials();
             var uri = GetUri("nusysconnect/" + credentials, true);
 

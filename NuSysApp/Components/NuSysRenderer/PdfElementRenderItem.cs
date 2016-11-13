@@ -50,11 +50,14 @@ namespace NuSysApp
         public override void Dispose()
         {
             if (IsDisposed)
+            {
                 return;
+            }
 
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-
+            _image.Dispose();
             _image = null;
+            _vm.Dispose();
             _vm = null;
             _pdfLibraryElementController = null;
 
