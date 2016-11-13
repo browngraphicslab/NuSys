@@ -76,12 +76,6 @@ namespace NuSysApp
         private BaseRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
-<<<<<<< HEAD
-
-        public DetailViewRenderItem DetailViewer { get; set; }
-
-=======
->>>>>>> 4a708de6992163adfd53b18f2f67559dcf304d93
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -963,13 +957,13 @@ namespace NuSysApp
                 }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //DetailViewer.ShowLibraryElement(libraryElementModelId);
                 //SessionController.Instance.SessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                DetailViewer.ShowLibraryElement(libraryElementModelId);
+                //DetailViewer.ShowLibraryElement(libraryElementModelId);
                 //SessionController.Instance.SessionView.ShowDetailView(controller);
             }
 
