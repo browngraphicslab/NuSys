@@ -190,6 +190,9 @@ namespace NuSysApp
         {
             UITask.Run(async delegate
             {
+                if(SessionView?.FreeFormViewer?.InitialCollection?.Camera == null) {
+                    return;
+                }
                 var camera = SessionView.FreeFormViewer.InitialCollection.Camera;
                 var currentState = new CapturedStateModel(
                     ActiveFreeFormViewer.LibraryElementId,
