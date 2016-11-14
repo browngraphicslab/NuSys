@@ -11,7 +11,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    class DetailViewImagePage : DetailViewPage
+    public class DetailViewImagePage : DetailViewPage
     {
         private DetailViewImageRegionContent _content;
 

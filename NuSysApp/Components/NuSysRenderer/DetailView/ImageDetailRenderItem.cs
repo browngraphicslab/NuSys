@@ -78,6 +78,9 @@ namespace NuSysApp
             _controller.LocationChanged -= ControllerOnLocationChanged;
             _controller.SizeChanged -= ControllerOnSizeChanged;
 
+            _activeRegion?.Dispose();
+            _bmp?.Dispose();
+
             foreach (var child in GetChildren())
             {
                 var region = child as ImageDetailRegionRenderItem;
@@ -132,6 +135,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
+            
             _isLoading = true;
             _bmp?.Dispose();
             await Task.Run(async () =>

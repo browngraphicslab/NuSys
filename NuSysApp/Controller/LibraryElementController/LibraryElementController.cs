@@ -503,7 +503,7 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");//TODO just had default icons 
+                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -540,7 +540,7 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");//TODO just had default icons 
+                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -578,7 +578,7 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
+                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");

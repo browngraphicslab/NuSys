@@ -193,6 +193,7 @@ namespace NuSysApp
 
             await Task.Run(async () =>
             {
+                Debug.WriteLine("loading");
                 _imageBitmap =
                     await
                         CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),

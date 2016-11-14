@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -28,7 +29,7 @@ namespace NuSysApp
         public ElementViewModel ViewModel => _vm;
         private bool _needsTitleUpdate = true;
         private CanvasTextFormat _format;
-
+   
         public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;
@@ -215,6 +216,22 @@ namespace NuSysApp
             };
 
             return rect.Contains(new Point(point.X, point.Y));
+        }
+
+        public Rect GetScreenRect()
+        {
+            var transform = Transform.Parent.LocalToScreenMatrix;
+            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), transform);
+            var rect = new Rect
+            {
+                X = sp.X,
+                Y = sp.Y,
+                Width = spr.X - sp.X,
+                Height = spr.Y - sp.Y
+            };
+
+            return rect;
         }
 
         public override Rect GetLocalBounds()
