@@ -22,11 +22,9 @@ namespace NuSysApp
         /// </summary>
         private bool _dismissable;
 
-        public bool Dismissable
-        {
-            get { return _dismissable; }
-        }
-
+        /// <summary>
+        /// the text set for a dismiss button, if there is one
+        /// </summary>
         private string _dismissText;
         /// <summary>
         /// if there is a dismiss button, use this to set the text of the button
@@ -65,8 +63,9 @@ namespace NuSysApp
             _parent = null;
             _dismissText = "";
 
-            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed +=
-            //    CanvasInteractionManager_ClosePopup;
+            //11/13/16 - if this is uncommented right now, the right click to trigger popup will immediately also dismiss it...
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed +=
+                CanvasInteractionManager_ClosePopup;
         }
 
         /// <summary>
@@ -153,17 +152,6 @@ namespace NuSysApp
         {
             DismissPopup();
             Dispose();
-        }
-
-        /// <summary>
-        /// draws popup. if the popup has no parent, then it will be drawn on top of the freeformviewer for now.
-        /// if the popup is not dismissable, then it needs a button in order to dismiss it.
-        /// </summary>
-        /// <param name="ds"></param>
-        public override void Draw(CanvasDrawingSession ds) 
-        {
-            //draw on top of freeform viewer if parent is null
-            base.Draw(ds);
         }
 
         /// <summary>

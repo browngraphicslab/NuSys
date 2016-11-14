@@ -396,22 +396,30 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
+        /// <summary>
+        /// shows flyout on right click.
+        /// sets the flyout's appearance.
+        /// 
+        /// NOTE: instead of null, pass in appropriate handler for delete/add columns in AddFlyoutItem
+        /// </summary>
+        /// <param name="pointer"></param>
         public void ShowFlyout(CanvasPointer pointer)
         {
             FlyoutPopup columnMenu = new FlyoutPopup(this, _resourceCreator);
             columnMenu.Width = 150;
             columnMenu.Height = 100;
             columnMenu.Parent = this;
-            //columnMenu.Transform.LocalPosition = pointer.CurrentPoint;
             var pos = new Vector2(pointer.CurrentPoint.X - Transform.LocalPosition.X, pointer.CurrentPoint.Y - Transform.LocalPosition.Y);
             columnMenu.Transform.LocalPosition = pos;
             columnMenu.Background = Colors.White;
             columnMenu.BorderWidth = 1;
             columnMenu.Bordercolor = Constants.color2;
             columnMenu.ShowPopup();
-
+            
+            //add appropriate handlers here!
             columnMenu.AddFlyoutItem("Add Column", null, _resourceCreator);
             columnMenu.AddFlyoutItem("Delete Column", null, _resourceCreator);
+
             AddChild(columnMenu);
 
         }
