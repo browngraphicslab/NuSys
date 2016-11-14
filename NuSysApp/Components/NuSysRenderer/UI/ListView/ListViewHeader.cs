@@ -46,7 +46,7 @@ namespace NuSysApp
                 headerItem.Background = Colors.LightGray;
                 headerItem.ButtonTextColor = Colors.Black;
                 headerItem.ButtonText = c.Title;
-                headerItem.ButtonFontSize = 15;
+                headerItem.ButtonTextSize = 15;
                 headerItem.Width = c.RelativeWidth / listview.SumOfColRelWidths * listview.Width;
                 headerItem.Height = Height;
                 headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);

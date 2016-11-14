@@ -354,6 +354,7 @@
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewAudioPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImagePage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewLinksPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewMainContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
@@ -370,9 +371,18 @@
     <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListViewHeaderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListTextColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewHeader.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewRowUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElementContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollableRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollBarUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ScrubBarUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackAlignment.cs" />

@@ -14,6 +14,6 @@ namespace NuSysApp
 
         //Each item in this list corresponds to a different column in this list
         //These items will be
-        private List<Win2dListViewItem>;
+        //private List<Win2dListViewItem>;
     }
 }
