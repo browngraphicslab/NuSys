@@ -686,19 +686,36 @@ namespace NuSysApp
             }
 
             var transform = RenderEngine.GetCollectionTransform(InitialCollection);
-            Vector2 start = -transform.Translation / transform.M11;
-            start = new Vector2(float.MaxValue, float.MaxValue);
+            Vector2 start = new Vector2(float.MaxValue, float.MaxValue);
 
             // Do the layout
-            foreach (var elementRenderItem in SortedSelections)
+            start = SortedSelections.Aggregate(start, (current, elementRenderItem) => new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, current.X), (float) Math.Min(elementRenderItem.ViewModel.Y, current.Y)));
+
+            if (style == LayoutStyle.Custom)
             {
-                start = new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, start.X), (float) Math.Min(elementRenderItem.ViewModel.Y, start.Y));
+                var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
+                var points =
+                    latestStroke.GetInkPoints().Select(p => new Vector2((float) p.Position.X, (float) p.Position.Y));
+                var multipoint = new MultiPoint(points.Select(p => new NetTopologySuite.Geometries.Point(p.X, p.Y)).ToArray());
+                foreach (var inkPoint in points)
+                {
+                    
+                }
+
+                var n = 0;
+                foreach (var inkPoint in points)
+                {
+                    var point = Vector2.Transform(inkPoint, transform);
+                    SortedSelections[n].ViewModel.Controller.SetPosition(inkPoint.X, inkPoint.Y);
+                    n++;
+                }
+                return;
             }
 
-            Vector2 nextPosition = start;
-            int rows = (int) Math.Round(Math.Sqrt(SortedSelections.Count));
-            int i = 0;
-            float maxHeight = 0;
+            var nextPosition = start;
+            var rows = (int) Math.Round(Math.Sqrt(SortedSelections.Count));
+            var i = 0;
+            var maxHeight = 0.0f;
             foreach (var elementRenderItem in SortedSelections)
             {
                 elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
