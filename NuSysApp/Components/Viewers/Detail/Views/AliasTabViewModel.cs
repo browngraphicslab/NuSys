@@ -71,6 +71,7 @@ namespace NuSysApp
         {
             Debug.Assert(elementModels != null);
             AliasTemplates.Clear();
+            elementModels = elementModels.Where(em => SessionController.Instance.ContentController.GetLibraryElementController(em.ParentCollectionId) != null);
             elementModels.ForEach(element => AliasTemplates.Add(new AliasTemplate(element)));//for each element model, add it to the alias templates
         }
 

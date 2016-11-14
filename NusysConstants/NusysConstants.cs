@@ -14,6 +14,16 @@ namespace NusysIntermediate
         /// </summary>
         public static bool TEST_LOCAL_BOOLEAN = false;
 
+        /// <summary>
+        /// a boolean representing whether we are using the test server by default or the live server
+        /// </summary>
+        public const bool TEST_SERVER_BOOLEAN = true;
+
+        /// <summary>
+        /// the name of the currently used server
+        /// </summary>
+        public static string ServerName { get; set; } = TEST_LOCAL_BOOLEAN ? "localhost:2776" : (TEST_SERVER_BOOLEAN ? "nusystest.azurewebsites.net" : "nusysrepo.azurewebsites.net");
+
         #region RequestManagementKeys
 
         /// <summary>

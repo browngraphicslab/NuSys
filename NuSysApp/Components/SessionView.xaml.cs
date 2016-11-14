@@ -69,6 +69,8 @@ namespace NuSysApp
         /// </summary>
         public FileAddedAclsPopup FileAddedAclsPopup => xFileAddedAclesPopup;
 
+        private string _prevCollectionLibraryId;
+
         #endregion Private Members
 
 
@@ -91,6 +93,11 @@ namespace NuSysApp
             xLoadingGrid.PointerPressed += XLoadingGridOnPointerPressed;
         }
 
+        public void SetPreviousCollection(string collectionLibraryId)
+        {
+            _prevCollectionLibraryId = collectionLibraryId;
+            PrevCollection.Visibility = _prevCollectionLibraryId != null ? Visibility.Visible : Visibility.Collapsed;
+        }
         private void XLoadingGridOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
             SessionController.Instance.LoadCapturedState();
@@ -691,6 +698,12 @@ namespace NuSysApp
         }
         public Grid OuterMost { get { return xOuterMost; } }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
+
+        private async void PrevCollectionButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            await SessionController.Instance.EnterCollection(_prevCollectionLibraryId);
+            PrevCollection.Visibility = Visibility.Collapsed;
+        }
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         {
             //await StaticServerCalls.CreateSnapshot();
