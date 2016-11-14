@@ -123,7 +123,19 @@ namespace NuSysApp
             }
         }
 
+        public float Height
+        {
+            get { return base.Height; }
 
+            set
+            {
+                if (base.Height != value)
+                {
+                    base.Height = value;
+                    CreateListViewRowUIElements();
+                }
+            }
+        }
         public float Width
         {
             get
@@ -751,7 +763,6 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            base.Draw(ds);
 
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
@@ -774,9 +785,11 @@ namespace NuSysApp
 
             }
             ds.Transform = orgTransform;
+            base.Draw(ds);
+
         }
 
-        
+
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
             foreach(var row in Rows)

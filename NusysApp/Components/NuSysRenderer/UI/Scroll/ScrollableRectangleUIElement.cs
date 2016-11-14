@@ -26,6 +26,7 @@ namespace NuSysApp
 
         public ScrollableRectangleUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            Background = Colors.Transparent;
             _parent = parent;
             _resourceCreator = resourceCreator;
             MakeScrollBar();
@@ -53,6 +54,12 @@ namespace NuSysApp
             AddChild(_scrollBar);
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _scrollBar.Height = Height;
+            base.Update(parentLocalToScreenTransform);
+        }
+
         public virtual void ScrollBarPositionChanged(object source, double position)
         {
 
@@ -60,7 +67,7 @@ namespace NuSysApp
         
         public override void Draw(CanvasDrawingSession ds)
         {
-            _scrollBar.Transform.LocalPosition = new Vector2((float)Width, 0);
+            _scrollBar.Transform.LocalPosition = new Vector2((float)Width - _scrollBar.Width, 0);
 
             base.Draw(ds);
         }
