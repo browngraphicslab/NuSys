@@ -116,16 +116,18 @@ namespace NuSysApp
             get { return base.Width; }
             set
             {
-                if (ListView != null)
+                if (base.Width != value)
                 {
-                    ListView.Width = value;
-                    if (_header != null)
+                    if (ListView != null)
                     {
-                        _header.RefreshTitles(ListView.ListColumns, ListView.Width, ListView.SumOfColRelWidths, _resourceCreator);
+                        ListView.Width = value;
+                        if (_header != null)
+                        {
+                            _header.RefreshTitles(ListView.ListColumns, ListView.Width, ListView.SumOfColRelWidths, _resourceCreator);
+                        }
                     }
+                    base.Width = value;
                 }
-                base.Width = value;
-                
             }
         }
 

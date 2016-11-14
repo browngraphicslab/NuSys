@@ -133,8 +133,11 @@ namespace NuSysApp
             }
             set
             {
-                base.Width = value;
-                RepopulateExistingListRows();
+                if (base.Width != value)
+                {
+                    base.Width = value;
+                    RepopulateExistingListRows();
+                }
             }
         }
         
