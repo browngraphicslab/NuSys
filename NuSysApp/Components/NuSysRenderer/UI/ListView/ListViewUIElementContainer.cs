@@ -399,7 +399,7 @@ namespace NuSysApp
         public void ShowFlyout(CanvasPointer pointer)
         {
             FlyoutPopup columnMenu = new FlyoutPopup(this, _resourceCreator);
-            columnMenu.Width = 200;
+            columnMenu.Width = 150;
             columnMenu.Height = 100;
             columnMenu.Parent = this;
             //columnMenu.Transform.LocalPosition = pointer.CurrentPoint;

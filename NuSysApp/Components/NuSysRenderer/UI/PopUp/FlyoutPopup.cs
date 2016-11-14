@@ -52,7 +52,7 @@ namespace NuSysApp
             flyoutItem.ButtonTextColor = Constants.color3;
             flyoutItem.BorderWidth = 1;
             flyoutItem.ButtonText = text;
-            flyoutItem.ButtonFontSize = 14;
+            flyoutItem.ButtonFontSize = 12;
             flyoutItem.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             flyoutItem.SelectedBackground = Constants.color3;
             flyoutItem.SelectedTextColor = Colors.White;
