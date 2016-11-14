@@ -27,6 +27,8 @@ namespace NuSysApp
 
         public static Color TextColor = Colors.Black;
 
+        public static Color SelectedTextColor = Colors.White;
+
         public static FontStyle FontStyle = FontStyle.Normal;
 
         public static float FontSize = 14;

@@ -65,8 +65,8 @@ namespace NuSysApp
             _parent = null;
             _dismissText = "";
 
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed +=
-                CanvasInteractionManager_ClosePopup;
+            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed +=
+            //    CanvasInteractionManager_ClosePopup;
         }
 
         /// <summary>
@@ -81,8 +81,6 @@ namespace NuSysApp
             {
                 DismissPopup();
             }
-            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed -=
-            //    CanvasInteractionManager_ClosePopup;
         }
 
         /// <summary>
@@ -101,6 +99,7 @@ namespace NuSysApp
         public void DismissPopup()
         {
             this.IsVisible = false;
+            Dispose();
         }
 
         /// <summary>
@@ -153,6 +152,7 @@ namespace NuSysApp
         private void DismissButton_OnTapped(ButtonUIElement item, CanvasPointer pointer)
         {
             DismissPopup();
+            Dispose();
         }
 
         /// <summary>

@@ -82,6 +82,11 @@ namespace NuSysApp
         public Color? SelectedBackground { get; set; }
 
         /// <summary>
+        /// color of selected text
+        /// </summary>
+        public Color? SelectedTextColor { get; set; }
+
+        /// <summary>
         /// The border color to be set while the button is in the pressed state.
         /// </summary>
         public Color? SelectedBorder { get; set; }
@@ -154,6 +159,7 @@ namespace NuSysApp
             // set the Background and Border to SelectedBackground and SelectedBorder if either of those is not null
             Background = SelectedBackground ?? Background;
             Bordercolor = SelectedBorder ?? Background;
+            SelectedTextColor = SelectedTextColor ?? ButtonTextColor;
 
             // Fire the button's Clicked event. 
             Tapped?.Invoke(this, pointer);

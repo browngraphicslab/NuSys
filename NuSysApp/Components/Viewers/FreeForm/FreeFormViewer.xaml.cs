@@ -190,6 +190,23 @@ namespace NuSysApp
             // add a child to the render engine after the InitialCollection. This will overlay the InitialCollection
             RenderEngine.Root.AddChild(listView);
 
+
+            ////popup testing
+            //var popup = new PopupUIElement(_renderRoot, RenderCanvas)
+            //{
+            //    Background = Colors.White,
+            //    Bordercolor = Colors.DarkSlateGray,
+            //    BorderWidth = 1,
+            //    Height = 200,
+            //    Width = 400
+            //};
+
+            //popup.Transform.LocalPosition =
+            //    new Vector2((float)(SessionController.Instance.ScreenWidth / 2 - popup.Width / 2), 300);
+            ////popup.SetNotDismissable(RenderCanvas, "OK");
+
+            //RenderEngine.Root.AddChild(popup);       
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

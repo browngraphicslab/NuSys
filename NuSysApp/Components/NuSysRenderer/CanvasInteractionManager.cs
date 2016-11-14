@@ -267,19 +267,5 @@ namespace NuSysApp
            
         }
 
-        ///// <summary>
-        ///// adds handler for when a popup is opened. this only gets added when there is a popup present, and should 
-        ///// get disposed of immediately after the popup is hidden.
-        ///// 
-        ///// this should be called by whatever is opening the popup.
-        ///// </summary>
-        ///// <param name="pointer"></param>
-        //public void PopupOpened(PopupUIElement popup)
-        //{
-        //    ClosePopup += CanvasInteractionManager_ClosePopup;
-        //    _popups.Add(popup);
-        //}
-
-
     }
 }

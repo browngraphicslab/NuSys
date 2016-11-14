@@ -9,6 +9,7 @@ using Windows.UI;
 using Windows.UI.Input;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
@@ -401,12 +402,16 @@ namespace NuSysApp
             columnMenu.Width = 200;
             columnMenu.Height = 100;
             columnMenu.Parent = this;
-            columnMenu.Transform.LocalPosition = pointer.CurrentPoint;
-            //columnMenu.Transform.LocalPosition = new Vector2(0,0);
+            //columnMenu.Transform.LocalPosition = pointer.CurrentPoint;
+            var pos = new Vector2(pointer.CurrentPoint.X - Transform.LocalPosition.X, pointer.CurrentPoint.Y - Transform.LocalPosition.Y);
+            columnMenu.Transform.LocalPosition = pos;
             columnMenu.Background = Colors.White;
             columnMenu.BorderWidth = 1;
             columnMenu.Bordercolor = Constants.color2;
             columnMenu.ShowPopup();
+
+            columnMenu.AddFlyoutItem("Add Column", null, _resourceCreator);
+            columnMenu.AddFlyoutItem("Delete Column", null, _resourceCreator);
             AddChild(columnMenu);
 
         }
