@@ -51,21 +51,16 @@ namespace NuSysApp
 
         private bool _showHeader;
 
-        public bool ShowHeader {
-            get { return _showHeader; } set {
-            if (value != _showHeader)
+        public bool ShowHeader
+        {
+            get { return _showHeader; }
+            set
             {
-                if (value == true)
-                {
-                    AddChild(_header);
-                }
-                else
-                {
-                    RemoveChild(_header);
-                }
+                _header.IsVisible = value;
+                _listYPos = value ? _header.Height : 0;
                 _showHeader = value;
             }
-        } }
+        }
 
         /// <summary>
         /// where listview will draw itself
@@ -197,6 +192,7 @@ namespace NuSysApp
             _header.HeaderTapped += Header_HeaderTapped;
             _header.HeaderResizing += Header_HeaderResizing;
             _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
+            AddChild(_header);
             ShowHeader = true;
         }
 

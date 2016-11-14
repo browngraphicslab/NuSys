@@ -3,7 +3,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public abstract class BaseToolInnerView : BaseRenderItem
+    public abstract class BaseToolInnerView : RectangleUIElement
     {
         public BaseToolInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {

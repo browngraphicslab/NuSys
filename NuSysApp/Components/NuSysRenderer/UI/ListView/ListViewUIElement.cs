@@ -329,6 +329,7 @@ namespace NuSysApp
         {
             foreach(var row in Rows)
             {
+                row.Width = Width - BorderWidth*2;
                 row.RemoveAllCells();
                 PopulateListRow(row);
             }

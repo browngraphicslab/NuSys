@@ -28,15 +28,11 @@ namespace NuSysApp
         {
             _parent = parent;
             _resourceCreator = resourceCreator;
+            MakeScrollBar();
 
-            //PointerWheelChanged += ScrollableRectanglePointerWheelChanged;
-            
-        }
-
-        public virtual void ScrollableRectanglePointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
-        {
 
         }
+        
 
         /// <summary>
         /// Creates the scrollbar and adds it as a child of the RectangleUIElement
@@ -61,18 +57,7 @@ namespace NuSysApp
         {
 
         }
-
-        public override Task Load()
-        {
-            MakeScrollBar();
-            return base.Load();
-        }
-
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            base.Update(parentLocalToScreenTransform);
-        }
-
+        
         public override void Draw(CanvasDrawingSession ds)
         {
             _scrollBar.Transform.LocalPosition = new Vector2((float)Width, 0);
@@ -83,7 +68,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             _scrollBar.ScrollBarPositionChanged -= ScrollBarPositionChanged;
-            //PointerWheelChanged -= ScrollableRectanglePointerWheelChanged;
             base.Dispose();
         }
 

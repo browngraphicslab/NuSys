@@ -145,41 +145,41 @@ namespace NuSysApp
             //        DetailViewer.Transform.LocalPosition = new Vector2(300, 300);
 
             //        //_renderRoot.AddChild(DetailViewer);
-            listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
-            {
-                Width = 500,
-                Height = 500
-            };
-            listView.ShowHeader = true;
-            listView.Transform.LocalPosition = new Vector2((float)(SessionController.Instance.ScreenWidth / 2),
-                100);
+            //listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
+            //{
+            //    Width = 500,
+            //    Height = 500
+            //};
+            //listView.ShowHeader = false;
+            //listView.Transform.LocalPosition = new Vector2((float)(SessionController.Instance.ScreenWidth / 2),
+            //    100);
 
-            listView.RowBorderThickness = 1;
-            listView.RowDragged += ListView_RowDragged;
-            listView.RowDragCompleted += ListView_RowDragCompleted;
+            //listView.RowBorderThickness = 1;
+            //listView.RowDragged += ListView_RowDragged;
+            //listView.RowDragCompleted += ListView_RowDragCompleted;
 
-            var listColumn = new ListTextColumn<LibraryElementModel>();
-            listColumn.Title = "Title";
-            listColumn.RelativeWidth = 1;
-            listColumn.ColumnFunction = model => model.Title;
+            //var listColumn = new ListTextColumn<LibraryElementModel>();
+            //listColumn.Title = "Title";
+            //listColumn.RelativeWidth = 1;
+            //listColumn.ColumnFunction = model => model.Title;
 
-            var listColumn2 = new ListTextColumn<LibraryElementModel>();
-            listColumn2.Title = "Creator";
-            listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction = model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
+            //var listColumn2 = new ListTextColumn<LibraryElementModel>();
+            //listColumn2.Title = "Creator";
+            //listColumn2.RelativeWidth = 2;
+            //listColumn2.ColumnFunction = model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
 
-            var listColumn3 = new ListTextColumn<LibraryElementModel>();
-            listColumn3.Title = "Last Edited Timestamp";
-            listColumn3.RelativeWidth = 3;
-            listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
+            //var listColumn3 = new ListTextColumn<LibraryElementModel>();
+            //listColumn3.Title = "Last Edited Timestamp";
+            //listColumn3.RelativeWidth = 3;
+            //listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
 
-            listView.AddColumns(new List<ListColumn<LibraryElementModel>>() { listColumn, listColumn2, listColumn3 });
+            //listView.AddColumns(new List<ListColumn<LibraryElementModel>>() { listColumn, listColumn2, listColumn3 });
             //listView.RemoveColumn("Last Edited Timestamp");
             //listView.AddColumn(listColumn3);
 
 
-            listView.AddItems(
-    SessionController.Instance.ContentController.ContentValues.ToList());
+    //        listView.AddItems(
+    //SessionController.Instance.ContentController.ContentValues.ToList());
 
             //        rect = new RectangleUIElement(_renderRoot, RenderCanvas);
             //        rect.Width = 100;
@@ -196,8 +196,13 @@ namespace NuSysApp
             //            Bordercolor = Colors.Black
             //        };
             //tool.Transform.LocalPosition = new Vector2(300, 300);
-
-            _renderRoot.AddChild(listView);
+            var tool = new BasicToolWindow(_renderRoot, RenderCanvas)
+            {
+                Height = 500,
+                Width = 500
+            };
+            tool.Transform.LocalPosition = new Vector2(200,200);
+            _renderRoot.AddChild(tool);
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

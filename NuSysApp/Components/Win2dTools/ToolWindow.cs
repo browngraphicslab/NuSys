@@ -195,9 +195,7 @@ namespace NuSysApp
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            base.Update(parentLocalToScreenTransform);
-            
+        {            
             //Make the width of the filter chooser and the button always fill the window
             if (_filterChooser.Width != Width)
             {
@@ -213,6 +211,8 @@ namespace NuSysApp
             //Set up button bar at the bottom of tool
             ButtonBarRectangle.Transform.LocalY = this.Height - BUTTON_BAR_HEIGHT;
             ButtonBarRectangle.Width = Width;
+
+            base.Update(parentLocalToScreenTransform);
         }
     }
 }

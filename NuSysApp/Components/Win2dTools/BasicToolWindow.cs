@@ -13,7 +13,7 @@ namespace NuSysApp
 
         private const int VIEW_BUTTON_HEIGHT = 40;
 
-      
+        private BaseToolInnerView _innerView;
 
         /// <summary>
         /// The button for changing the inner view to the list view
@@ -33,6 +33,18 @@ namespace NuSysApp
         public BasicToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             SetUpBottomButtons();
+            _innerView = new BaseToolListInnerView(this, ResourceCreator);
+            AddChild(_innerView);
+
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _innerView.Height = Height;
+            _innerView.Width = Width;
+            _innerView.Transform.LocalPosition = new Vector2(0, UIDefaults.TopBarHeight);
+
+            base.Update(parentLocalToScreenTransform);
         }
 
         private void SetUpBottomButtons()
@@ -79,7 +91,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            base.Draw(ds);
+            
 
             //Arrange the buttons at the bottom
             if (_listToolViewButton != null)
@@ -98,6 +110,8 @@ namespace NuSysApp
             {
                 _barToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
             }
+
+            base.Draw(ds);
 
         }
     }
