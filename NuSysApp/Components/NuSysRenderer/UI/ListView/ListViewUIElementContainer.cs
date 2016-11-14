@@ -142,11 +142,21 @@ namespace NuSysApp
             }
             set
             {
-                if (ListView != null)
+                if (base.Height != value)
                 {
-                    ListView.Height = value;
+                    if (ListView != null)
+                    {
+                        if (ShowHeader)
+                        {
+                            ListView.Height = value - _header.Height;
+                        }
+                        else
+                        {
+                            ListView.Height = value;
+                        }
+                    }
+                    base.Height = value;
                 }
-                base.Height = value;
             }
         }
 
