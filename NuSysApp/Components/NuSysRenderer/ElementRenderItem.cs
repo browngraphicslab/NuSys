@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Text;
@@ -15,6 +16,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using WinRTXamlToolkit.IO.Extensions;
 
 namespace NuSysApp
 {
@@ -240,5 +242,30 @@ namespace NuSysApp
                 return new Rect();
             return new Rect(0, 0, ViewModel.Width, ViewModel.Height);
         }
+
+        /// <summary>
+        /// export a node to an HTML page
+        /// 
+        /// creates an html page from the node's contents (for now, can also take rendered image of node)
+        /// </summary>
+        public async void ExportToHTML()
+        {
+            /// create the node's HTML file in the HTML folder
+            /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
+            var storageFolder = ApplicationData.Current.LocalFolder;
+            StorageFolder htmlFolder = null;
+            if (await storageFolder.ContainsFolderAsync("HTML"))
+            {
+                htmlFolder = await storageFolder.GetFolderAsync("HTML");
+            }
+            else
+            {
+                htmlFolder = await storageFolder.CreateFolderAsync("HTML", CreationCollisionOption.ReplaceExisting);
+            }
+            var sampleFile = await htmlFolder.CreateFileAsync(_vm.Title + ".htm", Windows.Storage.CreationCollisionOption.ReplaceExisting);
+
+            await FileIO.WriteTextAsync(sampleFile, "TITLE: " + _vm.Title);
+        }
+
     }
 }

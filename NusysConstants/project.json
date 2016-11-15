@@ -1,6 +1,7 @@
 ﻿{
   "supports": {},
   "dependencies": {
+    "Core.Spire.Presentation": "1.0.0",
     "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {
