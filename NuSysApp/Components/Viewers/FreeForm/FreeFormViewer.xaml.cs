@@ -187,26 +187,31 @@ namespace NuSysApp
             //        rect.Background = Colors.Red;
 
 
-            //        BasicToolWindow tool = new BasicToolWindow(_renderRoot, RenderCanvas)
-            //        {
-            //            Width = 500,
-            //            Height = 500,
-            //            Background = Colors.Blue,
-            //            BorderWidth = 5,
-            //            Bordercolor = Colors.Black
-            //        };
-            //tool.Transform.LocalPosition = new Vector2(300, 300);
-            BasicToolModel model = new BasicToolModel();
-            BasicToolController controller = new BasicToolController(model);
-            BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-            viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
-            var tool = new BasicToolWindow(_renderRoot, RenderCanvas, viewmodel)//you should change this to not be null.
+
+            //BasicToolModel model = new BasicToolModel();
+            //BasicToolController controller = new BasicToolController(model);
+            //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+            //viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+            //var tool = new BasicToolWindow(_renderRoot, RenderCanvas, viewmodel)//you should change this to not be null.
+            //{
+            //    Height = 500,
+            //    Width = 500
+            //};
+            //tool.Transform.LocalPosition = new Vector2(200,200);
+            //_renderRoot.AddChild(tool);
+
+            MetadataToolModel model = new MetadataToolModel();
+            MetadataToolController controller = new MetadataToolController(model);
+            MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+            viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+            MetadataToolWindow view = new MetadataToolWindow(_renderRoot, RenderCanvas, viewmodel)
             {
                 Height = 500,
                 Width = 500
             };
-            tool.Transform.LocalPosition = new Vector2(200,200);
-            _renderRoot.AddChild(tool);
+            view.Transform.LocalPosition = new Vector2(200, 200);
+            _renderRoot.AddChild(view);
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

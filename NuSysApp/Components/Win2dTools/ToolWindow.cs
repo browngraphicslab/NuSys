@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -53,7 +54,6 @@ namespace NuSysApp
         /// This is the rectangle on top of the tool that allows you to change the parent operator (AND, OR)
         /// </summary>
         private ButtonUIElement _parentOperatorButton;
-
 
 
         /// <summary>
@@ -117,6 +117,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Sets up the bar in the bottom behind all the buttons
+        /// </summary>
         private void SetUpBottomButtonBar()
         {
             ButtonBarRectangle = new RectangleUIElement(this, ResourceCreator)
@@ -245,6 +248,7 @@ namespace NuSysApp
             _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed; ;
             _filterChooserDropdownButton.Transform.LocalPosition = new Vector2(0, TopBarHeight);
             AddChild(_filterChooserDropdownButton);
+
             _filterChooser = new DropdownUIElement(this, ResourceCreator, Width);
             _filterChooser.ButtonHeight = FILTER_CHOOSER_HEIGHT;
             foreach (var filterType in Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>())
@@ -255,7 +259,6 @@ namespace NuSysApp
 
             _filterChooser.IsVisible = false;
             _filterChooser.Transform.LocalPosition = new Vector2(0, TopBarHeight + _filterChooserDropdownButton.Height);
-
             AddChild(_filterChooser);
         }
 
@@ -268,6 +271,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _dropdownButton_OnPressed(ButtonUIElement item, CanvasPointer pointer)
         {
+            if (_children.Last() != _filterChooser)
+            {
+                _children.Remove(_filterChooser);
+                _children.Add(_filterChooser);
+            }
             if (_filterChooser.IsVisible)
             {
                 _filterChooser.IsVisible = false;
@@ -276,10 +284,6 @@ namespace NuSysApp
             {
                 _filterChooser.IsVisible = true;
             }
-            var vm = Vm as BasicToolViewModel;
-
-            vm.Filter = ToolModel.ToolFilterTypeTitle.Creator;
-
         }
 
         /// <summary>
@@ -339,10 +343,28 @@ namespace NuSysApp
                 Height = 50,
             };
             _refreshButton = new ButtonUIElement(this, ResourceCreator, refreshCircleShape);
+            _refreshButton.Tapped += _refreshButton_Tapped;
             _refreshButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width / 2), _deleteButton.Transform.LocalY + _deleteButton.Height + BUTTON_MARGIN);
             AddChild(_refreshButton);
         }
 
+        /// <summary>
+        /// Refresh the filter chain when the refresh button is clicked
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void _refreshButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        {
+            Task.Run(delegate {
+                Vm.Controller?.RefreshFromTopOfChain();
+            });
+        }
+
+        /// <summary>
+        /// When the parent operator button is tapped, change the parent operator appropriately (AND/OR)
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void _parentOperatorButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
         {
             if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)

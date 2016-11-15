@@ -29,6 +29,9 @@ namespace NuSysApp
         public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
         public event PointerReleasedEventHandler RowPointerReleased;
 
+        public delegate void DoubleTappedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
+        public event DoubleTappedEventHandler RowDoubleTapped;
+
         public delegate void DraggedEventHandler(
             ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
 
@@ -77,8 +80,18 @@ namespace NuSysApp
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
             cell.Dragged += Cell_Dragged;
+            cell.DoubleTapped += Cell_DoubleTapped;
             cell.PointerWheelChanged += Cell_PointerWheelChanged;
         }
+
+        private void Cell_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var cell = item as RectangleUIElement;
+            Debug.Assert(cell != null);
+            RowDoubleTapped?.Invoke(this, _children.IndexOf(item), pointer, Item);
+
+        }
+
         /// <summary>
         /// Invokes PointerWheelChanged, which is listened to the ListViewUIElement, which then updates the position of the scrollbar.
         /// </summary>
@@ -184,6 +197,7 @@ namespace NuSysApp
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
             cell.Dragged -= Cell_Dragged;
+            cell.DoubleTapped -= Cell_DoubleTapped;
             cell.PointerWheelChanged -= Cell_PointerWheelChanged;
         }
 

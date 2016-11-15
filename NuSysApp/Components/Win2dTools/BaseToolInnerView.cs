@@ -157,7 +157,15 @@ namespace NuSysApp
                 {
                     Vm.Selection = new HashSet<string>() { selection };
                 }
-                //TODO: Add new tool here
+
+                //IDK WHAT TO DO W THIS SHIT
+                //var wvm = SessionController.Instance.ActiveFreeFormViewer;
+                //var el = (FrameworkElement)sender;
+                //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+                //var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
+                //var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+
+                //Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
             
 
