@@ -91,7 +91,8 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            
+            base.Draw(ds);
+
 
             //Arrange the buttons at the bottom
             if (_listToolViewButton != null)
@@ -111,7 +112,6 @@ namespace NuSysApp
                 _barToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
             }
 
-            base.Draw(ds);
 
         }
     }

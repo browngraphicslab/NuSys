@@ -24,17 +24,23 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
-        public delegate void RowSelectedEventHandler(T item, String columnName);
+        public delegate void RowTappedEventHandler(T item, String columnName);
+
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
         /// be null.
         /// </summary>
-        public event RowSelectedEventHandler RowSelected;
+        public event RowTappedEventHandler RowTapped;
 
         public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
 
         public event RowDraggedEventHandler RowDragged;
+
+        /// <summary>
+        /// If this is true, the color will not change when you click on an item, and it will not be added to the selected list.
+        /// </summary>
+        public bool DisableSelectionByClick { get; set; }
 
         /// <summary>
         /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
@@ -399,15 +405,27 @@ namespace NuSysApp
                 {
                     return;
                 }
+
+                Debug.Assert(colIndex < _listColumns.Count);
+                var colTitle = _listColumns[colIndex].Title;
                 if (_selectedElements.Contains(item))
                 {
-                    DeselectItem(item);
-                }else
-                {
-                    SelectItem(item);
-                }
+                    if (!DisableSelectionByClick)
+                    {
+                        DeselectItem(item);
 
-                
+                    }
+                }
+                else
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        SelectItem(item); 
+                    }
+                }
+                RowTapped?.Invoke(item, colTitle);
+
+
                 /*
                 if (rowUIElement.IsSelected)
                 {
@@ -515,6 +533,18 @@ namespace NuSysApp
             //Do I also need to remove handlers here?
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
         }
+
+
+        /// <summary>
+        /// Removes all items from the list. Clears item source, selectedElements, and calls createlistviewrowuielements.
+        /// </summary>
+        public void ClearItems()
+        {
+            _itemsSource.Clear();
+            _selectedElements.Clear();
+            CreateListViewRowUIElements();
+        }
+
 
         /// <summary>
         /// Stops listening to events from the row
@@ -692,7 +722,14 @@ namespace NuSysApp
                 _selectedElements.Remove(item);
 
             }
-            
+        }
+
+        /// <summary>
+        /// Clears the selected elements list
+        /// </summary>
+        public void DeselectAllItems()
+        {
+            _selectedElements.Clear();
         }
 
         /// <summary>
