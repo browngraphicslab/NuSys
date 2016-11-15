@@ -21,8 +21,29 @@ namespace NuSysApp
         {
             _isLoading = true;
             _controller = controller;
+            _controller.AliasAdded += OnAliasAdded;
+            _controller.AliasRemoved += OnAliasRemoved;
         }
-        
+
+        private void OnAliasRemoved(object sender, ElementModel e)
+        {
+            _listView.RemoveItems(new List<ElementModel> { e });
+        }
+
+        private void OnAliasAdded(object sender, ElementModel e)
+        {
+            _listView.AddItems(new List<ElementModel> {e});
+        }
+
+        public override void Dispose()
+        {
+            _controller.AliasAdded -= OnAliasAdded;
+            _controller.AliasRemoved -= OnAliasRemoved;
+
+
+            base.Dispose();
+        }
+
         public override async Task Load()
         {
             GetAliasesOfLibraryElementRequest req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
@@ -36,7 +57,6 @@ namespace NuSysApp
         {
             _listView = new ListViewUIElementContainer<ElementModel>(this, ResourceCreator);
             _listView.AddItems(_aliasList);
-            _listView.Background = Colors.CadetBlue;
 
             ListTextColumn<ElementModel> title = new ListTextColumn<ElementModel>();
             title.Title = "Collection Title";

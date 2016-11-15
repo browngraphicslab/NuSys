@@ -80,6 +80,8 @@ namespace NuSysApp
         public event NetworkUserChangedEventHandler UserChanged;
         public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
+        public event EventHandler<ElementModel> AliasAdded;
+        public event EventHandler<ElementModel> AliasRemoved;
 
         /// <summary>
         /// the event that is fired when the access type of this controller's library element changes. 
@@ -681,6 +683,16 @@ namespace NuSysApp
         public MetadatableType MetadatableType()
         {
             return NuSysApp.MetadatableType.Content;
+        }
+
+        public void FireAliasRemoved(ElementModel elementModel)
+        {
+            AliasRemoved?.Invoke(this, elementModel);
+        }
+
+        public void FireAliasAdded(ElementModel elementModel)
+        {
+            AliasAdded?.Invoke(this,elementModel);
         }
 
         public void FireLinkAdded(LinkLibraryElementController LinkLibraryElementController)
