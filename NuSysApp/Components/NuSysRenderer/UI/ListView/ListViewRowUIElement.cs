@@ -73,14 +73,18 @@ namespace NuSysApp
                 Debug.Write("Your trying to add a null cell to a listviewrowuielement you idiot");
                 return;
             }
-            //_cells.Add(cell);
             _children.Add(cell);
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
             cell.Dragged += Cell_Dragged;
             cell.PointerWheelChanged += Cell_PointerWheelChanged;
         }
-
+        /// <summary>
+        /// Invokes PointerWheelChanged, which is listened to the ListViewUIElement, which then updates the position of the scrollbar.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        /// <param name="delta"></param>
         private void Cell_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
         {
             var cell = item as RectangleUIElement;
@@ -117,14 +121,7 @@ namespace NuSysApp
         {
 
             RowPointerReleased?.Invoke(this, _children.IndexOf(item), pointer, Item);
-            //if (_isSelected == true)
-            //{
-            //    Deselected?.Invoke(this, item as RectangleUIElement);
-            //}
-            //else
-            //{
-            //    Selected?.Invoke(this, item as RectangleUIElement);
-            //}
+
         }
 
         /// <summary>
@@ -190,14 +187,6 @@ namespace NuSysApp
             cell.PointerWheelChanged -= Cell_PointerWheelChanged;
         }
 
-        /// <summary>
-        /// Highlights the row
-        /// </summary>
-        public override Task Load()
-        {
-            return base.Load();
-        }
-
 
         /// <summary>
         /// This method adds the sizeChange to the width of cell at leftColIndex, and subtracts sizeChange from cell at (leftColIndex + 1) width and adds sizeChanged to the position of the (leftColIndex + 1) cell
@@ -242,7 +231,6 @@ namespace NuSysApp
             {
                 RemoveHandlers(cell as RectangleUIElement);
             }
-            //_children.Clear();
             ClearChildren();
         }
 
@@ -264,7 +252,10 @@ namespace NuSysApp
                 return textCell.Text;
             }
         }
-
+        /// <summary>
+        /// Draw sets position of each cell in the row, then calls base.draw()
+        /// </summary>
+        /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
 
@@ -289,6 +280,13 @@ namespace NuSysApp
             base.Dispose();
         }
 
+
+        /// <summary>
+        /// Updates the content of the child in the given index of this row
+        /// (e.g., the text of the textbox).
+        /// </summary>
+        /// <param name="column"></param>
+        /// <param name="index"></param>
         public void UpdateContent(ListColumn<T> column, int index)
         {
             column.UpdateColumnCellFromItem(Item, _children[index] as RectangleUIElement);

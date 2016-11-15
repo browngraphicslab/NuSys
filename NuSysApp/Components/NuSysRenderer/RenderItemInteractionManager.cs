@@ -55,7 +55,6 @@ namespace NuSysApp
 
         private void OnTranslated(CanvasPointer pointer, Vector2 point, Vector2 delta)
         {
-            //_hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
             if (_isPressed && _hit != null)
             {
                 _hit.OnDragged(pointer);
