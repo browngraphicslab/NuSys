@@ -75,9 +75,7 @@ namespace NuSysApp
 
         private void OnLinkRemoved(object sender, string e)
         {
-            var linklec = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(e);
-
-            _listView.RemoveItems(new List<string> {linklec.LibraryElementModel.LibraryElementId});
+            _listView.RemoveItems(new List<string> {e});
         }
 
         private void OnLinkAdded(object sender, LinkLibraryElementController libraryElementController)

@@ -360,6 +360,7 @@
     <Compile Include="Components\NuSysRenderer\UI\DetailViewAudioPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImagePage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewLinksPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewAliasesPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewMainContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
