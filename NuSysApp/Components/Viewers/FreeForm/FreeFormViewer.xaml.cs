@@ -691,23 +691,54 @@ namespace NuSysApp
             // Do the layout
             start = SortedSelections.Aggregate(start, (current, elementRenderItem) => new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, current.X), (float) Math.Min(elementRenderItem.ViewModel.Y, current.Y)));
 
-            if (style == LayoutStyle.Custom)
+            var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
+            var points =
+                latestStroke.GetInkPoints()
+                    .Select(p => new Vector2((float) p.Position.X, (float) p.Position.Y))
+                    .ToArray();
+            if (style == LayoutStyle.Custom && 2 <= points.Length)
             {
-                var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
-                var points =
-                    latestStroke.GetInkPoints().Select(p => new Vector2((float) p.Position.X, (float) p.Position.Y));
-                var multipoint = new MultiPoint(points.Select(p => new NetTopologySuite.Geometries.Point(p.X, p.Y)).ToArray());
-                foreach (var inkPoint in points)
+                var lineLength = 0.0f;
+                var firstPoint = points[0];
+                for (int p = 1; p < points.Length; p++)
                 {
-                    
+                    var point = points[p];
+                    lineLength += Vector2.Distance(firstPoint, point);
+                    firstPoint = point;
                 }
 
-                var n = 0;
-                foreach (var inkPoint in points)
+                var k = 0;
+                var nodeDistance = lineLength / (SortedSelections.Count - 1);
+                var lengthA = 0.0f;
+                var pointA = points[0];
+                var pointB = points[1];
+                for (int n = 0; n < SortedSelections.Count; n++)
                 {
-                    var point = Vector2.Transform(inkPoint, transform);
-                    SortedSelections[n].ViewModel.Controller.SetPosition(inkPoint.X, inkPoint.Y);
-                    n++;
+                    var lengthB = 0.0f;
+                    var distance = n * nodeDistance;
+                    for (int p = k; p < points.Length - 1; p++)
+                    {
+                        if (lengthA >= distance)
+                        {
+                            k = p;
+                            pointA = points[k];
+                            pointB = points[k + 1];
+                            lengthB = lengthA + Vector2.Distance(points[p], points[p + 1]);
+                            break;
+                        }
+
+                        lengthA += Vector2.Distance(points[p], points[p + 1]);
+                    }
+
+                    if ((lengthB - lengthA) == 0)
+                    {
+                        lengthB = lengthA + 1.0f;
+                    }
+
+                    var f = (distance - lengthA) / (lengthB - lengthA);
+                    var interpolatedPoint = Vector2.Lerp(pointA, pointB, f);
+                    var point = Vector2.Transform(interpolatedPoint, transform);
+                    SortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
                 }
                 return;
             }
