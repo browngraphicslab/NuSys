@@ -11,7 +11,7 @@ namespace NuSysApp
     public class BaseToolListInnerView : BaseToolInnerView
     {
         private ListViewUIElementContainer<string> _listView;
-        public BaseToolListInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public BaseToolListInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
         {
             Background = Colors.Green;
             _listView = new ListViewUIElementContainer<string>(this, ResourceCreator);
@@ -25,13 +25,27 @@ namespace NuSysApp
             
             _listView.AddColumns(new List<ListColumn<string>>() { listColumn });
             _listView.RowTapped += _listView_RowTapped;
+            _listView.RowDragged += _listView_RowDragged;
+            _listView.RowDragCompleted += _listView_RowDragCompleted;
+            
 
             _listView.AddItems(new List<string>() {"1", "2", "3", "4", "5", "6", "7", "9", "10", });
             AddChild(_listView);
         }
 
-        private void _listView_RowTapped(string item, string columnName)
+        private void _listView_RowDragCompleted(string item, string columnName, CanvasPointer pointer)
         {
+            Item_DragCompleted(item, pointer);
+        }
+
+        private void _listView_RowDragged(string item, string columnName, CanvasPointer pointer)
+        {
+            Item_Dragging(pointer);
+        }
+
+        private void _listView_RowTapped(string item, string columnName, CanvasPointer pointer)
+        {
+            Item_OnTapped(item, pointer);
         }
         
 
@@ -50,14 +64,20 @@ namespace NuSysApp
         public override void SetProperties(List<string> propertiesList)
         {
             _listView.ClearItems();
+            HashSet<string> set = new HashSet<string>(propertiesList);
             if (propertiesList.Count > 0)
             {
-                _listView.AddItems(propertiesList);
+                
+                _listView.AddItems(set.ToList());
             }
         }
 
         public override void Dispose()
         {
+            base.Dispose();
+            _listView.RowTapped -= _listView_RowTapped;
+            _listView.RowDragged -= _listView_RowDragged;
+            _listView.RowDragCompleted -= _listView_RowDragCompleted;
         }
 
         /// <summary>

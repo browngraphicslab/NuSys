@@ -24,7 +24,7 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
-        public delegate void RowTappedEventHandler(T item, String columnName);
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer);
 
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
@@ -246,9 +246,9 @@ namespace NuSysApp
             //Number of rows needed to cover the screen at all times
             var numberOfRows = (int) Math.Ceiling(Height / RowHeight) + 1;
 
-            if (numberOfRows >= _itemsSource.Count)
+            if (numberOfRows > _itemsSource.Count)
             {
-                numberOfRows = _itemsSource.Count - 1;
+                numberOfRows = _itemsSource.Count;
             }
             
             //Creates the row UI elements and adds them to the list.
@@ -334,7 +334,7 @@ namespace NuSysApp
 
                 var index = startIndex + Rows.IndexOf(row);
                 //Accounts for the last, empty row.
-                if (index == _itemsSource.Count)
+                if (index >= _itemsSource.Count)
                 {
                     continue;
                 }
@@ -441,7 +441,7 @@ namespace NuSysApp
                         SelectItem(item); 
                     }
                 }
-                RowTapped?.Invoke(item, colTitle);
+                RowTapped?.Invoke(item, colTitle, pointer);
                 
             }
         }
@@ -464,15 +464,14 @@ namespace NuSysApp
 
             //We need the local point, not the screen point
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-
+            RowDragged?.Invoke(rowUIElement.Item,
+                     rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+            _isDragging = true;
             //check within bounds of listview
             if (point.X < minX || point.X > maxX || point.Y < minY ||
                 point.Y > maxY)
             {
-                //if out of bounds, invoke row drag out
-                RowDragged?.Invoke(rowUIElement.Item,
-                     rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-                _isDragging = true;
+                
             }
             else
             {

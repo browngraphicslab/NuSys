@@ -178,8 +178,8 @@ namespace NuSysApp
             //listView.AddColumn(listColumn3);
 
 
-    //        listView.AddItems(
-    //SessionController.Instance.ContentController.ContentValues.ToList());
+            //        listView.AddItems(
+            //SessionController.Instance.ContentController.ContentValues.ToList());
 
             //        rect = new RectangleUIElement(_renderRoot, RenderCanvas);
             //        rect.Width = 100;
@@ -196,7 +196,11 @@ namespace NuSysApp
             //            Bordercolor = Colors.Black
             //        };
             //tool.Transform.LocalPosition = new Vector2(300, 300);
-            var tool = new BasicToolWindow(_renderRoot, RenderCanvas)
+            BasicToolModel model = new BasicToolModel();
+            BasicToolController controller = new BasicToolController(model);
+            BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+            viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+            var tool = new BasicToolWindow(_renderRoot, RenderCanvas, viewmodel)//you should change this to not be null.
             {
                 Height = 500,
                 Width = 500

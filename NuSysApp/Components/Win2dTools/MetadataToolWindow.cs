@@ -4,7 +4,7 @@ namespace NuSysApp
 {
     public class MetadataToolWindow : ToolWindow
     {
-        public MetadataToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public MetadataToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, MetadataToolViewModel vm) : base(parent, resourceCreator, vm)
         {
         }
     }
