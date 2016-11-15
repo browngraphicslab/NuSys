@@ -32,7 +32,6 @@ namespace NuSysApp
 
         private void _listView_RowTapped(string item, string columnName)
         {
-            _listView.SelectItem(item);
         }
         
 
