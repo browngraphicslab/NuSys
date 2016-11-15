@@ -130,7 +130,30 @@ namespace NuSysApp
             Dragged += ScrollBarUIElement_Dragged;
             Pressed += ScrollBarUIElement_Pressed;
             Released += ScrollBarUIElement_Released;
+            PointerWheelChanged += ScrollBarUIElement_PointerWheelChanged;
+            
             return base.Load();
+        }
+
+        public void ChangePosition(double delta)
+        {
+
+            if (delta < 0)
+            {
+                //If you're going up (position going down), set position + delta, with 0 as min.
+                Position = Math.Max(0, Position + delta);
+            }
+
+            if (delta > 0)
+            {
+                //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                Position = (Position + delta + Range > 1) ? 1 - Range : Position + delta;
+
+            }
+        }
+        private void ScrollBarUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
+        {
+            
         }
 
         public override void Dispose()
@@ -138,7 +161,7 @@ namespace NuSysApp
             Dragged -= ScrollBarUIElement_Dragged;
             Pressed -= ScrollBarUIElement_Pressed;
             Released -= ScrollBarUIElement_Released;
-
+            PointerWheelChanged -= ScrollBarUIElement_PointerWheelChanged;
 
             base.Dispose();
         }
@@ -164,9 +187,10 @@ namespace NuSysApp
             {
                 return;
             }
-
-            //TODO: If point is not on the slide bar, go to that point with the scroll velocity
-
+            var newPosition = currentPoint.Y / Height;
+            Position = (newPosition + Range > 1) ? 1 - Range : newPosition;
+            //Sets the position to the point you clicked.
+            ScrollBarPositionChanged?.Invoke(this, newPosition);
 
         }
 
@@ -184,7 +208,7 @@ namespace NuSysApp
             return false;
         }
 
-
+        
         private void ScrollBarUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             //Checks to make sure it is the actual bar that is being dragged
@@ -201,18 +225,7 @@ namespace NuSysApp
             //Normalized vertical change
             var deltaY = pointer.DeltaSinceLastUpdate.Y / Height;
 
-            if (deltaY < 0)
-            {
-                //If you're going up (position going down), set position + delta, with 0 as min.
-                Position = Math.Max(0, Position + deltaY);
-            }
-
-            if (deltaY > 0)
-            {
-                //If you're going down (position going up), set position + delta, with 1-range being maximum.
-                Position = (Position + deltaY + Range > 1) ? 1 - Range : Position + deltaY;
-                
-            }
+            ChangePosition(deltaY);
 
 
         }

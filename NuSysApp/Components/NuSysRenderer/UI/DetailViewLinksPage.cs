@@ -2,6 +2,7 @@
 using NuSysApp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -43,7 +44,7 @@ namespace NuSysApp
 
             _layoutManager = new StackLayoutManager(StackAlignment.Vertical);
             _searchBarLayout = new StackLayoutManager(StackAlignment.Vertical);
-            _topSearchBars = new StackLayoutManager(StackAlignment.Horizontal);
+            _topSearchBars = new StackLayoutManager();
 
             // Add rectangles as children of the class
             AddChild(_linkTitleSearchBar);
@@ -58,6 +59,20 @@ namespace NuSysApp
             _searchBarLayout.AddElement(_createLinkButton);
 
             SetUpList(parent, resourceCreator, controller);
+
+            // make the list live updating
+            controller.LinkAdded += OnLinkAdded;
+            controller.LinkRemoved += OnLinkRemoved;
+        }
+
+        private void OnLinkRemoved(object sender, string e)
+        {
+            
+        }
+
+        private void OnLinkAdded(object sender, LinkViewModel e)
+        {
+            _listView.AddItems(new List<string>{ e.LinkModel.LibraryId });
         }
 
         /// <summary>
@@ -69,21 +84,19 @@ namespace NuSysApp
         private void SetUpList(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller)
         {
             // Returns the list of LinkLibraryElement ID's for links attached to the LibraryElementModel of the passed in id
-            HashSet<string> links = SessionController.Instance.LinksController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
+            HashSet<string> linkLibraryElementIds = SessionController.Instance.LinksController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
 
             _listView = new ListViewUIElementContainer<string>(parent, resourceCreator);
             _listView.ShowHeader = false;
-            _listView.AddItems(links.ToList<string>());
-            _listView.Width = Width;
-            _listView.Background = Colors.CadetBlue;
 
             // Create the title column
             ListTextColumn<string> title = new ListTextColumn<string>();
             title.Title = "TITLE:";
             title.RelativeWidth = 1;
-            title.ColumnFunction = delegate (string link)
+            title.ColumnFunction = delegate (string linkLibraryElementId)
             {
-                var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(link);
+                var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(linkLibraryElementId);
+                Debug.Assert(linkController != null);
                 return linkController.LinkLibraryElementModel.Title;
             };
 
@@ -91,11 +104,12 @@ namespace NuSysApp
             ListTextColumn<string> linkedTo = new ListTextColumn<string>();
             linkedTo.Title = "LINKED TO:";
             linkedTo.RelativeWidth = 1;
-            linkedTo.ColumnFunction = delegate (string link)
+            linkedTo.ColumnFunction = delegate (string linkLibraryElementId)
             {
-                var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(link);
-
+                var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(linkLibraryElementId);
+                Debug.Assert(linkController != null);
                 var opposite = SessionController.Instance.LinksController.GetOppositeLibraryElementModel(controller.LibraryElementModel.LibraryElementId, linkController);
+                Debug.Assert(opposite != null);
                 return opposite.Title;
             };
 
@@ -105,6 +119,9 @@ namespace NuSysApp
             _listView.AddColumns(cols);
 
             _listView.Transform.LocalPosition = new Vector2(0, 0);
+
+            _listView.AddItems(linkLibraryElementIds.ToList<string>());
+
 
             // Add it as a child of the links page and to a layout manager to
             // format its size and location
@@ -119,12 +136,12 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             // Update all layout managers to stay consistent with the container size
-            _layoutManager.SetSize(Width, 2*(Height/3)-5);
+            _layoutManager.SetSize(Width, 2 * (Height / 3) - 5);
             _layoutManager.VerticalAlignment = VerticalAlignment.Center;
             _layoutManager.HorizontalAlignment = HorizontalAlignment.Center;
             _layoutManager.ItemWidth = Width - 20;
-            _layoutManager.ItemHeight = 2*(Height/3)-5;
-            _layoutManager.ArrangeItems(new Vector2(0, Height/3));
+            _layoutManager.ItemHeight = 2 * (Height / 3) - 5;
+            _layoutManager.ArrangeItems(new Vector2(0, Height / 3));
 
             _searchBarLayout.SetSize(Width, 2*((Height/3)/3));
             _searchBarLayout.VerticalAlignment = VerticalAlignment.Center;

@@ -154,7 +154,8 @@ namespace NuSysApp
         /// it does nothing. Optional title argument.
         /// </summary>
         /// <param name="tabType"></param>
-        public void AddTab(T tab, string title = "")
+        /// <param name="showTab">True if you want to display the tab, false if you just want to add it as a tab and not display it</param>
+        public void AddTab(T tab, string title = "", bool showTab = true)
         {
             // if any Tab in the tablist has the same tabType as the one we are trying to add
             // then return
@@ -162,7 +163,10 @@ namespace NuSysApp
 
             if (equivalentTab != null)
             {
-                CurrentlySelectedTab = equivalentTab;
+                if (showTab)
+                {
+                    CurrentlySelectedTab = equivalentTab;
+                }
                 return;
             }
 
@@ -178,8 +182,12 @@ namespace NuSysApp
             // and the button as a child
             AddChild(button);
 
-            // set the currently selected tab to the new tab
-            CurrentlySelectedTab = button;
+            if (showTab)
+            {
+                // set the currently selected tab to the new tab
+                CurrentlySelectedTab = button;
+            }
+            
         }
 
         /// <summary>
@@ -271,6 +279,11 @@ namespace NuSysApp
             // get the tab which just got selected
             var tabToBeSelected = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.Tab));
             Debug.Assert(tabToBeSelected != null);
+
+            if (CurrentlySelectedTab == tabToBeSelected)
+            {
+                return;
+            }
 
             // set the currently selected tab to the tab which was selected
             CurrentlySelectedTab = tabToBeSelected;

@@ -92,15 +92,15 @@ namespace NuSysApp
             _pageTabContainer.ClearTabs();
 
             // all types have a home and metadata
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Home), "Home");
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Metadata), "Metadata");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Home), "Home", false);
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Metadata), "Metadata", false);
 
             switch (_currentController.LibraryElementModel.Type)
             {
                 case NusysConstants.ElementType.Text:
                     break;
                 case NusysConstants.ElementType.Image:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
 
                     break;
                 case NusysConstants.ElementType.Word:
@@ -110,15 +110,15 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Collection:
                     break;
                 case NusysConstants.ElementType.PDF:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
 
                     break;
                 case NusysConstants.ElementType.Audio:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
 
                     break;
                 case NusysConstants.ElementType.Video:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
                     break;
                 case NusysConstants.ElementType.Tag:
                     break;
@@ -136,8 +136,8 @@ namespace NuSysApp
                     throw new ArgumentOutOfRangeException();
             }
 
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Links), "Links");
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Aliases), "Aliases");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Links), "Links", false);
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Aliases), "Aliases", false);
 
             // show the passed in page on the detail viewer
             ShowPageType(pageToShow);
