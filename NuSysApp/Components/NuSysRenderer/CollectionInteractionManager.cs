@@ -394,7 +394,7 @@ namespace NuSysApp
                             LinkCreated?.Invoke((ElementRenderItem)_selectedRenderItem,
                                 (ElementRenderItem)_secondSelectedRenderItem);
 
-                        }
+                        } 
                         else
                         {
                             Debug.Fail("Failed to cast to element render item;");

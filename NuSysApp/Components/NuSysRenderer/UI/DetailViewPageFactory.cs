@@ -18,6 +18,8 @@ namespace NuSysApp
             RectangleUIElement rectangle = null;
             var elementType = controller.LibraryElementModel.Type;
 
+            //asynchronously fetches the content data model.  If it exists locally, this call is constant time.
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(controller.LibraryElementModel.ContentDataModelId);
             switch(pageType)
             {
                 case DetailViewPageType.Home:
