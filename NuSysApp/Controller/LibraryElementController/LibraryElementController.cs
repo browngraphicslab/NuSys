@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using MyToolkit.Utilities;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Extensions;
 using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
@@ -833,6 +835,30 @@ namespace NuSysApp
             contentDict.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
 
             return dict;
+        }
+
+        /// <summary>
+        /// export a library element to an HTML page
+        /// 
+        /// creates an html page from the element's contents (for now, can also take rendered image of node)
+        /// </summary>
+        public async void ExportToHTML()
+        {
+            /// create the node's HTML file in the HTML folder
+            /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
+            var storageFolder = ApplicationData.Current.LocalFolder;
+            StorageFolder htmlFolder = null;
+            if (await storageFolder.ContainsFolderAsync("HTML"))
+            {
+                htmlFolder = await storageFolder.GetFolderAsync("HTML");
+            }
+            else
+            {
+                htmlFolder = await storageFolder.CreateFolderAsync("HTML", CreationCollisionOption.ReplaceExisting);
+            }
+            var sampleFile = await htmlFolder.CreateFileAsync(Title + ".htm", Windows.Storage.CreationCollisionOption.ReplaceExisting);
+
+            await FileIO.WriteTextAsync(sampleFile, "TITLE: " + Title);
         }
     }
 }

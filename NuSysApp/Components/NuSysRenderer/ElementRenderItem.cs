@@ -243,29 +243,5 @@ namespace NuSysApp
             return new Rect(0, 0, ViewModel.Width, ViewModel.Height);
         }
 
-        /// <summary>
-        /// export a node to an HTML page
-        /// 
-        /// creates an html page from the node's contents (for now, can also take rendered image of node)
-        /// </summary>
-        public async void ExportToHTML()
-        {
-            /// create the node's HTML file in the HTML folder
-            /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
-            var storageFolder = ApplicationData.Current.LocalFolder;
-            StorageFolder htmlFolder = null;
-            if (await storageFolder.ContainsFolderAsync("HTML"))
-            {
-                htmlFolder = await storageFolder.GetFolderAsync("HTML");
-            }
-            else
-            {
-                htmlFolder = await storageFolder.CreateFolderAsync("HTML", CreationCollisionOption.ReplaceExisting);
-            }
-            var sampleFile = await htmlFolder.CreateFileAsync(_vm.Title + ".htm", Windows.Storage.CreationCollisionOption.ReplaceExisting);
-
-            await FileIO.WriteTextAsync(sampleFile, "TITLE: " + _vm.Title);
-        }
-
     }
 }

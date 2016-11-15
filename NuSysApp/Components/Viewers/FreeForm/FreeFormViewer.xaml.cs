@@ -627,6 +627,11 @@ namespace NuSysApp
                 await SessionController.Instance.EnterCollection(id);
             }
 
+            if (item == RenderEngine.ElementSelectionRect.BtnExport)
+            {
+                
+            }
+
             if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
             {
                 var selection = (PdfElementRenderItem) Selections[0];
