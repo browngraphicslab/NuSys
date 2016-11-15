@@ -676,6 +676,7 @@ namespace NuSysApp
         {
             // get the linkLibraryElementController from the link id
             var linkLibraryElementController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(linkLibraryElementId);
+            Debug.Assert(linkLibraryElementController != null);
 
             var request = new DeleteLibraryElementRequest(linkLibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

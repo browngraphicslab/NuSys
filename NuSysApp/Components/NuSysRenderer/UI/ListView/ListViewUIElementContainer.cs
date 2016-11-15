@@ -40,6 +40,14 @@ namespace NuSysApp
         public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
 
         /// <summary>
+        /// If a row has been double tapped this event will fire.
+        /// </summary>
+        public event RowDoubleTappedEventHandler RowDoubleTapped;
+
+        public delegate void RowDoubleTappedEventHandler(T item, string columnName, CanvasPointer pointer);
+
+
+        /// <summary>
         /// If a row was dragged outisde the list this event will fire.
         /// </summary>
         public event RowDragCompletedEventHandler RowDragCompleted;
@@ -205,6 +213,7 @@ namespace NuSysApp
             ListView.RowTapped += ListViewRowTapped;
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
+            ListView.RowDoubleTapped += ListView_RowDoubleTapped;
 
             _header = new ListViewHeader<T>(this, resourceCreator);
             _header.HeaderDragged += Header_HeaderDragged;
@@ -215,6 +224,8 @@ namespace NuSysApp
             AddChild(_header);
             ShowHeader = true;
         }
+
+
 
         /// <summary>
         /// This gets called when the user completes dragging of the a header's edge to resize a column. It changes the relative column widths
@@ -265,6 +276,7 @@ namespace NuSysApp
             ListView.RowTapped -= ListViewRowTapped;
             ListView.RowDragged -= ListView_RowDragged;
             ListView.RowDragCompleted -= ListView_RowDragCompleted;
+            ListView.RowDoubleTapped -= ListView_RowDoubleTapped;
 
             _header.HeaderDragged -= Header_HeaderDragged;
             _header.HeaderDragCompleted -= Header_HeaderDragCompleted;
@@ -449,7 +461,17 @@ namespace NuSysApp
         {
             _listview.SortByCol(colIndex);
         }
-
+        /// <summary>
+        /// When the listviewuielement fires its rowdoubletapped event, the container will fire its rowdoubletapped
+        /// which the user should be listening to.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void ListView_RowDoubleTapped(T item, string columnName, CanvasPointer pointer)
+        {
+            RowDoubleTapped?.Invoke(item, columnName, pointer);
+        }
         /// <summary>
         /// Deselects all the items currently selected
         /// </summary>
