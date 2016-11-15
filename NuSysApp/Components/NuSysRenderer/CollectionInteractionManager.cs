@@ -117,7 +117,7 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnPointerWheelChanged(CanvasPointer pointer, float delta)
         {
             var item = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-            if (item is RectangleUIElement)
+            if (item is InteractiveBaseRenderItem)
             {
                 return;
             }

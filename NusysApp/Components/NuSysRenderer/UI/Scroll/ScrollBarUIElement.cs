@@ -134,7 +134,10 @@ namespace NuSysApp
             
             return base.Load();
         }
-
+        /// <summary>
+        /// Call this method to change the position based on the (normalized) delta passed in.
+        /// </summary>
+        /// <param name="delta"></param>
         public void ChangePosition(double delta)
         {
 
@@ -153,7 +156,18 @@ namespace NuSysApp
         }
         private void ScrollBarUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
         {
-            
+            if (delta < 0)
+            {
+                //If you're going up (position going down), set position + delta, with 0 as min.
+                Position = Math.Max(0, Position -0.035);
+            }
+
+            if (delta > 0)
+            {
+                //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                Position = (Position + 0.035 + Range > 1) ? 1 - Range : Position + 0.035;
+
+            }
         }
 
         public override void Dispose()

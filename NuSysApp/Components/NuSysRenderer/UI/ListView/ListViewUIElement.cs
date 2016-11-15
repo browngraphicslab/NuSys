@@ -83,7 +83,6 @@ namespace NuSysApp
         /// </summary>
         private float _scrollOffset;
 
-        private bool _below0;
 
         /// <summary>
         /// The combined height of every listviewuielementrow
@@ -148,7 +147,7 @@ namespace NuSysApp
                 if (base.Width != value)
                 {
                     base.Width = value;
-                    RepopulateExistingListRows();
+                    CreateListViewRowUIElements();
                 }
             }
         }
@@ -194,7 +193,6 @@ namespace NuSysApp
             RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
-            _below0 = false;
 
         }
 
@@ -268,14 +266,30 @@ namespace NuSysApp
 
         }
 
-
+        /// <summary>
+        /// This handles the PointerWheelChanged event of the rows. The delta passed in is either 1 or -1, so we move the scroll bar
+        /// depending on the sign of the delta. 
+        /// 
+        /// 0.035 is the normalized change in position.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        /// <param name="pointer"></param>
+        /// <param name="delta"></param>
         private void ListViewRowUIElement_PointerWheelChanged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta)
         {
             
-            //Normalized vertical change
-            var deltaY = - delta / Height;
+            if(delta < 0)
+            {
+                ScrollBar.ChangePosition(0.035);
 
-            ScrollBar.ChangePosition(deltaY);
+            }
+            else if(delta> 0)
+            {
+                ScrollBar.ChangePosition(-0.035);
+
+            }
+
 
         }
 
@@ -291,7 +305,11 @@ namespace NuSysApp
                 row.BorderWidth = RowBorderThickness;
             }
         }
-
+        /// <summary>
+        /// This method makes sure the appearence of the rows reflect the item they represent.
+        /// It sets the row's Item property, then selects/deselects based on if it's selected,
+        /// and then updates the content of each row.
+        /// </summary>
         private void UpdateListRows()
         {
             if (ScrollBar == null)
@@ -407,19 +425,7 @@ namespace NuSysApp
                     SelectItem(item);
                 }
 
-                
-                /*
-                if (rowUIElement.IsSelected)
-                {
-                    DeselectRow(rowUIElement);
-                }
-                else
-                {
-                    SelectRow(rowUIElement);
-                }
-                */
-
-
+             
             }
         }
         
@@ -451,7 +457,7 @@ namespace NuSysApp
             else
             {
                 //scroll if in bounds
-                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / Height / RowHeight;
+                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / Height;
 
                 ScrollBar.ChangePosition(deltaY);
 
@@ -635,10 +641,7 @@ namespace NuSysApp
             {
                 _selectedElements.Clear();
             }
-            _selectedElements.Add(item);
-            //var rowToSelect = Rows.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
-            //SelectRow(rowToSelect);
-            
+            _selectedElements.Add(item);            
         }
 
         /// <summary>
@@ -742,41 +745,54 @@ namespace NuSysApp
         {
             return _selectedElements;
         }
-
+        /// <summary>
+        /// Listens to ScrollBar's position, and udates the scrolloffset by denormalized
+        /// position.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
         public override void ScrollBarPositionChanged(object source, double position)
         {
             _scrollOffset = (float) position * (_heightOfAllRows);
-            //RepopulateExistingListRows();
         }
-
+        /// <summary>
+        /// Calls update on every row, since rows are not children.
+        /// Also updates clipping rect to be based on the width and height.
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
         {
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
-             UpdateListRows();
+            UpdateListRows();
             foreach (var row in Rows.ToArray())
             {
                 row?.Update(parentLocalToScreenTransform);
             }
             base.Update(parentLocalToScreenTransform);
         }
-
+        /// <summary>
+        /// Draw creates a clipping and then draws every single row in Rows
+        /// Because the rows are not children of the list view, we need to 
+        /// call their draw methods here.
+        /// </summary>
+        /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-
+            // Creates a clipping of the drawing session based on _clippingrect
             using (ds.CreateLayer(1f, _clippingRect))
             {
 
                 var cellVerticalOffset = BorderWidth;
-                //This is bad design -- will refactor header asap
                 var headerOffset = Transform.LocalPosition.Y;
+                var scrollOffset = _scrollOffset % RowHeight;
+                //Draws every row
                 foreach (var row in Rows.ToArray())
                 {
                     //Position is the position of the bottom of the row
-                    var position = cellVerticalOffset - (_scrollOffset % RowHeight) + headerOffset;
+                    var position = cellVerticalOffset - scrollOffset + headerOffset;
                     row.Transform.LocalPosition = new Vector2(BorderWidth, position);
                     row.Draw(ds);
 
@@ -789,9 +805,20 @@ namespace NuSysApp
 
         }
 
-
+        /// <summary>
+        /// Hit tests every row in Rows.
+        /// This is necessary because the RowUIElements are not children of the list view.
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <returns></returns>
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
+            //If scroll bar is hit, return that instead of the row underneath.
+            var scrollBarht = ScrollBar.HitTest(screenPoint);
+            if(scrollBarht != null)
+            {
+                return scrollBarht;
+            }
             foreach(var row in Rows)
             {
                 var ht = row.HitTest(screenPoint);
