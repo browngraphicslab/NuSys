@@ -78,7 +78,7 @@ namespace NuSysApp
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event EventHandler<LinkViewModel> LinkAdded;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
 
         /// <summary>
@@ -683,9 +683,9 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
-        public void AddLink(LinkViewModel linkViewModel)
+        public void FireLinkAdded(LinkLibraryElementController LinkLibraryElementController)
         {
-            LinkAdded?.Invoke(this, linkViewModel);
+            LinkAdded?.Invoke(this, LinkLibraryElementController);
         }
 
         #region Linking methods
@@ -694,7 +694,7 @@ namespace NuSysApp
         /// are assured that the link has been removed successfully
         /// </summary>
         /// <param name="linkLibraryElementID"></param>
-        public void InvokeLinkRemoved(string linkLibraryElementID)
+        public void FireLinkRemoved(string linkLibraryElementID)
         {
             LinkRemoved?.Invoke(this, linkLibraryElementID);
         }

@@ -53,7 +53,7 @@ namespace NuSysApp
             controller.CameraCenterChanged += ControllerOnCameraCenterChanged;
 
             var libElemController = (CollectionLibraryElementController) controller.LibraryElementController;
-            libElemController.LinkAdded += LibraryElementControllerOnLinkAdded;
+            libElemController.LinkAddedToCollection += LibraryElementControllerOnLinkAdded;
             libElemController.OnTrailAdded += LibElemControllerOnOnTrailAdded;
             libElemController.OnTrailRemoved += LibElemControllerOnOnTrailRemoved;
 
@@ -132,7 +132,7 @@ namespace NuSysApp
             controller.ChildRemoved -= OnChildRemoved;
 
             var libElemController = (CollectionLibraryElementController)controller.LibraryElementController;
-            libElemController.LinkAdded -= LibraryElementControllerOnLinkAdded;
+            libElemController.LinkAddedToCollection -= LibraryElementControllerOnLinkAdded;
             libElemController.OnTrailAdded -= LibElemControllerOnOnTrailAdded;
             libElemController.OnTrailRemoved -= LibElemControllerOnOnTrailRemoved;
 

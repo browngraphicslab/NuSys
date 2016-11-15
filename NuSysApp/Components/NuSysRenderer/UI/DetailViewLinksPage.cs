@@ -70,9 +70,9 @@ namespace NuSysApp
             
         }
 
-        private void OnLinkAdded(object sender, LinkViewModel e)
+        private void OnLinkAdded(object sender, LinkLibraryElementController libraryElementController)
         {
-            _listView.AddItems(new List<string>{ e.LinkModel.LibraryId });
+            _listView.AddItems(new List<string>{ libraryElementController.LibraryElementModel.LibraryElementId });
         }
 
         /// <summary>
