@@ -832,7 +832,26 @@ namespace NuSysApp
             }
             return base.HitTest(screenPoint);
         }
-        
+        /// <summary>
+        /// Disposes rows and clears the lists we have. The rows are not children so we have to manually call dispose on them.
+        /// </summary>
+        public override void Dispose()
+        {
+            foreach (var row in Rows)
+            {
+                RemoveRowHandlers(row);
+                row?.Dispose();
+            }
+            Rows?.Clear();
+            _selectedElements?.Clear();
+            _itemsSource?.Clear();
+            _listColumns?.Clear();
+            Rows = null;
+            _selectedElements = null;
+            _itemsSource = null;
+            _listColumns = null;
+            base.Dispose();
+        }
 
     }
 }

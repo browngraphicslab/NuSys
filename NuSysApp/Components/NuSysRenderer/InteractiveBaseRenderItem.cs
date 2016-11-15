@@ -55,10 +55,6 @@ namespace NuSysApp
 
         public virtual void OnDragged(CanvasPointer pointer)
         {
-            if(Dragged == null)
-            {
-
-            }
             Dragged?.Invoke(this, pointer);
         }
 
