@@ -220,7 +220,7 @@ namespace NuSysApp
             var index = _tabList.IndexOf(tabToBeRemoved);
 
             // if the tabToBeRemoved is the CurrentlySelectedTab
-            if (IsEqual(_tabList[index].Tab, CurrentlySelectedTab.Tab))
+            if (CurrentlySelectedTab != null && IsEqual(_tabList[index].Tab, CurrentlySelectedTab.Tab))
             {
                 // remove it
                 _tabList.RemoveAt(index);

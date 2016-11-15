@@ -11,7 +11,7 @@ using Windows.UI;
 
 namespace NuSysApp
 {
-    class DetailViewLinksPage : RectangleUIElement
+    public class DetailViewLinksPage : RectangleUIElement
     {
         // All the layout managers to format the links page
         private StackLayoutManager _layoutManager;
@@ -27,9 +27,17 @@ namespace NuSysApp
         // List of link information
         private ListViewUIElementContainer<string> _listView;
 
+        /// <summary>
+        /// The controller for the links page
+        /// </summary>
+        private LibraryElementController _controller;
+
         public DetailViewLinksPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) 
             : base(parent, resourceCreator)
         {
+            // set up the local controller variable
+            _controller = controller;
+
             // Create all necessary rectangles
             _linkTitleSearchBar = new RectangleUIElement(parent, resourceCreator);
             _linkToSearchBar = new RectangleUIElement(parent, resourceCreator);
@@ -61,13 +69,15 @@ namespace NuSysApp
             SetUpList(parent, resourceCreator, controller);
 
             // make the list live updating
-            controller.LinkAdded += OnLinkAdded;
-            controller.LinkRemoved += OnLinkRemoved;
+            _controller.LinkAdded += OnLinkAdded;
+            _controller.LinkRemoved += OnLinkRemoved;
         }
 
         private void OnLinkRemoved(object sender, string e)
         {
-            
+            var linklec = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(e);
+
+            _listView.RemoveItems(new List<string> {linklec.LibraryElementModel.LibraryElementId});
         }
 
         private void OnLinkAdded(object sender, LinkLibraryElementController libraryElementController)
@@ -160,6 +170,13 @@ namespace NuSysApp
             _topSearchBars.ArrangeItems();
 
             base.Update(parentLocalToScreenTransform);
+        }
+
+        public override void Dispose()
+        {
+            _controller.LinkAdded -= OnLinkAdded;
+            _controller.LinkRemoved -= OnLinkRemoved;
+            base.Dispose();
         }
     }
 }

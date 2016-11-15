@@ -341,6 +341,7 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
+    <Compile Include="Components\NuSessionView.cs" />
     <Compile Include="Components\NuSysRenderer\AudioElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\BaseRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CanvasInteractionManager.cs" />
