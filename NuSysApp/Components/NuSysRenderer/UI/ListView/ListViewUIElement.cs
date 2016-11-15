@@ -33,8 +33,10 @@ namespace NuSysApp
         public event RowSelectedEventHandler RowSelected;
 
         public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
-
         public event RowDraggedEventHandler RowDragged;
+
+        public delegate void RowDoubleTappedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public event RowDoubleTappedEventHandler RowDoubleTapped;
 
         /// <summary>
         /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
@@ -261,9 +263,23 @@ namespace NuSysApp
                 listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
                 listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
                 listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
+                listViewRowUIElement.RowDoubleTapped += ListViewRowUIElement_RowDoubleTapped;
                 Rows.Add(listViewRowUIElement);
             }
 
+        }
+        /// <summary>
+        /// Fires RowDoubleTapped event listened by container
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
+        /// <param name="item"></param>
+        private void ListViewRowUIElement_RowDoubleTapped(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
+        {
+            Debug.Assert(rowUIElement != null);
+            RowDoubleTapped?.Invoke(rowUIElement.Item,
+                 rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
         }
 
         /// <summary>
@@ -524,7 +540,10 @@ namespace NuSysApp
             //Do I also need to remove handlers here?
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
 
-            CreateListViewRowUIElements();
+            if(_itemsSource.Count <= Rows.Count)
+            {
+                CreateListViewRowUIElements();
+            }
         }
 
         /// <summary>
@@ -538,6 +557,7 @@ namespace NuSysApp
             rowToRemoveHandlersFrom.RowPointerReleased -= ListViewRowUIElement_PointerReleased;
             rowToRemoveHandlersFrom.PointerWheelChanged -= ListViewRowUIElement_PointerWheelChanged;
             rowToRemoveHandlersFrom.RowDragged -= ListViewRowUIElement_Dragged;
+            rowToRemoveHandlersFrom.RowDoubleTapped -= ListViewRowUIElement_RowDoubleTapped;
         }
 
         /// <summary>
