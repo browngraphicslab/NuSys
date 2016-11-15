@@ -49,7 +49,7 @@ namespace NuSysApp
         /// <summary>
         ///Height of the button bar at the bottom of the tool
         /// </summary>
-        private const int BUTTON_BAR_HEIGHT = 60;
+        protected const int BUTTON_BAR_HEIGHT = 60;
 
         /// <summary>
         /// The rectangle at the bottom of the tool window
