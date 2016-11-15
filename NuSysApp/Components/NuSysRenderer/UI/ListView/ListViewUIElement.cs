@@ -523,6 +523,8 @@ namespace NuSysApp
 
             //Do I also need to remove handlers here?
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
+
+            CreateListViewRowUIElements();
         }
 
         /// <summary>

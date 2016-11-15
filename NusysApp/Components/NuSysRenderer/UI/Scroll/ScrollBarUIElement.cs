@@ -68,6 +68,10 @@ namespace NuSysApp
                 {
                     IsVisible = false;
                 }
+                else
+                {
+                    IsVisible = true;
+                }
             }
             get
             {
