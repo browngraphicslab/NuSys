@@ -78,8 +78,10 @@ namespace NuSysApp
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event EventHandler<LinkViewModel> LinkAdded;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
+        public event EventHandler<ElementModel> AliasAdded;
+        public event EventHandler<ElementModel> AliasRemoved;
 
         /// <summary>
         /// the event that is fired when the access type of this controller's library element changes. 
@@ -503,7 +505,7 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");//TODO just had default icons 
+                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -540,7 +542,7 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");//TODO just had default icons 
+                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -578,7 +580,7 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
+                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -683,9 +685,19 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
-        public void AddLink(LinkViewModel linkViewModel)
+        public void FireAliasRemoved(ElementModel elementModel)
         {
-            LinkAdded?.Invoke(this, linkViewModel);
+            AliasRemoved?.Invoke(this, elementModel);
+        }
+
+        public void FireAliasAdded(ElementModel elementModel)
+        {
+            AliasAdded?.Invoke(this,elementModel);
+        }
+
+        public void FireLinkAdded(LinkLibraryElementController LinkLibraryElementController)
+        {
+            LinkAdded?.Invoke(this, LinkLibraryElementController);
         }
 
         #region Linking methods
@@ -694,7 +706,7 @@ namespace NuSysApp
         /// are assured that the link has been removed successfully
         /// </summary>
         /// <param name="linkLibraryElementID"></param>
-        public void InvokeLinkRemoved(string linkLibraryElementID)
+        public void FireLinkRemoved(string linkLibraryElementID)
         {
             LinkRemoved?.Invoke(this, linkLibraryElementID);
         }

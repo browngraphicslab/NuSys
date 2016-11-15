@@ -109,6 +109,8 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task ExecuteRequestFunction()
         {
+
+
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
             var model = ElementModelFactory.DeserializeFromString(_message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
 

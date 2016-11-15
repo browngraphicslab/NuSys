@@ -116,6 +116,11 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnPointerWheelChanged(CanvasPointer pointer, float delta)
         {
+            var item = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+            if (item is InteractiveBaseRenderItem)
+            {
+                return;
+            }
             var zoomspeed = delta < 0 ? 0.8f : 1.2f;
             PanZoomed?.Invoke(pointer.CurrentPoint, Vector2.Zero, zoomspeed);
         }
@@ -389,7 +394,7 @@ namespace NuSysApp
                             LinkCreated?.Invoke((ElementRenderItem)_selectedRenderItem,
                                 (ElementRenderItem)_secondSelectedRenderItem);
 
-                        }
+                        } 
                         else
                         {
                             Debug.Fail("Failed to cast to element render item;");
@@ -480,7 +485,7 @@ namespace NuSysApp
         {
             var element = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
-            if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
+            if (element is NodeMenuButtonRenderItem || element is InteractiveBaseRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
                 return;
 
             if (element is LinkRenderItem)

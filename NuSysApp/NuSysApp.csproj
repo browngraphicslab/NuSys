@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\Philipp\Desktop\deploy\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\graphics_lab\Desktop\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -117,6 +117,11 @@
     <Content Include="Assets\exploration mode dark.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />
+    <Content Include="Assets\layout_icons\grid_layout_icon.png" />
+    <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
+    <Content Include="Assets\layout_icons\layout_icon.png" />
+    <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
+    <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_delete_color.png" />
@@ -336,6 +341,7 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
+    <Compile Include="Components\NuSessionView.cs" />
     <Compile Include="Components\NuSysRenderer\AudioElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\BaseRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CanvasInteractionManager.cs" />
@@ -344,22 +350,26 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\ListViewRowContainer.cs" />
-    <Compile Include="Components\NuSysRenderer\ListViewUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\BaseMediaPlayerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\AddRegionPublicPrivateUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AudioMediaContentUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AudioRegionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AudioRegionResizerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewAudioPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewImagePage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewLinksPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewAliasesPage.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewMainContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPageTabType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionContent.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\DetailViewRegionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
@@ -377,8 +387,10 @@
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\ScrollableRectangleUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\ScrollBarUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollableRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollBarUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrubBarUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackLayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TabButtonUIElement.cs" />
@@ -418,7 +430,6 @@
     <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
-    <Compile Include="Components\NuSysRenderer\Win2dListViewItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">

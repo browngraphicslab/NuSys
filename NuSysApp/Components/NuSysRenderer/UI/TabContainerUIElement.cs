@@ -60,14 +60,25 @@ namespace NuSysApp
         public delegate void CurrentTabChangedHandler(T tabType);
 
         /// <summary>
-        /// The color of the tabs in the tab container
-        /// </summary>
-        public Color TabColor { get; set; }
-
-        /// <summary>
         /// Invoked whenever the current tab is changed
         /// </summary>
         public event CurrentTabChangedHandler OnCurrentTabChanged;
+
+        /// <summary>
+        /// delegate for when a tab is removed
+        /// </summary>
+        /// <param name="tabType"></param>
+        public delegate void OnTabRemovedHandler(T tabType);
+
+        /// <summary>
+        /// Invoked whenever a tab is removed from the tab container
+        /// </summary>
+        public event OnTabRemovedHandler OnTabRemoved;
+
+        /// <summary>
+        /// The color of the tabs in the tab container
+        /// </summary>
+        public Color TabColor { get; set; }
 
         /// <summary>
         /// The Tab container's _stackLayoutManager
@@ -143,7 +154,8 @@ namespace NuSysApp
         /// it does nothing. Optional title argument.
         /// </summary>
         /// <param name="tabType"></param>
-        public void AddTab(T tab, string title = "")
+        /// <param name="showTab">True if you want to display the tab, false if you just want to add it as a tab and not display it</param>
+        public void AddTab(T tab, string title = "", bool showTab = true)
         {
             // if any Tab in the tablist has the same tabType as the one we are trying to add
             // then return
@@ -151,7 +163,10 @@ namespace NuSysApp
 
             if (equivalentTab != null)
             {
-                CurrentlySelectedTab = equivalentTab;
+                if (showTab)
+                {
+                    CurrentlySelectedTab = equivalentTab;
+                }
                 return;
             }
 
@@ -167,8 +182,12 @@ namespace NuSysApp
             // and the button as a child
             AddChild(button);
 
-            // set the currently selected tab to the new tab
-            CurrentlySelectedTab = button;
+            if (showTab)
+            {
+                // set the currently selected tab to the new tab
+                CurrentlySelectedTab = button;
+            }
+            
         }
 
         /// <summary>
@@ -201,7 +220,7 @@ namespace NuSysApp
             var index = _tabList.IndexOf(tabToBeRemoved);
 
             // if the tabToBeRemoved is the CurrentlySelectedTab
-            if (IsEqual(_tabList[index].Tab, CurrentlySelectedTab.Tab))
+            if (CurrentlySelectedTab != null && IsEqual(_tabList[index].Tab, CurrentlySelectedTab.Tab))
             {
                 // remove it
                 _tabList.RemoveAt(index);
@@ -241,6 +260,7 @@ namespace NuSysApp
             // remove the tab as a child
             RemoveChild(tabToBeRemoved);
             _tabStackLayoutManager.Remove(tabToBeRemoved);
+            OnTabRemoved?.Invoke(tabType);
         }
 
         /// <summary>
@@ -259,6 +279,11 @@ namespace NuSysApp
             // get the tab which just got selected
             var tabToBeSelected = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.Tab));
             Debug.Assert(tabToBeSelected != null);
+
+            if (CurrentlySelectedTab == tabToBeSelected)
+            {
+                return;
+            }
 
             // set the currently selected tab to the tab which was selected
             CurrentlySelectedTab = tabToBeSelected;

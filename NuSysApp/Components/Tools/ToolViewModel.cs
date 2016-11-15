@@ -199,10 +199,14 @@ namespace NuSysApp
                 request.AddReturnedLibraryElementToLibrary();
                 */
 
+                int i = 0;
                // Add all the elements to the newly created collection
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
-
+                    if (i > 14)
+                    {
+                        break;
+                    }
 
                     // get the library element model which needs to be added to the stack
                     var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
@@ -237,6 +241,7 @@ namespace NuSysApp
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(requestElemToCollection);
                     await requestElemToCollection.AddReturnedElementToSessionAsync();
                     */
+                    i++;
                 }
 
                 var request = new CreateNewCollectionRequest(args);
@@ -262,6 +267,10 @@ namespace NuSysApp
                 int offset = 40;
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
+                    if (i > 14)
+                    {
+                        break;
+                    }
                     // get the library element model which needs to be added to the stack
                     var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
 

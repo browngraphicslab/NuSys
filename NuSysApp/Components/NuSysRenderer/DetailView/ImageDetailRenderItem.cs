@@ -78,6 +78,9 @@ namespace NuSysApp
             _controller.LocationChanged -= ControllerOnLocationChanged;
             _controller.SizeChanged -= ControllerOnSizeChanged;
 
+            _activeRegion?.Dispose();
+            _bmp?.Dispose();
+
             foreach (var child in GetChildren())
             {
                 var region = child as ImageDetailRegionRenderItem;
@@ -132,6 +135,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
+            
             _isLoading = true;
             _bmp?.Dispose();
             await Task.Run(async () =>
@@ -236,14 +240,14 @@ namespace NuSysApp
 
         protected void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedX + delta.X/_croppedImageTarget.Width / _scaleDisplayToCrop;
-            var ry = region.LibraryElementModel.NormalizedY + delta.Y/_croppedImageTarget.Height / _scaleDisplayToCrop;
-            rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth , rx));
-            ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight , ry));
+            var rx = region.LibraryElementModel.NormalizedX + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
+            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _croppedImageTarget.Height / _scaleDisplayToCrop;
+            rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth, rx));
+            ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight, ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetXLocation(rx);
             controller.SetYLocation(ry);
-            
+
             NeedsRedraw?.Invoke();
         }
 

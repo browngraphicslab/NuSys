@@ -11,15 +11,14 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    class DetailViewImageRegionPage : DetailViewRegionPage
+    public class DetailViewImagePage : DetailViewPage
     {
         private DetailViewImageRegionContent _content;
 
-        public DetailViewImageRegionPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
-            ImageLibraryElementController controller) : base(parent, resourceCreator, controller)
+        public DetailViewImagePage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller, bool showImageAnalysis, bool showRegions) : base(parent, resourceCreator, controller, showImageAnalysis, showRegions)
         {
             // initialize the image rectangle and the _imageLayoutManager
-            _content = new DetailViewImageRegionContent(this, Canvas, controller);
+            _content = new DetailViewImageRegionContent(this, Canvas, controller, showRegions);
 
             SetContent(_content);
             

@@ -1,2 +1,6 @@
 #TargetFrameworkVersion=:PlatformToolSet=v120:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit
-Debug|Win32|C:\Users\graphics_lab\Desktop\NuSys\|
+<<<<<<< HEAD
+Debug|Win32|C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NuSys\|
+=======
+Debug|Win32|C:\Users\nico\Documents\gfx\NuSys\|
+>>>>>>> origin/win2dtools

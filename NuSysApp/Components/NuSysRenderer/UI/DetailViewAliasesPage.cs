@@ -11,8 +11,6 @@ namespace NuSysApp
     internal class DetailViewAliasesPage : RectangleUIElement
     {
         private ListViewUIElementContainer<ElementModel> _listView;
-        private readonly BaseRenderItem _parent;
-        private readonly ICanvasResourceCreatorWithDpi _resourceCreator;
         private readonly LibraryElementController _controller;
 
         private List<ElementModel> _aliasList;
@@ -22,28 +20,43 @@ namespace NuSysApp
             base(parent, resourceCreator)
         {
             _isLoading = true;
-            _parent = parent;
-            _resourceCreator = resourceCreator;
             _controller = controller;
+            _controller.AliasAdded += OnAliasAdded;
+            _controller.AliasRemoved += OnAliasRemoved;
         }
-        
+
+        private void OnAliasRemoved(object sender, ElementModel e)
+        {
+            _listView.RemoveItems(new List<ElementModel> { e });
+        }
+
+        private void OnAliasAdded(object sender, ElementModel e)
+        {
+            _listView.AddItems(new List<ElementModel> {e});
+        }
+
+        public override void Dispose()
+        {
+            _controller.AliasAdded -= OnAliasAdded;
+            _controller.AliasRemoved -= OnAliasRemoved;
+
+
+            base.Dispose();
+        }
+
         public override async Task Load()
         {
             GetAliasesOfLibraryElementRequest req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
             _aliasList = req.GetReturnedElementModels();
-            CreateAliasList(_parent, _resourceCreator);
+            CreateAliasList();
             base.Load();
         }
 
-        private void CreateAliasList(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
+        private void CreateAliasList()
         {
-            _listView = new ListViewUIElementContainer<ElementModel>(parent, resourceCreator);
-            _listView.Height = Height;
-            _listView.Width = Width;
-            _listView.Transform.LocalPosition = new Vector2(0, 0);
+            _listView = new ListViewUIElementContainer<ElementModel>(this, ResourceCreator);
             _listView.AddItems(_aliasList);
-            _listView.Background = Colors.CadetBlue;
 
             ListTextColumn<ElementModel> title = new ListTextColumn<ElementModel>();
             title.Title = "Collection Title";
@@ -59,25 +72,15 @@ namespace NuSysApp
             ListTextColumn<ElementModel> creator = new ListTextColumn<ElementModel>();
             creator.Title = "Creator";
             creator.RelativeWidth = 1;
-            creator.ColumnFunction = delegate (ElementModel el)
-            {
-                string CollectionId = el.ParentCollectionId;
-
-                var collectionController =
-                    SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
-                return
-                   SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(el?.CreatorId);
-            };
+            creator.ColumnFunction = el => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(el?.CreatorId);
 
             ListTextColumn<ElementModel> lastEdited = new ListTextColumn<ElementModel>();
             lastEdited.Title = "Last Edited";
             lastEdited.RelativeWidth = 1;
             lastEdited.ColumnFunction = delegate (ElementModel el)
             {
-                string CollectionId = el.ParentCollectionId;
-
                 var collectionController =
-                    SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
+                    SessionController.Instance.ContentController.GetLibraryElementController(el.ParentCollectionId);
                 return collectionController.LibraryElementModel.LastEditedTimestamp;
             };
 

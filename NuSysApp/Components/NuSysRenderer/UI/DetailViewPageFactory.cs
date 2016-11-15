@@ -18,6 +18,8 @@ namespace NuSysApp
             RectangleUIElement rectangle = null;
             var elementType = controller.LibraryElementModel.Type;
 
+            //asynchronously fetches the content data model.  If it exists locally, this call is constant time.
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(controller.LibraryElementModel.ContentDataModelId);
             switch(pageType)
             {
                 case DetailViewPageType.Home:
@@ -26,12 +28,15 @@ namespace NuSysApp
                         case NusysConstants.ElementType.Text:
                             break;
                         case NusysConstants.ElementType.Image:
+                            rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Collection:
                             break;
                         case NusysConstants.ElementType.PDF:
+                            rectangle = new DetailViewPdfPage(parent, resourceCreator, controller as PdfLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Audio:
+                            rectangle = new DetailViewAudioPage(parent, resourceCreator, controller as AudioLibraryElementController, false);
                             break;
                         case NusysConstants.ElementType.Video:
                             break;
@@ -69,14 +74,13 @@ namespace NuSysApp
                     switch (elementType)
                     {
                         case NusysConstants.ElementType.Image:
-                            rectangle = new DetailViewImageRegionPage(parent, resourceCreator, controller as ImageLibraryElementController);
-                            await rectangle.Load();
+                            rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, false, true);
                             break;
                         case NusysConstants.ElementType.PDF:
-                            rectangle = new DetailViewPdfRegionPage(parent, resourceCreator, controller as PdfLibraryElementController);
-                            await rectangle.Load();
+                            rectangle = new DetailViewPdfPage(parent, resourceCreator, controller as PdfLibraryElementController, false, true);
                             break;
                         case NusysConstants.ElementType.Audio:
+                            rectangle = new DetailViewAudioPage(parent, resourceCreator, controller as AudioLibraryElementController, true);
                             break;
                         case NusysConstants.ElementType.Video:
                             break;
@@ -90,31 +94,14 @@ namespace NuSysApp
                     await rectangle.Load();
                     break;
                 case DetailViewPageType.Links:
-                    switch (elementType)
-                    {
-                        case NusysConstants.ElementType.Text:
-                            break;
-                        case NusysConstants.ElementType.Image:
-                            break;
-                        case NusysConstants.ElementType.Collection:
-                            break;
-                        case NusysConstants.ElementType.PDF:
-                            break;
-                        case NusysConstants.ElementType.Audio:
-                            break;
-                        case NusysConstants.ElementType.Video:
-                            break;
-                        case NusysConstants.ElementType.Link:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(elementType),
-                                $"No links page support for {elementType} yet");
-                    }
+                    rectangle = new DetailViewLinksPage(parent, resourceCreator, controller);
+                    await rectangle.Load();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pageType), pageType, null);
             }
-
+            var load = rectangle?.Load();
+            if (load != null) await load;
             return rectangle;
         }
     }

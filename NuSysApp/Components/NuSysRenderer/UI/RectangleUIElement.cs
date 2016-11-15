@@ -48,6 +48,11 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// The image to be displayed on the rectangle
+        /// </summary>
+        public ICanvasImage Image { get; set; }
+
+        /// <summary>
         /// The height of the rectangle
         /// </summary>
         private float _height;
@@ -110,6 +115,8 @@ namespace NuSysApp
             // draw the background of the rectangle
             DrawBackground(ds);
 
+            DrawImage(ds);
+
             // draw the border in the rectangle
             DrawBorder(ds);
 
@@ -129,6 +136,23 @@ namespace NuSysApp
 
             // draw the border inside the rectangle
             ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Bordercolor, BorderWidth);
+
+            ds.Transform = orgTransform;
+        }
+
+        /// <summary>
+        /// Draws the image on the Rectangle UIElement
+        /// </summary>
+        /// <param name="ds"></param>
+        public virtual void DrawImage(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            if (Image != null)
+            {
+                ds.DrawImage(Image, GetLocalBounds(), Image.GetBounds(Canvas));
+            }
 
             ds.Transform = orgTransform;
         }

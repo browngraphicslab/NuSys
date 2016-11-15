@@ -19,7 +19,10 @@ namespace NuSysApp
         public event PointerHandler Tapped;
         public event PointerHandler Dragged;
 
+        
+        public delegate void PointerWheelHandler(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta);
 
+        public event PointerWheelHandler PointerWheelChanged;
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -33,6 +36,11 @@ namespace NuSysApp
         public virtual void OnReleased(CanvasPointer pointer)
         {
             Released?.Invoke(this, pointer);
+        }
+
+        public virtual void OnPointerWheelChanged(CanvasPointer pointer, float delta)
+        {
+            PointerWheelChanged?.Invoke(this, pointer, delta);
         }
 
         public virtual void OnDoubleTapped(CanvasPointer pointer)

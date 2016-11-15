@@ -113,14 +113,14 @@ namespace NuSysApp
         public bool IsRegionsVisible { get; set; }
 
 
-        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller) : base(parent, resourceCreator)
+        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller, bool showRegions) : base(parent, resourceCreator)
         {
             _controller = controller;
             ImageUrl = controller.ContentDataController.ContentDataModel.Data;
 
             // set defaults
             IsRegionsModifiable = true;
-            IsRegionsVisible = true;
+            IsRegionsVisible = showRegions;
 
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
@@ -129,12 +129,16 @@ namespace NuSysApp
             _controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
-        public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
-            PdfLibraryElementController controller) : base(parent, resourceCreator)
-        {
-            // do nothing handled in the extended class DetailViewPdfRegionRenderItem
-        }
 
+        public override void Dispose()
+        {
+            IsDisposed = true;
+
+            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+
+            base.Dispose();
+        }
 
         /// <summary>
         /// Called when a region is removed, recomputes the regions for the entire image
@@ -189,6 +193,7 @@ namespace NuSysApp
 
             await Task.Run(async () =>
             {
+                Debug.WriteLine("loading");
                 _imageBitmap =
                     await
                         CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
@@ -280,6 +285,12 @@ namespace NuSysApp
 
         protected virtual void ComputeRegions()
         {
+            // don't compute regions if they are not visible
+            if (!IsRegionsVisible || IsDisposed)
+            {
+                return;
+            }
+
             var children = GetChildren();
             ClearChildren();
             foreach (var child in children)
@@ -310,7 +321,7 @@ namespace NuSysApp
                 var areaA = a.GetLocalBounds(); var areaB = b.GetLocalBounds(); return areaA.Width * areaA.Height >= areaB.Width * areaB.Height ? -1 : 1;
             });
 
-        }
+        }  
 
 
         /// <summary>

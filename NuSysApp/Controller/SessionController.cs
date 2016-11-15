@@ -191,6 +191,9 @@ namespace NuSysApp
         {
             UITask.Run(async delegate
             {
+                if(SessionView?.FreeFormViewer?.InitialCollection?.Camera == null) {
+                    return;
+                }
                 var camera = SessionView.FreeFormViewer.InitialCollection.Camera;
                 var currentState = new CapturedStateModel(
                     ActiveFreeFormViewer.LibraryElementId,
@@ -289,6 +292,8 @@ namespace NuSysApp
             }
 
             SessionController.Instance.IdToControllers[model.Id] = controller;
+
+            controller.LibraryElementController.FireAliasAdded(model);
 
             await UITask.Run(async delegate
             {
@@ -406,6 +411,7 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task EnterCollection(string collectionLibraryId)
         {
+            SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
             SessionView.ShowBlockingScreen(true);
 
             EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
@@ -506,6 +512,7 @@ namespace NuSysApp
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
         {
+
             var made = new HashSet<string>();
             while (elementsLeft.Any())
             {

@@ -47,7 +47,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            if (!IsDisposed)
+            if (IsDisposed)
                 return;
 
             _image.Dispose();
