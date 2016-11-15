@@ -445,9 +445,12 @@ namespace NuSysApp
             var minY = this.Transform.Parent.LocalY;
             var maxY = minY + Height;
 
+            //We need the local point, not the screen point
+            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+
             //check within bounds of listview
-            if (pointer.CurrentPoint.X < minX || pointer.CurrentPoint.X > maxX || pointer.CurrentPoint.Y < minY ||
-                pointer.CurrentPoint.Y > maxY)
+            if (point.X < minX || point.X > maxX || point.Y < minY ||
+                point.Y > maxY)
             {
                 //if out of bounds, invoke row drag out
                 RowDragged?.Invoke(rowUIElement.Item,
