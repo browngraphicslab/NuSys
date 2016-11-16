@@ -248,7 +248,8 @@ namespace NuSysApp
 
 
             var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
-
+            
+            //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
             if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
             {
                 if (ScrollBar != null) ScrollBar.Position = 0;
@@ -256,9 +257,8 @@ namespace NuSysApp
 
             }
 
-
+            //Start index is the itemsource-index of the first item shown on the listview 
             var startIndex = (int)Math.Floor(position * _itemsSource.Count);
-            var items = _itemsSource.ToArray();
 
             //Number of rows needed to cover the screen at all times
             //Make sures that the number of rows created does not exceed the number of rows in the source
