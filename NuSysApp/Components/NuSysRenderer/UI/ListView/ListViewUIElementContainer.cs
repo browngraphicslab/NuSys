@@ -346,6 +346,15 @@ namespace NuSysApp
         #region RouterFunctions
 
         /// <summary>
+        /// Returns the item source of the list
+        /// </summary>
+        /// <returns></returns>
+        public List<T> GetItems()
+        {
+            return _listview.GetItems();
+        }
+
+        /// <summary>
         /// Add new items/rows to the list
         /// </summary>
         /// <param name="itemsToAdd"></param>

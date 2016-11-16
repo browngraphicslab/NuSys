@@ -288,6 +288,10 @@ namespace NuSysApp
 
                 foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
                 {
+                    if (item is ToolWindow)
+                    {
+                        (item as ToolWindow).Draw(ds);
+                    }
                     var element = item as ElementRenderItem;
                     if (element == null)
                         return;
@@ -439,12 +443,18 @@ namespace NuSysApp
         private async Task AddItem(object vm)
         {
             BaseRenderItem item = null;
+            /*
             if (vm is ToolFilterView || vm is BaseToolView || vm is MetadataToolView)
             {
                 await UITask.Run(async delegate
                 {
                     _renderItems2?.Add(new PseudoElementRenderItem((ITool)vm, this, ResourceCreator));
                 });
+            }*/
+            if (vm is BasicToolViewModel)
+            {
+                var tool = new BasicToolWindow(this, ResourceCreator, (BasicToolViewModel) vm);
+                _renderItems3?.Add(tool);
             }
             else if (vm is TextNodeViewModel)
             {

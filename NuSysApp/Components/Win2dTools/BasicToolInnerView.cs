@@ -14,11 +14,11 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public abstract class BaseToolInnerView : RectangleUIElement
+    public abstract class BasicToolInnerView : RectangleUIElement
     {
         private RectangleUIElement _dragFilterItem;
         protected BasicToolViewModel Vm;
-        public BaseToolInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel viewModel) : base(parent, resourceCreator)
+        public BasicToolInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel viewModel) : base(parent, resourceCreator)
         {
             Debug.Assert(viewModel != null);
             Vm = viewModel;
@@ -26,6 +26,9 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Sets up the item to be shown under the pointer when you drag a row
+        /// </summary>
         private void SetUpDragFilterItem()
         {
             _dragFilterItem = new RectangleUIElement(this, ResourceCreator)

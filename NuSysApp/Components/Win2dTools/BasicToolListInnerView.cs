@@ -8,12 +8,20 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class BaseToolListInnerView : BaseToolInnerView
+    public class BasicToolListInnerView : BasicToolInnerView
     {
         private ListViewUIElementContainer<string> _listView;
-        public BaseToolListInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
+        public BasicToolListInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
         {
             Background = Colors.Green;
+            SetUpList();
+        }
+
+        /// <summary>
+        /// Sets up the list that displays all the data and adds it to child
+        /// </summary>
+        private void SetUpList()
+        {
             _listView = new ListViewUIElementContainer<string>(this, ResourceCreator);
             _listView.ShowHeader = false;
             _listView.RowBorderThickness = 1;
@@ -22,14 +30,14 @@ namespace NuSysApp
             listColumn.Title = "Title";
             listColumn.RelativeWidth = 1;
             listColumn.ColumnFunction = model => model;
-            
+
             _listView.AddColumns(new List<ListColumn<string>>() { listColumn });
             _listView.RowTapped += _listView_RowTapped;
             _listView.RowDragged += _listView_RowDragged;
             _listView.RowDragCompleted += _listView_RowDragCompleted;
             _listView.RowDoubleTapped += _listView_RowDoubleTapped;
 
-            _listView.AddItems(new List<string>() {"1", "2", "3", "4", "5", "6", "7", "9", "10", });
+            _listView.AddItems(new List<string>() { "1", "2", "3", "4", "5", "6", "7", "9", "10", });
             AddChild(_listView);
         }
 

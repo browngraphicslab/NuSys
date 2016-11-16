@@ -82,13 +82,16 @@ namespace NuSysApp
         private const int BUTTON_MARGIN = 10;
         public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(parent, resourceCreator)
         {
+            Vm = vm;
             SetUpButtons();
             SetUpFilterDropDown();
             SetUpDraggableIcons();
             SetUpBottomButtonBar();
-            Vm = vm;
             vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
-
+            Height = (float)Vm.Height;
+            Width = (float)Vm.Width;
+            Transform.LocalX = (float)Vm.X;
+            Transform.LocalY = (float)Vm.Y;
         }
 
 
@@ -126,10 +129,10 @@ namespace NuSysApp
             {
                 Background = Colors.Azure,
                 Height = BUTTON_BAR_HEIGHT,
-                Width = this.Width
+                Width = Width
             };
-            ButtonBarRectangle.Transform.LocalPosition = new Vector2(0, this.Height - BUTTON_BAR_HEIGHT);
-            AddChild(ButtonBarRectangle);
+            ButtonBarRectangle.Transform.LocalPosition = new Vector2(0, Height - BUTTON_BAR_HEIGHT);
+            //AddChild(ButtonBarRectangle);
         }
 
         /// <summary>
@@ -148,7 +151,7 @@ namespace NuSysApp
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
             _draggableCollectionElement.Dragging += CollectionOrStack_Dragging;
             _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted;
-            AddChild(_draggableCollectionElement);
+            //AddChild(_draggableCollectionElement);
 
             //sets up icon to show under pointer while dragging
             _collectionDragIcon = new RectangleUIElement(this, ResourceCreator)
@@ -158,7 +161,7 @@ namespace NuSysApp
                 Width = 50
             };
             _collectionDragIcon.IsVisible = false;
-            AddChild(_collectionDragIcon);
+            //AddChild(_collectionDragIcon);
 
 
             //Set up button to be dragged
@@ -172,7 +175,7 @@ namespace NuSysApp
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
             _draggableStackElement.Dragging += CollectionOrStack_Dragging;
             _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted;
-            AddChild(_draggableStackElement);
+            //AddChild(_draggableStackElement);
 
             //sets up icon to show under pointer while dragging
             _stackDragIcon = new RectangleUIElement(this, ResourceCreator)
@@ -182,7 +185,7 @@ namespace NuSysApp
                 Width = 50
             };
             _stackDragIcon.IsVisible = false;
-            AddChild(_stackDragIcon);
+            //AddChild(_stackDragIcon);
 
         }
 
@@ -259,7 +262,7 @@ namespace NuSysApp
 
             _filterChooser.IsVisible = false;
             _filterChooser.Transform.LocalPosition = new Vector2(0, TopBarHeight + _filterChooserDropdownButton.Height);
-            AddChild(_filterChooser);
+            //AddChild(_filterChooser);
         }
 
 
@@ -324,7 +327,7 @@ namespace NuSysApp
             _parentOperatorButton.Transform.LocalY = -PARENT_OPERATOR_BUTTON_HEIGHT;
             _parentOperatorButton.ButtonText = "AND";
             _parentOperatorButton.Tapped += _parentOperatorButton_Tapped;
-            AddChild(_parentOperatorButton);
+            //AddChild(_parentOperatorButton);
 
             var deleteCircleShape = new EllipseUIElement(this, ResourceCreator)
             {
@@ -334,7 +337,7 @@ namespace NuSysApp
             };
             _deleteButton = new ButtonUIElement(this, ResourceCreator, deleteCircleShape);
             _deleteButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width / 2), _deleteButton.Height / 2 + BUTTON_MARGIN);
-            AddChild(_deleteButton);
+            //AddChild(_deleteButton);
 
             var refreshCircleShape = new EllipseUIElement(this, ResourceCreator)
             {
@@ -344,8 +347,8 @@ namespace NuSysApp
             };
             _refreshButton = new ButtonUIElement(this, ResourceCreator, refreshCircleShape);
             _refreshButton.Tapped += _refreshButton_Tapped;
-            _refreshButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width / 2), _deleteButton.Transform.LocalY + _deleteButton.Height + BUTTON_MARGIN);
-            AddChild(_refreshButton);
+            _refreshButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Transform.LocalY + _deleteButton.Height + BUTTON_MARGIN);
+            //AddChild(_refreshButton);
         }
 
         /// <summary>
@@ -389,7 +392,7 @@ namespace NuSysApp
             }
             _filterChooserDropdownButton.Width = Width;
 
-            _parentOperatorButton.Transform.LocalX = Width/2 - _parentOperatorButton.Width/2;
+            _parentOperatorButton.Transform.LocalX = Width / 2 - _parentOperatorButton.Width/2;
 
             //Set up draggable collection and stack elements local position.
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN), _draggableCollectionElement.Height / 2 + BUTTON_MARGIN);

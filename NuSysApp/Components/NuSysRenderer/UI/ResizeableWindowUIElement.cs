@@ -156,6 +156,7 @@ namespace NuSysApp
 
             }
         }
+        
 
         /// <summary>
         /// The height of the rectangle

@@ -15,7 +15,7 @@ namespace NuSysApp
 
         private const int VIEW_BUTTON_HEIGHT = 40;
 
-        private BaseToolInnerView _toolView;
+        private BasicToolInnerView _toolView;
 
         private enum ViewMode { PieChart, List, BarChart }
         private ViewMode _currentViewMode;
@@ -41,8 +41,8 @@ namespace NuSysApp
         {
             Vm = vm;
             SetUpBottomButtons();
-            _toolView = new BaseToolListInnerView(this, ResourceCreator, vm);
-            AddChild(_toolView);
+            _toolView = new BasicToolListInnerView(this, ResourceCreator, vm);
+            //AddChild(_toolView);
 
             //vm.Controller.SetLocation(x, y);
 
@@ -85,7 +85,7 @@ namespace NuSysApp
             _toolView.Height = Height - FILTER_CHOOSER_HEIGHT - UIDefaults.TopBarHeight - BUTTON_BAR_HEIGHT;
             _toolView.Width = Width;
             _toolView.Transform.LocalPosition = new Vector2(0, UIDefaults.TopBarHeight+FILTER_CHOOSER_HEIGHT);
-
+            
             base.Update(parentLocalToScreenTransform);
         }
 
@@ -105,7 +105,7 @@ namespace NuSysApp
             _listToolViewButton.ButtonText = "List";
             _listToolViewButton.ButtonTextColor = Colors.Black;
             _listToolViewButton.Transform.LocalPosition = new Vector2(VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            AddChild(_listToolViewButton);
+            //AddChild(_listToolViewButton);
 
             //Set up pie button 
             var pieButtonRectangle = new RectangleUIElement(this, ResourceCreator)
@@ -118,7 +118,7 @@ namespace NuSysApp
             _pieToolViewButton.ButtonText = "Pie";
             _pieToolViewButton.ButtonTextColor = Colors.Black;
             _pieToolViewButton.Transform.LocalPosition = new Vector2(_listToolViewButton.Transform.LocalX + _listToolViewButton.Width + VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            AddChild(_pieToolViewButton);
+            //AddChild(_pieToolViewButton);
 
             //Set up bar chart button 
             var barButtonRectangle = new RectangleUIElement(this, ResourceCreator)
@@ -131,7 +131,7 @@ namespace NuSysApp
             _barToolViewButton.ButtonText = "Bar";
             _barToolViewButton.ButtonTextColor = Colors.Black;
             _barToolViewButton.Transform.LocalPosition = new Vector2(_pieToolViewButton.Transform.LocalX + _pieToolViewButton.Width + VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            AddChild(_barToolViewButton);
+            //AddChild(_barToolViewButton);
         }
 
         public override void Draw(CanvasDrawingSession ds)

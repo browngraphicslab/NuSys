@@ -343,8 +343,15 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Text:
                     break;
                 case NusysConstants.ElementType.Tools:
-                    ToolFilterView filter = new ToolFilterView(position.X, position.Y);
-                    vm.AtomViewList.Add(filter);
+                    BasicToolModel model = new BasicToolModel();
+                    BasicToolController controller = new BasicToolController(model);
+                    BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+                    viewmodel.Width = 500;
+                    viewmodel.Height = 500;
+                    viewmodel.X = position.X;
+                    viewmodel.Y = position.Y;
+                    viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+                    vm.AddTool(viewmodel);
                     return;
                 case NusysConstants.ElementType.Recording:
                     // add a recording node view to the collection

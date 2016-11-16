@@ -174,7 +174,7 @@ namespace NuSysApp
         {
             get
             {
-                return Elements.Where(item => item != null).ToList();
+                return Elements.OfType<ElementViewModel>().Where(item => item != null).ToList();
             }
         }
 

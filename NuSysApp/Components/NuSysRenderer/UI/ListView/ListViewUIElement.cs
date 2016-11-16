@@ -254,7 +254,7 @@ namespace NuSysApp
             }
             
             //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
 
             foreach (var itemSource in rowList)
             {
@@ -910,5 +910,13 @@ namespace NuSysApp
             base.Dispose();
         }
 
+        /// <summary>
+        /// Returns the items source
+        /// </summary>
+        /// <returns></returns>
+        public List<T> GetItems()
+        {
+            return _itemsSource;
+        }
     }
 }

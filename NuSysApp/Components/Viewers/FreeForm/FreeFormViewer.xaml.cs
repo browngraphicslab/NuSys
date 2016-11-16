@@ -192,12 +192,15 @@ namespace NuSysApp
             //BasicToolController controller = new BasicToolController(model);
             //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
             //viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+            //viewmodel.Width = 500;
+            //viewmodel.Height = 500;
+            //viewmodel.X = 200;
+            //viewmodel.Y = 200;
             //var tool = new BasicToolWindow(_renderRoot, RenderCanvas, viewmodel)//you should change this to not be null.
             //{
             //    Height = 500,
             //    Width = 500
             //};
-            //tool.Transform.LocalPosition = new Vector2(200,200);
             //_renderRoot.AddChild(tool);
 
             MetadataToolModel model = new MetadataToolModel();

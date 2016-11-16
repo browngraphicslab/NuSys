@@ -482,6 +482,7 @@
       <DependentUpon>AddToCollectionButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\IdViewModelable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
@@ -510,8 +511,8 @@
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Win2dTools\BaseToolInnerView.cs" />
-    <Compile Include="Components\Win2dTools\BaseToolListInnerView.cs" />
+    <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
+    <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
