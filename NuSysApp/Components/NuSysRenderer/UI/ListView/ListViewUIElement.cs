@@ -240,19 +240,30 @@ namespace NuSysApp
             //Clear the rows.
             Rows.Clear();
 
+            //If itemssource is empty, no need to create rows.
+            if (_itemsSource.Count == 0)
+            {
+                return;
+            }
 
-            var position = (ScrollBar == null) ? 0 : ScrollBar.Position; 
+
+            var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+
+            if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
+            {
+                if (ScrollBar != null) ScrollBar.Position = 0;
+                position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+
+            }
+
+
             var startIndex = (int)Math.Floor(position * _itemsSource.Count);
             var items = _itemsSource.ToArray();
 
             //Number of rows needed to cover the screen at all times
-            var numberOfRows = (int) Math.Ceiling(Height / RowHeight) + 1;
+            //Make sures that the number of rows created does not exceed the number of rows in the source
+            var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1); 
 
-            if (numberOfRows > _itemsSource.Count)
-            {
-                numberOfRows = _itemsSource.Count;
-            }
-            
             //Creates the row UI elements and adds them to the list.
             var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
 
