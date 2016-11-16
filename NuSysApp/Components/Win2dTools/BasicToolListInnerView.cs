@@ -87,12 +87,12 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            base.Dispose();
             _listView.RowTapped -= _listView_RowTapped;
             _listView.RowDragged -= _listView_RowDragged;
             _listView.RowDragCompleted -= _listView_RowDragCompleted;
             _listView.RowDoubleTapped -= _listView_RowDoubleTapped;
-
+            _listView.Dispose();
+            base.Dispose();
         }
 
         /// <summary>

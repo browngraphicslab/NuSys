@@ -252,9 +252,9 @@ namespace NuSysApp
             {
                 numberOfRows = _itemsSource.Count;
             }
-            
+
             //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
 
             foreach (var itemSource in rowList)
             {

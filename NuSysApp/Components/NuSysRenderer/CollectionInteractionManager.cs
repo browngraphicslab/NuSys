@@ -242,7 +242,7 @@ namespace NuSysApp
 
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
             {
-                var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1000);
                 if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
                 {
                     _resizerHit = true;

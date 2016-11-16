@@ -203,17 +203,17 @@ namespace NuSysApp
             //};
             //_renderRoot.AddChild(tool);
 
-            MetadataToolModel model = new MetadataToolModel();
-            MetadataToolController controller = new MetadataToolController(model);
-            MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
-            viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
-            MetadataToolWindow view = new MetadataToolWindow(_renderRoot, RenderCanvas, viewmodel)
-            {
-                Height = 500,
-                Width = 500
-            };
-            view.Transform.LocalPosition = new Vector2(200, 200);
-            _renderRoot.AddChild(view);
+            //MetadataToolModel model = new MetadataToolModel();
+            //MetadataToolController controller = new MetadataToolController(model);
+            //MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+            //viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+            //MetadataToolWindow view = new MetadataToolWindow(_renderRoot, RenderCanvas, viewmodel)
+            //{
+            //    Height = 500,
+            //    Width = 500
+            //};
+            //view.Transform.LocalPosition = new Vector2(200, 200);
+            //_renderRoot.AddChild(view);
 
             RenderEngine.Start();
 

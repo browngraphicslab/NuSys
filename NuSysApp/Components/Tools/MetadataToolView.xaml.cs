@@ -564,7 +564,7 @@ namespace NuSysApp
                     }
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+                //vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
         }
 

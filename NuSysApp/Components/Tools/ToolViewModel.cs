@@ -13,8 +13,12 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public abstract class ToolViewModel : BaseINPC, ToolLinkable
+    public abstract class ToolViewModel : BaseINPC, ToolLinkable, IdViewModelable
     {
+
+        public bool IsSelected { get { return false; } }
+        public string Id { get { return _controller?.Model?.Id; } }
+
         public delegate void PropertiesToDisplayChangedEventHandler();
         /// <summary>
         /// Listened to by view to know when the properties to display have changed
@@ -355,39 +359,59 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Will either add this tool as a parent if dropped on top of an existing tool, or create a brand new tool filter chooser view. 
+        /// Will either add this tool as a parent if dropped on top of an existing tool, or create a brand new tool filter chooser view.
         /// </summary>
-        public void FilterIconDropped(IEnumerable<UIElement> hitsStart,  FreeFormViewerViewModel wvm, double x, double y)
+        public void FilterIconDropped(ToolWindow dragDestination, double x, double y)
         {
-            if (hitsStart.Where(uiElem => (uiElem is FrameworkElement) && (uiElem as FrameworkElement).DataContext is ToolViewModel).ToList().Any())
+            //if (hitsStart.Where(uiElem => (uiElem is FrameworkElement) && (uiElem as FrameworkElement).DataContext is ToolViewModel).ToList().Any())
+            //{
+            //    var hitsStartList = hitsStart.Where(uiElem => (uiElem is AnimatableUserControl) && (uiElem as AnimatableUserControl).DataContext is ToolViewModel).ToList();
+            //    AddFilterToExistingTool(hitsStartList, wvm);
+            //}
+            //else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
+            //{
+            //    var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
+            //    AddFilterToFilterToolView(hitsStartList, wvm);
+            //}
+
+            if (dragDestination != null)
             {
-                var hitsStartList = hitsStart.Where(uiElem => (uiElem is AnimatableUserControl) && (uiElem as AnimatableUserControl).DataContext is ToolViewModel).ToList();
-                AddFilterToExistingTool(hitsStartList, wvm);
-            }
-            else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
-            {
-                var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
-                AddFilterToFilterToolView(hitsStartList, wvm);
+                var toolViewModel = dragDestination.Vm;
+                AddFilterToExistingTool(toolViewModel, null); //FIX THIS SHIT
             }
             else
             {
-                AddNewFilterTool(x, y, wvm);
+                AddNewFilterTool(x, y);
             }
         }
 
         /// <summary>
         ///creates new filter tool at specified location
         /// </summary>
-        public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
+        public void AddNewFilterTool(double x, double y)
         {
-            var toolFilter = new ToolFilterView(x, y, this);
+            //var toolFilter = new ToolFilterView(x, y, this);
 
-            var linkviewmodel = new ToolLinkViewModel(this, toolFilter);
-            var link = new ToolLinkView(linkviewmodel);
-            
-            Canvas.SetZIndex(link, Canvas.GetZIndex(toolFilter) - 1);
-            wvm.AtomViewList.Add(toolFilter);
-            wvm.AtomViewList.Add(link);
+            //var linkviewmodel = new ToolLinkViewModel(this, toolFilter);
+            //var link = new ToolLinkView(linkviewmodel);
+
+            //Canvas.SetZIndex(link, Canvas.GetZIndex(toolFilter) - 1);
+            //wvm.AtomViewList.Add(toolFilter);
+            //wvm.AtomViewList.Add(link);
+            UITask.Run(() =>
+            {
+
+                BasicToolModel model = new BasicToolModel();
+                BasicToolController controller = new BasicToolController(model);
+                BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+                viewmodel.Controller.AddParent(Controller);
+                viewmodel.Width = 500;
+                viewmodel.Height = 500;
+                viewmodel.X = x;
+                viewmodel.Y = y;
+                viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+                SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
+            });
         }
 
         /// <summary>
@@ -406,17 +430,16 @@ namespace NuSysApp
         /// <summary>
         ///Adds tool as parent to existing tool. 
         /// </summary>
-        public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
+        public void AddFilterToExistingTool(ToolViewModel toolViewModel, FreeFormViewerViewModel wvm)
         {
-            ToolViewModel toolViewModel = (hitsStartList.First() as AnimatableUserControl).DataContext as ToolViewModel;
             if (toolViewModel != null && toolViewModel != this)
             {
                 if (!CreatesLoop(toolViewModel))
                 {
-                    var linkviewmodel = new ToolLinkViewModel(this, toolViewModel);
-                    var link = new ToolLinkView(linkviewmodel);
-                    Canvas.SetZIndex(link, Canvas.GetZIndex(hitsStartList.First()) - 1);
-                    wvm.AtomViewList.Add(link);
+                    //var linkviewmodel = new ToolLinkViewModel(this, toolViewModel);
+                    //var link = new ToolLinkView(linkviewmodel);
+                    //Canvas.SetZIndex(link, Canvas.GetZIndex(hitsStartList.First()) - 1);
+                    //wvm.AtomViewList.Add(link);
                     toolViewModel.Controller.AddParent(Controller);
                 }
             }

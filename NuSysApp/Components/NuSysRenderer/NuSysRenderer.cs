@@ -140,11 +140,21 @@ namespace NuSysApp
                             }
                         }
                     }
-
-
-                    if (childItem.HitTest(screenPoint) != null)
+                    if (currentLevel + 1 < maxLevel)
                     {
-                        return childItem;
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return h;
+                        }
+                    }
+                    else
+                    {
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return childItem;
+                        }
                     }
                 }
             }

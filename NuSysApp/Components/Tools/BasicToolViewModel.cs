@@ -10,10 +10,8 @@ namespace NuSysApp
         public string Name { get; set; }
         public int Amount { get; set; }
     }
-    public class BasicToolViewModel : ToolViewModel, IdViewModelable
+    public class BasicToolViewModel : ToolViewModel
     {
-        public bool IsSelected { get { return false; } }
-        public string Id { get { return _controller?.Model?.Id; } }
         /// <summary>
         ///This is the list of items to display
         /// </summary>

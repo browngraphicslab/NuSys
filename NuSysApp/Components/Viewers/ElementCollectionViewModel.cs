@@ -115,7 +115,7 @@ namespace NuSysApp
             CameraTranslation = new Vector2(f, f1);
         }
 
-        public void AddTool(BasicToolViewModel vm)
+        public void AddTool(ToolViewModel vm)
         {
             Elements.Add(vm);
         }

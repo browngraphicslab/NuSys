@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using Windows.Devices.Input;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -233,16 +238,102 @@ namespace NuSysApp
             listColumn.ColumnFunction = model => model.Key;
 
             _metadataValuesList.AddColumns(new List<ListColumn<KeyValuePair<string, double>>>() { listColumn });
-            //_metadataValuesList.RowTapped += _listView_RowTapped;
-            //_metadataValuesList.RowDragged += _listView_RowDragged;
+            _metadataValuesList.RowTapped += _metadataValuesList_RowTapped;
+            _metadataValuesList.RowDragged += _metadataValuesList_RowDragged; ;
             //_metadataValuesList.RowDragCompleted += _listView_RowDragCompleted;
-            //_metadataValuesList.RowDoubleTapped += _listView_RowDoubleTapped;
+            _metadataValuesList.RowDoubleTapped += _metadataValuesList_RowDoubleTapped; ;
             _metadataValuesList.Transform.LocalPosition = new Vector2(Width/2, FILTER_CHOOSER_HEIGHT + UIDefaults.TopBarHeight);
 
 
             AddChild(_metadataValuesList);
         }
 
+        private void _metadataValuesList_RowDragged(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///If the item that was double tapped is the only selected item, attempt to open the detail view.
+        /// </summary>
+        private void _metadataValuesList_RowDoubleTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        {
+            var vm = (Vm as MetadataToolViewModel);
+            var textTapped = item.Key;
+            if (!vm.Selection.Item2.Contains(textTapped) && vm.Selection.Item2.Count == 0)
+            {
+                vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
+                            new HashSet<string>() { textTapped });
+            }
+            if (vm.Selection.Item2.Count == 1 &&
+                vm.Selection.Item2.First().Equals(textTapped))
+            {
+                vm.OpenDetailView();
+            }
+        }
+
+        /// <summary>
+        /// Fires when a row in the metadata values list gets tapped. Sets the logical selection based on the type of selection (multi/single).
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void _metadataValuesList_RowTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        {
+            var vm = (Vm as MetadataToolViewModel);
+            if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
+                vm.Selection.Item2.Contains(item.Key))
+            {
+                if (pointer.DeviceType == PointerDeviceType.Pen) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                {
+                    //if tapped item is already selected and in multiselect mode, remove item from selection
+                    vm.Selection.Item2.Remove(item.Key);
+                    vm.Selection = vm.Selection;
+                }
+                else
+                {
+                    //if tapped item is already selected and in single select mode, remove all selections
+                    vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1, new HashSet<string>());
+                }
+            }
+            else
+            {
+                Debug.Assert(vm != null);
+                if (_metadataKeysList.GetSelectedItems().Count() == 1)
+                {
+                    if (pointer.DeviceType == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                    {
+                        //if tapped item is not selected and in multiselect mode, add item to selection
+
+                        if (vm.Selection != null)
+                        {
+                            var selection = item.Key;
+                            vm.Selection.Item2.Add(selection);
+                            vm.Selection = vm.Selection;
+                        }
+                        else
+                        {
+                            vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
+                            new HashSet<string>() { item.Key });
+                        }
+                    }
+                    else
+                    {
+                        //if tapped item is not selected and in single mode, set the item as the only selection
+                        vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
+                             new HashSet<string>() { item.Key });
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// This is called when the row of metadataakeys is tapped. It sets the selection appropriatelyy
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
         private void metadataKeysList_RowTapped(string item, string columnName, CanvasPointer pointer)
         {
             var vm = (Vm as MetadataToolViewModel);

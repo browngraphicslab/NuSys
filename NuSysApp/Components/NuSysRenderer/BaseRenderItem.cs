@@ -161,6 +161,8 @@ namespace NuSysApp
                 return null;
             }
 
+            var a = GetScreenBounds();
+
             return GetScreenBounds().Contains(screenPoint.ToPoint()) ? this : null;
         }
 

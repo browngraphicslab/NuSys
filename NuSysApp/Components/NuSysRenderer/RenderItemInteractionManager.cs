@@ -48,7 +48,7 @@ namespace NuSysApp
         {
             if (_isPressed)
                 return;
-            _hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
+            _hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root, 500 ) as InteractiveBaseRenderItem;
             _isPressed = true;
             _hit?.OnPressed(pointer);
         }
