@@ -77,6 +77,23 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// The height of the image
+        /// </summary>
+        public float ImageHeight {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The width of the image
+        /// </summary>
+        public float ImageWidth
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// The background color to be set while the button is in the pressed state.
         /// </summary>
         public Color? SelectedBackground { get; set; }
@@ -236,7 +253,10 @@ namespace NuSysApp
 
             if (Image != null)
             {
-                ds.DrawImage(Image, new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth));
+                var imageWidth = ImageWidth > 0 ? ImageWidth : Width - 2 * BorderWidth;
+                var imageHeight = ImageWidth > 0 ? ImageWidth : Width - 2 * BorderWidth;
+                
+                ds.DrawImage(Image, new Rect(Width/2 - ImageWidth/2, Height/2 - ImageHeight/2, imageWidth, imageHeight));
             }
 
             ds.Transform = orgTransform;
