@@ -29,7 +29,13 @@ namespace NuSysApp
         public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
         
         // Fired when a key is pressed on the application anywhere
-        public event KeyPressedDelegate OnKeyPressed; 
+        public event KeyPressedDelegate OnKeyPressed;
+
+        // Delegate to handle KeyPressed events
+        public delegate void KeyReleasedDelegate(Windows.UI.Core.KeyEventArgs args);
+
+        // Fired when a key is pressed on the application anywhere
+        public event KeyReleasedDelegate OnKeyReleased;
 
         public FocusManager(CanvasInteractionManager cim, CanvasRenderEngine cre)
         {
@@ -43,12 +49,19 @@ namespace NuSysApp
 
             _canvasInteractionManager.PointerPressed += _canvasInteractionManager_PointerPressed;
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyDown += FireKeyPressed;
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyUp += FireKeyReleased;
         }
 
         // Fired whenever a key is pressed on the application - Invokes OnKeyPressed
         private void FireKeyPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
             OnKeyPressed?.Invoke(args);    
+        }
+
+        // Fired whenever a key is released on the application - Invokes OnKeyReleased
+        private void FireKeyReleased(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+        {
+            OnKeyReleased?.Invoke(args);
         }
 
         /// <summary>
@@ -88,7 +101,7 @@ namespace NuSysApp
         {
             _canvasInteractionManager.PointerPressed -= _canvasInteractionManager_PointerPressed;
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyDown -= FireKeyPressed;
-
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyUp -= FireKeyReleased;
         }
     }
 }

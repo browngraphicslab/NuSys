@@ -26,6 +26,11 @@ namespace NuSysApp
         // Event that fires when a key is pressed on this render item
         public event KeyPressedDelegate KeyPressed;
 
+        // Delegate for the KeyReleased event
+        public delegate void KeyReleasedDelegate(Windows.UI.Core.KeyEventArgs args);
+        // Event that fires when a key is released on this render item
+        public event KeyPressedDelegate KeyReleased;
+
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             
@@ -62,10 +67,18 @@ namespace NuSysApp
             KeyPressed?.Invoke(e);
         }
 
+        // Function fired when key is released on this render item
+        // Invokes the KeyReleased event if possible
+        public virtual void OnKeyReleased(KeyEventArgs e)
+        {
+            KeyReleased?.Invoke(e);
+        }
+
         // Partial override of BaseRenderItem GotFocus in order to add KeyPressed event
         public override void GotFocus()
         {
             SessionController.Instance.FocusManager.OnKeyPressed += OnKeyPressed;
+            SessionController.Instance.FocusManager.OnKeyReleased += OnKeyReleased;
             base.GotFocus();
         }
 
@@ -73,6 +86,7 @@ namespace NuSysApp
         public override void LostFocus()
         {
             SessionController.Instance.FocusManager.OnKeyPressed -= OnKeyPressed;
+            SessionController.Instance.FocusManager.OnKeyReleased -= OnKeyReleased;
             base.LostFocus();
         }
     }

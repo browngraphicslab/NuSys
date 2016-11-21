@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NusysIntermediate;
 using WinRTXamlToolkit.Tools;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace NuSysApp
 {
@@ -66,6 +67,7 @@ namespace NuSysApp
         {
             IdToControllers = new ConcurrentDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
+            DataPackage = new DataPackage();
         }
 
         public NuSysNetworkSession NuSysNetworkSession
@@ -189,6 +191,8 @@ namespace NuSysApp
         {
             OnModeChanged?.Invoke(this, mode);
         }
+
+        public DataPackage DataPackage { get; }
 
         /// <summary>
         /// Method to be called when the application goes into a suspended state or loses internet connection.

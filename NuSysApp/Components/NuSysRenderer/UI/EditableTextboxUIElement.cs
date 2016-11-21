@@ -1,127 +1,390 @@
 ﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Text;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
+using Windows.UI;
+
 
 namespace NuSysApp
 {
     public class EditableTextboxUIElement : TextboxUIElement
-    {     
+    {
+        // Delegate for the TextChanged event
+        // Takes in the new string of text
+        public delegate void TextHandler(InteractiveBaseRenderItem item, String text);
 
+        // Text events
+        public event TextHandler TextChanged;
+        public event TextHandler TextCopied;
+        public event TextHandler TextCut;
+        public event TextHandler TextPasted;
+
+        // Keeps track of whether the user has highlighted
+        // any text
+        private bool _hasSelection;
+        // Boolean for when this textbox has focus
+        private bool _hasFocus;
+        // Boolean for when the control key is held down in order to handle
+        // cut/copy/paste events
+        private bool _isCtrlPressed = false;
+
+        // The current text layout
+        private CanvasTextLayout _textLayout;
+
+        // The rectangle representing the cursor
         private RectangleUIElement _cursor;
+        // Holds the index in the text string that the cursor is
+        // currently located at
+        private int _cursorCharacterIndex;
+        // Preserves the x position when moving the cursor up and down
+        // in the text box
+        private float _currCursorX = 0;
 
+        // Beginning and ending indices of the current highlighted text
+        private int _selectionStartIndex = 0;
+        private int _selectionEndIndex = 0;
+
+        // Incremented at every update call and used to control how often
+        // the cursor blinks
+        private int _blinkCounter = 0;
+        
+        /// <summary>
+        /// Models a text box which the user can type into and edit
+        /// Inherits from TextboxUIElement
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
         public EditableTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            //// set default values
-            //TextHorizontalAlignment = UIDefaults.TextHorizontalAlignment;
+            _hasSelection = false;
             TextVerticalAlignment = CanvasVerticalAlignment.Top;
             Wrapping = CanvasWordWrapping.WholeWord;
-            //TextColor = UIDefaults.TextColor;
-            //FontStyle = UIDefaults.FontStyle;
-            //FontSize = UIDefaults.FontSize;
-            //FontFamily = UIDefaults.FontFamily;
-            //Wrapping = UIDefaults.Wrapping;
-            //TrimmingSign = UIDefaults.TrimmingSign;
-            //TrimmingGranularity = UIDefaults.TrimmingGranularity;
-            //BorderWidth = 0;
 
-            //_cursor.Width = 3;
-            //_cursor.Height = FontSize;
+            _textLayout = CreateTextLayout(resourceCreator);
+            //_textLayout = TextLayout;
 
-            //this.Tapped += EditableTextboxUIElement_Tapped;
+            // Get the size the cursor should be
+            _cursorCharacterIndex = 0;
+            CanvasTextLayoutRegion textLayoutRegion;
+            _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);          
+            Rect bounds = textLayoutRegion.LayoutBounds;
+
+            // Initialize cursor
+            _cursor = new RectangleUIElement(this, resourceCreator);
+            _cursor.Width = 2;
+            _cursor.Height = (float)bounds.Height;
+            _cursor.Background = Colors.Black;
+            _cursor.IsVisible = false;
+
+            // Add cursor as child of the textbox
+            this.AddChild(_cursor);
+
+            this.Pressed += EditableTextboxUIElement_Pressed;
+            this.Dragged += EditableTextboxUIElement_Dragged;
+
             this.OnFocusGained += EditableTextboxUIElement_OnFocusGained;
             this.OnFocusLost += EditableTextboxUIElement_OnFocusLost;
             this.KeyPressed += EditableTextboxUIElement_KeyPressed;
-
+            this.KeyReleased += EditableTextboxUIElement_KeyReleased;
 
         }
 
-        private void EditableTextboxUIElement_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        /// <summary>
+        /// Fired when key is released while this element has focus
+        /// </summary>
+        /// <param name="args"></param>
+        private void EditableTextboxUIElement_KeyReleased(Windows.UI.Core.KeyEventArgs args)
         {
-            // if is in focus, add typed key to the current cursor location in string
-            // otherwise check for arrow keys to move cursor, enter to make newline, backspace/delete
-            // to remove characters (tab functionality?)
-
-            //Text += GetCharsFromKeys(args.VirtualKey, false, false);
-            if (args.VirtualKey == VirtualKey.Back)
+            if (args.VirtualKey == VirtualKey.Control)
             {
-                Text = Text.Remove(Text.Length - 1);
-            } else
-            {
-                Text += KeyCodeToUnicode(args.VirtualKey);
+                _isCtrlPressed = false;
             }
         }
 
+        /// <summary>
+        /// Fired when mouse is dragged while this element has focus. Used to highlight text
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void EditableTextboxUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            Vector2 pos = new Vector2(pointer.CurrentPoint.X - (float)this.Transform.LocalPosition.X,
+                                      pointer.CurrentPoint.Y - (float)this.Transform.LocalPosition.Y);
+            _selectionEndIndex = GetHitIndex(pos);
+            _hasSelection = true;
+        }
+
+        /// <summary>
+        /// Fired when text box is pressed on - used to move the cursor to the location of the press
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void EditableTextboxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ClearSelection();
+            Vector2 pos = new Vector2(pointer.CurrentPoint.X - (float)this.Transform.LocalPosition.X, 
+                                      pointer.CurrentPoint.Y - (float)this.Transform.LocalPosition.Y);
+            int charIndex = GetHitIndex(pos);
+            _cursorCharacterIndex = charIndex;
+
+            _selectionStartIndex = charIndex;
+        }
+
+        /// <summary>
+        /// Fired when key is pressed on the textbox while it has focus
+        /// </summary>
+        /// <param name="args"></param>
+        private void EditableTextboxUIElement_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        {
+            _cursor.IsVisible = true;
+
+            //Backspace Key
+            if (args.VirtualKey == VirtualKey.Back)
+            {
+                _currCursorX = 0;
+                if (_cursorCharacterIndex > 0)
+                {
+                    if (_cursorCharacterIndex == Text.Length)
+                    {
+                        Text = Text.Remove(_cursorCharacterIndex - 1, 1);
+                        OnTextChanged(Text);
+                    }
+                    else
+                    {
+                        Text = Text.Remove(_cursorCharacterIndex, 1);
+                        OnTextChanged(Text);
+                    }
+                    _cursorCharacterIndex--;
+                }
+
+            }
+            // Delete Key
+            else if (args.VirtualKey == VirtualKey.Delete)
+            {
+                _currCursorX = 0;
+                if (_cursorCharacterIndex < Text.Length)
+                {
+                    Text = Text.Remove(_cursorCharacterIndex+1, 1);
+                    OnTextChanged(Text);
+                }
+            }
+            // Move cursor left
+            else if (args.VirtualKey == VirtualKey.Left)
+            {
+                _currCursorX = 0;
+                if (_cursorCharacterIndex == Text.Length)
+                {
+                    _cursorCharacterIndex -= 2;
+                }
+                else if (_cursorCharacterIndex > 0)
+                {
+                    _cursorCharacterIndex--;
+                }
+            }
+            // Move cursor right
+            else if (args.VirtualKey == VirtualKey.Right)
+            {
+                _currCursorX = 0;
+                if (_cursorCharacterIndex < (Text.Length))
+                {
+                    _cursorCharacterIndex++;
+                }
+            }
+            // Move cursor up
+            else if (args.VirtualKey == VirtualKey.Up)
+            {
+                CanvasTextLayoutRegion textLayoutRegion;
+                _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
+
+                Rect bounds = textLayoutRegion.LayoutBounds;
+                Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
+                                          (float)(bounds.Top - _cursor.Height / 2));
+                if (_currCursorX != 0)
+                {
+                    pos.X = _currCursorX;
+                }
+                int charIndex = GetHitIndex(pos);
+                _cursorCharacterIndex = charIndex;
+                _currCursorX = pos.X;
+            }
+            // Move cursor down
+            else if (args.VirtualKey == VirtualKey.Down)
+            {
+                CanvasTextLayoutRegion textLayoutRegion;
+                _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
+
+                Rect bounds = textLayoutRegion.LayoutBounds;
+                Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
+                                          (float)(bounds.Bottom + _cursor.Height / 2));
+                if (_currCursorX != 0)
+                {
+                    pos.X = _currCursorX;
+                }
+                int charIndex = GetHitIndex(pos);
+                _cursorCharacterIndex = charIndex;
+                _currCursorX = pos.X;
+            }
+            // Control button pressed
+            else if (args.VirtualKey == VirtualKey.Control)
+            {
+                _isCtrlPressed = true;
+            }
+            // Special case z,x,c keys while control is pressed
+            else if (args.VirtualKey == VirtualKey.C && _isCtrlPressed)
+            {
+                Copy();
+            }
+            else if (args.VirtualKey == VirtualKey.X && _isCtrlPressed)
+            {
+                Cut();
+            }
+            else if (args.VirtualKey == VirtualKey.V && _isCtrlPressed)
+            {
+                Paste();
+            }
+            // Type the letter into the box
+            else
+            {
+
+                String s = KeyCodeToUnicode(args.VirtualKey);
+                if (s.Length > 0)
+                {
+                    _currCursorX = 0;
+                    if (_cursorCharacterIndex != Text.Length)
+                    {
+                        Text = Text.Insert(_cursorCharacterIndex + 1, s);
+                        OnTextChanged(Text);
+                        _cursorCharacterIndex++;
+                    }
+                    else
+                    {
+                        Text = Text.Insert(_cursorCharacterIndex, s);
+                        OnTextChanged(Text);
+                        _cursorCharacterIndex++;
+                    }
+
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Triggered when this textbox loses focus
+        /// </summary>
+        /// <param name="item"></param>
         private void EditableTextboxUIElement_OnFocusLost(BaseRenderItem item)
         {
             // hide blinking cursor
             BorderWidth = 0;
+            _hasFocus = false;
+            _cursor.IsVisible = false;
         }
 
+        /// <summary>
+        /// Triggered when this textbox gains focus
+        /// </summary>
+        /// <param name="item"></param>
         private void EditableTextboxUIElement_OnFocusGained(BaseRenderItem item)
         {
             // show blinking cursor at end of text
             BorderWidth = 2;
-
-        }
-
-        private void EditableTextboxUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            // if it is in focus, move cursor to location that is tapped
-            
+            _hasFocus = true;
+            _cursor.IsVisible = true;
         }
 
         /// <summary>
-        /// Draws the text within the textbox
+        /// Draw the cursor at its appropriate position
         /// </summary>
         /// <param name="ds"></param>
-        public void DrawText(CanvasDrawingSession ds)
+        public void DrawCursor(CanvasDrawingSession ds)
         {
-            // save the current transform of the drawing session
+            CanvasTextLayoutRegion textLayoutRegion;
+            _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
+
+            Rect bounds = textLayoutRegion.LayoutBounds;
+
+            _cursor.Transform.LocalPosition = new Vector2((float)bounds.Right + UIDefaults.XTextPadding, (
+                float)bounds.Top + UIDefaults.YTextPadding);
+
+            _cursor.Draw(ds);
+        }
+
+        // Update draw method to draw the cursor and highlighted selection
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            base.Draw(ds);
+
+            // Update current text layout 
+            _textLayout = CreateTextLayout(ds);
+
+            DrawCursor(ds);
+
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            base.DrawText(ds);
-
-            _cursor.Height = FontSize;
-
-            var textFormat = new CanvasTextFormat
+            // Highlight selected characters
+            if (_hasSelection)
             {
-                HorizontalAlignment = TextHorizontalAlignment,
-                VerticalAlignment = TextVerticalAlignment,
-                WordWrapping = Wrapping,
-                TrimmingGranularity = TrimmingGranularity,
-                TrimmingSign = TrimmingSign,
-                FontFamily = FontFamily,
-                FontSize = FontSize,
-                FontStyle = FontStyle,
-            };
+                _cursor.IsVisible = false;
+                int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+                CanvasTextLayoutRegion[] descriptions = _textLayout.GetCharacterRegions(firstIndex, length);
+                foreach (CanvasTextLayoutRegion description in descriptions)
+                {
+                    ICanvasBrush b = new CanvasSolidColorBrush(ds, Colors.Black);
+                    b.Opacity = 0.25f;
+                    ds.FillRectangle(description.LayoutBounds, b);
+                }
+            }
 
             ds.Transform = orgTransform;
+
         }
 
+        /// <summary>
+        /// Update the blinking cursor
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            base.Update(parentLocalToScreenTransform);
 
+            if (_hasFocus && !_hasSelection)
+            {
+                _blinkCounter++;
+                if (_blinkCounter % 20 == 0)
+                {
+                    _cursor.IsVisible = false;
+                }
+                if (_blinkCounter % 40 == 0)
+                {
+                    _cursor.IsVisible = true;
+                    _blinkCounter = 0;
+                }
+            }
+           
         }
 
         public override void Dispose()
         {
-            this.Tapped -= EditableTextboxUIElement_Tapped;
+            this.Pressed -= EditableTextboxUIElement_Pressed;
             this.OnFocusGained -= EditableTextboxUIElement_OnFocusGained;
             this.OnFocusLost -= EditableTextboxUIElement_OnFocusLost;
 
             base.Dispose();
         }
 
+        /// <summary>
+        /// Convert key code to its ascii character/string
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public string KeyCodeToUnicode(VirtualKey key)
         {
             byte[] keyboardState = new byte[255];
@@ -156,6 +419,156 @@ namespace NuSysApp
             uint wScanCode, byte[] lpKeyState, 
             [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszBuff, 
             int cchBuff, uint wFlags, IntPtr dwhkl);
+
+        /// <summary>
+        /// Get the character index of a mouse press point 
+        /// Used to move cursor
+        /// </summary>
+        /// <param name="mouseOverPt"></param>
+        /// <returns></returns>
+        int GetHitIndex(Vector2 mouseOverPt)
+        {
+            CanvasTextLayoutRegion textLayoutRegion;
+            _textLayout.HitTest(
+                mouseOverPt.X,
+                mouseOverPt.Y,
+                out textLayoutRegion);
+            return textLayoutRegion.CharacterIndex;
+        }
+
+        /// <summary>
+        /// Update text layout to the current text
+        /// </summary>
+        /// <param name="resourceCreator"></param>
+        /// <returns></returns>
+        private CanvasTextLayout CreateTextLayout(ICanvasResourceCreator resourceCreator)
+        {
+
+            var textFormat = new CanvasTextFormat
+            {
+                HorizontalAlignment = TextHorizontalAlignment,
+                VerticalAlignment = TextVerticalAlignment,
+                WordWrapping = Wrapping,
+                TrimmingGranularity = TrimmingGranularity,
+                TrimmingSign = TrimmingSign,
+                FontFamily = FontFamily,
+                FontSize = FontSize,
+                FontStyle = FontStyle,
+            };
+
+            var textLayout = new CanvasTextLayout(resourceCreator, Text, textFormat, 
+                Width - 2 * (BorderWidth + UIDefaults.XTextPadding), 
+                Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+
+            return textLayout;
+        }
+
+        /// <summary>
+        /// Clear the current selection
+        /// </summary>
+        private void ClearSelection()
+        {
+            _hasSelection = false;
+            _selectionStartIndex = 0;
+            _selectionEndIndex = 0;
+        }
+
+        /// <summary>
+        /// Fired when the text of this textbox is changed
+        /// Fires the TextChanged event when possible
+        /// </summary>
+        /// <param name="text"></param>
+        public virtual void OnTextChanged(String text)
+        {
+            TextChanged?.Invoke(this, text);
+        }
+
+        /// <summary>
+        /// Fired when text in this textbox is copied
+        /// Fires the TextCopied event when possible
+        /// </summary>
+        /// <param name="text">The text that is copied to the clipboard</param>
+        public virtual void OnTextCopied(String text)
+        {
+            TextCopied?.Invoke(this, text);
+        }
+
+        /// <summary>
+        /// Fired when the text of this textbox is cut
+        /// Fires the TextCut event when possible
+        /// </summary>
+        /// <param name="text">The text that is copied to the clipboard</param>
+        public virtual void OnTextCut(String text)
+        {
+            TextCut?.Invoke(this, text);
+        }
+
+        /// <summary>
+        /// Fired when the text is pasted into this textbox
+        /// Fires the TextPasted event when possible
+        /// </summary>
+        /// <param name="text">The text that is pasted into the textbox</param>
+        public virtual void OnTextPasted(String text)
+        {
+            TextPasted?.Invoke(this, text);
+        }
+
+        /// <summary>
+        /// Copies the current selection in the text box into the clipboard
+        /// </summary>
+        private void Copy()
+        {
+            if (_hasSelection)
+            {
+                int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+                String selection = Text.Substring(firstIndex, length);
+
+                SessionController.Instance.DataPackage.SetText(selection);
+
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(SessionController.Instance.DataPackage);
+                OnTextCopied(selection);
+            }
+        }
+
+        /// <summary>
+        /// Cuts current selection from the textbox and copies it into the clipboard
+        /// </summary>
+        private void Cut()
+        {
+            if (_hasSelection)
+            {
+                int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+                String selection = Text.Substring(firstIndex, length);
+
+                SessionController.Instance.DataPackage.SetText(selection);
+
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(SessionController.Instance.DataPackage);
+                OnTextCut(selection);
+                
+                Text = Text.Remove(firstIndex, length);
+                // Unhighlight selected text
+                ClearSelection();
+            }
+        }
+
+        /// <summary>
+        /// Pastes text from clipboard into current location in textbox indicated by the cursor
+        /// </summary>
+        private async void Paste()
+        {
+            DataPackageView dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
+            if (dataPackageView.Contains(StandardDataFormats.Text))
+            {
+                string text = await dataPackageView.GetTextAsync();
+                OnTextPasted(text);
+                // Paste text from clipboard into the text
+                Text = Text.Insert(_cursorCharacterIndex, text);
+                OnTextChanged(Text);
+                _cursorCharacterIndex += text.Length;
+            }
+        }
 
     }
 }
