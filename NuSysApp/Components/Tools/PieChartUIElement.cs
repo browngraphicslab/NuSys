@@ -471,6 +471,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            Released -= PieChartUIElement_Released;
+            Dragged -= PieChartUIElement_Dragged;
             base.Dispose();
         }
 
