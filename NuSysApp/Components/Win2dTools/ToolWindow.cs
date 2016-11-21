@@ -118,6 +118,7 @@ namespace NuSysApp
             if (numOfParents > 1)
             {
                 _parentOperatorButton.IsVisible = true;
+                _parentOperatorButton.ButtonText = Vm.Controller.Model.ParentOperator.ToString();
             }
             else
             {
@@ -245,7 +246,7 @@ namespace NuSysApp
         private void SetUpFilterDropDown()
         {
             _filterChooserDropdownButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator) {Height = 100, Width = 500});
-            _filterChooserDropdownButton.ButtonText = "fdsafd";
+            _filterChooserDropdownButton.ButtonText = Vm.Filter.ToString();
             _filterChooserDropdownButton.Width = Width;
             _filterChooserDropdownButton.Height = FILTER_CHOOSER_HEIGHT;
             _filterChooserDropdownButton.ButtonTextColor = Colors.Black;
@@ -299,16 +300,28 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void FilterChooserItem_Clicked(ButtonUIElement item, CanvasPointer pointer)
+        private async void FilterChooserItem_Clicked(ButtonUIElement item, CanvasPointer pointer)
         {
             _filterChooser.IsVisible = false;
-            _filterChooserDropdownButton.ButtonText = item.ButtonText;
-            var vm = Vm as BasicToolViewModel;
-            vm.Filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item.ButtonText);
-            if (vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
+            //var vm = Vm as BasicToolViewModel;
+            var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item.ButtonText);
+            var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)Transform.Position.X, (float)Transform.Position.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+            if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
-                vm.SwitchToAllMetadataTool();
+                //TODO: I think dispose is getting called before switching to all metadata tool
+                await Vm.SwitchToAllMetadataTool((float)canvasCoordinate.X, (float)canvasCoordinate.Y);
                 this.Dispose();
+            }
+            else if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
+            {
+                await Vm.SwitchToBasicTool(filter, (float)canvasCoordinate.X, (float)canvasCoordinate.Y);
+                this.Dispose();
+            }
+            else
+            {
+                Vm.Filter = filter;
+                _filterChooserDropdownButton.ButtonText = item.ButtonText;
+
             }
         }
 
@@ -331,8 +344,11 @@ namespace NuSysApp
             _parentOperatorButton = new ButtonUIElement(this, ResourceCreator, parentOperatorRectangle);
             _parentOperatorButton.Transform.LocalY = -PARENT_OPERATOR_BUTTON_HEIGHT;
             _parentOperatorButton.ButtonText = "AND";
+            _parentOperatorButton.ButtonTextColor = Colors.Black;
+            _parentOperatorButton.IsVisible = false;
             _parentOperatorButton.Tapped += _parentOperatorButton_Tapped;
             AddChild(_parentOperatorButton);
+
 
             var deleteCircleShape = new EllipseUIElement(this, ResourceCreator)
             {

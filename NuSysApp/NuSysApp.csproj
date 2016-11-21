@@ -515,6 +515,7 @@
     <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />

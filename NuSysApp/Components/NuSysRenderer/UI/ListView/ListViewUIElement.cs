@@ -240,19 +240,35 @@ namespace NuSysApp
             //Clear the rows.
             Rows.Clear();
 
+            //If itemssource is empty, no need to create rows.
+            if (_itemsSource.Count == 0)
+            {
+                return;
+            }
 
-            var position = (ScrollBar == null) ? 0 : ScrollBar.Position; 
+
+            var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+            
+            //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
+            if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
+            {
+                if (ScrollBar != null) ScrollBar.Position = 0;
+                position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+
+            }
+
+            //Start index is the itemsource-index of the first item shown on the listview 
             var startIndex = (int)Math.Floor(position * _itemsSource.Count);
-            var items = _itemsSource.ToArray();
 
             //Number of rows needed to cover the screen at all times
-            var numberOfRows = (int) Math.Ceiling(Height / RowHeight) + 1;
-
+            //Make sures that the number of rows created does not exceed the number of rows in the source
+            var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1); 
+            
             if (numberOfRows > _itemsSource.Count)
             {
                 numberOfRows = _itemsSource.Count;
             }
-
+            
             //Creates the row UI elements and adds them to the list.
             var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
 
@@ -903,10 +919,10 @@ namespace NuSysApp
             _selectedElements?.Clear();
             _itemsSource?.Clear();
             _listColumns?.Clear();
-            Rows = null;
-            _selectedElements = null;
-            _itemsSource = null;
-            _listColumns = null;
+            //Rows = null;
+            //_selectedElements = null;
+            //_itemsSource = null;
+            //_listColumns = null;
             base.Dispose();
         }
 

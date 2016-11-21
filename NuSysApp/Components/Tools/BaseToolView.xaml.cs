@@ -533,7 +533,7 @@ namespace NuSysApp
             if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
 
-                Vm.SwitchToAllMetadataTool();
+                //Vm.SwitchToAllMetadataTool();
                 this.Dispose();
             }
         }

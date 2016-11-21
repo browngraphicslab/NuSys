@@ -703,7 +703,7 @@ namespace NuSysApp
             if (filter != ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
 
-                (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
+                //(DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
                 this.Dispose();
             }
         }

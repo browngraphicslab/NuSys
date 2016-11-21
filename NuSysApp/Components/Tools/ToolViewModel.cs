@@ -15,6 +15,8 @@ namespace NuSysApp
 {
     public abstract class ToolViewModel : BaseINPC, ToolLinkable, IdViewModelable
     {
+        public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller).Model.Filter; } set { (_controller).SetFilter(value); } }
+
 
         public bool IsSelected { get { return false; } }
         public string Id { get { return _controller?.Model?.Id; } }
@@ -356,6 +358,69 @@ namespace NuSysApp
                 controllers = tempControllers;
             }
             return createsLoop;
+        }
+
+        /// <summary>
+        /// Switches from basic tool view to all metadata tool view. Transfers all parents from basic tool view to metadata toolview. Fires events to let 
+        /// children know they have a new parent and let the links know to replace the basic tool view with the new metadata tool view. After, it disposes of the 
+        /// basic tool.
+        /// </summary>
+        public async Task SwitchToAllMetadataTool(float x, float y)
+        {
+            if ((this as MetadataToolViewModel) == null)
+            {
+                await UITask.Run(() =>
+                {
+                    MetadataToolModel model = new MetadataToolModel();
+                    MetadataToolController controller = new MetadataToolController(model);
+                    MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+                    viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+                    foreach (var id in Controller.GetParentIds())
+                    {
+                        controller.AddParent(ToolController.ToolControllers[id]);
+                    }
+                    viewmodel.Width = 500;
+                    viewmodel.Height = 500;
+                    viewmodel.X = x;
+                    viewmodel.Y = y;
+                    SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
+                });
+                //var wvm = SessionController.Instance.ActiveFreeFormViewer;
+                //wvm.AtomViewList.Add(view);
+
+                //Controller.FireFilterTypeAllMetadataChanged(viewmodel);
+                //this.FireReplacedToolLinkAnchorPoint(viewmodel);
+            }
+            //this.Dispose();
+        }
+
+        //Switches to the basic tool view from metadatatoolview. It will not do anything if it is already a basic tool
+        public async Task SwitchToBasicTool(ToolModel.ToolFilterTypeTitle filter, float x, float y)
+        {
+            if ((this as BasicToolViewModel) == null)
+            {
+                await UITask.Run(() =>
+                {
+                    BasicToolModel model = new BasicToolModel();
+                    BasicToolController controller = new BasicToolController(model);
+                    BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+                    foreach (var id in Controller.GetParentIds())
+                    {
+                        controller.AddParent(ToolController.ToolControllers[id]);
+                    }
+                    viewmodel.Filter = filter;
+                    viewmodel.Width = 500;
+                    viewmodel.Height = 500;
+                    viewmodel.X = x;
+                    viewmodel.Y = y;
+                    SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
+                });
+                //var wvm = SessionController.Instance.ActiveFreeFormViewer;
+                //wvm.AtomViewList.Add(view);
+
+                //Controller.FireFilterTypeAllMetadataChanged(viewmodel);
+                //this.FireReplacedToolLinkAnchorPoint(viewmodel);
+            }
         }
 
         /// <summary>
