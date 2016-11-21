@@ -371,6 +371,8 @@
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\FloatingMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\LibraryListUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\HorizontalAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
@@ -382,12 +384,14 @@
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewRowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElementContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\NuSessionViewer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollableRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollBarUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ScrubBarUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionRootRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\StackLayoutManager.cs" />

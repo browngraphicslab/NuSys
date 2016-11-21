@@ -65,7 +65,7 @@ namespace NuSysApp
 
         private bool _inkPressed;
 
-        private BaseRenderItem _renderRoot;
+        private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
 
@@ -80,7 +80,7 @@ namespace NuSysApp
             xMinimapCanvas.Width = 300;
             xMinimapCanvas.Height = 300;
 
-            _renderRoot = new BaseRenderItem(null, xRenderCanvas);
+            _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
         }
 

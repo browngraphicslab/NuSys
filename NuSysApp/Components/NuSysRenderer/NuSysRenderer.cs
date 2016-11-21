@@ -44,7 +44,7 @@ namespace NuSysApp
         private RenderItemInteractionManager _interactionManager;
         private bool _isInitialized;
 
-        public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
+        public NuSysRenderer(CanvasAnimatedControl canvas, SessionRootRenderItem root) : base(canvas, root)
         {
             _interactionManager = new RenderItemInteractionManager(this, canvas);
             

@@ -43,8 +43,8 @@ namespace NuSysApp
         public static bool WindowIsResizeable = true;
         public static bool WindowKeepsAspectRatio = true;
         public static bool WindowIsDraggable = true;
-        public static float? WindowMaxWidth = (float?) SessionController.Instance.ScreenWidth;
-        public static float? WindowMaxHeight = (float?)SessionController.Instance.ScreenHeight;
+        public static float? WindowMaxWidth = 5000;
+        public static float? WindowMaxHeight = 5000;
         public static float? WindowMinWidth = 25;
         public static float? WindowMinHeight = 25;
         public static float WindowBorderWidth = 3;
@@ -68,5 +68,8 @@ namespace NuSysApp
         public static float AudioResizerConnectingLineWidth = 5;
         public static Color AudioRegionMaskColor = Color.FromArgb(160, 0, 0, 0);
         public static float ButtonTextSize = 14;
+        public static float floatingMenuHeight = 60;
+        public static float floatingMenuWidth = 130;
+
     }
 }

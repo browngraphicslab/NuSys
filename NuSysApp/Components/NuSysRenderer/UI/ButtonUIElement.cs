@@ -144,6 +144,13 @@ namespace NuSysApp
         /// </summary>
         protected bool _beingDragged;
 
+        /// <summary>
+        /// The bounds of the image we want to draw on the button, 
+        /// The image is drawn within these bounds, unless it is set to null
+        ///  in which case the image is drawn in the local bounds used for hit testing
+        /// </summary>
+        public Rect? ImageBounds { get; set; }
+
 
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
@@ -241,7 +248,7 @@ namespace NuSysApp
 
             if (Image != null)
             {
-                ds.DrawImage(Image, new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth));
+                ds.DrawImage(Image, ImageBounds ?? GetLocalBounds());
             }
 
             ds.Transform = orgTransform;
