@@ -565,6 +565,7 @@ namespace NuSysApp
             DataPackageView dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
             if (dataPackageView.Contains(StandardDataFormats.Text))
             {
+                // If text is selected, paste over it
                 if (_hasSelection)
                 {
                     int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
