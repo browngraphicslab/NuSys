@@ -456,9 +456,11 @@
       <DependentUpon>MetadataToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
+    <Compile Include="Components\Tools\PieChartElement.cs" />
     <Compile Include="Components\Tools\PieChartToolView.xaml.cs">
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\PieChartUIElement.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>

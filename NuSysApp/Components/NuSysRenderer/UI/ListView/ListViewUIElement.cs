@@ -167,21 +167,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// x and y positions necessary to see if canvas pointer is moving within the listview.
-        /// these should be set by the listviewcontainer.
-        /// </summary>
-        private float _x;
-        private float _y;
-        public float X
-        {
-            set { _x = value; }
-        }
-        public float Y
-        {
-            set { _y = value; }
-        }
-
-        /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
         /// </summary>
         /// <param name="parent"></param>
