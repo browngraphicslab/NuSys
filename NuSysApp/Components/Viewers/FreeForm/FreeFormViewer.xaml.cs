@@ -145,9 +145,12 @@ namespace NuSysApp
                 Height = 500
             };
 
+
             DetailViewer.Transform.LocalPosition = new Vector2(300,300);
 
             _renderRoot.AddChild(DetailViewer);
+
+            
 
             RenderEngine.Start();
 

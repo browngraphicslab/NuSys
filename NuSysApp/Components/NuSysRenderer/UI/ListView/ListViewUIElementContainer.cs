@@ -22,13 +22,13 @@ namespace NuSysApp
         /// </summary>
         private ListViewUIElement<T> _listview;
 
-        public delegate void RowSelectedEventHandler(T item, String columnName);
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer);
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
         /// be null.
         /// </summary>
-        public event RowSelectedEventHandler RowSelected;
+        public event RowTappedEventHandler RowTapped;
 
         public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
 
@@ -38,6 +38,14 @@ namespace NuSysApp
         public event RowDraggedEventHandler RowDragged;
 
         public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
+
+        /// <summary>
+        /// If a row has been double tapped this event will fire.
+        /// </summary>
+        public event RowDoubleTappedEventHandler RowDoubleTapped;
+
+        public delegate void RowDoubleTappedEventHandler(T item, string columnName, CanvasPointer pointer);
+
 
         /// <summary>
         /// If a row was dragged outisde the list this event will fire.
@@ -61,6 +69,14 @@ namespace NuSysApp
                 _showHeader = value;
             }
         }
+
+        public bool DisableSelectionByClick
+        {
+            get { return _listview.DisableSelectionByClick; }
+            set { _listview.DisableSelectionByClick = value; }
+        }
+
+
 
         /// <summary>
         /// where listview will draw itself
@@ -103,7 +119,7 @@ namespace NuSysApp
             {
                 if (ListView != null)
                 {
-                    ListView.Background = value;
+                    //ListView.Background = value;
                 }
             }
         }
@@ -142,11 +158,21 @@ namespace NuSysApp
             }
             set
             {
-                if (ListView != null)
+                if (base.Height != value)
                 {
-                    ListView.Height = value;
+                    if (ListView != null)
+                    {
+                        if (ShowHeader)
+                        {
+                            ListView.Height = value - _header.Height;
+                        }
+                        else
+                        {
+                            ListView.Height = value;
+                        }
+                    }
+                    base.Height = value;
                 }
-                base.Height = value;
             }
         }
 
@@ -184,9 +210,10 @@ namespace NuSysApp
             _listYPos = 0;
             ListView = new ListViewUIElement<T>(this, resourceCreator);
 
-            ListView.RowSelected += ListView_RowSelected;
+            ListView.RowTapped += ListViewRowTapped;
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
+            ListView.RowDoubleTapped += ListView_RowDoubleTapped;
 
             _header = new ListViewHeader<T>(this, resourceCreator);
             _header.HeaderDragged += Header_HeaderDragged;
@@ -197,6 +224,8 @@ namespace NuSysApp
             AddChild(_header);
             ShowHeader = true;
         }
+
+
 
         /// <summary>
         /// This gets called when the user completes dragging of the a header's edge to resize a column. It changes the relative column widths
@@ -244,9 +273,10 @@ namespace NuSysApp
         public override void Dispose()
         {
             base.Dispose();
-            ListView.RowSelected -= ListView_RowSelected;
+            ListView.RowTapped -= ListViewRowTapped;
             ListView.RowDragged -= ListView_RowDragged;
             ListView.RowDragCompleted -= ListView_RowDragCompleted;
+            ListView.RowDoubleTapped -= ListView_RowDoubleTapped;
 
             _header.HeaderDragged -= Header_HeaderDragged;
             _header.HeaderDragCompleted -= Header_HeaderDragCompleted;
@@ -316,12 +346,29 @@ namespace NuSysApp
         #region RouterFunctions
 
         /// <summary>
+        /// Returns the item source of the list
+        /// </summary>
+        /// <returns></returns>
+        public List<T> GetItems()
+        {
+            return _listview.GetItems();
+        }
+
+        /// <summary>
         /// Add new items/rows to the list
         /// </summary>
         /// <param name="itemsToAdd"></param>
         public void AddItems(List<T> itemsToAdd)
         {
             ListView.AddItems(itemsToAdd);
+        }
+
+        /// <summary>
+        /// Removes all items from list view
+        /// </summary>
+        public void ClearItems()
+        {
+            ListView.ClearItems();
         }
 
         /// <summary>
@@ -423,6 +470,24 @@ namespace NuSysApp
         {
             _listview.SortByCol(colIndex);
         }
+        /// <summary>
+        /// When the listviewuielement fires its rowdoubletapped event, the container will fire its rowdoubletapped
+        /// which the user should be listening to.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void ListView_RowDoubleTapped(T item, string columnName, CanvasPointer pointer)
+        {
+            RowDoubleTapped?.Invoke(item, columnName, pointer);
+        }
+        /// <summary>
+        /// Deselects all the items currently selected
+        /// </summary>
+        public void DeselectAllItems()
+        {
+            _listview.DeselectAllItems();
+        }
 
         /// <summary>
         /// When the listview  ui element fires its row dragged event, the container will fires it's row dragged
@@ -453,10 +518,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="columnName"></param>
-        private void ListView_RowSelected(T item, string columnName)
+        private void ListViewRowTapped(T item, string columnName, CanvasPointer pointer)
         {
-            RowSelected?.Invoke(item, columnName);
+            RowTapped?.Invoke(item, columnName, pointer);
         }
+
 
 
         #endregion RouterFunctions

@@ -1,5 +1,7 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Windows.UI;
+using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -13,7 +15,10 @@ namespace NuSysApp
 
         private const int VIEW_BUTTON_HEIGHT = 40;
 
-        private BaseToolInnerView _innerView;
+        private BasicToolInnerView _toolView;
+
+        private enum ViewMode { PieChart, List, BarChart }
+        private ViewMode _currentViewMode;
 
         /// <summary>
         /// The button for changing the inner view to the list view
@@ -30,23 +35,63 @@ namespace NuSysApp
         /// </summary>
         private ButtonUIElement _barToolViewButton;
 
-        public BasicToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
-        {
-            SetUpBottomButtons();
-            _innerView = new BaseToolListInnerView(this, ResourceCreator);
-            AddChild(_innerView);
 
+
+        public BasicToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
+        {
+            Vm = vm;
+            SetUpBottomButtons();
+            _toolView = new BasicToolListInnerView(this, ResourceCreator, vm);
+            //AddChild(_toolView);
+
+            //vm.Controller.SetLocation(x, y);
+
+
+            vm.ReloadPropertiesToDisplay();
+            _toolView.SetProperties((Vm as BasicToolViewModel).PropertiesToDisplay);
+            _currentViewMode = ViewMode.List;
+            //SetSize(250, 450);
+            (vm.Controller as BasicToolController).SelectionChanged += OnSelectionChanged;
+            vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
         }
+
+        /// <summary>
+        ///Passes new properties to display to the toolview
+        /// </summary>
+        private void Vm_PropertiesToDisplayChanged()
+        {
+            _toolView.SetProperties((Vm as BasicToolViewModel).PropertiesToDisplay);
+        }
+
+        /// <summary>
+        ///Passes new selection to the inner tool view
+        /// </summary>
+        private void OnSelectionChanged(object sender)
+        {
+            var vm = Vm as BasicToolViewModel;
+            if (vm.Selection != null && (Vm.Controller as BasicToolController).Model.Selected)
+            {
+                _toolView.SetVisualSelection(vm.Selection);
+            }
+            else
+            {
+                _toolView.SetVisualSelection(new HashSet<string>());
+            }
+        }
+
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _innerView.Height = Height;
-            _innerView.Width = Width;
-            _innerView.Transform.LocalPosition = new Vector2(0, UIDefaults.TopBarHeight);
-
+            _toolView.Height = Height - FILTER_CHOOSER_HEIGHT - UIDefaults.TopBarHeight - BUTTON_BAR_HEIGHT;
+            _toolView.Width = Width;
+            _toolView.Transform.LocalPosition = new Vector2(0, UIDefaults.TopBarHeight+FILTER_CHOOSER_HEIGHT);
+            
             base.Update(parentLocalToScreenTransform);
         }
 
+        /// <summary>
+        /// Sets up the buttons at the bottom of the tool ()
+        /// </summary>
         private void SetUpBottomButtons()
         {
             //Set up list button
@@ -60,7 +105,7 @@ namespace NuSysApp
             _listToolViewButton.ButtonText = "List";
             _listToolViewButton.ButtonTextColor = Colors.Black;
             _listToolViewButton.Transform.LocalPosition = new Vector2(VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            AddChild(_listToolViewButton);
+            //AddChild(_listToolViewButton);
 
             //Set up pie button 
             var pieButtonRectangle = new RectangleUIElement(this, ResourceCreator)
@@ -73,7 +118,7 @@ namespace NuSysApp
             _pieToolViewButton.ButtonText = "Pie";
             _pieToolViewButton.ButtonTextColor = Colors.Black;
             _pieToolViewButton.Transform.LocalPosition = new Vector2(_listToolViewButton.Transform.LocalX + _listToolViewButton.Width + VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            AddChild(_pieToolViewButton);
+            //AddChild(_pieToolViewButton);
 
             //Set up bar chart button 
             var barButtonRectangle = new RectangleUIElement(this, ResourceCreator)
@@ -86,12 +131,13 @@ namespace NuSysApp
             _barToolViewButton.ButtonText = "Bar";
             _barToolViewButton.ButtonTextColor = Colors.Black;
             _barToolViewButton.Transform.LocalPosition = new Vector2(_pieToolViewButton.Transform.LocalX + _pieToolViewButton.Width + VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            AddChild(_barToolViewButton);
+            //AddChild(_barToolViewButton);
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            
+            base.Draw(ds);
+
 
             //Arrange the buttons at the bottom
             if (_listToolViewButton != null)
@@ -111,7 +157,6 @@ namespace NuSysApp
                 _barToolViewButton.Transform.LocalY = ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN;
             }
 
-            base.Draw(ds);
 
         }
     }

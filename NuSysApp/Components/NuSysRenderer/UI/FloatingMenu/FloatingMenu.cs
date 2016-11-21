@@ -57,6 +57,7 @@ namespace NuSysApp
         private void OpenLibraryButtonOnTapped(ButtonUIElement item, CanvasPointer pointer)
         {
             _library.IsVisible = !_library.IsVisible;
+            _library.Transform.LocalPosition = new Vector2(-50, Height- 20);
         }
 
         public override async Task Load()
@@ -65,11 +66,15 @@ namespace NuSysApp
             _library = new LibraryListUIElement(this, Canvas)
             {
                 BorderWidth = 5,
-                Bordercolor = Colors.LightGray,
-                TopBarColor = Colors.DarkSlateGray
+                Bordercolor = Colors.Black,
+                TopBarColor = Colors.DarkSlateGray,
+                Height = 400,
+                Width = 400,
+                MinWidth = 400,
+                MinHeight = 400
             };
             AddChild(_library);
-            _library.Transform.LocalPosition = new Vector2(0, Height);
+            _library.IsVisible = false;
 
             _addElementButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_mainmenu_add_node.png"));
             _addElementButton.ImageBounds = new Rect(_addElementButton.Width / 4, _addElementButton.Height/4, _addElementButton.Width/2, _addElementButton.Height/2);

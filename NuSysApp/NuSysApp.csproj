@@ -369,6 +369,7 @@
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\FloatingMenu.cs" />
@@ -488,6 +489,7 @@
       <DependentUpon>AddToCollectionButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\IdViewModelable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
@@ -516,6 +518,11 @@
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
+    <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
+    <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
