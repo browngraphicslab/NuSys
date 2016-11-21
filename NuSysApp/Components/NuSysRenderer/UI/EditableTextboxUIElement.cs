@@ -65,6 +65,7 @@ namespace NuSysApp
             _hasSelection = false;
             TextVerticalAlignment = CanvasVerticalAlignment.Top;
             Wrapping = CanvasWordWrapping.WholeWord;
+            TrimmingSign = CanvasTrimmingSign.None;
 
             _textLayout = CreateTextLayout(resourceCreator);
             //_textLayout = TextLayout;
@@ -114,8 +115,8 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void EditableTextboxUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            Vector2 pos = new Vector2(pointer.CurrentPoint.X - (float)this.Transform.LocalPosition.X,
-                                      pointer.CurrentPoint.Y - (float)this.Transform.LocalPosition.Y);
+            Vector2 pos = new Vector2(pointer.CurrentPoint.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X,
+                                      pointer.CurrentPoint.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
             _selectionEndIndex = GetHitIndex(pos);
             _hasSelection = true;
         }
@@ -128,8 +129,8 @@ namespace NuSysApp
         private void EditableTextboxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ClearSelection();
-            Vector2 pos = new Vector2(pointer.CurrentPoint.X - (float)this.Transform.LocalPosition.X, 
-                                      pointer.CurrentPoint.Y - (float)this.Transform.LocalPosition.Y);
+            Vector2 pos = new Vector2(pointer.CurrentPoint.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X, 
+                                      pointer.CurrentPoint.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
             int charIndex = GetHitIndex(pos);
             _cursorCharacterIndex = charIndex;
 
@@ -168,7 +169,7 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.Delete)
             {
                 _currCursorX = 0;
-                if (_cursorCharacterIndex < Text.Length)
+                if (_cursorCharacterIndex < (Text.Length-1))
                 {
                     Text = Text.Remove(_cursorCharacterIndex+1, 1);
                     OnTextChanged(Text);
@@ -327,6 +328,8 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
+            var t1 = Matrix3x2.CreateTranslation(10, 5);
+            ds.Transform = ds.Transform * t1;
 
             // Highlight selected characters
             if (_hasSelection)
@@ -548,6 +551,7 @@ namespace NuSysApp
                 OnTextCut(selection);
                 
                 Text = Text.Remove(firstIndex, length);
+                _cursorCharacterIndex -= (length-1);
                 // Unhighlight selected text
                 ClearSelection();
             }
@@ -561,6 +565,16 @@ namespace NuSysApp
             DataPackageView dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
             if (dataPackageView.Contains(StandardDataFormats.Text))
             {
+                if (_hasSelection)
+                {
+                    int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                    int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+                    String selection = Text.Substring(firstIndex, length);
+
+                    Text = Text.Remove(firstIndex, length);
+                    _cursorCharacterIndex -= (length - 1);
+                    ClearSelection();
+                }
                 string text = await dataPackageView.GetTextAsync();
                 OnTextPasted(text);
                 // Paste text from clipboard into the text
