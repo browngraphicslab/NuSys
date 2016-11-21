@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using Windows.Storage;
+using WinRTXamlToolkit.IO.Extensions;
 
 namespace NuSysApp
 {
@@ -110,6 +112,35 @@ namespace NuSysApp
 
             base.UnPack(message);
             SetBlockServerBoolean(false);
+        }
+
+        /// <summary>
+        /// export a library element to an HTML page
+        /// 
+        /// creates an html page from the element's contents (for now, can also take rendered image of node)
+        /// </summary>
+        public async void ExportToHTML()
+        {
+            /// create the node's HTML file in the HTML folder
+            /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
+            var storageFolder = ApplicationData.Current.LocalFolder;
+            StorageFolder htmlFolder = null;
+            if (await storageFolder.ContainsFolderAsync("HTML"))
+            {
+                htmlFolder = await storageFolder.GetFolderAsync("HTML");
+            }
+            else
+            {
+                htmlFolder = await storageFolder.CreateFolderAsync("HTML", CreationCollisionOption.ReplaceExisting);
+            }
+            /// this file is what we will write to/edit
+            var nodeFile = await htmlFolder.CreateFileAsync(Title + ".html", Windows.Storage.CreationCollisionOption.ReplaceExisting);
+
+            //copy template for element
+            var template = await StorageFile.GetFileFromPathAsync("../../HTMLTemplates/image_node_template.html");
+            await template.CopyAndReplaceAsync(nodeFile);
+
+            //replace info for file
         }
     }
 }
