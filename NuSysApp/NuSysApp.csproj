@@ -268,6 +268,12 @@
     <Content Include="Assets\fonts\freightsanslight.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Themes\audio_node_template.html" />
+    <Content Include="Themes\image_node_template.html" />
+    <Content Include="Themes\node_template.css" />
+    <Content Include="Themes\pdf_node_template.html" />
+    <Content Include="Themes\text_node_template.html" />
+    <Content Include="Themes\video_node_template.html" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />

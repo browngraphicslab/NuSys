@@ -765,5 +765,13 @@ namespace NuSysApp
             Users?.Children?.Clear();
             WaitingRoomView.Instance.ClearUsers();
         }
+
+        private void Export_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (_activeFreeFormViewer.Selections.Count != 0)
+            {
+                _activeFreeFormViewer.Selections[0].ViewModel.Controller.LibraryElementController.ExportToHTML();
+            }
+        }
     }
 }

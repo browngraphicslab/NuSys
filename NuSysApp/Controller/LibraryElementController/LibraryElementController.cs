@@ -846,19 +846,46 @@ namespace NuSysApp
         {
             /// create the node's HTML file in the HTML folder
             /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
-            var storageFolder = ApplicationData.Current.LocalFolder;
             StorageFolder htmlFolder = null;
-            if (await storageFolder.ContainsFolderAsync("HTML"))
+            if (await NuSysStorages.NuSysTempFolder.ContainsFolderAsync("HTML"))
             {
-                htmlFolder = await storageFolder.GetFolderAsync("HTML");
+                htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
             }
             else
             {
-                htmlFolder = await storageFolder.CreateFolderAsync("HTML", CreationCollisionOption.ReplaceExisting);
+                htmlFolder = await NuSysStorages.NuSysTempFolder.CreateFolderAsync("HTML");
             }
-            var sampleFile = await htmlFolder.CreateFileAsync(Title + ".htm", Windows.Storage.CreationCollisionOption.ReplaceExisting);
 
-            await FileIO.WriteTextAsync(sampleFile, "TITLE: " + Title);
+
+            var nodeFile = await htmlFolder.CreateFileAsync(Title + ".html", CreationCollisionOption.ReplaceExisting);
+
+
+            if (!await htmlFolder.ContainsFolderAsync("node_template.css"))
+            {
+                var cssFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/node_template.css"));
+                string css = await FileIO.ReadTextAsync(cssFile);
+                var newCssFile = await htmlFolder.CreateFileAsync("node_template.css", CreationCollisionOption.ReplaceExisting);
+                await FileIO.WriteTextAsync(newCssFile, css);
+            }
+            
+            ///copy template for element. 
+            var type = LibraryElementModel.Type.ToString();
+            type = type.ToLower();
+            var template = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/" + type + "_node_template.html"));
+
+            ///replace info for file
+            string text = await FileIO.ReadTextAsync(template);
+            text = text.Replace("[[title]]", Title);
+            text = text.Replace("[[data]]", ContentDataController.ContentDataModel.Data);
+            text = text.Replace("[[creator]]", LibraryElementModel.Creator);
+            text = text.Replace("[[timestamp]]", LibraryElementModel.LastEditedTimestamp);
+            if (LibraryElementModel.Keywords != null)
+            {
+                var tags = LibraryElementModel.Keywords.ToList();
+                string tagtext = string.Join(", ", tags.Select(tag => string.Join(", ", tag.Text)));
+                text = text.Replace("[[tags]]", tagtext);
+            }
+            await FileIO.WriteTextAsync(nodeFile, text);
         }
     }
 }

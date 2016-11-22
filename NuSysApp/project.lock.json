@@ -1,5 +1,4 @@
 {
-  "locked": false,
   "version": 1,
   "targets": {
     "UAP,Version=v10.0": {
@@ -378,9 +377,6 @@
         "dependencies": {
           "GeoAPI": "[1.7.4, 1.8.0)"
         },
-        "frameworkAssemblies": [
-          "System"
-        ],
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
@@ -2646,9 +2642,6 @@
         "dependencies": {
           "GeoAPI": "[1.7.4, 1.8.0)"
         },
-        "frameworkAssemblies": [
-          "System"
-        ],
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
@@ -5036,9 +5029,6 @@
         "dependencies": {
           "GeoAPI": "[1.7.4, 1.8.0)"
         },
-        "frameworkAssemblies": [
-          "System"
-        ],
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
@@ -7467,9 +7457,6 @@
         "dependencies": {
           "GeoAPI": "[1.7.4, 1.8.0)"
         },
-        "frameworkAssemblies": [
-          "System"
-        ],
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
@@ -9866,9 +9853,6 @@
         "dependencies": {
           "GeoAPI": "[1.7.4, 1.8.0)"
         },
-        "frameworkAssemblies": [
-          "System"
-        ],
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
@@ -12302,9 +12286,6 @@
         "dependencies": {
           "GeoAPI": "[1.7.4, 1.8.0)"
         },
-        "frameworkAssemblies": [
-          "System"
-        ],
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
@@ -14701,9 +14682,6 @@
         "dependencies": {
           "GeoAPI": "[1.7.4, 1.8.0)"
         },
-        "frameworkAssemblies": [
-          "System"
-        ],
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
@@ -25854,5 +25832,8 @@
       "sqlite-net >= 1.0.8"
     ],
     "UAP,Version=v10.0": []
+  },
+  "packageFolders": {
+    "C:\\Users\\GFX Lab\\.nuget\\packages\\": {}
   }
 }
