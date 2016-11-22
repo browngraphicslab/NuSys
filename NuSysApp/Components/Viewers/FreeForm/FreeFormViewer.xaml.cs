@@ -72,6 +72,7 @@ namespace NuSysApp
         public DetailViewMainContainer DetailViewer { get; set; }
 
         private LayoutWindowUIElement _layoutWindow;
+        private bool _customLayoutDrawing = false;
 
         public FreeFormViewer()
         {
@@ -668,35 +669,21 @@ namespace NuSysApp
             }
         }
 
-        private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
+        private void _customLayout(List<ElementRenderItem> sortedSelections)
         {
-            var SortedSelections = new List<ElementRenderItem>(Selections);
-
-            if (sorting == LayoutSorting.Title)
-            {
-                SortedSelections.Sort((x, y) => String.Compare(x.ViewModel.Model.Title, y.ViewModel.Model.Title, StringComparison.CurrentCultureIgnoreCase));
-            } else if (sorting == LayoutSorting.Date)
-            {
-                SortedSelections.OrderBy(x => SessionController.Instance.ContentController.GetLibraryElementModel(x.ViewModel.Model.LibraryId).LastEditedTimestamp).ThenBy(x => x.ViewModel.Model.Title);
-            }
-
-            if (SortedSelections.Count <= 1)
+            if (sortedSelections.Count <= 1)
             {
                 return;
             }
 
             var transform = RenderEngine.GetCollectionTransform(InitialCollection);
-            Vector2 start = new Vector2(float.MaxValue, float.MaxValue);
-
-            // Do the layout
-            start = SortedSelections.Aggregate(start, (current, elementRenderItem) => new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, current.X), (float) Math.Min(elementRenderItem.ViewModel.Y, current.Y)));
 
             var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
             var points =
                 latestStroke.GetInkPoints()
-                    .Select(p => new Vector2((float) p.Position.X, (float) p.Position.Y))
+                    .Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y))
                     .ToArray();
-            if (style == LayoutStyle.Custom && 2 <= points.Length)
+            if (2 <= points.Length)
             {
                 var lineLength = 0.0f;
                 var firstPoint = points[0];
@@ -708,11 +695,11 @@ namespace NuSysApp
                 }
 
                 var k = 0;
-                var nodeDistance = lineLength / (SortedSelections.Count - 1);
+                var nodeDistance = lineLength / (sortedSelections.Count - 1);
                 var lengthA = 0.0f;
                 var pointA = points[0];
                 var pointB = points[1];
-                for (int n = 0; n < SortedSelections.Count; n++)
+                for (int n = 0; n < sortedSelections.Count; n++)
                 {
                     var lengthB = 0.0f;
                     var distance = n * nodeDistance;
@@ -738,16 +725,55 @@ namespace NuSysApp
                     var f = (distance - lengthA) / (lengthB - lengthA);
                     var interpolatedPoint = Vector2.Lerp(pointA, pointB, f);
                     var point = Vector2.Transform(interpolatedPoint, transform);
-                    SortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
+                    sortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
                 }
                 return;
             }
+        }
+
+        private List<ElementRenderItem> _sortedSelections(LayoutSorting sorting)
+        {
+            var sortedSelections = new List<ElementRenderItem>(Selections);
+
+            switch (sorting)
+            {
+                case LayoutSorting.Title:
+                    sortedSelections.Sort((x, y) => String.Compare(x.ViewModel.Model.Title, y.ViewModel.Model.Title, StringComparison.CurrentCultureIgnoreCase));
+                    break;
+                case LayoutSorting.Date:
+                    sortedSelections.OrderBy(x => SessionController.Instance.ContentController.GetLibraryElementModel(x.ViewModel.Model.LibraryId).LastEditedTimestamp).ThenBy(x => x.ViewModel.Model.Title);
+                    break;
+            }
+
+            return sortedSelections;
+        } 
+
+        private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
+        {
+            var sortedSelections = _sortedSelections(sorting);
+
+            if (sortedSelections.Count <= 1)
+            {
+                return;
+            }
+
+            if (style == LayoutStyle.Custom)
+            {
+                _customLayout(sortedSelections);
+                return;
+            }
+
+            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
+            Vector2 start = new Vector2(float.MaxValue, float.MaxValue);
+
+            // Do the layout
+            start = sortedSelections.Aggregate(start, (current, elementRenderItem) => new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, current.X), (float) Math.Min(elementRenderItem.ViewModel.Y, current.Y)));
 
             var nextPosition = start;
-            var rows = (int) Math.Round(Math.Sqrt(SortedSelections.Count));
+            var rows = (int) Math.Round(Math.Sqrt(sortedSelections.Count));
             var i = 0;
             var maxHeight = 0.0f;
-            foreach (var elementRenderItem in SortedSelections)
+            foreach (var elementRenderItem in sortedSelections)
             {
                 elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
                 switch (style)
@@ -840,6 +866,7 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
+            _layoutWindow.NotifyArrangeCustom();
             CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
             if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
             {

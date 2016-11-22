@@ -48,6 +48,7 @@ namespace NuSysApp
         private static string LAYOUT_STYLE_DATE_TEXT = "date";
         private static string CLOSE_BUTTON_TEXT = "X X X X X";
         private static float CLOSE_BUTTON_SIZE = 100.0f;
+        private static String CUSTOM_LAYOUT_TEXT = "Draw to arrange";
 
         // Buttons
         private ButtonUIElement _arrangeButton;
@@ -176,6 +177,19 @@ namespace NuSysApp
             //AddChild(_closePanelButton);
         }
 
+        public void Arrange()
+        {
+            DoLayout?.Invoke(_layoutStyle, _layoutSorting);
+        }
+
+        public void NotifyArrangeCustom()
+        {
+            if (_layoutStyle == LayoutStyle.Custom)
+            {
+                DoLayout?.Invoke(_layoutStyle, _layoutSorting);
+            }
+        }
+
         private async void AddImageToButton(ICanvasResourceCreatorWithDpi resourceCreator, string uri, ButtonUIElement button)
         {
             var bmp = await CanvasBitmap.LoadAsync(resourceCreator, new Uri(uri));
@@ -184,7 +198,7 @@ namespace NuSysApp
 
         private void _arrangeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            DoLayout?.Invoke(_layoutStyle, _layoutSorting);
+            Arrange();
         }
 
         private void _horizontalButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -193,6 +207,9 @@ namespace NuSysApp
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Horizontal;
+            _arrangeButton.ButtonText = ARRANGE_TEXT;
+            _arrangeButton.Background = Colors.Green;
+            _arrangeButton.Enabled = true;
         }
         private void _verticalButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
@@ -200,6 +217,9 @@ namespace NuSysApp
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Vertical;
+            _arrangeButton.ButtonText = ARRANGE_TEXT;
+            _arrangeButton.Background = Colors.Green;
+            _arrangeButton.Enabled = true;
         }
 
         private void _gridButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -208,6 +228,9 @@ namespace NuSysApp
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Grid;
+            _arrangeButton.ButtonText = ARRANGE_TEXT;
+            _arrangeButton.Background = Colors.Green;
+            _arrangeButton.Enabled = true;
         }
 
         private void _customButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -216,6 +239,9 @@ namespace NuSysApp
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Custom;
+            _arrangeButton.ButtonText = CUSTOM_LAYOUT_TEXT;
+            _arrangeButton.Background = Colors.LightGray;
+            _arrangeButton.Enabled = false;
         }
 
         private void _viewListButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)

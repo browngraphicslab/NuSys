@@ -77,6 +77,11 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Enables or disables the button
+        /// </summary>
+        public Boolean Enabled { get; set; }
+
+        /// <summary>
         /// The background color to be set while the button is in the pressed state.
         /// </summary>
         public Color? SelectedBackground { get; set; }
@@ -134,6 +139,8 @@ namespace NuSysApp
 
             Shape.Pressed += RectangleButtonUIElement_Pressed;
             Shape.Released += RectangleButtonUIElement_Released;
+
+            Enabled = true;
         }
 
         /// <summary>
@@ -143,6 +150,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void RectangleButtonUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+           
             // reset the Background and Bordercolor to the original colors
             Background = _orgBackground;
             Bordercolor = _orgBorder;
@@ -157,6 +169,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void RectangleButtonUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             // save the Background and Bordercolor to reset them when the button is no longer pressed
             _orgBackground = Background;
             _orgBorder = Bordercolor;
