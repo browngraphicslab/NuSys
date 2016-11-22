@@ -161,9 +161,18 @@ namespace NuSysApp
                 Background = Colors.Aqua
             };
 
+            OneLineInputTextboxUIElement oltb = new OneLineInputTextboxUIElement(_renderRoot, RenderCanvas)
+            {
+                Width = 200,
+                Height = 30,
+                Background = Colors.Bisque
+            };
+
             tb.Transform.LocalPosition = new Vector2(500, 500);
+            oltb.Transform.LocalPosition = new Vector2(600, 400);
 
             _renderRoot.AddChild(tb);
+            _renderRoot.AddChild(oltb);
 
             RenderEngine.Start();
 

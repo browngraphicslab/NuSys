@@ -35,7 +35,7 @@ namespace NuSysApp
         private bool _isCtrlPressed = false;
 
         // The current text layout
-        private CanvasTextLayout _textLayout;
+        public CanvasTextLayout TextLayout { get; set; }
 
         // The rectangle representing the cursor
         private RectangleUIElement _cursor;
@@ -64,16 +64,16 @@ namespace NuSysApp
         {
             _hasSelection = false;
             TextVerticalAlignment = CanvasVerticalAlignment.Top;
-            Wrapping = CanvasWordWrapping.WholeWord;
+            Wrapping = CanvasWordWrapping.NoWrap;
             TrimmingSign = CanvasTrimmingSign.None;
 
-            _textLayout = CreateTextLayout(resourceCreator);
+            TextLayout = CreateTextLayout(resourceCreator);
             //_textLayout = TextLayout;
 
             // Get the size the cursor should be
             _cursorCharacterIndex = 0;
             CanvasTextLayoutRegion textLayoutRegion;
-            _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);          
+            TextLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);          
             Rect bounds = textLayoutRegion.LayoutBounds;
 
             // Initialize cursor
@@ -162,6 +162,11 @@ namespace NuSysApp
                         OnTextChanged(Text);
                     }
                     _cursorCharacterIndex--;
+                } else if ((_cursorCharacterIndex == 0) && (Text.Length != 0))
+                {
+                    Text = Text.Remove(_cursorCharacterIndex, 1);
+                    OnTextChanged(Text);
+                    _cursorCharacterIndex--;
                 }
 
             }
@@ -179,11 +184,15 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.Left)
             {
                 _currCursorX = 0;
-                if (_cursorCharacterIndex == Text.Length)
+                if ((Text.Length == 1) && _cursorCharacterIndex < 2)
+                {
+                    _cursorCharacterIndex = -1;
+                }
+                else if (_cursorCharacterIndex == Text.Length)
                 {
                     _cursorCharacterIndex -= 2;
                 }
-                else if (_cursorCharacterIndex > 0)
+                else if (_cursorCharacterIndex >= 0)
                 {
                     _cursorCharacterIndex--;
                 }
@@ -201,7 +210,7 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.Up)
             {
                 CanvasTextLayoutRegion textLayoutRegion;
-                _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
+                TextLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
 
                 Rect bounds = textLayoutRegion.LayoutBounds;
                 Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
@@ -218,7 +227,7 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.Down)
             {
                 CanvasTextLayoutRegion textLayoutRegion;
-                _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
+                TextLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
 
                 Rect bounds = textLayoutRegion.LayoutBounds;
                 Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
@@ -248,6 +257,11 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.V && _isCtrlPressed)
             {
                 Paste();
+            }
+            else if (args.VirtualKey == VirtualKey.Tab)
+            {
+                Text = Text.Insert(_cursorCharacterIndex + 1, "    ");
+                _cursorCharacterIndex += 4;
             }
             // Type the letter into the box
             else
@@ -306,12 +320,23 @@ namespace NuSysApp
         public void DrawCursor(CanvasDrawingSession ds)
         {
             CanvasTextLayoutRegion textLayoutRegion;
-            _textLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
+            if (_cursorCharacterIndex > -1)
+            {
+                TextLayout.GetCaretPosition(_cursorCharacterIndex, false, out textLayoutRegion);
 
-            Rect bounds = textLayoutRegion.LayoutBounds;
+                Rect bounds = textLayoutRegion.LayoutBounds;
 
-            _cursor.Transform.LocalPosition = new Vector2((float)bounds.Right + UIDefaults.XTextPadding, (
-                float)bounds.Top + UIDefaults.YTextPadding);
+                _cursor.Transform.LocalPosition = new Vector2((float)bounds.Right + UIDefaults.XTextPadding, (
+                    float)bounds.Top + UIDefaults.YTextPadding);
+            } else
+            {
+                TextLayout.GetCaretPosition(0, false, out textLayoutRegion);
+
+                Rect bounds = textLayoutRegion.LayoutBounds;
+
+                _cursor.Transform.LocalPosition = new Vector2((float)bounds.Left + UIDefaults.XTextPadding, (
+                    float)bounds.Top + UIDefaults.YTextPadding);
+            }
 
             _cursor.Draw(ds);
         }
@@ -322,7 +347,7 @@ namespace NuSysApp
             base.Draw(ds);
 
             // Update current text layout 
-            _textLayout = CreateTextLayout(ds);
+            TextLayout = CreateTextLayout(ds);
 
             DrawCursor(ds);
 
@@ -337,7 +362,7 @@ namespace NuSysApp
                 _cursor.IsVisible = false;
                 int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
                 int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
-                CanvasTextLayoutRegion[] descriptions = _textLayout.GetCharacterRegions(firstIndex, length);
+                CanvasTextLayoutRegion[] descriptions = TextLayout.GetCharacterRegions(firstIndex, length);
                 foreach (CanvasTextLayoutRegion description in descriptions)
                 {
                     ICanvasBrush b = new CanvasSolidColorBrush(ds, Colors.Black);
@@ -377,8 +402,12 @@ namespace NuSysApp
         public override void Dispose()
         {
             this.Pressed -= EditableTextboxUIElement_Pressed;
+            this.Dragged -= EditableTextboxUIElement_Dragged;
+
             this.OnFocusGained -= EditableTextboxUIElement_OnFocusGained;
             this.OnFocusLost -= EditableTextboxUIElement_OnFocusLost;
+            this.KeyPressed -= EditableTextboxUIElement_KeyPressed;
+            this.KeyReleased -= EditableTextboxUIElement_KeyReleased;
 
             base.Dispose();
         }
@@ -432,7 +461,7 @@ namespace NuSysApp
         int GetHitIndex(Vector2 mouseOverPt)
         {
             CanvasTextLayoutRegion textLayoutRegion;
-            _textLayout.HitTest(
+            TextLayout.HitTest(
                 mouseOverPt.X,
                 mouseOverPt.Y,
                 out textLayoutRegion);
