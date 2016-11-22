@@ -117,6 +117,13 @@ namespace NusysServer
                             throw new Exception(
                                 "the file extension cannot be null when creating a new data file with Audio, Video, or Image contentTypes");
                         }
+
+                        if (contentData.Length < 500)
+                        {
+                            fileUrl = contentData;
+                            filePath = "";
+                            break;
+                        }
                         filePath = Constants.WWW_ROOT + contentDataModelId + fileExtension;
                         var fileStream = File.Create(filePath);
                         fileStream.Dispose();

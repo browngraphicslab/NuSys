@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="ServerMuPdfLib.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFClass.cpp" />
+    <ClCompile Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFClassCallers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ServerMuPdfLib.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFClass.h" />
+    <ClInclude Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFClassCallers.h" />
+    <ClInclude Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFFilesChanged.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFLib.vcxproj" />
+    <None Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFLib.vcxproj.filters" />
+    <None Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\MuPDFLib.vcxproj.user" />
+    <None Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\Version.aps" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\Downloads\mupdf-converter-master\MuPDFlib\Version.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

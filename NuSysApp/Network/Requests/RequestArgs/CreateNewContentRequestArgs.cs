@@ -76,7 +76,7 @@ namespace NuSysApp
                 LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.PDF ||
                 LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Image)
             {
-                Debug.Assert(FileExtension != null);
+                //Debug.Assert(FileExtension != null);
                 message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION] = FileExtension;
             }
 
