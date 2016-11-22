@@ -8,13 +8,14 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI;
 
 namespace NuSysApp
 {
     class OneLineInputTextboxUIElement : EditableTextboxUIElement
     {
-        public string FullText { get; set; }
+        public string LeftOver { get; set; }
 
         public OneLineInputTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -38,10 +39,26 @@ namespace NuSysApp
             float minw = TextLayout.GetMinimumLineLength();
 
             float w = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
-            Debug.WriteLine(minw);
-            if (minw > w)
+            //Debug.WriteLine(minw);
+            //if (minw > w)
+            //{
+            //    Debug.WriteLine("OVER");
+            //}
+
+            // if cursor is at left most position and left key is pressed, shift left
+            // if cursor is at right most position and right key is pressed, shift right
+            // if key is typed and cursor is far right, shift right
+            // DON'T LET CURSOR MOVE OUSIDE INDEX RANGE
+
+            // Move cursor left
+            if (args.VirtualKey == VirtualKey.Left)
             {
-                Debug.WriteLine("OVER");
+                
+            }
+            // Move cursor right
+            else if (args.VirtualKey == VirtualKey.Right)
+            {
+
             }
         }
 
