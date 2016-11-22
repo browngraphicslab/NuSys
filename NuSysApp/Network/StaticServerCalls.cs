@@ -163,7 +163,7 @@ namespace NuSysApp
                         args = pdfArgs;
                         break;
                     default:
-                        Debug.Fail("this should never even be hit because this is not copyable"); //tODO, maybe have this just create a snapshot instead?
+                        //Debug.Fail("this should never even be hit because this is not copyable"); //tODO, maybe have this just create a snapshot instead?
                         return "";
                         break;
                 }

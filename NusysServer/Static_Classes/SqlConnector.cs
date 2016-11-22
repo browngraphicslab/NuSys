@@ -19,12 +19,18 @@ namespace NusysServer
         /// <summary>
         /// this string is used to connect to the azure SQL database
         /// </summary>
-        private const string SQLSTRING = "Server=tcp:nureposql.database.windows.net,1433;Database=NuRepo_SQL;User ID=nusys@nureposql;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";
+        /// 
+        //Nusys  Live
+        //private const string SQLSTRING = "Server=tcp:nureposql.database.windows.net,1433;Database=NuRepo_SQL;User ID=nusys@nureposql;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";
+        //Nusys Test
+        //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Database=NuSysTest;User ID=nusys@nusystest;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";    /// <summary>
+        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuSysTest;Persist Security Info=False;User ID=nusys@nusystestsql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-        /// <summary>
-        /// the private database we will use when making SQL commands for any of the four tables
-        /// </summary>
-        private SqlConnection _db;
+
+    /// <summary>
+    /// the private database we will use when making SQL commands for any of the four tables
+    /// </summary>
+    private SqlConnection _db;
 
         /// <summary>
         /// settings for json serialization
@@ -110,7 +116,7 @@ namespace NusysServer
                 NusysConstants.ALIAS_SIZE_WIDTH_KEY + " float, " +
                 NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " float, " +
                 NusysConstants.ALIAS_CREATOR_ID_KEY + " varchar(128), " +
-                 NusysConstants.ALIAS_ACCESS_KEY + " varchar(128), " +
+                NusysConstants.ALIAS_ACCESS_KEY + " varchar(128), " +
                 NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
 
             var metadataTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Metadata)+" ("+
