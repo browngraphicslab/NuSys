@@ -646,6 +646,14 @@ namespace NuSysApp
                 await SessionController.Instance.EnterCollection(id);
             }
 
+            /*
+             * TODO: Collection list view functionality!
+             */
+            if (item == RenderEngine.ElementSelectionRect.BtnCollectionListView)
+            {
+                System.Diagnostics.Debug.WriteLine("Found it!");
+            }
+
             if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
             {
                 var selection = (PdfElementRenderItem) Selections[0];

@@ -28,6 +28,7 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
         public NodeMenuButtonRenderItem BtnLayoutTool;
+        public NodeMenuButtonRenderItem BtnCollectionListView;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
@@ -43,6 +44,8 @@ namespace NuSysApp
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
             BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
             BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+            BtnCollectionListView = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_list.png",parent,resourceCreator);
+          
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
@@ -55,12 +58,24 @@ namespace NuSysApp
                 BtnGroup,
                 BtnPresent,
                 BtnLayoutTool,
+                BtnCollectionListView,
                 BtnPdfLeft,
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer
             };
-            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection };
+            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnCollectionListView };
+
+            /*
+             * Only add the list view button if we are working with a collection node
+             * NOTE: This is hacky and temporary for the beta release
+             */
+            //if ((_vm!=null) && (_vm.Model.ElementType == NusysConstants.ElementType.Collection))
+            //{
+            //    Buttons.Add(BtnCollectionListView);
+            //    //_menuButtons.Add(BtnCollectionListView);
+            //}
+            
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -107,6 +122,8 @@ namespace NuSysApp
             _isSingleCollectionSelected = _selectedItems.Count == 1 && _selectedItems[0] is CollectionRenderItem;
 
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
+            // Added for list view button to show up for collection elements. Feels hacky af
+            BtnCollectionListView.IsVisible = _isSingleCollectionSelected;
 
 
             BtnDelete.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
