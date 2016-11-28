@@ -269,9 +269,6 @@ namespace NuSysApp
 
         public void EnterPresentationMode(ElementViewModel em)
         {
-            var a = new HTMLImporter();
-            a.Run(null);
-
             Debug.Assert(em != null);
 
             // Don't do anything if we're already in presentation mode

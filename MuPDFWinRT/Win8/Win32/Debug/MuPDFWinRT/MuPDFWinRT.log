@@ -1,1 +1,16 @@
-﻿  MuPDFWinRT.vcxproj -> C:\Users\Trent\Documents\nusys_repo\nusys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll
+﻿  Document.cpp
+  LinkInfoInternal.cpp
+  LinkInfoRemote.cpp
+  LinkInfoURI.cpp
+  LinkInfoVisitor.cpp
+  MuPDFDoc.cpp
+  OutlineItem.cpp
+  Utilities.cpp
+  libmupdf.lib(doc_document.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+Document.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
+     Creating library Win32\Debug\MuPDFWinRT.lib and object Win32\Debug\MuPDFWinRT.exp
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  Finished generating code
+  MuPDFWinRT.vcxproj -> C:\Users\Trent\Documents\nusys_repo\main\nusys\MuPDFWinRT\Win8\Win32\Debug\MuPDFWinRT.dll

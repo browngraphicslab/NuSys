@@ -183,6 +183,10 @@ namespace NuSysApp
         // when the user submits a query show the query results
         private void SearchBox_OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            var a = new HTMLImporter();
+            a.RunWithSearch(args.QueryText);
+            return;
+
             // hide helper text and any open info boxes
             HideHelperText();
             foreach (var element in _openInfo) element.Visibility = Visibility.Collapsed;

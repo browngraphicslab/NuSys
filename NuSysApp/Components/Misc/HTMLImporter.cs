@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using HtmlAgilityPack;
 using MyToolkit.Utilities;
+using NAudio.Wave;
 using Newtonsoft.Json;
 using NusysIntermediate;
 using WinRTXamlToolkit.Imaging;
@@ -28,6 +29,10 @@ namespace NuSysApp
         public async Task<IEnumerable<LibraryElementModel>> Run(Uri url)
         {
             var doc = await GetDocumentFromUri(url);
+            if (doc == null)
+            {
+                return null;
+            }
             var models = new HashSet<LibraryElementModel>();
             var contentDataModels = new HashSet<ContentDataModel>();
             await RecursiveAdd(doc.DocumentNode, models, contentDataModels);
@@ -82,30 +87,53 @@ namespace NuSysApp
 
             return models;
         }
-        
+
+        public async Task RunWithSearch(string search)
+        {
+            await Run(new Uri("https://en.wikipedia.org/wiki/"+search));
+        }
+
         private async Task<HtmlDocument> GetDocumentFromUri(Uri url)
         {
-            url = url ?? new Uri("https://en.wikipedia.org/wiki/Computer_science");
-            var doc = new HtmlDocument();
-            var webRequest = HttpWebRequest.Create(url.AbsoluteUri);
-            HttpWebResponse response = (HttpWebResponse)(await webRequest.GetResponseAsync());
-            Stream stream = response.GetResponseStream();
-            doc.Load(stream);
-            stream.Dispose();
-            return doc;
+            try
+            {
+                url = url ?? new Uri("https://en.wikipedia.org/wiki/Computer_science");
+                var doc = new HtmlDocument();
+                var webRequest = HttpWebRequest.Create(url.AbsoluteUri);
+                HttpWebResponse response = (HttpWebResponse) (await webRequest.GetResponseAsync());
+                Stream stream = response.GetResponseStream();
+                doc.Load(stream);
+                stream.Dispose();
+                return doc;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
-        private async Task RecursiveAdd(HtmlNode node, HashSet<LibraryElementModel> models, HashSet<ContentDataModel> contentDataModels)
+        private async Task RecursiveAdd(HtmlNode node, HashSet<LibraryElementModel> models, HashSet<ContentDataModel> contentDataModels, bool ignoreTexts = false)
         {
             if (node.Name.ToLower() == "script")
             {
                 return;
             }
-
+            if (!ignoreTexts && node.ChildNodes.Count(c => c.NodeType == HtmlNodeType.Text) > node.ChildNodes.Count()/2)
+            {
+                var text = StripText(RecursiveSpan(node));
+                if (IsValidText(text) && (text.Length < 2000 || !node.ChildNodes.Any()))
+                {
+                    ignoreTexts = true;
+                    var content = new ContentDataModel(SessionController.Instance.GenerateId(), text);
+                    var m = new LibraryElementModel(SessionController.Instance.GenerateId(), NusysConstants.ElementType.Text) { ContentDataModelId = content.ContentId };
+                    models.Add(m);
+                    contentDataModels.Add(content);
+                }
+            }
             foreach (var child in node.ChildNodes)
             {
-                if(child.Name.ToLower() != "script")
+                if (child.Name.ToLower() != "script")
                 {
-                    await RecursiveAdd(child, models, contentDataModels);
+                    await RecursiveAdd(child, models, contentDataModels, ignoreTexts);
                 }
             }
             if (node.Name == "img")
@@ -231,31 +259,30 @@ namespace NuSysApp
                     });
                 }
             }
-            if (node.NodeType == HtmlNodeType.Text && node.Name != "span")
-            {
-                
-                var text = StripText(RecursiveSpan(node));
-                if (IsValidText(text)) { 
-                    var content = new ContentDataModel(SessionController.Instance.GenerateId(),text);
-                    var m = new LibraryElementModel(SessionController.Instance.GenerateId(),NusysConstants.ElementType.Text) {ContentDataModelId = content.ContentId};
-                    models.Add(m);
-                    contentDataModels.Add(content);
-                }
-            }
         }
 
         private string RecursiveSpan(HtmlNode node)
         {
             var s = "";
-            s += node.InnerText;
+            if (!IsJS(node.InnerText) && node.NodeType == HtmlNodeType.Text)
+            {
+                s += node.InnerText;
+            }
             foreach (var child in node.ChildNodes)
             {
-                if (child.Name == "span" || child.NodeType == HtmlNodeType.Text)
-                {
-                    s += RecursiveSpan(child);
-                }
+                s += RecursiveSpan(child) + "  ";
             }
             return s;
+        }
+
+        private bool IsJS(string text)
+        {
+            var list = text.ToCharArray().ToList();
+            if (list.Count(c => c == '{' || c == '}' || c == '$' || c == '&' || c == '.' || c == ';' || c == '!' || c == '=') > list.Count*.025)
+            {
+                return true;;
+            }
+            return false;
         }
 
         private string FormatSource(string src)
