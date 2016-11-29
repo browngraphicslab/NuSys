@@ -726,9 +726,9 @@ namespace NuSysApp
             // If there exists a presentation link between two element models, return and do not create a new one
             if (
                 PresentationLinkViewModel.Models.FirstOrDefault(
-                    item => item.InElementId == model.InElementId && item.OutElementId == model.OutElementId) != null ||
+                    item => item.OutElementId == model.OutElementId && item.InElementId == model.InElementId) != null ||
                 PresentationLinkViewModel.Models.FirstOrDefault(
-                    item => item.OutElementId == model.InElementId && item.InElementId == model.OutElementId) != null)
+                    item => item.InElementId == model.OutElementId && item.OutElementId == model.InElementId) != null)
             {
                 return false;
             }
@@ -748,10 +748,10 @@ namespace NuSysApp
 
             // Add the model to the list of models
             // create a new presentation link view model
-            if (!(SessionController.Instance.IdToControllers.ContainsKey(model.InElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId)))
+            if (!(SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.InElementId)))
                 return false;
 
-            var inElementController = SessionController.Instance.IdToControllers[model.InElementId];
+            var inElementController = SessionController.Instance.IdToControllers[model.OutElementId];
             var parentCollectionId = inElementController.GetParentCollectionId();
             var parentCollectionController = (CollectionLibraryElementController) SessionController.Instance.ContentController.GetLibraryElementController(parentCollectionId);
 

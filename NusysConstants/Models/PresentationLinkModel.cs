@@ -19,14 +19,14 @@ namespace NusysIntermediate
         public string LinkId { get; set; }
 
         /// <summary>
-        /// The ElementId of the element that starts this presentation link.
-        /// </summary>
-        public string InElementId { get; set; }
-
-        /// <summary>
-        /// The ElementId of the element that is the end of this presentation link.
+        /// The ElementId of the element that ends this presentation link.
         /// </summary>
         public string OutElementId { get; set; }
+
+        /// <summary>
+        /// The ElementId of the element that is the start of this presentation link.
+        /// </summary>
+        public string InElementId { get; set; }
 
         /// <summary>
         /// the string that will hold the text of the presentation links when annotations are desired.

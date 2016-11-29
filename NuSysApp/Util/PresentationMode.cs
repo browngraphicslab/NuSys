@@ -138,12 +138,12 @@ namespace NuSysApp
             Debug.Assert(currentElemVm != null);
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
-            var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
-            if (outgoingLink?.InElementId == outgoingLink?.OutElementId)
+            var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
+            if (outgoingLink?.OutElementId == outgoingLink?.InElementId)
             {
                 return null;
             }
-            var nextElemVm = GetElementViewModelFromId(outgoingLink?.OutElementId);
+            var nextElemVm = GetElementViewModelFromId(outgoingLink?.InElementId);
             return nextElemVm;
 
         }
@@ -160,12 +160,12 @@ namespace NuSysApp
             Debug.Assert(currentElemVm != null);
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
-            var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
-            if (incomingLink?.InElementId == incomingLink?.OutElementId)
+            var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
+            if (incomingLink?.OutElementId == incomingLink?.InElementId)
             {
                 return null;
             }
-            var prevElemVm = GetElementViewModelFromId(incomingLink?.InElementId);
+            var prevElemVm = GetElementViewModelFromId(incomingLink?.OutElementId);
             return prevElemVm;
         }
 

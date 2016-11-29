@@ -371,8 +371,8 @@ namespace NuSysApp
             {
                 var presLink = dataContext as PresentationLinkViewModel;
 
-                var atom1 = PresentationMode.GetElementViewModelFromId(presLink.Model.InElementId);
-                var atom2 = PresentationMode.GetElementViewModelFromId(presLink.Model.OutElementId);
+                var atom1 = PresentationMode.GetElementViewModelFromId(presLink.Model.OutElementId);
+                var atom2 = PresentationMode.GetElementViewModelFromId(presLink.Model.InElementId);
 
                 // if atom1 is currently selected move to atom2
                 if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(atom1))
@@ -764,14 +764,6 @@ namespace NuSysApp
         {
             Users?.Children?.Clear();
             WaitingRoomView.Instance.ClearUsers();
-        }
-
-        private void Export_Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (_activeFreeFormViewer.Selections.Count != 0)
-            {
-                _activeFreeFormViewer.Selections[0].ViewModel.Controller.LibraryElementController.ExportToHTML();
-            }
         }
     }
 }

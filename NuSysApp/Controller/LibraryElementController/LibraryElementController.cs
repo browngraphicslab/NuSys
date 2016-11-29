@@ -841,8 +841,10 @@ namespace NuSysApp
         /// export a library element to an HTML page
         /// 
         /// creates an html page from the element's contents (for now, can also take rendered image of node)
+        /// 
+        /// takes in previous and next node as options for trail export
         /// </summary>
-        public async void ExportToHTML()
+        public async void ExportToHTML(string previous = null, string next = null)
         {
             /// create the node's HTML file in the HTML folder
             /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
@@ -860,7 +862,7 @@ namespace NuSysApp
             var nodeFile = await htmlFolder.CreateFileAsync(Title + ".html", CreationCollisionOption.ReplaceExisting);
 
 
-            if (!await htmlFolder.ContainsFolderAsync("node_template.css"))
+            if (!await htmlFolder.ContainsFileAsync("node_template.css"))
             {
                 var cssFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/node_template.css"));
                 string css = await FileIO.ReadTextAsync(cssFile);
@@ -885,6 +887,17 @@ namespace NuSysApp
                 string tagtext = string.Join(", ", tags.Select(tag => string.Join(", ", tag.Text)));
                 text = text.Replace("[[tags]]", tagtext);
             }
+
+            if (previous != null)
+            {
+                text = text.Replace("[[previous]]", previous + ".html");
+            }
+
+            if (next != null)
+            {
+                text = text.Replace("[[next]]", next + ".html");
+            }
+
             await FileIO.WriteTextAsync(nodeFile, text);
         }
     }

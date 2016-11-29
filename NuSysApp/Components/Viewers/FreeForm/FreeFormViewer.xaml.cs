@@ -136,7 +136,71 @@ namespace NuSysApp
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
             RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
 
+            RenderEngine.BtnExportTrail.Tapped -= BtnExportTrailOnTapped;
+            RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
+
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+        }
+
+        /// <summary>
+        /// exports trail to HTML when export button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_selectedLink is TrailRenderItem)
+            {
+                //get trail as a list of nodes
+                List<LibraryElementController> trailList = GetTrailAsList((_selectedLink as TrailRenderItem).ViewModel.Model);
+                for (int i = 0; i < trailList.Count; i++)
+                {
+                    var currElement = trailList[i];
+                    string prev = null;
+                    string next = null;
+                    if (i > 0)
+                    {
+                        prev = trailList[i - 1].Title;
+                    }
+                    if (i < trailList.Count - 1)
+                    {
+                        next = trailList[i + 1].Title;
+                    }
+
+                    currElement.ExportToHTML(prev, next);
+                }
+            }
+        }
+
+        /// <summary>
+        /// gets trail elements as a list
+        /// </summary>
+        /// <param name="trail"></param>
+        /// <returns></returns>
+        private List<LibraryElementController> GetTrailAsList(PresentationLinkModel trail)
+        {
+            List<LibraryElementController> elements = new List<LibraryElementController>();
+            var currTrail = trail;
+            while (currTrail != null) 
+            {
+                var inNode = SessionController.Instance.IdToControllers[currTrail.OutElementId].LibraryElementController;
+                var outNode =
+                    SessionController.Instance.IdToControllers[currTrail.InElementId].LibraryElementController;
+                if (!elements.Contains(inNode))
+                {
+                    elements.Add(inNode);
+                }
+                if (elements.Contains(outNode))
+                {
+                    break;
+                }
+                elements.Add(outNode);
+
+                currTrail =
+                    PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currTrail.InElementId);
+            }
+
+            return elements;
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -240,16 +304,27 @@ namespace NuSysApp
 
         private void OnRenderItemPressed(BaseRenderItem item, CanvasPointer point)
         {
-            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem))
+            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem || item == RenderEngine.BtnExportTrail))
             {
                 RenderEngine.BtnDelete.IsVisible = false;
+                RenderEngine.BtnExportTrail.IsVisible = false;
             }
         }
 
+        /// <summary>
+        /// made edits to include HTML export
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
             RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -40);
             RenderEngine.BtnDelete.IsVisible = true;
+
+            //HTML export
+            RenderEngine.BtnExportTrail.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, 40);
+            RenderEngine.BtnExportTrail.IsVisible = true;
+
             _selectedLink = element;
         }
 

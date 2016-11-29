@@ -62,8 +62,8 @@ namespace NusysServer
             {
                 PresentationLinkModel linkModel = new PresentationLinkModel();
                 linkModel.AnnotationText = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY);
-                linkModel.InElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY);
-                linkModel.OutElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY);
+                linkModel.OutElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY);
+                linkModel.InElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY);
                 linkModel.LinkId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY);
                 linkModel.ParentCollectionId =
                     linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY);

@@ -90,8 +90,5 @@
         <Grid x:Name="xLoadingGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#55000000" Visibility="Collapsed">
             <local:LoadingScreen></local:LoadingScreen>
         </Grid>
-
-        <Button Click="Export_Button_Click" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="100" Height="50" Background="DarkRed">export</Button>
-
     </Grid>
 </Page>
