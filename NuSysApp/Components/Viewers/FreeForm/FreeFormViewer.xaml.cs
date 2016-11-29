@@ -663,13 +663,17 @@ namespace NuSysApp
             {
                 // Show the layout panel
                 _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
-                _layoutWindow.DoLayout += _arrangeCallback;
+                _layoutWindow.DoLayout += ArrangeCallback;
                 _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
                 RenderEngine.Root.AddChild(_layoutWindow);
             }
         }
 
-        private void _customLayout(List<ElementRenderItem> sortedSelections)
+        /// <summary>
+        /// Does the layout for a custom layout by arranging the selected nodes along a stroke.
+        /// </summary>
+        /// <param name="sortedSelections"></param>
+        private void CustomLayout(List<ElementRenderItem> sortedSelections)
         {
             if (sortedSelections.Count <= 1)
             {
@@ -731,7 +735,12 @@ namespace NuSysApp
             }
         }
 
-        private List<ElementRenderItem> _sortedSelections(LayoutSorting sorting)
+        /// <summary>
+        /// Gets the current selections sorted by the LayoutSorting of the layout panel.
+        /// </summary>
+        /// <param name="sorting"></param>
+        /// <returns></returns>
+        private List<ElementRenderItem> SortedSelections(LayoutSorting sorting)
         {
             var sortedSelections = new List<ElementRenderItem>(Selections);
 
@@ -748,9 +757,14 @@ namespace NuSysApp
             return sortedSelections;
         } 
 
-        private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
+        /// <summary>
+        /// Does the arrange for a given LayoutStyle and LayoutSorting.
+        /// </summary>
+        /// <param name="style"></param>
+        /// <param name="sorting"></param>
+        private void ArrangeCallback(LayoutStyle style, LayoutSorting sorting)
         {
-            var sortedSelections = _sortedSelections(sorting);
+            var sortedSelections = SortedSelections(sorting);
 
             if (sortedSelections.Count <= 1)
             {
@@ -759,7 +773,7 @@ namespace NuSysApp
 
             if (style == LayoutStyle.Custom)
             {
-                _customLayout(sortedSelections);
+                CustomLayout(sortedSelections);
                 return;
             }
 
