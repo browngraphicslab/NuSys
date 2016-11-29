@@ -352,7 +352,7 @@ namespace NuSysApp
             var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
             var items = _itemsSource.ToArray();
 
-            foreach (var row in Rows)
+            foreach (var row in Rows.ToArray())
             {
                 if (row == null)
                 {

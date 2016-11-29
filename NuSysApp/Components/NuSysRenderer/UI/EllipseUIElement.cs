@@ -151,19 +151,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// The initializer method for the ellipse
-        /// </summary>
-        /// <returns></returns>
-        public override Task Load()
-        {
-            // shift the ellipse by its width and height so its center point is draw on the upper
-            // let corner of the parent initially
-            Transform.LocalPosition -= new Vector2(_radiusX, _radiusY);
-
-            return base.Load();
-        }
-
-        /// <summary>
         /// Returns the LocalBounds of the base render item, used for hit testing. The bounds are given with the offset
         /// of the local matrix assumed to be zero. If the matrix is offset, then the local bounds must be offset accordingly
         /// </summary>

@@ -152,7 +152,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Draws the background of the UI Eelents
+        /// Draws the background of the UI Elements
         /// </summary>
         /// <param name="ds"></param>
         protected override void DrawBackground(CanvasDrawingSession ds)

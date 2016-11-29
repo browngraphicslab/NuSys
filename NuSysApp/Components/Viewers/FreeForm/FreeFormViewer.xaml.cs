@@ -639,7 +639,7 @@ namespace NuSysApp
             }
             if (item == RenderEngine.ElementSelectionRect.BtnPresent)
             {
-                SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
 

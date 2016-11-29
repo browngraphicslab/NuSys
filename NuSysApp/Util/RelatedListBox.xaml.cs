@@ -98,18 +98,18 @@ namespace NuSysApp
             var foo = vms?.ToList();
             var element = foo[0]?.DataContext as ElementViewModel;
             Debug.Assert(element != null);
-            SessionController.Instance.SessionView.ExploreSelectedObject(element);
+            //SessionController.Instance.SessionView.ExploreSelectedObject(element);
 
         }
 
-        /// <summary>
-        /// Remove this box when the exit button is clicked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        ///// <summary>
+        ///// Remove this box when the exit button is clicked
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
         private void XExitButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            SessionController.Instance.SessionView.RemoveRelatedListBox();
+            //SessionController.Instance.SessionView.RemoveRelatedListBox();
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace NuSysApp
             var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.LibraryElementModel.LibraryElementId == model.LibraryElementId);
             var foo = vms.ToList();
             var element = foo[0].DataContext as ElementViewModel;
-            SessionController.Instance.SessionView.ExploreSelectedObject(element);
+            //SessionController.Instance.SessionView.ExploreSelectedObject(element);
 
             // Make the list view selection reflect these changes
             xListView.DeselectRange(new ItemIndexRange(xListView.SelectedIndex,1));

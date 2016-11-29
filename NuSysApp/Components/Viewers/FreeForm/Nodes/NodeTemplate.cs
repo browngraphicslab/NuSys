@@ -548,7 +548,7 @@ namespace NuSysApp
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
 
-            sv.EnterPresentationMode(vm);
+            //sv.EnterPresentationMode(vm);
         }
 
         private void OnExplorationClick(object sender, RoutedEventArgs e)

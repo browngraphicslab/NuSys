@@ -356,6 +356,7 @@
     <Compile Include="Components\NuSysRenderer\UI\AudioRegionResizerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ChatBox\ChatBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewAudioPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImagePage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewLinksPage.cs" />
@@ -372,6 +373,7 @@
     <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\AddElementMenuUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\FloatingMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\LibraryListUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\HorizontalAlignment.cs" />
@@ -400,6 +402,7 @@
     <Compile Include="Components\NuSysRenderer\UI\TabContainerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\User Bubbles\UserBubbleContainerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\VerticalAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />

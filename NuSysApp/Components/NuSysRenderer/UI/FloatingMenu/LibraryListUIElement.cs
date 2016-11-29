@@ -41,10 +41,11 @@ namespace NuSysApp
         private void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
 
-            foreach (var rect in _libraryDragElements)
+            foreach (var rect in _libraryDragElements.ToArray())
             {
                 rect.Dispose();
                 RemoveChild(rect);
+                _libraryDragElements.Remove(rect);
             }
             _isDragVisible = false;
 
@@ -58,10 +59,12 @@ namespace NuSysApp
                 // If they are different we simply return 
                 var currWorkSpaceAccessType =
                     SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+                var currWorkSpaceLibraryElementId =
+                    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
 
-                // if the item is private and the workspace is public then continue
-                if (item.AccessType == NusysConstants.AccessType.Private &&
-                    currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+                // if the item is private and the workspace is public or the item is the current workspace then continue
+                if ((lem.AccessType == NusysConstants.AccessType.Private &&
+                    currWorkSpaceAccessType == NusysConstants.AccessType.Public) || lem.LibraryElementId == currWorkSpaceLibraryElementId)
                 {
                     continue;
                 }
@@ -75,34 +78,38 @@ namespace NuSysApp
                 collectionPoint += new Vector2(_itemDropOffset, _itemDropOffset);
               
             }
-            
-
-
         }
 
         private async void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
+            // if we are currently dragging
             if (_isDragVisible)
             {
-                var position = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+                var position = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
                 foreach (var element in _libraryDragElements)
                 {
-                    element.Transform.LocalPosition = position;
-                    position += new Vector2(_itemDropOffset, _itemDropOffset);
-
+                    element.Transform.LocalPosition = position + new Vector2(_itemDropOffset * _libraryDragElements.IndexOf(element));
                 }
 
             }
             else
             {
-                var position = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+                // get the current position of the pointer relative to the local matrix
+                var position = pointer.StartPoint;
+                // convert the list of selected library element models from the libraryListView into a list of controllers
+                var selectedControllers =
+                    libraryListView.GetSelectedItems()
+                        .Select(
+                            model =>
+                                SessionController.Instance.ContentController.GetLibraryElementController(
+                                    model.LibraryElementId))
+                        .ToList();
                 _isDragVisible = true;
-                foreach (var lem in libraryListView.GetSelectedItems())
+                foreach (var controller in selectedControllers)
                 {
-                    var controller= SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
                     var rect = new RectangleUIElement(this, ResourceCreator);
                     rect.Image = await CanvasBitmap.LoadAsync(Canvas, controller.SmallIconUri);
-                    rect.Transform.LocalPosition = position;
+                    rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
                     _libraryDragElements.Add(rect);
                     position += new Vector2(_itemDropOffset, _itemDropOffset);
                     AddChild(rect);
@@ -121,10 +128,7 @@ namespace NuSysApp
 
         public void InitializeLibraryList()
         {
-            libraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
-            {
-                MultipleSelections = true
-            };
+            libraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas);
 
             var listColumn = new ListTextColumn<LibraryElementModel>();
             listColumn.Title = "Title";
@@ -147,7 +151,16 @@ namespace NuSysApp
 
             libraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());
-           
+
+            BorderWidth = 5;
+            Bordercolor = Colors.Black;
+            TopBarColor = Colors.DarkSlateGray;
+            Height = 400;
+            Width = 400;
+            MinWidth = 400;
+            MinHeight = 400;
+
+
         }
 
         private void UpdateLibraryListToRemoveElement(LibraryElementModel element)

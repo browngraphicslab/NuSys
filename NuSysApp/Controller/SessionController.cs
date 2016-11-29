@@ -215,7 +215,7 @@ namespace NuSysApp
             {
                 var tup = await WaitingRoomView.AttemptLogin(WaitingRoomView.UserName, WaitingRoomView.HashedPass, "", false);
                 Debug.Assert(tup.Item1);
-                SessionView?.ClearUsers();
+                //SessionView?.ClearUsers();
                 await NuSysNetworkSession.Init();
 
                 var request = new GetAllLibraryElementsRequest();

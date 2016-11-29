@@ -18,6 +18,8 @@ namespace NuSysApp
 
         private LibraryListUIElement _library;
 
+        private AddElementMenuUIElement _addElementMenu;
+
         public FloatingMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the default height and width of the floating menu view
@@ -27,21 +29,34 @@ namespace NuSysApp
             // set the default background
             Background = Colors.Transparent;
 
-            _addElementButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas));
-            _addElementButton.Background = Colors.DarkSlateGray;
+            _addElementButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
+            {
+                Background = Colors.DarkSlateGray
+            };
+            _addElementButton.Tapped += ShowAddElementMenu;
             AddChild(_addElementButton);
-            
-            _openLibraryButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas));
-            _openLibraryButton.Background = Colors.DarkSlateGray;
+
+            _openLibraryButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
+            {
+                Background = Colors.DarkSlateGray
+            };
             AddChild(_openLibraryButton);
 
+            _addElementMenu = new AddElementMenuUIElement(this, Canvas)
+            {
+                IsVisible = false
+            };
+            AddChild(_addElementMenu);
+
             // initialize the layout manager
-            _buttonLayoutManager = new StackLayoutManager();
-            _buttonLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _buttonLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
+            _buttonLayoutManager = new StackLayoutManager
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Spacing = 20
+            };
             _buttonLayoutManager.SetSize(Width, Height);
             _buttonLayoutManager.SetMargins(5, 5);
-            _buttonLayoutManager.Spacing = 20;
             _buttonLayoutManager.AddElement(_addElementButton);
             _buttonLayoutManager.AddElement(_openLibraryButton);
             _buttonLayoutManager.ArrangeItems(); // arrange the items only so widths and heights are properly instantiated
@@ -54,25 +69,22 @@ namespace NuSysApp
             _openLibraryButton.Tapped += OpenLibraryButtonOnTapped;
         }
 
+        private void ShowAddElementMenu(ButtonUIElement item, CanvasPointer pointer)
+        {
+            _addElementMenu.IsVisible = !_addElementMenu.IsVisible;
+            _addElementMenu.Transform.LocalPosition = item.Transform.LocalPosition + new Vector2(-_addElementMenu.Width/2 + item.Width/2, -_addElementMenu.Height - 10);
+        }
+
         private void OpenLibraryButtonOnTapped(ButtonUIElement item, CanvasPointer pointer)
         {
             _library.IsVisible = !_library.IsVisible;
-            _library.Transform.LocalPosition = new Vector2(-50, Height- 20);
+            _library.Transform.LocalPosition = item.Transform.LocalPosition + new Vector2(-_library.Width/2 + item.Width/2, item.Height + 10);
         }
 
         public override async Task Load()
         {
             // created here because it must be created after the create resources method is called on the main canvas animated control
-            _library = new LibraryListUIElement(this, Canvas)
-            {
-                BorderWidth = 5,
-                Bordercolor = Colors.Black,
-                TopBarColor = Colors.DarkSlateGray,
-                Height = 400,
-                Width = 400,
-                MinWidth = 400,
-                MinHeight = 400
-            };
+            _library = new LibraryListUIElement(this, Canvas);
             AddChild(_library);
             _library.IsVisible = false;
 
@@ -97,6 +109,9 @@ namespace NuSysApp
             Dragged -= FloatingMenuOnDragged;
             _addElementButton.Dragging -= FloatingMenuOnDragged;
             _openLibraryButton.Dragging -= FloatingMenuOnDragged;
+            _addElementButton.Tapped -= ShowAddElementMenu;
+            _openLibraryButton.Tapped -= OpenLibraryButtonOnTapped;
+
             base.Dispose();
         }
 
