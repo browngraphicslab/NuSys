@@ -305,6 +305,8 @@
     <Compile Include="Components\MediaPlayer\BaseMediaPlayer.cs" />
     <Compile Include="Components\MediaPlayer\MediaPlayerProgressBar.cs" />
     <Compile Include="Components\MediaPlayer\VideoPlayer.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartElement.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartUIElement.cs" />
     <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
       <DependentUpon>ChatBoxView.xaml</DependentUpon>
     </Compile>

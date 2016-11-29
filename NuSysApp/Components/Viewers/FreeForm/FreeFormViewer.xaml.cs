@@ -215,6 +215,14 @@ namespace NuSysApp
             //view.Transform.LocalPosition = new Vector2(200, 200);
             //_renderRoot.AddChild(view);
 
+            var bar = new BarChartUIElement(_renderRoot, RenderCanvas)
+            {
+                Height = 500,
+                Width = 500
+            };
+            bar.Transform.LocalPosition = new Vector2(200, 200);
+            _renderRoot.AddChild(bar);
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
