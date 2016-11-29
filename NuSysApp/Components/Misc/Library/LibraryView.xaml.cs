@@ -33,7 +33,7 @@ namespace NuSysApp
         /// <summary>
         /// Define the quality of the waveform
         /// </summary>
-        private enum WaveFormQuality
+        public enum WaveFormQuality
         {
             /// <summary>
             /// Lowest Quality, somewhat blurry on one region level

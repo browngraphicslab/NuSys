@@ -1,13 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
+using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas;
+using NAudio.Wave;
+using Newtonsoft.Json;
 using NusysIntermediate;
+using WinRTXamlToolkit.Imaging;
 
 namespace NuSysApp
 {
@@ -21,6 +35,29 @@ namespace NuSysApp
 
         private float _itemDropOffset = 10;
 
+        private ButtonUIElement _addFileButton;
+
+        private Dictionary<string, NusysConstants.AccessType> _fileIdToAccessMap = new Dictionary<string, NusysConstants.AccessType>();
+
+        /// <summary>
+        /// Define the quality of the waveform
+        /// </summary>
+        public enum WaveFormQuality
+        {
+            /// <summary>
+            /// Lowest Quality, somewhat blurry on one region level
+            /// </summary>
+            Low,
+            /// <summary>
+            /// Medium Quality, somewhat blurry on two region levels
+            /// </summary>
+            Medium,
+            /// <summary>
+            /// Medium Quality, somewhat blurry on three region levels
+            /// </summary>
+            High
+        }
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -28,14 +65,68 @@ namespace NuSysApp
             InitializeLibraryList();
             AddChild(libraryListView);
 
+            _addFileButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, Canvas))
+            {
+                BorderWidth = 3,
+                SelectedBorder = Colors.LightGray,
+                Background = TopBarColor,
+                Bordercolor = TopBarColor
+            };
+            AddButton(_addFileButton, TopBarPosition.Right);
+            _addFileButton.Tapped += AddFileButtonTapped;
+
             _libraryDragElements = new List<RectangleUIElement>();
 
             libraryListView.RowDragged += LibraryListView_RowDragged;
             libraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
+            libraryListView.RowTapped += OnLibraryItemSelected;
 
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
+        }
+
+        /// <summary>
+        /// Fired whenever a row is selected, causes the session controller to fetch the content data model for that row
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(item.ContentDataModelId))
+            {
+                Task.Run(async delegate
+                {
+                    if (item.Type == NusysConstants.ElementType.Collection)
+                    {
+                        var request = new GetEntireWorkspaceRequest(item.LibraryElementId);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                        Debug.Assert(request.WasSuccessful() == true);
+                        await request.AddReturnedDataToSessionAsync();
+                        await request.MakeCollectionFromReturnedElementsAsync();
+                    }
+                    else
+                    {
+                        SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(item.ContentDataModelId);
+                    }
+                });
+            }
+        }
+
+        public override async Task Load()
+        {
+            _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/add from file dark.png"));
+            base.Load(); 
+        }
+
+        private void AddFileButtonTapped(ButtonUIElement item, CanvasPointer pointer)
+        {
+            UITask.Run(() =>
+            {
+                AddFile();
+            });
+
         }
 
         private void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
@@ -120,9 +211,13 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            libraryListView.RowDragged -= LibraryListView_RowDragged;
+            libraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
+            libraryListView.RowTapped -= OnLibraryItemSelected;
 
             SessionController.Instance.ContentController.OnNewLibraryElement -= UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete -= UpdateLibraryListToRemoveElement;
+            _addFileButton.Tapped -= AddFileButtonTapped;
             base.Dispose();
         }
 
@@ -154,7 +249,7 @@ namespace NuSysApp
 
             BorderWidth = 5;
             Bordercolor = Colors.Black;
-            TopBarColor = Colors.DarkSlateGray;
+            TopBarColor = Colors.Azure;
             Height = 400;
             Width = 400;
             MinWidth = 400;
@@ -178,7 +273,487 @@ namespace NuSysApp
             libraryListView.Width = Width - 2 * BorderWidth;
             libraryListView.Height = Height - TopBarHeight - BorderWidth;
             libraryListView.Transform.LocalPosition = new Vector2(BorderWidth, TopBarHeight);
+
+            _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, _addFileButton.Width - 2*BorderWidth, _addFileButton.Height-2*BorderWidth);
             base.Update(parentLocalToScreenTransform);
         }
+
+        private async void AddFile()
+        {
+            var vm = SessionController.Instance.ActiveFreeFormViewer;
+
+            NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;
+            string data = string.Empty;
+            string title = string.Empty;
+            // a list of strings containing pdf text for each page
+            List<string> pdfTextByPage = new List<string>();
+            int pdfPageCount = 0;
+            double aspectRatio = 0;
+
+            var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+
+            // get the fileAddedAclsPopup from the session view
+            var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;
+
+            // get a mapping of the acls for all of the storage files using the fileAddedAclsPopup
+            var tempfileIdToAccessMaps = await fileAddedAclsPopup.GetAcls(storageFiles);
+
+            if (tempfileIdToAccessMaps == null) //if the user canceled the document import
+            {
+                return;
+            }
+
+            foreach (var fileAccess in tempfileIdToAccessMaps)
+            {
+                _fileIdToAccessMap.Add(fileAccess.Key, fileAccess.Value);
+            }
+
+            // check if the user has canceled the upload
+            if (_fileIdToAccessMap == null)
+            {
+                return;
+            }
+
+            foreach (var storageFile in storageFiles ?? new List<StorageFile>())
+            {
+                if (storageFile == null) return;
+
+                var contentId = SessionController.Instance.GenerateId();
+
+                var fileType = storageFile.FileType.ToLower();
+                title = storageFile.DisplayName;
+
+                bool validFileType = true;
+                // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
+                // Note that only video and images are to get thumbnails this way, currently.
+                var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
+                thumbnails[NusysConstants.ThumbnailSize.Small] = string.Empty;
+                thumbnails[NusysConstants.ThumbnailSize.Medium] = string.Empty;
+                thumbnails[NusysConstants.ThumbnailSize.Large] = string.Empty;
+
+                if (Constants.ImageFileTypes.Contains(fileType))
+                {
+                    elementType = NusysConstants.ElementType.Image;
+                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+
+                    var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
+                    aspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
+                }
+                else if (Constants.WordFileTypes.Contains(fileType))
+                {
+                    elementType = NusysConstants.ElementType.Word;
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                else if (Constants.PowerpointFileTypes.Contains(fileType))
+                {
+                    elementType = NusysConstants.ElementType.Powerpoint;
+                }
+                else if (Constants.PdfFileTypes.Contains(fileType))
+                {
+                    elementType = NusysConstants.ElementType.PDF;
+
+                    // create a list of strings which contain the image data for each page of the pdf
+                    List<string> pdfPages = new List<string>();
+
+                    // read the contents of storageFile into a MUPDF Document
+                    byte[] fileBytes;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
+
+                    pdfPageCount = MuPdfDoc.PageCount;
+
+                    // convert each page of the pdf into an image file, and store it in the pdfPages list
+                    for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
+                    {
+                        // set the pdf text by page for the current page number
+                        pdfTextByPage.Add(MuPdfDoc.GetAllTexts(pageNumber));
+
+                        // get variables for drawing the page
+                        var pageSize = MuPdfDoc.GetPageSize(pageNumber);
+                        var width = pageSize.X;
+                        var height = pageSize.Y;
+
+                        // create an image to use for converting
+                        var image = new WriteableBitmap(width, height);
+
+                        // create a buffer to draw the page on
+                        IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                        buf.Length = image.PixelBuffer.Length;
+
+                        // draw the page onto the buffer
+                        MuPdfDoc.DrawPage(pageNumber, buf, 0, 0, width, height, false);
+                        var ss = buf.AsStream();
+
+                        // copy the buffer to the image
+                        await ss.CopyToAsync(image.PixelBuffer.AsStream());
+                        image.Invalidate();
+
+                        // save the image as a file (temporarily)
+                        var x = await image.SaveAsync(NuSysStorages.SaveFolder);
+
+                        // use the system to convert the file to a byte array
+                        pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
+                        if (pageNumber == 0)
+                        {
+                            // if we are on the first apge, get thumbnails of the file from the system
+                            thumbnails = await MediaUtil.GetThumbnailDictionary(x);
+                        }
+
+                        // delete the image file that we saved
+                        await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                    }
+
+                    data = JsonConvert.SerializeObject(pdfPages);
+                }
+                else if (Constants.VideoFileTypes.Contains(fileType))
+                {
+                    elementType = NusysConstants.ElementType.Video;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
+                    aspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+
+                    data = Convert.ToBase64String(fileBytes);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
+                }
+                else if (Constants.AudioFileTypes.Contains(fileType))
+                {
+                    elementType = NusysConstants.ElementType.Audio;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+                    var frameWorkWaveForm = GetWaveFormFrameWorkElement(fileBytes);
+                    thumbnails = await GetThumbnailsFromFrameworkElement(frameWorkWaveForm);
+
+                    // override the largest thumbnail for higher resolution
+                    thumbnails[NusysConstants.ThumbnailSize.Large] =
+                        await GetImageAsStringFromFrameworkElement(frameWorkWaveForm);
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                else
+                {
+                    validFileType = false;
+                }
+                if (validFileType)
+                {
+                    CreateNewContentRequestArgs args;
+                    //if there is pdf text, add it to the request
+                    if (pdfTextByPage.Any())
+                    {
+                        args = new CreateNewPdfContentRequestArgs()
+                        {
+                            PdfText = JsonConvert.SerializeObject(pdfTextByPage),
+                            PageCount = pdfPageCount
+                        };
+                        pdfTextByPage.Clear();
+                    }
+                    else
+                    {
+                        args = new CreateNewContentRequestArgs();
+                    }
+                    args.ContentId = contentId;
+                    args.DataBytes = data;
+
+                    //add the extension if there is one
+                    if (fileType != null)
+                    {
+                        args.FileExtension = fileType;
+                    }
+
+                    CreateNewLibraryElementRequestArgs libraryElementArgs;
+                    switch (elementType)
+                    {
+                        case NusysConstants.ElementType.Image:
+                            var imageArgs = new CreateNewImageLibraryElementRequestArgs();
+                            imageArgs.AspectRatio = aspectRatio;
+                            libraryElementArgs = imageArgs;
+                            break;
+                        case NusysConstants.ElementType.PDF:
+                            var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                            pdfArgs.PdfPageStart = 0;
+                            pdfArgs.PdfPageEnd = pdfPageCount;
+                            pdfArgs.AspectRatio = aspectRatio;
+                            libraryElementArgs = pdfArgs;
+                            break;
+                        case NusysConstants.ElementType.Video:
+                            var videoArgs = new CreateNewVideoLibraryElementRequestArgs();
+                            videoArgs.AspectRatio = aspectRatio;
+                            libraryElementArgs = videoArgs;
+                            break;
+                        case NusysConstants.ElementType.Audio:
+                            libraryElementArgs = new CreateNewAudioLibraryElementRequestArgs();
+                            break;
+                        default:
+                            libraryElementArgs = new CreateNewLibraryElementRequestArgs();
+                            break;
+                    }
+
+                    args.LibraryElementArgs = libraryElementArgs;
+
+                    //add the three thumbnails
+                    args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+                    args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+                    args.LibraryElementArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+
+                    args.LibraryElementArgs.Title = title;
+                    args.LibraryElementArgs.LibraryElementType = elementType;
+
+                    // add the acls from the map, default to private instead of throwing an error on release
+                    Debug.Assert(_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId), "The mapping from the fileAddedPopup is not being output or set correctly");
+                    if (_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
+                    {
+                        args.LibraryElementArgs.AccessType = _fileIdToAccessMap[storageFile.FolderRelativeId];
+                    }
+                    else
+                    {
+                        args.LibraryElementArgs.AccessType = NusysConstants.AccessType.Private;
+                    }
+
+                    var request = new CreateNewContentRequest(args);
+
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+                    request.AddReturnedLibraryElementToLibrary();
+
+                    vm.ClearSelection();
+                }
+                else
+                {
+                    Debug.WriteLine("tried to import invalid filetype");
+                }
+
+                _fileIdToAccessMap.Remove(storageFile.FolderRelativeId);
+            }
+        }
+
+        /// <summary>
+        /// Converts Audio into a Framework element representing its waveform. The quality level defaults to low but
+        /// can be set higher if desired.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="quality"></param>
+        /// <returns></returns>
+        private FrameworkElement GetWaveFormFrameWorkElement(Byte[] bytes, WaveFormQuality quality = WaveFormQuality.Low)
+        {
+            MemoryStream s = new MemoryStream(bytes);
+            var stream = s.AsRandomAccessStream();
+
+            WaveStream waveStream = new MediaFoundationReaderUniversal(stream);
+            int bytesPerSample = (waveStream.WaveFormat.BitsPerSample / 8) * waveStream.WaveFormat.Channels;
+            waveStream.Position = 0;
+            int bytesRead = 1;
+            int samplesPerPixel = 1024;
+
+            if (waveStream.TotalTime.TotalMinutes > 15)
+            {
+                samplesPerPixel = (int)Math.Pow(2, 15);
+            }
+            else if (waveStream.TotalTime.TotalMinutes > 8)
+            {
+                samplesPerPixel = (int)Math.Pow(2, 14);
+            }
+            else if (waveStream.TotalTime.TotalMinutes > 5)
+            {
+                samplesPerPixel = (int)Math.Pow(2, 13);
+            }
+            else if (waveStream.TotalTime.TotalMinutes > 3)
+            {
+                samplesPerPixel = (int)Math.Pow(2, 12);
+            }
+            else if (waveStream.TotalTime.TotalMinutes > 0.5)
+            {
+                samplesPerPixel = (int)Math.Pow(2, 11);
+            }
+
+            // change the quality of the waveform by affecting the number of samples used
+            switch (quality)
+            {
+                case WaveFormQuality.Low:
+                    break;
+                case WaveFormQuality.Medium:
+                    samplesPerPixel /= 2;
+                    break;
+                case WaveFormQuality.High:
+                    samplesPerPixel /= 4;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(quality), quality, "The quality level is not supported here");
+            }
+
+
+            byte[] waveData = new byte[samplesPerPixel * bytesPerSample];
+            var visualGrid = new Grid();
+            float x = 0;
+            while (bytesRead != 0)
+            {
+                short low = 0;
+                short high = 0;
+                bytesRead = waveStream.Read(waveData, 0, samplesPerPixel * bytesPerSample);
+
+                for (int n = 0; n < bytesRead; n += 2)
+                {
+                    short sample = BitConverter.ToInt16(waveData, n);
+                    if (sample < low) low = sample;
+                    if (sample > high) high = sample;
+                }
+                float lowPercent = ((((float)low) - short.MinValue) / ushort.MaxValue);
+                float highPercent = ((((float)high) - short.MinValue) / ushort.MaxValue);
+
+                Line line = new Line();
+                line.X1 = x;
+                line.X2 = x;
+                line.Y1 = 100 * (highPercent);
+                line.Y2 = 100 * (lowPercent);
+                line.Stroke = new SolidColorBrush(Colors.Crimson);
+                line.StrokeThickness = 1;
+                x++;
+                visualGrid.Children.Add(line);
+            }
+            visualGrid.Height = 100;
+            visualGrid.Width = x;
+            Line middleLine = new Line();
+            middleLine.X1 = 0;
+            middleLine.X2 = x;
+            middleLine.Y1 = visualGrid.Height / 2;
+            middleLine.Y2 = visualGrid.Height / 2;
+
+            middleLine.Stroke = new SolidColorBrush(Colors.Crimson);
+            middleLine.StrokeThickness = 1;
+            visualGrid.Children.Add(middleLine);
+
+            return visualGrid;
+        }
+
+        /// <summary>
+        /// Returns the thumbnails from a Framework element
+        /// </summary>
+        /// <param name="frameWorkElement"></param>
+        /// <returns></returns>
+        private async Task<Dictionary<NusysConstants.ThumbnailSize, string>> GetThumbnailsFromFrameworkElement(FrameworkElement frameWorkElement)
+        {
+            // add the ui element to the canvas out of sight
+            Windows.UI.Xaml.Controls.Canvas.SetTop(frameWorkElement, -frameWorkElement.Height * 2);
+            SessionController.Instance.SessionView.MainCanvas.Children.Add(frameWorkElement);
+
+            // render it
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
+            await renderTargetBitmap.RenderAsync(frameWorkElement, (int)frameWorkElement.Width, (int)frameWorkElement.Height);
+
+            // remove the visual grid from the canvas
+            SessionController.Instance.SessionView.MainCanvas.Children.Remove(frameWorkElement);
+
+            // create a buffer from the rendered bitmap
+            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+            byte[] pixels = pixelBuffer.ToArray();
+
+            // create a WriteableBitmap with desired width and height
+            var writeableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
+
+            // write the pixels to the bitmap
+            using (Stream bitmapStream = writeableBitmap.PixelBuffer.AsStream())
+            {
+                await bitmapStream.WriteAsync(pixels, 0, pixels.Length);
+            }
+
+            // save the writeable bitmap to a file
+            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+
+            // get the thumbnails from the image file
+            var thumbnails = await MediaUtil.GetThumbnailDictionary(tempFile);
+
+            // delete the writeable bitmap file that we saved
+            await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
+            return thumbnails;
+        }
+
+        /// <summary>
+        /// Pass in a framework element and render a 1 : 1 pixel representation image of it.
+        /// Returns the image as a string for use in JSON
+        /// </summary>
+        /// <param name="frameWorkElement"></param>
+        /// <returns>A string representation of the passed in framework element as an image</returns>
+        private async Task<string> GetImageAsStringFromFrameworkElement(FrameworkElement frameWorkElement)
+        {
+            // add the ui element to the canvas out of sight
+            Windows.UI.Xaml.Controls.Canvas.SetTop(frameWorkElement, -frameWorkElement.Height * 2);
+            SessionController.Instance.SessionView.MainCanvas.Children.Add(frameWorkElement);
+
+            // render it
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
+            await renderTargetBitmap.RenderAsync(frameWorkElement, (int)frameWorkElement.Width, (int)frameWorkElement.Height);
+
+            // remove the visual grid from the canvas
+            SessionController.Instance.SessionView.MainCanvas.Children.Remove(frameWorkElement);
+
+            // create a buffer from the rendered bitmap
+            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+            byte[] pixels = pixelBuffer.ToArray();
+
+            // create a WriteableBitmap with desired width and height
+            var writeableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
+
+            // write the pixels to the bitmap
+            using (Stream bitmapStream = writeableBitmap.PixelBuffer.AsStream())
+            {
+                await bitmapStream.WriteAsync(pixels, 0, pixels.Length);
+            }
+
+            // save the writeable bitmap to a file
+            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+
+            // use the system to convert the file to a string
+            var imageAsString = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(tempFile));
+
+            // delete the writeable bitmap file that we saved
+            await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
+            // return the string representation of the image
+            return imageAsString;
+        }
+
+
     }
 }

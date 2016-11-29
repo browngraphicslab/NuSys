@@ -23,8 +23,21 @@ namespace NuSysApp
         public DraggableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             IsDraggable = UIDefaults.WindowIsDraggable;
-            Dragged += DraggableWindowUIElement_Dragged;
-            Pressed += DraggableWindowUIElement_Pressed;
+            OnTopBarDragged += DraggableWindowUIElement_OnTopBarDragged;
+        }
+
+        private void DraggableWindowUIElement_OnTopBarDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // if we are not currently dragging then set dragging to IsDraggable
+            if (!_dragging)
+            {
+                _dragging = IsDraggable;
+            }
+            else
+            {
+                // if we are dragging then move the window around the screen
+                Transform.LocalPosition += pointer.DeltaSinceLastUpdate;
+            }
         }
 
         /// <summary>
@@ -33,44 +46,8 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
-            Dragged -= DraggableWindowUIElement_Dragged;
-            Pressed -= DraggableWindowUIElement_Pressed;
+            OnTopBarDragged -= DraggableWindowUIElement_OnTopBarDragged;
             base.Dispose();
-        }
-
-        /// <summary>
-        /// Fired when the pointer is pressed on the DraggableWindowUIElement
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void DraggableWindowUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            // transform the pointers current point into the local coordinate system
-            var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-
-            // if the Window supports dragging and the pointer has been pressed on the top bar, set _dragging to true
-            if (IsDraggable && currentPoint.Y <= TopBarHeight)
-            {
-                _dragging = true;
-            }
-            else
-            {
-                _dragging = false;
-            }
-        }
-
-        /// <summary>
-        /// Fired when the pointer is dragged on the DraggableWindowUIElement
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void DraggableWindowUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            // if we are currently dragging then move the window around the screen
-            if (_dragging)
-            {
-                Transform.LocalPosition += pointer.DeltaSinceLastUpdate;
-            }
         }
     }
 }
