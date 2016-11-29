@@ -153,6 +153,9 @@ namespace NuSysApp
             {
                 //get trail as a list of nodes
                 List<LibraryElementController> trailList = GetTrailAsList((_selectedLink as TrailRenderItem).ViewModel.Model);
+
+                var firstPage = trailList[0].Title + ".html";
+
                 for (int i = 0; i < trailList.Count; i++)
                 {
                     var currElement = trailList[i];
@@ -169,6 +172,8 @@ namespace NuSysApp
 
                     currElement.ExportToHTML(prev, next);
                 }
+                //open the exported html in browser
+                //Windows.System.Launcher.LaunchUriAsync(new Uri(firstPage));
             }
         }
 
