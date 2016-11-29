@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,7 @@ namespace NuSysApp
             int i = 0;
             foreach (var model in models.Except(images).Except(pdfs))
             {
+                continue;
                 if (i%10 == 0 && model.Type != NusysConstants.ElementType.Image)
                 {
                     var args = new CreateNewContentRequestArgs();
@@ -63,7 +65,7 @@ namespace NuSysApp
                 }
                 i++;
             }
-            foreach (var img in images)
+            foreach (var img in images.Where(ik => ik.Title.ToLower() != "image"))
             {
                 var args = new CreateNewContentRequestArgs();
                 args.LibraryElementArgs = new CreateNewImageLibraryElementRequestArgs();
@@ -90,7 +92,25 @@ namespace NuSysApp
 
         public async Task RunWithSearch(string search)
         {
-            await Run(new Uri("https://en.wikipedia.org/wiki/"+search));
+
+            var client = new HttpClient();
+            search += " wikipedia";
+            // Add the subscription key to the request header
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "1299a79fa68b4799b77aef55de849237");
+            string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search+"&count=10&offset=0&mkt=en-us&safesearch=Moderate";
+            // Build the content of the post request
+
+            var ret = await client.GetAsync(url);
+            var jsonString = await ret.Content.ReadAsStringAsync();
+            var json = JsonConvert.DeserializeObject<BingJson>(jsonString);
+            var urls = json.webPages.value.Select(o => FormatSource(o.displayUrl) ?? "").ToList();
+            IEnumerable<LibraryElementModel> models = new List<LibraryElementModel>();
+            int i = 0;
+            while(models.Count(m => m.Type == NusysConstants.ElementType.Image && m.Title.ToLower() != "image") < 20 && i < urls.Count())
+            {
+                models = models.Concat(await Run(new Uri(urls[i])) ?? new List<LibraryElementModel>());
+                i++;
+            }
         }
 
         private async Task<HtmlDocument> GetDocumentFromUri(Uri url)
@@ -139,7 +159,7 @@ namespace NuSysApp
             if (node.Name == "img")
             {
                 var src = FormatSource(node.GetAttributeValue("src", null));
-                if (src == null || src.Contains(".svg")) 
+                if (src == null || src.Contains(".svg") || src.Contains("/svg/")) 
                 {
                     return;
                 }
@@ -284,18 +304,42 @@ namespace NuSysApp
             }
             return false;
         }
-
         private string FormatSource(string src)
+        {
+            try
+            {
+                var s = FormatSourcePrivate(src);
+                var uri = new Uri(s);
+                return s;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+        private string FormatSourcePrivate(string src)
         {
             if (src == null)
             {
                 return null;
             }
+            if (src.StartsWith("/~/"))
+            {
+                return "http:/" + src.Substring(2);
+            }
+            if (src.StartsWith("http://") || src.StartsWith("https://"))
+            {
+                return src;
+            }
             if (src.StartsWith("//"))
             {
                 return "http:" + src;
             }
-            return src;
+            if (src.StartsWith("/"))
+            {
+                return "http:/" + src;
+            }
+            return "http://" + src;
         }
 
         private bool IsValidText(string text)
@@ -305,6 +349,14 @@ namespace NuSysApp
 
         private string StripText(string text)
         {
+            while (text.StartsWith(" "))
+            {
+                text = text.Substring(1);
+            }
+            while (text.EndsWith(" "))
+            {
+                text = text.Remove(text.Length - 1);
+            }
             return text.Replace("\n","").Replace("\t","");
         }
 
@@ -372,5 +424,18 @@ namespace NuSysApp
             }
             return null;
         }
+        private class BingJson
+        {
+            public BingPages webPages;
+        }
+        private class BingPages
+        {
+            public BingUrl[] value;
+        }
+        private class BingUrl
+        {
+            public string displayUrl;
+        }
     }
+    
 }
