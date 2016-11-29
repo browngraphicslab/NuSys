@@ -141,23 +141,29 @@ namespace NuSysApp
             _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
         }
 
+        /// <summary>
+        /// This load call and consequently all load calls for children of the nusessionviewer is fired every time the user enters a new collection,
+        /// sometimes this can lead to undesired behavior for instance when objects are instantaited twice, or when images are loaded twice. To avoid
+        /// this behavior null check objects and images in the load method of children of the nusessionviewer
+        /// </summary>
+        /// <returns></returns>
         public override async Task Load()
         {
             // set the image for the _currCollDetailViewbutton
-            _currCollDetailViewButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/info.png"));
+            _currCollDetailViewButton.Image = _currCollDetailViewButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/info.png"));
             _currCollDetailViewButton.ImageBounds = new Rect(_currCollDetailViewButton.Width/4, _currCollDetailViewButton.Height/4, _currCollDetailViewButton.Width/2, _currCollDetailViewButton.Height/2);
 
             // set the image for the _chatButton
-            _chatButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
+            _chatButton.Image = _chatButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
             _chatButton.ImageBounds = new Rect(_chatButton.Width / 4, _chatButton.Height / 4, _chatButton.Width / 2, _chatButton.Height / 2);
 
             // set the image for the _snapshotButton
-            _snapshotButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/snapshot_icon.png"));
+            _snapshotButton.Image = _snapshotButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/snapshot_icon.png"));
             _snapshotButton.ImageBounds = new Rect(_snapshotButton.Width / 4, _snapshotButton.Height / 4, _snapshotButton.Width / 2, _snapshotButton.Height / 2);
 
 
             // set the image for the _backToWaitingRoomButton
-            _backToWaitingRoomButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/back icon triangle.png"));
+            _backToWaitingRoomButton.Image = _backToWaitingRoomButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/back icon triangle.png"));
             
             base.Load();
         }

@@ -79,8 +79,8 @@ namespace NuSysApp
             this.InitializeComponent();
             var bounds = Window.Current.Bounds;
  
-            CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
-            CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
+            //CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
+            //CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
 
             SessionController.Instance.SessionView = this;
 
@@ -93,11 +93,11 @@ namespace NuSysApp
             xLoadingGrid.PointerPressed += XLoadingGridOnPointerPressed;
         }
 
-        public void SetPreviousCollection(string collectionLibraryId)
-        {
-            _prevCollectionLibraryId = collectionLibraryId;
-            PrevCollection.Visibility = _prevCollectionLibraryId != null ? Visibility.Visible : Visibility.Collapsed;
-        }
+        //public void SetPreviousCollection(string collectionLibraryId)
+        //{
+        //    _prevCollectionLibraryId = collectionLibraryId;
+        //    PrevCollection.Visibility = _prevCollectionLibraryId != null ? Visibility.Visible : Visibility.Collapsed;
+        //}
         private void XLoadingGridOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
             SessionController.Instance.LoadCapturedState();
@@ -109,7 +109,7 @@ namespace NuSysApp
         public void MakeWorkspaceReadonly()
         {
             // toggle visibility and activity of some ui elements
-            xFloatingMenu.Visibility = Visibility.Collapsed;
+            //xFloatingMenu.Visibility = Visibility.Collapsed;
             xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
             //xCurrentCollectionDVButton.Visibility = Visibility.Collapsed;
             this.IsReadonly = true;
@@ -121,7 +121,7 @@ namespace NuSysApp
         public void MakeWorkspaceEditable()
         {
             // toggle visibility of some ui elements
-            xFloatingMenu.Visibility = Visibility.Visible;
+            //xFloatingMenu.Visibility = Visibility.Visible;
             xReadonlyFloatingMenu.Visibility = Visibility.Collapsed;
            // xCurrentCollectionDVButton.Visibility = Visibility.Visible;
             this.IsReadonly = false;
@@ -166,7 +166,7 @@ namespace NuSysApp
                 //    NewNetworkUser(user);
                 //}
 
-                xFloatingMenu.Library.Init();
+                //xFloatingMenu.Library.Init();
             }
             _isInitialized = true;
             var collectionId = WaitingRoomView.InitialWorkspaceId;
@@ -208,51 +208,51 @@ namespace NuSysApp
         //    });
         //}
 
-        private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
-        {
+        //private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
+        //{
 
-            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
-            {
-                FloatingMenu.ActivatePenMode(true);
-            }
-        }
+        //    if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
+        //    {
+        //        FloatingMenu.ActivatePenMode(true);
+        //    }
+        //}
 
-        private async void OnKeyUp(CoreWindow sender, KeyEventArgs args)
-        {
-            if (args.VirtualKey == VirtualKey.Shift)
-            {
-                FloatingMenu.ActivatePenMode(false);
-            }
+        //private async void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        //{
+        //    if (args.VirtualKey == VirtualKey.Shift)
+        //    {
+        //        FloatingMenu.ActivatePenMode(false);
+        //    }
 
-            //if (_modeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
-            //{
-            //    if (_modeInstance.Next())
-            //    {
-            //        _modeInstance.MoveToNext();
-            //        SetModeButtons();
-            //    }
-            //}
+        //    //if (_modeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
+        //    //{
+        //    //    if (_modeInstance.Next())
+        //    //    {
+        //    //        _modeInstance.MoveToNext();
+        //    //        SetModeButtons();
+        //    //    }
+        //    //}
 
-            //if (_modeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
-            //{
-            //    if (_modeInstance.Previous())
-            //    {
-            //        _modeInstance.MoveToPrevious();
-            //        SetModeButtons();
-            //    }
+        //    //if (_modeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
+        //    //{
+        //    //    if (_modeInstance.Previous())
+        //    //    {
+        //    //        _modeInstance.MoveToPrevious();
+        //    //        SetModeButtons();
+        //    //    }
 
-            //}
+        //    //}
 
-            //if (_modeInstance != null && args.VirtualKey == VirtualKey.Space)
-            //{
-            //    _modeInstance.GoToCurrent();
-            //}
+        //    //if (_modeInstance != null && args.VirtualKey == VirtualKey.Space)
+        //    //{
+        //    //    _modeInstance.GoToCurrent();
+        //    //}
 
-            //if (_modeInstance != null && args.VirtualKey == VirtualKey.Escape)
-            //{
-            //    ExitMode();
-            //}
-        }
+        //    //if (_modeInstance != null && args.VirtualKey == VirtualKey.Escape)
+        //    //{
+        //    //    ExitMode();
+        //    //}
+        //}
 
         /// <summary>
         /// Shows the box with elements that have the passed in tag
@@ -647,10 +647,10 @@ namespace NuSysApp
         */
         }
 
-        public FloatingMenuView FloatingMenu
-        {
-            get { return xFloatingMenu; }
-        }
+        //public FloatingMenuView FloatingMenu
+        //{
+        //    get { return xFloatingMenu; }
+        //}
 
         public ReadonlyFloatingMenuView ReadonlyFloatingMenu
         {
@@ -699,11 +699,11 @@ namespace NuSysApp
         public Grid OuterMost { get { return xOuterMost; } }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
 
-        private async void PrevCollectionButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            await SessionController.Instance.EnterCollection(_prevCollectionLibraryId);
-            PrevCollection.Visibility = Visibility.Collapsed;
-        }
+        //private async void PrevCollectionButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    await SessionController.Instance.EnterCollection(_prevCollectionLibraryId);
+        //    PrevCollection.Visibility = Visibility.Collapsed;
+        //}
         //private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         //{
         //    //await StaticServerCalls.CreateSnapshot();

@@ -409,7 +409,7 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task EnterCollection(string collectionLibraryId)
         {
-            SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
+            //SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
             SessionView.ShowBlockingScreen(true);
 
             EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);

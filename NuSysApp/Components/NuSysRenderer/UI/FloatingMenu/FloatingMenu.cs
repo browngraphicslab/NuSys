@@ -81,16 +81,24 @@ namespace NuSysApp
             _library.Transform.LocalPosition = item.Transform.LocalPosition + new Vector2(-_library.Width/2 + item.Width/2, item.Height + 10);
         }
 
+        /// <summary>
+        /// This load call is fired every time the nusessionviewer is reloaded, so make sure new items are only ever instantiated once by null checking them
+        /// before creating them. This is essentially breaking the singleton pattern if you do reinstantiate items
+        /// </summary>
+        /// <returns></returns>
         public override async Task Load()
         {
             // created here because it must be created after the create resources method is called on the main canvas animated control
-            _library = new LibraryListUIElement(this, Canvas);
-            AddChild(_library);
+            if (_library == null)
+            {
+                _library = new LibraryListUIElement(this, Canvas);
+                AddChild(_library);
+            }
             _library.IsVisible = false;
 
-            _addElementButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_mainmenu_add_node.png"));
+            _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_mainmenu_add_node.png"));
             _addElementButton.ImageBounds = new Rect(_addElementButton.Width / 4, _addElementButton.Height/4, _addElementButton.Width/2, _addElementButton.Height/2);
-            _openLibraryButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_library.png"));
+            _openLibraryButton.Image = _openLibraryButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_library.png"));
             _openLibraryButton.ImageBounds = new Rect(_openLibraryButton.Width / 4, _openLibraryButton.Height / 4, _openLibraryButton.Width / 2, _openLibraryButton.Height / 2);
 
 
