@@ -33,7 +33,7 @@ namespace NuSysApp
         public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
 
         /// <summary>
-        /// If a row was dragged outisde the list this event will fire.
+        /// If a row was dragged outside the list this event will fire.
         /// </summary>
         public event RowDraggedEventHandler RowDragged;
 

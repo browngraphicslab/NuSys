@@ -47,7 +47,11 @@ namespace NuSysApp
         public RenderItemTransform Camera { get; set; } = new RenderItemTransform();
         
         public int NumLinks => ViewModel.Links.Count;
-        
+
+        private CollectionRenderItem _parent;
+
+
+
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
             _canvas = (CanvasAnimatedControl)ResourceCreator;
@@ -68,6 +72,8 @@ namespace NuSysApp
             vm.Links.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
+
+            _parent = parent;
         }
 
         public override void Dispose()
@@ -541,6 +547,59 @@ namespace NuSysApp
                     Remove(toolItem.First());
                 }
             }
+        }
+
+
+        public void SetUpListViewPublic(List<string> cids)
+        {
+            SetUpListView(_parent,_canvas,null,cids);
+        }
+
+        /// <summary>
+        /// Sets up the list UI element that will store information for all the children
+        /// </summary>
+        private void SetUpListView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, List<string> childElementIds)
+        {
+            /*
+             * Instanatiate new ListView UI component and create the first (and only) title column
+             */
+            var listView = new ListViewUIElementContainer<string>(parent, resourceCreator);
+            listView.ShowHeader = false;
+            listView.Width = (float)_parent.Mask.ComputeBounds().Width;
+            listView.Height = (float) _parent.Mask.ComputeBounds().Height;
+            ListTextColumn<string> title = new ListTextColumn<string>();
+            title.Title = "TITLE:";
+            title.RelativeWidth = 1;
+
+            /*
+             * Set up column function to take in an element ID, and returns the title of the element
+             */
+            title.ColumnFunction = delegate (string id)
+            {
+                var ec= SessionController.Instance.IdToControllers[id];
+                Debug.Assert(ec != null);
+                return ec.Model.Title;
+            };
+      
+            /*
+             * Set some more column properties
+             */
+            var cols = new List<ListColumn<string>>();
+            cols.Add(title);
+            listView.AddColumns(cols);
+            listView.Transform.LocalPosition = new Vector2(0, 0);
+
+            /*
+             * Since we are adding the child element IDs as items, the column function will return their titles
+             */
+            listView.AddItems(childElementIds); 
+
+            /*
+             * Add it as a child of the CRI and to a layout mgr to format 
+             * its size and location (jk, no layout mgr here)
+             */
+            AddChild(listView);
+            //_layoutManager.AddElement(listView); Is there a layout manager for collection render items??
         }
     }
 }

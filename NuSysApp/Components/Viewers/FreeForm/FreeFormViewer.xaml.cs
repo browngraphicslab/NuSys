@@ -651,7 +651,30 @@ namespace NuSysApp
              */
             if (item == RenderEngine.ElementSelectionRect.BtnCollectionListView)
             {
-                System.Diagnostics.Debug.WriteLine("Found it!");
+                
+                /*
+                 * We can use the Controller of the selected collection to obtain a list of child ids, and can then
+                 * obtain the ElementControllers of those children
+                 */
+                var controller =
+                    Selections[0].ViewModel.Controller.LibraryElementController as CollectionLibraryElementController;
+                var childIDs = controller.CollectionModel.Children.ToArray().ToList();
+
+                /*
+                 * [Testing] Loop thru list of ids and print out titles for each element
+                 */
+                foreach (var id in childIDs)
+                {
+                    var elementController = SessionController.Instance.IdToControllers[id];
+                    System.Diagnostics.Debug.WriteLine(elementController.Model.Title);
+                }
+
+                // var listView = new ListViewUIElementContainer<string>();
+                // Need parent and resourceCreator! Should I be doing this somewhere else?
+                var selection = (CollectionRenderItem)Selections[0];
+                selection.SetUpListViewPublic(childIDs);
+
+
             }
 
             if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
