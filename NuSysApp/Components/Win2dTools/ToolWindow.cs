@@ -71,6 +71,32 @@ namespace NuSysApp
 
         private const int PARENT_OPERATOR_BUTTON_WIDTH = 150;
 
+        private const int MIN_HEIGHT = 300;
+
+        private const int MIN_WIDTH = 200;
+
+        public override float Width
+        {
+            set
+            {
+                if (value > MIN_WIDTH)
+                {
+                    base.Width = value;
+                }
+            }
+        }
+
+        public override float Height
+        {
+            set
+            {
+                if (value > MIN_HEIGHT)
+                {
+                    base.Height = value;
+                }
+            }
+        }
+
         private bool _setUpComponents;
 
         /// <summary>
@@ -83,12 +109,17 @@ namespace NuSysApp
         private const int BUTTON_MARGIN = 10;
         public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(parent, resourceCreator)
         {
+            //Set up draggable and resizable attributes
+            TopBarColor = Constants.color3;
+            KeepAspectRatio = false;
+
             Vm = vm;
             SetUpButtons();
             SetUpFilterDropDown();
             SetUpDraggableIcons();
             SetUpBottomButtonBar();
             Vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
+            this.BorderWidth = 0;
             Height = (float)Vm.Height;
             Width = (float)Vm.Width;
             Transform.LocalX = (float)Vm.X;
@@ -135,7 +166,7 @@ namespace NuSysApp
         {
             ButtonBarRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.Azure,
+                Background = Constants.color1,
                 Height = BUTTON_BAR_HEIGHT,
                 Width = Width
             };
@@ -148,7 +179,7 @@ namespace NuSysApp
         /// </summary>
         private void SetUpDraggableIcons()
         {
-            //Sets up button to be dragged
+            //Sets collection button to be dragged
             var collectionRectangle = new RectangleUIElement(this, ResourceCreator)
             {
                 Background = Colors.Transparent,
@@ -156,7 +187,11 @@ namespace NuSysApp
                 Width = 50,
             };
             _draggableCollectionElement = new ButtonUIElement(this, ResourceCreator, collectionRectangle);
-            
+            _draggableCollectionElement.ButtonText = "collection";
+            _draggableCollectionElement.ButtonTextSize = 10;
+            _draggableCollectionElement.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom;
+            _draggableCollectionElement.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+            _draggableCollectionElement.ButtonTextColor = Constants.color3;
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
             _draggableCollectionElement.Dragging += CollectionOrStack_Dragging;
             _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted;
@@ -173,7 +208,7 @@ namespace NuSysApp
             AddChild(_collectionDragIcon);
 
 
-            //Set up button to be dragged
+            //Set up stack button to be dragged
             var stackRectangle = new RectangleUIElement(this, ResourceCreator)
             {
                 Background = Colors.Transparent,
@@ -181,6 +216,11 @@ namespace NuSysApp
                 Width = 50,
             };
             _draggableStackElement = new ButtonUIElement(this, ResourceCreator, stackRectangle);
+            _draggableStackElement.ButtonText = "stack";
+            _draggableStackElement.ButtonTextSize = 10;
+            _draggableStackElement.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom;
+            _draggableStackElement.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+            _draggableStackElement.ButtonTextColor = Constants.color3;
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
             _draggableStackElement.Dragging += CollectionOrStack_Dragging;
             _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted;
@@ -209,6 +249,7 @@ namespace NuSysApp
                     await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
                 _draggableStackElement.ImageWidth = 30;
                 _draggableStackElement.ImageHeight = 30;
+
 
                 _stackDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
 
@@ -266,13 +307,13 @@ namespace NuSysApp
         /// </summary>
         private void SetUpFilterDropDown()
         {
-            _filterChooserDropdownButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator) {Height = 100, Width = 500});
+            _filterChooserDropdownButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator) {Height = 100, Width = 500, Background = Constants.color1});
             _filterChooserDropdownButton.ButtonText = Vm.Filter.ToString();
             _filterChooserDropdownButton.Width = Width;
             _filterChooserDropdownButton.Height = FILTER_CHOOSER_HEIGHT;
-            _filterChooserDropdownButton.ButtonTextColor = Colors.Black;
-            _filterChooserDropdownButton.BorderWidth = 2;
-            _filterChooserDropdownButton.Bordercolor = Colors.Black;
+            _filterChooserDropdownButton.ButtonTextColor = Constants.color3;
+            _filterChooserDropdownButton.BorderWidth = 0;
+            _filterChooserDropdownButton.Bordercolor = Constants.color3;
             _filterChooserDropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _filterChooserDropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed; ;
@@ -372,7 +413,7 @@ namespace NuSysApp
 
             var deleteCircleShape = new EllipseUIElement(this, ResourceCreator)
             {
-                Background = Colors.Red,
+                Background = Constants.color1,
                 Width = 50,
                 Height = 50,
             };
@@ -386,7 +427,7 @@ namespace NuSysApp
 
             var refreshCircleShape = new EllipseUIElement(this, ResourceCreator)
             {
-                Background = Colors.Blue,
+                Background = Constants.color1,
                 Width = 50,
                 Height = 50,
             };

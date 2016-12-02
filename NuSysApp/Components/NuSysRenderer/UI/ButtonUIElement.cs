@@ -34,7 +34,13 @@ namespace NuSysApp
         public override Color Bordercolor {
             get { return Shape.Bordercolor; }
             set { Shape.Bordercolor = value; } }
-        
+
+
+        /// <summary>
+        /// Font size of the buttons text
+        /// </summary>
+        public float ButtonTextSize { get; set; }
+
 
         /// <summary>
         /// The width of the Button. Must be greater than or equal to zero.
@@ -277,9 +283,12 @@ namespace NuSysApp
                     VerticalAlignment = ButtonTextVerticalAlignment,
                     WordWrapping = CanvasWordWrapping.NoWrap,
                     TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
                 };
-
+                if (ButtonTextSize > 0)
+                {
+                    textFormat.FontSize = ButtonTextSize;
+                }
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created textFormat
                 ds.DrawText(ButtonText,
@@ -289,6 +298,7 @@ namespace NuSysApp
 
             ds.Transform = orgTransform;
         }
+
 
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
