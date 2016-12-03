@@ -16,7 +16,7 @@ namespace NuSysApp
         public SessionRootRenderItem(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             NuSessionViewer = new NuSessionViewer(this, canvas);
-            
+           
 
         }
 

@@ -37,7 +37,7 @@ namespace NuSysApp
 
         private ButtonUIElement _addFileButton;
 
-        private Dictionary<string, NusysConstants.AccessType> _fileIdToAccessMap = new Dictionary<string, NusysConstants.AccessType>();
+        private static Dictionary<string, NusysConstants.AccessType> _fileIdToAccessMap = new Dictionary<string, NusysConstants.AccessType>();
 
         /// <summary>
         /// Define the quality of the waveform
@@ -120,7 +120,7 @@ namespace NuSysApp
             base.Load(); 
         }
 
-        private void AddFileButtonTapped(ButtonUIElement item, CanvasPointer pointer)
+        private void AddFileButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             UITask.Run(() =>
             {
@@ -223,7 +223,10 @@ namespace NuSysApp
 
         public void InitializeLibraryList()
         {
-            libraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas);
+            libraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
+            {
+                MultipleSelections = true
+            };
 
             var listColumn = new ListTextColumn<LibraryElementModel>();
             listColumn.Title = "Title";
@@ -278,7 +281,12 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        private async void AddFile()
+        /// <summary>
+        /// Returns a list of library element model ids for the files which were just added to the library
+        /// </summary>
+        /// <param name="storageFiles"></param>
+        /// <returns></returns>
+        public static async Task<List<LibraryElementController>> AddFile(IReadOnlyList<StorageFile> storageFiles = null)
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
@@ -290,7 +298,12 @@ namespace NuSysApp
             int pdfPageCount = 0;
             double aspectRatio = 0;
 
-            var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+            var addedLibraryElemControllers = new List<LibraryElementController>();
+
+            if (storageFiles == null)
+            {
+                storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+            }
 
             // get the fileAddedAclsPopup from the session view
             var fileAddedAclsPopup = SessionController.Instance.SessionView.FileAddedAclsPopup;
@@ -300,7 +313,7 @@ namespace NuSysApp
 
             if (tempfileIdToAccessMaps == null) //if the user canceled the document import
             {
-                return;
+                return addedLibraryElemControllers;
             }
 
             foreach (var fileAccess in tempfileIdToAccessMaps)
@@ -311,12 +324,13 @@ namespace NuSysApp
             // check if the user has canceled the upload
             if (_fileIdToAccessMap == null)
             {
-                return;
+                return addedLibraryElemControllers;
             }
 
             foreach (var storageFile in storageFiles ?? new List<StorageFile>())
             {
-                if (storageFile == null) return;
+                if (storageFile == null)
+                    return addedLibraryElemControllers;
 
                 var contentId = SessionController.Instance.GenerateId();
 
@@ -545,6 +559,7 @@ namespace NuSysApp
                     if (_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
                     {
                         args.LibraryElementArgs.AccessType = _fileIdToAccessMap[storageFile.FolderRelativeId];
+                        args.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
                     }
                     else
                     {
@@ -555,7 +570,13 @@ namespace NuSysApp
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
-                    request.AddReturnedLibraryElementToLibrary();
+                    // if we succesfully complete the request
+                    if (request.AddReturnedLibraryElementToLibrary())
+                    {
+                        // add the library element controller of the new content to the list we are going to return
+                        addedLibraryElemControllers.Add(SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId));
+                    }
+                    
 
                     vm.ClearSelection();
                 }
@@ -566,6 +587,8 @@ namespace NuSysApp
 
                 _fileIdToAccessMap.Remove(storageFile.FolderRelativeId);
             }
+
+            return addedLibraryElemControllers;
         }
 
         /// <summary>
@@ -575,7 +598,7 @@ namespace NuSysApp
         /// <param name="bytes"></param>
         /// <param name="quality"></param>
         /// <returns></returns>
-        private FrameworkElement GetWaveFormFrameWorkElement(Byte[] bytes, WaveFormQuality quality = WaveFormQuality.Low)
+        private static FrameworkElement GetWaveFormFrameWorkElement(Byte[] bytes, WaveFormQuality quality = WaveFormQuality.Low)
         {
             MemoryStream s = new MemoryStream(bytes);
             var stream = s.AsRandomAccessStream();
@@ -671,7 +694,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="frameWorkElement"></param>
         /// <returns></returns>
-        private async Task<Dictionary<NusysConstants.ThumbnailSize, string>> GetThumbnailsFromFrameworkElement(FrameworkElement frameWorkElement)
+        private static async Task<Dictionary<NusysConstants.ThumbnailSize, string>> GetThumbnailsFromFrameworkElement(FrameworkElement frameWorkElement)
         {
             // add the ui element to the canvas out of sight
             Windows.UI.Xaml.Controls.Canvas.SetTop(frameWorkElement, -frameWorkElement.Height * 2);
@@ -715,7 +738,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="frameWorkElement"></param>
         /// <returns>A string representation of the passed in framework element as an image</returns>
-        private async Task<string> GetImageAsStringFromFrameworkElement(FrameworkElement frameWorkElement)
+        private static async Task<string> GetImageAsStringFromFrameworkElement(FrameworkElement frameWorkElement)
         {
             // add the ui element to the canvas out of sight
             Windows.UI.Xaml.Controls.Canvas.SetTop(frameWorkElement, -frameWorkElement.Height * 2);

@@ -77,6 +77,8 @@ namespace NuSysApp
 
         public SessionView SessionView { get; set; }
 
+        public NuSessionViewer NuSessionView { get; set; }
+
         public ContentController ContentController
         {
             get { return _contentController; }

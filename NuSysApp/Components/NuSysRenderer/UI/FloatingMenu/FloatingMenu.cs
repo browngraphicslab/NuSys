@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -20,6 +21,11 @@ namespace NuSysApp
 
         private AddElementMenuUIElement _addElementMenu;
 
+        /// <summary>
+        ///  the initial drag position of the floating menu view
+        /// </summary>
+        private Vector2 _initialDragPosition;
+
         public FloatingMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the default height and width of the floating menu view
@@ -33,7 +39,6 @@ namespace NuSysApp
             {
                 Background = Colors.DarkSlateGray
             };
-            _addElementButton.Tapped += ShowAddElementMenu;
             AddChild(_addElementButton);
 
             _openLibraryButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
@@ -62,23 +67,35 @@ namespace NuSysApp
             _buttonLayoutManager.ArrangeItems(); // arrange the items only so widths and heights are properly instantiated
 
 
-
+            DragStarted += FloatingMenu_DragStarted;
+            _addElementButton.DragStarted += FloatingMenu_DragStarted;
+            _openLibraryButton.DragStarted += FloatingMenu_DragStarted;
             Dragged += FloatingMenuOnDragged;
-            _addElementButton.Dragging += FloatingMenuOnDragged;
-            _openLibraryButton.Dragging += FloatingMenuOnDragged;
+            _addElementButton.Dragged += FloatingMenuOnDragged;
+            _openLibraryButton.Dragged += FloatingMenuOnDragged;
             _openLibraryButton.Tapped += OpenLibraryButtonOnTapped;
+            _addElementButton.Tapped += ShowAddElementMenu;
         }
 
-        private void ShowAddElementMenu(ButtonUIElement item, CanvasPointer pointer)
+        private void FloatingMenu_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _initialDragPosition = Transform.LocalPosition;
+        }
+
+        private void ShowAddElementMenu(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             _addElementMenu.IsVisible = !_addElementMenu.IsVisible;
-            _addElementMenu.Transform.LocalPosition = item.Transform.LocalPosition + new Vector2(-_addElementMenu.Width/2 + item.Width/2, -_addElementMenu.Height - 10);
+            var addElementButton = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(addElementButton != null, "The add element button should be a button ui element, make sure something else isn't causing this to open");
+            _addElementMenu.Transform.LocalPosition = addElementButton.Transform.LocalPosition + new Vector2(-_addElementMenu.Width/2 + addElementButton.Width/2, -_addElementMenu.Height - 10);
         }
 
-        private void OpenLibraryButtonOnTapped(ButtonUIElement item, CanvasPointer pointer)
+        private void OpenLibraryButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             _library.IsVisible = !_library.IsVisible;
-            _library.Transform.LocalPosition = item.Transform.LocalPosition + new Vector2(-_library.Width/2 + item.Width/2, item.Height + 10);
+            var openLibraryButton = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(openLibraryButton != null, "The open library button should be a button ui element");
+            _library.Transform.LocalPosition = openLibraryButton.Transform.LocalPosition + new Vector2(-_library.Width/2 + openLibraryButton.Width/2, openLibraryButton.Height + 10);
         }
 
         /// <summary>
@@ -108,17 +125,19 @@ namespace NuSysApp
 
         private void FloatingMenuOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            Transform.LocalPosition += pointer.DeltaSinceLastUpdate;
-
+            Transform.LocalPosition = _initialDragPosition + pointer.Delta;
         }
 
         public override void Dispose()
         {
             Dragged -= FloatingMenuOnDragged;
-            _addElementButton.Dragging -= FloatingMenuOnDragged;
-            _openLibraryButton.Dragging -= FloatingMenuOnDragged;
+            _addElementButton.Dragged -= FloatingMenuOnDragged;
+            _openLibraryButton.Dragged -= FloatingMenuOnDragged;
             _addElementButton.Tapped -= ShowAddElementMenu;
             _openLibraryButton.Tapped -= OpenLibraryButtonOnTapped;
+            DragStarted -= FloatingMenu_DragStarted;
+            _addElementButton.DragStarted -= FloatingMenu_DragStarted;
+            _openLibraryButton.DragStarted -= FloatingMenu_DragStarted;
 
             base.Dispose();
         }

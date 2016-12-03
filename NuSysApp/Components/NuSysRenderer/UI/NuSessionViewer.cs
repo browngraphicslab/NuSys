@@ -32,6 +32,7 @@ namespace NuSysApp
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
+            SessionController.Instance.NuSessionView = this; // set the session controller's getter for the NuSessionView
 
             _floatingMenu = new FloatingMenu(this, canvas);
             AddChild(_floatingMenu);
@@ -103,7 +104,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ChatButtonOnTapped(ButtonUIElement item, CanvasPointer pointer)
+        private void ChatButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             _chatBox.IsVisible = !_chatBox.IsVisible;
             if (_chatBox.IsVisible)
@@ -121,7 +122,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnCurrCollDetailViewButtonTapped(ButtonUIElement item, CanvasPointer pointer)
+        private void OnCurrCollDetailViewButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             var currWorkspaceController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.ActiveFreeFormViewer.LibraryElementId);
             SessionController.Instance.SessionView.ShowDetailView(currWorkspaceController);
@@ -181,7 +182,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void SnapShotButtonTapped(ButtonUIElement item, CanvasPointer pointer)
+        private async void SnapShotButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             CreateSnapshotOfCollectionRequest request = new CreateSnapshotOfCollectionRequest(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.LibraryElementModel.LibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
@@ -191,7 +192,7 @@ namespace NuSysApp
         /// <summary>
         /// Fired whenever the waiting room button is clicked, returns the user to the waitin groom
         /// </summary>
-        private async void BackToWaitingRoomOnTapped(ButtonUIElement item, CanvasPointer pointer)
+        private async void BackToWaitingRoomOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             // clear all the users from the user bubble container
             _userBubbleContainer.ClearUsers();

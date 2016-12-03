@@ -65,7 +65,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             _layoutManager.VerticalAlignment = VerticalAlignment.Top;
         }
 
-        public void AddOption(string item, ButtonTappedHandler handler)
+        public void AddOption(string item, PointerHandler handler)
         {
             _layoutManager.Height += ButtonHeight;
             var button = new ButtonUIElement(this, base.ResourceCreator, new RectangleUIElement(this, base.ResourceCreator));

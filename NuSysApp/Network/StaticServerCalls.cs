@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
 using Windows.Foundation;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace NuSysApp
 {
@@ -208,6 +211,103 @@ namespace NuSysApp
                 
             }
             
+        }
+
+
+        /// <summary>
+        /// Adds an element of elementType to the current collection, at the point on the collection directly under screenpoint. If the element can exist without any
+        /// predefined content, such as an empty text node, or collection node, then lec can be a null argument and the empty element will be created. Otherwise if content
+        /// is required, the associated library element controller must be passed in.
+        /// </summary>
+        /// <param name="screenPoint">Point on the screen the new element will be created directly under this point on the main collection</param>
+        /// <param name="elementType">The type of the elementy we are going to create. Must be able to exist without predefined content if library element controller is null</param>
+        /// <param name="lec">The libraryy element controller of the element we are going to add</param>
+        public static async void AddElementToCurrentCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null)
+        {
+            // transform the passed in screenpoint to a point on the main collection
+            var collectionPoint = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(screenPoint, SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
+            var libraryElementId = lec?.LibraryElementModel.LibraryElementId; // variable to hold the library element id of the element we are adding
+            var contentId = lec?.LibraryElementModel.ContentDataModelId; // variable to hold the content id of the element we are adding
+
+            // if we are creating empty content
+            if (lec == null)
+            {
+                // make sure that the element type requested can be empty, and filter out requests for non-content such as recording nodes
+                switch (elementType)
+                {
+                    case NusysConstants.ElementType.Collection:
+                        break;
+                    case NusysConstants.ElementType.Text:
+                        break;
+                    case NusysConstants.ElementType.Tools:
+                        Debug.Assert(false);
+                        return; // return after this we are not creating content
+                    case NusysConstants.ElementType.Recording:
+                        AddRecordingNode(screenPoint);
+                        return; // return after this we are not creating content
+                    default:
+                        Debug.Fail($"In order to add an element of type, {elementType} to the collection you must provide a library element controller");
+                        return;
+                }
+
+
+                // Create a new content request
+                var createNewContentRequestArgs = new CreateNewContentRequestArgs
+                {
+                    LibraryElementArgs = new CreateNewLibraryElementRequestArgs
+                    {
+                        AccessType =
+                            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
+                        LibraryElementType = elementType,
+                        Title = elementType == NusysConstants.ElementType.Collection ? "Unnamed Collection" : "Unnamed Text",
+                        LibraryElementId = SessionController.Instance.GenerateId()
+                    },
+                    ContentId = SessionController.Instance.GenerateId()
+                };
+
+                // execute the content request
+                var contentRequest = new CreateNewContentRequest(createNewContentRequestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
+                contentRequest.AddReturnedLibraryElementToLibrary();
+
+                // get the library element id and content id for use outside of this if statement
+                libraryElementId = createNewContentRequestArgs.LibraryElementArgs.LibraryElementId;
+                contentId = createNewContentRequestArgs.ContentId;
+            }
+
+
+            // create a new add element to collection request
+            var newElementRequestArgs = new NewElementRequestArgs
+            {
+                LibraryElementId = libraryElementId,
+                ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                Height = Constants.DefaultNodeSize,
+                Width = Constants.DefaultNodeSize,
+                X = collectionPoint.X,
+                Y = collectionPoint.Y
+            };
+
+            // execute the add element to collection request
+            var elementRequest = new NewElementRequest(newElementRequestArgs);
+
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(contentId);
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
+
+            await elementRequest.AddReturnedElementToSessionAsync();
+        }
+
+
+        /// <summary>
+        /// Adds a recording node to the NuSessionView at the passed in screenpoint
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        private static void AddRecordingNode(Vector2 screenPoint)
+        {
+            var newRecNode = new RecordingNode(SessionController.Instance.NuSessionView, SessionController.Instance.NuSessionView.ResourceCreator);
+            newRecNode.Load();
+            newRecNode.Transform.LocalPosition = screenPoint;
+            SessionController.Instance.NuSessionView.AddChild(newRecNode);
         }
     }
 }

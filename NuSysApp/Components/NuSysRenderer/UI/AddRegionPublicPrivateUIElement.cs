@@ -82,10 +82,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void AddButtonTapped(ButtonUIElement item, CanvasPointer pointer)
+        private void AddButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             // invoke with public if public button was tapped else private
-            OnRegionAdded?.Invoke(item == _addPublicButton ? NusysConstants.AccessType.Public : NusysConstants.AccessType.Private);
+            OnRegionAdded?.Invoke(interactiveBaseRenderItem == _addPublicButton ? NusysConstants.AccessType.Public : NusysConstants.AccessType.Private);
         }
 
         /// <summary>

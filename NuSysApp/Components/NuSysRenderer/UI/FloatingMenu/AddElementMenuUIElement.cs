@@ -29,9 +29,6 @@ namespace NuSysApp
         // drag rect used to display a drag image when we are moving items onto the canvas
         private RectangleUIElement _dragRect;
 
-        // determines if we are currently dragging a button
-        private bool _isDragging;
-
         // the type of the element that is being dragged
         private NusysConstants.ElementType _elementType;
 
@@ -142,10 +139,19 @@ namespace NuSysApp
             // add each button the the stack layout manager and then add dragging and drag completed methods
             foreach (var button in _menuButtons)
             {
-                button.Dragging += MenuButton_OnDragging;
+                button.Dragged += MenuButton_OnDragging;
                 button.DragCompleted += MenuButton_DragCompleted;
+                button.DragStarted += MenuButton_DragStarted;
                 _buttonLayoutManager.AddElement(button);
             }
+        }
+
+        private void MenuButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SetElementType(item as ButtonUIElement);
+            SetDragImage(_elementType);
+            _dragRect.Transform.LocalPosition = item.Transform.LocalPosition;
+            _dragRect.IsVisible = true;
         }
 
         /// <summary>
@@ -176,8 +182,9 @@ namespace NuSysApp
         {
             foreach (var button in _menuButtons)
             {
-                button.Dragging -= MenuButton_OnDragging;
+                button.Dragged -= MenuButton_OnDragging;
                 button.DragCompleted -= MenuButton_DragCompleted;
+                button.DragStarted -= MenuButton_DragStarted;
             }
             base.Dispose();
         }
@@ -187,21 +194,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MenuButton_OnDragging(ButtonUIElement item, CanvasPointer pointer)
+        private void MenuButton_OnDragging(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            // the first time this is fired, just set the image, element type, transform, and visibility of the dragrect
-            if (!_isDragging)
-            {
-                SetElementType(item);
-                SetDragImage(_elementType);
-                _dragRect.Transform.LocalPosition = item.Transform.LocalPosition;
-                _isDragging = true;
-                _dragRect.IsVisible = true;
-            }
-            else // all other times just move the drag rect to a new location
-            {
-                _dragRect.Transform.LocalPosition = item.Transform.LocalPosition + pointer.Delta;
-            }
+
+            // move the drag rect to a new location
+            _dragRect.Transform.LocalPosition = interactiveBaseRenderItem.Transform.LocalPosition + pointer.Delta;
         }
 
         /// <summary>
@@ -209,17 +206,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MenuButton_DragCompleted(ButtonUIElement item, CanvasPointer pointer)
+        private void MenuButton_DragCompleted(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            // reset visibility of the drag rect
-            _isDragging = false;
+            // reset the visibility of the drag rect
             _dragRect.IsVisible = false;
 
-            // transform the canvas pointer point to a point on the collection
-            var r = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(pointer.CurrentPoint, SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
-
             // Add the element at the dropped location          
-            AddElementToCollection(new Point(r.X, r.Y));
+            StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, _elementType);
 
         }
 
@@ -280,77 +273,6 @@ namespace NuSysApp
             }
 
         }
-
-        /// <summary>
-        /// Adds the element from the floating menu view to the collection at the specified point
-        /// where the point is in workspace coordinates not the session view
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        private async void AddElementToCollection(Point position)
-        {
-            var vm = SessionController.Instance.ActiveFreeFormViewer;
-
-            // take care of filtering out elements that do not require requests to the server
-            switch (_elementType)
-            {
-                case NusysConstants.ElementType.Collection:
-                    break;
-                case NusysConstants.ElementType.Text:
-                    break;
-                case NusysConstants.ElementType.Tools:
-                    Debug.Assert(false);
-                    return; // return after this we are not creating content
-                case NusysConstants.ElementType.Recording:
-                    Debug.Assert(false);
-                    return; // return after this we are not creating content
-                default:
-                    Debug.Fail($"We do not support adding {_elementType} to the collection yet, please add support for it here");
-                    return;
-            }
-            // Create a new content request
-            var createNewContentRequestArgs = new CreateNewContentRequestArgs
-            {
-                LibraryElementArgs = new CreateNewLibraryElementRequestArgs
-                {
-                    AccessType =
-                        SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
-                    LibraryElementType = _elementType,
-                    Title = _elementType == NusysConstants.ElementType.Collection ? "Unnamed Collection" : "Unnamed Text",
-                    LibraryElementId = SessionController.Instance.GenerateId()
-                },
-                ContentId = SessionController.Instance.GenerateId()
-            };
-
-            // execute the content request
-            var contentRequest = new CreateNewContentRequest(createNewContentRequestArgs);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
-            contentRequest.AddReturnedLibraryElementToLibrary();
-
-            // create a new add element to collection request
-            var newElementRequestArgs = new NewElementRequestArgs
-            {
-                LibraryElementId = createNewContentRequestArgs.LibraryElementArgs.LibraryElementId,
-                ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
-                Height = Constants.DefaultNodeSize,
-                Width = Constants.DefaultNodeSize,
-                X = position.X,
-                Y = position.Y
-            };
-
-            // execute the add element to collection request
-            var elementRequest = new NewElementRequest(newElementRequestArgs);
-
-            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(createNewContentRequestArgs.ContentId);
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
-
-            await elementRequest.AddReturnedElementToSessionAsync();
-
-            // remove any selections from the activeFreeFormViewer
-            //vm.ClearSelection();
-        }
-
 
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

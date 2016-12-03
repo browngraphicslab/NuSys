@@ -149,7 +149,7 @@ namespace NuSysApp
             };
             _draggableCollectionElement = new ButtonUIElement(this, ResourceCreator, collectionRectangle);
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
-            _draggableCollectionElement.Dragging += CollectionOrStack_Dragging;
+            _draggableCollectionElement.Dragged += CollectionOrStack_Dragging;
             _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted;
             //AddChild(_draggableCollectionElement);
 
@@ -173,7 +173,7 @@ namespace NuSysApp
             };
             _draggableStackElement = new ButtonUIElement(this, ResourceCreator, stackRectangle);
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
-            _draggableStackElement.Dragging += CollectionOrStack_Dragging;
+            _draggableStackElement.Dragged += CollectionOrStack_Dragging;
             _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted;
             //AddChild(_draggableStackElement);
 
@@ -194,8 +194,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CollectionOrStack_DragCompleted(ButtonUIElement item, CanvasPointer pointer)
+        private void CollectionOrStack_DragCompleted(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            var item = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(item != null);
+
             var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
             if (item == _draggableCollectionElement)
             {
@@ -217,8 +220,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CollectionOrStack_Dragging(ButtonUIElement item, CanvasPointer pointer)
+        private void CollectionOrStack_Dragging(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            var item = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(item != null);
+
             RectangleUIElement icon;
             if (item == _draggableCollectionElement)
             {
@@ -272,7 +278,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _dropdownButton_OnPressed(ButtonUIElement item, CanvasPointer pointer)
+        private void _dropdownButton_OnPressed(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             if (_children.Last() != _filterChooser)
             {
@@ -294,8 +300,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void FilterChooserItem_Clicked(ButtonUIElement item, CanvasPointer pointer)
+        private void FilterChooserItem_Clicked(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            var item = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(item != null);
+
             _filterChooser.IsVisible = false;
             _filterChooserDropdownButton.ButtonText = item.ButtonText;
             var vm = Vm as BasicToolViewModel;
@@ -356,7 +365,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _refreshButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private void _refreshButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             Task.Run(delegate {
                 Vm.Controller?.RefreshFromTopOfChain();
@@ -368,7 +377,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _parentOperatorButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private void _parentOperatorButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
             {

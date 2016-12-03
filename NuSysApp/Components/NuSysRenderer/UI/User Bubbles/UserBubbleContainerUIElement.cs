@@ -114,15 +114,20 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ShowUserNameOnBubbleTapped(ButtonUIElement item, CanvasPointer pointer)
+        private void ShowUserNameOnBubbleTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+
+            var userbubble = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(userbubble != null);
+
+
             // set the color of the username to the background of the button that was clicked
-            _userNameRect.TextColor = item.Background;
+            _userNameRect.TextColor = userbubble.Background;
             // move the rect so it is centered over the button that was tapped
-            _userNameRect.Transform.LocalPosition = item.Transform.LocalPosition -
-                                                    new Vector2(_userNameRect.Width/2 - item.Width/2, _userNameRect.Height + 5);
+            _userNameRect.Transform.LocalPosition = userbubble.Transform.LocalPosition -
+                                                    new Vector2(_userNameRect.Width/2 - userbubble.Width/2, _userNameRect.Height + 5);
             // get the user id of the button that was selected
-            var user_id = _userIds_toBubbles.Where(kv => kv.Value == item).Select(kv => kv.Key).First();
+            var user_id = _userIds_toBubbles.Where(kv => kv.Value == userbubble).Select(kv => kv.Key).First();
 
             // hide the rectangle if the button clicked is already being displayed
             if (_currentUserNameDisplayed_userid == user_id)

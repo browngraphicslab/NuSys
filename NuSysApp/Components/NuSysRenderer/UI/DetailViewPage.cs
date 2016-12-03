@@ -126,7 +126,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void AddRegionButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private void AddRegionButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             AddChild(_addRegionUIElement);
             _addRegionUIElement.OnRegionAdded += OnRegionAdded;

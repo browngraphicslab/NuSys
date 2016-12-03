@@ -388,6 +388,7 @@
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElementContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\NuSessionViewer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\RecordingNode\RecordingNode.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />

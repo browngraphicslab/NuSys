@@ -202,7 +202,7 @@ namespace NuSysApp
             });
         }
 
-        private void OnVolumeButtonTapped(ButtonUIElement item, CanvasPointer pointer)
+        private void OnVolumeButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             if (_isMuted)
             {
@@ -265,7 +265,7 @@ namespace NuSysApp
             base.Load();
         }
 
-        private void _playPauseButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private void _playPauseButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             if (_isPlaying)
             {

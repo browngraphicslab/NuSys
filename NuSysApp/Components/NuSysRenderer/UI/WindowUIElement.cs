@@ -82,7 +82,17 @@ namespace NuSysApp
         /// <summary>
         /// Event fired whenever the top bar is dragged
         /// </summary>
-        public event PointerHandler OnTopBarDragged;
+        public event PointerHandler TopBarDragged;
+
+        /// <summary>
+        /// Event fired when the top bar drag is started
+        /// </summary>
+        public event PointerHandler TopBarDragStarted;
+
+        /// <summary>
+        /// Event fired when the top bar drag is completed
+        /// </summary>
+        public event PointerHandler TopBarDragCompleted;
 
         public enum TopBarPosition
         {
@@ -105,6 +115,8 @@ namespace NuSysApp
             AddChild(_topBar);
 
             _topBar.Dragged += InvokeTopBarDragged;
+            _topBar.DragStarted += InvokeTopBarDragStarted;
+            _topBar.DragCompleted += InvokeTopBarDragCompleted;
 
             _topBarRightButtons = new List<ButtonUIElement>();
             _rightButtonLayoutManager = new StackLayoutManager
@@ -115,6 +127,28 @@ namespace NuSysApp
             };
         }
 
+
+
+        public override void Dispose()
+        {
+            _topBar.DragStarted -= InvokeTopBarDragStarted;
+            _topBar.Dragged -= InvokeTopBarDragged;
+            _topBar.DragCompleted -= InvokeTopBarDragCompleted;
+
+
+            base.Dispose();
+        }
+
+        private void InvokeTopBarDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            TopBarDragCompleted?.Invoke(item, pointer);
+        }
+
+        private void InvokeTopBarDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            TopBarDragStarted?.Invoke(item, pointer);
+        }
+
         /// <summary>
         /// Invokes the on top bar dragged event
         /// </summary>
@@ -122,7 +156,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void InvokeTopBarDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            OnTopBarDragged?.Invoke(item, pointer);
+            TopBarDragged?.Invoke(item, pointer);
         }
 
         /// <summary>
