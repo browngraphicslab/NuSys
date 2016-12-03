@@ -220,7 +220,7 @@ namespace NuSysApp
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
-            if (selectedTag != null && !(SessionController.Instance.SessionView.ModeInstance is ExplorationMode))
+            if (selectedTag != null/* && !(SessionController.Instance.SessionView.ModeInstance is ExplorationMode)*/)
             {
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var width = SessionController.Instance.SessionView.ActualWidth;
@@ -565,8 +565,7 @@ namespace NuSysApp
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode || SessionController.Instance.SessionView.IsReadonly)
-                return;
+
 
             var vm = (ElementViewModel) this.DataContext;
 

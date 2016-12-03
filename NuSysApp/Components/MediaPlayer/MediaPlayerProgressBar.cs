@@ -72,7 +72,7 @@ namespace NuSysApp
 
         private void BackgroundRectangleOnDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
         {
-            SessionController.Instance.SessionView.DetailViewerView.ShowElement(CurrentLibraryElementController);
+            SessionController.Instance.NuSessionView.ShowDetailView(CurrentLibraryElementController);
         }
 
         private void BackgroundRectangleOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
@@ -368,7 +368,7 @@ namespace NuSysApp
 
             private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
             {
-                SessionController.Instance.SessionView.DetailViewerView.ShowElement(LibraryElementController,DetailViewTabType.Home);
+                SessionController.Instance.NuSessionView.ShowDetailView(LibraryElementController);
             }
 
 

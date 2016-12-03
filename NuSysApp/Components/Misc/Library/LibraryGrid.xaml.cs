@@ -237,46 +237,46 @@ namespace NuSysApp
 
         {
 
-            var view = SessionController.Instance.SessionView;
+            //var view = SessionController.Instance.SessionView;
 
-            var rect = view.LibraryDraggingRectangle;
-
-
-
-
-            Border wrappedView = (Border)sender;
-
-            StackPanel itemPanel = (StackPanel)wrappedView.Child;
+            //var rect = view.LibraryDraggingRectangle;
 
 
 
-            //Moves rectangle to position of click.
 
-            _ct = new CompositeTransform();
+            //Border wrappedView = (Border)sender;
 
-            rect.RenderTransform = _ct;
+            //StackPanel itemPanel = (StackPanel)wrappedView.Child;
 
-            _x = e.GetCurrentPoint(view).Position.X;
 
-            _y = e.GetCurrentPoint(view).Position.Y;
 
-            _ct.TranslateX += _x;
+            ////Moves rectangle to position of click.
 
-            _ct.TranslateY += _y;
+            //_ct = new CompositeTransform();
 
-            //arbitrary z index
+            //rect.RenderTransform = _ct;
 
-            Canvas.SetZIndex(rect, 3);
+            //_x = e.GetCurrentPoint(view).Position.X;
+
+            //_y = e.GetCurrentPoint(view).Position.Y;
+
+            //_ct.TranslateX += _x;
+
+            //_ct.TranslateY += _y;
+
+            ////arbitrary z index
+
+            //Canvas.SetZIndex(rect, 3);
             
 
 
-            wrappedView.CapturePointer(e.Pointer);
+            //wrappedView.CapturePointer(e.Pointer);
 
-            wrappedView.PointerMoved += wrappedView_PointerMoved;
+            //wrappedView.PointerMoved += wrappedView_PointerMoved;
 
-            wrappedView.PointerReleased += wrappedView_PointerReleased;
+            //wrappedView.PointerReleased += wrappedView_PointerReleased;
 
-            e.Handled = true;
+            //e.Handled = true;
 
         }
 

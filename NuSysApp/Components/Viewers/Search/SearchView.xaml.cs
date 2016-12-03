@@ -238,7 +238,7 @@ namespace NuSysApp
 
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
             
-            SessionController.Instance.SessionView.ShowDetailView(controller);
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
 
             e.Handled = true;
         }
@@ -252,116 +252,116 @@ namespace NuSysApp
 
         private void ListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
-            LibraryElementModel element = result?.Model;
-            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
-            {
-                e.Handled = true;
-                return;
-            }
+            //SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
+            //LibraryElementModel element = result?.Model;
+            //if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
 
-            var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SetIcon(element);
-            view.LibraryDraggingRectangle.Show();
-            var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
-            rect.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)rect.RenderTransform;
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.SetIcon(element);
+            //view.LibraryDraggingRectangle.Show();
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
+            //rect.RenderTransform = new CompositeTransform();
+            //var t = (CompositeTransform)rect.RenderTransform;
 
 
-            t.TranslateX += _x;
-            t.TranslateY += _y;
+            //t.TranslateX += _x;
+            //t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
-            {
-                Task.Run(async delegate
-                {
-                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
-                });
-            }
+            //if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
+            //{
+            //    Task.Run(async delegate
+            //    {
+            //        SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
+            //    });
+            //}
         }
 
 
         private void ListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-            SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
-            LibraryElementModel element = result?.Model;
-            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
-            {
-                e.Handled = true;
-                return;
-            }
+            //SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
+            //LibraryElementModel element = result?.Model;
+            //if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
 
-            var el = (FrameworkElement)sender;
-            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            //var el = (FrameworkElement)sender;
+            //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
 
 
-            // scroll the scroll viewer if sp.X is inside the scrollviewer
-            if (sp.X < Width)
-            {
-                Border border = (Border)VisualTreeHelper.GetChild(ListView, 0);
-                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-                if (scrollViewer != null)
-                {
-                    scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
-                }
-            }
+            //// scroll the scroll viewer if sp.X is inside the scrollviewer
+            //if (sp.X < Width)
+            //{
+            //    Border border = (Border)VisualTreeHelper.GetChild(ListView, 0);
+            //    ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+            //    if (scrollViewer != null)
+            //    {
+            //        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+            //    }
+            //}
 
-            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
-            if (itemsBelow.Any())
-            {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
-            }
-            else
-            {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
+            //var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
+            //if (itemsBelow.Any())
+            //{
+            //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
+            //}
+            //else
+            //{
+            //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
 
-            }
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
-            var t = (CompositeTransform)rect.RenderTransform;
+            //}
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
+            //var t = (CompositeTransform)rect.RenderTransform;
 
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
 
-            _x += e.Delta.Translation.X;
-            _y += e.Delta.Translation.Y;
+            //_x += e.Delta.Translation.X;
+            //_y += e.Delta.Translation.Y;
 
         }
 
         private async void ListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
-            LibraryElementModel element = result?.Model;
-            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
-            {
-                e.Handled = true;
-                return;
-            }
+            //SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
+            //LibraryElementModel element = result?.Model;
+            //if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
 
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
 
 
-            if (rect.Visibility == Visibility.Collapsed)
-                return;
+            //if (rect.Visibility == Visibility.Collapsed)
+            //    return;
 
-            rect.Hide();
+            //rect.Hide();
           
-            if (_x < this.Width) return;
+            //if (_x < this.Width) return;
 
-            //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
-            // If they are different we simply return 
-            var currWorkSpaceAccessType =
-                SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+            ////Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
+            //// If they are different we simply return 
+            //var currWorkSpaceAccessType =
+            //    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
 
-            if (element.AccessType == NusysConstants.AccessType.Private &&
-                currWorkSpaceAccessType == NusysConstants.AccessType.Public)
-            {
-                return;
-            }
+            //if (element.AccessType == NusysConstants.AccessType.Private &&
+            //    currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+            //{
+            //    return;
+            //}
 
-            await AddSearchResulttoSession(result);
+            //await AddSearchResulttoSession(result);
         }
 
         /// <summary>
@@ -419,19 +419,19 @@ namespace NuSysApp
         private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
 
-            // Since we are adding a collection, we should make the dragging rectangle reflect this
-            var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
-            view.LibraryDraggingRectangle.Show();
-            var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
+            //// Since we are adding a collection, we should make the dragging rectangle reflect this
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
+            //view.LibraryDraggingRectangle.Show();
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
 
-            // Make the rectangle movable and set its position
-            rect.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += _searchExportPos.X;
-            t.TranslateY += _searchExportPos.Y;
-            e.Handled = true;
+            //// Make the rectangle movable and set its position
+            //rect.RenderTransform = new CompositeTransform();
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += _searchExportPos.X;
+            //t.TranslateY += _searchExportPos.Y;
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -441,21 +441,21 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void XSearchExportButton_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            // Obtain the library dragging rectangle  
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
+            //// Obtain the library dragging rectangle  
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
 
-            // Update its transform
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+            //// Update its transform
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
 
-            // Update the position instance variable
-            _searchExportPos.X += e.Delta.Translation.X;
-            _searchExportPos.Y += e.Delta.Translation.Y;
+            //// Update the position instance variable
+            //_searchExportPos.X += e.Delta.Translation.X;
+            //_searchExportPos.Y += e.Delta.Translation.Y;
 
-            // Handled!
-            e.Handled = true;
+            //// Handled!
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -465,15 +465,15 @@ namespace NuSysApp
         /// <param name="e"></param>
         private async void XSearchExportButton_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            // Hide the library dragging rect
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-            rect.Hide();
+            //// Hide the library dragging rect
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            //rect.Hide();
 
-            // Add a collection to the dropped location
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
-            ExportSearchResultsToCollection(dropPoint);
-            e.Handled = true;
+            //// Add a collection to the dropped location
+            //var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            //var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
+            //ExportSearchResultsToCollection(dropPoint);
+            //e.Handled = true;
 
         }
 

@@ -147,155 +147,155 @@ namespace NuSysApp
         }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
+            //LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            //LibraryElementModel libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
 
 
-            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == libraryElementModel.LibraryElementId) || (libraryElementModel.Type == NusysConstants.ElementType.Link))
-            {
-                e.Handled = true;
-                return;
-            }
+            //if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == libraryElementModel.LibraryElementId) || (libraryElementModel.Type == NusysConstants.ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
             
-            var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SetIcon(libraryElementModel);
-            view.LibraryDraggingRectangle.Show();
-            var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
-            rect.RenderTransform = new CompositeTransform();
-            rect.Visibility = Visibility.Collapsed;
-            var t = (CompositeTransform)rect.RenderTransform;
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.SetIcon(libraryElementModel);
+            //view.LibraryDraggingRectangle.Show();
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
+            //rect.RenderTransform = new CompositeTransform();
+            //rect.Visibility = Visibility.Collapsed;
+            //var t = (CompositeTransform)rect.RenderTransform;
 
 
-            t.TranslateX += _x;
-            t.TranslateY += _y;
+            //t.TranslateX += _x;
+            //t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsContentDataModel(libraryElementModel.ContentDataModelId))
-            {
-                Task.Run(async delegate
-                {
-                    if (libraryElementModel.Type == NusysConstants.ElementType.Collection)
-                    {
-                        var request = new GetEntireWorkspaceRequest(libraryElementModel.LibraryElementId);
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                        Debug.Assert(request.WasSuccessful() == true);
-                        await request.AddReturnedDataToSessionAsync();
-                        await request.MakeCollectionFromReturnedElementsAsync();
-                    }
-                    else
-                    {
-                        SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(libraryElementModel.ContentDataModelId);
-                    }
-                });
-            }
+            //if (!SessionController.Instance.ContentController.ContainsContentDataModel(libraryElementModel.ContentDataModelId))
+            //{
+            //    Task.Run(async delegate
+            //    {
+            //        if (libraryElementModel.Type == NusysConstants.ElementType.Collection)
+            //        {
+            //            var request = new GetEntireWorkspaceRequest(libraryElementModel.LibraryElementId);
+            //            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            //            Debug.Assert(request.WasSuccessful() == true);
+            //            await request.AddReturnedDataToSessionAsync();
+            //            await request.MakeCollectionFromReturnedElementsAsync();
+            //        }
+            //        else
+            //        {
+            //            SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(libraryElementModel.ContentDataModelId);
+            //        }
+            //    });
+            //}
         }
 
 
         private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
+            //LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            //LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
 
             
-            // get the pointer point position, and upper left corner of the libary in relation to the sessionview
-            var el = (FrameworkElement)sender;
-            var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-            var upperLeftPoint = xGrid.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
+            //// get the pointer point position, and upper left corner of the libary in relation to the sessionview
+            //var el = (FrameworkElement)sender;
+            //var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            //var upperLeftPoint = xGrid.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
 
-            // if the pointer point is in the library scroll the library
-            if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
-                pointerPoint.Y > upperLeftPoint.Y && pointerPoint.Y < upperLeftPoint.Y + this.ActualHeight)
-            {
-                Border border = (Border)VisualTreeHelper.GetChild(ListView, 0);
-                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-                scrollViewer?.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
-            }
+            //// if the pointer point is in the library scroll the library
+            //if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
+            //    pointerPoint.Y > upperLeftPoint.Y && pointerPoint.Y < upperLeftPoint.Y + this.ActualHeight)
+            //{
+            //    Border border = (Border)VisualTreeHelper.GetChild(ListView, 0);
+            //    ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+            //    scrollViewer?.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+            //}
             
 
-            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
-            {
-                e.Handled = true;
-                return;
-            }
+            //if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
 
-            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(pointerPoint, null).Where( i => i is LibraryView);
+            //var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(pointerPoint, null).Where( i => i is LibraryView);
 
-            if (itemsBelow.Any())
-            {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
-            }
-            else
-            {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
+            //if (itemsBelow.Any())
+            //{
+            //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
+            //}
+            //else
+            //{
+            //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
 
-            }
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
-            var t = (CompositeTransform)rect.RenderTransform;
+            //}
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
+            //var t = (CompositeTransform)rect.RenderTransform;
 
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
 
-            _x += e.Delta.Translation.X;
-            _y += e.Delta.Translation.Y;
+            //_x += e.Delta.Translation.X;
+            //_y += e.Delta.Translation.Y;
 
-            _propertiesWindow.Visibility = Visibility.Collapsed;
+            //_propertiesWindow.Visibility = Visibility.Collapsed;
             
         }
 
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
-            if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
-            {
-                e.Handled = true;
-                return;
-            }
+            //LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            //LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.LibraryElementId);
+            //if ((SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
 
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
 
 
-            if (rect.Visibility == Visibility.Collapsed)
-            {
-                return;
-            }
+            //if (rect.Visibility == Visibility.Collapsed)
+            //{
+            //    return;
+            //}
 
-            var el = (FrameworkElement)sender;
-            var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-            var upperLeftPoint = xGrid.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
+            //var el = (FrameworkElement)sender;
+            //var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            //var upperLeftPoint = xGrid.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
 
-            // if the pointer point is in the library dont create the element
-            //This is the final check
-            if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
-                pointerPoint.Y > upperLeftPoint.Y && pointerPoint.Y < upperLeftPoint.Y + this.ActualHeight)
-            {
-                return;
-            }
+            //// if the pointer point is in the library dont create the element
+            ////This is the final check
+            //if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
+            //    pointerPoint.Y > upperLeftPoint.Y && pointerPoint.Y < upperLeftPoint.Y + this.ActualHeight)
+            //{
+            //    return;
+            //}
 
-            rect.Hide();
+            //rect.Hide();
 
-            var r = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)_x, (float)_y), SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
+            //var r = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)_x, (float)_y), SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
 
-            //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
-            // If they are different we siply return 
-            var currWorkSpaceAccessType =
-                SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+            ////Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
+            //// If they are different we siply return 
+            //var currWorkSpaceAccessType =
+            //    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
 
-            if (element.AccessType == NusysConstants.AccessType.Private &&
-                currWorkSpaceAccessType == NusysConstants.AccessType.Public)
-            {
-                //SessionController.Instance.SessionView.ShowAccessInvalid();
-                return;
-            }
+            //if (element.AccessType == NusysConstants.AccessType.Private &&
+            //    currWorkSpaceAccessType == NusysConstants.AccessType.Public)
+            //{
+            //    //SessionController.Instance.SessionView.ShowAccessInvalid();
+            //    return;
+            //}
 
-            var libraryElementController =
-                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
-            var id = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-            var currCollectionAccess =
-                SessionController.Instance.ContentController.GetLibraryElementController(id)
-                    .LibraryElementModel.AccessType;
-            libraryElementController.AddElementAtPosition(r.X, r.Y);
+            //var libraryElementController =
+            //    SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            //var id = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+            //var currCollectionAccess =
+            //    SessionController.Instance.ContentController.GetLibraryElementController(id)
+            //        .LibraryElementModel.AccessType;
+            //libraryElementController.AddElementAtPosition(r.X, r.Y);
         }
 
 
@@ -423,7 +423,7 @@ namespace NuSysApp
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
             // show the detail viewer
-            SessionController.Instance.SessionView.ShowDetailView(controller);
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
         }
         
         private async void LibraryListItem_OnRightTapped(object sender, RightTappedRoutedEventArgs e)

@@ -29,6 +29,9 @@ namespace NuSysApp
 
         private UserBubbleContainerUIElement _userBubbleContainer;
 
+        private DetailViewMainContainer _detailViewer;
+
+
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -92,6 +95,16 @@ namespace NuSysApp
             };
             AddChild(_chatBox);
 
+            _detailViewer = new DetailViewMainContainer(this, Canvas)
+            {
+                Width = 500,
+                Height = 500,
+                MinWidth = 400,
+                MinHeight = 400,
+                KeepAspectRatio = true
+            };
+            AddChild(_detailViewer);
+
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             _currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped;
@@ -125,7 +138,7 @@ namespace NuSysApp
         private void OnCurrCollDetailViewButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             var currWorkspaceController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.ActiveFreeFormViewer.LibraryElementId);
-            SessionController.Instance.SessionView.ShowDetailView(currWorkspaceController);
+            ShowDetailView(currWorkspaceController);
         }
 
         private void OnMainCanvasSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
@@ -140,6 +153,9 @@ namespace NuSysApp
             _chatBox.Transform.LocalPosition = new Vector2(10, Height - _chatBox.Height - 70);
             _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoomButton.Height/2);
             _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
+            _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
+            _detailViewer.Height = Height;
+            _detailViewer.Width = Width;
         }
 
         /// <summary>
@@ -205,6 +221,18 @@ namespace NuSysApp
                 await WaitingRoomView.Instance.ShowWaitingRoom();
             });
             
+
+        }
+
+        /// <summary>
+        /// Takes in the library element controller of whatever you want to show in the detail view. (this is the current method)
+        /// </summary>
+        /// <param name="viewable"></param>
+        /// <param name="tabToOpenTo"></param>
+        public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
+        {
+
+            _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
 
         }
     }

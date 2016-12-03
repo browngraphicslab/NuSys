@@ -204,12 +204,18 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void OnCloseButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            // remove button events
+            RemoveButtonEvents();
+
             // if we are recording safely stop and dispose of resousrces
             if (_recording)
             {
                 await _mediaRecording.StopAsync();
                 await _mediaRecording.FinishAsync();
             }
+
+            // add button events
+            AddButtonEvents();
 
             // then close the recording node
             RemoveFromParent();
@@ -230,6 +236,11 @@ namespace NuSysApp
         /// </summary>
         private async void StopRecording()
         {
+            // remove button events
+            RemoveButtonEvents();
+
+            _mediaCapture.RecordLimitationExceeded -= OnMediaCaptureRecordLimitationExceeded;
+
             await _mediaRecording.StopAsync();
             await _mediaRecording.FinishAsync();
 
@@ -245,6 +256,8 @@ namespace NuSysApp
                         : NusysConstants.ElementType.Video, libController);
             });
 
+            // add button events
+            AddButtonEvents();
             RemoveFromParent();
         }
 
@@ -288,12 +301,16 @@ namespace NuSysApp
         /// </summary>
         private async void ResumeRecording()
         {
+            RemoveButtonEvents();
+
             // resume the recording
             await _mediaRecording.ResumeAsync();
             _paused = false;
 
             // set the ui for the new state now that we are no longer paused
             SetUIForCurrentState();
+
+            AddButtonEvents();
         }
 
         /// <summary>
@@ -301,12 +318,16 @@ namespace NuSysApp
         /// </summary>
         private async void PauseRecording()
         {
+            RemoveButtonEvents();
+
             // pause the recording
-            await _mediaRecording.PauseAsync(MediaCapturePauseBehavior.RetainHardwareResources);
+            await _mediaRecording.PauseAsync(MediaCapturePauseBehavior.ReleaseHardwareResources);
             _paused = true;
 
             // set the ui for the new state now that we are paused
             SetUIForCurrentState();
+
+            AddButtonEvents();
         }
 
         /// <summary>
@@ -314,6 +335,8 @@ namespace NuSysApp
         /// </summary>
         private async void StartRecording()
         {
+            RemoveButtonEvents();
+
             // dispose of the current _mediaCapture if necessary
             _mediaCapture?.Dispose();
 
@@ -366,6 +389,8 @@ namespace NuSysApp
 
             // set the ui to reflect that we are currently recording
             SetUIForCurrentState();
+
+            AddButtonEvents();
         }
 
         /// <summary>
@@ -383,7 +408,6 @@ namespace NuSysApp
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
             _closeButton.Tapped -= OnCloseButtonTapped;
-            _mediaCapture.RecordLimitationExceeded -= OnMediaCaptureRecordLimitationExceeded;
             _mediaCapture?.Dispose();
             _audioIcon?.Dispose(); // TODO not sure if disposing of these images is necessary
             _recordIcon?.Dispose();
@@ -497,10 +521,19 @@ namespace NuSysApp
             ArrangeElements();
         }
 
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        private void AddButtonEvents()
         {
-            ArrangeElements();
-            base.Update(parentLocalToScreenTransform);
+            _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
+            _stopButton.Tapped += StopButtonOnTapped;
+            _closeButton.Tapped += OnCloseButtonTapped;
         }
+
+        private void RemoveButtonEvents()
+        {
+            _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
+            _stopButton.Tapped -= StopButtonOnTapped;
+            _closeButton.Tapped -= OnCloseButtonTapped;
+        }
+
     }
 }

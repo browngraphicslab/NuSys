@@ -246,8 +246,8 @@ namespace NuSysApp
             Debug.WriteLine("starting request");
 
             // Hide the library dragging rect
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-            rect.Hide();
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            //rect.Hide();
 
             var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(args.Position);
             var r = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)p.X, (float)p.Y), SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
@@ -265,18 +265,18 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            // Obtain the library dragging rectangle  
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
+            //// Obtain the library dragging rectangle  
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
 
-            // Update its transform
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+            //// Update its transform
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
             
-            // Update the position instance variable
-            _exportPos.X += e.Delta.Translation.X;
-            _exportPos.Y += e.Delta.Translation.Y;
+            //// Update the position instance variable
+            //_exportPos.X += e.Delta.Translation.X;
+            //_exportPos.Y += e.Delta.Translation.Y;
         }
 
         /// <summary>
@@ -286,43 +286,43 @@ namespace NuSysApp
         /// <param name="args"></param>
         private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartingRoutedEventArgs args)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Freeze();
-            // set the _elementType based on the sender
-            if (sender == btnAddTextNode)
-            {
-                _elementType = NusysConstants.ElementType.Text;
-            }
-            else if (sender == btnAddRecordingNode)
-            {
-                _elementType = NusysConstants.ElementType.Recording;
-            }
-            else if (sender == btnAddCollectionNode)
-            {
-                _elementType = NusysConstants.ElementType.Collection;
-            }
-            else if (sender == btnAddTools)
-            {
-                _elementType = NusysConstants.ElementType.Tools;
-            }
-            else
-            {
-                Debug.Fail($"We do not have support for {_elementType} yet please add it yourself in the if statement above, the SwitchType method below and in OnManipulationCompleted");
-            }
+            //SessionController.Instance.SessionView.FreeFormViewer.Freeze();
+            //// set the _elementType based on the sender
+            //if (sender == btnAddTextNode)
+            //{
+            //    _elementType = NusysConstants.ElementType.Text;
+            //}
+            //else if (sender == btnAddRecordingNode)
+            //{
+            //    _elementType = NusysConstants.ElementType.Recording;
+            //}
+            //else if (sender == btnAddCollectionNode)
+            //{
+            //    _elementType = NusysConstants.ElementType.Collection;
+            //}
+            //else if (sender == btnAddTools)
+            //{
+            //    _elementType = NusysConstants.ElementType.Tools;
+            //}
+            //else
+            //{
+            //    Debug.Fail($"We do not have support for {_elementType} yet please add it yourself in the if statement above, the SwitchType method below and in OnManipulationCompleted");
+            //}
 
-            // add the icon and start controlling the icon rect
-            var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.IsHitTestVisible = false;
-            view.LibraryDraggingRectangle.SetIcon(_elementType);
-            view.LibraryDraggingRectangle.Show();
+            //// add the icon and start controlling the icon rect
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.IsHitTestVisible = false;
+            //view.LibraryDraggingRectangle.SetIcon(_elementType);
+            //view.LibraryDraggingRectangle.Show();
             
-            var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
 
-            // Make the rectangle movable and set its position
-            rect.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX = _exportPos.X;
-            t.TranslateY = _exportPos.Y;
+            //// Make the rectangle movable and set its position
+            //rect.RenderTransform = new CompositeTransform();
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX = _exportPos.X;
+            //t.TranslateY = _exportPos.Y;
         }
 
         /// <summary>

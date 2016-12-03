@@ -158,7 +158,7 @@ namespace NuSysApp
             Debug.Assert(controller != null);
 
             // open the detail viewer
-            SessionController.Instance.SessionView.ShowDetailView(controller);
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
         }
 
     }

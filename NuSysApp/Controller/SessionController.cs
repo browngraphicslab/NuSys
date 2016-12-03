@@ -178,6 +178,11 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// boolean value to determine if the current workspace is read only
+        /// </summary>
+        public static bool IsReadonly { get; set; }
+
+        /// <summary>
         /// Use this method to switch the mode of the entire workspace.
         /// </summary>
         /// <param name="mode"></param>
@@ -493,21 +498,37 @@ namespace NuSysApp
             var userID = WaitingRoomView.UserID;
             var creator = elementCollectionInstanceController.LibraryElementModel.Creator;
 
+            //TODO redo read only or editable implementation
             if (elementCollectionInstanceController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly &&
                 userID != creator)
             {
-                SessionView.MakeWorkspaceReadonly();
+                Instance.MakeWorkspaceReadonly();
             }
             else
             {
-                SessionView.MakeWorkspaceEditable();
+                Instance.MakeWorkspaceEditable();
             }
 
             await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
 
             SessionView.ShowBlockingScreen(false);
+        }
 
-     
+
+        /// <summary>
+        /// Makes a workspace readonly by showing the readonly menu and modifying the modes
+        /// </summary>
+        public void MakeWorkspaceReadonly()
+        {
+            IsReadonly = true;
+        }
+
+        /// <summary>
+        /// Reverts a workspace back to editable by modifying ui elements and the session mode
+        /// </summary>
+        public void MakeWorkspaceEditable()
+        {
+            IsReadonly = false;
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)

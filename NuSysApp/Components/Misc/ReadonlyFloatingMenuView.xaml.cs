@@ -75,7 +75,7 @@ namespace NuSysApp
         private void RevertToNormalWorkspace()
         {
             // TODO implement
-            SessionController.Instance.SessionView.ToggleReadonly();
+            //SessionController.Instance.SessionView.ToggleReadonly();
         }
 
         /// <summary>

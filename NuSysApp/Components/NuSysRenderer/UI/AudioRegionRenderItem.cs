@@ -207,7 +207,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void RegionOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SessionController.Instance.SessionView.ShowDetailView(_controller);
+            SessionController.Instance.NuSessionView.ShowDetailView(_controller);
         }
 
         /// <summary>

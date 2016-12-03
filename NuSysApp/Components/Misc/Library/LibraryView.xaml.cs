@@ -555,19 +555,19 @@ namespace NuSysApp
         private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
           
-            // Since we are adding a collection, we should make the dragging rectangle reflect this
-            var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
-            view.LibraryDraggingRectangle.Show();
-            var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
+            //// Since we are adding a collection, we should make the dragging rectangle reflect this
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
+            //view.LibraryDraggingRectangle.Show();
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
 
-            // Make the rectangle movable and set its position
-            rect.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += _searchExportPos.X;
-            t.TranslateY += _searchExportPos.Y;
-            e.Handled = true;
+            //// Make the rectangle movable and set its position
+            //rect.RenderTransform = new CompositeTransform();
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += _searchExportPos.X;
+            //t.TranslateY += _searchExportPos.Y;
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -577,21 +577,21 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void XSearchExportButton_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            // Obtain the library dragging rectangle  
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
+            //// Obtain the library dragging rectangle  
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
 
             // Update its transform
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
 
-            // Update the position instance variable
-            _searchExportPos.X += e.Delta.Translation.X;
-            _searchExportPos.Y += e.Delta.Translation.Y;
+            //// Update the position instance variable
+            //_searchExportPos.X += e.Delta.Translation.X;
+            //_searchExportPos.Y += e.Delta.Translation.Y;
 
-            // Handled!
-            e.Handled = true;
+            //// Handled!
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -602,8 +602,8 @@ namespace NuSysApp
         private async void XSearchExportButton_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             // Hide the library dragging rect
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-            rect.Hide();
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            //rect.Hide();
 
             // Add a collection to the dropped location
             var wvm = SessionController.Instance.ActiveFreeFormViewer;

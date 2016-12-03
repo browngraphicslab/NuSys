@@ -68,9 +68,6 @@ namespace NuSysApp
         private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
-
-        public DetailViewMainContainer DetailViewer { get; set; }
-
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -137,20 +134,7 @@ namespace NuSysApp
             RenderEngine.Root.ClearChildren();
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
-            RenderEngine.Root.AddChild(InitialCollection);
-
-            DetailViewer = new DetailViewMainContainer(_renderRoot, RenderCanvas)
-            {
-                Width = 500,
-                Height = 500
-            };
-
-
-            DetailViewer.Transform.LocalPosition = new Vector2(300,300);
-
-            _renderRoot.AddChild(DetailViewer);
-
-            
+            RenderEngine.Root.AddChild(InitialCollection);   
 
             RenderEngine.Start();
 
@@ -210,7 +194,7 @@ namespace NuSysApp
             }
 
 
-            if (!SessionController.Instance.SessionView.IsReadonly) { 
+            if (!SessionController.IsReadonly) { 
                 _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
                 _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
@@ -900,14 +884,12 @@ namespace NuSysApp
                 }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                DetailViewer.ShowLibraryElement(libraryElementModelId);
-                //SessionController.Instance.SessionView.ShowDetailView(controller);
+                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                DetailViewer.ShowLibraryElement(libraryElementModelId);
-                //SessionController.Instance.SessionView.ShowDetailView(controller);
+                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             }
 
         }

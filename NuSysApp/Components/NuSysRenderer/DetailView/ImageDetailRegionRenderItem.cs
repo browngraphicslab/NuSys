@@ -195,7 +195,7 @@ namespace NuSysApp
         {
             if (!IsModifiable)
                 return;
-            SessionController.Instance.SessionView.ShowDetailView(_controller);
+            SessionController.Instance.NuSessionView.ShowDetailView(_controller);
         }
 
         public override Rect GetLocalBounds()

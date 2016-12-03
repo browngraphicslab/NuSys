@@ -109,11 +109,11 @@ namespace NuSysApp
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
 
 
-            BtnDelete.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
-            BtnGroup.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
+            BtnDelete.IsVisible = !SessionController.IsReadonly;
+            BtnGroup.IsVisible = !SessionController.IsReadonly;
             // Layout tool only available when editing more than one node
-            BtnLayoutTool.IsVisible = !SessionController.Instance.SessionView.IsReadonly && _selectedItems.Count > 1;
-            Resizer.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
+            BtnLayoutTool.IsVisible = !SessionController.IsReadonly && _selectedItems.Count > 1;
+            Resizer.IsVisible = !SessionController.IsReadonly;
 
             IsDirty = true;
         }

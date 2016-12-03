@@ -83,7 +83,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void _mainTabContainer_TabContainerClosed(object sender, EventArgs e)
         {
-            IsVisible = false;
+            HideDetailView();
         }
 
         /// <summary>
@@ -150,6 +150,14 @@ namespace NuSysApp
             _mainTabLayoutManager.ArrangeItems();
 
             base.Update(parentLocalToScreenTransform);
+        }
+
+        /// <summary>
+        /// hides the detail view so we can no longer see it
+        /// </summary>
+        public void HideDetailView()
+        {
+            IsVisible = false;
         }
     }
 }
