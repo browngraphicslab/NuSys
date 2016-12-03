@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media.Capture;
+using Windows.Media.Devices;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -41,9 +42,14 @@ namespace NuSysApp
         private RecordingType _currRecordingType;
 
         /// <summary>
-        /// Button which when selected starts the recording process.
+        /// Button which when selected starts the recording process or pauses it
         /// </summary>
-        private ButtonUIElement _recordButton;
+        private ButtonUIElement _recordPauseButton;
+
+        /// <summary>
+        /// Button which when selected stops the recording process
+        /// </summary>
+        private ButtonUIElement _stopButton;
 
         /// <summary>
         /// Text displaying what type of media the recording node is currently set up to record
@@ -66,6 +72,11 @@ namespace NuSysApp
         private CanvasBitmap _recordIcon;
 
         /// <summary>
+        /// Icon used to let the user pause the recording
+        /// </summary>
+        private CanvasBitmap _pauseIcon;
+
+        /// <summary>
         /// Icon used to inform the user that we are recording
         /// </summary>
         private CanvasBitmap _stopIcon;
@@ -74,15 +85,27 @@ namespace NuSysApp
         /// Media capture element that actually does the heavy lifting of recording audio and video
         /// </summary>
         private MediaCapture _mediaCapture;
-        /// <summary>
-        /// Random access stream for use with the mediaCapture
-        /// </summary>
-        private InMemoryRandomAccessStream _buffer;
 
         /// <summary>
-        /// boolean value that is true if we are recording false otherwise
+        /// Low lag media recording used for recording media to a file
+        /// </summary>
+        LowLagMediaRecording _mediaRecording;
+
+        /// <summary>
+        /// boolean value that is true if we are recording false otherwise, true if we are recording and paused.
         /// </summary>
         private bool _recording;
+
+        /// <summary>
+        /// boolean value that is true if we are recording and paused, false otherwise
+        /// </summary>
+        private bool _paused;
+
+        /// <summary>
+        /// File we are going to use to store our recorded data
+        /// </summary>
+        private StorageFile _file;
+        
 
         public RecordingNode(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
@@ -113,7 +136,7 @@ namespace NuSysApp
             AddChild(_mediaTypeSwitch);
 
             // add the record button and set default ui values
-            _recordButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
+            _recordPauseButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
             {
                 Height = 50,
                 Width = 50,
@@ -122,9 +145,22 @@ namespace NuSysApp
                 SelectedBorder = Colors.LightGray,
                 BorderWidth = 5
             };
-            _recordButton.ImageBounds = new Rect(_recordButton.Width / 4, _recordButton.Height / 4,
-                   _recordButton.Width / 2, _recordButton.Height / 2);
-            AddChild(_recordButton);
+            _recordPauseButton.ImageBounds = new Rect(_recordPauseButton.Width / 4, _recordPauseButton.Height / 4,
+                   _recordPauseButton.Width / 2, _recordPauseButton.Height / 2);
+            AddChild(_recordPauseButton);
+
+            _stopButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
+            {
+                Height = 50,
+                Width = 50,
+                Background = Colors.Red,
+                Bordercolor = Colors.Red,
+                SelectedBorder = Colors.LightGray,
+                BorderWidth = 5
+            };
+            _stopButton.ImageBounds = new Rect(_stopButton.Width / 4, _stopButton.Height / 4,
+                _stopButton.Width / 2, _stopButton.Height / 2);
+            AddChild(_stopButton);
 
             // add the currMediaType to display and set default ui values
             _textDisplayOfRecordingType = new TextboxUIElement(this, Canvas)
@@ -134,55 +170,74 @@ namespace NuSysApp
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center,
                 Height = 25,
-                Width = 100
+                Width = 250
             };
             AddChild(_textDisplayOfRecordingType);
 
             _mediaTypeSwitch.Tapped += MediaTypeSwitchOnTapped;
-            _recordButton.Tapped += RecordStopButtonOnTapped;
+            _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
+            _stopButton.Tapped += StopButtonOnTapped;
         }
 
         /// <summary>
-        /// Fired when the record button is tapped, starts recording and changes the ui
-        /// to reflect the current state. If we are already recording, stops the recording
-        /// and disposes of the recording node
+        /// Called when the stop button is tapped, stops whatever recording is being done
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void RecordStopButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void StopButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StopRecording();
+        }
+
+        /// <summary>
+        /// Cleans up and stops an audio recording, adding the recording audio to the collection
+        /// </summary>
+        private async void StopRecording()
+        {
+            await _mediaRecording.StopAsync();
+            await _mediaRecording.FinishAsync();
+
+            await UITask.Run(async () =>
+            {
+                // add the file to the library, getting the library elmeent controller of the newly added file
+                var libController = (await LibraryListUIElement.AddFile(new List<StorageFile> {_file})).FirstOrDefault();
+                Debug.Assert(libController != null);
+                // add the library element to the current collection
+                StaticServerCalls.AddElementToCurrentCollection(Transform.LocalPosition,
+                    _currRecordingType == RecordingType.Audio
+                        ? NusysConstants.ElementType.Audio
+                        : NusysConstants.ElementType.Video, libController);
+            });
+
+            RemoveFromParent();
+        }
+
+        /// <summary>
+        /// Starts recording if we are not recording, pauses or resumes recording if we are recording
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private async void Record_Pause_buttonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_recording)
             {
-                // if we are currently recording
-                switch (_currRecordingType)
+                // if paused, then unpause, otherwise pause the recording
+                if (_paused)
                 {
-                    case RecordingType.Audio:
-                        await StopRecordingAudio();
-                        break;
-                    case RecordingType.Video:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    ResumeRecording();
                 }
-
-                RemoveFromParent();
+                else
+                {
+                    PauseRecording();
+                }
             }
             else
             {
                 // if we are not currently recording
-                switch (_currRecordingType)
-                {
-                    case RecordingType.Audio:
-                        StartRecordingAudio();
-                        break;
-                    case RecordingType.Video:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                StartRecording();
             }
-
         }
+
 
         /// <summary>
         /// Removes the recording node from the parent which fires disposed automatically
@@ -193,74 +248,52 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Call this when you want to stop recording audio, this will dispose of the media capture, and add the audio recording
-        /// as an audio node to the collection below the point where the recording node is currently
+        /// Resume recording if we were paused
         /// </summary>
-        private async Task StopRecordingAudio()
+        private async void ResumeRecording()
         {
-            // stop the recording
-            await _mediaCapture.StopRecordAsync();
-            _recording = false;
-            
-            // set the ui for the new state now that we are not recording
+            // resume the recording
+            await _mediaRecording.ResumeAsync();
+            _paused = false;
+
+            // set the ui for the new state now that we are no longer paused
             SetUIForCurrentState();
-
-            List<string> newLibraryElementIds;
-
-            // read the data from the media capture stream to a buffer
-            IRandomAccessStream audio = _buffer.CloneStream();
-            Debug.Assert(audio!= null);
-
-
-            // store the buffer data as a file
-            var file = await NuSysStorages.NuSysTempFolder.CreateFileAsync("New Audio Recording.mp3", CreationCollisionOption.ReplaceExisting);
-            using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                await RandomAccessStream.CopyAndCloseAsync(audio.GetInputStreamAt(0), fileStream.GetOutputStreamAt(0));
-                await audio.FlushAsync();
-                audio.Dispose();
-            }
-
-            await UITask.Run(async() =>
-            {
-                // add the file to the library, getting the library elmeent controller of the newly added file
-                var libController = (await LibraryListUIElement.AddFile(new List<StorageFile> { file })).FirstOrDefault();
-                Debug.Assert(libController != null);
-                // add the library element to the current collection
-                StaticServerCalls.AddElementToCurrentCollection(Transform.LocalPosition, NusysConstants.ElementType.Audio, libController);
-            });
-
-            
-            // dispose of the mediacapture and buffer and file
-            _mediaCapture?.Dispose();
-            _buffer?.Dispose();
-            file.DeleteAsync();
         }
 
         /// <summary>
-        /// Call this when you want to start recording audio, this will create a media capture and start audio recording
+        /// Pauses recording if we were currently recording
         /// </summary>
-        private async void StartRecordingAudio()
+        private async void PauseRecording()
         {
-            // dispose of the current buffer and media capture if necessary
-            _buffer?.Dispose();
-            _buffer = new InMemoryRandomAccessStream();
+            // pause the recording
+            await _mediaRecording.PauseAsync(MediaCapturePauseBehavior.RetainHardwareResources);
+            _paused = true;
+
+            // set the ui for the new state now that we are paused
+            SetUIForCurrentState();
+        }
+
+        /// <summary>
+        /// Starts recording audio or video setting up everthing safely
+        /// </summary>
+        private async void StartRecording()
+        {
+            // dispose of the current _mediaCapture if necessary
             _mediaCapture?.Dispose();
 
-            try {
+
+            try
+            {
                 // initialize a new media capture for recording audio
                 var settings = new MediaCaptureInitializationSettings
                 {
-                    StreamingCaptureMode = StreamingCaptureMode.Audio
+                    StreamingCaptureMode = _currRecordingType == RecordingType.Audio ? StreamingCaptureMode.Audio : StreamingCaptureMode.AudioAndVideo
                 };
                 _mediaCapture = new MediaCapture();
                 await _mediaCapture.InitializeAsync(settings);
 
-                // set a delegate to stop recording when we reach recording limit
-                _mediaCapture.RecordLimitationExceeded += sender =>
-                {
-                    StopRecordingAudio();
-                };
+                // set a method to stop recording when we reach recording limit
+                _mediaCapture.RecordLimitationExceeded += OnMediaCaptureRecordLimitationExceeded;
 
                 // set a delegate to output information when the media capture fails
                 _mediaCapture.Failed += (sender, errorEventArgs) =>
@@ -268,6 +301,18 @@ namespace NuSysApp
                     _recording = false;
                     throw new Exception(string.Format("Code: {0}. {1}", errorEventArgs.Code, errorEventArgs.Message));
                 };
+
+                // create a file we are goign to record into
+                var fileName = _currRecordingType == RecordingType.Audio
+                    ? "New Audio Recording.mp3"
+                    : "New Video Recording.mp4";
+                _file = await NuSysStorages.NuSysTempFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+
+                // prepare a low lag media recording object to record to the file
+                var profile = _currRecordingType == RecordingType.Audio
+                    ? MediaEncodingProfile.CreateMp3(AudioEncodingQuality.High)
+                        : MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto);
+                _mediaRecording = await _mediaCapture.PrepareLowLagRecordToStorageFileAsync(profile, _file);
             }
             catch (Exception ex)
             {
@@ -280,23 +325,34 @@ namespace NuSysApp
             }
 
             // start recording to the stream
-            await _mediaCapture.StartRecordToStreamAsync(MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Auto), _buffer);
+            await _mediaRecording.StartAsync();
             _recording = true;
 
             // set the ui to reflect that we are currently recording
             SetUIForCurrentState();
         }
 
+        /// <summary>
+        /// Stop recording audio when we have exceeded the record limitation
+        /// </summary>
+        /// <param name="sender"></param>
+        private void OnMediaCaptureRecordLimitationExceeded(MediaCapture sender)
+        {
+            StopRecording();
+        }
+
         public override void Dispose()
         {
             _mediaTypeSwitch.Tapped -= MediaTypeSwitchOnTapped;
-            _recordButton.Tapped -= RecordStopButtonOnTapped;
+            _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
+            _stopButton.Tapped -= StopButtonOnTapped;
+            _mediaCapture.RecordLimitationExceeded -= OnMediaCaptureRecordLimitationExceeded;
             _mediaCapture?.Dispose();
-            _buffer?.Dispose();
             _audioIcon?.Dispose(); // TODO not sure if disposing of these images is necessary
             _recordIcon?.Dispose();
             _stopIcon?.Dispose();
             _videoIcon?.Dispose();
+            _file?.DeleteAsync();
             base.Dispose();
         }
 
@@ -334,10 +390,10 @@ namespace NuSysApp
             _stopIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_stop.png"));
             _videoIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_video.png"));
             _audioIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/record.png"));
+            _pauseIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_pause.png"));
 
             // set the ui for the _currMediatype, this should already be set in the constructor to audio
             SetUIForCurrentState();
-            ArrangeElements();
 
             base.Load();
         }
@@ -350,8 +406,18 @@ namespace NuSysApp
             _mediaTypeSwitch.Transform.LocalPosition = new Vector2(Width/2 - _mediaTypeSwitch.Width/2, Height/2 - _mediaTypeSwitch.Height/2);
             // put the _currMediaTypeDisplay just below the center of the record node
             _textDisplayOfRecordingType.Transform.LocalPosition = new Vector2(Width/2 - _textDisplayOfRecordingType.Width/2, Height/2 - _textDisplayOfRecordingType.Height/2 + _mediaTypeSwitch.Height/2 + 20);
-            // put the record button in the bottom of the record ndoe
-            _recordButton.Transform.LocalPosition = new Vector2(Width/2 - _recordButton.Width/2, Height - _recordButton.Height - 10);
+
+            // put the record button in the bottom of the record node
+            _recordPauseButton.Transform.LocalPosition = new Vector2(Width/2 - _recordPauseButton.Width/2, Height - _recordPauseButton.Height - 10);
+            // put the stop button in the bottom of the record node
+            _stopButton.Transform.LocalPosition = new Vector2(Width/2 - _stopButton.Width/2, Height - _stopButton.Height - 10);
+
+            // if we are currently recording shift the stop and record buttons so they are next to eachother
+            if (_recording)
+            {
+                _stopButton.Transform.LocalPosition -= new Vector2(_stopButton.Width, 0);
+                _recordPauseButton.Transform.LocalPosition += new Vector2(_recordPauseButton.Width, 0);
+            }
         }
 
 
@@ -360,14 +426,17 @@ namespace NuSysApp
         /// </summary>
         private void SetUIForCurrentState()
         {
-
             if (_recording)
             {
-                _recordButton.Image = _stopIcon;
+                _stopButton.IsVisible = true;
+                _recordPauseButton.Image = _paused ? _recordIcon : _pauseIcon;
+                _stopButton.Image = _stopIcon;
+                _textDisplayOfRecordingType.Text = _paused ? "Press Record to Continue, Stop to Finish" : "Press Pause to Pause, Stop to Finish";
             }
             else
             {
-                _recordButton.Image = _recordIcon;
+                _stopButton.IsVisible = false;
+                _recordPauseButton.Image = _recordIcon;
                 switch (_currRecordingType)
                 {
                     case RecordingType.Audio:
@@ -383,6 +452,8 @@ namespace NuSysApp
                 }
             }
 
+            // arrange the elements for the current state
+            ArrangeElements();
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
