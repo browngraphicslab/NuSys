@@ -160,7 +160,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Adds the passed in button to the top bar at the passed in button position
+        /// Adds the passed in button to the top bar at the passed in button position, also adds the button as a child so do not
+        /// add the button as a child elsewhere. The button's size is automatically set
         /// </summary>
         /// <param name="button"></param>
         /// <param name="position"></param>
