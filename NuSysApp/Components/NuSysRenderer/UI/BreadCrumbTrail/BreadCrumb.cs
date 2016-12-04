@@ -12,17 +12,17 @@ namespace NuSysApp
     /// <summary>
     /// BreadCrumb Data Object used to stored the necessary data to display the bread crumb
     /// </summary>
-    public class BreadCrumb
+    public class BreadCrumb : IDisposable
     {
         /// <summary>
         /// The element model associated with the bread crumb, null if the bread crumb represents a collection
         /// </summary>
-        public ElementModel ElementModel { get; }
+        public ElementController ElementController { get; }
 
         /// <summary>
         /// The id of the parent collection the breadcrumb was found in
         /// </summary>
-        public string CollectionId { get; }
+        public LibraryElementController CollectionController { get; }
 
         /// <summary>
         /// True if the breadcrumb represents going to a new collection. For example when we enter a workspace
@@ -42,29 +42,39 @@ namespace NuSysApp
 
         public ICanvasResourceCreator ResourceCreator { get; set; }
 
-        /// <summary>
-        /// The collection id is the id of the collection if thebreadcrumb represents a collection,
-        /// otherwise the id of the parent collection for the element model.
-        /// </summary>
-        /// <param name="collectionId"></param>
-        /// <param name="resourceCreator"></param>
-        /// <param name="model"></param>
-        public BreadCrumb(string collectionId, ICanvasResourceCreator resourceCreator, ElementModel model = null)
+        public delegate void OnBreadCrumbDeletedHandler(BreadCrumb sender);
+
+        public event OnBreadCrumbDeletedHandler Deleted; 
+
+
+        public BreadCrumb(LibraryElementController collectionController, ICanvasResourceCreator resourceCreator, ElementController controller = null)
         {
             // set default values
-            ElementModel = model;
-            CollectionId = collectionId;
+            ElementController = controller;
+            CollectionController = collectionController;
 
             // its a collection if there is no element model
-            IsCollection = model == null;
+            IsCollection = controller == null;
 
             // set the color of the breadcrumb based on the hash of the collection controller's library element id
-            Color = MediaUtil.GetHashColorFromString(CollectionId);
+            Color = MediaUtil.GetHashColorFromString(CollectionController.LibraryElementModel.LibraryElementId);
 
             ResourceCreator = resourceCreator;
+
+            CollectionController.Deleted += OnBreadCrumbDeleted;
+            if (ElementController != null)
+            {
+                ElementController.Deleted += OnBreadCrumbDeleted;
+            }
         }
 
-        
+        private void OnBreadCrumbDeleted(object sender)
+        {
+            Deleted?.Invoke(this);
+
+        }
+
+
 
         /// <summary>
         /// Load the breadcrumb
@@ -74,17 +84,11 @@ namespace NuSysApp
         {
             if (!IsCollection)
             {
-                var controller =
-                    SessionController.Instance.ContentController.GetLibraryElementController(ElementModel.LibraryId);
-
-                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, controller.SmallIconUri);
+                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, ElementController.LibraryElementController.SmallIconUri);
             }
             else
             {
-                var controller =
-                    SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
-
-                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, controller.SmallIconUri);
+                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, CollectionController.SmallIconUri);
             }
 
         }
@@ -97,12 +101,21 @@ namespace NuSysApp
         /// <returns></returns>
         public static bool operator ==(BreadCrumb a, BreadCrumb b)
         {
-            return a?.CollectionId == b?.CollectionId && a?.ElementModel == b?.ElementModel;
+            return a?.CollectionController == b?.CollectionController && a?.ElementController == b?.ElementController;
         }
 
         public static bool operator !=(BreadCrumb a, BreadCrumb b)
         {
             return !(a == b);
+        }
+
+        public void Dispose()
+        {
+            CollectionController.Deleted -= OnBreadCrumbDeleted;
+            if (ElementController != null)
+            {
+                ElementController.Deleted -= OnBreadCrumbDeleted;
+            }
         }
     }
 }

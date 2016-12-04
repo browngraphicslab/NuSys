@@ -513,9 +513,9 @@ namespace NuSysApp
                 SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
             }
 
-
+            var controller = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
             // add the bread crumb for the collection
-            Instance.NuSessionView.TrailBox.AddBreadCrumb(collectionLibraryId);
+            Instance.NuSessionView.TrailBox.AddBreadCrumb(controller);
 
             SessionView.ShowBlockingScreen(false);
         }

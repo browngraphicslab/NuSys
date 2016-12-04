@@ -76,7 +76,7 @@ namespace NuSysApp
             {
                 Width = Width,
                 Height = 15,
-                Background = Colors.DarkGray
+                Background = Colors.DimGray
             };
             AddChild(_scrollBar);
             _scrollBar.Transform.LocalPosition = new Vector2(0, Height - _scrollBar.Height);
@@ -150,6 +150,11 @@ namespace NuSysApp
                 }
             }
 
+            foreach (var crumb in _breadCrumbData.ToArray())
+            {
+                crumb.Deleted -= OnBreadCrumbDeleted;
+            }
+
             _scrollBar.Tapped -= OnScrollBarTapped;
             _scrollHandle.DragStarted -= OnScrollHandleDragStarted;
             _scrollHandle.Dragged -= OnScrollHandleDragged;
@@ -175,19 +180,32 @@ namespace NuSysApp
             refreshUI = true;
         }
 
-        public async void AddBreadCrumb(string collectionId, ElementModel model = null)
+        public async void AddBreadCrumb(LibraryElementController collectionController, ElementController controller = null)
         {
             var lastCrumb = _breadCrumbData.LastOrDefault();
-            var newCrumb = new BreadCrumb(collectionId, Canvas, model);
+            var newCrumb = new BreadCrumb(collectionController, Canvas, controller);
             if (lastCrumb == newCrumb)
             {
+                newCrumb.Dispose();
                 return;
             }
             await newCrumb.Load();
+            newCrumb.Deleted += OnBreadCrumbDeleted;
 
             _breadCrumbData.Add(newCrumb);
             ComputeScrollHandleSize();
             _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
+            refreshUI = true;
+        }
+
+        /// <summary>
+        /// Called whenever an element associated with a breadcrumb is deleted
+        /// </summary>
+        /// <param name="source"></param>
+        private void OnBreadCrumbDeleted(BreadCrumb sender)
+        {
+            _breadCrumbData.Remove(sender);
+            ComputeScrollHandleSize();
             refreshUI = true;
         }
 
@@ -221,6 +239,7 @@ namespace NuSysApp
             // update the position of the scroll bar so the crop rect is maintained
             var normalizedOffset = _cropRect.Left/_totalPathWidth;
             _scrollHandle.Transform.LocalPosition = new Vector2((float) normalizedOffset * Width, _scrollHandle.Transform.LocalY);
+            BoundScrollHandle();
         }
 
         public void ReRender()
@@ -243,7 +262,7 @@ namespace NuSysApp
             Vector2 upperLeft = new Vector2(BreadCrumbUIElement.DefaultSpacing, 0);
             Vector2 lowerRight = new Vector2(upperLeft.X + BreadCrumbUIElement.DefaultWidth, upperLeft.Y + BreadCrumbUIElement.DefaultHeight);
             Vector2 diff = new Vector2(BreadCrumbUIElement.DefaultWidth + BreadCrumbUIElement.DefaultSpacing, 0);
-            foreach (var crumb in _breadCrumbData)
+            foreach (var crumb in _breadCrumbData.ToArray())
             {
                 if (IsPartiallyContained(upperLeft, lowerRight, _cropRect))
                 {
@@ -287,7 +306,7 @@ namespace NuSysApp
             Debug.Assert(crumb != null);
 
             // if the crumb we clicked on is in the current collection
-            if (crumb.CollectionId == SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId)
+            if (crumb.CollectionController.LibraryElementModel == SessionController.Instance.CurrentCollectionLibraryElementModel)
             {
                 // and if the crumb is not the current collection
                 if (!crumb.IsCollection)
@@ -296,7 +315,7 @@ namespace NuSysApp
                     {
                         // move the camera to the element the crumb represents
                         SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
-                            crumb.ElementModel.Id);
+                            crumb.ElementController.Id);
                     });
                 }
             }
@@ -305,7 +324,7 @@ namespace NuSysApp
                 // otherwise enter the collection and try to zoom in on the element model that the crumb represents
                 UITask.Run(() =>
                 {
-                    SessionController.Instance.EnterCollection(crumb.CollectionId, crumb.ElementModel?.Id);
+                    SessionController.Instance.EnterCollection(crumb.CollectionController.LibraryElementModel.LibraryElementId, crumb.ElementController?.Id);
                 });
             }
         }
