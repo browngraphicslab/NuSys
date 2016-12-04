@@ -240,7 +240,23 @@ namespace NuSysApp
                     case NusysConstants.ElementType.Text:
                         break;
                     case NusysConstants.ElementType.Tools:
-                        Debug.Assert(false);
+
+                        // add a tool to the workspace
+                        var model = new BasicToolModel();
+                        var controller = new BasicToolController(model);
+                        UITask.Run(() =>
+                        {
+                            var viewModel = new BasicToolViewModel(controller)
+                            {
+                                Filter = ToolModel.ToolFilterTypeTitle.Title,
+                                Width = 500,
+                                Height = 500,
+                                X = collectionPoint.X,
+                                Y = collectionPoint.Y
+                            };
+                            SessionController.Instance.ActiveFreeFormViewer.AddTool(viewModel);
+                        });
+
                         return; // return after this we are not creating content
                     case NusysConstants.ElementType.Recording:
                         AddRecordingNode(screenPoint);
@@ -296,6 +312,8 @@ namespace NuSysApp
 
             await elementRequest.AddReturnedElementToSessionAsync();
         }
+
+
 
 
         /// <summary>
