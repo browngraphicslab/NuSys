@@ -355,6 +355,8 @@
     <Compile Include="Components\NuSysRenderer\UI\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumb.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumbContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ChatBox\ChatBoxUIElement.cs" />
