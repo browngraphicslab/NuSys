@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -32,16 +33,23 @@ namespace NuSysApp
         /// <summary>
         /// The color of the breadcrumb
         /// </summary>
-        public Color Color;
+        public Color Color { get; }
 
+        /// <summary>
+        /// Preview icon for the breadcrumb
+        /// </summary>
+        public CanvasBitmap Icon { get; private set; }
+
+        public ICanvasResourceCreator ResourceCreator { get; set; }
 
         /// <summary>
         /// The collection id is the id of the collection if thebreadcrumb represents a collection,
         /// otherwise the id of the parent collection for the element model.
         /// </summary>
         /// <param name="collectionId"></param>
+        /// <param name="resourceCreator"></param>
         /// <param name="model"></param>
-        public BreadCrumb(string collectionId, ElementModel model = null)
+        public BreadCrumb(string collectionId, ICanvasResourceCreator resourceCreator, ElementModel model = null)
         {
             // set default values
             ElementModel = model;
@@ -52,6 +60,33 @@ namespace NuSysApp
 
             // set the color of the breadcrumb based on the hash of the collection controller's library element id
             Color = MediaUtil.GetHashColorFromString(CollectionId);
+
+            ResourceCreator = resourceCreator;
+        }
+
+        
+
+        /// <summary>
+        /// Load the breadcrumb
+        /// </summary>
+        /// <returns></returns>
+        public async Task Load()
+        {
+            if (!IsCollection)
+            {
+                var controller =
+                    SessionController.Instance.ContentController.GetLibraryElementController(ElementModel.LibraryId);
+
+                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, controller.SmallIconUri);
+            }
+            else
+            {
+                var controller =
+                    SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
+
+                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, controller.SmallIconUri);
+            }
+
         }
 
         /// <summary>

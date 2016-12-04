@@ -24,6 +24,11 @@ namespace NuSysApp
         private TextboxUIElement _userNameRect;
 
         /// <summary>
+        /// True if the container has already been loaded false otherwise
+        /// </summary>
+        private bool _loaded;
+
+        /// <summary>
         ///  The user id of the current user name that is being displayed in the _userNameRect
         /// </summary>
         private string _currentUserNameDisplayed_userid;
@@ -50,6 +55,11 @@ namespace NuSysApp
 
         public override Task Load()
         {
+            if (_loaded)
+            {
+                return base.Load(); 
+            }
+
             // add all the curent users to the workspace
             foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
             {
@@ -59,6 +69,8 @@ namespace NuSysApp
             // add events so users are added and removed dynamically
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
             SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += DropNetworkUser;
+
+            _loaded = true;
             return base.Load();
         }
 

@@ -107,7 +107,7 @@ namespace NuSysApp
         private void MainBackgroundDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var normalizedDiff = pointer.Delta.X/_totalPathWidth;
-            var _scrollDiff = normalizedDiff*Width;
+            var _scrollDiff = -normalizedDiff*Width;
             _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(_scrollDiff, 0);
             BoundScrollHandle();
             refreshUI = true;
@@ -175,14 +175,15 @@ namespace NuSysApp
             refreshUI = true;
         }
 
-        public void AddBreadCrumb(string collectionId, ElementModel model = null)
+        public async void AddBreadCrumb(string collectionId, ElementModel model = null)
         {
             var lastCrumb = _breadCrumbData.LastOrDefault();
-            var newCrumb = new BreadCrumb(collectionId, model);
+            var newCrumb = new BreadCrumb(collectionId, Canvas, model);
             if (lastCrumb == newCrumb)
             {
                 return;
             }
+            await newCrumb.Load();
 
             _breadCrumbData.Add(newCrumb);
             ComputeScrollHandleSize();
@@ -269,8 +270,6 @@ namespace NuSysApp
         private void RemoveCrumbEvents(BreadCrumbUIElement breadCrumb)
         {
             breadCrumb.Tapped -= BreadCrumb_Tapped;
-            breadCrumb.DragStarted -= MainBackgroundOnDragStarted;
-            breadCrumb.Dragged -= MainBackgroundDragged;
         }
 
         /// <summary>
@@ -280,8 +279,6 @@ namespace NuSysApp
         private void AddCrumbEvents(BreadCrumbUIElement breadCrumb)
         {
             breadCrumb.Tapped += BreadCrumb_Tapped;
-            breadCrumb.DragStarted += MainBackgroundOnDragStarted;
-            breadCrumb.Dragged += MainBackgroundDragged;
         }
 
         private void BreadCrumb_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)

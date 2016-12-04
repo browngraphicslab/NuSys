@@ -216,9 +216,6 @@ namespace NuSysApp
         /// </summary>
         private async void BackToWaitingRoomOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            // clear all the users from the user bubble container
-            _userBubbleContainer.ClearUsers();
-
             // for now this has to be done on the ui thread because it deals with xaml elements
             UITask.Run(async () =>
             {

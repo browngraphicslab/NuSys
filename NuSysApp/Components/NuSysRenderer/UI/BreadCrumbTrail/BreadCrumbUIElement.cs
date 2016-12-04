@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
@@ -15,12 +16,12 @@ namespace NuSysApp
         /// <summary>
         /// The default width of the breadcrumb ui element
         /// </summary>
-        public static float DefaultWidth = 25;
+        public static float DefaultWidth = 100;
 
         /// <summary>
         /// The default height of the breadcrumb ui element
         /// </summary>
-        public static float DefaultHeight = 25;
+        public static float DefaultHeight = 100;
 
         /// <summary>
         /// The default spacing between breadcrumb ui elements
@@ -32,11 +33,12 @@ namespace NuSysApp
         public BreadCrumbUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BreadCrumb crumb) : base(parent, resourceCreator, GetShapeFromController(parent, resourceCreator, crumb))
         {
             Crumb = crumb;
-            BorderWidth = 5;
             Width = DefaultWidth;
             Height = DefaultHeight;
-            Background = Colors.Transparent;
+            Image = crumb.Icon;
+            BorderWidth = 5;
             Bordercolor = crumb.Color;
+            ImageBounds = new Rect(BorderWidth, BorderWidth, Width - 2*BorderWidth, Height - 2*BorderWidth);
 
         }
 
