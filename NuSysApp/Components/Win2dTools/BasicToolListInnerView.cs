@@ -13,7 +13,7 @@ namespace NuSysApp
         private ListViewUIElementContainer<string> _listView;
         public BasicToolListInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
         {
-            Background = Colors.Green;
+            Background = Colors.White;
             SetUpList();
         }
 
@@ -24,7 +24,7 @@ namespace NuSysApp
         {
             _listView = new ListViewUIElementContainer<string>(this, ResourceCreator);
             _listView.ShowHeader = false;
-            _listView.RowBorderThickness = 1;
+            _listView.RowBorderThickness = 0;
             _listView.DisableSelectionByClick = true;
             var listColumn = new ListTextColumn<string>();
             listColumn.Title = "Title";
