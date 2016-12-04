@@ -94,20 +94,43 @@ namespace NuSysApp
             _scrollBar.Tapped += OnScrollBarTapped;
             _scrollHandle.DragStarted += OnScrollHandleDragStarted;
             _scrollHandle.Dragged += OnScrollHandleDragged;
+
+            Dragged += MainBackgroundDragged;
+            DragStarted += MainBackgroundOnDragStarted;
+        }
+
+        private void MainBackgroundOnDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _scrollHandleInitialDragPosition = _scrollHandle.Transform.LocalPosition;
+        }
+
+        private void MainBackgroundDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var normalizedDiff = pointer.Delta.X/_totalPathWidth;
+            var _scrollDiff = normalizedDiff*Width;
+            _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(_scrollDiff, 0);
+            BoundScrollHandle();
+            refreshUI = true;
+        }
+
+        private void BoundScrollHandle()
+        {
+            // bound the handle to the bounds
+            if (_scrollHandle.Transform.LocalPosition.X < 0)
+            {
+                _scrollHandle.Transform.LocalPosition = new Vector2(0, _scrollHandle.Transform.LocalY);
+            }
+            else if (_scrollHandle.Transform.LocalPosition.X + _scrollHandle.Width > Width)
+            {
+                _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
+            }
         }
 
         private void OnScrollHandleDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(pointer.Delta.X, 0);
+            BoundScrollHandle();
 
-            // bound the handle to the bounds
-            if (_scrollHandle.Transform.LocalPosition.X < 0)
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(0, _scrollHandle.Transform.LocalY);
-            } else if (_scrollHandle.Transform.LocalPosition.X + _scrollHandle.Width > Width)
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
-            }
 
             refreshUI = true;
         }
@@ -130,6 +153,8 @@ namespace NuSysApp
             _scrollBar.Tapped -= OnScrollBarTapped;
             _scrollHandle.DragStarted -= OnScrollHandleDragStarted;
             _scrollHandle.Dragged -= OnScrollHandleDragged;
+            Dragged += MainBackgroundDragged;
+            DragStarted += MainBackgroundOnDragStarted;
             base.Dispose();
         }
 
@@ -244,6 +269,8 @@ namespace NuSysApp
         private void RemoveCrumbEvents(BreadCrumbUIElement breadCrumb)
         {
             breadCrumb.Tapped -= BreadCrumb_Tapped;
+            breadCrumb.DragStarted -= MainBackgroundOnDragStarted;
+            breadCrumb.Dragged -= MainBackgroundDragged;
         }
 
         /// <summary>
@@ -253,6 +280,8 @@ namespace NuSysApp
         private void AddCrumbEvents(BreadCrumbUIElement breadCrumb)
         {
             breadCrumb.Tapped += BreadCrumb_Tapped;
+            breadCrumb.DragStarted += MainBackgroundOnDragStarted;
+            breadCrumb.Dragged += MainBackgroundDragged;
         }
 
         private void BreadCrumb_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
