@@ -102,11 +102,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected override void RectangleButtonUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        public override void OnDragged(CanvasPointer pointer)
         {
             var startX = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix).X;
 
-            if (_borderBeingDragged == false && _beingDragged == false)
+            if (_borderBeingDragged == false)
             {
                 if (startX < BorderWidth)
                 {
@@ -126,11 +126,8 @@ namespace NuSysApp
                 Debug.Assert(_edgeBeingDragged != null);
                 HeaderResizing?.Invoke(this, pointer, _edgeBeingDragged);
             }
-            else
-            {
-                base.RectangleButtonUIElement_Dragged(item, pointer);
 
-            }
+            base.OnDragged(pointer);
         }
 
         /// <summary>
@@ -138,7 +135,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected override void RectangleButtonUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        public override void OnReleased(CanvasPointer pointer)
         {
             if (_borderBeingDragged)
             {
@@ -147,10 +144,8 @@ namespace NuSysApp
                 HeaderResizeCompleted?.Invoke(this, pointer, _edgeBeingDragged);
                 return;
             }
-            else
-            {
-                base.RectangleButtonUIElement_Released(item, pointer);
-            }
+
+            base.OnReleased(pointer);
         }
 
         /// <summary>
@@ -158,13 +153,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected override void RectangleButtonUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        public override void OnPressed(CanvasPointer pointer)
         {
             var currentX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
 
-            if (_beingDragged == false && currentX > BorderWidth && currentX < Width - BorderWidth)
+            if (currentX > BorderWidth && currentX < Width - BorderWidth)
             {
-                base.RectangleButtonUIElement_Pressed(item, pointer);
+                base.OnPressed(pointer);
                 return;
             }
         }
