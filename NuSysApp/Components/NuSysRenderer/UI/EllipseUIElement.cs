@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -91,6 +92,16 @@ namespace NuSysApp
         public override Color Bordercolor { get; set; }
 
         /// <summary>
+        /// The image to draw on the ellipse
+        /// </summary>
+        public override ICanvasImage Image { get; set; }
+
+        /// <summary>
+        /// The image bounds, which the image will scale to fill
+        /// </summary>
+        public override Rect? ImageBounds { get; set; }
+
+        /// <summary>
         /// The center of the ellipse
         /// </summary>
         private Vector2 CenterPoint => new Vector2(Width/2, Height/2);
@@ -110,6 +121,9 @@ namespace NuSysApp
 
             // draw the background of the ellipse
             DrawBackground(ds);
+
+            // draw the image on the background of the ellipse
+            DrawImage(ds);
 
             // draw the border in the ellipse
             DrawBorder(ds);
@@ -147,6 +161,27 @@ namespace NuSysApp
 
             ds.FillEllipse(CenterPoint, _radiusX, _radiusY, Background);
 
+            ds.Transform = orgTransform;
+        }
+
+        /// <summary>
+        /// Draws the image on the Rectangle UIElement
+        /// </summary>
+        /// <param name="ds"></param>
+        protected override void DrawImage(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            if (Image != null)
+            {
+                using (ds.CreateLayer(1, CanvasGeometry.CreateEllipse(Canvas, CenterPoint, _radiusX, _radiusY)))
+                {
+                    ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+
+                }
+            }
+            
             ds.Transform = orgTransform;
         }
 

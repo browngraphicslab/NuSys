@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -83,6 +84,16 @@ namespace NuSysApp
         public override Color Bordercolor { get; set; }
 
         /// <summary>
+        /// The image to display on the rounded rectangle
+        /// </summary>
+        public override ICanvasImage Image { get; set; }
+
+        /// <summary>
+        /// the bounds of the image on the rounded rectangle, the image scales to fill these bounds
+        /// </summary>
+        public override Rect? ImageBounds { get; set; }
+
+        /// <summary>
         /// The radius of the corner of the Rectangle
         /// </summary>
         private float _radius;
@@ -116,6 +127,8 @@ namespace NuSysApp
 
             // draw the background of the rectangle
             DrawBackground(ds);
+
+            DrawImage(ds);
 
             // draw the border in the rectangle
             DrawBorder(ds);
@@ -152,6 +165,25 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             ds.FillRoundedRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Radius, Radius, Background);
+
+            ds.Transform = orgTransform;
+        }
+
+        protected override void DrawImage(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            if (Image != null)
+            {
+                using (
+                    ds.CreateLayer(1,
+                        CanvasGeometry.CreateRoundedRectangle(Canvas, BorderWidth/2, BorderWidth/2, Width - BorderWidth,
+                            Height - BorderWidth, Radius, Radius)))
+                {
+                    ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                }
+            }
 
             ds.Transform = orgTransform;
         }

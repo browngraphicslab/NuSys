@@ -96,8 +96,12 @@ namespace NuSysApp
         /// <summary>
         /// The image to be displayed on the button
         /// </summary>
-        public CanvasBitmap Image { get; set;  }
-        
+        public override ICanvasImage Image
+        {
+            get { return Shape.Image; }
+            set { Shape.Image = value; }
+        }
+
         /// <summary>
         /// The color of the text on the button
         /// </summary>
@@ -123,8 +127,11 @@ namespace NuSysApp
         /// The image is drawn within these bounds, unless it is set to null
         ///  in which case the image is drawn in the local bounds used for hit testing
         /// </summary>
-        public Rect? ImageBounds { get; set; }
-
+        public override Rect? ImageBounds
+        {
+            get { return Shape.ImageBounds; }
+            set { Shape.ImageBounds = value; }
+        }
 
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
@@ -236,29 +243,9 @@ namespace NuSysApp
             // Delegate drawing to the shape.
             base.Draw(ds);
 
-
-
-            // draw the text on the button
-            DrawButtonImage(ds);
             DrawButtonText(ds);
         }
-        
-
-        public virtual void DrawButtonImage(CanvasDrawingSession ds)
-        {
-            var orgTransform = ds.Transform;
-            ds.Transform = Shape.Transform.LocalToScreenMatrix;
-
-            if (Image != null)
-            {
-
-                ds.DrawImage(Image, ImageBounds ?? GetLocalBounds());
-
-            }
-
-            ds.Transform = orgTransform;
-        }
-
+    
         public virtual void DrawButtonText(CanvasDrawingSession ds)
         {
             // save the current transform of the drawing session
@@ -298,6 +285,11 @@ namespace NuSysApp
         protected override void DrawBackground(CanvasDrawingSession ds)
         {
             //This has been left empty as the shape draws it's own background. 
+        }
+
+        protected override void DrawImage(CanvasDrawingSession ds)
+        {
+            //This has been left empty as the shape draws it's own image. 
         }
 
         /// <summary>

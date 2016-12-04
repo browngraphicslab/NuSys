@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -44,7 +45,9 @@ namespace NuSysApp
         /// <summary>
         /// The image to be displayed on the rectangle
         /// </summary>
-        public ICanvasImage Image { get; set; }
+        public override ICanvasImage Image { get; set; }
+
+        public override Rect? ImageBounds { get; set; }
 
         /// <summary>
         /// The height of the rectangle
@@ -109,6 +112,7 @@ namespace NuSysApp
             // draw the background of the rectangle
             DrawBackground(ds);
 
+            // draw the image over the background
             DrawImage(ds);
 
             // draw the border in the rectangle
@@ -138,14 +142,15 @@ namespace NuSysApp
         /// Draws the image on the Rectangle UIElement
         /// </summary>
         /// <param name="ds"></param>
-        public virtual void DrawImage(CanvasDrawingSession ds)
+        protected override void DrawImage(CanvasDrawingSession ds)
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
             if (Image != null)
             {
-                ds.DrawImage(Image, GetLocalBounds(), Image.GetBounds(Canvas));
+                using(ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
+                ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
             }
 
             ds.Transform = orgTransform;

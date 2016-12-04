@@ -38,7 +38,7 @@ namespace NuSysApp
             Image = crumb.Icon;
             BorderWidth = 5;
             Bordercolor = crumb.Color;
-            ImageBounds = new Rect(BorderWidth, BorderWidth, Width - 2*BorderWidth, Height - 2*BorderWidth);
+            ImageBounds = new Rect(0, 0, Width, Height);
 
         }
 

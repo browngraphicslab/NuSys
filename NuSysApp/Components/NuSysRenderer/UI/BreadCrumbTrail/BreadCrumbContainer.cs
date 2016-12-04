@@ -298,23 +298,14 @@ namespace NuSysApp
                         SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
                             crumb.ElementModel.Id);
                     });
-
                 }
-            }
-            // otherwise if the crumb is a collection then enter it
-            else if (crumb.IsCollection)
-            {
-                UITask.Run(() =>
-                {
-                    SessionController.Instance.EnterCollection(crumb.CollectionId);
-                });
             }
             else
             {
+                // otherwise enter the collection and try to zoom in on the element model that the crumb represents
                 UITask.Run(() =>
                 {
-                    // if the crumb is in another collection and represents an element, enter that collection and go to that element
-                    SessionController.Instance.EnterCollection(crumb.CollectionId, crumb.ElementModel.Id);
+                    SessionController.Instance.EnterCollection(crumb.CollectionId, crumb.ElementModel?.Id);
                 });
             }
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -50,6 +51,18 @@ namespace NuSysApp
         public abstract Color Bordercolor { get; set; }
 
         /// <summary>
+        /// The image which can be drawn on the UIElement
+        /// </summary>
+        public abstract ICanvasImage Image { get; set; }
+
+
+        /// <summary>
+        /// The bounds the image will be scaled to fill, if null will use localbounds
+        /// </summary>
+        public abstract Rect? ImageBounds { get; set; }
+
+
+        /// <summary>
         /// Draws the Border around the UI Element
         /// </summary>
         /// <param name="ds"></param>
@@ -60,6 +73,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="ds"></param>
         protected abstract void DrawBackground(CanvasDrawingSession ds);
+
+        /// <summary>
+        /// Draw the Image on the background of the UIElement
+        /// </summary>
+        /// <param name="ds"></param>
+        protected abstract void DrawImage(CanvasDrawingSession ds);
 
 
         public override void OnPressed(CanvasPointer pointer)
