@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -13,14 +14,14 @@ namespace NuSysApp
     public class BreadCrumb
     {
         /// <summary>
-        /// The library element controller associated with this bread crumb
+        /// The element model associated with the bread crumb, null if the bread crumb represents a collection
         /// </summary>
-        public LibraryElementController Controller { get; }
+        public ElementModel ElementModel { get; }
 
         /// <summary>
-        /// The controller for the collection the breadcrumb was found in
+        /// The id of the parent collection the breadcrumb was found in
         /// </summary>
-        public LibraryElementController CollectionController { get; }
+        public string CollectionId { get; }
 
         /// <summary>
         /// True if the breadcrumb represents going to a new collection. For example when we enter a workspace
@@ -33,27 +34,40 @@ namespace NuSysApp
         /// </summary>
         public Color Color;
 
+
         /// <summary>
-        /// Creates a new breadcrumb data object, the controller is the controller associated with the breadcrumb, the collection controller
-        /// is the controller for the collection the breadcrumb was found on. To create a breadcrumb when entering a new collection just pass
-        /// the library element controller and collection library elment controller for that new collection
+        /// The collection id is the id of the collection if thebreadcrumb represents a collection,
+        /// otherwise the id of the parent collection for the element model.
         /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="collectionController"></param>
-        /// <param name="isCollection"></param>
-        public BreadCrumb(LibraryElementController controller, LibraryElementController collectionController)
+        /// <param name="collectionId"></param>
+        /// <param name="model"></param>
+        public BreadCrumb(string collectionId, ElementModel model = null)
         {
             // set default values
-            Controller = controller;
-            CollectionController = collectionController;
+            ElementModel = model;
+            CollectionId = collectionId;
 
-            // its a collection if the collection controller and library element controller are the same
-            IsCollection = collectionController.LibraryElementModel.LibraryElementId ==
-                           Controller.LibraryElementModel.LibraryElementId;
+            // its a collection if there is no element model
+            IsCollection = model == null;
 
             // set the color of the breadcrumb based on the hash of the collection controller's library element id
-            Color = MediaUtil.GetHashColorFromString(CollectionController.LibraryElementModel.LibraryElementId);
+            Color = MediaUtil.GetHashColorFromString(CollectionId);
+        }
 
+        /// <summary>
+        /// override the equality operator
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator ==(BreadCrumb a, BreadCrumb b)
+        {
+            return a?.CollectionId == b?.CollectionId && a?.ElementModel == b?.ElementModel;
+        }
+
+        public static bool operator !=(BreadCrumb a, BreadCrumb b)
+        {
+            return !(a == b);
         }
     }
 }

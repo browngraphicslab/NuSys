@@ -899,8 +899,8 @@ namespace NuSysApp
         {
             AddToSelections(element);
             // add the bread crumb
-            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(element.ViewModel.Controller.LibraryElementController,
-                SessionController.Instance.ContentController.GetLibraryElementController(element.ViewModel.Controller.GetParentCollectionId()));
+            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(element.ViewModel.Model.ParentCollectionId, element.ViewModel.Model);
+            
         }
 
         public void AddToSelections(ElementRenderItem element)

@@ -557,5 +557,60 @@ namespace NuSysApp
                 }
             }
         }
+
+        /// <summary>
+        /// Zooms the camera to the passed in elementModelId
+        /// </summary>
+        /// <param name="elementModelId"></param>
+        public void CenterCameraOnElement(string elementModelId)
+        {
+            var elementToBeFullScreened =
+                SessionController.Instance.ActiveFreeFormViewer.Elements.FirstOrDefault(
+                    elem => elem.Id == elementModelId);
+            Debug.Assert(elementToBeFullScreened != null);
+
+            // Define some variables that will be used in future translation/scaling
+            var nodeWidth = elementToBeFullScreened.Width;
+            var nodeHeight = elementToBeFullScreened.Height; // 40 for title adjustment
+
+            var x = elementToBeFullScreened.X + nodeWidth / 2;
+            var y = elementToBeFullScreened.Y + nodeHeight / 2;
+            var widthAdjustment = ViewModel.Width / 2;
+            var heightAdjustment = ViewModel.Height / 2;
+
+            // Reset the scaling and translate the free form viewer so that the passed in element is at the center
+            var scaleX = 1;
+            var scaleY = 1;
+            var translateX = widthAdjustment - x;
+            var translateY = heightAdjustment - y;
+            double scale;
+
+
+            // Scale based on the width and height proportions of the current node
+            if (nodeWidth > nodeHeight)
+            {
+                scale = ViewModel.Width / nodeWidth;
+                if (nodeWidth - nodeHeight <= 20)
+                    scale = scale * .50;
+                else
+                    scale = scale * .55;
+            }
+
+
+            else
+            {
+                scale = ViewModel.Height / nodeHeight;
+                scale = scale * .7;
+            }
+
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition = new Vector2((float)translateX, (float)translateY);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2((float)x, (float)y);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale = new Vector2((float)scale, (float)scale);
+            //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float)translateX, (float)translateY);
+            //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)x, (float)y);
+            //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)scale;
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?.UpdateDryInkTransform();
+            SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+        }
     }
 }

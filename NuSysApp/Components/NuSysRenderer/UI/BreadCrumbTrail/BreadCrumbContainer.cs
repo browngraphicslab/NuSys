@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -9,6 +10,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -117,6 +119,14 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            foreach (var child in GetChildren())
+            {
+                if (child is BreadCrumbUIElement)
+                {
+                    RemoveCrumbEvents(child as BreadCrumbUIElement);
+                }
+            }
+
             _scrollBar.Tapped -= OnScrollBarTapped;
             _scrollHandle.DragStarted -= OnScrollHandleDragStarted;
             _scrollHandle.Dragged -= OnScrollHandleDragged;
@@ -140,9 +150,16 @@ namespace NuSysApp
             refreshUI = true;
         }
 
-        public void AddBreadCrumb(LibraryElementController controller, LibraryElementController parentCollectionController)
+        public void AddBreadCrumb(string collectionId, ElementModel model = null)
         {
-            _breadCrumbData.Add(new BreadCrumb(controller, parentCollectionController));
+            var lastCrumb = _breadCrumbData.LastOrDefault();
+            var newCrumb = new BreadCrumb(collectionId, model);
+            if (lastCrumb == newCrumb)
+            {
+                return;
+            }
+
+            _breadCrumbData.Add(newCrumb);
             ComputeScrollHandleSize();
             _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
             refreshUI = true;
@@ -192,6 +209,7 @@ namespace NuSysApp
             // dispose of all the previous bread crumbs
             foreach (var breadCrumb in _visibleBreadCrumbs)
             {
+                RemoveCrumbEvents(breadCrumb);
                 RemoveChild(breadCrumb); // fires the dispose method automatically
             }
 
@@ -206,12 +224,72 @@ namespace NuSysApp
                     var breadCrumb = new BreadCrumbUIElement(this, Canvas, crumb);
                     breadCrumb.Transform.LocalPosition = new Vector2((float) (upperLeft.X - _cropRect.Left), Height/2 - BreadCrumbUIElement.DefaultHeight/2);
                     _visibleBreadCrumbs.Add(breadCrumb);
+                    AddCrumbEvents(breadCrumb);
                     AddChild(breadCrumb);
                 }
 
                 // shift the positions for the new calculations
                 upperLeft += diff;
                 lowerRight += diff;
+            }
+
+
+            refreshUI = false;
+        }
+
+        /// <summary>
+        /// Remove events from the bread crumb ui
+        /// </summary>
+        /// <param name="breadCrumb"></param>
+        private void RemoveCrumbEvents(BreadCrumbUIElement breadCrumb)
+        {
+            breadCrumb.Tapped -= BreadCrumb_Tapped;
+        }
+
+        /// <summary>
+        /// Add events to the bread crumb ui
+        /// </summary>
+        /// <param name="breadCrumb"></param>
+        private void AddCrumbEvents(BreadCrumbUIElement breadCrumb)
+        {
+            breadCrumb.Tapped += BreadCrumb_Tapped;
+        }
+
+        private void BreadCrumb_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var crumb = (item as BreadCrumbUIElement)?.Crumb;
+            Debug.Assert(crumb != null);
+
+            // if the crumb we clicked on is in the current collection
+            if (crumb.CollectionId == SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId)
+            {
+                // and if the crumb is not the current collection
+                if (!crumb.IsCollection)
+                {
+                    UITask.Run(() =>
+                    {
+                        // move the camera to the element the crumb represents
+                        SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
+                            crumb.ElementModel.Id);
+                    });
+
+                }
+            }
+            // otherwise if the crumb is a collection then enter it
+            else if (crumb.IsCollection)
+            {
+                UITask.Run(() =>
+                {
+                    SessionController.Instance.EnterCollection(crumb.CollectionId);
+                });
+            }
+            else
+            {
+                UITask.Run(() =>
+                {
+                    // if the crumb is in another collection and represents an element, enter that collection and go to that element
+                    SessionController.Instance.EnterCollection(crumb.CollectionId, crumb.ElementModel.Id);
+                });
             }
         }
 

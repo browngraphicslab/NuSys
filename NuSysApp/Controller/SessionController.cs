@@ -342,9 +342,6 @@ namespace NuSysApp
             });
         }
 
-
-
-
         public async Task<String> TranscribeVoice()
         {
             string spokenString = "";
@@ -409,12 +406,13 @@ namespace NuSysApp
         /// <summary>
         /// method to enter a collection from anywhere.  
         /// The id is the libraryElementId of the collection you want to enter. 
-        /// 
+        /// The elementModelId is the id of the element model you wish to zoom in on in that collection
         /// THis method will take care of all the clearing and crap for you, just call it with the id you want to use.
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="elementModelId"></param>
         /// <returns></returns>
-        public async Task EnterCollection(string collectionLibraryId)
+        public async Task EnterCollection(string collectionLibraryId, string elementModelId = null)
         {
             //SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
             SessionView.ShowBlockingScreen(true);
@@ -510,10 +508,14 @@ namespace NuSysApp
             }
 
             await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
+            if (elementModelId != null)
+            {
+                SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
+            }
+
 
             // add the bread crumb for the collection
-            var collectionController = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
-            Instance.NuSessionView.TrailBox.AddBreadCrumb(collectionController, collectionController);
+            Instance.NuSessionView.TrailBox.AddBreadCrumb(collectionLibraryId);
 
             SessionView.ShowBlockingScreen(false);
         }

@@ -27,8 +27,11 @@ namespace NuSysApp
         /// </summary>
         public static float DefaultSpacing = 25;
 
+        public BreadCrumb Crumb { get; }
+
         public BreadCrumbUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BreadCrumb crumb) : base(parent, resourceCreator, GetShapeFromController(parent, resourceCreator, crumb))
         {
+            Crumb = crumb;
             BorderWidth = 5;
             Width = DefaultWidth;
             Height = DefaultHeight;
@@ -44,13 +47,12 @@ namespace NuSysApp
         /// <returns></returns>
         private static BaseInteractiveUIElement GetShapeFromController(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BreadCrumb crumb)
         {
-            switch (crumb.Controller.LibraryElementModel.Type)
+            if (crumb.IsCollection)
             {
-                case NusysConstants.ElementType.Collection:
-                    return new RectangleUIElement(parent, resourceCreator);
-                default:
-                    return new EllipseUIElement(parent, resourceCreator);
+                return new RectangleUIElement(parent, resourceCreator);
             }
+
+            return new EllipseUIElement(parent, resourceCreator);
         }
     }
 }
