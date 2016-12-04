@@ -889,6 +889,16 @@ namespace NuSysApp
         /// <returns></returns>
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
+            var r = new Rect(0, 0, Width, Height);
+
+            var pt = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
+            if (!r.Contains(pt.ToPoint()))
+            {
+                return null;
+            }
+
+
+                
             //If scroll bar is hit, return that instead of the row underneath.
             var scrollBarht = ScrollBar.HitTest(screenPoint);
             if(scrollBarht != null)

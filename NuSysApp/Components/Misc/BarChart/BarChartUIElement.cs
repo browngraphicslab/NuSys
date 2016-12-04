@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 using Windows.UI;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace NuSysApp
 {
@@ -22,18 +23,21 @@ namespace NuSysApp
 
 
 
-        public delegate void BarChartElementReleasedEventHandler(BarChartElement bar, CanvasPointer pointer);
-        public event BarChartElementReleasedEventHandler BarReleased;
+        //public delegate void BarChartElementTappedEventHandler(BarChartElement bar, CanvasPointer pointer);
+        //public event BarChartElementReleasedEventHandler BarTapped;
 
+
+        private bool _isDragging;
         public BarChartUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            Title = "My Bar Chart";
             Palette = new List<Color>(new[] { Colors.Red, Colors.Blue, Colors.Green, Colors.Yellow });
-            Background = Colors.Transparent;
-            //Palette = new List<Color>(new[] { Colors.DarkSalmon, Colors.Azure, Colors.LemonChiffon, Colors.Honeydew, Colors.Pink });
+            Background = Colors.LightBlue;
             AddElement("Kiana", 8);
             AddElement("John", 3);
             AddElement("Henri", 5);
-
+            Padding = 50;
+            _isDragging = false;
 
         }
 
@@ -54,7 +58,12 @@ namespace NuSysApp
         {
             var bar = item as BarChartElement;
             Debug.Assert(bar != null);
-            BarReleased?.Invoke(bar, pointer);
+
+            if (_isDragging)
+            {
+                //BarReleased?.Invoke(bar, pointer);
+
+            }
         }
 
         private void Element_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -66,11 +75,43 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            DrawBars(ds);
-            DrawTitle(ds);
-
             base.Draw(ds);
 
+            DrawBars(ds);
+            DrawTitle(ds);
+            DrawScale(ds);
+
+
+        }
+
+        private void DrawScale(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+            var numLines = 10f;
+
+            for (int i = 0; i < numLines; i++)
+            {
+                var point0 = new Vector2(0,  Height - Padding - Height*i/numLines);
+                var point1 = new Vector2(10, Height - Padding - Height* i/numLines);
+
+                ds.DrawLine(point0, point1, Colors.Black);
+
+                var p = point1;
+                var text = "4";
+                ds.DrawText(
+                    text,
+                    p,
+                    Colors.Black,
+                    new Microsoft.Graphics.Canvas.Text.CanvasTextFormat
+                    {
+                        FontSize = 12,
+                        HorizontalAlignment = Microsoft.Graphics.Canvas.Text.CanvasHorizontalAlignment.Right
+                    });
+
+            }
+
+            ds.Transform = orgTransform;
 
         }
 
@@ -82,6 +123,16 @@ namespace NuSysApp
 
         private void DrawTitle(CanvasDrawingSession ds)
         {
+            var p = new Vector2(0, Padding - 5);
+                ds.DrawText(
+        Title,
+        p,
+        Colors.Black,
+        new Microsoft.Graphics.Canvas.Text.CanvasTextFormat
+        {
+            FontSize = 12,
+            HorizontalAlignment = Microsoft.Graphics.Canvas.Text.CanvasHorizontalAlignment.Left
+        });
 
         }
         private void DrawBars(CanvasDrawingSession ds)
@@ -98,11 +149,9 @@ namespace NuSysApp
                 element.Height = element.Value / total * h;
                 var w = Width - Padding * 2;
                 element.Width = w / (_children.Count * 2);
-                element.Transform.LocalPosition = new System.Numerics.Vector2(offset, h * 2 /3 - element.Height);
+                element.Transform.LocalPosition = new System.Numerics.Vector2(offset, Height - Padding - element.Height);
                 offset += 100;
             }
-
-
             ds.Transform = orgTransform;
 
         }

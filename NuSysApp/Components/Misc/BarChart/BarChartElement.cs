@@ -46,7 +46,7 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            var p = new Vector2(0, 250);
+            var p = new Vector2(Width/2, Height + 20);
             var text = Item;
             ds.DrawText(
                 text,
@@ -54,7 +54,8 @@ namespace NuSysApp
                 Colors.Black,
                 new Microsoft.Graphics.Canvas.Text.CanvasTextFormat
                 {
-                    FontSize = 12
+                    FontSize = 12,
+                    HorizontalAlignment = CanvasHorizontalAlignment.Center
                 });
 
 
