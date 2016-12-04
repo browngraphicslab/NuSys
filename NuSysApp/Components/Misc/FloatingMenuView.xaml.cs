@@ -343,14 +343,23 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Text:
                     break;
                 case NusysConstants.ElementType.Tools:
-                    BasicToolModel model = new BasicToolModel();
-                    BasicToolController controller = new BasicToolController(model);
-                    BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+                    //BasicToolModel model = new BasicToolModel();
+                    //BasicToolController controller = new BasicToolController(model);
+                    //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+                    //viewmodel.Width = 500;
+                    //viewmodel.Height = 500;
+                    //viewmodel.X = position.X;
+                    //viewmodel.Y = position.Y;
+                    //viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+                    //vm.AddTool(viewmodel);
+                    MetadataToolModel model = new MetadataToolModel();
+                    MetadataToolController controller = new MetadataToolController(model);
+                    MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+                    viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
                     viewmodel.Width = 500;
                     viewmodel.Height = 500;
                     viewmodel.X = position.X;
                     viewmodel.Y = position.Y;
-                    viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
                     vm.AddTool(viewmodel);
                     return;
                 case NusysConstants.ElementType.Recording:

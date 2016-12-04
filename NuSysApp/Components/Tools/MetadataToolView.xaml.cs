@@ -562,7 +562,7 @@ namespace NuSysApp
                     }
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+                //vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
         }
 
@@ -701,7 +701,7 @@ namespace NuSysApp
             if (filter != ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
 
-                (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
+                //(DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
                 this.Dispose();
             }
         }

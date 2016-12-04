@@ -511,6 +511,10 @@ namespace NuSysApp
 
             await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
 
+            // add the bread crumb for the collection
+            var collectionController = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
+            Instance.NuSessionView.TrailBox.AddBreadCrumb(collectionController, collectionController);
+
             SessionView.ShowBlockingScreen(false);
         }
 

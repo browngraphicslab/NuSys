@@ -17,7 +17,7 @@ namespace NuSysApp
     {
         private FloatingMenu _floatingMenu;
 
-        private ButtonUIElement _currCollDetailViewButton;
+        //private ButtonUIElement _currCollDetailViewButton;
 
         private ButtonUIElement _chatButton;
 
@@ -31,6 +31,8 @@ namespace NuSysApp
 
         private DetailViewMainContainer _detailViewer;
 
+        public BreadCrumbContainer TrailBox;
+
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
@@ -40,16 +42,19 @@ namespace NuSysApp
             _floatingMenu = new FloatingMenu(this, canvas);
             AddChild(_floatingMenu);
 
-            _currCollDetailViewButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
-            {
-                Width = 50,
-                Height = 50,
-                Background = Colors.Transparent,
-                BorderWidth = 3,
-                SelectedBorder = Colors.LightGray,
-                Bordercolor = Colors.Transparent
-            };
-            AddChild(_currCollDetailViewButton);
+            //_currCollDetailViewButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
+            //{
+            //    Width = 50,
+            //    Height = 50,
+            //    Background = Colors.Transparent,
+            //    BorderWidth = 3,
+            //    SelectedBorder = Colors.LightGray,
+            //    Bordercolor = Colors.Transparent
+            //};
+            //AddChild(_currCollDetailViewButton);
+
+            TrailBox = new BreadCrumbContainer(this, Canvas);
+            AddChild(TrailBox);
 
             _chatButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
             {
@@ -106,7 +111,7 @@ namespace NuSysApp
             AddChild(_detailViewer);
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
-            _currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
+            //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped;
             _chatButton.Tapped += ChatButtonOnTapped;
             _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
@@ -147,7 +152,7 @@ namespace NuSysApp
             Height = (float) e.NewSize.Height;
 
             _floatingMenu.Transform.LocalPosition = new Vector2(Width / 4 - _floatingMenu.Width/2, Height / 4 - _floatingMenu.Height/2);
-            _currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
+            //_currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
             _chatButton.Transform.LocalPosition = new Vector2(10, Height - _chatButton.Height - 10);
             _snapshotButton.Transform.LocalPosition = new Vector2(10, 10);
             _chatBox.Transform.LocalPosition = new Vector2(10, Height - _chatBox.Height - 70);
@@ -156,6 +161,7 @@ namespace NuSysApp
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
             _detailViewer.Width = Width;
+            TrailBox.Transform.LocalPosition = new Vector2(Width - TrailBox.Width, 0);
         }
 
         /// <summary>
@@ -167,8 +173,8 @@ namespace NuSysApp
         public override async Task Load()
         {
             // set the image for the _currCollDetailViewbutton
-            _currCollDetailViewButton.Image = _currCollDetailViewButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/info.png"));
-            _currCollDetailViewButton.ImageBounds = new Rect(_currCollDetailViewButton.Width/4, _currCollDetailViewButton.Height/4, _currCollDetailViewButton.Width/2, _currCollDetailViewButton.Height/2);
+            //_currCollDetailViewButton.Image = _currCollDetailViewButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/info.png"));
+            //_currCollDetailViewButton.ImageBounds = new Rect(_currCollDetailViewButton.Width/4, _currCollDetailViewButton.Height/4, _currCollDetailViewButton.Width/2, _currCollDetailViewButton.Height/2);
 
             // set the image for the _chatButton
             _chatButton.Image = _chatButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
@@ -188,7 +194,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             Canvas.SizeChanged -= OnMainCanvasSizeChanged;
-            _currCollDetailViewButton.Tapped -= OnCurrCollDetailViewButtonTapped;
+            //_currCollDetailViewButton.Tapped -= OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped -= SnapShotButtonTapped;
             base.Dispose();
         }

@@ -516,7 +516,7 @@ namespace NuSysApp
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
 
-                Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+                //Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
         }
 
@@ -532,7 +532,7 @@ namespace NuSysApp
             if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
 
-                Vm.SwitchToAllMetadataTool();
+                //Vm.SwitchToAllMetadataTool();
                 this.Dispose();
             }
         }

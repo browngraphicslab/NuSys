@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using MyToolkit.Converters;
 using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
@@ -70,39 +72,76 @@ namespace NuSysApp
 
         private const int PARENT_OPERATOR_BUTTON_WIDTH = 150;
 
+        private const int MIN_HEIGHT = 300;
 
+        private const int MIN_WIDTH = 200;
+
+        public override float Width
+        {
+            set
+            {
+                if (value > MIN_WIDTH)
+                {
+                    base.Width = value;
+                }
+            }
+        }
+
+        public override float Height
+        {
+            set
+            {
+                if (value > MIN_HEIGHT)
+                {
+                    base.Height = value;
+                }
+            }
+        }
+
+        private bool _setUpComponents;
 
         /// <summary>
         /// The rectangle at the bottom of the tool window
         /// </summary>
         protected RectangleUIElement ButtonBarRectangle;
 
-        protected ToolViewModel Vm;
+        public ToolViewModel Vm { get; private set; }
 
         private const int BUTTON_MARGIN = 10;
         public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(parent, resourceCreator)
         {
+            //Set up draggable and resizable attributes
+            TopBarColor = Constants.color3;
+            KeepAspectRatio = false;
+
             Vm = vm;
             SetUpButtons();
             SetUpFilterDropDown();
             SetUpDraggableIcons();
             SetUpBottomButtonBar();
-            vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
+            Vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
+            this.BorderWidth = 0;
             Height = (float)Vm.Height;
             Width = (float)Vm.Width;
             Transform.LocalX = (float)Vm.X;
             Transform.LocalY = (float)Vm.Y;
         }
+        
+
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
+        {
+            return base.HitTest(screenPoint);
+        }
 
 
         public override void Dispose()
         {
-            base.Dispose();
+            //TODO: Remove the tool window as a child
             _filterChooserDropdownButton.Tapped -= _dropdownButton_OnPressed;
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
             Vm.Dispose();
-
+            base.Dispose();
         }
 
         /// <summary>
@@ -113,6 +152,7 @@ namespace NuSysApp
             if (numOfParents > 1)
             {
                 _parentOperatorButton.IsVisible = true;
+                _parentOperatorButton.ButtonText = Vm.Controller.Model.ParentOperator.ToString();
             }
             else
             {
@@ -127,12 +167,12 @@ namespace NuSysApp
         {
             ButtonBarRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.Azure,
+                Background = Constants.color1,
                 Height = BUTTON_BAR_HEIGHT,
                 Width = Width
             };
             ButtonBarRectangle.Transform.LocalPosition = new Vector2(0, Height - BUTTON_BAR_HEIGHT);
-            //AddChild(ButtonBarRectangle);
+            AddChild(ButtonBarRectangle);
         }
 
         /// <summary>
@@ -140,52 +180,86 @@ namespace NuSysApp
         /// </summary>
         private void SetUpDraggableIcons()
         {
-            //Sets up button to be dragged
+            //Sets collection button to be dragged
             var collectionRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.Green,
+                Background = Colors.Transparent,
                 Height = 50,
                 Width = 50,
             };
-            _draggableCollectionElement = new ButtonUIElement(this, ResourceCreator, collectionRectangle);
+            _draggableCollectionElement = new ButtonUIElement(this, ResourceCreator, collectionRectangle)
+            {
+                ButtonText = "collection",
+                ButtonTextSize = 10,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextColor = Constants.color3
+            };
+            _draggableCollectionElement.ImageBounds = new Rect(_draggableCollectionElement.Width/4,
+                _draggableCollectionElement.Height/4, _draggableCollectionElement.Width/2,
+                _draggableCollectionElement.Height/2);
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
             _draggableCollectionElement.Dragged += CollectionOrStack_Dragging;
             _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted;
-            //AddChild(_draggableCollectionElement);
+            AddChild(_draggableCollectionElement);
 
             //sets up icon to show under pointer while dragging
             _collectionDragIcon = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.Green,
-                Height = 50, 
-                Width = 50
+                Background = Colors.Transparent,
+                Height = 30, 
+                Width = 30
             };
             _collectionDragIcon.IsVisible = false;
-            //AddChild(_collectionDragIcon);
+            AddChild(_collectionDragIcon);
 
 
-            //Set up button to be dragged
+            //Set up stack button to be dragged
             var stackRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.Purple,
+                Background = Colors.Transparent,
                 Height = 50,
                 Width = 50,
             };
-            _draggableStackElement = new ButtonUIElement(this, ResourceCreator, stackRectangle);
+            _draggableStackElement = new ButtonUIElement(this, ResourceCreator, stackRectangle)
+            {
+                ButtonText = "stack",
+                ButtonTextSize = 10,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextColor = Constants.color3
+            };
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
+            _draggableStackElement.ImageBounds = new Rect(_draggableStackElement.Width/4, _draggableStackElement.Height/4, _draggableStackElement.Width/2, _draggableStackElement.Height/2);
             _draggableStackElement.Dragged += CollectionOrStack_Dragging;
             _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted;
-            //AddChild(_draggableStackElement);
+            AddChild(_draggableStackElement);
 
             //sets up icon to show under pointer while dragging
             _stackDragIcon = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.Purple,
-                Height = 50,
-                Width = 50
+                Background = Colors.Transparent,
+                Height = 30,
+                Width = 30
             };
             _stackDragIcon.IsVisible = false;
-            //AddChild(_stackDragIcon);
+            AddChild(_stackDragIcon);
+
+            UITask.Run(async delegate
+            {
+                _draggableCollectionElement.Image =
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+
+                _collectionDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+
+                _draggableStackElement.Image =
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+
+
+
+                _stackDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+
+            });
 
         }
 
@@ -245,13 +319,13 @@ namespace NuSysApp
         /// </summary>
         private void SetUpFilterDropDown()
         {
-            _filterChooserDropdownButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator));
-            _filterChooserDropdownButton.ButtonText = "fdsafd";
+            _filterChooserDropdownButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator) {Height = 100, Width = 500, Background = Constants.color1});
+            _filterChooserDropdownButton.ButtonText = Vm.Filter.ToString();
             _filterChooserDropdownButton.Width = Width;
             _filterChooserDropdownButton.Height = FILTER_CHOOSER_HEIGHT;
-            _filterChooserDropdownButton.ButtonTextColor = Colors.Black;
-            _filterChooserDropdownButton.BorderWidth = 2;
-            _filterChooserDropdownButton.Bordercolor = Colors.Black;
+            _filterChooserDropdownButton.ButtonTextColor = Constants.color3;
+            _filterChooserDropdownButton.BorderWidth = 0;
+            _filterChooserDropdownButton.Bordercolor = Constants.color3;
             _filterChooserDropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _filterChooserDropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed; ;
@@ -268,7 +342,7 @@ namespace NuSysApp
 
             _filterChooser.IsVisible = false;
             _filterChooser.Transform.LocalPosition = new Vector2(0, TopBarHeight + _filterChooserDropdownButton.Height);
-            //AddChild(_filterChooser);
+            AddChild(_filterChooser);
         }
 
 
@@ -300,19 +374,31 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void FilterChooserItem_Clicked(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void FilterChooserItem_Clicked(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             var item = interactiveBaseRenderItem as ButtonUIElement;
             Debug.Assert(item != null);
 
             _filterChooser.IsVisible = false;
-            _filterChooserDropdownButton.ButtonText = item.ButtonText;
-            var vm = Vm as BasicToolViewModel;
-            vm.Filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item.ButtonText);
-            if (vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
+            //var vm = Vm as BasicToolViewModel;
+            var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item.ButtonText);
+            var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)Transform.Position.X, (float)Transform.Position.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+            if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
-                vm.SwitchToAllMetadataTool();
+                //TODO: I think dispose is getting called before switching to all metadata tool
+                await Vm.SwitchToAllMetadataTool((float)canvasCoordinate.X, (float)canvasCoordinate.Y);
                 this.Dispose();
+            }
+            else if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
+            {
+                await Vm.SwitchToBasicTool(filter, (float)canvasCoordinate.X, (float)canvasCoordinate.Y);
+                this.Dispose();
+            }
+            else
+            {
+                Vm.Filter = filter;
+                _filterChooserDropdownButton.ButtonText = item.ButtonText;
+
             }
         }
 
@@ -324,40 +410,56 @@ namespace NuSysApp
         /// <summary>
         /// Initializes the parent operator, delete and refresh buttons
         /// </summary>
-        private void SetUpButtons()
+        private async Task SetUpButtons()
         {
             var parentOperatorRectangle = new RectangleUIElement(this, ResourceCreator)
             {
                 Height = PARENT_OPERATOR_BUTTON_HEIGHT,
                 Width = PARENT_OPERATOR_BUTTON_WIDTH,
-                Background = Colors.Red
             };
             _parentOperatorButton = new ButtonUIElement(this, ResourceCreator, parentOperatorRectangle);
             _parentOperatorButton.Transform.LocalY = -PARENT_OPERATOR_BUTTON_HEIGHT;
             _parentOperatorButton.ButtonText = "AND";
+            _parentOperatorButton.ButtonTextColor = Colors.Black;
+            _parentOperatorButton.IsVisible = false;
             _parentOperatorButton.Tapped += _parentOperatorButton_Tapped;
-            //AddChild(_parentOperatorButton);
+            AddChild(_parentOperatorButton);
+
 
             var deleteCircleShape = new EllipseUIElement(this, ResourceCreator)
             {
-                Background = Colors.Red,
+                Background = Constants.color1,
                 Width = 50,
                 Height = 50,
             };
             _deleteButton = new ButtonUIElement(this, ResourceCreator, deleteCircleShape);
-            _deleteButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width / 2), _deleteButton.Height / 2 + BUTTON_MARGIN);
-            //AddChild(_deleteButton);
+            _deleteButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/delete.png"));
+            _deleteButton.ImageBounds = new Rect(_deleteButton.Width/4, _deleteButton.Height/4, _deleteButton.Width/2, _deleteButton.Height/2);
+            _deleteButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Height / 2 + BUTTON_MARGIN);
+            _deleteButton.Tapped += _deleteButton_Tapped;
+            AddChild(_deleteButton);
 
             var refreshCircleShape = new EllipseUIElement(this, ResourceCreator)
             {
-                Background = Colors.Blue,
+                Background = Constants.color1,
                 Width = 50,
                 Height = 50,
             };
             _refreshButton = new ButtonUIElement(this, ResourceCreator, refreshCircleShape);
+            _refreshButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/refresh icon.png"));
+            _refreshButton.ImageBounds = new Rect(_refreshButton.Width / 4, _refreshButton.Height / 4, _refreshButton.Width / 2, _refreshButton.Height / 2);
             _refreshButton.Tapped += _refreshButton_Tapped;
             _refreshButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Transform.LocalY + _deleteButton.Height + BUTTON_MARGIN);
-            //AddChild(_refreshButton);
+            AddChild(_refreshButton);
+        }
+        /// <summary>
+        /// When the delete button is tapped, call the dispose method
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void _deleteButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        {
+            Dispose();
         }
 
         /// <summary>
@@ -394,22 +496,35 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {            
             //Make the width of the filter chooser and the button always fill the window
-            if (_filterChooser.Width != Width)
+            if (_filterChooser != null)
             {
-                _filterChooser.Width = Width;
-                _filterChooser.Layout();
+                if (_filterChooser.Width != Width)
+                {
+                    _filterChooser.Width = Width;
+                    _filterChooser.Layout();
+                }
+                _filterChooserDropdownButton.Width = Width;
             }
-            _filterChooserDropdownButton.Width = Width;
 
-            _parentOperatorButton.Transform.LocalX = Width / 2 - _parentOperatorButton.Width/2;
 
-            //Set up draggable collection and stack elements local position.
-            _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN), _draggableCollectionElement.Height / 2 + BUTTON_MARGIN);
-            _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN), _draggableCollectionElement.Transform.LocalY + _draggableCollectionElement.Height + BUTTON_MARGIN);
+            if (_parentOperatorButton != null)
+            {
+                _parentOperatorButton.Transform.LocalX = Width / 2 - _parentOperatorButton.Width / 2;
+            }
 
-            //Set up button bar at the bottom of tool
-            ButtonBarRectangle.Transform.LocalY = this.Height - BUTTON_BAR_HEIGHT;
-            ButtonBarRectangle.Width = Width;
+            if (_draggableCollectionElement != null)
+            {
+                //Set up draggable collection and stack elements local position.
+                _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN), _draggableCollectionElement.Height / 2 + BUTTON_MARGIN);
+                _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN), _draggableCollectionElement.Transform.LocalY + _draggableCollectionElement.Height + BUTTON_MARGIN);
+            }
+
+            if (ButtonBarRectangle != null)
+            {
+                //Set up button bar at the bottom of tool
+                ButtonBarRectangle.Transform.LocalY = this.Height - BUTTON_BAR_HEIGHT;
+                ButtonBarRectangle.Width = Width;
+            }
 
             base.Update(parentLocalToScreenTransform);
         }

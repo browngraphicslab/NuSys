@@ -27,13 +27,13 @@ namespace NuSysApp
         /// </summary>
         public static float DefaultSpacing = 25;
 
-        public BreadCrumbUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, CollectionLibraryElementController baseCollection) : base(parent, resourceCreator, GetShapeFromController(parent, resourceCreator, controller))
+        public BreadCrumbUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BreadCrumb crumb) : base(parent, resourceCreator, GetShapeFromController(parent, resourceCreator, crumb))
         {
             BorderWidth = 5;
             Width = DefaultWidth;
             Height = DefaultHeight;
             Background = Colors.Transparent;
-            Bordercolor = MediaUtil.GetHashColorFromString(baseCollection.LibraryElementModel.LibraryElementId);
+            Bordercolor = crumb.Color;
 
         }
 
@@ -42,10 +42,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="controller"></param>
         /// <returns></returns>
-        private static BaseInteractiveUIElement GetShapeFromController(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller)
+        private static BaseInteractiveUIElement GetShapeFromController(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BreadCrumb crumb)
         {
-            Debug.Assert(controller != null);
-            switch (controller.LibraryElementModel.Type)
+            switch (crumb.Controller.LibraryElementModel.Type)
             {
                 case NusysConstants.ElementType.Collection:
                     return new RectangleUIElement(parent, resourceCreator);

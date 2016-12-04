@@ -456,6 +456,11 @@ namespace NuSysApp
                 var tool = new BasicToolWindow(this, ResourceCreator, (BasicToolViewModel) vm);
                 _renderItems3?.Add(tool);
             }
+            else if (vm is MetadataToolViewModel)
+            {
+                var tool = new MetadataToolWindow(this, ResourceCreator, (MetadataToolViewModel)vm);
+                _renderItems3?.Add(tool);
+            }
             else if (vm is TextNodeViewModel)
             {
                 item = new TextElementRenderItem((TextNodeViewModel)vm, this, ResourceCreator);

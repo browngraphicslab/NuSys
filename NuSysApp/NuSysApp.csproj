@@ -357,6 +357,7 @@
     <Compile Include="Components\NuSysRenderer\UI\AudioRegionResizerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumbContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumbUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ChatBox\ChatBoxUIElement.cs" />
@@ -507,6 +508,7 @@
     <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas;
@@ -39,10 +41,10 @@ namespace NuSysApp
 
         public BasicToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
         {
-            Vm = vm;
+            //Vm = vm;
             SetUpBottomButtons();
             _toolView = new BasicToolListInnerView(this, ResourceCreator, vm);
-            //AddChild(_toolView);
+            AddChild(_toolView);
 
             //vm.Controller.SetLocation(x, y);
 
@@ -53,6 +55,14 @@ namespace NuSysApp
             //SetSize(250, 450);
             (vm.Controller as BasicToolController).SelectionChanged += OnSelectionChanged;
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+        }
+
+        public override void Dispose()
+        {
+            (Vm.Controller as BasicToolController).SelectionChanged -= OnSelectionChanged;
+            Vm.PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
+            _toolView.Dispose();
+            base.Dispose();
         }
 
         /// <summary>
@@ -97,41 +107,63 @@ namespace NuSysApp
             //Set up list button
             var listButtonRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.CadetBlue,
+                Background = Colors.Transparent,
                 Height = VIEW_BUTTON_HEIGHT,
                 Width = VIEW_BUTTON_HEIGHT,
             };
             _listToolViewButton = new ButtonUIElement(this, ResourceCreator, listButtonRectangle);
-            _listToolViewButton.ButtonText = "List";
-            _listToolViewButton.ButtonTextColor = Colors.Black;
-            _listToolViewButton.Transform.LocalPosition = new Vector2(VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            //AddChild(_listToolViewButton);
+            
+            _listToolViewButton.Transform.LocalPosition = new Vector2(VIEW_BUTTON_MARGIN,
+                ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
+            AddChild(_listToolViewButton);
 
             //Set up pie button 
             var pieButtonRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.CadetBlue,
+                Background = Colors.Transparent,
                 Height = VIEW_BUTTON_HEIGHT,
                 Width = VIEW_BUTTON_HEIGHT,
             };
             _pieToolViewButton = new ButtonUIElement(this, ResourceCreator, pieButtonRectangle);
-            _pieToolViewButton.ButtonText = "Pie";
-            _pieToolViewButton.ButtonTextColor = Colors.Black;
-            _pieToolViewButton.Transform.LocalPosition = new Vector2(_listToolViewButton.Transform.LocalX + _listToolViewButton.Width + VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            //AddChild(_pieToolViewButton);
+            _pieToolViewButton.ButtonTextColor = Constants.color3;
+            _pieToolViewButton.Transform.LocalPosition =
+                new Vector2(_listToolViewButton.Transform.LocalX + _listToolViewButton.Width + VIEW_BUTTON_MARGIN,
+                    ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
+            AddChild(_pieToolViewButton);
 
             //Set up bar chart button 
             var barButtonRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Colors.CadetBlue,
+                Background = Colors.Transparent,
                 Height = VIEW_BUTTON_HEIGHT,
                 Width = VIEW_BUTTON_HEIGHT,
+                BorderWidth = 1,
+                Bordercolor = Constants.color2
             };
             _barToolViewButton = new ButtonUIElement(this, ResourceCreator, barButtonRectangle);
-            _barToolViewButton.ButtonText = "Bar";
             _barToolViewButton.ButtonTextColor = Colors.Black;
-            _barToolViewButton.Transform.LocalPosition = new Vector2(_pieToolViewButton.Transform.LocalX + _pieToolViewButton.Width + VIEW_BUTTON_MARGIN, ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
-            //AddChild(_barToolViewButton);
+            _barToolViewButton.Transform.LocalPosition =
+                new Vector2(_pieToolViewButton.Transform.LocalX + _pieToolViewButton.Width + VIEW_BUTTON_MARGIN,
+                    ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
+            AddChild(_barToolViewButton);
+
+            UITask.Run(async delegate
+            {
+                _listToolViewButton.Image =
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/listview bluegreen.png"));
+                _listToolViewButton.ImageBounds = new Rect(_listToolViewButton.Width / 4, _listToolViewButton.Height / 4, _listToolViewButton.Width / 2, _listToolViewButton.Height / 2);
+
+
+                _pieToolViewButton.Image =
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/piegraph bluegreen.png"));
+                _pieToolViewButton.ImageBounds = new Rect(_pieToolViewButton.Width / 4, _pieToolViewButton.Height / 4, _pieToolViewButton.Width / 2, _pieToolViewButton.Height / 2);
+
+
+                _barToolViewButton.Image =
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/bar chart icon.png"));
+                _barToolViewButton.ImageBounds = new Rect(_barToolViewButton.Width / 4, _barToolViewButton.Height / 4, _barToolViewButton.Width / 2, _barToolViewButton.Height / 2);
+
+            });
         }
 
         public override void Draw(CanvasDrawingSession ds)

@@ -22,19 +22,11 @@ namespace NuSysApp
             }
         }
 
-        public delegate void FilterChangedEventHandler(object sender, ToolModel.ToolFilterTypeTitle filter);
         public delegate void SelectionChangedEventHandler(object sender);
 
-        public event FilterChangedEventHandler FilterChanged;
         public event SelectionChangedEventHandler SelectionChanged;
 
-        public void SetFilter(ToolModel.ToolFilterTypeTitle filter)
-        {
-            BasicToolModel.SetFilter(filter);
-            FilterChanged?.Invoke(this, filter);
-            FireIdsToDisplayChanged();
-            FireOutputLibraryIdsChanged();
-        }
+        
 
         public override Func<string, bool> GetFunc()
         {

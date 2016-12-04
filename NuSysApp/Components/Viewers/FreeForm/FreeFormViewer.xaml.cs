@@ -134,7 +134,8 @@ namespace NuSysApp
             RenderEngine.Root.ClearChildren();
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
-            RenderEngine.Root.AddChild(InitialCollection);   
+
+            RenderEngine.Root.AddChild(InitialCollection);
 
             RenderEngine.Start();
 
@@ -897,6 +898,9 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
         {
             AddToSelections(element);
+            // add the bread crumb
+            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(element.ViewModel.Controller.LibraryElementController,
+                SessionController.Instance.ContentController.GetLibraryElementController(element.ViewModel.Controller.GetParentCollectionId()));
         }
 
         public void AddToSelections(ElementRenderItem element)

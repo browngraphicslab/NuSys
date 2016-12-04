@@ -263,9 +263,14 @@ namespace NuSysApp
             //Number of rows needed to cover the screen at all times
             //Make sures that the number of rows created does not exceed the number of rows in the source
             var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1); 
-
+            
+            if (numberOfRows > _itemsSource.Count)
+            {
+                numberOfRows = _itemsSource.Count;
+            }
+            
             //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
 
             foreach (var itemSource in rowList)
             {
@@ -914,10 +919,10 @@ namespace NuSysApp
             _selectedElements?.Clear();
             _itemsSource?.Clear();
             _listColumns?.Clear();
-            Rows = null;
-            _selectedElements = null;
-            _itemsSource = null;
-            _listColumns = null;
+            //Rows = null;
+            //_selectedElements = null;
+            //_itemsSource = null;
+            //_listColumns = null;
             base.Dispose();
         }
 

@@ -20,7 +20,7 @@ namespace NuSysApp
         /// <summary>
         /// The controller for the collection the breadcrumb was found in
         /// </summary>
-        public CollectionLibraryElementController CollectionController { get; }
+        public LibraryElementController CollectionController { get; }
 
         /// <summary>
         /// True if the breadcrumb represents going to a new collection. For example when we enter a workspace
@@ -41,7 +41,7 @@ namespace NuSysApp
         /// <param name="controller"></param>
         /// <param name="collectionController"></param>
         /// <param name="isCollection"></param>
-        public BreadCrumb(LibraryElementController controller, CollectionLibraryElementController collectionController)
+        public BreadCrumb(LibraryElementController controller, LibraryElementController collectionController)
         {
             // set default values
             Controller = controller;
