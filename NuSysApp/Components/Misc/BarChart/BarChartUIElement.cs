@@ -14,9 +14,15 @@ namespace NuSysApp
     {
         public List<Color> Palette { set; get; }
 
-        public float Padding { set; get; }
+        public float InnerPadding { set; get; }
         public string Title { set; get; }
 
+
+        public delegate void BarChartElementSelectedEventHandler(object source, BarChartElement element);
+        public event BarChartElementSelectedEventHandler BarSelected;
+
+        public delegate void BarChartElementDeselectedEventHandler(object source, BarChartElement element);
+        public event BarChartElementDeselectedEventHandler BarDeselected;
 
         public delegate void BarChartElementDraggedEventHandler(BarChartElement bar, CanvasPointer pointer);
         public event BarChartElementDraggedEventHandler BarDragged;
@@ -34,18 +40,28 @@ namespace NuSysApp
 
         private HashSet<BarChartElement> _selectedElements;
 
+        public bool MultiSelect;
         private bool _isDragging;
+
+        /// <summary>
+        /// Padding is by default 50
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
         public BarChartUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            MultiSelect = false;
             Title = "My Bar Chart";
             Palette = new List<Color>(new[] { Colors.Red, Colors.Blue, Colors.Green, Colors.Yellow });
             Background = Colors.LightBlue;
             AddElement("Kiana", 8);
             AddElement("John", 3);
             AddElement("Henri", 5);
-            Padding = 50;
+            AddElement("Howard", 12);
+            AddElement("Joanna", 1);
+            InnerPadding = 50;
             _isDragging = false;
-
+            _selectedElements = new HashSet<BarChartElement>();
         }
 
         public void AddElement(string item, int value)
@@ -99,12 +115,39 @@ namespace NuSysApp
 
         private void SelectElement(BarChartElement bar)
         {
-            throw new NotImplementedException();
+            if (bar == null)
+            {
+                Debug.Write("Trying to select a null element, idiot.");
+                return;
+            }
+
+            if (!MultiSelect)
+            {
+                //var elementsToDeselect = new List<BarChartElement>();
+                foreach(var e in _selectedElements.ToList())
+                {
+                    DeselectElement(e);
+                }
+            }
+            _selectedElements.Add(bar);
+            BarSelected?.Invoke(this, bar);
+
+            
         }
 
         private void DeselectElement(BarChartElement bar)
         {
-            throw new NotImplementedException();
+            if (bar == null)
+            {
+                Debug.Write("Trying to select a null element, idiot.");
+                return;
+            }
+
+            if (_selectedElements.Contains(bar))
+            {
+                _selectedElements.Remove(bar);
+                BarDeselected?.Invoke(this, bar);
+            }
         }
 
         private void Element_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -119,29 +162,37 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             base.Draw(ds);
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
 
+            ds.DrawRectangle(new Windows.Foundation.Rect(InnerPadding, InnerPadding, Width - InnerPadding * 2, Height - InnerPadding * 2), Colors.Purple);
             DrawBars(ds);
             DrawTitle(ds);
             DrawScale(ds);
+            ds.Transform = orgTransform;
 
 
         }
 
         private void DrawScale(CanvasDrawingSession ds)
         {
+            var total = _children.Sum(element => (element as BarChartElement).Value);
+
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             var numLines = 10f;
 
+            var realHeight = Height - InnerPadding * 2;
+            var start = Height - InnerPadding;
             for (int i = 0; i < numLines; i++)
             {
-                var point0 = new Vector2(0,  Height - Padding - Height*i/numLines);
-                var point1 = new Vector2(10, Height - Padding - Height* i/numLines);
+                var point0 = new Vector2(InnerPadding - 5,  start - realHeight * i/numLines);
+                var point1 = new Vector2(InnerPadding, start - realHeight * i/numLines);
 
                 ds.DrawLine(point0, point1, Colors.Black);
 
-                var p = point1;
-                var text = "4";
+                var p = point0;
+                var text = (total* i/numLines).ToString();
                 ds.DrawText(
                     text,
                     p,
@@ -149,7 +200,8 @@ namespace NuSysApp
                     new Microsoft.Graphics.Canvas.Text.CanvasTextFormat
                     {
                         FontSize = 12,
-                        HorizontalAlignment = Microsoft.Graphics.Canvas.Text.CanvasHorizontalAlignment.Right
+                        HorizontalAlignment = Microsoft.Graphics.Canvas.Text.CanvasHorizontalAlignment.Right,
+                        VerticalAlignment = Microsoft.Graphics.Canvas.Text.CanvasVerticalAlignment.Center
                     });
 
             }
@@ -166,36 +218,50 @@ namespace NuSysApp
 
         private void DrawTitle(CanvasDrawingSession ds)
         {
-            var p = new Vector2(0, Padding - 5);
+            var p = new Vector2(Width/2, InnerPadding + 16);
                 ds.DrawText(
         Title,
         p,
         Colors.Black,
         new Microsoft.Graphics.Canvas.Text.CanvasTextFormat
         {
-            FontSize = 12,
-            HorizontalAlignment = Microsoft.Graphics.Canvas.Text.CanvasHorizontalAlignment.Left
+            FontSize = 16,
+            HorizontalAlignment = Microsoft.Graphics.Canvas.Text.CanvasHorizontalAlignment.Center
         });
 
         }
         private void DrawBars(CanvasDrawingSession ds)
         {
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
             var total = _children.Sum(element => (element as BarChartElement).Value);
-            var offset = Padding;
+            var offset = InnerPadding;
+            var h = Height - InnerPadding * 2;
+            var w = Width - InnerPadding * 2;
+            var barWidth = 0.8f * w / _children.Count;
+            var spacing = 0.2f * w / (_children.Count - 1);
             foreach (var child in _children)
             {
 
                 var element = child as BarChartElement;
-                var h = Height - Padding * 2;
+
+                //Marks if selected
+                if (_selectedElements.Contains(element))
+                {
+                    element.Bordercolor = Colors.Black;
+                    element.BorderWidth = 4;
+                }else
+                {
+                    //element.Bordercolor = Colors.Black;
+                    element.BorderWidth = 0;
+                }
+
+
+
+                element.Width = barWidth;
                 element.Height = element.Value / total * h;
-                var w = Width - Padding * 2;
-                element.Width = w / (_children.Count * 2);
-                element.Transform.LocalPosition = new System.Numerics.Vector2(offset, Height - Padding - element.Height);
-                offset += 100;
+
+                element.Transform.LocalPosition = new System.Numerics.Vector2(offset, Height - InnerPadding - element.Height);
+                offset += barWidth + spacing;
             }
-            ds.Transform = orgTransform;
 
         }
     }
