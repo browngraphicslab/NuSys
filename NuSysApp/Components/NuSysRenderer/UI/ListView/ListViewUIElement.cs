@@ -270,7 +270,7 @@ namespace NuSysApp
             }
             
             //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
 
             foreach (var itemSource in rowList)
             {
@@ -355,9 +355,9 @@ namespace NuSysApp
                 return;
             }
             var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
-            var items = _itemsSource.ToArray();
+            var items = _itemsSource;
 
-            foreach (var row in Rows.ToArray())
+            foreach (var row in Rows)
             {
                 if (row == null)
                 {
