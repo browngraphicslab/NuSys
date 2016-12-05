@@ -40,11 +40,31 @@ namespace NuSysApp
         /// </summary>
         public CanvasBitmap Icon { get; private set; }
 
-        public ICanvasResourceCreator ResourceCreator { get; set; }
+        /// <summary>
+        /// The canvas the bread crumb is going to be rendered on, this may break encapsulation but is necessary for turning the 
+        /// smalliconurl into a CanvasBitmap for display in win2d
+        /// </summary>
+        private ICanvasResourceCreator ResourceCreator { get; set; }
 
         public delegate void OnBreadCrumbDeletedHandler(BreadCrumb sender);
 
-        public event OnBreadCrumbDeletedHandler Deleted; 
+        /// <summary>
+        /// Fired when the breadcrumb is deleted, the breadcrumb disposes of itself
+        /// </summary>
+        public event OnBreadCrumbDeletedHandler Deleted;
+
+        public delegate void OnTitleChangedEventHandler(BreadCrumb sender, string title);
+
+
+        /// <summary>
+        /// Fired when the title of the breadcrumb changes
+        /// </summary>
+        public event OnTitleChangedEventHandler TitleChanged;
+
+        /// <summary>
+        /// The title of the breadcrumb
+        /// </summary>
+        public string Title { get; set; }
 
 
         public BreadCrumb(LibraryElementController collectionController, ICanvasResourceCreator resourceCreator, ElementController controller = null)
@@ -56,22 +76,47 @@ namespace NuSysApp
             // its a collection if there is no element model
             IsCollection = controller == null;
 
+            // set the initial title
+            Title = IsCollection
+                ? CollectionController.LibraryElementModel.Title
+                : ElementController.LibraryElementModel.Title;
+
             // set the color of the breadcrumb based on the hash of the collection controller's library element id
             Color = MediaUtil.GetHashColorFromString(CollectionController.LibraryElementModel.LibraryElementId);
 
             ResourceCreator = resourceCreator;
 
+            // delete the bread crumb if its collection has been deleted
             CollectionController.Deleted += OnBreadCrumbDeleted;
+
+            // delete the breadcrumb if it is not a collection and its element has been deleted
             if (ElementController != null)
             {
                 ElementController.Deleted += OnBreadCrumbDeleted;
+                ElementController.LibraryElementController.TitleChanged += OnTitleChanged;
             }
+            else
+            {
+                CollectionController.TitleChanged += OnTitleChanged;
+            }
+
+        }
+
+        /// <summary>
+        /// Fired when the title is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTitleChanged(object sender, string e)
+        {
+            Title = e;
+            TitleChanged?.Invoke(this, e);
         }
 
         private void OnBreadCrumbDeleted(object sender)
         {
             Deleted?.Invoke(this);
-
+            Dispose();
         }
 
 
@@ -104,18 +149,34 @@ namespace NuSysApp
             return a?.CollectionController == b?.CollectionController && a?.ElementController == b?.ElementController;
         }
 
+        /// <summary>
+        /// override the != operator
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(BreadCrumb a, BreadCrumb b)
         {
             return !(a == b);
         }
 
+        /// <summary>
+        /// Remove any events
+        /// </summary>
         public void Dispose()
         {
             CollectionController.Deleted -= OnBreadCrumbDeleted;
             if (ElementController != null)
             {
                 ElementController.Deleted -= OnBreadCrumbDeleted;
+                ElementController.LibraryElementController.TitleChanged -= OnTitleChanged;
             }
+            else
+            {
+                CollectionController.TitleChanged -= OnTitleChanged;
+            }
+
+
         }
     }
 }
