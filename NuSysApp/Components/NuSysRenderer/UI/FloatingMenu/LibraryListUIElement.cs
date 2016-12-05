@@ -195,7 +195,6 @@ namespace NuSysApp
                                 SessionController.Instance.ContentController.GetLibraryElementController(
                                     model.LibraryElementId))
                         .ToList();
-                _isDragVisible = true;
                 foreach (var controller in selectedControllers)
                 {
                     var rect = new RectangleUIElement(this, ResourceCreator);
@@ -204,8 +203,10 @@ namespace NuSysApp
                     _libraryDragElements.Add(rect);
                     position += new Vector2(_itemDropOffset, _itemDropOffset);
                     AddChild(rect);
-
                 }
+
+                _isDragVisible = true;
+
             }
         }
 

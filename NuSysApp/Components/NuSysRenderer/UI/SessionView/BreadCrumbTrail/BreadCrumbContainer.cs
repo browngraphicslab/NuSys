@@ -99,13 +99,24 @@ namespace NuSysApp
             DragStarted += MainBackgroundOnDragStarted;
         }
 
+        /// <summary>
+        /// Fired when drag starts on the background, saves the initial position of the scroll handle when this starts
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void MainBackgroundOnDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _scrollHandleInitialDragPosition = _scrollHandle.Transform.LocalPosition;
         }
 
+        /// <summary>
+        /// Fired when the background is dragged, shifts the ui less than if we drag the scrollbar
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void MainBackgroundDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+
             var normalizedDiff = pointer.Delta.X/_totalPathWidth;
             var _scrollDiff = -normalizedDiff*Width;
             _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(_scrollDiff, 0);
