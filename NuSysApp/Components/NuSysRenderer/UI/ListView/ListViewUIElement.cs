@@ -841,7 +841,7 @@ namespace NuSysApp
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
-            foreach (var row in Rows.ToArray())
+            foreach (var row in Rows)
             {
                 row?.Update(parentLocalToScreenTransform);
             }
@@ -865,7 +865,7 @@ namespace NuSysApp
                 var headerOffset = Transform.LocalPosition.Y;
                 var scrollOffset = _scrollOffset % RowHeight;
                 //Draws every row
-                foreach (var row in Rows.ToArray())
+                foreach (var row in Rows)
                 {
                     //Position is the position of the bottom of the row
                     var position = cellVerticalOffset - scrollOffset + headerOffset;
