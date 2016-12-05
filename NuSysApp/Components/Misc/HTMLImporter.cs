@@ -94,10 +94,10 @@ namespace NuSysApp
         {
 
             var client = new HttpClient();
-            search += " wikipedia";
+            //search += " wikipedia";
             // Add the subscription key to the request header
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "1299a79fa68b4799b77aef55de849237");
-            string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search+"&count=10&offset=0&mkt=en-us&safesearch=Moderate";
+            string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search+"&count=25&offset=0&mkt=en-us&safesearch=Moderate";
             // Build the content of the post request
 
             var ret = await client.GetAsync(url);

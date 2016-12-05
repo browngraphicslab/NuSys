@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
 using NusysIntermediate;
@@ -142,6 +143,12 @@ namespace NusysServer
                         break;
                     case NusysConstants.ContentType.PDF:
                         //creates a file and url for each page image and returns a serialized list of urls
+
+                        var pdfBytes = Convert.FromBase64String(contentData);
+                        var d = Open(pdfBytes, pdfBytes.Length);
+                        ActivateDocument(d);
+                        int j = 9;
+                        /*
                         var listOfBytes = JsonConvert.DeserializeObject<List<string>>(contentData);
                         List<string> listOfUrls = new List<string>();
                         int i = 0;
@@ -162,7 +169,7 @@ namespace NusysServer
                                            NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
                             i++;
                         }
-                        return JsonConvert.SerializeObject(listOfUrls);
+                        return JsonConvert.SerializeObject(listOfUrls);*/
                         break;
                     case NusysConstants.ContentType.Text:
                         filePath = "";
@@ -270,5 +277,34 @@ namespace NusysServer
         {
             return Constants.WWW_ROOT + url.Substring(Constants.SERVER_ADDRESS.Length);
         }
+
+        [DllImport("mupdftest")]
+        public static extern IntPtr Open(byte[] data, int length);
+
+        [DllImport("mupdftest")]
+        public static extern void ActivateDocument(IntPtr document);
+        [DllImport("mupdftest")]
+        public static extern void Free(IntPtr pointer);
+
+        [DllImport("mupdftest")]
+        public static extern int RenderPage(int width, int height, out IntPtr output);
+        [DllImport("mupdftest")]
+        public static extern int RenderToPng(int width, int height, IntPtr data);
+
+        [DllImport("mupdftest")]
+        public static extern int GetPageWidth();
+
+        [DllImport("mupdftest")]
+        public static extern int GetPageHeight();
+        [DllImport("mupdftest")]
+        public static extern int GetNumComponents();
+        [DllImport("mupdftest")]
+        public static extern int GetNumPages();
+        [DllImport("mupdftest")]
+        public static extern bool GotoPage(int page);
+
+        [DllImport("mupdftest")]
+        public static extern void DeleteArray(IntPtr pointer);
+
     }
 }
