@@ -10,10 +10,12 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
+using Windows.Storage;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Extensions;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
 
@@ -147,14 +149,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_selectedLink is TrailRenderItem)
             {
                 //get trail as a list of nodes
                 List<LibraryElementController> trailList = GetTrailAsList((_selectedLink as TrailRenderItem).ViewModel.Model);
-
-                var firstPage = trailList[0].Title + ".html";
 
                 for (int i = 0; i < trailList.Count; i++)
                 {
@@ -172,8 +172,12 @@ namespace NuSysApp
 
                     currElement.ExportToHTML(prev, next);
                 }
+                
+                StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+
+                var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
                 //open the exported html in browser
-                //Windows.System.Launcher.LaunchUriAsync(new Uri(firstPage));
+                Windows.System.Launcher.LaunchFileAsync(firstPage);
             }
         }
 

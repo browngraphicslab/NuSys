@@ -878,8 +878,22 @@ namespace NuSysApp
             ///replace info for file
             string text = await FileIO.ReadTextAsync(template);
             text = text.Replace("[[title]]", Title);
-            text = text.Replace("[[data]]", ContentDataController.ContentDataModel.Data);
-            text = text.Replace("[[creator]]", LibraryElementModel.Creator);
+
+            if (LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+            {
+                string htmlImages = "";
+                foreach (var page in ((PdfContentDataModel)(ContentDataController).ContentDataModel).PageUrls)
+                {
+                    htmlImages += "<img src=\"" + page + "\">" + "\n";
+                }
+                text = text.Replace("[[data]]", htmlImages);
+            }
+            else
+            {
+                text = text.Replace("[[data]]", ContentDataController.ContentDataModel.Data);
+            }
+            
+            text = text.Replace("[[creator]]", SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(LibraryElementModel.Creator));
             text = text.Replace("[[timestamp]]", LibraryElementModel.LastEditedTimestamp);
             if (LibraryElementModel.Keywords != null)
             {
@@ -892,10 +906,18 @@ namespace NuSysApp
             {
                 text = text.Replace("[[previous]]", previous + ".html");
             }
+            else
+            {
+                text = text.Replace("[[previous]]", "");
+            }
 
             if (next != null)
             {
                 text = text.Replace("[[next]]", next + ".html");
+            }
+            else
+            {
+                text = text.Replace("[[next]]", "");
             }
 
             await FileIO.WriteTextAsync(nodeFile, text);
