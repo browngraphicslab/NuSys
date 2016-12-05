@@ -22,10 +22,17 @@ namespace NuSysApp
         public event BarChartElementDraggedEventHandler BarDragged;
 
 
+        public delegate void BarChartElementDragCompletedEventHandler(object source, BarChartElement element, CanvasPointer pointer);
+        public event BarChartElementDragCompletedEventHandler BarDragCompleted;
 
-        //public delegate void BarChartElementTappedEventHandler(BarChartElement bar, CanvasPointer pointer);
-        //public event BarChartElementReleasedEventHandler BarTapped;
+        public delegate void BarChartElementTappedEventHandler(BarChartElement bar, CanvasPointer pointer);
+        public event BarChartElementTappedEventHandler BarTapped;
 
+        public bool DisableSelectionByClick { set; get; }
+
+        private BarChartElement _draggedElement;
+
+        private HashSet<BarChartElement> _selectedElements;
 
         private bool _isDragging;
         public BarChartUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -58,12 +65,46 @@ namespace NuSysApp
         {
             var bar = item as BarChartElement;
             Debug.Assert(bar != null);
-
+            //If we are dragging, then the release of the pointer signifies the end of a drag
             if (_isDragging)
             {
-                //BarReleased?.Invoke(bar, pointer);
+                if(_draggedElement != null)
+                {
+                    BarDragCompleted?.Invoke(this, _draggedElement, pointer);
+                }
+                _isDragging = false;
+                _draggedElement = null;
+            }
+            //If we are not dragging (Element_Dragged was not called before this), this is a click
+            else
+            {
+                //Here we select/deselect the bar.
+                if (_selectedElements.Contains(bar))
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        DeselectElement(bar);
+                    }
+                }else
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        SelectElement(bar);
+                    }
+                }
+
 
             }
+        }
+
+        private void SelectElement(BarChartElement bar)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DeselectElement(BarChartElement bar)
+        {
+            throw new NotImplementedException();
         }
 
         private void Element_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -71,6 +112,8 @@ namespace NuSysApp
             var bar = item as BarChartElement;
             Debug.Assert(bar != null);
             BarDragged?.Invoke(bar, pointer);
+            _draggedElement = bar;
+            _isDragging = true;
         }
 
         public override void Draw(CanvasDrawingSession ds)
