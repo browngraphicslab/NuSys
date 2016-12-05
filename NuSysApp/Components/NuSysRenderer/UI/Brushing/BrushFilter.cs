@@ -13,12 +13,20 @@ namespace NuSysApp
     {
 
         /// <summary>
-        /// List of creators that we can search for
+        /// List of creators that we are brushing for. To add or remove creators use
+        /// AddCreator(), AddCreatorRange(), RemoveCreator(), or RemoveCreatorRange()
         /// </summary>
         public HashSet<string> Creators { get; }
 
+        /// <summary>
+        /// helper value for CreationDateStart property
+        /// </summary>
         private DateTime? _creationDateStart;
 
+        /// <summary>
+        /// All brushed elements returned will have a creation date after this date. If set to null, no limit on the
+        /// starting bound of the creation date is assumed
+        /// </summary>
         public DateTime? CreationDateStart
         {
             get { return _creationDateStart; }
@@ -29,7 +37,15 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// helper value for CreationDateEnd property
+        /// </summary>
         private DateTime? _creationDateEnd;
+
+        /// <summary>
+        /// All brushed elements returned will have a creation date before this date. If set to null, no limit on the
+        /// ending bound of the creation date is assumed
+        /// </summary>
         public DateTime? CreationDateEnd
         {
             get { return _creationDateEnd; }
@@ -40,8 +56,15 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// helper value for LastEditedStart property
+        /// </summary>
         private DateTime? _lastEditedStart;
 
+        /// <summary>
+        /// All brushed elements returned will have a last edited date after this date. If set to null, no limit on the
+        /// starting bound of the last edited date is assumed
+        /// </summary>
         public DateTime? LastEditedStart
         {
             get { return _lastEditedStart; }
@@ -52,7 +75,15 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Helper value for the LastEditedEnd property
+        /// </summary>
         private DateTime? _lastEditedEnd;
+
+        /// <summary>
+        /// All brushed elements returned will have a last edited date before this date. If set to null, no limit on the
+        /// ending bound of the last edited date is assumed
+        /// </summary>
         public DateTime? LastEditedEnd
         {
             get { return _lastEditedEnd; }
@@ -63,8 +94,10 @@ namespace NuSysApp
             }
         }
 
-        public HashSet<string> ParentCollectionIds { get; }
-
+        /// <summary>
+        /// Hashset of element types that we are brushing for. To add or remove types use
+        /// AddType(), AddTypeRange(), RemoveType(), or RemoveTypeRange()
+        /// </summary>
         public HashSet<NusysConstants.ElementType> Types { get; }
 
         /// <summary>
@@ -81,12 +114,23 @@ namespace NuSysApp
             LastEdit
         }
 
+        /// <summary>
+        /// hash set of the library element controllers which the filter returns true for. 
+        /// includes all library element controllers in the entire library
+        /// </summary>
         private HashSet<LibraryElementController> _filteredLibraryElementControllers;
 
+        /// <summary>
+        /// hash set of the element controllers which the filter returns true for.
+        /// includes only the element controllers which are in the collection associated with
+        /// _prevCollectionController
+        /// </summary>
         private HashSet<ElementController> _filteredElementControllers;
 
+        /// <summary>
+        /// private helper variable to store the most recent collection we quered for element controllers
+        /// </summary>
         CollectionLibraryElementController _prevCollectionController;
-
 
         public BrushFilter()
         {
@@ -95,57 +139,85 @@ namespace NuSysApp
             CreationDateEnd = null;
             LastEditedStart = null;
             LastEditedEnd = null;
-            ParentCollectionIds = new HashSet<string>();
             Types = new HashSet<NusysConstants.ElementType>();
             needsRefresh = true;
         }
 
         /// <summary>
-        /// Computes the brush given all the data
+        /// Returns all the library element controllers from the entire library that fulfill the brush's constraints
         /// </summary>
         /// <returns></returns>
-        private HashSet<LibraryElementController> GetLibraryElementControllers()
+        public HashSet<LibraryElementController> GetLibraryElementControllers()
         {
+            // if we haven't changed anything since the last time we brushed the data, just return the previous results
             if (!needsRefresh)
             {
                 return _filteredLibraryElementControllers;
             }
 
+            // otherwise get all Libraryelementcontrollers which fulfill our creator and type constraints
             var controllers = SessionController.Instance.ContentController.AllLibraryElementControllers.Where(
                 ctrl => Creators.Contains(ctrl.LibraryElementModel.Creator) && // first filter controllers by creator
                 Types.Contains(ctrl.LibraryElementModel.Type)); // and by type
 
+            // filter the controllers by the creation date constraint
             controllers = FilterBetweenDates(controllers, _creationDateStart, CreationDateEnd, DateType.Creation); // filter by creation date
+
+            // filter the controllers by the last edited date constraint
             controllers = FilterBetweenDates(controllers, LastEditedStart, LastEditedEnd, DateType.LastEdit); // filter by last edit date
 
+            // set the local results variable to the new results
             _filteredLibraryElementControllers = new HashSet<LibraryElementController>(controllers);
 
+            // return the new results
             return _filteredLibraryElementControllers;
         }
 
-        private HashSet<ElementController> GetElementControllersForCollection(CollectionLibraryElementController collectionController)
+        /// <summary>
+        /// Returns all the element controllers from the collection associated with the 
+        /// passed in collection controller which fulfill the brush constraints
+        /// </summary>
+        /// <param name="collectionController"></param>
+        /// <returns></returns>
+        public HashSet<ElementController> GetElementControllersForCollection(CollectionLibraryElementController collectionController)
         {
+            // if we haven't changed anything since the last time we brushed the data, just return the previous results
             if (!needsRefresh && collectionController == _prevCollectionController)
             {
                 return _filteredElementControllers;
             }
 
             Debug.Assert(collectionController != null);
+
+            // update the most recently searched collection variable to reflect the new search
             _prevCollectionController = collectionController;
 
-            var controllers = collectionController.CollectionModel.Children.Where(id => SessionController.Instance.IdToControllers.ContainsKey(id)).Select(id => SessionController.Instance.IdToControllers[id]);
+            // get all element controllers that are in the passed in collection
+            var elementControllers = collectionController.CollectionModel.Children.Where(id => SessionController.Instance.IdToControllers.ContainsKey(id)).Select(id => SessionController.Instance.IdToControllers[id]);
 
-            var filteredLibraryElements = GetLibraryElementControllers();
+            // get a list of library element controllers that fulfill the brush constraints
+            var filteredLibraryElementControllers = GetLibraryElementControllers();
 
-            controllers =
-                controllers.Where(
+            // transform the list of library element controllers into a hashset of library element ids which fulfill the constraints
+            var filteredLibraryElementControllerIds = new HashSet<string>(filteredLibraryElementControllers.Select(lec => lec.LibraryElementModel.LibraryElementId));
+
+            // filter the element controllers into only those that have a library element id matching one which fulfilled our constraints
+            elementControllers =
+                elementControllers.Where(
                     controller =>
-                        filteredLibraryElements.Count(
-                            lem =>
-                                lem.LibraryElementModel.LibraryElementId ==
-                                controller.LibraryElementModel.LibraryElementId) > 0);
+                        filteredLibraryElementControllerIds.Contains(controller.LibraryElementModel.LibraryElementId));
+
+            // store the new results locally
+            _filteredElementControllers = new HashSet<ElementController>(elementControllers);
+
+            // return all the element controllers which fulfill the brush constraints
+            return _filteredElementControllers;
         }
 
+        /// <summary>
+        /// Add the passed in string to the Creators filter
+        /// </summary>
+        /// <param name="creator"></param>
         public void AddCreator(string creator)
         {
             if (!Creators.Contains(creator))
@@ -155,6 +227,22 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Add each of the passed in strings to the Creators filter
+        /// </summary>
+        /// <param name="creators"></param>
+        public void AddCreatorRange(IEnumerable<string> creators)
+        {
+            foreach (var creator in creators)
+            {
+                AddCreator(creator);
+            }
+        }
+
+        /// <summary>
+        /// Remove the passed in string from the Creators filter
+        /// </summary>
+        /// <param name="creator"></param>
         public void RemoveCreator(string creator)
         {
             if (Creators.Contains(creator))
@@ -164,25 +252,23 @@ namespace NuSysApp
             }
         }
 
-        public void AddParentCollectionId(string parentCollectionId)
+        /// <summary>
+        /// Remove each of the passed in strings from the Creators filter
+        /// </summary>
+        /// <param name="creators"></param>
+        public void RemoveCreatorRange(IEnumerable<string> creators)
         {
-            if (!ParentCollectionIds.Contains(parentCollectionId))
+            foreach (var creator in creators)
             {
-                ParentCollectionIds.Add(parentCollectionId);
-                needsRefresh = true;
+                RemoveCreator(creator);
             }
         }
 
-        public void RemoveParentCollectionId(string parentCollectionId)
-        {
-            if (ParentCollectionIds.Contains(parentCollectionId))
-            {
-                ParentCollectionIds.Remove(parentCollectionId);
-                needsRefresh = true;
-            }
-        }
-
-        public void AddElementType(NusysConstants.ElementType elementType)
+        /// <summary>
+        /// Add the passed in type to the Types filter
+        /// </summary>
+        /// <param name="elementType"></param>
+        public void AddType(NusysConstants.ElementType elementType)
         {
             if (!Types.Contains(elementType))
             {
@@ -191,18 +277,42 @@ namespace NuSysApp
             }
         }
 
-        public void RemoveElementType(NusysConstants.ElementType elementType)
+        /// <summary>
+        /// Add each of the passed in types to the Types filter
+        /// </summary>
+        /// <param name="elementTypes"></param>
+        public void AddTypeRange(IEnumerable<NusysConstants.ElementType> elementTypes)
+        {
+            foreach (var type in elementTypes)
+            {
+                AddType(type);        
+            }
+        }
+
+        /// <summary>
+        /// Remove the passed in type from the Types filter
+        /// </summary>
+        /// <param name="elementType"></param>
+        public void RemoveType(NusysConstants.ElementType elementType)
         {
             if (Types.Contains(elementType))
             {
-                Types.Add(elementType);
+                Types.Remove(elementType);
                 needsRefresh = true;
             }
         }
 
-
-
-
+        /// <summary>
+        /// Remove each of the passed in types from the Types filter
+        /// </summary>
+        /// <param name="elementTypes"></param>
+        public void RemoveTypeRange(IEnumerable<NusysConstants.ElementType> elementTypes)
+        {
+            foreach (var type in elementTypes)
+            {
+                RemoveType(type);
+            }
+        }
 
         /// <summary>
         /// Takes in an IEnumerable of Library element controllers and filters out those which are not created or edited
