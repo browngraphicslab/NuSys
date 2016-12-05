@@ -185,8 +185,15 @@ namespace NuSysApp
             }
             else
             {
-                // get the current position of the pointer relative to the local matrix
-                var position = pointer.StartPoint;
+                // remove any current rectangles from the drag list that are left over
+                foreach (var rect in _libraryDragElements.ToArray())
+                {
+                    rect.Dispose();
+                    RemoveChild(rect);
+                    _libraryDragElements.Remove(rect);
+                }
+
+
                 // convert the list of selected library element models from the libraryListView into a list of controllers
                 var selectedControllers =
                     libraryListView.GetSelectedItems()
@@ -195,18 +202,15 @@ namespace NuSysApp
                                 SessionController.Instance.ContentController.GetLibraryElementController(
                                     model.LibraryElementId))
                         .ToList();
+                _isDragVisible = true;
                 foreach (var controller in selectedControllers)
                 {
                     var rect = new RectangleUIElement(this, ResourceCreator);
                     rect.Image = await CanvasBitmap.LoadAsync(Canvas, controller.SmallIconUri);
-                    rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
+                    rect.Transform.LocalPosition = new Vector2(10000);
                     _libraryDragElements.Add(rect);
-                    position += new Vector2(_itemDropOffset, _itemDropOffset);
                     AddChild(rect);
                 }
-
-                _isDragVisible = true;
-
             }
         }
 

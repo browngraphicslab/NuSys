@@ -143,12 +143,17 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Displays the passed in pivot on the pivot container
+        /// Displays the passed in pivot on the pivot container, fires the proper events
         /// </summary>
         /// <param name="pivot"></param>
         private void DisplayPivot(Pivot pivot)
         {
+            if (_displayRect != null)
+            {
+                RemoveChild(_displayRect);
+            }
             _displayRect = pivot.DisplayObject;
+
             PivotChanged?.Invoke(pivot);
         }
 
