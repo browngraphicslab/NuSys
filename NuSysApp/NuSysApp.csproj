@@ -355,12 +355,11 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\Brushing\Brush.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\Brushing\IBrushable.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\ButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\ChatBox\ChatBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAudioPage.cs" />

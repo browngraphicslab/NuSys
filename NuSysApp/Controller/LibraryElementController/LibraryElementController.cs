@@ -460,6 +460,24 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Returns the date the library element controller was created as a DateTime
+        /// </summary>
+        /// <returns></returns>
+        public DateTime GetCreationDate()
+        {
+            return DateTime.Parse(LibraryElementModel.Timestamp);
+        }
+
+        /// <summary>
+        /// Returns the date the library element controller was last edited as a DateTime
+        /// </summary>
+        /// <returns></returns>
+        public DateTime GetLastEditedDate()
+        {
+            return DateTime.Parse(LibraryElementModel.LastEditedTimestamp);
+        }
+
+        /// <summary>
         /// This will remove a single keyword to the model's list of keywords and update the server
         /// it will fire the generic 'KeywordsChanged' event
         /// </summary>
