@@ -140,10 +140,15 @@ namespace NuSysApp
             _bmp?.Dispose();
             await Task.Run(async () =>
             {
-                _bmp =
-                    await
-                        CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
-                            ResourceCreator.Dpi);
+                try
+                {
+                    _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
+                }
+                catch (Exception e)
+                {
+                    _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/icon_chat.png"), ResourceCreator.Dpi);
+                    Debug.WriteLine("Image failed to load, using chat icon instead!");
+                }
             });
             ReRender();
             _isLoading = false;
