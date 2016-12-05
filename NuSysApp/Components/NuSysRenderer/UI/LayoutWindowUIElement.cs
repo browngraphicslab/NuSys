@@ -42,13 +42,14 @@ namespace NuSysApp
         private static Vector2 GRID_BUTTON_POSITION = new Vector2(PANEL_INSET + BUTTON_PADDING, HORIZONTAL_BUTTON_POSITION.Y + BUTTON_SIZE + BUTTON_PADDING);
         private static Vector2 CUSTOM_BUTTON_POSITION = new Vector2(VERTICAL_BUTTON_POSITION.X, GRID_BUTTON_POSITION.Y);
         private static float DROPDOWN_INSET = 2.0f * PANEL_INSET;
-        private static LayoutStyle _layoutStyle = LayoutStyle.Horizontal;
-        private static LayoutSorting _layoutSorting = LayoutSorting.Title;
         private static string LAYOUT_STYLE_TITLE_TEXT = "title";
         private static string LAYOUT_STYLE_DATE_TEXT = "date";
         private static string CLOSE_BUTTON_TEXT = "X X X X X";
         private static float CLOSE_BUTTON_SIZE = 100.0f;
         private static String CUSTOM_LAYOUT_TEXT = "Draw to arrange";
+
+        private LayoutStyle _layoutStyle = LayoutStyle.Horizontal;
+        private LayoutSorting _layoutSorting = LayoutSorting.Title;
 
         // Buttons
         private ButtonUIElement _arrangeButton;

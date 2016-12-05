@@ -681,7 +681,6 @@ namespace NuSysApp
             }
 
             var transform = RenderEngine.GetCollectionTransform(InitialCollection);
-
             var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
             var points =
                 latestStroke.GetInkPoints()
@@ -880,29 +879,31 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
-            _layoutWindow.NotifyArrangeCustom();
             CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
-            if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
+            if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds > 500)
             {
                 var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
                 var optionsBounds = RenderEngine.InkOptions.GetLocalBounds();
-                var targetPoint  = pointer.CurrentPoint;
+                var targetPoint = pointer.CurrentPoint;
                 if (targetPoint.X < screenBounds.Width/2)
                 {
                     targetPoint.X += 20;
                 }
                 else
                 {
-                    targetPoint.X -= (20 + (float)optionsBounds.Width);
+                    targetPoint.X -= (20 + (float) optionsBounds.Width);
                 }
-                targetPoint.Y -= (float)optionsBounds.Height/2;
-                targetPoint.X = (float)Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
-                targetPoint.Y = (float)Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
+                targetPoint.Y -= (float) optionsBounds.Height/2;
+                targetPoint.X = (float) Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
+                targetPoint.Y = (float) Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
                 RenderEngine.InkOptions.Transform.LocalPosition = targetPoint;
                 RenderEngine.InkOptions.IsVisible = true;
                 CurrentCollection.InkRenderItem.RemoveLatestStroke();
             }
-
+            else
+            {
+                _layoutWindow?.NotifyArrangeCustom();
+            }
         }
 
         private void CollectionInteractionManagerOnInkDrawing(CanvasPointer pointer)
