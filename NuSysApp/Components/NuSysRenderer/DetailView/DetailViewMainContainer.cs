@@ -23,30 +23,46 @@ namespace NuSysApp
         private DetailViewPageContainer _pageContainer;
 
         /// <summary>
-        /// the layout manager for the _mainTabContainer
+        /// the layout manager for the _mainTabContainer, essentailly makes sure that the _mainTabContainer fills the entire
+        /// width and height of the base ResizeableWindowUIelement
         /// </summary>
-        private StackLayoutManager _mainTabLayoutManager;
+        private StackLayoutManager _mainTabContainerLayoutManager;
 
+        /// <summary>
+        /// Dictionary of library element model ids to the currebt tab open for that id
+        /// </summary>
         private Dictionary<string, DetailViewPageTabType> _libElemToCurrTabOpen;
 
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            // initialize the basic ui
+            IsVisible = false;
+
+
             // create the _mainTabContainer
             _mainTabContainer = new TabContainerUIElement<string>(this, Canvas);
 
-            // add the page to the _mainTabContainer, the page
+            // create the page container
             _pageContainer = new DetailViewPageContainer(this, Canvas);
 
-            _mainTabLayoutManager = new StackLayoutManager();
-
-            _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
-
+            // the page displayed on the main tab container is a page container
             _mainTabContainer.SetPage(_pageContainer);
 
+            // set the basic settings of the maintab layout maanger
+            _mainTabContainerLayoutManager = new StackLayoutManager
+            {
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                TopMargin = TopBarHeight,
+                LeftMargin = BorderWidth,
+                RightMargin = BorderWidth,
+                BottomMargin = BorderWidth
+            };
+            _mainTabContainerLayoutManager.AddElement(_mainTabContainer);
             AddChild(_mainTabContainer);
-            _mainTabLayoutManager.AddElement(_mainTabContainer);
 
-            IsVisible = false;
+            // initialize the dictionary of library element model ids to detail view tabs which are open
+            _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
 
             // add events
             _mainTabContainer.TabContainerClosed += _mainTabContainer_TabContainerClosed;
@@ -115,6 +131,7 @@ namespace NuSysApp
                 _libElemToCurrTabOpen.Add(libElemId, currPage);
             }
 
+            // show the requested library element
             _pageContainer.ShowLibraryElement(libElemId, currPage);
         }
 
@@ -130,7 +147,8 @@ namespace NuSysApp
                 IsVisible = true;
             }
 
-
+            // adds a tab to the detailviewer which should fire OnCurrentTabChanged in the _mainTabContainer,
+            // which will cause the element to be displayed in the method _mainTabContainer_OnCurrentTabChanged()
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _mainTabContainer.AddTab(libraryElementModelId, controller.LibraryElementModel.Title);
 
@@ -142,12 +160,9 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _mainTabLayoutManager.SetMargins(BorderWidth);
-            _mainTabLayoutManager.TopMargin = TopBarHeight;
-            _mainTabLayoutManager.SetSize(Width, Height);
-            _mainTabLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _mainTabLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _mainTabLayoutManager.ArrangeItems();
+            // make the main tab container fill the width and height of the window
+            _mainTabContainerLayoutManager.SetSize(Width, Height);
+            _mainTabContainerLayoutManager.ArrangeItems();
 
             base.Update(parentLocalToScreenTransform);
         }
