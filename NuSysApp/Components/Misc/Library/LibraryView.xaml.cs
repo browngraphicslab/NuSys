@@ -251,8 +251,8 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    data = Convert.ToBase64String(fileBytes);
-                    /*
+                    //data = Convert.ToBase64String(fileBytes);
+                    
                     var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
 
                     pdfPageCount = MuPdfDoc.PageCount;
@@ -299,7 +299,7 @@ namespace NuSysApp
                     }
 
                     data = JsonConvert.SerializeObject(pdfPages);
-                    */
+                    
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
