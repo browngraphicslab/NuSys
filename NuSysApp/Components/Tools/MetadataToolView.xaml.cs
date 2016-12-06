@@ -403,8 +403,6 @@ namespace NuSysApp
         /// </summary>
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
 
             var vm = (ToolViewModel)this.DataContext;
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
@@ -564,7 +562,7 @@ namespace NuSysApp
                     }
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+                //vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
         }
 
@@ -703,7 +701,7 @@ namespace NuSysApp
             if (filter != ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
 
-                (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
+                //(DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
                 this.Dispose();
             }
         }
@@ -744,8 +742,8 @@ namespace NuSysApp
 
             button.Background = new SolidColorBrush(Colors.Orange);
             button.Content = "0 %";
-            button.HorizontalContentAlignment = HorizontalAlignment.Center;
-            button.VerticalContentAlignment = VerticalAlignment.Center;
+            button.HorizontalContentAlignment = Windows.UI.Xaml.HorizontalAlignment.Center;
+            button.VerticalContentAlignment = Windows.UI.Xaml.VerticalAlignment.Center;
 
             Task.Run(async delegate
             {

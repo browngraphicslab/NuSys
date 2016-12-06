@@ -12,10 +12,12 @@ using System.Numerics;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
 using WinRTXamlToolkit.IO.Extensions;
+using NuSysApp.Components.NuSysRenderer.UI;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
 
@@ -32,6 +34,7 @@ namespace NuSysApp
         private List<PointModel> _latestStroke;
         private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
+
         private FreeFormViewerViewModel _vm;
 
         private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
@@ -64,7 +67,7 @@ namespace NuSysApp
 
         private bool _inkPressed;
 
-        private BaseRenderItem _renderRoot;
+        private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
         public FreeFormViewer()
@@ -76,9 +79,8 @@ namespace NuSysApp
             xMinimapCanvas.Width = 300;
             xMinimapCanvas.Height = 300;
 
-            _renderRoot = new BaseRenderItem(null, xRenderCanvas);
+            _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
-     
         }
 
         public void Clear()
@@ -112,9 +114,12 @@ namespace NuSysApp
             _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
+            // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
+            {
                 _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
-
+            }
+       
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -131,6 +136,7 @@ namespace NuSysApp
             RenderEngine.Root.ClearChildren();
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
+
             RenderEngine.Root.AddChild(InitialCollection);
 
             RenderEngine.Start();
@@ -270,7 +276,7 @@ namespace NuSysApp
             }
 
 
-            if (!SessionController.Instance.SessionView.IsReadonly) { 
+            if (!SessionController.IsReadonly) { 
                 _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
                 _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
@@ -710,7 +716,7 @@ namespace NuSysApp
             }
             if (item == RenderEngine.ElementSelectionRect.BtnPresent)
             {
-                SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
 
@@ -976,12 +982,12 @@ namespace NuSysApp
                 }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             }
 
         }
@@ -989,6 +995,9 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
         {
             AddToSelections(element);
+            // add the bread crumb
+            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
+            
         }
 
         public void AddToSelections(ElementRenderItem element)

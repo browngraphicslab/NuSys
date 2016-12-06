@@ -45,8 +45,8 @@ namespace NuSysApp.Components.Nodes.GroupNode
             tb.TextAlignment = TextAlignment.Center;
             tb.FontSize = 11;
             tb.FontWeight = FontWeights.Bold;
-            tb.VerticalAlignment = VerticalAlignment.Bottom;
-            tb.HorizontalAlignment = HorizontalAlignment.Center;
+            tb.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Bottom;
+            tb.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Center;
             tb.Foreground = new SolidColorBrush(Colors.Black);
             //tb.Width = 120;
 

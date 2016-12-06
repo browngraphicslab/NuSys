@@ -54,10 +54,10 @@ namespace NuSysApp
             RenderTransform = floatingTransform;
             InitializeComponent();
 
-            btnLibrary.Tapped += BtnLibrary_Tapped;
-            btnAddNode.Tapped += BtnAddNode_Tapped;
-            btnPen.Tapped += BtnPen_Tapped;
-            btnSearch.Tapped += BtnSearch_Tapped;
+            //btnLibrary.Tapped += BtnLibrary_Tapped;
+            //btnAddNode.Tapped += BtnAddNode_Tapped;
+            //btnPen.Tapped += BtnPen_Tapped;
+            //btnSearch.Tapped += BtnSearch_Tapped;
              
             libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
@@ -82,61 +82,61 @@ namespace NuSysApp
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var compositeTransform = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
-            compositeTransform.TranslateX += e.Delta.Translation.X;
-            compositeTransform.TranslateY += e.Delta.Translation.Y;
+            //var compositeTransform = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
+            //compositeTransform.TranslateX += e.Delta.Translation.X;
+            //compositeTransform.TranslateY += e.Delta.Translation.Y;
 
             e.Handled = true;
         }
 
-        private void CheckPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            var mainCanvas = SessionController.Instance.SessionView.MainCanvas;
-            var position = e.GetCurrentPoint(mainCanvas).Position;
+        //private void CheckPointerPressed(object sender, PointerRoutedEventArgs e)
+        //{
+        //    var mainCanvas = SessionController.Instance.SessionView.MainCanvas;
+        //    var position = e.GetCurrentPoint(mainCanvas).Position;
 
-            var xdiff = addMenuTransform.X;
-            var ydiff = addMenuTransform.Y;
+        //    var xdiff = addMenuTransform.X;
+        //    var ydiff = addMenuTransform.Y;
 
-            var xpos = floatingTransform.TranslateX + Canvas.GetLeft(SessionController.Instance.SessionView.FloatingMenu);
-            var ypos = floatingTransform.TranslateY + Canvas.GetTop(SessionController.Instance.SessionView.FloatingMenu);
+        //    var xpos = floatingTransform.TranslateX + Canvas.GetLeft(SessionController.Instance.SessionView.FloatingMenu);
+        //    var ypos = floatingTransform.TranslateY + Canvas.GetTop(SessionController.Instance.SessionView.FloatingMenu);
 
-            var lefttop = new Point(xpos+xdiff, ypos+ydiff);
+        //    var lefttop = new Point(xpos+xdiff, ypos+ydiff);
 
-            if (position.X > lefttop.X && position.X < lefttop.X + 400)
-            {
-                if (position.Y > lefttop.Y && position.Y < lefttop.Y + 150) return;
-            }
+        //    if (position.X > lefttop.X && position.X < lefttop.X + 400)
+        //    {
+        //        if (position.Y > lefttop.Y && position.Y < lefttop.Y + 150) return;
+        //    }
 
-            //do we want this for the library?
-            if (position.X > xpos && position.X < xpos + 450)
-            {
-                if (position.Y > ypos + 100 && position.Y < ypos + 650) return;
-            }
+        //    //do we want this for the library?
+        //    if (position.X > xpos && position.X < xpos + 450)
+        //    {
+        //        if (position.Y > ypos + 100 && position.Y < ypos + 650) return;
+        //    }
 
-            Reset();
+        //    Reset();
 
-        }
+        //}
 
         /// <summary>
         /// Called when the user taps on the search icon in the floating menu view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BtnSearch_Tapped(object sender, TappedRoutedEventArgs e)
-        {
+        //private void BtnSearch_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
 
-            var SearchViewer = SessionController.Instance.SessionView.SearchView;
+        //    var SearchViewer = SessionController.Instance.SessionView.SearchView;
 
-            if (SearchViewer.Visibility == Visibility.Collapsed)
-            {
-                SearchViewer.Visibility = Visibility.Visible;
-                SearchViewer.SetFocusOnSearchBox();
-            }
-            else
-            {
-                SearchViewer.Visibility = Visibility.Collapsed;
-            }
-        }
+        //    if (SearchViewer.Visibility == Visibility.Collapsed)
+        //    {
+        //        SearchViewer.Visibility = Visibility.Visible;
+        //        SearchViewer.SetFocusOnSearchBox();
+        //    }
+        //    else
+        //    {
+        //        SearchViewer.Visibility = Visibility.Collapsed;
+        //    }
+        //}
 
         public void Reset()
         {
@@ -187,53 +187,53 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BtnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _lib.Visibility = Visibility.Collapsed;
-            btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
-            if (xAddNodeMenu.Visibility == Visibility.Visible)
-            {
-                xAddNodeMenu.Visibility = Visibility.Collapsed;
-            }
-            else {
-                xAddNodeMenu.Visibility = Visibility.Visible;
-            }
+        //private void BtnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    _lib.Visibility = Visibility.Collapsed;
+        //    btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
+        //    if (xAddNodeMenu.Visibility == Visibility.Visible)
+        //    {
+        //        xAddNodeMenu.Visibility = Visibility.Collapsed;
+        //    }
+        //    else {
+        //        xAddNodeMenu.Visibility = Visibility.Visible;
+        //    }
 
-            //collapse things as necessary
-            if (checkPointerAdded != true)
-            {
-                SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
-                checkPointerAdded = true;
-            }
+        //    //collapse things as necessary
+        //    if (checkPointerAdded != true)
+        //    {
+        //        SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
+        //        checkPointerAdded = true;
+        //    }
             
-        }
+        //}
 
-        /// <summary>
-        /// Called when the user taps on the library icon in the floating menu view
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _lib.ToggleVisiblity();
-            xAddNodeMenu.Visibility = Visibility.Collapsed;
-            if (_lib.Visibility == Visibility.Visible)
-            {
-                btnLibrary.Icon = "ms-appx:///Assets/icon_whitex.png";
-            }
-            else
-            {
-                btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
-            }
+        ///// <summary>
+        ///// Called when the user taps on the library icon in the floating menu view
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
+        //private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    _lib.ToggleVisiblity();
+        //    xAddNodeMenu.Visibility = Visibility.Collapsed;
+        //    if (_lib.Visibility == Visibility.Visible)
+        //    {
+        //        btnLibrary.Icon = "ms-appx:///Assets/icon_whitex.png";
+        //    }
+        //    else
+        //    {
+        //        btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
+        //    }
 
-            //collapse things as necessary
-            if (checkPointerAdded != true)
-            {
-                SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
-                checkPointerAdded = true;
-            }
+        //    //collapse things as necessary
+        //    if (checkPointerAdded != true)
+        //    {
+        //        SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
+        //        checkPointerAdded = true;
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// When the user finishes dragging a button from the floating menu view, this method creates an element at the desired location
@@ -246,8 +246,8 @@ namespace NuSysApp
             Debug.WriteLine("starting request");
 
             // Hide the library dragging rect
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-            rect.Hide();
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            //rect.Hide();
 
             var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(args.Position);
             var r = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)p.X, (float)p.Y), SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
@@ -265,18 +265,18 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            // Obtain the library dragging rectangle  
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
+            //// Obtain the library dragging rectangle  
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
 
-            // Update its transform
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+            //// Update its transform
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
             
-            // Update the position instance variable
-            _exportPos.X += e.Delta.Translation.X;
-            _exportPos.Y += e.Delta.Translation.Y;
+            //// Update the position instance variable
+            //_exportPos.X += e.Delta.Translation.X;
+            //_exportPos.Y += e.Delta.Translation.Y;
         }
 
         /// <summary>
@@ -286,43 +286,43 @@ namespace NuSysApp
         /// <param name="args"></param>
         private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartingRoutedEventArgs args)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Freeze();
-            // set the _elementType based on the sender
-            if (sender == btnAddTextNode)
-            {
-                _elementType = NusysConstants.ElementType.Text;
-            }
-            else if (sender == btnAddRecordingNode)
-            {
-                _elementType = NusysConstants.ElementType.Recording;
-            }
-            else if (sender == btnAddCollectionNode)
-            {
-                _elementType = NusysConstants.ElementType.Collection;
-            }
-            else if (sender == btnAddTools)
-            {
-                _elementType = NusysConstants.ElementType.Tools;
-            }
-            else
-            {
-                Debug.Fail($"We do not have support for {_elementType} yet please add it yourself in the if statement above, the SwitchType method below and in OnManipulationCompleted");
-            }
+            //SessionController.Instance.SessionView.FreeFormViewer.Freeze();
+            //// set the _elementType based on the sender
+            //if (sender == btnAddTextNode)
+            //{
+            //    _elementType = NusysConstants.ElementType.Text;
+            //}
+            //else if (sender == btnAddRecordingNode)
+            //{
+            //    _elementType = NusysConstants.ElementType.Recording;
+            //}
+            //else if (sender == btnAddCollectionNode)
+            //{
+            //    _elementType = NusysConstants.ElementType.Collection;
+            //}
+            //else if (sender == btnAddTools)
+            //{
+            //    _elementType = NusysConstants.ElementType.Tools;
+            //}
+            //else
+            //{
+            //    Debug.Fail($"We do not have support for {_elementType} yet please add it yourself in the if statement above, the SwitchType method below and in OnManipulationCompleted");
+            //}
 
-            // add the icon and start controlling the icon rect
-            var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.IsHitTestVisible = false;
-            view.LibraryDraggingRectangle.SetIcon(_elementType);
-            view.LibraryDraggingRectangle.Show();
+            //// add the icon and start controlling the icon rect
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.IsHitTestVisible = false;
+            //view.LibraryDraggingRectangle.SetIcon(_elementType);
+            //view.LibraryDraggingRectangle.Show();
             
-            var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
 
-            // Make the rectangle movable and set its position
-            rect.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX = _exportPos.X;
-            t.TranslateY = _exportPos.Y;
+            //// Make the rectangle movable and set its position
+            //rect.RenderTransform = new CompositeTransform();
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX = _exportPos.X;
+            //t.TranslateY = _exportPos.Y;
         }
 
         /// <summary>
@@ -343,8 +343,24 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Text:
                     break;
                 case NusysConstants.ElementType.Tools:
-                    ToolFilterView filter = new ToolFilterView(position.X, position.Y);
-                    vm.AtomViewList.Add(filter);
+                    //BasicToolModel model = new BasicToolModel();
+                    //BasicToolController controller = new BasicToolController(model);
+                    //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+                    //viewmodel.Width = 500;
+                    //viewmodel.Height = 500;
+                    //viewmodel.X = position.X;
+                    //viewmodel.Y = position.Y;
+                    //viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+                    //vm.AddTool(viewmodel);
+                    MetadataToolModel model = new MetadataToolModel();
+                    MetadataToolController controller = new MetadataToolController(model);
+                    MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+                    viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+                    viewmodel.Width = 500;
+                    viewmodel.Height = 500;
+                    viewmodel.X = position.X;
+                    viewmodel.Y = position.Y;
+                    vm.AddTool(viewmodel);
                     return;
                 case NusysConstants.ElementType.Recording:
                     // add a recording node view to the collection

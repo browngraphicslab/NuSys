@@ -46,8 +46,7 @@ namespace NuSysApp
 
         /// button for export
         public NodeMenuButtonRenderItem BtnExportTrail;
-
-        public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
+        public NuSysRenderer(CanvasAnimatedControl canvas, SessionRootRenderItem root) : base(canvas, root)
         {
             _interactionManager = new RenderItemInteractionManager(this, canvas);
             
@@ -143,11 +142,21 @@ namespace NuSysApp
                             }
                         }
                     }
-
-
-                    if (childItem.HitTest(screenPoint) != null)
+                    if (currentLevel + 1 < maxLevel)
                     {
-                        return childItem;
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return h;
+                        }
+                    }
+                    else
+                    {
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return childItem;
+                        }
                     }
                 }
             }

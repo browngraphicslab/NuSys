@@ -8,6 +8,8 @@ namespace NuSysApp
 {
     public abstract class ToolModel
     {
+        public ToolFilterTypeTitle Filter { get; protected set; }
+
         public enum ToolFilterTypeTitle
         {
             Title,
@@ -45,6 +47,10 @@ namespace NuSysApp
         public void SetParentOperator(ParentOperatorType parentOperator)
         {
             ParentOperator = parentOperator;
+        }
+        public void SetFilter(ToolFilterTypeTitle filter)
+        {
+            Filter = filter;
         }
 
         public void SetOutputLibraryIds(IEnumerable<string> libraryIds)

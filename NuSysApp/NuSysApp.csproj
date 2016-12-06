@@ -117,6 +117,10 @@
     <Content Include="Assets\exploration mode dark.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />
+    <Content Include="Assets\layout_icons\grid_layout_icon.png" />
+    <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
+    <Content Include="Assets\layout_icons\layout_icon.png" />
+    <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
@@ -315,6 +319,7 @@
     <Compile Include="Components\Misc\AdornmentView.xaml.cs">
       <DependentUpon>AdornmentView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\IdViewModelable.cs" />
     <Compile Include="Components\Misc\Library\FileAddedAclsPopup\FileAddedAclsPopup.xaml.cs">
       <DependentUpon>FileAddedAclsPopup.xaml</DependentUpon>
     </Compile>
@@ -351,6 +356,66 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\BaseMediaPlayerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AddRegionPublicPrivateUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AudioMediaContentUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AudioRegionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumb.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumbContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BreadCrumbTrail\BreadCrumbUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Button.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ChatBox\ChatBoxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewAudioPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewImagePage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewLinksPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewMainContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPageContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPageFactory.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPageType.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPageTabType.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPdfRegionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DraggableWindowUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\EllipseUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseInteractiveUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\AddElementMenuUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\FloatingMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\FloatingMenu\LibraryListUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\HorizontalAlignment.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ImageAnalysisUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\LayoutManager.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListViewHeaderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListTextColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewHeader.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewRowUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewUIElementContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\NuSessionViewer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\RecordingNode\RecordingNode.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\RectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ResizeableWindowUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\RoundedRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollableRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollBarUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrubBarUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionRootRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SliderUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\StackAlignment.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\StackLayoutManager.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\TabButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\TabContainerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\TextboxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\User Bubbles\UserBubbleContainerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\VerticalAlignment.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\WindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\PdfDetailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\ImageDetailRenderItem.cs" />
@@ -433,31 +498,10 @@
     <Compile Include="Components\Undo\UndoButton.xaml.cs">
       <DependentUpon>UndoButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
-    <Compile Include="Components\Viewers\Detail\Misc\AddToCollectionButton.xaml.cs">
-      <DependentUpon>AddToCollectionButton.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ShowHideRegionButtons.xaml.cs">
-      <DependentUpon>ShowHideRegionButtons.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
-      <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\ILinkable.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\AliasTabView.xaml.cs">
-      <DependentUpon>AliasTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
-      <DependentUpon>LinkEditorTab.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\AliasTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\AliasTemplate.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
+    <Compile Include="Components\Misc\IMetadatable.cs" />
+    <Compile Include="Components\Misc\ILinkable.cs" />
+    <Compile Include="Components\Misc\AliasTemplate.cs" />
+    <Compile Include="Components\Misc\LinkTemplate.cs" />
     <Compile Include="Components\Viewers\FreeForm\FreeFormElementViewModelFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
@@ -466,6 +510,12 @@
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
+    <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
+    <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
+    <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
@@ -486,19 +536,6 @@
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\ImageDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\PdfDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml.cs">
-      <DependentUpon>MetadataEditorTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml.cs">
-      <DependentUpon>RegionEditorTabView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
     <Compile Include="Components\Viewers\FreeForm\LibraryDragElement.xaml.cs">
@@ -510,38 +547,6 @@
     </Compile>
     <Compile Include="Components\Viewers\Search\SearchViewModel.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
-    <Compile Include="Components\Viewers\Detail\DetailViewHomeTabViewFactory.cs" />
-    <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
-      <DependentUpon>DetailViewerView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\DetailViewerViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml.cs">
-      <DependentUpon>AudioDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml.cs">
-      <DependentUpon>GroupDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml.cs">
-      <DependentUpon>LinkDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml.cs">
-      <DependentUpon>PowerpointDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml.cs">
-      <DependentUpon>VideoDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml.cs">
-      <DependentUpon>WebDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml.cs">
-      <DependentUpon>PdfDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml.cs">
-      <DependentUpon>ImageDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml.cs">
-      <DependentUpon>TextDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\GroupChat\ChatPopupView.xaml.cs">
       <DependentUpon>ChatPopupView.xaml</DependentUpon>
     </Compile>
@@ -1076,74 +1081,6 @@
     <Page Include="Components\Undo\UndoButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Misc\AddToCollectionButton.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ShowHideRegionButtons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\AliasTabView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\GroupChat\ChatPopupView.xaml">
       <SubType>Designer</SubType>

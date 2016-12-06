@@ -11,7 +11,7 @@ namespace NuSysApp
 
         public Tuple<string, HashSet<string>> Selection { get { return (_controller as MetadataToolController).MetadataToolModel.Selection; } set { (_controller as MetadataToolController).SetSelection(value); } }
 
-        public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as MetadataToolController).MetadataToolModel.Filter; } set { (_controller as MetadataToolController).SetFilter(value); } }
+        //public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as MetadataToolController).MetadataToolModel.Filter; } set { (_controller as MetadataToolController).SetFilter(value); } }
 
         /// <summary>
         ///This is the dictionary of items to display
@@ -90,23 +90,6 @@ namespace NuSysApp
             }
         }
 
-        public void SwitchToBasicTool(ToolModel.ToolFilterTypeTitle filter)
-        {
-            BasicToolModel model = new BasicToolModel();
-            BasicToolController controller = new BasicToolController(model);
-            BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-            viewmodel.Filter = filter;
-            BaseToolView view = new BaseToolView(viewmodel, this.X, this.Y);
-            foreach (var id in Controller.GetParentIds())
-            {
-                controller.AddParent(ToolController.ToolControllers[id]);
-            }
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            wvm.AtomViewList.Add(view);
-
-            Controller.FireFilterTypeAllMetadataChanged(viewmodel);
-            this.FireReplacedToolLinkAnchorPoint(viewmodel);
-        }
 
     }
 }

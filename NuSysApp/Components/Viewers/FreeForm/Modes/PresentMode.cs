@@ -55,7 +55,7 @@ namespace NuSysApp
             var frameWorkElemToBeExplored = e.OriginalSource as FrameworkElement;
             if (frameWorkElemToBeExplored != null && frameWorkElemToBeExplored.DataContext as ElementViewModel!=null)
             {
-                SessionController.Instance.SessionView.EnterPresentationMode(frameWorkElemToBeExplored.DataContext as ElementViewModel);
+                //SessionController.Instance.SessionView.EnterPresentationMode(frameWorkElemToBeExplored.DataContext as ElementViewModel);
             }
         }
     }

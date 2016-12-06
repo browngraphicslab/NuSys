@@ -11,7 +11,6 @@ namespace NuSysApp
     {
         
 
-        public ToolFilterTypeTitle Filter { get; private set; }
         public  HashSet<string> Selection { get; protected set; }
 
         public BasicToolModel()
@@ -23,9 +22,6 @@ namespace NuSysApp
         {
             Selection = selection;
         }
-        public void SetFilter(ToolFilterTypeTitle filter)
-        {
-            Filter = filter;
-        }
+        
     }
 }
