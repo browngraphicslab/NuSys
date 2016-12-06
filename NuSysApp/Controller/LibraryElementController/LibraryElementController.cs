@@ -844,7 +844,7 @@ namespace NuSysApp
         /// 
         /// takes in previous and next node as options for trail export
         /// </summary>
-        public async void ExportToHTML(string previous = null, string next = null)
+        public async Task ExportToHTML(string previous = null, string next = null)
         {
             /// create the node's HTML file in the HTML folder
             /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
@@ -918,7 +918,7 @@ namespace NuSysApp
             ///replace metadata
             ///first, turn metadata list into a string that puts new line characters at end of each key value pair
             string metadataString = "";
-            foreach (var metadata in LibraryElementModel.Metadata)
+            foreach (var metadata in LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>())
             {
                 metadataString += metadata.Value.GetMetadataAsString() + "<br>";
             }
