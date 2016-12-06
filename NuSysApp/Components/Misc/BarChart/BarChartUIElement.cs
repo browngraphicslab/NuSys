@@ -12,10 +12,20 @@ namespace NuSysApp
 {
     public class BarChartUIElement : RectangleUIElement
     {
+        /// <summary>
+        /// Possible colors of the bars. If there are more bars than colors, we reuse colors
+        /// </summary>
         public List<Color> Palette { set; get; }
-
+        /// <summary>
+        /// InnerPadding is the distance from the actual bar chart to the outline of the RectangleUIElement
+        /// </summary>
         public float InnerPadding { set; get; }
+        /// <summary>
+        /// Title of the bar chart displayed at the top
+        /// </summary>
         public string Title { set; get; }
+
+        public bool MultiSelect { set; get; }
 
 
         public delegate void BarChartElementSelectedEventHandler(object source, BarChartElement element);
@@ -36,22 +46,26 @@ namespace NuSysApp
 
         public bool DisableSelectionByClick { set; get; }
 
-        private BarChartElement _draggedElement;
-        /// <summary>
-        /// Normalized height of the maximum value in the bar chart
-        /// For example, if the chart is 100 in height, then the largest value is 80 in height
-        /// </summary>
         public float VerticalScale { set; get; }
         /// <summary>
         /// Sum of the normalized widths of the bars.
         /// For example, if the chart is 100 in width and it has four elements, then each bar is 20 in width.
         /// </summary>
         public float HorizontalScale { set; get; }
-
+        /// <summary>
+        /// Number of lines in the scale of the bar chart
+        /// </summary>
         public int NumberOfLines { set; get; }
+
+
+        private BarChartElement _draggedElement;
+        /// <summary>
+        /// Normalized height of the maximum value in the bar chart
+        /// For example, if the chart is 100 in height, then the largest value is 80 in height
+        /// </summary>
+
         private HashSet<BarChartElement> _selectedElements;
 
-        public bool MultiSelect;
         private bool _isDragging;
 
         /// <summary>
@@ -62,11 +76,9 @@ namespace NuSysApp
         public BarChartUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             MultiSelect = false;
-            Title = "My Bar Chart";
+            Title = "";
             Palette = new List<Color>(new[] { Colors.Red, Colors.Blue, Colors.Green, Colors.Yellow });
             Background = Colors.LightBlue;
-            AddElement("Kiana", 1);
-            AddElement("John", 100);
             AddElement("Henri", 2);
             AddElement("Howard", 3);
             AddElement("Joanna", 4);
@@ -89,6 +101,11 @@ namespace NuSysApp
 
             element.Dragged += Element_Dragged;
             element.Released += Element_Released;
+        }
+
+        public void RemoveElement()
+        {
+
         }
 
         private void Element_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
