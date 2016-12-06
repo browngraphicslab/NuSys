@@ -473,6 +473,7 @@ namespace NuSysApp
                         SelectItem(item); 
                     }
                 }
+
                 RowTapped?.Invoke(item, colTitle, pointer);
                 
             }
@@ -676,7 +677,13 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void ScrollTo(T item)
         {
-            
+            var i = _itemsSource.IndexOf(item);
+            if(i < 0)
+            {
+                return;
+            }
+            //Sets the position of the ScrollBar to the position of the item in the list
+            ScrollBar.Position = (float)i / _itemsSource.Count;
         }
 
         /// <summary>
