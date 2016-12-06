@@ -36,14 +36,21 @@ body {
 	justify-content: center;
 	align-items: center;
 	height: 60%;
+    position: relative;
 }
 
 .content {
 	justify-content: center;
 	align-items: center;
-	height: 600px;
     overflow: auto;
     padding: 20px;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    max-height: 500px;
+
 }
 
 .infoTable {

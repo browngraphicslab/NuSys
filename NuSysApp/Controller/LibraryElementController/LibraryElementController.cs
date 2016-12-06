@@ -858,10 +858,10 @@ namespace NuSysApp
                 htmlFolder = await NuSysStorages.NuSysTempFolder.CreateFolderAsync("HTML");
             }
 
-
+            ///make file for the element
             var nodeFile = await htmlFolder.CreateFileAsync(Title + ".html", CreationCollisionOption.ReplaceExisting);
 
-
+            ///create the css file if it does not already exist
             if (!await htmlFolder.ContainsFileAsync("node_template.css"))
             {
                 var cssFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/node_template.css"));
@@ -875,10 +875,13 @@ namespace NuSysApp
             type = type.ToLower();
             var template = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/" + type + "_node_template.html"));
 
-            ///replace info for file
+            ///replace info for file - essentially string replaceing 
             string text = await FileIO.ReadTextAsync(template);
+
+            ///title
             text = text.Replace("[[title]]", Title);
 
+            ///if pdf, replace the data in a specific way to get div to scroll w/ images
             if (LibraryElementModel.Type == NusysConstants.ElementType.PDF)
             {
                 string htmlImages = "";
@@ -890,18 +893,38 @@ namespace NuSysApp
             }
             else
             {
+                ///else replace with content data model data
                 text = text.Replace("[[data]]", ContentDataController.ContentDataModel.Data);
             }
             
+            ///creator
             text = text.Replace("[[creator]]", SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(LibraryElementModel.Creator));
+
+            ///timestamp
             text = text.Replace("[[timestamp]]", LibraryElementModel.LastEditedTimestamp);
+
+            ///if there are keywords, replace them
             if (LibraryElementModel.Keywords != null)
             {
                 var tags = LibraryElementModel.Keywords.ToList();
                 string tagtext = string.Join(", ", tags.Select(tag => string.Join(", ", tag.Text)));
                 text = text.Replace("[[tags]]", tagtext);
             }
+            else
+            {
+                text = text.Replace("[[tags]]", "None");
+            }
 
+            ///replace metadata
+            ///first, turn metadata list into a string that puts new line characters at end of each key value pair
+            string metadataString = "";
+            foreach (var metadata in LibraryElementModel.Metadata)
+            {
+                metadataString += metadata.Value.GetMetadataAsString() + "<br>";
+            }
+            text = text.Replace("[[metadata]]", metadataString);
+
+            ///set links for previous and next buttons
             if (previous != null)
             {
                 text = text.Replace("[[previous]]", previous + ".html");
@@ -920,6 +943,7 @@ namespace NuSysApp
                 text = text.Replace("[[next]]", "");
             }
 
+            ///update file with replaced text
             await FileIO.WriteTextAsync(nodeFile, text);
         }
     }
