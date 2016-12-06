@@ -218,6 +218,7 @@ namespace NuSysApp
         /// Adds an element of elementType to the current collection, at the point on the collection directly under screenpoint. If the element can exist without any
         /// predefined content, such as an empty text node, or collection node, then lec can be a null argument and the empty element will be created. Otherwise if content
         /// is required, the associated library element controller must be passed in.
+        /// This method safety checks to make sure acls are respected
         /// </summary>
         /// <param name="screenPoint">Point on the screen the new element will be created directly under this point on the main collection</param>
         /// <param name="elementType">The type of the elementy we are going to create. Must be able to exist without predefined content if library element controller is null</param>
@@ -286,11 +287,19 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
                 contentRequest.AddReturnedLibraryElementToLibrary();
 
-                // get the library element id and content id for use outside of this if statement
+                // get the library element id and content id and library element controller for use outside of this if statement 
                 libraryElementId = createNewContentRequestArgs.LibraryElementArgs.LibraryElementId;
                 contentId = createNewContentRequestArgs.ContentId;
+                lec = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementId);
             }
 
+            // if the item is private and the workspace is public or the item is the current workspace then don't add it
+            if ((lec.LibraryElementModel.AccessType == NusysConstants.AccessType.Private &&
+                SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType == NusysConstants.AccessType.Public) || 
+                lec.LibraryElementModel.LibraryElementId == SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId)
+            {
+                return;
+            }
 
             // create a new add element to collection request
             var newElementRequestArgs = new NewElementRequestArgs

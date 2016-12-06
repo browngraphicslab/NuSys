@@ -8,7 +8,6 @@ namespace NuSysApp
 {
     class BrushManager
     {
-        createmask(BrushFilter )
 
     }
 }
