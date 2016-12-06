@@ -371,8 +371,8 @@ namespace NuSysApp
             {
                 var presLink = dataContext as PresentationLinkViewModel;
 
-                var atom1 = PresentationMode.GetElementViewModelFromId(presLink.Model.InElementId);
-                var atom2 = PresentationMode.GetElementViewModelFromId(presLink.Model.OutElementId);
+                var atom1 = PresentationMode.GetElementViewModelFromId(presLink.Model.OutElementId);
+                var atom2 = PresentationMode.GetElementViewModelFromId(presLink.Model.InElementId);
 
                 // if atom1 is currently selected move to atom2
                 if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(atom1))

@@ -44,6 +44,9 @@ namespace NuSysApp
         private RenderItemInteractionManager _interactionManager;
         private bool _isInitialized;
 
+        /// button for export
+        public NodeMenuButtonRenderItem BtnExportTrail;
+
         public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
         {
             _interactionManager = new RenderItemInteractionManager(this, canvas);
@@ -190,10 +193,15 @@ namespace NuSysApp
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", Root, CanvasAnimatedControl);
             BtnDelete.IsVisible = false;
+
+            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", Root, CanvasAnimatedControl);
+            BtnExportTrail.IsVisible = false;
+
             Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
             Root.AddChild(InkOptions);
             Root.AddChild(BtnDelete);
+            Root.AddChild(BtnExportTrail);
 
             _isInitialized = true;
         }

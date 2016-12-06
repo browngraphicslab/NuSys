@@ -199,8 +199,8 @@ namespace NuSysApp
 
                 foreach (var trail in Trails.ToList())
                 {
-                    if (trail.Model.InElementId == soughtChild.Id ||
-                        trail.Model.OutElementId == soughtChild.Id)
+                    if (trail.Model.OutElementId == soughtChild.Id ||
+                        trail.Model.InElementId == soughtChild.Id)
                     {
                         trail.DeletePresentationLink();
                         Trails.Remove(trail);

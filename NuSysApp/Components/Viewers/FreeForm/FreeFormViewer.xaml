@@ -48,9 +48,8 @@
             </Canvas>
             
             <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed"></local:UndoButton>
-            
-            <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
 
+            <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
         </Canvas>
     </Canvas>
 

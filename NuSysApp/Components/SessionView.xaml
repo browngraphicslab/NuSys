@@ -90,6 +90,5 @@
         <Grid x:Name="xLoadingGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#55000000" Visibility="Collapsed">
             <local:LoadingScreen></local:LoadingScreen>
         </Grid>
-
     </Grid>
 </Page>
