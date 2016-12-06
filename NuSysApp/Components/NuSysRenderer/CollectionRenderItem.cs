@@ -519,6 +519,9 @@ namespace NuSysApp
                 item = new TrailRenderItem((PresentationLinkViewModel)vm, this, ResourceCreator);
                 _renderItems1.Add(item);
             }
+            /*
+             * Zach's addition
+             */
             else if (vm is RectangleUIElement)
             {
                 /*
@@ -595,7 +598,7 @@ namespace NuSysApp
             if (_listView == null && _listViewMask==null)
             {
                 SetUpListViewMask(_parent,_canvas);
-                //SetUpListView(_parent, _canvas, null, cids);
+                SetUpListView(_parent, _canvas, null, cids);
             }
             else
             {
@@ -623,8 +626,8 @@ namespace NuSysApp
             _listViewMask.Height = (float)ViewModel.Height;
             //_listViewMask.Background = Colors.White;
             _listViewMask.Background = Colors.Fuchsia;
-            //AddChild(_listViewMask);
-            AddItem(_listViewMask);
+            AddChild(_listViewMask);
+            //AddItem(_listViewMask);
         }
 
         /// <summary>
@@ -632,9 +635,9 @@ namespace NuSysApp
         /// </summary>
         private void RemoveListViewAndMask()
         {
-            //Remove(_listView);
+            Remove(_listView);
             Remove(_listViewMask);
-            //_listView = null;
+            _listView = null;
             _listViewMask = null;
         }
 
@@ -671,8 +674,8 @@ namespace NuSysApp
              * Add it as a child of the CRI and to a layout mgr to format 
              * its size and location (jk, no layout mgr here)
              */
-            //AddChild(_listView);
-            AddItem(_listView);
+            AddChild(_listView);
+            //AddItem(_listView);
 
         }
 
