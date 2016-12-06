@@ -12,7 +12,7 @@ using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
-    class CheckBoxUIElement : RectangleUIElement
+    public class CheckBoxUIElement : RectangleUIElement
     {
 
         /// <summary>
@@ -228,8 +228,9 @@ namespace NuSysApp
 
             // set some default ui values, others are below
             ErrorMargin = 10;
-            Height = 25;
-            Width = 125;
+            Height = UIDefaults.CheckBoxUIElementHeight;
+            Width = UIDefaults.CheckBoxUIElementWidth;
+            LabelPosition = UIDefaults.CheckBoxLabelPosition;
 
             // add the checkbox
             _checkBoxButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
@@ -240,9 +241,9 @@ namespace NuSysApp
             AddChild(_checkBoxButton);
 
             // set the default ui values for the new checkbox, do this after initializing checkbox because properties change checkbox values
-            CheckBoxHeight = 15;
+            CheckBoxHeight = UIDefaults.CheckBoxHeight;
             SpaceBetweenCheckboxAndLabel = 10; // set this before checkboxwidth since the checkboxWidth uses this in its calculations
-            CheckBoxWidth = 15;
+            CheckBoxWidth = UIDefaults.CheckBoxWidth;
             CheckBoxBorderColor = Colors.Black;
             CheckBoxBackground = Colors.White;
 
@@ -251,6 +252,7 @@ namespace NuSysApp
             {
                 IsHitTestVisible = false,
             };
+            LabelTextHorizontalAlignment = UIDefaults.CheckBoxLabelTextHorizontalAlignmentAlignment;
             AddChild(_labelElement);
 
 

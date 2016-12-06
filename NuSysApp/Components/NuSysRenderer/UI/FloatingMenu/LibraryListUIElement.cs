@@ -99,6 +99,11 @@ namespace NuSysApp
 
         private float _filterButtonWidth = 50;
 
+        /// <summary>
+        /// the menu used for filtering library elements
+        /// </summary>
+        private FilterMenu _filterMenu;
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -149,6 +154,9 @@ namespace NuSysApp
                 Bordercolor = Colors.Gray
             };
             AddChild(_filterButton);
+
+            _filterMenu = new FilterMenu(this, Canvas);
+            AddChild(_filterMenu);
             
 
             // initialize the list of library drag elements
@@ -377,6 +385,7 @@ namespace NuSysApp
             _searchBar.Width = Width - 2*BorderWidth - _filterButtonWidth;
             _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - _searchBarHeight);
             _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - _searchBarHeight);
+            _filterMenu.Transform.LocalPosition = new Vector2(Width, 0);
 
             base.Update(parentLocalToScreenTransform);
         }
