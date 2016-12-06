@@ -37,7 +37,18 @@ namespace NuSysApp
         public bool DisableSelectionByClick { set; get; }
 
         private BarChartElement _draggedElement;
+        /// <summary>
+        /// Normalized height of the maximum value in the bar chart
+        /// For example, if the chart is 100 in height, then the largest value is 80 in height
+        /// </summary>
+        public float VerticalScale { set; get; }
+        /// <summary>
+        /// Sum of the normalized widths of the bars.
+        /// For example, if the chart is 100 in width and it has four elements, then each bar is 20 in width.
+        /// </summary>
+        public float HorizontalScale { set; get; }
 
+        public int NumberOfLines { set; get; }
         private HashSet<BarChartElement> _selectedElements;
 
         public bool MultiSelect;
@@ -54,12 +65,15 @@ namespace NuSysApp
             Title = "My Bar Chart";
             Palette = new List<Color>(new[] { Colors.Red, Colors.Blue, Colors.Green, Colors.Yellow });
             Background = Colors.LightBlue;
-            AddElement("Kiana", 8);
-            AddElement("John", 3);
-            AddElement("Henri", 5);
-            AddElement("Howard", 12);
-            AddElement("Joanna", 1);
+            AddElement("Kiana", 1);
+            AddElement("John", 100);
+            AddElement("Henri", 2);
+            AddElement("Howard", 3);
+            AddElement("Joanna", 4);
             InnerPadding = 50;
+            VerticalScale = 0.8f;
+            HorizontalScale = 0.8f;
+            NumberOfLines = 10;
             _isDragging = false;
             _selectedElements = new HashSet<BarChartElement>();
         }
@@ -67,7 +81,7 @@ namespace NuSysApp
         public void AddElement(string item, int value)
         {
             var element = new BarChartElement(Parent, ResourceCreator);
-
+            element.Bordercolor = Colors.Black;
             element.Background = Palette[_children.Count % Palette.Count];
             element.Item = item;
             element.Value = value;
@@ -173,26 +187,30 @@ namespace NuSysApp
 
 
         }
-
+        /// <summary>
+        /// Draws the scale on the side
+        /// </summary>
+        /// <param name="ds"></param>
         private void DrawScale(CanvasDrawingSession ds)
         {
             var total = _children.Sum(element => (element as BarChartElement).Value);
+            var max = _children.Max(element => (element as BarChartElement).Value);
 
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-            var numLines = 10f;
+            var maxYVal = max + NumberOfLines - max % NumberOfLines;
 
             var realHeight = Height - InnerPadding * 2;
             var start = Height - InnerPadding;
-            for (int i = 0; i < numLines; i++)
+            for (float i = 0; i <= NumberOfLines; i+= 1f)
             {
-                var point0 = new Vector2(InnerPadding - 5,  start - realHeight * i/numLines);
-                var point1 = new Vector2(InnerPadding, start - realHeight * i/numLines);
+                var point0 = new Vector2(InnerPadding - 5,  start - realHeight * i/ NumberOfLines);
+                var point1 = new Vector2(InnerPadding, start - realHeight * i/ NumberOfLines);
 
                 ds.DrawLine(point0, point1, Colors.Black);
 
                 var p = point0;
-                var text = (total* i/numLines).ToString();
+                var text = (maxYVal * i/ NumberOfLines).ToString();
                 ds.DrawText(
                     text,
                     p,
@@ -218,7 +236,7 @@ namespace NuSysApp
 
         private void DrawTitle(CanvasDrawingSession ds)
         {
-            var p = new Vector2(Width/2, InnerPadding + 16);
+            var p = new Vector2(Width/2, InnerPadding /2);
                 ds.DrawText(
         Title,
         p,
@@ -233,10 +251,12 @@ namespace NuSysApp
         private void DrawBars(CanvasDrawingSession ds)
         {
             var total = _children.Sum(element => (element as BarChartElement).Value);
+            var max = _children.Max(element => (element as BarChartElement).Value);
+            var maxYval = max + NumberOfLines - max % NumberOfLines;
             var offset = InnerPadding;
             var h = Height - InnerPadding * 2;
             var w = Width - InnerPadding * 2;
-            var barWidth = 0.8f * w / _children.Count;
+            var barWidth = HorizontalScale * w / _children.Count;
             var spacing = 0.2f * w / (_children.Count - 1);
             foreach (var child in _children)
             {
@@ -246,18 +266,16 @@ namespace NuSysApp
                 //Marks if selected
                 if (_selectedElements.Contains(element))
                 {
-                    element.Bordercolor = Colors.Black;
                     element.BorderWidth = 4;
                 }else
                 {
-                    //element.Bordercolor = Colors.Black;
                     element.BorderWidth = 0;
                 }
 
 
 
                 element.Width = barWidth;
-                element.Height = element.Value / total * h;
+                element.Height = element.Value / maxYval * h;
 
                 element.Transform.LocalPosition = new System.Numerics.Vector2(offset, Height - InnerPadding - element.Height);
                 offset += barWidth + spacing;
