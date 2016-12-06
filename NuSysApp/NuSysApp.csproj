@@ -482,7 +482,6 @@
       <DependentUpon>AddToCollectionButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\IdViewModelable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
@@ -514,8 +513,13 @@
     <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\iLink.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkController.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkRenderitem.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkViewModelWin2d.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />

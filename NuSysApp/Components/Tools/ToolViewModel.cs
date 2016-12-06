@@ -13,9 +13,9 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public abstract class ToolViewModel : BaseINPC, ToolLinkable, IdViewModelable
+    public abstract class ToolViewModel : ElementViewModel, ToolLinkable
     {
-        public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller).Model.Filter; } set { (_controller).SetFilter(value); } }
+        public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller).ToolModel.Filter; } set { (_controller).SetFilter(value); } }
 
 
         public bool IsSelected { get { return false; } }
@@ -50,42 +50,57 @@ namespace NuSysApp
        
         public Point2d ToolAnchor { get { return _anchor; } }
         public ToolController Controller { get { return _controller; } }
-        public double Height
-        {
-            set
-            {
-                _height = value;
-                RaisePropertyChanged("Height");
-            }
-            get
-            {
-                return _height;
-            }
-        }
-        public double X
-        {
-            set
-            {
-                _x = value;
-                RaisePropertyChanged("X");
-            }
-            get
-            {
-                return _x;
-            }
-        }
-        public double Y
-        {
-            set
-            {
-                _y = value;
-                RaisePropertyChanged("Y");
-            }
-            get
-            {
-                return _y;
-            }
-        }
+        //public double Height
+        //{
+        //    set
+        //    {
+        //        _height = value;
+        //        RaisePropertyChanged("Height");
+        //    }
+        //    get
+        //    {
+        //        return _height;
+        //    }
+        //}
+
+
+        //public double Width
+        //{
+        //    set
+        //    {
+        //        _width = value;
+        //        RaisePropertyChanged("Width");
+        //    }
+        //    get
+        //    {
+        //        return _width;
+        //    }
+        //}
+
+        //public double X
+        //{
+        //    set
+        //    {
+        //        _x = value;
+        //        RaisePropertyChanged("X");
+        //    }
+        //    get
+        //    {
+        //        return _x;
+        //    }
+        //}
+        //public double Y
+        //{
+        //    set
+        //    {
+        //        _y = value;
+        //        RaisePropertyChanged("Y");
+        //    }
+        //    get
+        //    {
+        //        return _y;
+        //    }
+        //}
         public CompositeTransform Transform
         {
             get { return _transform; }
@@ -99,20 +114,8 @@ namespace NuSysApp
                 RaisePropertyChanged("Transform");
             }
         }
-        public double Width
-        {
-            set
-            {
-                _width = value;
-                RaisePropertyChanged("Width");
-            }
-            get
-            {
-                return _width;
-            }
-        }
 
-        public ToolViewModel(ToolController toolController)
+        public ToolViewModel(ToolController toolController):base(toolController)
         {
             CalculateAnchorPoint();
             _controller = toolController;
@@ -207,7 +210,7 @@ namespace NuSysApp
 
                 int i = 0;
                // Add all the elements to the newly created collection
-                foreach (var id in Controller.Model.OutputLibraryIds)
+                foreach (var id in Controller.ToolModel.OutputLibraryIds)
                 {
                     if (i > 14)
                     {
@@ -271,7 +274,7 @@ namespace NuSysApp
                 // use the i counter to offset each new element in the stack
                 int i = 0;
                 int offset = 40;
-                foreach (var id in Controller.Model.OutputLibraryIds)
+                foreach (var id in Controller.ToolModel.OutputLibraryIds)
                 {
                     if (i > 14)
                     {
@@ -322,9 +325,9 @@ namespace NuSysApp
         /// </summary>
         public void OpenDetailView()
         {
-            if (Controller.Model.OutputLibraryIds.Count == 1)
+            if (Controller.ToolModel.OutputLibraryIds.Count == 1)
             {
-                var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.Model.OutputLibraryIds.First());
+                var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.ToolModel.OutputLibraryIds.First());
                 SessionController.Instance.SessionView.ShowDetailView(lem);
             }
             
@@ -336,7 +339,7 @@ namespace NuSysApp
         public bool CreatesLoop(ToolViewModel toolViewModel)
         {
             bool createsLoop = false;
-            var controllers = new List<ToolStartable>(Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
+            var controllers = new List<ToolStartable>(Controller.ToolModel.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
 
             while (controllers != null && controllers.Count != 0)
             {
@@ -457,7 +460,7 @@ namespace NuSysApp
         {
             //var toolFilter = new ToolFilterView(x, y, this);
 
-            //var linkviewmodel = new ToolLinkViewModel(this, toolFilter);
+            //var linkviewmodel = new ToolLinkViewModelWin2d(this, toolFilter);
             //var link = new ToolLinkView(linkviewmodel);
 
             //Canvas.SetZIndex(link, Canvas.GetZIndex(toolFilter) - 1);
@@ -475,7 +478,14 @@ namespace NuSysApp
                 viewmodel.X = x;
                 viewmodel.Y = y;
                 viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
-                SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
+
+                var linkModel = new ToolLinkModel();
+                linkModel.InAtomId = this.Id;
+                linkModel.OutAtomId = model.Id;
+                var linkController = new ToolLinkController(linkModel);
+                var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel, linkViewModel);
+
             });
         }
 
@@ -501,7 +511,7 @@ namespace NuSysApp
             {
                 if (!CreatesLoop(toolViewModel))
                 {
-                    //var linkviewmodel = new ToolLinkViewModel(this, toolViewModel);
+                    //var linkviewmodel = new ToolLinkViewModelWin2d(this, toolViewModel);
                     //var link = new ToolLinkView(linkviewmodel);
                     //Canvas.SetZIndex(link, Canvas.GetZIndex(hitsStartList.First()) - 1);
                     //wvm.AtomViewList.Add(link);

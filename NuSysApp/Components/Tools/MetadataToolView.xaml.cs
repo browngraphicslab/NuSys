@@ -85,7 +85,7 @@ namespace NuSysApp
             {
                 var vm = DataContext as MetadataToolViewModel;
                 if (vm.Selection != null &&
-                    (vm.Controller as MetadataToolController).Model.Selected &&
+                    (vm.Controller as MetadataToolController).ToolModel.Selected &&
                     vm.Selection.Item1 != null)
                 {
                     if (xMetadataKeysList.SelectedItem != vm.Selection.Item1)
@@ -148,7 +148,7 @@ namespace NuSysApp
         {
             UITask.Run(delegate {
                 var vm = (DataContext as MetadataToolViewModel);
-                if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
+                if (vm?.Selection?.Item1 != null && vm.Controller.ToolModel.Selected)
                 {
                     var filteredList = FilterValuesList(xSearchBox.Text);
                     if (!ScrambledEquals(xMetadataValuesList.Items.Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
@@ -265,12 +265,12 @@ namespace NuSysApp
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = DataContext as ToolViewModel;
-            if (vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            if (vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
                 xParentOperatorText.Text = "OR";
             }
-            else if (vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            else if (vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.Or)
             {
                 vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
                 xParentOperatorText.Text = "AND";
@@ -606,7 +606,7 @@ namespace NuSysApp
         private void KeyListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (vm.Controller.Model.Selected &&
+            if (vm.Controller.ToolModel.Selected &&
                 vm.Selection.Item1.Equals(
                     GetTextFromListItemGrid(sender as Grid)))
             {
@@ -625,7 +625,7 @@ namespace NuSysApp
         private void ValueListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
+            if (vm.Controller.ToolModel.Selected && vm.Selection.Item2 != null &&
                 vm.Selection.Item2.Contains(
                     GetTextFromListItemGrid(sender as Grid)))
             {

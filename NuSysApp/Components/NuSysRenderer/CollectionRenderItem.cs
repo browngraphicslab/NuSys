@@ -19,6 +19,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Mathematics;
+using MyToolkit.Utilities;
 using NusysIntermediate;
 using Wintellect.PowerCollections;
 
@@ -36,6 +37,7 @@ namespace NuSysApp
 
         protected List<BaseRenderItem> _renderItems0 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems1 = new List<BaseRenderItem>();
+
         protected List<BaseRenderItem> _renderItems2 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems3 = new List<BaseRenderItem>();
 
@@ -66,6 +68,7 @@ namespace NuSysApp
 
             vm.Elements.CollectionChanged += OnElementsChanged;
             vm.Links.CollectionChanged += OnElementsChanged;
+            vm.ToolLinks.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
         }
@@ -83,6 +86,7 @@ namespace NuSysApp
 
                 ViewModel.Elements.CollectionChanged -= OnElementsChanged;
                 ViewModel.Links.CollectionChanged -= OnElementsChanged;
+                ViewModel.ToolLinks.CollectionChanged -= OnElementsChanged;
                 ViewModel.Trails.CollectionChanged -= OnElementsChanged;
                 ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
 
@@ -142,12 +146,14 @@ namespace NuSysApp
                 {
                     AddItem(elementViewModel);
                 }
-
+                foreach (var elementViewModel in ViewModel.ToolLinks.ToArray())
+                {
+                    AddItem(elementViewModel);
+                }
                 foreach (var linkViewModel in ViewModel.Links.ToArray())
                 {
                     AddItem(linkViewModel);
                 }
-
 
                 foreach (var tailViewModel in ViewModel.Trails.ToArray())
                 {
@@ -461,6 +467,11 @@ namespace NuSysApp
                 var tool = new MetadataToolWindow(this, ResourceCreator, (MetadataToolViewModel)vm);
                 _renderItems3?.Add(tool);
             }
+            else if (vm is ToolLinkViewModelWin2d)
+            {
+                var link = new ToolLinkRenderitem((ToolLinkViewModelWin2d)vm, this, ResourceCreator);
+                _renderItems1?.Add(link);
+            }
             else if (vm is TextNodeViewModel)
             {
                 item = new TextElementRenderItem((TextNodeViewModel)vm, this, ResourceCreator);
@@ -520,15 +531,32 @@ namespace NuSysApp
         private void RemoveItem(object item)
         {
 
-            if (item is ElementViewModel) { 
-                var renderItem = _renderItems2.OfType<ElementRenderItem>().Where(el => el.ViewModel == item);
+            if (item is ElementViewModel)
+            {
+                IEnumerable<BaseRenderItem> renderItem;
+                if (item is ToolViewModel)
+                {
+                    renderItem = _renderItems3.OfType<ToolWindow>().Where(el => el.Vm == item);
+                }
+                else
+                {
+                    renderItem = _renderItems2.OfType<ElementRenderItem>().Where(el => el.ViewModel == item);
+                }
                 if (renderItem.Any())
                 {
                     var element = renderItem.First();
                     Remove(element);
                 }
             }
-
+            if (item is ToolLinkViewModelWin2d)
+            {
+                var renderItem = _renderItems1.OfType<ToolLinkRenderitem>().Where(el => el.ViewModel == item);
+                if (renderItem.Any())
+                {
+                    var element = renderItem.First();
+                    Remove(element);
+                }
+            }
             if (item is LinkViewModel)
             {
                 var linkItem = _renderItems1.OfType<LinkRenderItem>().Where(el => el.ViewModel == item);

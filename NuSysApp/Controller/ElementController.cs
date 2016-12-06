@@ -20,7 +20,7 @@ namespace NuSysApp
         /// count to represent how many unpacks are currently running.
         /// This is being used to replace the boolean. If this number is greater than 0, then an unpack is currently happening
         /// </summary>
-        private int _blockServerInteractionCount;
+        protected int _blockServerInteractionCount;
 
         private bool _blockServerInteraction
         {
@@ -298,7 +298,7 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(Model.LibraryId != null);
+                //Debug.Assert(Model.LibraryId != null);
                 return SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId);
             }
         }
@@ -320,7 +320,7 @@ namespace NuSysApp
             }
         }
 
-        public string ContentId
+        public string LibraryElementId
         {
             get
             {

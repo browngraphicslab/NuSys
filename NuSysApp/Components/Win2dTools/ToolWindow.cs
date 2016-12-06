@@ -151,7 +151,7 @@ namespace NuSysApp
             if (numOfParents > 1)
             {
                 _parentOperatorButton.IsVisible = true;
-                _parentOperatorButton.ButtonText = Vm.Controller.Model.ParentOperator.ToString();
+                _parentOperatorButton.ButtonText = Vm.Controller.ToolModel.ParentOperator.ToString();
             }
             else
             {
@@ -367,17 +367,15 @@ namespace NuSysApp
             _filterChooser.IsVisible = false;
             //var vm = Vm as BasicToolViewModel;
             var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item.ButtonText);
-            var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)Transform.Position.X, (float)Transform.Position.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
             if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
-                //TODO: I think dispose is getting called before switching to all metadata tool
-                await Vm.SwitchToAllMetadataTool((float)canvasCoordinate.X, (float)canvasCoordinate.Y);
-                this.Dispose();
+                await Vm.SwitchToAllMetadataTool((float)Transform.LocalX, (float)Transform.LocalY);
+                Delete();
             }
             else if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
-                await Vm.SwitchToBasicTool(filter, (float)canvasCoordinate.X, (float)canvasCoordinate.Y);
-                this.Dispose();
+                await Vm.SwitchToBasicTool(filter, (float)Transform.LocalX, (float)Transform.LocalY);
+                Delete();
             }
             else
             {
@@ -444,8 +442,17 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _deleteButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private async void _deleteButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
         {
+            Delete();
+        }
+
+        public async void Delete()
+        {
+            await UITask.Run(() =>
+            {
+                Vm.Controller.Delete(this);
+            });
             Dispose();
         }
 
@@ -468,12 +475,12 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _parentOperatorButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
         {
-            if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
                 _parentOperatorButton.ButtonText = "OR";
             }
-            else if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            else if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.Or)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
                 _parentOperatorButton.ButtonText = "AND";
@@ -481,7 +488,14 @@ namespace NuSysApp
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {            
+        {
+            if (Vm != null)
+            {
+                Vm.X = Transform.LocalX;
+                Vm.Y = Transform.LocalY;
+                Vm.Height = Height;
+                Vm.Width = Width;
+            }
             //Make the width of the filter chooser and the button always fill the window
             if (_filterChooser != null)
             {

@@ -14,7 +14,7 @@ namespace NuSysApp
 
         string Id { get; }
 
-        string ContentId { get; }
+        string LibraryElementId { get; }
 
         void UpdateCircleLinks();
 
