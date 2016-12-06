@@ -9,6 +9,7 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using NuSysApp.Network.Requests;
 
 namespace NuSysApp
@@ -33,9 +34,15 @@ namespace NuSysApp
 
         public BreadCrumbContainer TrailBox;
 
+        private CheckBoxUIElement _checkbox;
+
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
+            _checkbox = new CheckBoxUIElement(this, canvas);
+            AddChild(_checkbox);
+            _checkbox.Transform.LocalPosition = new Vector2(600, 600);
+
             Background = Colors.Transparent;
             SessionController.Instance.NuSessionView = this; // set the session controller's getter for the NuSessionView
 
