@@ -17,8 +17,10 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Mathematics;
+using MyToolkit.Utilities;
 using NusysIntermediate;
 using Wintellect.PowerCollections;
 
@@ -49,6 +51,12 @@ namespace NuSysApp
         public int NumLinks => ViewModel.Links.Count;
 
         private CollectionRenderItem _parent;
+  
+        /// <summary>
+        /// ListView and its mask will be null when inactive.
+        /// </summary>
+        private ListViewUIElementContainer<string> _listView;
+        private RectangleUIElement _listViewMask;
 
 
 
@@ -74,6 +82,7 @@ namespace NuSysApp
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
 
             _parent = parent;
+           
         }
 
         public override void Dispose()
@@ -197,6 +206,17 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
+
+            /*
+             * Update dimensions of listview and its mask, if applicable
+             */
+            if (_listView!=null && ViewModel!=null && _listViewMask!=null)
+            {  
+                _listView.Width = (float) ViewModel.Width;
+                _listView.Height = (float) ViewModel.Height;
+                _listViewMask.Width = (float)ViewModel.Width;
+                _listViewMask.Height = (float)ViewModel.Height;
+            }
 
             _elementSize = new Size(ViewModel.Width, ViewModel.Height);
 
@@ -488,6 +508,7 @@ namespace NuSysApp
                 await item.Load();
                 _renderItems2?.Add(item);
             }
+   
             else if (vm is LinkViewModel)
             {
                 item = new LinkRenderItem((LinkViewModel) vm, this, ResourceCreator);
@@ -497,6 +518,22 @@ namespace NuSysApp
             {
                 item = new TrailRenderItem((PresentationLinkViewModel)vm, this, ResourceCreator);
                 _renderItems1.Add(item);
+            }
+            else if (vm is RectangleUIElement)
+            {
+                /*
+                 * TODO: WTF IS GOING ON, HOW TO DO I GET THE RECTANGLE TO SHOW UP!!!
+                 */
+                var rect = vm as RectangleUIElement;
+                //item.Transform.Translate((float) ViewModel.X,(float)ViewModel.Y);
+                rect.Height = 500000;
+                rect.Width = 500000;
+                //rect.Background = Colors.Blue;
+                var foo = GetCenterOnScreen();
+                var fa = this.ViewModel.Anchor;
+                //rect.Transform.Translate((float)fa.X,(float)fa.Y);
+                await rect.Load();
+                _renderItems2?.Add(rect);
             }
 
             item?.Transform.SetParent(Camera);
@@ -549,10 +586,56 @@ namespace NuSysApp
             }
         }
 
-
-        public void SetUpListViewPublic(List<string> cids)
+        /// <summary>
+        /// Toggles the presence of the list view and its mask
+        /// </summary>
+        /// <param name="cids"></param>
+        public void ToggleListView(List<string> cids)
         {
-            SetUpListView(_parent,_canvas,null,cids);
+            if (_listView == null && _listViewMask==null)
+            {
+                SetUpListViewMask(_parent,_canvas);
+                //SetUpListView(_parent, _canvas, null, cids);
+            }
+            else
+            {
+               RemoveListViewAndMask();
+            }
+        }
+
+        /// <summary>
+        /// Enums to be used in column generation for the list view
+        /// </summary>
+        private enum ColumnType
+        {
+            Title,Type,Creator
+        }
+
+        /// <summary>
+        /// Sets up the mask behind the list view
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
+        private void SetUpListViewMask(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
+        {
+            _listViewMask = new RectangleUIElement(parent, resourceCreator);
+            _listViewMask.Width = (float)ViewModel.Width;
+            _listViewMask.Height = (float)ViewModel.Height;
+            //_listViewMask.Background = Colors.White;
+            _listViewMask.Background = Colors.Fuchsia;
+            //AddChild(_listViewMask);
+            AddItem(_listViewMask);
+        }
+
+        /// <summary>
+        /// Graphically removes list view and mask and sets variables to null
+        /// </summary>
+        private void RemoveListViewAndMask()
+        {
+            //Remove(_listView);
+            Remove(_listViewMask);
+            //_listView = null;
+            _listViewMask = null;
         }
 
         /// <summary>
@@ -561,45 +644,82 @@ namespace NuSysApp
         private void SetUpListView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, List<string> childElementIds)
         {
             /*
-             * Instanatiate new ListView UI component and create the first (and only) title column
+             * Instanatiate new ListView UI component and set some basic properties
              */
-            var listView = new ListViewUIElementContainer<string>(parent, resourceCreator);
-            listView.ShowHeader = false;
-            listView.Width = (float)_parent.Mask.ComputeBounds().Width;
-            listView.Height = (float) _parent.Mask.ComputeBounds().Height;
-            ListTextColumn<string> title = new ListTextColumn<string>();
-            title.Title = "TITLE:";
-            title.RelativeWidth = 1;
+            _listView = new ListViewUIElementContainer<string>(parent, resourceCreator);
+            _listView.ShowHeader = true;
+            _listView.Width = (float)ViewModel.Width;
+            _listView.Height = (float)ViewModel.Height;         
 
             /*
-             * Set up column function to take in an element ID, and returns the title of the element
-             */
-            title.ColumnFunction = delegate (string id)
-            {
-                var ec= SessionController.Instance.IdToControllers[id];
-                Debug.Assert(ec != null);
-                return ec.Model.Title;
-            };
-      
-            /*
-             * Set some more column properties
+             * Set up the columns by using a helper function
              */
             var cols = new List<ListColumn<string>>();
-            cols.Add(title);
-            listView.AddColumns(cols);
-            listView.Transform.LocalPosition = new Vector2(0, 0);
+            cols.Add(this.GenerateListTextColumn("Title", 2, ColumnType.Title));
+            cols.Add(this.GenerateListTextColumn("Type", 1, ColumnType.Type));
+            cols.Add(this.GenerateListTextColumn("Creator", 1, ColumnType.Creator));
+            _listView.AddColumns(cols);
+            _listView.Transform.LocalPosition = new Vector2(0, 0);
 
             /*
-             * Since we are adding the child element IDs as items, the column function will return their titles
+             * Add the child element IDs as items so that the column functions can use them to get 
+             * relevant information 
              */
-            listView.AddItems(childElementIds); 
+            _listView.AddItems(childElementIds);
 
             /*
              * Add it as a child of the CRI and to a layout mgr to format 
              * its size and location (jk, no layout mgr here)
              */
-            AddChild(listView);
-            //_layoutManager.AddElement(listView); Is there a layout manager for collection render items??
+            //AddChild(_listView);
+            AddItem(_listView);
+
         }
+
+        /// <summary>
+        /// Returns a list text column based on the passed in specifications.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="relWidth"></param>
+        /// <param name="colType"></param>
+        /// <returns></returns>
+        private ListTextColumn<string> GenerateListTextColumn(string title, float relWidth, ColumnType colType)
+        {
+
+            /*
+             * Instantiate a new list text column, set some basic properties
+             */
+            var column = new ListTextColumn<string>();
+            column.Title = title;
+            column.RelativeWidth = relWidth;
+           
+
+            /*
+             * Set up column function to take in an element ID, and returns something based on the
+             * ColumnType...i.e. creator, title, etc
+             */
+            column.ColumnFunction = delegate (string id)
+            {
+                var ec = SessionController.Instance.IdToControllers[id];
+             
+                Debug.Assert(ec != null);
+                switch (colType)
+                {
+                    case ColumnType.Creator:
+                        var longID = ec.Model.CreatorId;
+                        return SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[longID];
+                    case ColumnType.Title:
+                        return ec.Model.Title;
+                    case ColumnType.Type:
+                        return ec.Model.ElementType.ToString();
+                    default:
+                        return String.Empty;
+                }
+                
+            };
+
+            return column;
+        }
+        
     }
 }

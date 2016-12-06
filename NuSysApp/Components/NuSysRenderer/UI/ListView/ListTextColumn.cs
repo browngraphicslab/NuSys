@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -10,6 +11,11 @@ namespace NuSysApp
         /// This function takes in a generic item, and returns the string to be displayed in the list.
         /// </summary>
         public Func<T, string> ColumnFunction { private get; set; }
+
+        /// <summary>
+        /// The horizontal alignment of the text within the column, default is left
+        /// </summary>
+        public CanvasHorizontalAlignment TextHorizontalAlignment { get; set; }
 
         /// <summary>
         /// This function will return the cell based on the string outputed by the column function you give
@@ -25,6 +31,7 @@ namespace NuSysApp
             cell.Height = rowHeight;
             cell.Background = Colors.Transparent;
             cell.Text = ColumnFunction(itemSource);
+            cell.TextHorizontalAlignment = TextHorizontalAlignment;
             return cell;
         }
 

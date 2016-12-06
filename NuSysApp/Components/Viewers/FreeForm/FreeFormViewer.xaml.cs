@@ -669,10 +669,10 @@ namespace NuSysApp
                     System.Diagnostics.Debug.WriteLine(elementController.Model.Title);
                 }
 
-                // var listView = new ListViewUIElementContainer<string>();
                 // Need parent and resourceCreator! Should I be doing this somewhere else?
                 var selection = (CollectionRenderItem)Selections[0];
-                selection.SetUpListViewPublic(childIDs);
+                selection.ToggleListView(childIDs);
+             
 
 
             }

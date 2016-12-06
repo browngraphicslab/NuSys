@@ -20,6 +20,7 @@ namespace NuSysApp
             Width = UIDefaults.Width;
             Height = UIDefaults.Height;
             Background = UIDefaults.Background;
+            //Background = Colors.Fuchsia;
             BorderWidth = UIDefaults.Borderwidth;
             Bordercolor = UIDefaults.Bordercolor;
         }

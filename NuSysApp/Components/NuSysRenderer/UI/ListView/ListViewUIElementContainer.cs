@@ -119,7 +119,11 @@ namespace NuSysApp
             {
                 if (ListView != null)
                 {
-                    //ListView.Background = value;
+                    /*
+                     * This was commented out on 12/5/16. I just uncommented it. 
+                     * Hopefully this does not introduce any new bugs. - zkirsche
+                     */
+                    ListView.Background = value;
                 }
             }
         }
