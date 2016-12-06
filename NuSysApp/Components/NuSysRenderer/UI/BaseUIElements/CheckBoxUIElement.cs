@@ -6,12 +6,29 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
-namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
+namespace NuSysApp
 {
-    class CheckBoxUIElement : ButtonUIElement
+    class CheckBoxUIElement : RectangleUIElement
     {
+
+        /// <summary>
+        /// The position of the label relative to the checkbox
+        /// </summary>
+        public enum CheckBoxLabelPosition
+        {
+            Right,
+            Left
+        }
+
+        /// <summary>
+        /// The position of the label relative to the checkbox, the default is right
+        /// </summary>
+        public CheckBoxLabelPosition LabelPosition { get; set; }
+
         /// <summary>
         /// True if the checkbox is selected false otherwise, use SetCheckBoxSelection() to change the selection programatically
         /// </summary>
@@ -23,9 +40,63 @@ namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
         private RectangleUIElement _selectionIndicatorRect;
 
         /// <summary>
+        /// the width of the checkbox, must be less than or equal to the width of the checkboxuielement plus the spacing between
+        /// the checkbox and the label
+        /// </summary>
+        public float CheckBoxWidth
+        {
+            get { return _checkBoxButton.Width; }
+            set { _checkBoxButton.Width = Math.Min(Width - SpaceBetweenCheckboxAndLabel, value); }
+        }
+
+        /// <summary>
+        /// the space between the checkbox and the label in pixel coordinates
+        /// </summary>
+        public float SpaceBetweenCheckboxAndLabel { get; set; }
+
+        /// <summary>
+        /// the height of the checkbox, must be less than or equal to the overall height of the checkboxuielement
+        /// </summary>
+        public float CheckBoxHeight
+        {
+            get { return _checkBoxButton.Height; }
+            set { _checkBoxButton.Height = Math.Min(Height, value); }
+        }
+
+        /// <summary>
         /// The color of the rectangle indicator used to show that the checkbox is selected
         /// </summary>
-        public Color SelectionIndicatorColor { get; set; }
+        public Color SelectionIndicatorColor
+        {
+            get { return _selectionIndicatorRect.Background; }
+            set { _selectionIndicatorRect.Background = value; }
+        }
+
+        /// <summary>
+        /// The color of the border of the checkbox
+        /// </summary>
+        public Color CheckBoxBorderColor
+        {
+            get { return _checkBoxButton.Bordercolor; }
+            set
+            {
+                _checkBoxButton.Bordercolor = value;
+                _checkBoxButton.SelectedBorder = value; // we don't want the border to flash on tapped
+            }
+        }
+
+        /// <summary>
+        /// The color of the background of the checkbox
+        /// </summary>
+        public Color CheckBoxBackground
+        {
+            get { return _checkBoxButton.Background; }
+            set
+            {
+                _checkBoxButton.Background = value;
+                _checkBoxButton.SelectedBackground = value; // we don't want the background to flash on tapped
+            }
+        }
 
         /// <summary>
         /// helper delegate for the on selection changed event
@@ -46,28 +117,144 @@ namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
         private float _indicatorRectMargins = 2;
 
         /// <summary>
-        /// The margin of error for touch events
+        /// The margin of error for touch events, affects the localbounds in every direction from the checkbox itself
         /// </summary>
-        private float _errorMargin = 10;
+        public float ErrorMargin { get; set; }
 
-        public CheckBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, bool initialSelectionValue = false) : base(parent, resourceCreator, new RectangleUIElement(parent, resourceCreator))
+        /// <summary>
+        /// The actual checkbox itself
+        /// </summary>
+        private ButtonUIElement _checkBoxButton;
+
+        /// <summary>
+        /// the label associated with the checkbox
+        /// </summary>
+        private TextboxUIElement _labelElement;
+
+        /// <summary>
+        /// The sign used to show that the text has overflow the end of the label
+        /// </summary>
+        public CanvasTrimmingSign LabelTrimmingSign
+        {
+            get { return _labelElement.TrimmingSign; }
+            set { _labelElement.TrimmingSign = value; }
+        }
+
+        /// <summary>
+        /// specifies at what granularity the trimming sign will be used upon text overflow
+        /// </summary>
+        public CanvasTextTrimmingGranularity LabelTrimmingGranularity
+        {
+            get { return _labelElement.TrimmingGranularity; }
+            set { _labelElement.TrimmingGranularity = value; }
+        }
+
+        /// <summary>
+        /// the vertical alignment of the text within the label
+        /// </summary>
+        public CanvasVerticalAlignment LabelTextVerticalAlignment
+        {
+            get { return _labelElement.TextVerticalAlignment; }
+            set { _labelElement.TextVerticalAlignment = value; }
+        }
+
+        /// <summary>
+        /// the horizontal alignment of the text within the label
+        /// </summary>
+        public CanvasHorizontalAlignment LabelTextHorizontalAlignment
+        {
+            get { return _labelElement.TextHorizontalAlignment; }
+            set { _labelElement.TextHorizontalAlignment = value; }
+        }
+
+        /// <summary>
+        /// The color of the text on the label
+        /// </summary>
+        public Color LabelTextColor
+        {
+            get { return _labelElement.TextColor; }
+            set { _labelElement.TextColor = value; }
+        }
+
+        /// <summary>
+        /// the actual text displayed on the label
+        /// </summary>
+        public string LabelText
+        {
+            get { return _labelElement.Text; }
+            set { _labelElement.Text = value; }
+        }
+
+        /// <summary>
+        /// the fontsize of the text displayed on the label
+        /// </summary>
+        public float LabelFontSize
+        {
+            get { return _labelElement.FontSize; }
+            set { _labelElement.FontSize = value; }
+        }
+
+        /// <summary>
+        /// the fontstyle used for the text displayed on the label, normal, oblique, and italic. note that oblique is not bold
+        /// </summary>
+        public FontStyle LabelFontStyle
+        {
+            get { return _labelElement.FontStyle; }
+            set { _labelElement.FontStyle = value; }
+        }
+
+        /// <summary>
+        /// the font family used for the text 
+        /// </summary>
+        public string LabelFontFamily
+        {
+            get { return _labelElement.FontFamily; }
+            set { _labelElement.FontFamily = value; }
+        }
+
+        /// <summary>
+        /// the background color of the label
+        /// </summary>
+        public Color LabelBackground
+        {
+            get { return _labelElement.Background; }
+            set { _labelElement.Background = value; }
+        }
+
+        public CheckBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, bool initialSelectionValue = false) : base(parent, resourceCreator)
         {
             // set the initial selection to the passed in value
             IsSelected = initialSelectionValue;
 
-            // set the default ui values
-            Height = 15;
-            Width = 15;
-            BorderWidth = 1;
-            Bordercolor = Colors.Black;
-            SelectedBorder = Colors.Black;
-            SelectedBackground = Colors.White;
-            Background = Colors.White;
+            // set some default ui values, others are below
+            ErrorMargin = 10;
+            Height = 25;
+            Width = 125;
 
-            // set default selection indicator color
-            SelectionIndicatorColor = Colors.Black;
+            // add the checkbox
+            _checkBoxButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
+            {
+                BorderWidth = 1,
+                IsHitTestVisible = false,
+            };
+            AddChild(_checkBoxButton);
+
+            // set the default ui values for the new checkbox, do this after initializing checkbox because properties change checkbox values
+            CheckBoxHeight = 15;
+            SpaceBetweenCheckboxAndLabel = 10; // set this before checkboxwidth since the checkboxWidth uses this in its calculations
+            CheckBoxWidth = 15;
+            CheckBoxBorderColor = Colors.Black;
+            CheckBoxBackground = Colors.White;
+
+            // we'll just accept all the default TextBoxUIElementValuesforNow
+            _labelElement = new TextboxUIElement(this, ResourceCreator)
+            {
+                IsHitTestVisible = false,
+            };
+            AddChild(_labelElement);
 
 
+            // add the selection indicator rect
             _selectionIndicatorRect = new RectangleUIElement(this, Canvas)
             {
                 IsHitTestVisible = false,
@@ -75,6 +262,10 @@ namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
             };
             AddChild(_selectionIndicatorRect);
             
+            // set the default selection indicator color, do this after initializing the _selectionIndicatorRect because property changes rect values
+            SelectionIndicatorColor = Colors.Black;
+
+
             // add the proper events
             Tapped += SetCheckboxSelectionOnTapped;
 
@@ -121,24 +312,46 @@ namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            // set the background and size of the selectionIndicatorRect
+
+            // set the default border color and selected border color of the checkbox button
+            _checkBoxButton.Bordercolor = CheckBoxBorderColor;
+            _checkBoxButton.SelectedBorder = CheckBoxBorderColor;
+
+            // set the background and size and location of the selectionIndicatorRect
             if (IsSelected)
             {
                 _selectionIndicatorRect.Background = SelectionIndicatorColor;
-                _selectionIndicatorRect.Transform.LocalPosition = new Vector2(BorderWidth + _indicatorRectMargins);
-                _selectionIndicatorRect.Width = Width - 2*(BorderWidth + _indicatorRectMargins);
-                _selectionIndicatorRect.Height = Height - 2*(BorderWidth + _indicatorRectMargins);
+                _selectionIndicatorRect.Transform.LocalPosition = _checkBoxButton.Transform.LocalPosition + new Vector2(BorderWidth + _indicatorRectMargins);
+                _selectionIndicatorRect.Width = _checkBoxButton.Width - 2*_indicatorRectMargins;
+                _selectionIndicatorRect.Height = _checkBoxButton.Height - 2 * _indicatorRectMargins;
             }
-            base.Update(parentLocalToScreenTransform);
-        }
 
-        /// <summary>
-        /// Override the local bounds with an error margin so that touch users are comfortable
-        /// </summary>
-        /// <returns></returns>
-        public override Rect GetLocalBounds()
-        {
-            return new Rect(-_errorMargin, -_errorMargin, Width + 2* _errorMargin, Height + 2* _errorMargin);
+
+            // set the height and width of the Label
+            _labelElement.Width = Width - CheckBoxWidth - SpaceBetweenCheckboxAndLabel - 2 * BorderWidth;
+            _labelElement.Height = Height - 2 * BorderWidth;
+
+            // position the checkbox and label based on the LabelPosition
+            switch (LabelPosition)
+            {
+                case CheckBoxLabelPosition.Right:
+                    // center the _checkBoxButton Vertically
+                    _checkBoxButton.Transform.LocalPosition = new Vector2(BorderWidth, Height/2 - _checkBoxButton.Height/2);
+                    // put the label next to the checkbox
+                    _labelElement.Transform.LocalPosition = new Vector2(BorderWidth + CheckBoxWidth + SpaceBetweenCheckboxAndLabel, BorderWidth);
+                    break;
+                case CheckBoxLabelPosition.Left:
+                    // center the _checkBoxButton Vertically
+                    _checkBoxButton.Transform.LocalPosition = new Vector2(Width-BorderWidth-CheckBoxWidth, Height / 2 - _checkBoxButton.Height / 2);
+                    // put the label next to the checkbox
+                    _labelElement.Transform.LocalPosition = new Vector2(BorderWidth);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+
+            base.Update(parentLocalToScreenTransform);
         }
     }
 }

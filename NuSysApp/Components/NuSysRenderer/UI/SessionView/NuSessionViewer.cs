@@ -9,7 +9,6 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using NuSysApp.Network.Requests;
 
 namespace NuSysApp
@@ -34,15 +33,8 @@ namespace NuSysApp
 
         public BreadCrumbContainer TrailBox;
 
-        private CheckBoxUIElement _checkbox;
-
-
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
-            _checkbox = new CheckBoxUIElement(this, canvas);
-            AddChild(_checkbox);
-            _checkbox.Transform.LocalPosition = new Vector2(600, 600);
-
             Background = Colors.Transparent;
             SessionController.Instance.NuSessionView = this; // set the session controller's getter for the NuSessionView
 
@@ -153,10 +145,10 @@ namespace NuSysApp
             ShowDetailView(currWorkspaceController);
         }
 
-        private void OnMainCanvasSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
+        private void OnMainCanvasSizeChanged(object sender, SizeChangedEventArgs e)
         {
             Width = (float) e.NewSize.Width;
-            Height = (float) e.NewSize.Height;
+            Height = (float) e.NewSize.Height;            
 
             _floatingMenu.Transform.LocalPosition = new Vector2(Width / 4 - _floatingMenu.Width/2, Height / 4 - _floatingMenu.Height/2);
             //_currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
