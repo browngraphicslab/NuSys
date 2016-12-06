@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -186,14 +187,19 @@ namespace NuSysApp
                 Height = 50,
                 Width = 50,
             };
-            _draggableCollectionElement = new ButtonUIElement(this, ResourceCreator, collectionRectangle);
-            _draggableCollectionElement.ButtonText = "collection";
-            _draggableCollectionElement.ButtonTextSize = 10;
-            _draggableCollectionElement.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom;
-            _draggableCollectionElement.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
-            _draggableCollectionElement.ButtonTextColor = Constants.color3;
+            _draggableCollectionElement = new ButtonUIElement(this, ResourceCreator, collectionRectangle)
+            {
+                ButtonText = "collection",
+                ButtonTextSize = 10,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextColor = Constants.color3
+            };
+            _draggableCollectionElement.ImageBounds = new Rect(_draggableCollectionElement.Width/4,
+                _draggableCollectionElement.Height/4, _draggableCollectionElement.Width/2,
+                _draggableCollectionElement.Height/2);
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
-            _draggableCollectionElement.Dragging += CollectionOrStack_Dragging;
+            _draggableCollectionElement.Dragged += CollectionOrStack_Dragging;
             _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted;
             AddChild(_draggableCollectionElement);
 
@@ -215,14 +221,17 @@ namespace NuSysApp
                 Height = 50,
                 Width = 50,
             };
-            _draggableStackElement = new ButtonUIElement(this, ResourceCreator, stackRectangle);
-            _draggableStackElement.ButtonText = "stack";
-            _draggableStackElement.ButtonTextSize = 10;
-            _draggableStackElement.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom;
-            _draggableStackElement.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
-            _draggableStackElement.ButtonTextColor = Constants.color3;
+            _draggableStackElement = new ButtonUIElement(this, ResourceCreator, stackRectangle)
+            {
+                ButtonText = "stack",
+                ButtonTextSize = 10,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextColor = Constants.color3
+            };
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
-            _draggableStackElement.Dragging += CollectionOrStack_Dragging;
+            _draggableStackElement.ImageBounds = new Rect(_draggableStackElement.Width/4, _draggableStackElement.Height/4, _draggableStackElement.Width/2, _draggableStackElement.Height/2);
+            _draggableStackElement.Dragged += CollectionOrStack_Dragging;
             _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted;
             AddChild(_draggableStackElement);
 
@@ -240,15 +249,12 @@ namespace NuSysApp
             {
                 _draggableCollectionElement.Image =
                     await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
-                _draggableCollectionElement.ImageWidth = 30;
-                _draggableCollectionElement.ImageHeight = 30;
 
                 _collectionDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
 
                 _draggableStackElement.Image =
                     await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
-                _draggableStackElement.ImageWidth = 30;
-                _draggableStackElement.ImageHeight = 30;
+
 
 
                 _stackDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
@@ -262,8 +268,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CollectionOrStack_DragCompleted(ButtonUIElement item, CanvasPointer pointer)
+        private void CollectionOrStack_DragCompleted(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            var item = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(item != null);
+
             var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
             if (item == _draggableCollectionElement)
             {
@@ -285,8 +294,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CollectionOrStack_Dragging(ButtonUIElement item, CanvasPointer pointer)
+        private void CollectionOrStack_Dragging(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            var item = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(item != null);
+
             RectangleUIElement icon;
             if (item == _draggableCollectionElement)
             {
@@ -340,7 +352,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _dropdownButton_OnPressed(ButtonUIElement item, CanvasPointer pointer)
+        private void _dropdownButton_OnPressed(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             if (_children.Last() != _filterChooser)
             {
@@ -362,8 +374,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void FilterChooserItem_Clicked(ButtonUIElement item, CanvasPointer pointer)
+        private async void FilterChooserItem_Clicked(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            var item = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(item != null);
+
             _filterChooser.IsVisible = false;
             //var vm = Vm as BasicToolViewModel;
             var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item.ButtonText);
@@ -417,8 +432,7 @@ namespace NuSysApp
             };
             _deleteButton = new ButtonUIElement(this, ResourceCreator, deleteCircleShape);
             _deleteButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/delete.png"));
-            _deleteButton.ImageWidth = 30;
-            _deleteButton.ImageHeight = 30;
+            _deleteButton.ImageBounds = new Rect(_deleteButton.Width/4, _deleteButton.Height/4, _deleteButton.Width/2, _deleteButton.Height/2);
             _deleteButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Height / 2 + BUTTON_MARGIN);
             _deleteButton.Tapped += _deleteButton_Tapped;
             AddChild(_deleteButton);
@@ -431,8 +445,7 @@ namespace NuSysApp
             };
             _refreshButton = new ButtonUIElement(this, ResourceCreator, refreshCircleShape);
             _refreshButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/refresh icon.png"));
-            _refreshButton.ImageWidth = 30;
-            _refreshButton.ImageHeight = 30;
+            _refreshButton.ImageBounds = new Rect(_refreshButton.Width / 4, _refreshButton.Height / 4, _refreshButton.Width / 2, _refreshButton.Height / 2);
             _refreshButton.Tapped += _refreshButton_Tapped;
             _refreshButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Transform.LocalY + _deleteButton.Height + BUTTON_MARGIN);
             AddChild(_refreshButton);
@@ -442,7 +455,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void _deleteButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private async void _deleteButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             Delete();
         }
@@ -461,7 +474,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _refreshButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private void _refreshButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             Task.Run(delegate {
                 Vm.Controller?.RefreshFromTopOfChain();
@@ -473,7 +486,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _parentOperatorButton_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private void _parentOperatorButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {

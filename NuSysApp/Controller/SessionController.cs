@@ -77,6 +77,8 @@ namespace NuSysApp
 
         public SessionView SessionView { get; set; }
 
+        public NuSessionViewer NuSessionView { get; set; }
+
         public ContentController ContentController
         {
             get { return _contentController; }
@@ -176,6 +178,11 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// boolean value to determine if the current workspace is read only
+        /// </summary>
+        public static bool IsReadonly { get; set; }
+
+        /// <summary>
         /// Use this method to switch the mode of the entire workspace.
         /// </summary>
         /// <param name="mode"></param>
@@ -191,6 +198,9 @@ namespace NuSysApp
         {
             UITask.Run(async delegate
             {
+                if(SessionView?.FreeFormViewer?.InitialCollection?.Camera == null) {
+                    return;
+                }
                 var camera = SessionView.FreeFormViewer.InitialCollection.Camera;
                 var currentState = new CapturedStateModel(
                     ActiveFreeFormViewer.LibraryElementId,
@@ -212,7 +222,7 @@ namespace NuSysApp
             {
                 var tup = await WaitingRoomView.AttemptLogin(WaitingRoomView.UserName, WaitingRoomView.HashedPass, "", false);
                 Debug.Assert(tup.Item1);
-                SessionView?.ClearUsers();
+                //SessionView?.ClearUsers();
                 await NuSysNetworkSession.Init();
 
                 var request = new GetAllLibraryElementsRequest();
@@ -332,9 +342,6 @@ namespace NuSysApp
             });
         }
 
-
-
-
         public async Task<String> TranscribeVoice()
         {
             string spokenString = "";
@@ -399,14 +406,15 @@ namespace NuSysApp
         /// <summary>
         /// method to enter a collection from anywhere.  
         /// The id is the libraryElementId of the collection you want to enter. 
-        /// 
+        /// The elementModelId is the id of the element model you wish to zoom in on in that collection
         /// THis method will take care of all the clearing and crap for you, just call it with the id you want to use.
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="elementModelId"></param>
         /// <returns></returns>
-        public async Task EnterCollection(string collectionLibraryId)
+        public async Task EnterCollection(string collectionLibraryId, string elementModelId = null)
         {
-            SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
+            //SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
             SessionView.ShowBlockingScreen(true);
 
             EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
@@ -488,21 +496,45 @@ namespace NuSysApp
             var userID = WaitingRoomView.UserID;
             var creator = elementCollectionInstanceController.LibraryElementModel.Creator;
 
+            //TODO redo read only or editable implementation
             if (elementCollectionInstanceController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly &&
                 userID != creator)
             {
-                SessionView.MakeWorkspaceReadonly();
+                Instance.MakeWorkspaceReadonly();
             }
             else
             {
-                SessionView.MakeWorkspaceEditable();
+                Instance.MakeWorkspaceEditable();
             }
 
             await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
+            if (elementModelId != null)
+            {
+                SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
+            }
+
+            var controller = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
+            // add the bread crumb for the collection
+            Instance.NuSessionView.TrailBox.AddBreadCrumb(controller);
 
             SessionView.ShowBlockingScreen(false);
+        }
 
-     
+
+        /// <summary>
+        /// Makes a workspace readonly by showing the readonly menu and modifying the modes
+        /// </summary>
+        public void MakeWorkspaceReadonly()
+        {
+            IsReadonly = true;
+        }
+
+        /// <summary>
+        /// Reverts a workspace back to editable by modifying ui elements and the session mode
+        /// </summary>
+        public void MakeWorkspaceEditable()
+        {
+            IsReadonly = false;
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)

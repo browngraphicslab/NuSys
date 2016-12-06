@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -67,22 +68,6 @@ namespace NuSysApp
                 
                 
             }
-        }
-
-
-        public void MoveToNode(string id)
-        {
-            // TODO: refactor
-            /*
-            var node = (ElementModel)SessionController.Instance.IdToSendables[id];
-            var tp = new Point(-node.X, -node.Y);
-            var np = CompositeTransform.Inverse.TransformPoint(tp);
-            var ns = new Size(node.Width, node.Height);
-            CompositeTransform.ScaleX = 1;
-            CompositeTransform.ScaleY = 1;
-            CompositeTransform.TranslateX = tp.X + (SessionController.Instance.SessionView.ActualWidth - node.Width) / 2;
-            CompositeTransform.TranslateY = tp.Y + (SessionController.Instance.SessionView.ActualHeight - node.Height) / 2;
-            */
         }
 
         #region Node Interaction

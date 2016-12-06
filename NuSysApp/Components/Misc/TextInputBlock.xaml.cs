@@ -301,7 +301,7 @@ namespace NuSysApp
 
         private async void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {
-            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, TextBox.Text);
+            //SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, TextBox.Text);
 
             /*
             //record functionality

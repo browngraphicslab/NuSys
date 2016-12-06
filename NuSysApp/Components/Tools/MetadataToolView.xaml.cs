@@ -403,8 +403,6 @@ namespace NuSysApp
         /// </summary>
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
 
             var vm = (ToolViewModel)this.DataContext;
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;

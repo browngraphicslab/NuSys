@@ -64,14 +64,7 @@ namespace NuSysApp
             set
             {
                 _range = Math.Min(1, value);
-                if (_range == 1)
-                {
-                    IsVisible = false;
-                }
-                else
-                {
-                    IsVisible = true;
-                }
+                IsVisible = _range != 1;
             }
             get
             {
@@ -134,12 +127,6 @@ namespace NuSysApp
 
         }
 
-        public override Task Load()
-        {
-            
-            
-            return base.Load();
-        }
         /// <summary>
         /// Call this method to change the position based on the (normalized) delta passed in.
         /// </summary>

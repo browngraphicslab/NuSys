@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas;
@@ -150,18 +151,18 @@ namespace NuSysApp
             {
                 _listToolViewButton.Image =
                     await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/listview bluegreen.png"));
-                _listToolViewButton.ImageWidth = 30;
-                _listToolViewButton.ImageHeight = 30;
+                _listToolViewButton.ImageBounds = new Rect(_listToolViewButton.Width / 4, _listToolViewButton.Height / 4, _listToolViewButton.Width / 2, _listToolViewButton.Height / 2);
+
 
                 _pieToolViewButton.Image =
                     await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/piegraph bluegreen.png"));
-                _pieToolViewButton.ImageWidth = 30;
-                _pieToolViewButton.ImageHeight = 30;
+                _pieToolViewButton.ImageBounds = new Rect(_pieToolViewButton.Width / 4, _pieToolViewButton.Height / 4, _pieToolViewButton.Width / 2, _pieToolViewButton.Height / 2);
+
 
                 _barToolViewButton.Image =
                     await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/bar chart icon.png"));
-                _barToolViewButton.ImageWidth = 30;
-                _barToolViewButton.ImageHeight = 30;
+                _barToolViewButton.ImageBounds = new Rect(_barToolViewButton.Width / 4, _barToolViewButton.Height / 4, _barToolViewButton.Width / 2, _barToolViewButton.Height / 2);
+
             });
         }
 

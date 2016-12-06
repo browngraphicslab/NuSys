@@ -10,11 +10,13 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
+using Windows.Storage;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Extensions;
 using NuSysApp.Components.NuSysRenderer.UI;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
@@ -65,14 +67,9 @@ namespace NuSysApp
 
         private bool _inkPressed;
 
-        private BaseRenderItem _renderRoot;
+        private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
-
-        public DetailViewMainContainer DetailViewer { get; set; }
-
-        private LayoutWindowUIElement _layoutWindow;
-        
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -82,7 +79,7 @@ namespace NuSysApp
             xMinimapCanvas.Width = 300;
             xMinimapCanvas.Height = 300;
 
-            _renderRoot = new BaseRenderItem(null, xRenderCanvas);
+            _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
         }
 
@@ -139,106 +136,94 @@ namespace NuSysApp
             RenderEngine.Root.ClearChildren();
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
+
             RenderEngine.Root.AddChild(InitialCollection);
-
-            //        DetailViewer = new DetailViewMainContainer(_renderRoot, RenderCanvas);
-            //        DetailViewer.Transform.LocalPosition = new Vector2(300, 300);
-
-            //        //_renderRoot.AddChild(DetailViewer);
-            //listView = new ListViewUIElementContainer<LibraryElementModel>(_renderRoot, RenderCanvas)
-            //{
-            //    Width = 500,
-            //    Height = 500
-            //};
-            //listView.ShowHeader = false;
-            //listView.Transform.LocalPosition = new Vector2((float)(SessionController.Instance.ScreenWidth / 2),
-            //    100);
-
-            //listView.RowBorderThickness = 1;
-            //listView.RowDragged += ListView_RowDragged;
-            //listView.RowDragCompleted += ListView_RowDragCompleted;
-
-            //var listColumn = new ListTextColumn<LibraryElementModel>();
-            //listColumn.Title = "Title";
-            //listColumn.RelativeWidth = 1;
-            //listColumn.ColumnFunction = model => model.Title;
-
-            //var listColumn2 = new ListTextColumn<LibraryElementModel>();
-            //listColumn2.Title = "Creator";
-            //listColumn2.RelativeWidth = 2;
-            //listColumn2.ColumnFunction = model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
-
-            //var listColumn3 = new ListTextColumn<LibraryElementModel>();
-            //listColumn3.Title = "Last Edited Timestamp";
-            //listColumn3.RelativeWidth = 3;
-            //listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
-
-            //listView.AddColumns(new List<ListColumn<LibraryElementModel>>() { listColumn, listColumn2, listColumn3 });
-            //listView.RemoveColumn("Last Edited Timestamp");
-            //listView.AddColumn(listColumn3);
-
-
-            //        listView.AddItems(
-            //SessionController.Instance.ContentController.ContentValues.ToList());
-
-            //        rect = new RectangleUIElement(_renderRoot, RenderCanvas);
-            //        rect.Width = 100;
-            //        rect.Height = 100;
-            //        rect.Background = Colors.Red;
-
-
-
-            //BasicToolModel model = new BasicToolModel();
-            //BasicToolController controller = new BasicToolController(model);
-            //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-            //viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
-            //viewmodel.Width = 500;
-            //viewmodel.Height = 500;
-            //viewmodel.X = 200;
-            //viewmodel.Y = 200;
-            //var tool = new BasicToolWindow(_renderRoot, RenderCanvas, viewmodel)//you should change this to not be null.
-            //{
-            //    Height = 500,
-            //    Width = 500
-            //};
-            //_renderRoot.AddChild(tool);
-
-            //MetadataToolModel model = new MetadataToolModel();
-            //MetadataToolController controller = new MetadataToolController(model);
-            //MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
-            //viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
-            //MetadataToolWindow view = new MetadataToolWindow(_renderRoot, RenderCanvas, viewmodel)
-            //{
-            //    Height = 500,
-            //    Width = 500
-            //};
-            //view.Transform.LocalPosition = new Vector2(200, 200);
-            //_renderRoot.AddChild(view);
 
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
             RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
 
+            RenderEngine.BtnExportTrail.Tapped -= BtnExportTrailOnTapped;
+            RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
+
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
-        
-        private ListViewUIElementContainer<LibraryElementModel> listView;
-        private RectangleUIElement rect;
 
-        private void ListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        /// <summary>
+        /// exports trail to HTML when export button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (!rect.IsVisible)
+            if (_selectedLink is TrailRenderItem)
             {
-                rect.IsVisible = true;
+                //get trail as a list of nodes
+                List<LibraryElementController> trailList = GetTrailAsList((_selectedLink as TrailRenderItem).ViewModel.Model);
+
+                for (int i = 0; i < trailList.Count; i++)
+                {
+                    var currElement = trailList[i];
+                    string prev = null;
+                    string next = null;
+                    if (i > 0)
+                    {
+                        prev = trailList[i - 1].Title;
+                    }
+                    if (i < trailList.Count - 1)
+                    {
+                        next = trailList[i + 1].Title;
+                    }
+
+                    currElement.ExportToHTML(prev, next);
+                }
+                
+                //OpenInBrowser(trailList);  <---- currently commented out, will probably work when this is not happening on the UI thread
             }
-            rect.Transform.LocalPosition = pointer.CurrentPoint;
-            
         }
 
-        private void ListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        /// <summary>
+        /// opens the exported trail in internet browser
+        /// </summary>
+        /// <param name="trailList"></param>
+        private async void OpenInBrowser(List<LibraryElementController> trailList)
         {
-            rect.IsVisible = false;
+            StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+            var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
+            //open the exported html in browser
+            Windows.System.Launcher.LaunchFileAsync(firstPage);
+        }
+
+        /// <summary>
+        /// gets trail elements as a list
+        /// </summary>
+        /// <param name="trail"></param>
+        /// <returns></returns>
+        private List<LibraryElementController> GetTrailAsList(PresentationLinkModel trail)
+        {
+            List<LibraryElementController> elements = new List<LibraryElementController>();
+            var currTrail = trail;
+            while (currTrail != null) 
+            {
+                var inNode = SessionController.Instance.IdToControllers[currTrail.OutElementId].LibraryElementController;
+                var outNode =
+                    SessionController.Instance.IdToControllers[currTrail.InElementId].LibraryElementController;
+                if (!elements.Contains(inNode))
+                {
+                    elements.Add(inNode);
+                }
+                if (elements.Contains(outNode))
+                {
+                    break;
+                }
+                elements.Add(outNode);
+
+                currTrail =
+                    PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currTrail.InElementId);
+            }
+
+            return elements;
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -291,7 +276,7 @@ namespace NuSysApp
             }
 
 
-            if (!SessionController.Instance.SessionView.IsReadonly) { 
+            if (!SessionController.IsReadonly) { 
                 _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
                 _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
@@ -342,16 +327,27 @@ namespace NuSysApp
 
         private void OnRenderItemPressed(BaseRenderItem item, CanvasPointer point)
         {
-            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem))
+            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem || item == RenderEngine.BtnExportTrail))
             {
                 RenderEngine.BtnDelete.IsVisible = false;
+                RenderEngine.BtnExportTrail.IsVisible = false;
             }
         }
 
+        /// <summary>
+        /// made edits to include HTML export
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
             RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -40);
             RenderEngine.BtnDelete.IsVisible = true;
+
+            //HTML export
+            RenderEngine.BtnExportTrail.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, 40);
+            RenderEngine.BtnExportTrail.IsVisible = true;
+
             _selectedLink = element;
         }
 
@@ -720,7 +716,7 @@ namespace NuSysApp
             }
             if (item == RenderEngine.ElementSelectionRect.BtnPresent)
             {
-                SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
 
@@ -728,6 +724,11 @@ namespace NuSysApp
             {
                 var id = Selections[0].ViewModel.LibraryElementId;
                 await SessionController.Instance.EnterCollection(id);
+            }
+
+            if (item == RenderEngine.ElementSelectionRect.BtnExport)
+            {
+                
             }
 
             if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
@@ -739,76 +740,6 @@ namespace NuSysApp
             {
                 var selection = (PdfElementRenderItem)Selections[0];
                 selection.GotoPage(selection.CurrentPage + 1);
-            }
-            if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
-            {
-                // Show the layout panel
-                _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
-                _layoutWindow.DoLayout += _arrangeCallback;
-                _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
-                RenderEngine.Root.AddChild(_layoutWindow);
-            }
-        }
-
-        private void _arrangeCallback(LayoutStyle style, LayoutSorting sorting)
-        {
-            var SortedSelections = new List<ElementRenderItem>(Selections);
-
-            if (sorting == LayoutSorting.Title)
-            {
-                SortedSelections.Sort((x, y) => String.Compare(x.ViewModel.Model.Title, y.ViewModel.Model.Title, StringComparison.CurrentCultureIgnoreCase));
-            } else if (sorting == LayoutSorting.Date)
-            {
-                SortedSelections.OrderBy(x => SessionController.Instance.ContentController.GetLibraryElementModel(x.ViewModel.Model.LibraryId).LastEditedTimestamp).ThenBy(x => x.ViewModel.Model.Title);
-            }
-
-            if (SortedSelections.Count <= 1)
-            {
-                return;
-            }
-
-            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
-            Vector2 start = -transform.Translation / transform.M11;
-            start = new Vector2(float.MaxValue, float.MaxValue);
-
-            // Do the layout
-            foreach (var elementRenderItem in SortedSelections)
-            {
-                start = new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, start.X), (float) Math.Min(elementRenderItem.ViewModel.Y, start.Y));
-            }
-
-            Vector2 nextPosition = start;
-            int rows = (int) Math.Round(Math.Sqrt(SortedSelections.Count));
-            int i = 0;
-            float maxHeight = 0;
-            foreach (var elementRenderItem in SortedSelections)
-            {
-                elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
-                switch (style)
-                {
-                    case LayoutStyle.Horizontal:
-                        nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
-                        break;
-                    case LayoutStyle.Vertical:
-                        nextPosition.Y = (float)(nextPosition.Y + 35.0f + elementRenderItem.ViewModel.Height);
-                        break;
-                    case LayoutStyle.Grid:
-                        maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
-                        if (i % rows == rows - 1)
-                        {
-                            nextPosition.Y = (float)(nextPosition.Y + 35.0f + maxHeight);
-                            nextPosition.X = start.X;
-                            maxHeight = 0.0f;
-                        }
-                        else
-                        {
-                            nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
-                        }
-                        i++;
-                        break;
-                    default:
-                        break;
-                }
             }
         }
 
@@ -1017,12 +948,6 @@ namespace NuSysApp
                 ClearSelections();
 
             _minimap.Invalidate();
-
-            if (_layoutWindow != null)
-            {
-                RenderEngine.Root.RemoveChild(_layoutWindow);
-                _layoutWindow = null;
-            }
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -1057,14 +982,12 @@ namespace NuSysApp
                 }
                 var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                DetailViewer.ShowLibraryElement(libraryElementModelId);
-                //SessionController.Instance.SessionView.ShowDetailView(controller);
+                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                DetailViewer.ShowLibraryElement(libraryElementModelId);
-                //SessionController.Instance.SessionView.ShowDetailView(controller);
+                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             }
 
         }
@@ -1072,6 +995,9 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
         {
             AddToSelections(element);
+            // add the bread crumb
+            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
+            
         }
 
         public void AddToSelections(ElementRenderItem element)

@@ -389,7 +389,7 @@ namespace NuSysApp
 
                     if (vm.ElementType == NusysConstants.ElementType.Powerpoint)
                     {
-                        SessionController.Instance.SessionView.OpenFile(vm);
+                        //SessionController.Instance.SessionView.OpenFile(vm);
                     }
                     else if (vm.ElementType != NusysConstants.ElementType.Link)
                     {
@@ -397,7 +397,7 @@ namespace NuSysApp
                         if (vm.ElementType == NusysConstants.ElementType.PDF)
                         {
                             var pdfVm = (PdfNodeViewModel)vm;
-                            PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber; // this is a static field so we can set it here, even though it looks weird
+                            //PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber; // this is a static field so we can set it here, even though it looks weird
 
                             // disable opening the detail viewer for the pageRight and pageLeft buttons
                             if ((e.OriginalSource as FrameworkElement).Parent is Button)
@@ -406,7 +406,7 @@ namespace NuSysApp
                             } 
                         }
 
-                        SessionController.Instance.SessionView.ShowDetailView(vm.Controller.LibraryElementController);
+                        //SessionController.Instance.SessionView.ShowDetailView(vm.Controller.LibraryElementController);
                     }
 
                 }

@@ -43,8 +43,8 @@ namespace NuSysApp
         public static bool WindowIsResizeable = true;
         public static bool WindowKeepsAspectRatio = true;
         public static bool WindowIsDraggable = true;
-        public static float? WindowMaxWidth = (float?) SessionController.Instance.ScreenWidth;
-        public static float? WindowMaxHeight = (float?)SessionController.Instance.ScreenHeight;
+        public static float? WindowMaxWidth = 5000;
+        public static float? WindowMaxHeight = 5000;
         public static float? WindowMinWidth = 25;
         public static float? WindowMinHeight = 25;
         public static float WindowBorderWidth = 3;
@@ -59,8 +59,17 @@ namespace NuSysApp
         public static Color ScrubBarBackgroundColor = Colors.LightGray;
         public static float ScrubberPosition = 0;
         public static Color ScrubberBarColor = Colors.Yellow;
-        public static float MediaPlayerScrubBarHeight = 100;
-        public static float MediaPlayerButtonBarHeight = 50;
+        public static float MediaPlayerScrubBarHeight = 50;
+        public static float MediaPlayerButtonBarHeight = 30;
         public static Color ShadowColor = Color.FromArgb(50, 0, 0, 0);
+        public static Color AudioRegionColor = Color.FromArgb(125, 72, 182, 111);
+        public static float AudioResizerHandleDiameter = 15;
+        public static Color AudioResizerHandleColor = Colors.SlateGray;
+        public static float AudioResizerConnectingLineWidth = 5;
+        public static Color AudioRegionMaskColor = Color.FromArgb(160, 0, 0, 0);
+        public static float ButtonTextSize = 14;
+        public static float floatingMenuHeight = 60;
+        public static float floatingMenuWidth = 130;
+
     }
 }

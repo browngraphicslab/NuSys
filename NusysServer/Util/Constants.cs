@@ -99,24 +99,24 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "harsh":
-                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "miranda":
-                        return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "sahil":
-                        return Directory.Exists("C:/Users/nusys/Documents/Sahil8/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil8/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "book":
-                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "luke1":
-                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "nico":
-                        return Directory.Exists("C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/") ? "http://localhost:2776/" : NusysConstants.ServerName;
+                        return Directory.Exists("C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
 
                     default:
-                        return NusysConstants.ServerName;
+                        return "http://"+NusysConstants.ServerName+"/";
                 }
             }
         }

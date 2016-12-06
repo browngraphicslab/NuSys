@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Text;
@@ -15,6 +16,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using WinRTXamlToolkit.IO.Extensions;
 
 namespace NuSysApp
 {
@@ -240,5 +242,6 @@ namespace NuSysApp
                 return new Rect();
             return new Rect(0, 0, ViewModel.Width, ViewModel.Height);
         }
+
     }
 }

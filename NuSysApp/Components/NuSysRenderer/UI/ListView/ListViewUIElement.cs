@@ -270,7 +270,7 @@ namespace NuSysApp
             }
             
             //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
 
             foreach (var itemSource in rowList)
             {
@@ -355,7 +355,7 @@ namespace NuSysApp
                 return;
             }
             var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
-            var items = _itemsSource.ToArray();
+            var items = _itemsSource;
 
             foreach (var row in Rows)
             {
@@ -473,6 +473,7 @@ namespace NuSysApp
                         SelectItem(item); 
                     }
                 }
+
                 RowTapped?.Invoke(item, colTitle, pointer);
                 
             }
@@ -676,7 +677,13 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void ScrollTo(T item)
         {
-            
+            var i = _itemsSource.IndexOf(item);
+            if(i < 0)
+            {
+                return;
+            }
+            //Sets the position of the ScrollBar to the position of the item in the list
+            ScrollBar.Position = (float)i / _itemsSource.Count;
         }
 
         /// <summary>
@@ -841,7 +848,7 @@ namespace NuSysApp
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
-            foreach (var row in Rows.ToArray())
+            foreach (var row in Rows)
             {
                 row?.Update(parentLocalToScreenTransform);
             }

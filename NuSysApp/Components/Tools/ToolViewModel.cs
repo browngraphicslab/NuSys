@@ -328,7 +328,7 @@ namespace NuSysApp
             if (Controller.ToolModel.OutputLibraryIds.Count == 1)
             {
                 var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.ToolModel.OutputLibraryIds.First());
-                SessionController.Instance.SessionView.ShowDetailView(lem);
+                SessionController.Instance.NuSessionView.ShowDetailView(lem);
             }
             
         }

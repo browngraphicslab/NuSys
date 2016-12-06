@@ -185,11 +185,6 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.GetLibraryElementController(LibraryId);
             Debug.Assert(libraryElementController != null);
 
-            // don't show the detail view in readonly mode
-            if (!SessionController.Instance.SessionView.IsReadonly)
-            {
-                SessionController.Instance.SessionView.ShowDetailView(libraryElementController);
-            }
             e.Handled = true;
         }
 

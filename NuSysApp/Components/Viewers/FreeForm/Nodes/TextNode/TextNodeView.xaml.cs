@@ -411,7 +411,7 @@ namespace NuSysApp
         {
             e.Handled = true;
 
-            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, _text);
+            //SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, _text);
 
             /* old code
             _isRecording = true;
