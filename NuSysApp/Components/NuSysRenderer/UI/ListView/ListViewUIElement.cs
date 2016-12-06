@@ -872,7 +872,7 @@ namespace NuSysApp
                 var headerOffset = Transform.LocalPosition.Y;
                 var scrollOffset = _scrollOffset % RowHeight;
                 //Draws every row
-                foreach (var row in Rows)
+                foreach (var row in Rows.ToArray())
                 {
                     //Position is the position of the bottom of the row
                     var position = cellVerticalOffset - scrollOffset + headerOffset;
