@@ -682,51 +682,55 @@ namespace NuSysApp
 
             var transform = RenderEngine.GetCollectionTransform(InitialCollection);
             var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
-            var points =
-                latestStroke.GetInkPoints()
-                    .Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y))
-                    .ToArray();
+            var points = latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)).ToArray();
             if (2 <= points.Length)
             {
                 var lineLength = 0.0f;
                 var firstPoint = points[0];
-                for (int p = 1; p < points.Length; p++)
+                var pointDistances = new float[points.Length];
+                pointDistances[0] = 0.0f;
+                for (var p = 1; p < points.Length; p++)
                 {
                     var point = points[p];
                     lineLength += Vector2.Distance(firstPoint, point);
                     firstPoint = point;
+                    pointDistances[p] = lineLength;
                 }
 
-                var k = 0;
                 var nodeDistance = lineLength / (sortedSelections.Count - 1);
-                var lengthA = 0.0f;
-                var pointA = points[0];
-                var pointB = points[1];
-                for (int n = 0; n < sortedSelections.Count; n++)
+                var nodeIndexInterval = points.Length / sortedSelections.Count;
+                for (var n = 0; n < sortedSelections.Count; n++)
                 {
-                    var lengthB = 0.0f;
-                    var distance = n * nodeDistance;
-                    for (int p = k; p < points.Length - 1; p++)
+                    var a = 0;
+                    var b = 0;
+                    for (var p = 0; p < points.Length; p++)
                     {
-                        if (lengthA >= distance)
+                        if (n == 0)
                         {
-                            k = p;
-                            pointA = points[k];
-                            pointB = points[k + 1];
-                            lengthB = lengthA + Vector2.Distance(points[p], points[p + 1]);
+                            a = 0;
+                            b = 1;
+                            break;
+                        } else if (n == sortedSelections.Count - 1)
+                        {
+                            a = points.Length - 2;
+                            b = points.Length - 1;
+                            break;
+                        } else if (pointDistances[p] > n * nodeDistance)
+                        {
+                            a = p - 1;
+                            b = p;
+
                             break;
                         }
-
-                        lengthA += Vector2.Distance(points[p], points[p + 1]);
                     }
 
-                    if ((lengthB - lengthA) == 0)
+                    var f = 1.0f;
+                    if ((pointDistances[b] - pointDistances[a]) != 0.0f)
                     {
-                        lengthB = lengthA + 1.0f;
+                        f = (n * nodeDistance - pointDistances[a]) / (pointDistances[b] - pointDistances[a]);
                     }
 
-                    var f = (distance - lengthA) / (lengthB - lengthA);
-                    var interpolatedPoint = Vector2.Lerp(pointA, pointB, f);
+                    var interpolatedPoint = Vector2.Lerp(points[a], points[b], f);
                     var point = Vector2.Transform(interpolatedPoint, transform);
                     sortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
                 }
