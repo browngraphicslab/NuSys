@@ -140,7 +140,7 @@ namespace NuSysApp
             _bmp?.Dispose();
             await Task.Run(async () =>
             {
-                _bmp =
+                //_bmp =
                     await
                         CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
                             ResourceCreator.Dpi);

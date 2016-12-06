@@ -218,8 +218,12 @@ namespace NuSysApp
             }
             //Add items to the item source
             _itemsSource.AddRange(itemsToAdd);
-            //Make RowUIElements
-            CreateListViewRowUIElements();
+            //Make RowUIElements only if we need more rows
+            if(_itemsSource.Count > Rows.Count)
+            {
+                CreateListViewRowUIElements();
+
+            }
         }
 
         /// <summary>
