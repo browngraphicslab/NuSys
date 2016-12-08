@@ -32,7 +32,7 @@ namespace NuSysApp
     public sealed partial class FreeFormViewer
     {
         private List<PointModel> _latestStroke;
-        private RenderItemInteractionManager _canvasInteractionManager;
+        private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
 
         private FreeFormViewerViewModel _vm;
@@ -153,6 +153,26 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+
+            ScrollableTextboxUIElement stb = new ScrollableTextboxUIElement(_renderRoot, RenderCanvas, false, false)
+            {
+                Width = 200,
+                Height = 30,
+                Background = Colors.LightSeaGreen
+            };
+
+            ScrollableTextboxUIElement stb2 = new ScrollableTextboxUIElement(_renderRoot, RenderCanvas, true, false)
+            {
+                Width = 200,
+                Height = 200,
+                Background = Colors.LightSeaGreen
+            };
+
+            stb2.Transform.LocalPosition = new Vector2(900, 500);
+            stb.Transform.LocalPosition = new Vector2(600, 300);
+
+            _renderRoot.AddChild(stb);
+            _renderRoot.AddChild(stb2);
         }
 
         /// <summary>
@@ -199,26 +219,6 @@ namespace NuSysApp
             //open the exported html in browser
             Windows.System.Launcher.LaunchFileAsync(firstPage);
         }
-
-            ScrollableTextboxUIElement stb = new ScrollableTextboxUIElement(_renderRoot, RenderCanvas, false, false)
-            {
-                Width = 200,
-                Height = 30,
-                Background = Colors.LightSeaGreen
-            };
-
-            ScrollableTextboxUIElement stb2 = new ScrollableTextboxUIElement(_renderRoot, RenderCanvas, true, false)
-            {
-                Width = 200,
-                Height = 200,
-                Background = Colors.LightSeaGreen
-            };
-
-            stb2.Transform.LocalPosition = new Vector2(900, 500);
-            stb.Transform.LocalPosition = new Vector2(600, 300);
-
-            _renderRoot.AddChild(stb);
-            _renderRoot.AddChild(stb2);
 
         /// <summary>
         /// gets trail elements as a list

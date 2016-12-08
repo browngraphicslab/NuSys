@@ -361,6 +361,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewAliasesPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbUIElement.cs" />
@@ -533,6 +535,7 @@
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="FocusManager.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
