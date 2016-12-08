@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,9 +46,14 @@ namespace NuSysApp
         public float LabelFontSize { get; set; } = UIDefaults.FontSize;
 
         /// <summary>
+        /// Event fired whenever a checkbox in this column is selected
+        /// </summary>
+        public event CheckBoxUIElement.OnSelectionChangedHandler CheckBoxSelected; //todo figure out a way to remove this event, currently a memory leak!!!
+
+        /// <summary>
         /// This function will return the cell based on the string outputed by the column function you give
         /// </summary>
-        public override RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement,
+        public override BaseInteractiveUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement,
             ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
 
         {
@@ -60,14 +66,19 @@ namespace NuSysApp
                 Background = Colors.Transparent,
                 LabelText = ColumnFunction(itemSource)
             };
+            cell.Selected += FiredOnCheckBoxSelected;
             return cell;
         }
 
-
-
-        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rectangleUIElement)
+        private void FiredOnCheckBoxSelected(CheckBoxUIElement sender, bool SelectionValue)
         {
-            var cell = rectangleUIElement as CheckBoxUIElement;
+            CheckBoxSelected?.Invoke(sender, SelectionValue);
+        }
+
+        public override void UpdateColumnCellFromItem(T itemSource, BaseInteractiveUIElement baseInteractiveUIElem)
+        {
+            var cell = baseInteractiveUIElem as CheckBoxUIElement;
+            Debug.Assert(cell != null);
             cell.LabelText = ColumnFunction(itemSource);
             cell.LabelPosition = LabelPosition;
             cell.LabelTextHorizontalAlignment = LabelTextHorizontalAlignment;

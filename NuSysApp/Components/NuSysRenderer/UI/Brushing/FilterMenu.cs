@@ -12,19 +12,29 @@ namespace NuSysApp
 {
     public class FilterMenu : ResizeableWindowUIElement
     {
-        private ListViewUIElementContainer<LibraryElementModel> _filterList;
+        private ListViewUIElementContainer<FilterCategory> _filterList;
+
+        private static BiDictionary<FilterCategory, string> _filterToStringDict = new BiDictionary<FilterCategory, string>
+        {
+            {FilterCategory.Creator, "Creator"},
+            {FilterCategory.CreationDate, "Creation Date"},
+            {FilterCategory.LastEditedDate, "Last Edited Date"},
+            {FilterCategory.Type, "Type"},
+
+        };
+
+        public enum FilterCategory
+        {
+            Creator,
+            CreationDate,
+            LastEditedDate,
+            Type
+        }
 
 
         public FilterMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            // set default ui values
-            //TopBarHeight = 0;
-            //Height = 500;
-            //Width = 300;
-            //MinWidth = 300;
-            //MinHeight = 300;
-            //BorderWidth = 3;
-            //Bordercolor = Colors.Black;
+
             IsDraggable = false;
 
             InitializeFilterList();
@@ -36,32 +46,28 @@ namespace NuSysApp
         /// </summary>
         public void InitializeFilterList()
         {
-            _filterList = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
+            _filterList = new ListViewUIElementContainer<FilterCategory>(this, Canvas)
             {
                 DisableSelectionByClick = true
             };
 
-            var listColumn = new ListCheckBoxColumn<LibraryElementModel>();
-            listColumn.Title = "Title";
-            listColumn.RelativeWidth = 1;
-            listColumn.ColumnFunction = model => model.Title;
+            var listColumn = new ListTextColumn<FilterCategory>
+            {
+                Title = "Filter By",
+                RelativeWidth = 1,
+                ColumnFunction = FilterCategoryToString
+            };
 
-            var listColumn2 = new ListCheckBoxColumn<LibraryElementModel>();
-            listColumn2.Title = "Creator";
-            listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction =
-                model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
-
-            var listColumn3 = new ListCheckBoxColumn<LibraryElementModel>();
-            listColumn3.Title = "Last Edited Timestamp";
-            listColumn3.RelativeWidth = 3;
-            listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
-
-            _filterList.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn, listColumn2, listColumn3 });
+            _filterList.AddColumns(new List<ListColumn<FilterCategory>> { listColumn});
 
 
-            _filterList.AddItems(
-                           SessionController.Instance.ContentController.ContentValues.ToList());
+            _filterList.AddItems( new List<FilterCategory>
+            {
+                FilterCategory.Creator,
+                FilterCategory.CreationDate,
+                FilterCategory.LastEditedDate,
+                FilterCategory.Type
+            });
 
             BorderWidth = 5;
             Bordercolor = Colors.Black;
@@ -82,6 +88,28 @@ namespace NuSysApp
             _filterList.Transform.LocalPosition = new Vector2(BorderWidth, TopBarHeight);
 
             base.Update(parentLocalToScreenTransform);
+        }
+
+        /// <summary>
+        /// Converts a filter category to a human readable string
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        public static string FilterCategoryToString(FilterCategory category)
+        {
+            switch (category)
+            {
+                case FilterCategory.Creator:
+                    return _filterToStringDict[FilterCategory.Creator];
+                case FilterCategory.CreationDate:
+                    return _filterToStringDict[FilterCategory.CreationDate];
+                case FilterCategory.LastEditedDate:
+                    return _filterToStringDict[FilterCategory.LastEditedDate];
+                case FilterCategory.Type:
+                    return _filterToStringDict[FilterCategory.Type];
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(category), category, null);
+            }
         }
     }
 }
