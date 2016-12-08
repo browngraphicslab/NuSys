@@ -192,7 +192,7 @@ namespace NuSysApp
             Debug.Assert(vm != null);
             var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(vm?.Controller.ContentId);
             Debug.Assert(linkController != null);
-            SessionController.Instance.SessionView.ShowDetailView(linkController);
+            SessionController.Instance.NuSessionView.ShowDetailView(linkController);
         }
 
         private void Title_LostFocus(object sender, RoutedEventArgs e)

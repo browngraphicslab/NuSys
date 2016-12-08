@@ -64,14 +64,7 @@ namespace NuSysApp
             set
             {
                 _range = Math.Min(1, value);
-                if (_range == 1)
-                {
-                    IsVisible = false;
-                }
-                else
-                {
-                    IsVisible = true;
-                }
+                IsVisible = _range != 1;
             }
             get
             {
@@ -110,6 +103,11 @@ namespace NuSysApp
             _isdragging = false;
             _scrollVelocity = 0.08;
             BorderWidth = 0;
+
+            Dragged += ScrollBarUIElement_Dragged;
+            Pressed += ScrollBarUIElement_Pressed;
+            Released += ScrollBarUIElement_Released;
+            PointerWheelChanged += ScrollBarUIElement_PointerWheelChanged;
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -129,15 +127,6 @@ namespace NuSysApp
 
         }
 
-        public override Task Load()
-        {
-            Dragged += ScrollBarUIElement_Dragged;
-            Pressed += ScrollBarUIElement_Pressed;
-            Released += ScrollBarUIElement_Released;
-            PointerWheelChanged += ScrollBarUIElement_PointerWheelChanged;
-            
-            return base.Load();
-        }
         /// <summary>
         /// Call this method to change the position based on the (normalized) delta passed in.
         /// </summary>

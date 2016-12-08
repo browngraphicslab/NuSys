@@ -223,7 +223,7 @@ namespace NuSysApp
         public void AddHeaderHandlers(ListViewHeaderItem<T> header)
         {
             header.Tapped += Header_Tapped;
-            header.Dragging += Header_Dragged;
+            header.Dragged += Header_Dragged;
             header.DragCompleted += Header_DragCompleted;
             header.HeaderResizing += HeaderItemResizing;
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;
@@ -340,9 +340,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void Header_Tapped(ButtonUIElement item, CanvasPointer pointer)
+        private void Header_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            HeaderTapped?.Invoke(_children.IndexOf(item));   
+            HeaderTapped?.Invoke(_children.IndexOf(interactiveBaseRenderItem));   
         }
     }
 }

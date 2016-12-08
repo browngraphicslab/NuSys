@@ -28,6 +28,7 @@ namespace NuSysApp
         public const string NuSysFALFolders = "NuSysFALFolders.txt";
         public const string FirstTimeWord = "FirstTimeWord.txt";
         public const string FirstTimePowerpoint = "FirstTimePowerpoint.txt";
+        public const string HTML = "HTML";
 
         #endregion Folders and files
 

@@ -24,7 +24,7 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
-        public delegate void RowTappedEventHandler(T item, String columnName);
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer);
 
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
@@ -240,21 +240,37 @@ namespace NuSysApp
             //Clear the rows.
             Rows.Clear();
 
+            //If itemssource is empty, no need to create rows.
+            if (_itemsSource.Count == 0)
+            {
+                return;
+            }
 
-            var position = (ScrollBar == null) ? 0 : ScrollBar.Position; 
+
+            var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+            
+            //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
+            if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
+            {
+                if (ScrollBar != null) ScrollBar.Position = 0;
+                position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+
+            }
+
+            //Start index is the itemsource-index of the first item shown on the listview 
             var startIndex = (int)Math.Floor(position * _itemsSource.Count);
-            var items = _itemsSource.ToArray();
 
             //Number of rows needed to cover the screen at all times
-            var numberOfRows = (int) Math.Ceiling(Height / RowHeight) + 1;
-
+            //Make sures that the number of rows created does not exceed the number of rows in the source
+            var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1); 
+            
             if (numberOfRows > _itemsSource.Count)
             {
                 numberOfRows = _itemsSource.Count;
             }
             
             //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
 
             foreach (var itemSource in rowList)
             {
@@ -339,7 +355,7 @@ namespace NuSysApp
                 return;
             }
             var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
-            var items = _itemsSource.ToArray();
+            var items = _itemsSource;
 
             foreach (var row in Rows)
             {
@@ -350,7 +366,7 @@ namespace NuSysApp
 
                 var index = startIndex + Rows.IndexOf(row);
                 //Accounts for the last, empty row.
-                if (index == _itemsSource.Count)
+                if (index >= _itemsSource.Count)
                 {
                     continue;
                 }
@@ -457,7 +473,8 @@ namespace NuSysApp
                         SelectItem(item); 
                     }
                 }
-                RowTapped?.Invoke(item, colTitle);
+
+                RowTapped?.Invoke(item, colTitle, pointer);
                 
             }
         }
@@ -480,15 +497,14 @@ namespace NuSysApp
 
             //We need the local point, not the screen point
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-
+            RowDragged?.Invoke(rowUIElement.Item,
+                     rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+            _isDragging = true;
             //check within bounds of listview
             if (point.X < minX || point.X > maxX || point.Y < minY ||
                 point.Y > maxY)
             {
-                //if out of bounds, invoke row drag out
-                RowDragged?.Invoke(rowUIElement.Item,
-                     rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-                _isDragging = true;
+                
             }
             else
             {
@@ -661,7 +677,13 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void ScrollTo(T item)
         {
-            
+            var i = _itemsSource.IndexOf(item);
+            if(i < 0)
+            {
+                return;
+            }
+            //Sets the position of the ScrollBar to the position of the item in the list
+            ScrollBar.Position = (float)i / _itemsSource.Count;
         }
 
         /// <summary>
@@ -826,7 +848,7 @@ namespace NuSysApp
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
-            foreach (var row in Rows.ToArray())
+            foreach (var row in Rows)
             {
                 row?.Update(parentLocalToScreenTransform);
             }
@@ -904,12 +926,20 @@ namespace NuSysApp
             _selectedElements?.Clear();
             _itemsSource?.Clear();
             _listColumns?.Clear();
-            Rows = null;
-            _selectedElements = null;
-            _itemsSource = null;
-            _listColumns = null;
+            //Rows = null;
+            //_selectedElements = null;
+            //_itemsSource = null;
+            //_listColumns = null;
             base.Dispose();
         }
 
+        /// <summary>
+        /// Returns the items source
+        /// </summary>
+        /// <returns></returns>
+        public List<T> GetItems()
+        {
+            return _itemsSource;
+        }
     }
 }

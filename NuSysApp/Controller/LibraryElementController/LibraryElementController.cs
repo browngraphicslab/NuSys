@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using MyToolkit.Utilities;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Extensions;
 using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
@@ -845,6 +847,116 @@ namespace NuSysApp
             contentDict.ForEach(kvp => dict[kvp.Key] = (dict.ContainsKey(kvp.Key) ? dict[kvp.Key] : 0) + kvp.Value);
 
             return dict;
+        }
+
+        /// <summary>
+        /// export a library element to an HTML page
+        /// 
+        /// creates an html page from the element's contents (for now, can also take rendered image of node)
+        /// 
+        /// takes in previous and next node as options for trail export
+        /// </summary>
+        public async void ExportToHTML(string previous = null, string next = null)
+        {
+            /// create the node's HTML file in the HTML folder
+            /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
+            StorageFolder htmlFolder = null;
+            if (await NuSysStorages.NuSysTempFolder.ContainsFolderAsync("HTML"))
+            {
+                htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+            }
+            else
+            {
+                htmlFolder = await NuSysStorages.NuSysTempFolder.CreateFolderAsync("HTML");
+            }
+
+            ///make file for the element
+            var nodeFile = await htmlFolder.CreateFileAsync(Title + ".html", CreationCollisionOption.ReplaceExisting);
+
+            ///create the css file if it does not already exist
+            if (!await htmlFolder.ContainsFileAsync("node_template.css"))
+            {
+                var cssFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/node_template.css"));
+                string css = await FileIO.ReadTextAsync(cssFile);
+                var newCssFile = await htmlFolder.CreateFileAsync("node_template.css", CreationCollisionOption.ReplaceExisting);
+                await FileIO.WriteTextAsync(newCssFile, css);
+            }
+            
+            ///copy template for element. 
+            var type = LibraryElementModel.Type.ToString();
+            type = type.ToLower();
+            var template = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/" + type + "_node_template.html"));
+
+            ///replace info for file - essentially string replaceing 
+            string text = await FileIO.ReadTextAsync(template);
+
+            ///title
+            text = text.Replace("[[title]]", Title);
+
+            ///if pdf, replace the data in a specific way to get div to scroll w/ images
+            if (LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+            {
+                string htmlImages = "";
+                foreach (var page in ((PdfContentDataModel)(ContentDataController).ContentDataModel).PageUrls)
+                {
+                    htmlImages += "<img src=\"" + page + "\">" + "\n";
+                }
+                text = text.Replace("[[data]]", htmlImages);
+            }
+            else
+            {
+                ///else replace with content data model data
+                text = text.Replace("[[data]]", ContentDataController.ContentDataModel.Data);
+            }
+            
+            ///creator
+            text = text.Replace("[[creator]]", SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(LibraryElementModel.Creator));
+
+            ///timestamp
+            text = text.Replace("[[timestamp]]", LibraryElementModel.LastEditedTimestamp);
+
+            ///if there are keywords, replace them
+            if (LibraryElementModel.Keywords != null)
+            {
+                var tags = LibraryElementModel.Keywords.ToList();
+                string tagtext = string.Join(", ", tags.Select(tag => string.Join(", ", tag.Text)));
+                text = text.Replace("[[tags]]", tagtext);
+            }
+            else
+            {
+                text = text.Replace("[[tags]]", "None");
+            }
+
+            ///replace metadata
+            ///first, turn metadata list into a string that puts new line characters at end of each key value pair
+            string metadataString = "";
+            foreach (var metadata in LibraryElementModel.Metadata)
+            {
+                metadataString += metadata.Value.GetMetadataAsString() + "<br>";
+            }
+            text = text.Replace("[[metadata]]", metadataString);
+
+            ///set links for previous and next buttons
+            if (previous != null)
+            {
+                text = text.Replace("[[previous]]", previous + ".html");
+            }
+            else
+            {
+                text = text.Replace("[[previous]]", "");
+            }
+
+            if (next != null)
+            {
+                text = text.Replace("[[next]]", next + ".html");
+            }
+            else
+            {
+                text = text.Replace("[[next]]", "");
+            }
+
+            ///update file with replaced text
+            await FileIO.WriteTextAsync(nodeFile, text);
         }
     }
 }

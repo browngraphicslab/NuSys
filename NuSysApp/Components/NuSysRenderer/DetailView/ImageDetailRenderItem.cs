@@ -135,15 +135,25 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            
             _isLoading = true;
             _bmp?.Dispose();
             await Task.Run(async () =>
             {
-                _bmp =
-                    await
-                        CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
-                            ResourceCreator.Dpi);
+                try
+                {
+                    _bmp =
+                        await
+                            CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
+                                ResourceCreator.Dpi);
+                }
+                catch (Exception e)
+                {
+                    _bmp =
+                        await
+                            CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/refresh.png"),
+                                ResourceCreator.Dpi);
+                    Debug.WriteLine("Image failed to load, using default icon instead");
+                }
             });
             ReRender();
             _isLoading = false;

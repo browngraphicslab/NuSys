@@ -278,7 +278,7 @@ namespace NuSysApp
                 }
                 else if (type != NusysConstants.ElementType.Link)
                 {
-                    SessionController.Instance.SessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
+                    SessionController.Instance.NuSessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
                 }
 
                 e.Handled = true;
