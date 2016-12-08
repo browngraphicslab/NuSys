@@ -33,7 +33,6 @@ namespace NuSysApp
             set
             {
                 _creationDateStart = value;
-                needsRefresh = true;
             }
         }
 
@@ -52,7 +51,6 @@ namespace NuSysApp
             set
             {
                 _creationDateEnd = value;
-                needsRefresh = true;
             }
         }
 
@@ -71,7 +69,6 @@ namespace NuSysApp
             set
             {
                 _lastEditedStart = value;
-                needsRefresh = true;
             }
         }
 
@@ -90,7 +87,6 @@ namespace NuSysApp
             set
             {
                 _lastEditedEnd = value;
-                needsRefresh = true;
             }
         }
 
@@ -99,11 +95,6 @@ namespace NuSysApp
         /// AddType(), AddTypeRange(), RemoveType(), or RemoveTypeRange()
         /// </summary>
         public HashSet<NusysConstants.ElementType> Types { get; }
-
-        /// <summary>
-        /// True if the data the filter is based off of needs to be refreshed
-        /// </summary>
-        private bool needsRefresh;
 
         /// <summary>
         /// private enum used for filtering helper methods
@@ -140,7 +131,6 @@ namespace NuSysApp
             LastEditedStart = null;
             LastEditedEnd = null;
             Types = new HashSet<NusysConstants.ElementType>();
-            needsRefresh = true;
         }
 
         /// <summary>
@@ -149,13 +139,8 @@ namespace NuSysApp
         /// <returns></returns>
         public HashSet<LibraryElementController> GetLibraryElementControllers()
         {
-            // if we haven't changed anything since the last time we brushed the data, just return the previous results
-            if (!needsRefresh)
-            {
-                return _filteredLibraryElementControllers;
-            }
 
-            // otherwise get all Libraryelementcontrollers which fulfill our creator and type constraints
+            // get all Libraryelementcontrollers which fulfill our creator and type constraints
             var controllers = SessionController.Instance.ContentController.AllLibraryElementControllers.Where(
                 ctrl => Creators.Contains(ctrl.LibraryElementModel.Creator) && // first filter controllers by creator
                 Types.Contains(ctrl.LibraryElementModel.Type)); // and by type
@@ -181,12 +166,6 @@ namespace NuSysApp
         /// <returns></returns>
         public HashSet<ElementController> GetElementControllersForCollection(CollectionLibraryElementController collectionController)
         {
-            // if we haven't changed anything since the last time we brushed the data, just return the previous results
-            if (!needsRefresh && collectionController == _prevCollectionController)
-            {
-                return _filteredElementControllers;
-            }
-
             Debug.Assert(collectionController != null);
 
             // update the most recently searched collection variable to reflect the new search
@@ -223,7 +202,6 @@ namespace NuSysApp
             if (!Creators.Contains(creator))
             {
                 Creators.Add(creator);
-                needsRefresh = true;
             }
         }
 
@@ -248,7 +226,6 @@ namespace NuSysApp
             if (Creators.Contains(creator))
             {
                 Creators.Remove(creator);
-                needsRefresh = true;
             }
         }
 
@@ -273,7 +250,6 @@ namespace NuSysApp
             if (!Types.Contains(elementType))
             {
                 Types.Add(elementType);
-                needsRefresh = true;
             }
         }
 
@@ -298,7 +274,6 @@ namespace NuSysApp
             if (Types.Contains(elementType))
             {
                 Types.Remove(elementType);
-                needsRefresh = true;
             }
         }
 

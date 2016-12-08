@@ -53,7 +53,7 @@ namespace NuSysApp
         /// <summary>
         /// This function will return the cell based on the string outputed by the column function you give
         /// </summary>
-        public override BaseInteractiveUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement,
+        public override RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement,
             ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
 
         {
@@ -75,9 +75,9 @@ namespace NuSysApp
             CheckBoxSelected?.Invoke(sender, SelectionValue);
         }
 
-        public override void UpdateColumnCellFromItem(T itemSource, BaseInteractiveUIElement baseInteractiveUIElem)
+        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rectangleUiElement)
         {
-            var cell = baseInteractiveUIElem as CheckBoxUIElement;
+            var cell = rectangleUiElement as CheckBoxUIElement;
             Debug.Assert(cell != null);
             cell.LabelText = ColumnFunction(itemSource);
             cell.LabelPosition = LabelPosition;

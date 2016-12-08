@@ -155,7 +155,10 @@ namespace NuSysApp
             };
             AddChild(_filterButton);
 
-            _filterMenu = new FilterMenu(this, Canvas);
+            _filterMenu = new FilterMenu(this, Canvas)
+            {
+                IsVisible = false
+            };
             AddChild(_filterMenu);
             
 
@@ -170,9 +173,18 @@ namespace NuSysApp
             libraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
             libraryListView.RowTapped += OnLibraryItemSelected;
 
+            _filterButton.Tapped += OnFilterButtonTapped;
+
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
+        }
+
+        private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _filterMenu.IsVisible = !_filterMenu.IsVisible;
+            _filterMenu.Height = 400;
+            _filterMenu.Width = 200;
         }
 
         /// <summary>
@@ -308,6 +320,9 @@ namespace NuSysApp
             libraryListView.RowDragged -= LibraryListView_RowDragged;
             libraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
             libraryListView.RowTapped -= OnLibraryItemSelected;
+
+            _filterButton.Tapped -= OnFilterButtonTapped;
+
 
             SessionController.Instance.ContentController.OnNewLibraryElement -= UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete -= UpdateLibraryListToRemoveElement;
