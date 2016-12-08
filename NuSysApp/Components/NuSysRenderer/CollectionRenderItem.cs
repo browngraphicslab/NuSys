@@ -407,6 +407,17 @@ namespace NuSysApp
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
+            /*
+             * TODO: FIGURE THIS SHIT OUT, why can't i just override this?
+             */
+            if (_listView != null)
+            {
+                var ht = _listView.HitTest(screenPoint);
+                if (ht != null)
+                {
+                    return ht;
+                }
+            }
             if (ViewModel is FreeFormViewerViewModel)
             {
                 return this;
@@ -431,6 +442,10 @@ namespace NuSysApp
             {
                 if (IsDisposed)
                     return;
+
+                /*
+                 * RenderItems0/1/2...those are just to make sure elements are on the proper layer
+                 */
                 if (e.Action == NotifyCollectionChangedAction.Reset)
                 {
                     foreach (var baseRenderItem in _renderItems0)
@@ -599,6 +614,7 @@ namespace NuSysApp
             {
                 SetUpListViewMask(_parent,_canvas);
                 SetUpListView(_parent, _canvas, null, cids);
+                
             }
             else
             {
