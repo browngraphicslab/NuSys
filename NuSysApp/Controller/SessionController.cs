@@ -303,6 +303,8 @@ namespace NuSysApp
 
             SessionController.Instance.IdToControllers[model.Id] = controller;
 
+            controller.LibraryElementController.FireAliasAdded(model);
+
             await UITask.Run(async delegate
             {
 

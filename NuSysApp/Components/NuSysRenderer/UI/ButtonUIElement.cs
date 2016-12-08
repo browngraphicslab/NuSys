@@ -102,6 +102,11 @@ namespace NuSysApp
         public Color ButtonTextColor { get; set; }
 
         /// <summary>
+        /// The size of the text on the button
+        /// </summary>
+        public float ButtonTextSize { get; set; } = UIDefaults.ButtonTextSize;
+
+        /// <summary>
         /// The horizontal alignment of the text on the button
         /// </summary>
         public CanvasHorizontalAlignment ButtonTextHorizontalAlignment;
@@ -120,27 +125,76 @@ namespace NuSysApp
         /// </summary>
         public event ButtonTappedHandler Tapped;
 
+        public delegate void ButtonDraggedHandler(ButtonUIElement item, CanvasPointer pointer);
+
+        /// <summary>
+        /// Fired when the Button is being dragged
+        /// </summary>
+        public event ButtonDraggedHandler Dragging;
+
+        public delegate void ButtonDragCompletedHandler(ButtonUIElement item, CanvasPointer pointer);
+
+        /// <summary>
+        /// Fired dragging has been completed
+        /// </summary>
+        public event ButtonDragCompletedHandler DragCompleted;
+
+        /// <summary>
+        /// This is true when the shape is being dragged
+        /// </summary>
+        protected bool _beingDragged;
+
+
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
         {
             Shape = shapeElement;
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
-
             Shape.Pressed += RectangleButtonUIElement_Pressed;
             Shape.Released += RectangleButtonUIElement_Released;
+            Shape.Dragged += RectangleButtonUIElement_Dragged;
+            Shape.Tapped += RectangleButtonUIElement_Tapped;
+            
         }
 
         /// <summary>
-        /// Fired when the button is released. Changes the appearance of the button to reflect unselected appearance.
+        /// Is called when the shape is being dragged, then invokes its own dragged event
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RectangleButtonUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void RectangleButtonUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _beingDragged = true;
+            Dragging?.Invoke(this, pointer);
+        }
+
+        /// <summary>
+        /// Is called when the shape is tapped, then invokes its own dragged event
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected virtual void RectangleButtonUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // Fire the button's tapped event. 
+            Tapped?.Invoke(this, pointer);
+        }
+
+        /// <summary>
+        /// Fired when the button is released. Changes the appearance of the button to reflect unselected appearance. Also fires the drag completed event if
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected virtual void RectangleButtonUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // reset the Background and Bordercolor to the original colors
             Background = _orgBackground;
             Bordercolor = _orgBorder;
+            if (_beingDragged)
+            {
+                DragCompleted?.Invoke(this, pointer);
+                _beingDragged = false;
+            }
         }
 
         /// <summary>
@@ -148,7 +202,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RectangleButtonUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void RectangleButtonUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // save the Background and Bordercolor to reset them when the button is no longer pressed
             _orgBackground = Background;
@@ -157,9 +211,6 @@ namespace NuSysApp
             // set the Background and Border to SelectedBackground and SelectedBorder if either of those is not null
             Background = SelectedBackground ?? Background;
             Bordercolor = SelectedBorder ?? Background;
-
-            // Fire the button's Clicked event. 
-            Tapped?.Invoke(this, pointer);
         }
 
         /// <summary>
@@ -178,9 +229,10 @@ namespace NuSysApp
 
 
             // draw the text on the button
-            DrawButtonText(ds);
             DrawButtonImage(ds);
+            DrawButtonText(ds);
         }
+        
 
         public virtual void DrawButtonImage(CanvasDrawingSession ds)
         {
@@ -189,7 +241,7 @@ namespace NuSysApp
 
             if (Image != null)
             {
-                ds.DrawImage(Image, GetLocalBounds());
+                ds.DrawImage(Image, new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth));
             }
 
             ds.Transform = orgTransform;
@@ -210,7 +262,8 @@ namespace NuSysApp
                     VerticalAlignment = ButtonTextVerticalAlignment,
                     WordWrapping = CanvasWordWrapping.NoWrap,
                     TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis
+                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
+                    FontSize = ButtonTextSize
                 };
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
@@ -222,6 +275,8 @@ namespace NuSysApp
 
             ds.Transform = orgTransform;
         }
+
+        
 
         protected override void DrawBorder(CanvasDrawingSession ds)
         {
@@ -240,6 +295,8 @@ namespace NuSysApp
         {
             Shape.Pressed -= RectangleButtonUIElement_Pressed;
             Shape.Released -= RectangleButtonUIElement_Released;
+            Shape.Dragged -= RectangleButtonUIElement_Dragged;
+            Shape.Tapped -= RectangleButtonUIElement_Tapped;
             base.Dispose();
         }
 

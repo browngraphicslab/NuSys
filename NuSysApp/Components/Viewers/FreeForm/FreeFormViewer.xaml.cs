@@ -30,7 +30,7 @@ namespace NuSysApp
     public sealed partial class FreeFormViewer
     {
         private List<PointModel> _latestStroke;
-        private CanvasInteractionManager _canvasInteractionManager;
+        private RenderItemInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
 
         private FreeFormViewerViewModel _vm;
@@ -121,7 +121,7 @@ namespace NuSysApp
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
-                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+                _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xRenderCanvas);
             }
 
             FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
@@ -154,25 +154,25 @@ namespace NuSysApp
 
             _renderRoot.AddChild(DetailViewer);
 
-            EditableTextboxUIElement tb = new EditableTextboxUIElement(_renderRoot, RenderCanvas)
-            {
-                Width = 300,
-                Height = 200,
-                Background = Colors.Aqua
-            };
-
-            OneLineInputTextboxUIElement oltb = new OneLineInputTextboxUIElement(_renderRoot, RenderCanvas)
+            ScrollableTextboxUIElement stb = new ScrollableTextboxUIElement(_renderRoot, RenderCanvas, false, false)
             {
                 Width = 200,
                 Height = 30,
-                Background = Colors.Bisque
+                Background = Colors.LightSeaGreen
             };
 
-            tb.Transform.LocalPosition = new Vector2(500, 500);
-            oltb.Transform.LocalPosition = new Vector2(600, 400);
+            ScrollableTextboxUIElement stb2 = new ScrollableTextboxUIElement(_renderRoot, RenderCanvas, true, false)
+            {
+                Width = 200,
+                Height = 200,
+                Background = Colors.LightSeaGreen
+            };
 
-            _renderRoot.AddChild(tb);
-            _renderRoot.AddChild(oltb);
+            stb2.Transform.LocalPosition = new Vector2(900, 500);
+            stb.Transform.LocalPosition = new Vector2(600, 300);
+
+            _renderRoot.AddChild(stb);
+            _renderRoot.AddChild(stb2);
 
             RenderEngine.Start();
 

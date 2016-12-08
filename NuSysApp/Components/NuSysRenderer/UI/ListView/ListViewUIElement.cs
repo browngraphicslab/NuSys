@@ -24,24 +24,32 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
-        public delegate void RowSelectedEventHandler(T item, String columnName);
+        public delegate void RowTappedEventHandler(T item, String columnName);
+
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
         /// be null.
         /// </summary>
-        public event RowSelectedEventHandler RowSelected;
+        public event RowTappedEventHandler RowTapped;
 
         public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
-
         public event RowDraggedEventHandler RowDragged;
 
+        public delegate void RowDoubleTappedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public event RowDoubleTappedEventHandler RowDoubleTapped;
+
         /// <summary>
-        /// 
+        /// If this is true, the color will not change when you click on an item, and it will not be added to the selected list.
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="columnName"></param>
-        /// <param name="pointer"></param>
+        public bool DisableSelectionByClick { get; set; }
+
+        /// <summary>
+        /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
+        /// this is -1.
+        /// </summary>
+        private int _columnIndexSortedBy;
+        
         public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
 
         /// <summary>
@@ -70,7 +78,7 @@ namespace NuSysApp
         /// <summary>
         /// A hashset of the selected rows
         /// </summary>
-        private HashSet<ListViewRowUIElement<T>> _selectedElements;
+        private HashSet<T> _selectedElements;
 
         /// <summary>
         /// A clipping rectangle the size of the list view
@@ -82,6 +90,7 @@ namespace NuSysApp
         /// reflects the position of the slider in the scroll bar.
         /// </summary>
         private float _scrollOffset;
+
 
         /// <summary>
         /// The combined height of every listviewuielementrow
@@ -121,7 +130,19 @@ namespace NuSysApp
             }
         }
 
+        public float Height
+        {
+            get { return base.Height; }
 
+            set
+            {
+                if (base.Height != value)
+                {
+                    base.Height = value;
+                    CreateListViewRowUIElements();
+                }
+            }
+        }
         public float Width
         {
             get
@@ -131,11 +152,15 @@ namespace NuSysApp
             }
             set
             {
-                base.Width = value;
-                RepopulateExistingListRows();
+                if (base.Width != value)
+                {
+                    base.Width = value;
+                    CreateListViewRowUIElements();
+                }
             }
         }
         
+        public List<ListViewRowUIElement<T>> Rows { set; get; }
         public List<ListColumn<T>> ListColumns
         {
             get { return _listColumns; }   
@@ -170,23 +195,13 @@ namespace NuSysApp
             _scrollOffset = 0;
             MultipleSelections = false;
             BorderWidth = 0;
+            _columnIndexSortedBy = -1;
             //RowBorderThickness = 5;
+            Rows = new List<ListViewRowUIElement<T>>();
             RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
-            //_listViewRowUIElements = new List<ListViewRowUIElement<T>>();
-            _selectedElements = new HashSet<ListViewRowUIElement<T>>();
-        }
-        
+            _selectedElements = new HashSet<T>();
 
-        /// <summary>
-        /// This method will populate the list view using the functions of the columns and the item source.
-        /// </summary>
-        public void PopulateListView()
-        {
-            //_listViewRowUIElements.Clear();
-            ClearChildren();
-            _selectedElements.Clear();
-            CreateListViewRowUIElements(_itemsSource);
         }
 
         /// <summary>
@@ -203,23 +218,46 @@ namespace NuSysApp
             }
             //Add items to the item source
             _itemsSource.AddRange(itemsToAdd);
-
-            CreateListViewRowUIElements(itemsToAdd);
+            //Make RowUIElements
+            CreateListViewRowUIElements();
         }
 
         /// <summary>
-        /// This simply creates new list view row ui elements for each of the 
-        /// items passed in.
+        /// Method that creates the ListViewRowUIElements necessary to cover the screen. 
+        /// 
+        /// This should be called somewhere in the constructor, as well as whenever the number of
+        /// rows necessary to cover the screen changes (e.g., height changes)
         /// </summary>
-        /// <param name="itemsToCreateRow"></param>
-        private void CreateListViewRowUIElements(List<T> itemsToCreateRow)
+        private void CreateListViewRowUIElements()
         {
-            foreach (var itemSource in itemsToCreateRow)
+            Debug.Assert(_itemsSource != null);
+
+            //Remove handlers of rows
+            foreach(var row in Rows)
             {
-                if (itemSource == null)
-                {
-                    continue;
-                }
+                RemoveRowHandlers(row);
+            }
+            //Clear the rows.
+            Rows.Clear();
+
+
+            var position = (ScrollBar == null) ? 0 : ScrollBar.Position; 
+            var startIndex = (int)Math.Floor(position * _itemsSource.Count);
+            var items = _itemsSource.ToArray();
+
+            //Number of rows needed to cover the screen at all times
+            var numberOfRows = (int) Math.Ceiling(Height / RowHeight) + 1;
+
+            if (numberOfRows > _itemsSource.Count)
+            {
+                numberOfRows = _itemsSource.Count;
+            }
+            
+            //Creates the row UI elements and adds them to the list.
+            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
+
+            foreach (var itemSource in rowList)
+            {
                 var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                 listViewRowUIElement.Item = itemSource;
                 listViewRowUIElement.Background = Colors.White;
@@ -228,49 +266,131 @@ namespace NuSysApp
                 listViewRowUIElement.Width = Width - BorderWidth * 2;
                 listViewRowUIElement.Height = RowHeight;
                 PopulateListRow(listViewRowUIElement);
-                //_listViewRowUIElements.Add(listViewRowUIElement);
-                //listViewRowUIElement.Selected += ListViewRowUIElement_Selected;
-                //listViewRowUIElement.Deselected += ListViewRowUIElement_Deselected;
-                listViewRowUIElement.PointerReleased += ListViewRowUIElement_PointerReleased;
-                listViewRowUIElement.Dragged += ListViewRowUIElement_Dragged;
-                _children.Add(listViewRowUIElement);
+                listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
+                listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
+                listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
+                listViewRowUIElement.RowDoubleTapped += ListViewRowUIElement_RowDoubleTapped;
+                Rows.Add(listViewRowUIElement);
+            }
+
+        }
+        /// <summary>
+        /// Fires RowDoubleTapped event listened by container
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
+        /// <param name="item"></param>
+        private void ListViewRowUIElement_RowDoubleTapped(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
+        {
+            Debug.Assert(rowUIElement != null);
+            RowDoubleTapped?.Invoke(rowUIElement.Item,
+                 rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+        }
+
+        /// <summary>
+        /// This handles the PointerWheelChanged event of the rows. The delta passed in is either 1 or -1, so we move the scroll bar
+        /// depending on the sign of the delta. 
+        /// 
+        /// 0.035 is the normalized change in position.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        /// <param name="pointer"></param>
+        /// <param name="delta"></param>
+        private void ListViewRowUIElement_PointerWheelChanged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta)
+        {
+            
+            if(delta < 0)
+            {
+                ScrollBar.ChangePosition(0.035);
 
             }
+            else if(delta> 0)
+            {
+                ScrollBar.ChangePosition(-0.035);
+
+            }
+
+
         }
-        
+
 
         /// <summary>
         /// This just changes all the border widths of the rows to be the rowborderthickness variable
         /// </summary>
         private void UpdateRowBorder()
         {
-            foreach (var child in _children)
+            foreach (var row in Rows)
             {
-                var row = child as ListViewRowUIElement<T>;
                 Debug.Assert(row != null);
                 row.BorderWidth = RowBorderThickness;
             }
         }
+        /// <summary>
+        /// This method makes sure the appearence of the rows reflect the item they represent.
+        /// It sets the row's Item property, then selects/deselects based on if it's selected,
+        /// and then updates the content of each row.
+        /// </summary>
+        private void UpdateListRows()
+        {
+            if (ScrollBar == null)
+            {
+                return;
+            }
+            var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
+            var items = _itemsSource.ToArray();
 
+            foreach (var row in Rows)
+            {
+                if (row == null)
+                {
+                    continue;
+                }
+
+                var index = startIndex + Rows.IndexOf(row);
+                //Accounts for the last, empty row.
+                if (index == _itemsSource.Count)
+                {
+                    continue;
+                }
+
+                row.Item = items[index];
+
+                if (_selectedElements.Contains(row.Item))
+                {
+                    SelectRow(row);
+                }
+                else
+                {
+                    DeselectRow(row);
+                }
+
+                foreach (var column in _listColumns)
+                {
+                    row.UpdateContent(column, _listColumns.IndexOf(column));
+                }
+
+
+
+
+            }
+        }
         /// <summary>
         /// This method simply clears all the cells in each of the rows and repopulates each row using the list of columns
         /// and the column function
         /// </summary>
         private void RepopulateExistingListRows()
         {
-            foreach (var child in _children)
+            foreach(var row in Rows)
             {
-                var row = child as ListViewRowUIElement<T>;
-                if (row == null)
-                {
-                    continue;
-                }
-                row.Width = Width - BorderWidth * 2;
-
+                row.Width = Width - BorderWidth*2;
                 row.RemoveAllCells();
                 PopulateListRow(row);
             }
+            
         }
+
 
         /// <summary>
         /// This populates the passed in row with the cells using the list of columns.
@@ -303,51 +423,43 @@ namespace NuSysApp
 
         }
 
-        ///// <summary>
-        ///// This is called when a list view row ui element fires its deselected event. It simply calls the select row method.
-        ///// </summary>
-        ///// <param name="rowUIElement"></param>
-        ///// <param name="cell"></param>
-        //private void ListViewRowUIElement_Deselected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
-        //{
-        //    DeselectRow(rowUIElement);
-        //}
+        
 
-        ///// <summary>
-        ///// This is called when a list view row ui element fires its selected event. It simply calls the select row method.
-        ///// </summary>
-        ///// <param name="rowUIElement"></param>
-        ///// <param name="cell"></param>
-        //private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
-        //{
-        //    SelectRow(rowUIElement);
-        //}
-
-        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
+        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
         {
-            if (rowUIElement.IsSelected)
-            {
-                DeselectRow(rowUIElement);
-            }
-            else
-            {
-                SelectRow(rowUIElement);
-            }
             if (_isDragging)
             {
-                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[rowUIElement.GetColumnIndex(cell)].Title, pointer);
+                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
                 _isDragging = false;
+            }else
+            {
+                var t = Transform.ScreenToLocalMatrix;
+                var np = Vector2.Transform(pointer.CurrentPoint, t);
+                if (rowUIElement.HitTest(pointer.CurrentPoint) == null)
+                {
+                    return;
+                }
+
+                Debug.Assert(colIndex < _listColumns.Count);
+                var colTitle = _listColumns[colIndex].Title;
+                if (_selectedElements.Contains(item))
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        DeselectItem(item);
+
+                    }
+                }
+                else
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        SelectItem(item); 
+                    }
+                }
+                RowTapped?.Invoke(item, colTitle);
+                
             }
-        }
-        
-        /// <summary>
-        /// This is called when a list view row ui element fires its selected event. It simply calls the select row method.
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        private void ListViewRowUIElement_Selected(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell)
-        {
-            SelectRow(rowUIElement);
         }
         
         /// <summary>
@@ -358,7 +470,7 @@ namespace NuSysApp
         /// <param name="rowUIElement"></param>
         /// <param name="cell"></param>
         /// <param name="pointer"></param>
-        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer)
+        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
         {
             //calculate bounds of listview
             var minX = this.Transform.Parent.LocalX;
@@ -366,39 +478,69 @@ namespace NuSysApp
             var minY = this.Transform.Parent.LocalY;
             var maxY = minY + Height;
 
+            //We need the local point, not the screen point
+            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+
             //check within bounds of listview
-            if (pointer.CurrentPoint.X < minX || pointer.CurrentPoint.X > maxX || pointer.CurrentPoint.Y < minY ||
-                pointer.CurrentPoint.Y > maxY)
+            if (point.X < minX || point.X > maxX || point.Y < minY ||
+                point.Y > maxY)
             {
                 //if out of bounds, invoke row drag out
                 RowDragged?.Invoke(rowUIElement.Item,
-                    cell != null && rowUIElement != null ? _listColumns[rowUIElement.GetColumnIndex(cell)].Title : null, pointer);
+                     rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
                 _isDragging = true;
             }
             else
             {
                 //scroll if in bounds
-                var deltaY = pointer.DeltaSinceLastUpdate.Y / Height;
+                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / Height;
 
-                if (deltaY > 0)
-                {
-                    //If you're going up (position going down), set position + delta, with 0 as min.
-                    ScrollBar.Position = Math.Max(0, ScrollBar.Position - deltaY/RowHeight);
-                }
+                ScrollBar.ChangePosition(deltaY);
 
-                if (deltaY < 0)
-                {
-                    //If you're going down (position going up), set position + delta, with 1-range being maximum.
-                    ScrollBar.Position = (ScrollBar.Position - deltaY/RowHeight + ScrollBar.Range > 1)
-                        ? 1 - ScrollBar.Range
-                        : ScrollBar.Position - deltaY/RowHeight;
-
-                }
                 
             }
         }
 
-        
+        /// <summary>
+        /// This will sort the list by the column index
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        public void SortByCol(int columnIndex)
+        {
+            Debug.Assert(columnIndex < _listColumns.Count);
+            //If it isn't sorted by this index then just sort it normally
+            if (columnIndex != _columnIndexSortedBy)
+            {
+                _children.Sort(delegate(BaseRenderItem row1, BaseRenderItem row2)
+                {
+                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    if (str1 == null || str2 == null)
+                    {
+                        return 0;
+                    }
+                    return str1.CompareTo(str2);
+                });
+                _columnIndexSortedBy = columnIndex;    
+            }
+            //If it is sorted by this index then sort it with reverse order
+            else
+            {
+                _children.Sort(delegate (BaseRenderItem row1, BaseRenderItem row2)
+                {
+                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
+                    if (str1 == null || str2 == null)
+                    {
+                        return 0;
+                    }
+                    return str1.CompareTo(str2) * -1;
+                });
+                _columnIndexSortedBy = -1;
+            }
+            
+        }
+
         /// <summary>
         /// Removes things from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
         /// </summary>
@@ -411,26 +553,27 @@ namespace NuSysApp
                 return;
             }
             _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
-            //var rowsToRemove = _children.Where(row => row is ListViewRowUIElement<T> && itemsToRemove.Contains((row as ListViewRowUIElement<T>).Item));
-            //foreach (ListViewRowUIElement<T> row in rowsToRemove)
-            //{
-            //    RemoveRowHandlers(row);
-            //    //row.Selected -= ListViewRowUIElement_Selected;
-            //    //row.Deselected -= ListViewRowUIElement_Deselected;
-            //}
-            _children.RemoveAll(delegate(BaseRenderItem item)
-            {
-                var cell = item as ListViewRowUIElement<T>;
-                if (cell != null && itemsToRemove.Contains(cell.Item))
-                {
-                    RemoveRowHandlers(cell);
-                    return true;
-                }
-                return false;
-            });
+
             //Do I also need to remove handlers here?
-            _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row.Item));
+            _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
+
+            if(_itemsSource.Count <= Rows.Count)
+            {
+                CreateListViewRowUIElements();
+            }
         }
+
+
+        /// <summary>
+        /// Removes all items from the list. Clears item source, selectedElements, and calls createlistviewrowuielements.
+        /// </summary>
+        public void ClearItems()
+        {
+            _itemsSource.Clear();
+            _selectedElements.Clear();
+            CreateListViewRowUIElements();
+        }
+
 
         /// <summary>
         /// Stops listening to events from the row
@@ -440,9 +583,10 @@ namespace NuSysApp
         {
             //rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
             //rowToRemoveHandlersFrom.Deselected -= ListViewRowUIElement_Deselected;
-            rowToRemoveHandlersFrom.PointerReleased -= ListViewRowUIElement_PointerReleased;
-
-            rowToRemoveHandlersFrom.Dragged -= ListViewRowUIElement_Dragged;
+            rowToRemoveHandlersFrom.RowPointerReleased -= ListViewRowUIElement_PointerReleased;
+            rowToRemoveHandlersFrom.PointerWheelChanged -= ListViewRowUIElement_PointerWheelChanged;
+            rowToRemoveHandlersFrom.RowDragged -= ListViewRowUIElement_Dragged;
+            rowToRemoveHandlersFrom.RowDoubleTapped -= ListViewRowUIElement_RowDoubleTapped;
         }
 
         /// <summary>
@@ -521,6 +665,22 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// This changes the column relative widths for the column at leftHeaderIndex and the column at leftHeaderIndex + 1. This is used for resizing, since
+        /// you can only resize 2 cols at the same time.
+        /// </summary>
+        /// <param name="leftHeaderWidth"></param>
+        /// <param name="rightHeaderWidth"></param>
+        /// <param name="leftColWidth"></param>
+        public void ChangeRelativeColumnWidths(double leftHeaderWidth, double rightHeaderWidth, int leftHeaderIndex)
+        {
+            var leftCol = _listColumns[leftHeaderIndex];
+            var rightCol = _listColumns[leftHeaderIndex + 1];
+            float sumRelativeWidths = leftCol.RelativeWidth + rightCol.RelativeWidth;
+            leftCol.RelativeWidth = (float)(leftHeaderWidth/(rightHeaderWidth + leftHeaderWidth)*sumRelativeWidths);
+            rightCol.RelativeWidth = (float)(rightHeaderWidth / (rightHeaderWidth + leftHeaderWidth) * sumRelativeWidths);
+        }
+
+        /// <summary>
         /// This method will select the row corresponding to the item passed in. This is what users will call when you 
         /// want to select an item in the list.
         /// </summary>
@@ -531,9 +691,11 @@ namespace NuSysApp
                 Debug.Write("Trying to select a null item idiot");
                 return;
             }
-            var rowToSelect = _children.First(row => row is ListViewRowUIElement<T> && (row as ListViewRowUIElement<T>).Item.Equals(item)) as ListViewRowUIElement<T>;
-            SelectRow(rowToSelect);
-            
+            if (MultipleSelections == false)
+            {
+                _selectedElements.Clear();
+            }
+            _selectedElements.Add(item);            
         }
 
         /// <summary>
@@ -547,19 +709,26 @@ namespace NuSysApp
                 Debug.Write("Could not find the row corresponding to the item you with to select");
                 return;
             }
-            if (MultipleSelections == false)
-            {
-                foreach (var selectedRow in _selectedElements)
-                {
-                    selectedRow.Deselect();
-                }
-                _selectedElements.Clear();
-            }
+
             rowToSelect.Select();
-            _selectedElements.Add(rowToSelect);
-            RowSelected?.Invoke(rowToSelect.Item,
-                cell != null && rowToSelect != null ? _listColumns[rowToSelect.GetColumnIndex(cell)].Title : null);
             
+        }
+
+        /// <summary>
+        /// This function adds the sizeChange to the width of cell at leftColIndex, and subtracts sizeChange from cell at (leftColIndex + 1) width and adds sizeChanged to the position of the (leftColIndex + 1) cell
+        /// </summary>
+        /// <param name="leftColIndex"></param>
+        /// <param name="rightColIndex"></param>
+        /// <param name="distanceToMove"></param>
+        public void MoveBorderAfterCell(int leftColIndex, float sizeChange)
+        {
+            foreach (var row in Rows)
+            {
+                if (row != null)
+                {
+                    row.MoveBorderAfterCell(leftColIndex, sizeChange);
+                }
+            }
         }
 
         /// <summary>
@@ -574,8 +743,20 @@ namespace NuSysApp
                 Debug.Write("Trying to deselect a null item idiot");
                 return;
             }
-            var rowToDeselect = _selectedElements.First(row => row.Item.Equals(item));
-            DeselectRow(rowToDeselect);
+
+            if (_selectedElements.Contains(item))
+            {
+                _selectedElements.Remove(item);
+
+            }
+        }
+
+        /// <summary>
+        /// Clears the selected elements list
+        /// </summary>
+        public void DeselectAllItems()
+        {
+            _selectedElements.Clear();
         }
 
         /// <summary>
@@ -590,7 +771,6 @@ namespace NuSysApp
                 return;
             }
             rowToDeselect.Deselect();
-            _selectedElements.Remove(rowToDeselect);
         }
 
         /// <summary>
@@ -608,13 +788,8 @@ namespace NuSysApp
             }
             bool AIndexIsLast = false;
             bool BIndexIsLast = false;
-            foreach (var child in _children)
+            foreach (var row in Rows)
             {
-                var row = child as ListViewRowUIElement<T>;
-                if (row == null)
-                {
-                    continue;
-                }
                 row.SwapCell(columnAIndex, columnBIndex);
             }
 
@@ -622,8 +797,6 @@ namespace NuSysApp
             var tmpCol = _listColumns[columnAIndex];
             _listColumns[columnAIndex] = _listColumns[columnBIndex];
             _listColumns[columnBIndex] = tmpCol;
-
-
         }
 
         /// <summary>
@@ -631,64 +804,111 @@ namespace NuSysApp
         /// </summary>
         public IEnumerable<T> GetSelectedItems()
         {
-            return _selectedElements.Select(row => row.Item);
+            return _selectedElements;
         }
-
+        /// <summary>
+        /// Listens to ScrollBar's position, and udates the scrolloffset by denormalized
+        /// position.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
         public override void ScrollBarPositionChanged(object source, double position)
         {
             _scrollOffset = (float) position * (_heightOfAllRows);
         }
-
+        /// <summary>
+        /// Calls update on every row, since rows are not children.
+        /// Also updates clipping rect to be based on the width and height.
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
         {
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
-
+            UpdateListRows();
+            foreach (var row in Rows.ToArray())
+            {
+                row?.Update(parentLocalToScreenTransform);
+            }
             base.Update(parentLocalToScreenTransform);
         }
-
+        /// <summary>
+        /// Draw creates a clipping and then draws every single row in Rows
+        /// Because the rows are not children of the list view, we need to 
+        /// call their draw methods here.
+        /// </summary>
+        /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-            base.Draw(ds);
-
             var orgTransform = ds.Transform;
-            //Is this necessary?
-            //ds.Transform = Transform.LocalToScreenMatrix;
-
-            //Clipping in this way does not work...
+            ds.Transform = Transform.LocalToScreenMatrix;
+            // Creates a clipping of the drawing session based on _clippingrect
             using (ds.CreateLayer(1f, _clippingRect))
             {
 
                 var cellVerticalOffset = BorderWidth;
-                foreach (var child in _children)
+                var headerOffset = Transform.LocalPosition.Y;
+                var scrollOffset = _scrollOffset % RowHeight;
+                //Draws every row
+                foreach (var row in Rows.ToArray())
                 {
-                    var row = child as ListViewRowUIElement<T>;
-                    if (row == null)
-                    {
-                        continue;
-                    }
-
-                    
                     //Position is the position of the bottom of the row
-                    var position = cellVerticalOffset - _scrollOffset + RowHeight;
+                    var position = cellVerticalOffset - scrollOffset + headerOffset;
+                    row.Transform.LocalPosition = new Vector2(BorderWidth, position);
+                    row.Draw(ds);
 
-                    //Set visibility based on if the row is at all visible.
-                    if (position > 0 && position < Height + RowHeight)
-                    {
-                        row.IsVisible = true;
-                    }
-                    else
-                    {
-                        row.IsVisible = false;
-                    }
-                    row.Transform.LocalPosition = new Vector2(BorderWidth, cellVerticalOffset - _scrollOffset);
                     cellVerticalOffset += row.Height;
-   
                 }
+
             }
             ds.Transform = orgTransform;
+            base.Draw(ds);
 
+        }
 
+        /// <summary>
+        /// Hit tests every row in Rows.
+        /// This is necessary because the RowUIElements are not children of the list view.
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <returns></returns>
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
+        {
+            //If scroll bar is hit, return that instead of the row underneath.
+            var scrollBarht = ScrollBar.HitTest(screenPoint);
+            if(scrollBarht != null)
+            {
+                return scrollBarht;
+            }
+            foreach(var row in Rows)
+            {
+                var ht = row.HitTest(screenPoint);
+                if (ht != null)
+                {
+                    return ht;
+                }
+            }
+            return base.HitTest(screenPoint);
+        }
+        /// <summary>
+        /// Disposes rows and clears the lists we have. The rows are not children so we have to manually call dispose on them.
+        /// </summary>
+        public override void Dispose()
+        {
+            foreach (var row in Rows)
+            {
+                RemoveRowHandlers(row);
+                row?.Dispose();
+            }
+            Rows?.Clear();
+            _selectedElements?.Clear();
+            _itemsSource?.Clear();
+            _listColumns?.Clear();
+            Rows = null;
+            _selectedElements = null;
+            _itemsSource = null;
+            _listColumns = null;
+            base.Dispose();
         }
 
     }

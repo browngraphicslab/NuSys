@@ -23,10 +23,18 @@ namespace NuSysApp
             ItemDoubleTapped += OnItemDoubleTapped;
             PointerReleased += OnPointerReleased;
             AllPointersReleased += OnAllPointersReleased;
+            PointerWheelChanged += OnPointerWheelChanged;
+        }
+
+        private void OnPointerWheelChanged(CanvasPointer pointer, float delta)
+        {
+            _hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
+            _hit?.OnPointerWheelChanged(pointer, delta);
         }
 
         private void OnPointerReleased(CanvasPointer pointer)
         {
+            //_hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
             _hit?.OnReleased(pointer);
         }
 

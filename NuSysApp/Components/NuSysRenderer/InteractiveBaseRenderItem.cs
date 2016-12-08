@@ -21,6 +21,8 @@ namespace NuSysApp
         public event PointerHandler Tapped;
         public event PointerHandler Dragged;
 
+        
+        public delegate void PointerWheelHandler(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta);
         // Delegate for the KeyPressed event
         public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
         // Event that fires when a key is pressed on this render item
@@ -30,6 +32,8 @@ namespace NuSysApp
         public delegate void KeyReleasedDelegate(Windows.UI.Core.KeyEventArgs args);
         // Event that fires when a key is released on this render item
         public event KeyPressedDelegate KeyReleased;
+
+        public event PointerWheelHandler PointerWheelChanged;
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -43,6 +47,11 @@ namespace NuSysApp
         public virtual void OnReleased(CanvasPointer pointer)
         {
             Released?.Invoke(this, pointer);
+        }
+
+        public virtual void OnPointerWheelChanged(CanvasPointer pointer, float delta)
+        {
+            PointerWheelChanged?.Invoke(this, pointer, delta);
         }
 
         public virtual void OnDoubleTapped(CanvasPointer pointer)

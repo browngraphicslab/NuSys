@@ -132,13 +132,13 @@ namespace NuSysApp
             }
         }
 
-        private void LinkTabableLinkAdded(object sender, LinkViewModel linkViewModel)
+        private void LinkTabableLinkAdded(object sender, LinkLibraryElementController linkLibraryElementController)
         {
             if (CurrentLibraryElementId == null)
             {
                 return;
             }
-            var template = new LinkTemplate((LinkLibraryElementController)linkViewModel.Controller.LibraryElementController, CurrentLibraryElementId);
+            var template = new LinkTemplate(linkLibraryElementController, CurrentLibraryElementId);
             UITask.Run(delegate {
             foreach (var existingTemplate in LinkTemplates)
             {

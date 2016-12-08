@@ -23,13 +23,18 @@ namespace NuSysApp
             get { return _scrollBar; }
         }
 
+
         public ScrollableRectangleUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            Background = Colors.Transparent;
             _parent = parent;
             _resourceCreator = resourceCreator;
+            MakeScrollBar();
+            IsHitTestVisible = false;
 
 
         }
+        
 
         /// <summary>
         /// Creates the scrollbar and adds it as a child of the RectangleUIElement
@@ -50,25 +55,19 @@ namespace NuSysApp
             AddChild(_scrollBar);
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _scrollBar.Height = Height;
+            base.Update(parentLocalToScreenTransform);
+        }
+
         public virtual void ScrollBarPositionChanged(object source, double position)
         {
 
         }
-
-        public override Task Load()
-        {
-            MakeScrollBar();
-            return base.Load();
-        }
-
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            base.Update(parentLocalToScreenTransform);
-        }
-
         public override void Draw(CanvasDrawingSession ds)
         {
-            _scrollBar.Transform.LocalPosition = new Vector2((float)Width, 0);
+            _scrollBar.Transform.LocalPosition = new Vector2((float)Width - _scrollBar.Width, 0);
 
             base.Draw(ds);
         }
@@ -76,7 +75,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             _scrollBar.ScrollBarPositionChanged -= ScrollBarPositionChanged;
-
             base.Dispose();
         }
 

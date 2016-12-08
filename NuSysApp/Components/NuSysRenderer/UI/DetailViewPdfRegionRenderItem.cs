@@ -43,7 +43,7 @@ namespace NuSysApp
         /// </summary>
         private PdfContentDataModel _pdfContentDataModel;
 
-        public DetailViewPdfRegionRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PdfLibraryElementController controller) : base(parent, resourceCreator, controller)
+        public DetailViewPdfRegionRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PdfLibraryElementController controller, bool showRegions) : base(parent, resourceCreator, controller, showRegions)
         {
 
             _controller = controller;
@@ -55,7 +55,7 @@ namespace NuSysApp
 
             // set defaults
             IsRegionsModifiable = true;
-            IsRegionsVisible = true;
+            IsRegionsVisible = showRegions;
 
             // add events
             _controller.LocationChanged += ControllerOnLocationChanged;
@@ -67,6 +67,12 @@ namespace NuSysApp
 
         protected override void ComputeRegions()
         {
+            // don't compute regions if they are not visible
+            if (!IsRegionsVisible)
+            {
+                return;
+            }
+
             var children = GetChildren();
             ClearChildren();
             foreach (var child in children)

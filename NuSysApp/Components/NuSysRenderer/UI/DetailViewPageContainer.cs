@@ -24,6 +24,10 @@ namespace NuSysApp
 
         private StackLayoutManager _titleLayoutManager;
 
+        public delegate void OnDetailViewPageTabChanged(string libraryElementId , DetailViewPageTabType page);
+
+        public event OnDetailViewPageTabChanged OnPageTabChanged;
+
 
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -44,12 +48,12 @@ namespace NuSysApp
             AddChild(_pageTabContainer);
             AddChild(_titleTextBox);
 
-            _pageTabContainer.OnCurrentTabChanged += _pageTabContainer_OnCurrentTabChanged;
+            _pageTabContainer.OnCurrentTabChanged += ShowPageType;
         }
 
         public override void Dispose()
         {
-            _pageTabContainer.OnCurrentTabChanged -= _pageTabContainer_OnCurrentTabChanged;
+            _pageTabContainer.OnCurrentTabChanged -= ShowPageType;
             base.Dispose();
         }
 
@@ -57,12 +61,13 @@ namespace NuSysApp
         /// Called whenever the current tab is changed in the page container
         /// </summary>
         /// <param name="tabType"></param>
-        private async void _pageTabContainer_OnCurrentTabChanged(DetailViewPageTabType tabType)
+        private async void ShowPageType(DetailViewPageTabType tabType)
         {
             var rect = await DetailViewPageFactory.GetPage(this, Canvas, tabType.Type, _currentController);
             if (rect != null)
             {
                 _pageTabContainer.SetPage(rect);
+                OnPageTabChanged?.Invoke(_currentController.LibraryElementModel.LibraryElementId, tabType);
             }
         }
 
@@ -70,8 +75,14 @@ namespace NuSysApp
         /// Show a library element in the page container
         /// </summary>
         /// <param name="libraryElementModelId"></param>
-        public void ShowLibraryElement(string libraryElementModelId)
+        public void ShowLibraryElement(string libraryElementModelId, DetailViewPageTabType pageToShow)
         {
+            // if we are already showing the library elment model that was selected then just return
+            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId)
+            {
+                return;
+            }
+
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
 
@@ -81,15 +92,15 @@ namespace NuSysApp
             _pageTabContainer.ClearTabs();
 
             // all types have a home and metadata
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Home), "Home");
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Metadata), "Metadata");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Home), "Home", false);
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Metadata), "Metadata", false);
 
             switch (_currentController.LibraryElementModel.Type)
             {
                 case NusysConstants.ElementType.Text:
                     break;
                 case NusysConstants.ElementType.Image:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
 
                     break;
                 case NusysConstants.ElementType.Word:
@@ -99,15 +110,15 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Collection:
                     break;
                 case NusysConstants.ElementType.PDF:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
 
                     break;
                 case NusysConstants.ElementType.Audio:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
 
                     break;
                 case NusysConstants.ElementType.Video:
-                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions");
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
                     break;
                 case NusysConstants.ElementType.Tag:
                     break;
@@ -125,8 +136,11 @@ namespace NuSysApp
                     throw new ArgumentOutOfRangeException();
             }
 
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Links), "Links");
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Aliases), "Aliases");
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Links), "Links", false);
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Aliases), "Aliases", false);
+
+            // show the passed in page on the detail viewer
+            ShowPageType(pageToShow);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

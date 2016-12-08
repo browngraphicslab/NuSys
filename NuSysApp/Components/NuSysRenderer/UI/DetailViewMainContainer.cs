@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -26,6 +27,8 @@ namespace NuSysApp
         /// </summary>
         private StackLayoutManager _mainTabLayoutManager;
 
+        private Dictionary<string, DetailViewPageTabType> _libElemToCurrTabOpen;
+
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // create the _mainTabContainer
@@ -36,23 +39,41 @@ namespace NuSysApp
 
             _mainTabLayoutManager = new StackLayoutManager();
 
+            _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
+
             _mainTabContainer.SetPage(_pageContainer);
 
             AddChild(_mainTabContainer);
             _mainTabLayoutManager.AddElement(_mainTabContainer);
 
             IsVisible = false;
+
+            // add events
+            _mainTabContainer.TabContainerClosed += _mainTabContainer_TabContainerClosed;
+            _mainTabContainer.OnCurrentTabChanged += _mainTabContainer_OnCurrentTabChanged;
+            _mainTabContainer.OnTabRemoved += _mainTabContainer_OnTabRemoved;
+            _pageContainer.OnPageTabChanged += PageContainerOnPageTabChanged;
         }
 
         /// <summary>
-        /// Initializer method put events here
+        /// Fired whenever a new tabtype is shown on the page container
         /// </summary>
-        /// <returns></returns>
-        public override Task Load()
+        /// <param name="page"></param>
+        private void PageContainerOnPageTabChanged(string libraryElementId, DetailViewPageTabType page)
         {
-            _mainTabContainer.TabContainerClosed += _mainTabContainer_TabContainerClosed;
-            _mainTabContainer.OnCurrentTabChanged += _mainTabContainer_OnCurrentTabChanged;
-            return base.Load();
+            // set the element in the dictionary to the new page
+            Debug.Assert(_libElemToCurrTabOpen.ContainsKey(libraryElementId));
+            _libElemToCurrTabOpen[libraryElementId] = page;
+        }
+
+        /// <summary>
+        /// Fired whenver a tab is removed from the main container
+        /// </summary>
+        /// <param name="libElemId"></param>
+        private void _mainTabContainer_OnTabRemoved(string libElemId)
+        {
+            // remove the tab from the dictionary
+            _libElemToCurrTabOpen.Remove(libElemId);
         }
 
         /// <summary>
@@ -70,18 +91,31 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
-            _mainTabContainer.OnCurrentTabChanged -= _mainTabContainer_OnCurrentTabChanged;
             _mainTabContainer.TabContainerClosed -= _mainTabContainer_TabContainerClosed;
+            _mainTabContainer.OnCurrentTabChanged -= _mainTabContainer_OnCurrentTabChanged;
+            _mainTabContainer.OnTabRemoved -= _mainTabContainer_OnTabRemoved;
+            _pageContainer.OnPageTabChanged -= PageContainerOnPageTabChanged;
             base.Dispose();
         }
 
         /// <summary>
         /// Invoked whenever the current tab changes in the detail viewer
         /// </summary>
-        /// <param name="tabType"></param>
-        private void _mainTabContainer_OnCurrentTabChanged(string tabType)
+        /// <param name="libElemId"></param>
+        private void _mainTabContainer_OnCurrentTabChanged(string libElemId)
         {
-            _pageContainer.ShowLibraryElement(tabType);
+            // try to get the curr page that is open from the dictionary
+            DetailViewPageTabType currPage;
+            _libElemToCurrTabOpen.TryGetValue(libElemId, out currPage);
+
+            // if it is not in the dictionary, then set the currPage to the home page
+            if (currPage == null)
+            {
+                currPage = new DetailViewPageTabType(DetailViewPageType.Home);
+                _libElemToCurrTabOpen.Add(libElemId, currPage);
+            }
+
+            _pageContainer.ShowLibraryElement(libElemId, currPage);
         }
 
         /// <summary>
