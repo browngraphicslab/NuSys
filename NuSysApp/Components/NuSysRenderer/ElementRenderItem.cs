@@ -21,7 +21,7 @@ using WinRTXamlToolkit.IO.Extensions;
 namespace NuSysApp
 {
 
-    public class ElementRenderItem : BaseRenderItem
+    public class ElementRenderItem : RectangleUIElement
     {
         private ElementViewModel _vm;
         private CanvasTextLayout _textLayout;
@@ -39,7 +39,10 @@ namespace NuSysApp
                 Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
                 _vm.Controller.PositionChanged += ControllerOnPositionChanged;
                 _vm.Controller.SizeChanged += ControllerOnSizeChanged;
-                _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
+                if (_vm?.Controller?.LibraryElementController != null)
+                {
+                    _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
+                }
                 _tagRenderItem = new WrapRenderItem((float)_vm.Width, parent, resourceCreator);
                 _vm.Tags.CollectionChanged += TagsOnCollectionChanged;
 

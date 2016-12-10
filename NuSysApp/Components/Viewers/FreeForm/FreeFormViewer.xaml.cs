@@ -996,12 +996,21 @@ namespace NuSysApp
         {
             AddToSelections(element);
             // add the bread crumb
-            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
-            
+
+            if (element?.ViewModel?.Controller?.LibraryElementModel != null)
+            {
+                SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(
+                    CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
+            }
+
         }
 
         public void AddToSelections(ElementRenderItem element)
         {
+            if (element is ToolWindow)
+            {
+                return;
+            }
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
             _minimap.Invalidate();

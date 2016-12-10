@@ -306,7 +306,6 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(LibraryElementController != null);
                 return LibraryElementController?.LibraryElementModel;
             }
         }

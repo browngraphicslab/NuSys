@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using NuSysApp.Tools;
 
 namespace NuSysApp
 {
@@ -13,10 +14,10 @@ namespace NuSysApp
 
         public event EventHandler Disposed;
 
-        public LibraryElementController LibraryElementController { get; private set; }
+        //public LibraryElementController LibraryElementController { get; private set; }
 
-        public ILinkable InElement { get; private set; }
-        public ILinkable OutElement { get; private set; }
+        public ToolLinkable InElement { get; private set; }
+        public ToolLinkable OutElement { get; private set; }
         public ToolLinkModel Model { get; private set; }
 
         public string Id
@@ -27,16 +28,16 @@ namespace NuSysApp
                 return Model.Id;
             }
         }
-        public string Title
-        {
-            get { return LibraryElementController.Title; }
-        }
+        //public string Title
+        //{
+        //    get { return LibraryElementController.Title; }
+        //}
 
         public Point2d Anchor
         {
             get
             {
-                return new Point2d((InElement.Anchor.X + OutElement.Anchor.X) / 2, (OutElement.Anchor.Y + InElement.Anchor.Y) / 2);
+                return new Point2d((InElement.ToolAnchor.X + OutElement.ToolAnchor.X) / 2, (OutElement.ToolAnchor.Y + InElement.ToolAnchor.Y) / 2);
             }
         }
 
@@ -49,7 +50,7 @@ namespace NuSysApp
         //    }
         //}
 
-        public ToolLinkController(ToolLinkModel model)
+        public ToolLinkController(ToolLinkModel model, ToolViewModel inVm, ToolViewModel outVm)
         {
             Debug.Assert(model != null);
             Debug.Assert(model.InAtomId != null);
@@ -61,11 +62,11 @@ namespace NuSysApp
             //Debug.Assert(model.LibraryId != null);
             //LibraryElementController = controller;
 
-            InElement = SessionController.Instance.LinksController.GetLinkable(model.InAtomId);
-            OutElement = SessionController.Instance.LinksController.GetLinkable(model.OutAtomId);
+            InElement = inVm;
+            OutElement = outVm;
 
-            InElement.AnchorChanged += ChangeAnchor;
-            OutElement.AnchorChanged += ChangeAnchor;
+            InElement.ToolAnchorChanged += ChangeAnchor;
+            OutElement.ToolAnchorChanged += ChangeAnchor;
             //controller.TitleChanged += ChangeTitle;
 
             //controller.Disposed += Dispose;
@@ -85,22 +86,17 @@ namespace NuSysApp
             AnchorChanged?.Invoke(this, Anchor);
         }
 
-        public void Dispose(object sender, EventArgs args)
+        public void Dispose(object sender, string s)
         {
             if (InElement != null)
             {
-                InElement.AnchorChanged -= ChangeAnchor;
+                InElement.ToolAnchorChanged -= ChangeAnchor;
                 InElement.Disposed -= Dispose;
             }
             if (OutElement != null)
             {
-                OutElement.AnchorChanged -= ChangeAnchor;
+                OutElement.ToolAnchorChanged -= ChangeAnchor;
                 OutElement.Disposed -= Dispose;
-            }
-            if (LibraryElementController != null)
-            {
-                LibraryElementController.TitleChanged -= ChangeTitle;
-                LibraryElementController.Disposed -= Dispose;
             }
             Disposed?.Invoke(this, EventArgs.Empty);
         }
@@ -112,9 +108,7 @@ namespace NuSysApp
 
         public string GetParentCollectionId()
         {
-            return InElement.GetParentCollectionId() == OutElement.GetParentCollectionId()
-                ? InElement.GetParentCollectionId()
-                : null;
+            return SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
         }
 
     }

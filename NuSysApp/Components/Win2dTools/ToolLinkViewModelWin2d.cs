@@ -58,10 +58,10 @@ namespace NuSysApp
         {
             _controller = controller;
             _numDirectionButtonClicks = 0;
-            Debug.Assert(controller.LibraryElementController != null);
+            //Debug.Assert(controller.LibraryElementController != null);
 
             controller.TitleChanged += TitleChanged;
-            Title = controller.Title;
+            //Title = controller.Title;
             IsSelected = false;
             controller.AnchorChanged += ChangeAnchor;
             RaisePropertyChanged("Anchor");
@@ -100,7 +100,7 @@ namespace NuSysApp
         public void UpdateTitle(string title)
         {
             Controller.TitleChanged -= TitleChanged;
-            Controller.LibraryElementController.SetTitle(title);
+            //Controller.LibraryElementController.SetTitle(title);
             Controller.TitleChanged += TitleChanged;
         }
 

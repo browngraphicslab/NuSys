@@ -12,7 +12,7 @@ using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
-    public abstract class ToolWindow : ResizeableWindowUIElement
+    public abstract class ToolWindow : ElementRenderItem
     {
         /// <summary>
         /// The delete to delete the tool
@@ -75,7 +75,7 @@ namespace NuSysApp
         private const int MIN_HEIGHT = 300;
 
         private const int MIN_WIDTH = 200;
-
+        /*
         public override float Width
         {
             set
@@ -97,7 +97,7 @@ namespace NuSysApp
                 }
             }
         }
-
+        */
         private bool _setUpComponents;
 
         /// <summary>
@@ -108,11 +108,11 @@ namespace NuSysApp
         public ToolViewModel Vm { get; private set; }
 
         private const int BUTTON_MARGIN = 10;
-        public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(parent, resourceCreator)
+        public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(vm,parent as CollectionRenderItem, resourceCreator)
         {
             //Set up draggable and resizable attributes
-            TopBarColor = Constants.color3;
-            KeepAspectRatio = false;
+            //TopBarColor = Constants.color3;
+            //KeepAspectRatio = false;
 
             Vm = vm;
             SetUpButtons();
@@ -329,7 +329,7 @@ namespace NuSysApp
             _filterChooserDropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _filterChooserDropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed; ;
-            _filterChooserDropdownButton.Transform.LocalPosition = new Vector2(0, TopBarHeight);
+            _filterChooserDropdownButton.Transform.LocalPosition = new Vector2(0, 0);
             AddChild(_filterChooserDropdownButton);
 
             _filterChooser = new DropdownUIElement(this, ResourceCreator, Width);
@@ -341,7 +341,7 @@ namespace NuSysApp
             _filterChooser.Layout();
 
             _filterChooser.IsVisible = false;
-            _filterChooser.Transform.LocalPosition = new Vector2(0, TopBarHeight + _filterChooserDropdownButton.Height);
+            _filterChooser.Transform.LocalPosition = new Vector2(0, 0 + _filterChooserDropdownButton.Height);
             AddChild(_filterChooser);
         }
 
@@ -502,13 +502,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            if (Vm != null)
-            {
-                Vm.X = Transform.LocalX;
-                Vm.Y = Transform.LocalY;
-                Vm.Height = Height;
-                Vm.Width = Width;
-            }
+
             //Make the width of the filter chooser and the button always fill the window
             if (_filterChooser != null)
             {

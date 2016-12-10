@@ -242,7 +242,7 @@ namespace NuSysApp
 
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
             {
-                var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection);
                 if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
                 {
                     _resizerHit = true;
@@ -485,7 +485,7 @@ namespace NuSysApp
         {
             var element = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
-            if (element is NodeMenuButtonRenderItem || element is InteractiveBaseRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
+            if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
                 return;
 
             if (element is LinkRenderItem)

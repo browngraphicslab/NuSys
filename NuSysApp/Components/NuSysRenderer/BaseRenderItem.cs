@@ -17,7 +17,15 @@ namespace NuSysApp
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
-        public bool IsDirty { get; set; } = true;
+        public bool IsDirty {
+            get { return fuckyou2; }
+            set
+            {
+                fuckyou2 = value;
+            }
+        }
+
+        private bool fuckyou2 = true;
 
         public BaseRenderItem Parent { get; set; }
 
@@ -25,7 +33,16 @@ namespace NuSysApp
 
         public bool IsDisposed { get; protected set; }
 
-        public bool IsVisible { get; set; } = true;
+        public bool IsVisible {
+            get { return _fuckyou; }
+            set
+            {
+                _fuckyou = value;
+            } 
+        }
+            
+
+        private bool _fuckyou = true;
 
         public bool IsHitTestVisible
         {

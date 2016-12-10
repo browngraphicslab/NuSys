@@ -482,7 +482,7 @@ namespace NuSysApp
                 var linkModel = new ToolLinkModel();
                 linkModel.InAtomId = this.Id;
                 linkModel.OutAtomId = model.Id;
-                var linkController = new ToolLinkController(linkModel);
+                var linkController = new ToolLinkController(linkModel, this, viewmodel);
                 var linkViewModel = new ToolLinkViewModelWin2d(linkController);
                 SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel, linkViewModel);
 
@@ -569,6 +569,7 @@ namespace NuSysApp
 
         public void OnLocationChanged(object sender, double x, double y)
         {
+            return;
             X = x;
             Y = y;
             Transform.TranslateX = x;

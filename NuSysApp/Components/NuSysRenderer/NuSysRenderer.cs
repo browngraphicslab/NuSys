@@ -128,18 +128,32 @@ namespace NuSysApp
                     if (childCollection != null)
                     {
 
-                        if (currentLevel + 1 < maxLevel)
+                        //if (currentLevel + 1 < maxLevel)
+                        //{
+                        //    var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
+                        //    if (result != item)
+                        //        return result;
+                        //}
+                        //else
+                        //{
+                        //    if (childCollection.HitTest(screenPoint) != null)
+                        //    {
+                        //        return childCollection;
+                        //    }
+                        //}
+                        if (childCollection.HitTest(screenPoint) != null)
                         {
-                            var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
-                            if (result != item)
-                                return result;
+                            if (currentLevel + 1 < maxLevel)
+                            {
+                                var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
+                                if (result != item)
+                                    return result;
+                            }
+                            return childCollection;
                         }
                         else
                         {
-                            if (childCollection.HitTest(screenPoint) != null)
-                            {
-                                return childCollection;
-                            }
+
                         }
                     }
                     if (currentLevel + 1 < maxLevel)

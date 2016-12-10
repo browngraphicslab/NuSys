@@ -10,6 +10,7 @@ using NetTopologySuite.Utilities;
 using NusysIntermediate;
 using NuSysApp.Tools;
 using SharpDX.DirectWrite;
+using Wintellect.PowerCollections;
 
 namespace NuSysApp
 {
@@ -54,6 +55,12 @@ namespace NuSysApp
             ToolControllers.Add(model.Id, this);
             ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             _blockServerInteractionCount++;//never send server updates about tool information
+            PositionChanged += OnPositionChanged;
+        }
+
+        private void OnPositionChanged(object source, double x, double y, double dx, double dy)
+        {
+            SetLocation(x,y);
         }
 
         public void SetFilter(ToolModel.ToolFilterTypeTitle filter)
