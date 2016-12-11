@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using Windows.Storage;
+using WinRTXamlToolkit.IO.Extensions;
 
 namespace NuSysApp
 {
@@ -56,7 +58,7 @@ namespace NuSysApp
         /// <param name="normalizedX"></param>
         public void SetXLocation(double normalizedX)
         {
-            ImageLibraryElementModel.NormalizedX = Math.Max(0, Math.Min(1 - ImageLibraryElementModel.NormalizedWidth, normalizedX));
+            ImageLibraryElementModel.NormalizedX = Math.Max(0, Math.Min(1, normalizedX));
             LocationChanged?.Invoke(this, new Point(ImageLibraryElementModel.NormalizedX, ImageLibraryElementModel.NormalizedY));
 
             if (!_blockServerInteraction)
@@ -72,7 +74,7 @@ namespace NuSysApp
         /// <param name="normalizedX"></param>
         public void SetYLocation(double normalizedY)
         {
-            ImageLibraryElementModel.NormalizedY = Math.Max(0, Math.Min(1 - ImageLibraryElementModel.NormalizedHeight, normalizedY)); ;
+            ImageLibraryElementModel.NormalizedY = Math.Max(0, Math.Min(1, normalizedY)); ;
 
             LocationChanged?.Invoke(this, new Point(ImageLibraryElementModel.NormalizedX, ImageLibraryElementModel.NormalizedY));
 

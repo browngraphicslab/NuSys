@@ -71,7 +71,7 @@ namespace NuSysApp
         {
             var block = new DialogBlock(text,user);
             block.MaxWidth = DialogPanel.ActualWidth * .67;
-            block.HorizontalAlignment = HorizontalAlignment.Left;
+            block.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
             block.Margin = new Thickness(6, 0, 0, 0);
             /*
             var index = _texts.Count - 1;

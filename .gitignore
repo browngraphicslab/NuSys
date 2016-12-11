@@ -202,3 +202,15 @@ FakesAssemblies/
 # Visual C++ cache files
 *.VC.db
 *.db
+
+# Ignore all the mupdf stuff finally
+Win8/_ReSharper.MuPDF.WinRT
+Win8/*.user
+Win8/*.sdf
+Win8/*.suo
+Win8/*.opensdf
+Win8/Debug
+Win8/Release
+Win8/ARM
+Win8/Win32
+Win8/Generated Files

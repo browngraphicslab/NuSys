@@ -16,11 +16,12 @@ namespace NuSysApp
     public abstract class ToolController : ToolStartable
     {
         public static Dictionary<string, ToolStartable> ToolControllers = new Dictionary<string, ToolStartable>();
-
+        public delegate void FilterChangedEventHandler(object sender, ToolModel.ToolFilterTypeTitle filter);
         public delegate void LocationChangedEventHandler(object sender, double x, double y);
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public delegate void IdsToDisplayChangedEventHandler();
         public delegate void NumberOfParentsChangedEventHandler (int numberOfParents);
+        public event FilterChangedEventHandler FilterChanged;
 
         /// <summary>
         /// Fires when its library ids change. Its children tools listen to this event on when to refresh the 
@@ -46,6 +47,14 @@ namespace NuSysApp
             Model = model;
             ToolControllers.Add(model.Id, this);
             Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+        }
+
+        public void SetFilter(ToolModel.ToolFilterTypeTitle filter)
+        {
+            Model.SetFilter(filter);
+            FilterChanged?.Invoke(this, filter);
+            FireIdsToDisplayChanged();
+            FireOutputLibraryIdsChanged();
         }
 
         /// <summary>

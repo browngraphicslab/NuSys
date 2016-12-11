@@ -29,6 +29,11 @@ namespace NuSysApp
         {
 
         }
+
+        /// <summary>
+        /// Sets the normalized start time for the region
+        /// </summary>
+        /// <param name="startTime">The normalized start time for the region</param>
         public void SetStartTime(double startTime)
         {
             startTime = Math.Min(Math.Max(startTime, 0), 1-Constants.MinimumVideoAndAudioDuration);
@@ -47,7 +52,7 @@ namespace NuSysApp
         /// <summary>
         /// setter for the normalized duration
         /// </summary>
-        /// <param name="duration"></param>
+        /// <param name="duration">The normalized duration for the region</param>
         public void SetDuration(double duration)
         {
             duration = Math.Max(Math.Min(duration,1-AudioLibraryElementModel.NormalizedStartTime), Constants.MinimumVideoAndAudioDuration);

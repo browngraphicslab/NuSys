@@ -16,6 +16,13 @@ namespace NuSysApp
     {
         private CanvasGeometry _triangle;
         private Rect _triangleBounds;
+
+        /// <summary>
+        /// The direction is -1 for left and 1 for right
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
         public PdfPageButtonRenderItem(int direction, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             var x = (float)(direction*15);

@@ -135,15 +135,25 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            
             _isLoading = true;
-               _bmp?.Dispose();
+            _bmp?.Dispose();
             await Task.Run(async () =>
             {
-                _bmp =
-                    await
-                        CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
-                            ResourceCreator.Dpi);
+                try
+                {
+                    _bmp =
+                        await
+                            CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
+                                ResourceCreator.Dpi);
+                }
+                catch (Exception e)
+                {
+                    _bmp =
+                        await
+                            CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/refresh.png"),
+                                ResourceCreator.Dpi);
+                    Debug.WriteLine("Image failed to load, using default icon instead");
+                }
             });
             ReRender();
             _isLoading = false;
@@ -240,14 +250,14 @@ namespace NuSysApp
 
         protected void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedX + delta.X/_croppedImageTarget.Width / _scaleDisplayToCrop;
-            var ry = region.LibraryElementModel.NormalizedY + delta.Y/_croppedImageTarget.Height / _scaleDisplayToCrop;
-            rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth , rx));
-            ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight , ry));
+            var rx = region.LibraryElementModel.NormalizedX + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
+            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _croppedImageTarget.Height / _scaleDisplayToCrop;
+            rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth, rx));
+            ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight, ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetXLocation(rx);
             controller.SetYLocation(ry);
-            
+
             NeedsRedraw?.Invoke();
         }
 

@@ -55,7 +55,7 @@ namespace NuSysApp
             var frameWorkElemToBeExplored = e.OriginalSource as FrameworkElement;
             if (frameWorkElemToBeExplored != null)
             {
-                SessionController.Instance.SessionView.ExploreSelectedObject(frameWorkElemToBeExplored.DataContext);
+                //SessionController.Instance.SessionView.ExploreSelectedObject(frameWorkElemToBeExplored.DataContext);
             }
         }
 

@@ -84,13 +84,13 @@ namespace NuSysApp
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
-        public LibraryElementController GetLibraryElementController(string id)
+        public LibraryElementController GetLibraryElementController(string libraryElementModelId)
         {
-            if (id == null)
+            if (libraryElementModelId == null)
             {
                 return null;
             }
-            return _contentControllers.ContainsKey(id) ? _contentControllers[id] : null;
+            return _contentControllers.ContainsKey(libraryElementModelId) ? _contentControllers[libraryElementModelId] : null;
         }
 
         public ICollection<LibraryElementModel> ContentValues

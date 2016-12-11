@@ -24,7 +24,7 @@ namespace NuSysApp
         public event EventHandler<string> Disposed;
         public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
-        public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel>();
+        public ObservableCollection<IdViewModelable> Elements { get; set; } = new ObservableCollection<IdViewModelable>();
         public ObservableCollection<LinkViewModel> Links { get; set; } = new ObservableCollection<LinkViewModel>();
 
         public ObservableCollection<PresentationLinkViewModel> Trails { get; set; } = new ObservableCollection<PresentationLinkViewModel>();
@@ -115,6 +115,11 @@ namespace NuSysApp
             CameraTranslation = new Vector2(f, f1);
         }
 
+        public void AddTool(ToolViewModel vm)
+        {
+            Elements.Add(vm);
+        }
+
         public async Task CreateChildren()
         {
             var model = (CollectionLibraryElementModel) Controller.LibraryElementModel;
@@ -199,8 +204,8 @@ namespace NuSysApp
 
                 foreach (var trail in Trails.ToList())
                 {
-                    if (trail.Model.InElementId == soughtChild.Id ||
-                        trail.Model.OutElementId == soughtChild.Id)
+                    if (trail.Model.OutElementId == soughtChild.Id ||
+                        trail.Model.InElementId == soughtChild.Id)
                     {
                         trail.DeletePresentationLink();
                         Trails.Remove(trail);

@@ -35,6 +35,35 @@ namespace NusysIntermediate
             Values = values;
             Mutability = mutability;
         }
+
+        /// <summary>
+        /// Method to get key value pair as a readable string
+        /// Format: Key: Value1, Value2
+        /// </summary>
+        /// <returns></returns>
+        public string GetMetadataAsString()
+        {
+            string dataString = "";
+            dataString += (Key + ": ");
+            if (Values.Count == 0)
+            {
+                dataString += "None";
+                return dataString;
+            }
+            for (int i = 0; i < Values.Count; i++)
+            {
+                if (i < Values.Count - 1)
+                {
+                    dataString += (Values[i] + ", ");
+                }
+                else
+                {
+                    dataString += Values[i];
+                }
+            }
+            
+            return dataString;
+        }
     }
 
     /// <summary>

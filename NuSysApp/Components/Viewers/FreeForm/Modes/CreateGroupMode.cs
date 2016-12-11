@@ -166,8 +166,8 @@ namespace NuSysApp
                 };
                 foreach(var preslink in PresentationLinkViewModel.Models.ToList())
                 {
-                    if (draggedId == preslink.InElementId || draggedId == preslink.OutElementId ||
-                        hoveredId == preslink.InElementId || hoveredId == preslink.OutElementId)
+                    if (draggedId == preslink.OutElementId || draggedId == preslink.InElementId ||
+                        hoveredId == preslink.OutElementId || hoveredId == preslink.InElementId)
                     {
                         var request = new DeletePresentationLinkRequest(preslink.LinkId);
                     //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

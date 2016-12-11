@@ -77,7 +77,6 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\lib\collections.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\BrushStroke.ts" />
@@ -112,6 +111,12 @@
     <TypeScriptCompile Include="Scripts\typings\webrtc\RTCPeerConnection.d.ts" />
     <TypeScriptCompile Include="Scripts\src\app.ts" />
     <TypeScriptCompile Include="Scripts\src\Main.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

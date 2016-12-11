@@ -44,7 +44,9 @@ namespace NuSysApp
         private RenderItemInteractionManager _interactionManager;
         private bool _isInitialized;
 
-        public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
+        /// button for export
+        public NodeMenuButtonRenderItem BtnExportTrail;
+        public NuSysRenderer(CanvasAnimatedControl canvas, SessionRootRenderItem root) : base(canvas, root)
         {
             _interactionManager = new RenderItemInteractionManager(this, canvas);
             
@@ -140,11 +142,21 @@ namespace NuSysApp
                             }
                         }
                     }
-
-
-                    if (childItem.HitTest(screenPoint) != null)
+                    if (currentLevel + 1 < maxLevel)
                     {
-                        return childItem;
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return h;
+                        }
+                    }
+                    else
+                    {
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return childItem;
+                        }
                     }
                 }
             }
@@ -190,10 +202,15 @@ namespace NuSysApp
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", Root, CanvasAnimatedControl);
             BtnDelete.IsVisible = false;
+
+            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", Root, CanvasAnimatedControl);
+            BtnExportTrail.IsVisible = false;
+
             Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
             Root.AddChild(InkOptions);
             Root.AddChild(BtnDelete);
+            Root.AddChild(BtnExportTrail);
 
             _isInitialized = true;
         }
