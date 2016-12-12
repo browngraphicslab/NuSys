@@ -14,7 +14,8 @@ namespace NuSysApp
 
         /// <summary>
         /// List of creators that we are brushing for. To add or remove creators use
-        /// AddCreator(), AddCreatorRange(), RemoveCreator(), or RemoveCreatorRange()
+        /// AddCreator(), AddCreatorRange(), RemoveCreator(), or RemoveCreatorRange().
+        /// These are the hashed creator id values, not the english easy to read ones
         /// </summary>
         public HashSet<string> Creators { get; }
 
@@ -139,11 +140,16 @@ namespace NuSysApp
         /// <returns></returns>
         public HashSet<LibraryElementController> GetLibraryElementControllers()
         {
+            IEnumerable<LibraryElementController> controllers = SessionController.Instance.ContentController.AllLibraryElementControllers;
+            // filter all Libraryelementcontrollers to those fulfill our creator constraints if any creator constraints exist
+            if (Creators.Count != 0)
+                controllers = SessionController.Instance.ContentController.AllLibraryElementControllers.Where(
+                    ctrl => Creators.Contains(ctrl.LibraryElementModel.Creator));
 
-            // get all Libraryelementcontrollers which fulfill our creator and type constraints
-            var controllers = SessionController.Instance.ContentController.AllLibraryElementControllers.Where(
-                ctrl => Creators.Contains(ctrl.LibraryElementModel.Creator) && // first filter controllers by creator
-                Types.Contains(ctrl.LibraryElementModel.Type)); // and by type
+            // filter by type constraint if type constraint exists
+            if (Types.Count != 0)
+                controllers = controllers.Where(ctrl => Types.Contains(ctrl.LibraryElementModel.Type));
+
 
             // filter the controllers by the creation date constraint
             controllers = FilterBetweenDates(controllers, _creationDateStart, CreationDateEnd, DateType.Creation); // filter by creation date
@@ -194,7 +200,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Add the passed in string to the Creators filter
+        /// Add the passed in string to the Creators filter, these are the hashed creator values not the easy to read english ones
         /// </summary>
         /// <param name="creator"></param>
         public void AddCreator(string creator)
@@ -206,7 +212,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Add each of the passed in strings to the Creators filter
+        /// Add each of the passed in strings to the Creators filter, these are the hashed creator values not the easy to read english ones
         /// </summary>
         /// <param name="creators"></param>
         public void AddCreatorRange(IEnumerable<string> creators)
@@ -218,7 +224,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Remove the passed in string from the Creators filter
+        /// Remove the passed in string from the Creators filter, these are the hashed creator values not the easy to read english ones
         /// </summary>
         /// <param name="creator"></param>
         public void RemoveCreator(string creator)
@@ -230,7 +236,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Remove each of the passed in strings from the Creators filter
+        /// Remove each of the passed in strings from the Creators filter, these are the hashed creator values not the easy to read english ones
         /// </summary>
         /// <param name="creators"></param>
         public void RemoveCreatorRange(IEnumerable<string> creators)

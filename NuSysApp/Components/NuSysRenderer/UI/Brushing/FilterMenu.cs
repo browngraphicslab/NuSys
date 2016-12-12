@@ -9,6 +9,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
@@ -61,6 +62,11 @@ namespace NuSysApp
         /// filter by type button used to open the filter by type menu
         /// </summary>
         private ButtonUIElement _filterByTypeButton;
+
+        /// <summary>
+        /// button used to apply the filter
+        /// </summary>
+        private ButtonUIElement _applyFilterbutton;
 
         /// <summary>
         /// helper list of all the buttons used to apply similar functions to all the buttons
@@ -123,6 +129,23 @@ namespace NuSysApp
                 AddChild(button);
             }
 
+            _applyFilterbutton = new ButtonUIElement(this, ResourceCreator,
+                new RectangleUIElement(this, ResourceCreator))
+            {
+                Background = Colors.Gray,
+                SelectedBorder = Colors.LightGray,
+                BorderWidth = 5,
+                Bordercolor = Colors.Gray,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                ButtonTextColor = Colors.Black,
+                ButtonText = "Apply Filter"
+            };
+            AddChild(_applyFilterbutton);
+            _buttonLayoutManager.AddElement(_applyFilterbutton);
+            _filterMenuButtons.Add(_applyFilterbutton);
+            _applyFilterbutton.Tapped += OnApplyFilterButtonTapped;
+
             _filterSubMenu = new FilterSubMenu(this, ResourceCreator);
             AddChild(_filterSubMenu);
 
@@ -131,6 +154,12 @@ namespace NuSysApp
             MinHeight = _filterMenuButtons.Count*buttonHeight + (_filterMenuButtons.Count - 1)*spacing + topMargin + BorderWidth;
             MinWidth = 100;
 
+        }
+
+        private void OnApplyFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var x = _filterSubMenu.GetLibraryElementControllers();
+            var y = _filterSubMenu.GetElementControllersForCurrentCollection();
         }
 
         /// <summary>
@@ -174,8 +203,10 @@ namespace NuSysApp
         {
             foreach (var button in _filterMenuButtons)
             {
-                button.Tapped -= OnCategoryButtonTapped;
+                if (button != _applyFilterbutton)
+                    button.Tapped -= OnCategoryButtonTapped;
             }
+            _applyFilterbutton.Tapped -= OnApplyFilterButtonTapped;
             base.Dispose();
         }
 

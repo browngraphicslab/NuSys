@@ -49,7 +49,17 @@ namespace NuSysApp
             }
         }
 
+        public delegate void OnDateChangedHandler(DateSelector sender, DateTime? date);
+
+        /// <summary>
+        /// Event fired whenever a new valid date has been created. or if a valid date existed and now no longer exists
+        /// In that case date would be null
+        /// </summary>
+        public event OnDateChangedHandler DateChanged;
+
         private StackLayoutManager _dropDownManager;
+
+        private bool _hasValidDate;
 
         public DateSelector(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -157,6 +167,20 @@ namespace NuSysApp
 
         private void AssertValidDate()
         {
+            // if we don't have a null date, then tell the user that we have a valid date by firing datechanged
+            if (Date != null)
+            {
+                _hasValidDate = true;
+                DateChanged?.Invoke(this, Date.Value);
+            }
+
+            // otherwise if we have a null date and we had a valid date, tell the user that we no longer have a valid date by firing datechanged
+            if (Date == null && _hasValidDate)
+            {
+                _hasValidDate = false;
+                DateChanged?.Invoke(this, Date);
+            }
+
             // if either the year or month is null we cannot assert that a valid day was chosen so return
             if (Year == null || Month == null)
             {
