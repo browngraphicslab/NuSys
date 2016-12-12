@@ -360,7 +360,7 @@ namespace NuSysApp
             var newX = Vm.X + delta.X / (transform.M11 * collection.Camera.S.M11);
             var newY = Vm.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
             this.Vm.Controller.SetPosition(newX,newY);
-            SessionController.Instance.SessionView.FreeFormViewer._minimap.Invalidate();
+            SessionController.Instance.SessionView.FreeFormViewer.
         }
 
 

@@ -318,6 +318,11 @@ namespace NuSysApp
             
         }
 
+        public void InvalidateMinimap()
+        {
+            _minimap.Invalidate();
+        }
+
         private async void BtnDeleteOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_selectedLink is LinkRenderItem)
