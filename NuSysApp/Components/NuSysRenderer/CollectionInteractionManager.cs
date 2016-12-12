@@ -134,6 +134,9 @@ namespace NuSysApp
             var menu = _freeFormViewer.RenderEngine.NodeMarkingMenu;
             menu.IsVisible = false;
             _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
+
+            
+
             if (menu.CurrentIndex == 0)
                 LinkCreated?.Invoke(_potentiaLink.Item1, _potentiaLink.Item2);
             if (menu.CurrentIndex == 1)
