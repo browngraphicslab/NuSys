@@ -54,22 +54,35 @@ namespace NuSysApp
         public DateSelector(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // instantiate the three dropdowns
-            _monthDropDownUIElement = new DropdownUIElement(this, ResourceCreator);
+            _monthDropDownUIElement = new DropdownUIElement(this, ResourceCreator)
+            {
+                Prompt = "MM"
+            };
             AddChild(_monthDropDownUIElement);
-            _dayDropDownUIElement = new DropdownUIElement(this, ResourceCreator);
+            _dayDropDownUIElement = new DropdownUIElement(this, ResourceCreator)
+            {
+                Prompt = "DD"
+            };
             AddChild(_dayDropDownUIElement);
-            _yearDropDownUIElement = new DropdownUIElement(this, ResourceCreator);
+            _yearDropDownUIElement = new DropdownUIElement(this, ResourceCreator)
+            {
+                Prompt = "YYYY"
+            };
             AddChild(_yearDropDownUIElement);
 
             // add all the options to the dropdowns, these bounds have nothing to do with AVD birthday. literally arbitrary
             _yearDropDownUIElement.AddOption(string.Empty);
-            _yearDropDownUIElement.AddOptionRange(Enumerable.Range(1938, DateTime.Now.Year - 1938 + 1).Select(numYear => numYear.ToString()));
+            _yearDropDownUIElement.AddOptionRange(Enumerable.Range(1938, DateTime.Now.Year - 1938 + 1).Reverse().Select(numYear => numYear.ToString()));
+            // cause the year to display the prompt
+            _yearDropDownUIElement.CurrentSelection = String.Empty;
 
             _monthDropDownUIElement.AddOption(string.Empty);
             _monthDropDownUIElement.AddOptionRange(Enumerable.Range(1, 12).Select(numMonth => numMonth.ToString()));
+            _monthDropDownUIElement.CurrentSelection = String.Empty;
 
             _dayDropDownUIElement.AddOption(string.Empty);
             _dayDropDownUIElement.AddOptionRange(Enumerable.Range(1, 31).Select(numDay => numDay.ToString()));
+            _dayDropDownUIElement.CurrentSelection = String.Empty;
 
             Height = 40;
             Width = 150;

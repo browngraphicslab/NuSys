@@ -30,6 +30,17 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             {
                 Debug.Assert(_dropDownList.GetItems().Contains(value), "make sure the dropdown list contains the value we are setting the current selection to");
                 Debug.Assert(value != null, "make sure the value is not null, the dropdown list can have an empty string but not a null string");
+                
+                // support prompts
+                if (value == string.Empty && Prompt != null)
+                {
+                    _currentSelection = value;
+                    ButtonText = Prompt;
+                    _dropDownList.SelectItem(value);
+                    Selected?.Invoke(this, value);
+                }
+
+
                 if (_currentSelection != value)
                 {
                     _currentSelection = value;
@@ -103,6 +114,16 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         /// </summary>
         public bool IsOpen => _dropDownList.IsVisible;
 
+        /// <summary>
+        /// the prompt to display to the user, if you want to display a prompt add an empty string to the dropdown values,
+        /// When the empty string is selected, the prompt will be displayed instead, the value of CurrentSelection
+        /// will only be the empty string, but the value displayed to the user will be the prompt, if you would like to remove
+        /// prompt support, set Prompt to null, and do not include an empty string in the values, if you would like an empty
+        /// string in your values but no prompt support, just set prompt to null. In order to display the prompt to the user
+        /// initially, you could simply set the CurrentSelection to the empty string, after adding the empty string to the
+        /// list of possible values that the dropdown can display
+        /// </summary>
+        public string Prompt { get; set; }
 
 
         public DropdownUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator, new RectangleUIElement(parent, resourceCreator))
@@ -148,6 +169,13 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             base.Dispose();
         }
 
+        /// <summary>
+        /// Called whenever a row is selected, changes the current selection which fires the Selected event
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        /// <param name="isSelected"></param>
         private void OnRowSelected(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             if (isSelected)
@@ -156,6 +184,12 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             }
         }
 
+        /// <summary>
+        /// called whenever the main header button is tapped, changes the display status of the dropdown
+        /// if it is visible then it is no longer visible, if it was invisible it is visible
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void OnDisplayButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dropDownList.IsVisible = !_dropDownList.IsVisible;
