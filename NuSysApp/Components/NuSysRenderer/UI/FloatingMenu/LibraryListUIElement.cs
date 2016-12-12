@@ -193,7 +193,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             if (!SessionController.Instance.ContentController.ContainsContentDataModel(item.ContentDataModelId))
             {

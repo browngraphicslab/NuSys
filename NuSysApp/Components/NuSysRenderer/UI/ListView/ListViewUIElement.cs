@@ -24,7 +24,7 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
-        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer);
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
 
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
@@ -449,6 +449,7 @@ namespace NuSysApp
                 _isDragging = false;
             }else
             {
+                bool _isSelected = false;
                 var t = Transform.ScreenToLocalMatrix;
                 var np = Vector2.Transform(pointer.CurrentPoint, t);
                 if (rowUIElement.HitTest(pointer.CurrentPoint) == null)
@@ -470,10 +471,11 @@ namespace NuSysApp
                 {
                     if (!DisableSelectionByClick)
                     {
-                        SelectItem(item); 
+                        SelectItem(item);
+                        _isSelected = true;
                     }
                 }
-                RowTapped?.Invoke(item, colTitle, pointer);
+                RowTapped?.Invoke(item, colTitle, pointer, _isSelected);
                 
             }
         }

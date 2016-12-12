@@ -56,7 +56,7 @@ namespace NuSysApp
             Item_Dragging(pointer);
         }
 
-        private void _listView_RowTapped(string item, string columnName, CanvasPointer pointer)
+        private void _listView_RowTapped(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             Item_OnTapped(item, pointer);
         }

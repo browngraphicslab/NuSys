@@ -221,6 +221,11 @@ namespace NuSysApp
             set { _labelElement.Background = value; }
         }
 
+        /// <summary>
+        /// True if we want the checkbox to only be changed programmatically
+        /// </summary>
+        public bool DisableSelectionOnTap { get; set; }
+
         public CheckBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, bool initialSelectionValue = false) : base(parent, resourceCreator)
         {
             // set the initial selection to the passed in value
@@ -287,7 +292,10 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void SetCheckboxSelectionOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SetCheckBoxSelection(!IsSelected);
+            if (!DisableSelectionOnTap)
+            {
+                SetCheckBoxSelection(!IsSelected);
+            }
         }
 
         /// <summary>
@@ -351,7 +359,7 @@ namespace NuSysApp
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
+            Background = Colors.Transparent;
 
             base.Update(parentLocalToScreenTransform);
         }

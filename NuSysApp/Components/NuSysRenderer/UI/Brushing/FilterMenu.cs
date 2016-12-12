@@ -67,6 +67,9 @@ namespace NuSysApp
         /// </summary>
         private List<ButtonUIElement> _filterMenuButtons;
 
+
+        private FilterSubMenu _filterSubMenu;
+
         private StackLayoutManager _buttonLayoutManager;
 
         private float buttonHeight = 50;
@@ -119,6 +122,10 @@ namespace NuSysApp
                 _filterMenuButtons.Add(button);
                 AddChild(button);
             }
+
+            _filterSubMenu = new FilterSubMenu(this, ResourceCreator);
+            AddChild(_filterSubMenu);
+
 
             // set the MinHeight based on the number of buttons we passed in
             MinHeight = _filterMenuButtons.Count*buttonHeight + (_filterMenuButtons.Count - 1)*spacing + topMargin + BorderWidth;
@@ -183,7 +190,7 @@ namespace NuSysApp
             Debug.Assert(button != null);
             Debug.Assert(_buttonToFilterCategories.ContainsKey(button));
             var category = _buttonToFilterCategories[button];
-
+            _filterSubMenu.DisplayViewFromCategory(category);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -191,6 +198,8 @@ namespace NuSysApp
             // make the library fill the resizeable window leaving room for the search bar and filter button
             _buttonLayoutManager.SetSize(Width, Height);
             _buttonLayoutManager.ArrangeItems();
+
+            _filterSubMenu.Transform.LocalPosition = new Vector2(Width, 0);
 
             base.Update(parentLocalToScreenTransform);
         }

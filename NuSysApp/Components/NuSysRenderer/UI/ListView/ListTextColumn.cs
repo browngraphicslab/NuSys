@@ -30,7 +30,7 @@ namespace NuSysApp
 
 
 
-        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rectangleUIElement)
+        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rectangleUIElement, bool isSelected)
         {
             var cell = rectangleUIElement as TextboxUIElement;
             cell.Text = ColumnFunction(itemSource);

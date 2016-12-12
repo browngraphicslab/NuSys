@@ -33,6 +33,8 @@ namespace NuSysApp
 
         public BreadCrumbContainer TrailBox;
 
+        public DateSelector DateSelector;
+
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -171,6 +173,9 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
+            DateSelector = new DateSelector(this, ResourceCreator) { Transform = { LocalPosition = new Vector2(500, 500) } };
+            AddChild(DateSelector);
+
             // set the image for the _currCollDetailViewbutton
             //_currCollDetailViewButton.Image = _currCollDetailViewButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/info.png"));
             //_currCollDetailViewButton.ImageBounds = new Rect(_currCollDetailViewButton.Width/4, _currCollDetailViewButton.Height/4, _currCollDetailViewButton.Width/2, _currCollDetailViewButton.Height/2);

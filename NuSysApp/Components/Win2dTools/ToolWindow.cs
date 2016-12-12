@@ -31,11 +31,6 @@ namespace NuSysApp
         private DropdownUIElement _filterChooser;
 
         /// <summary>
-        /// The button for showing the dropdown list for choosing filter type
-        /// </summary>
-        private ButtonUIElement _filterChooserDropdownButton;
-
-        /// <summary>
         /// The ButtonUIElement that can be dragged to create a new collection
         /// </summary>
         private ButtonUIElement _draggableCollectionElement;
@@ -137,7 +132,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             //TODO: Remove the tool window as a child
-            _filterChooserDropdownButton.Tapped -= _dropdownButton_OnPressed;
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
             Vm.Dispose();
@@ -199,8 +193,8 @@ namespace NuSysApp
                 _draggableCollectionElement.Height/4, _draggableCollectionElement.Width/2,
                 _draggableCollectionElement.Height/2);
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
-            _draggableCollectionElement.Dragged += CollectionOrStack_Dragging;
-            _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted;
+            _draggableCollectionElement.Dragged += CollectionOrStack_Dragging; //TODO DISPOSE OF THESE
+            _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted; //TODO DISPOSE OF THESE
             AddChild(_draggableCollectionElement);
 
             //sets up icon to show under pointer while dragging
@@ -231,8 +225,8 @@ namespace NuSysApp
             };
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
             _draggableStackElement.ImageBounds = new Rect(_draggableStackElement.Width/4, _draggableStackElement.Height/4, _draggableStackElement.Width/2, _draggableStackElement.Height/2);
-            _draggableStackElement.Dragged += CollectionOrStack_Dragging;
-            _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted;
+            _draggableStackElement.Dragged += CollectionOrStack_Dragging; //TODO DISPOSE OF THESE
+            _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted; //TODO DISPOSE OF THESE
             AddChild(_draggableStackElement);
 
             //sets up icon to show under pointer while dragging
@@ -319,54 +313,26 @@ namespace NuSysApp
         /// </summary>
         private void SetUpFilterDropDown()
         {
-            _filterChooserDropdownButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator) {Height = 100, Width = 500, Background = Constants.color1});
-            _filterChooserDropdownButton.ButtonText = Vm.Filter.ToString();
-            _filterChooserDropdownButton.Width = Width;
-            _filterChooserDropdownButton.Height = FILTER_CHOOSER_HEIGHT;
-            _filterChooserDropdownButton.ButtonTextColor = Constants.color3;
-            _filterChooserDropdownButton.BorderWidth = 0;
-            _filterChooserDropdownButton.Bordercolor = Constants.color3;
-            _filterChooserDropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
-            _filterChooserDropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-            _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed; ;
-            _filterChooserDropdownButton.Transform.LocalPosition = new Vector2(0, TopBarHeight);
-            AddChild(_filterChooserDropdownButton);
+            // create a new dropdown ui element and set the ui for it
+            _filterChooser = new DropdownUIElement(this, ResourceCreator)
+            {
+                Width = Width,
+                Height = FILTER_CHOOSER_HEIGHT,
+                RowHeight = FILTER_CHOOSER_HEIGHT,
+                ButtonTextColor = Constants.color3,
+                BorderWidth = 0,
+                Bordercolor = Constants.color3,
+                Transform = {LocalPosition = new Vector2(0, TopBarHeight)}
+            };
+            // add a method for when an item is selected in the dropdown
+            _filterChooser.Selected += FilterChooserItem_Clicked; //TODO DISPOSE OF THIS
 
-            _filterChooser = new DropdownUIElement(this, ResourceCreator, Width);
-            _filterChooser.ButtonHeight = FILTER_CHOOSER_HEIGHT;
+            // add all the filter options to the dropdown
             foreach (var filterType in Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>())
             {
-                _filterChooser.AddOption(filterType.ToString(), FilterChooserItem_Clicked);
+                _filterChooser.AddOption(filterType.ToString());
             }
-            _filterChooser.Layout();
-
-            _filterChooser.IsVisible = false;
-            _filterChooser.Transform.LocalPosition = new Vector2(0, TopBarHeight + _filterChooserDropdownButton.Height);
             AddChild(_filterChooser);
-        }
-
-
-
-        /// <summary>
-        /// When the dropdown button is pressed either show or hide the dropdown list filter chooser
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void _dropdownButton_OnPressed(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
-        {
-            if (_children.Last() != _filterChooser)
-            {
-                _children.Remove(_filterChooser);
-                _children.Add(_filterChooser);
-            }
-            if (_filterChooser.IsVisible)
-            {
-                _filterChooser.IsVisible = false;
-            }
-            else
-            {
-                _filterChooser.IsVisible = true;
-            }
         }
 
         /// <summary>
@@ -374,14 +340,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void FilterChooserItem_Clicked(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void FilterChooserItem_Clicked(DropdownUIElement sender, string item)
         {
-            var item = interactiveBaseRenderItem as ButtonUIElement;
-            Debug.Assert(item != null);
-
             _filterChooser.IsVisible = false;
             //var vm = Vm as BasicToolViewModel;
-            var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item.ButtonText);
+            var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item);
             var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)Transform.Position.X, (float)Transform.Position.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
             if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
@@ -397,8 +360,6 @@ namespace NuSysApp
             else
             {
                 Vm.Filter = filter;
-                _filterChooserDropdownButton.ButtonText = item.ButtonText;
-
             }
         }
 
@@ -498,12 +459,7 @@ namespace NuSysApp
             //Make the width of the filter chooser and the button always fill the window
             if (_filterChooser != null)
             {
-                if (_filterChooser.Width != Width)
-                {
-                    _filterChooser.Width = Width;
-                    _filterChooser.Layout();
-                }
-                _filterChooserDropdownButton.Width = Width;
+                _filterChooser.Width = Width;
             }
 
 

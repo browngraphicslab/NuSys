@@ -46,11 +46,6 @@ namespace NuSysApp
         public float LabelFontSize { get; set; } = UIDefaults.FontSize;
 
         /// <summary>
-        /// Event fired whenever a checkbox in this column is selected
-        /// </summary>
-        public event CheckBoxUIElement.OnSelectionChangedHandler CheckBoxSelected; //todo figure out a way to remove this event, currently a memory leak!!!
-
-        /// <summary>
         /// This function will return the cell based on the string outputed by the column function you give
         /// </summary>
         public override RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement,
@@ -64,18 +59,14 @@ namespace NuSysApp
                 Bordercolor = BorderColor,
                 Height = rowHeight,
                 Background = Colors.Transparent,
-                LabelText = ColumnFunction(itemSource)
+                LabelText = ColumnFunction(itemSource),
+                LabelBackground = Colors.Transparent,
+                DisableSelectionOnTap = true
             };
-            cell.Selected += FiredOnCheckBoxSelected;
             return cell;
         }
 
-        private void FiredOnCheckBoxSelected(CheckBoxUIElement sender, bool SelectionValue)
-        {
-            CheckBoxSelected?.Invoke(sender, SelectionValue);
-        }
-
-        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rectangleUiElement)
+        public override void UpdateColumnCellFromItem(T itemSource, RectangleUIElement rectangleUiElement, bool isSelected)
         {
             var cell = rectangleUiElement as CheckBoxUIElement;
             Debug.Assert(cell != null);
@@ -85,6 +76,7 @@ namespace NuSysApp
             cell.CheckBoxHeight = CheckBoxHeight;
             cell.CheckBoxWidth = CheckBoxWidth;
             cell.LabelFontSize = LabelFontSize;
+            cell.SetCheckBoxSelection(isSelected);
         }
     }
 }

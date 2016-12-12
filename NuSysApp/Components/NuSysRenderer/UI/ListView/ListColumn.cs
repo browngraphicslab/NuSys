@@ -40,7 +40,7 @@ namespace NuSysApp
         /// </summary>
         public Color BorderColor { get; set; }
 
-        public abstract void UpdateColumnCellFromItem(T item, RectangleUIElement rectangleUIElement);
+        public abstract void UpdateColumnCellFromItem(T item, RectangleUIElement rectangleUIElement, bool isSelected );
 
         /// <summary>
         /// This function will return the cell based on the column function you you give. It will first run the column function,

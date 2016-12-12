@@ -384,7 +384,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadataValuesList_RowTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        private void _metadataValuesList_RowTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             var vm = (Vm as MetadataToolViewModel);
             if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
@@ -440,7 +440,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void metadataKeysList_RowTapped(string item, string columnName, CanvasPointer pointer)
+        private void metadataKeysList_RowTapped(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             var vm = (Vm as MetadataToolViewModel);
             if (vm.Controller.Model.Selected &&
