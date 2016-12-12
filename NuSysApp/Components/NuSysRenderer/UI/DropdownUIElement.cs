@@ -28,8 +28,9 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             get { return _currentSelection; }
             set
             {
-                Debug.Assert(_dropDownList.GetItems().Contains(value));
-                if (_currentSelection == value)
+                Debug.Assert(_dropDownList.GetItems().Contains(value), "make sure the dropdown list contains the value we are setting the current selection to");
+                Debug.Assert(value != null, "make sure the value is not null, the dropdown list can have an empty string but not a null string");
+                if (_currentSelection != value)
                 {
                     _currentSelection = value;
                     ButtonText = value;
@@ -88,14 +89,32 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         /// </summary>
         public event SelectedHandler Selected;
 
+        public delegate void OpenStateChangedHandler(DropdownUIElement sender, bool isOpen);
+
+        /// <summary>
+        /// Event fired whenever the dropdown is opened or closed, has an isOpen bool which is true if the dropdown
+        /// was just opened, or false if it was just closed
+        /// </summary>
+        public event OpenStateChangedHandler OpenOrClosed;
+
+        /// <summary>
+        /// boolean used to determine if the dropdown is being displayed or not, true if the dropdown list is visible
+        /// false if only the header button is visible
+        /// </summary>
+        public bool IsOpen => _dropDownList.IsVisible;
+
+
 
         public DropdownUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator, new RectangleUIElement(parent, resourceCreator))
         {
             // set default ui
             Background = Colors.Transparent;
             ButtonTextColor = Colors.Black;
-            ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
+            ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
             ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+            BorderWidth = 1;
+            Bordercolor = Colors.Black;
+            SelectedBorder = Colors.Black;
 
             // instantiate a list and column for the dropdown
             _dropDownList = new ListViewUIElementContainer<string>(this, ResourceCreator)
@@ -112,7 +131,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             _dropDownItems = new ListTextColumn<string>()
             {
                 ColumnFunction = text => text,
-                RelativeWidth = 1
+                RelativeWidth = 1,
             };
             _dropDownList.AddColumn(_dropDownItems);          
 
@@ -140,6 +159,16 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         private void OnDisplayButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dropDownList.IsVisible = !_dropDownList.IsVisible;
+            OpenOrClosed?.Invoke(this, _dropDownList.IsVisible);
+        }
+
+        /// <summary>
+        /// Hides the dropdown list programmatically
+        /// </summary>
+        public void HideDropDown()
+        {
+            _dropDownList.IsVisible = false;
+            OpenOrClosed?.Invoke(this, _dropDownList.IsVisible);
         }
 
         /// <summary>
@@ -148,7 +177,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         /// <param name="item"></param>
         public void AddOption(string item)
         {
-            if (_dropDownList.GetItems().Count(s => s.Equals(item)) != 0)
+            if (_dropDownList.GetItems().Count(s => s.Equals(item)) == 0)
             {
                 _dropDownList.AddItems(new List<string> { item });
             }
@@ -199,7 +228,8 @@ namespace NuSysApp.Components.NuSysRenderer.UI
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _dropDownList.Transform.LocalPosition = new Vector2(Width, Height);
+            _dropDownList.Transform.LocalPosition = new Vector2(0, Height);
+            _dropDownList.Width = Width;
 
             base.Update(parentLocalToScreenTransform);
         }

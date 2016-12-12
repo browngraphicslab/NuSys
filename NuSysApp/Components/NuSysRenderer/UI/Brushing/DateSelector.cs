@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NuSysApp.Components.NuSysRenderer.UI;
 
@@ -61,27 +62,30 @@ namespace NuSysApp
             AddChild(_yearDropDownUIElement);
 
             // add all the options to the dropdowns, these bounds have nothing to do with AVD birthday. literally arbitrary
-            _yearDropDownUIElement.AddOptionRange(Enumerable.Range(1938, DateTime.Now.Year).Select(numYear => numYear.ToString()));
             _yearDropDownUIElement.AddOption(string.Empty);
+            _yearDropDownUIElement.AddOptionRange(Enumerable.Range(1938, DateTime.Now.Year - 1938 + 1).Select(numYear => numYear.ToString()));
 
-            _monthDropDownUIElement.AddOptionRange(Enumerable.Range(1, 12).Select(numMonth => numMonth.ToString()));
             _monthDropDownUIElement.AddOption(string.Empty);
+            _monthDropDownUIElement.AddOptionRange(Enumerable.Range(1, 12).Select(numMonth => numMonth.ToString()));
 
-            _dayDropDownUIElement.AddOptionRange(Enumerable.Range(1, 31).Select(numDay => numDay.ToString()));
             _dayDropDownUIElement.AddOption(string.Empty);
+            _dayDropDownUIElement.AddOptionRange(Enumerable.Range(1, 31).Select(numDay => numDay.ToString()));
 
-            Height = 50;
-            Width = 100;
+            Height = 40;
+            Width = 150;
+            BorderWidth = 3;
+            Bordercolor = Colors.Black;
+            
 
             _dropDownManager = new StackLayoutManager()
             {
-                TopMargin = 10,
-                BottomMargin = 10,
-                LeftMargin = 7.5f,
-                RightMargin = 7.5f,
+                TopMargin = 5,
+                BottomMargin = 5,
+                LeftMargin = 5,
+                RightMargin = 5,
                 ItemHeight = 30,
-                ItemWidth = 25,
-                Spacing = 5,
+                ItemWidth = 40,
+                Spacing = 15,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Center,
                 Width = Width,
@@ -96,11 +100,45 @@ namespace NuSysApp
             _monthDropDownUIElement.Selected += OnMenuSelected;
             _dayDropDownUIElement.Selected += OnMenuSelected;
             _yearDropDownUIElement.Selected += OnMenuSelected;
+            _monthDropDownUIElement.OpenOrClosed += OnMenuOpenOrClosed;
+            _yearDropDownUIElement.OpenOrClosed += OnMenuOpenOrClosed;
+            _dayDropDownUIElement.OpenOrClosed += OnMenuOpenOrClosed;
+        }
+
+
+        /// <summary>
+        /// Called whenever any menu is opened or closed, hides the other menus
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="isOpen"></param>
+        private void OnMenuOpenOrClosed(DropdownUIElement sender, bool isOpen)
+        {
+            // if we open a minute hide all the other ones
+            if (isOpen)
+            {
+                if (sender != _dayDropDownUIElement)
+                {
+                    _dayDropDownUIElement.HideDropDown();
+                }
+                if (sender != _monthDropDownUIElement)
+                {
+                    _monthDropDownUIElement.HideDropDown();
+                }
+                if (sender != _yearDropDownUIElement)
+                {
+                    _yearDropDownUIElement.HideDropDown();
+                }
+            }
         }
 
         public override void Dispose()
         {
             _monthDropDownUIElement.Selected -= OnMenuSelected;
+            _dayDropDownUIElement.Selected -= OnMenuSelected;
+            _yearDropDownUIElement.Selected -= OnMenuSelected;
+            _monthDropDownUIElement.OpenOrClosed -= OnMenuOpenOrClosed;
+            _yearDropDownUIElement.OpenOrClosed -= OnMenuOpenOrClosed;
+            _dayDropDownUIElement.OpenOrClosed -= OnMenuOpenOrClosed;
             base.Dispose();
         }
 
@@ -120,18 +158,21 @@ namespace NuSysApp
             // if the current max is too long, remove the extra days
             if (maxDay > numDays)
             {
-                _dayDropDownUIElement.RemoveOptionRange(Enumerable.Range(numDays + 1, maxDay).Select(day => day.ToString()));
+                _dayDropDownUIElement.RemoveOptionRange(Enumerable.Range(numDays + 1, maxDay - numDays).Select(day => day.ToString()));
             }
             // otherwise try to add the non existing days
             else if (maxDay < numDays)
             {
-                _dayDropDownUIElement.AddOptionRange(Enumerable.Range(maxDay + 1, numDays).Select(day =>day.ToString()));
+                _dayDropDownUIElement.AddOptionRange(Enumerable.Range(maxDay + 1, numDays - maxDay).Select(day => day.ToString()));
             }
         }
 
         private void OnMenuSelected(DropdownUIElement sender, string item)
         {
             AssertValidDate();
+            _dayDropDownUIElement.HideDropDown();
+            _yearDropDownUIElement.HideDropDown();
+            _monthDropDownUIElement.HideDropDown();
         }
 
         /// <summary>
