@@ -81,7 +81,7 @@ namespace NuSysApp
                 return;
 
             if (_path != null)
-                ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
+                ds.DrawGeometry(_path, Colors.DodgerBlue, 10);
         }
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)

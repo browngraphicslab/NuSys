@@ -63,7 +63,7 @@ namespace NuSysApp
         /// </summary>
         public event EventHandler<NusysConstants.AccessType> AccessChanged;
 
-        public Point2d Anchor
+        public virtual Point2d Anchor
         {
             get
             {

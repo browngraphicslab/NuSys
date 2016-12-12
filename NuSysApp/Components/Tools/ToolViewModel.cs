@@ -27,18 +27,7 @@ namespace NuSysApp
         /// Listened to by view to know when the properties to display have changed
         /// </summary>
         public event PropertiesToDisplayChangedEventHandler PropertiesToDisplayChanged;
-        /// <summary>
-        /// Listened to by links to know when the anchor changes.
-        /// </summary>
-        public event EventHandler<Point2d> ToolAnchorChanged;
-        /// <summary>
-        /// Listened to by links to know when to delete the link
-        /// </summary>
-        public event EventHandler<string> Disposed;
-        /// <summary>
-        /// Listened to by links to know when to replace the tool it is connected to
-        /// </summary>
-        public event EventHandler<ElementViewModel> ReplacedToolLinkAnchorPoint;
+
 
         protected ToolController _controller;
         private double _width;
@@ -49,91 +38,13 @@ namespace NuSysApp
         private Point2d _anchor;
         public ObservableCollection<ToolModel.ParentOperatorType> ParentOperatorList = new ObservableCollection<ToolModel.ParentOperatorType>() {ToolModel.ParentOperatorType.And, ToolModel.ParentOperatorType.Or};
        
-        public Point2d ToolAnchor { get { return _anchor; } }
         public ToolController Controller { get { return _controller; } }
-        //public double Height
-        //{
-        //    set
-        //    {
-        //        _height = value;
-        //        RaisePropertyChanged("Height");
-        //    }
-        //    get
-        //    {
-        //        return _height;
-        //    }
-        //}
-
-
-        //public double Width
-        //{
-        //    set
-        //    {
-        //        _width = value;
-        //        RaisePropertyChanged("Width");
-        //    }
-        //    get
-        //    {
-        //        return _width;
-        //    }
-        //}
-
-        //public double X
-        //{
-        //    set
-        //    {
-        //        _x = value;
-        //        RaisePropertyChanged("X");
-        //    }
-        //    get
-        //    {
-        //        return _x;
-        //    }
-        //}
-        //public double Y
-        //{
-        //    set
-        //    {
-        //        _y = value;
-        //        RaisePropertyChanged("Y");
-        //    }
-        //    get
-        //    {
-        //        return _y;
-        //    }
-        //}
-        public CompositeTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-                RaisePropertyChanged("Transform");
-            }
-        }
-
         public ToolViewModel(ToolController toolController):base(toolController)
         {
-            CalculateAnchorPoint();
             _controller = toolController;
             _controller.IdsToDisplayChanged += ControllerOnLibraryIdsToDisplayChanged;
-            Controller.SizeChanged += OnSizeChanged;
-            Controller.LocationChanged += OnLocationChanged;
-            Height = 400;
-            Width = 260;
         }
-
-        /// <summary>
-        ///So that subclasses can fire the event
-        /// </summary>
-        public void FireReplacedToolLinkAnchorPoint(ElementViewModel newTool)
-        {
-            ReplacedToolLinkAnchorPoint?.Invoke(this, newTool);
-        }
+        
 
         /// <summary>
         /// So that sublcasses can invoke properties to display changed event
@@ -142,23 +53,7 @@ namespace NuSysApp
         {
             PropertiesToDisplayChanged?.Invoke();
         }
-
-        /// <summary>
-        /// Returns the tool startable
-        /// </summary>
-        /// <returns></returns>
-        public ToolStartable GetToolStartable()
-        {
-            return Controller;
-        }
-
-        /// <summary>
-        /// Calculates the tool anchor point of as the top center of the node
-        /// </summary>
-        public void CalculateAnchorPoint()
-        {
-            _anchor = new Point2d(X + Width / 2 + 60, Y + 20);
-        }
+        
 
         /// <summary>
         /// Creates a collection from this tools output library ids
@@ -397,11 +292,12 @@ namespace NuSysApp
                     controller.SetSize(500, 500);
                     controller.SetPosition(x, y);
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
+                    Controller.FireFilterTypeAllMetadataChanged(viewmodel);
+
                 });
                 //var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 //wvm.AtomViewList.Add(view);
 
-                //Controller.FireFilterTypeAllMetadataChanged(viewmodel);
                 //this.FireReplacedToolLinkAnchorPoint(viewmodel);
             }
             //this.Dispose();
@@ -438,11 +334,12 @@ namespace NuSysApp
                     controller.SetPosition(x, y);
 
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
+                    Controller.FireFilterTypeAllMetadataChanged(viewmodel);
+
                 });
                 //var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 //wvm.AtomViewList.Add(view);
 
-                //Controller.FireFilterTypeAllMetadataChanged(viewmodel);
                 //this.FireReplacedToolLinkAnchorPoint(viewmodel);
             }
         }
@@ -512,18 +409,7 @@ namespace NuSysApp
 
             });
         }
-
-        ///// <summary>
-        /////Adds tool as parent to existing filter picker tool. 
-        ///// </summary>
-        //public void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
-        //{
-        //    var linkviewmodel = new ToolLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
-        //    var linkView = new ToolLinkView(linkviewmodel);
-        //    Canvas.SetZIndex(linkView, Canvas.GetZIndex(hitsStartList.First()) - 1);
-        //    (hitsStartList.First() as ToolFilterView).AddParentTool(this);
-        //    wvm.AtomViewList.Add(linkView);
-        //}
+        
 
         /// <summary>
         ///Adds tool as parent to existing tool. 
@@ -549,18 +435,7 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        /// Returns the drag filter image with correct sizing etc.
-        /// </summary>
-        /// <returns></returns>
-        public Image InitializeDragFilterImage()
-        {
-            Image dragItem = new Image();
-            dragItem.Source = new BitmapImage(new Uri("ms-appx:///Assets/filter.png"));
-            dragItem.Height = 50;
-            dragItem.Width = 50;
-            return dragItem;
-        }
+       
 
         /// <summary>
         /// Removes all the listeners and calls dispose on the controller
@@ -569,9 +444,8 @@ namespace NuSysApp
         {
             _controller.IdsToDisplayChanged -= ControllerOnLibraryIdsToDisplayChanged;
             Controller.SizeChanged -= OnSizeChanged;
-            Controller.LocationChanged -= OnLocationChanged;
             Controller.Dispose();
-            Disposed?.Invoke(this, Controller.GetID());
+            //Disposed?.Invoke(this, Controller.GetID());
         }
 
         /// <summary>
@@ -588,26 +462,19 @@ namespace NuSysApp
         /// <param name="recursivelyRefresh"></param>
         public abstract void ReloadPropertiesToDisplay();
 
-        public void OnSizeChanged(object sender, double width, double height)
-        {
-            Width = width;
-            Height = height;
-            CalculateAnchorPoint();
-            ToolAnchorChanged?.Invoke(this, _anchor);
-        }
 
-        public void OnLocationChanged(object sender, double x, double y)
+        /// <summary>
+        /// Returns the drag filter image with correct sizing etc.
+        /// </summary>
+        /// <returns></returns>
+        public Image InitializeDragFilterImage()
         {
-            return;
-            X = x;
-            Y = y;
-            Transform.TranslateX = x;
-            Transform.TranslateY = y;
-            RaisePropertyChanged("Transform");
-            CalculateAnchorPoint();
-            ToolAnchorChanged?.Invoke(this, _anchor);
+            Image dragItem = new Image();
+            dragItem.Source = new BitmapImage(new Uri("ms-appx:///Assets/filter.png"));
+            dragItem.Height = 50;
+            dragItem.Width = 50;
+            return dragItem;
         }
-
 
     }
 }

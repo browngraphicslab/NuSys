@@ -48,7 +48,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             _dragItem = vm.InitializeDragFilterImage();
-            vm.Controller.SetLocation(x, y);
+            //vm.Controller.SetLocation(x, y);
             xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>();
             xFilterComboBox.SelectedItem = vm.Filter;
             this.DataContext = vm;
@@ -382,7 +382,7 @@ namespace NuSysApp
             var y = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
             if (vm != null)
             {
-                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
+                //vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
             ToolAnchorChanged?.Invoke(this, new Point2d(vm.X + x, vm.Y + y));
         }
