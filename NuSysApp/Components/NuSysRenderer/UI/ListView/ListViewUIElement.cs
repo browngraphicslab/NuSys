@@ -509,7 +509,7 @@ namespace NuSysApp
             else
             {
                 //scroll if in bounds
-                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / Height;
+                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _itemsSource.Count);
 
                 ScrollBar.ChangePosition(deltaY);
 

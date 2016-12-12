@@ -18,8 +18,6 @@ namespace NuSysApp
     {
         public static Dictionary<string, ToolStartable> ToolControllers = new Dictionary<string, ToolStartable>();
         public delegate void FilterChangedEventHandler(object sender, ToolModel.ToolFilterTypeTitle filter);
-        public delegate void LocationChangedEventHandler(object sender, double x, double y);
-        public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public delegate void IdsToDisplayChangedEventHandler();
         public delegate void NumberOfParentsChangedEventHandler (int numberOfParents);
         public event FilterChangedEventHandler FilterChanged;
@@ -29,8 +27,6 @@ namespace NuSysApp
         /// properties displayed
         /// </summary>
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
-        public event LocationChangedEventHandler LocationChanged;
-        public event SizeChangedEventHandler SizeChanged;
         public event EventHandler<string> Disposed;
         public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
@@ -39,6 +35,21 @@ namespace NuSysApp
         /// </summary>
         public event IdsToDisplayChangedEventHandler IdsToDisplayChanged;
         public event NumberOfParentsChangedEventHandler NumberOfParentsChanged;
+
+        public override Point2d Anchor
+        {
+            get
+            {
+                if (GetParentIds().Count() > 1)
+                {
+                    return new Point2d(Model.X + Model.Width / 2, Model.Y);
+                }
+                else
+                {
+                    return new Point2d(Model.X + Model.Width / 2, Model.Y + 20);
+                }
+            }
+        }
 
         public string ContentId
         {
@@ -55,13 +66,8 @@ namespace NuSysApp
             ToolControllers.Add(model.Id, this);
             ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             _blockServerInteractionCount++;//never send server updates about tool information
-            PositionChanged += OnPositionChanged;
         }
-
-        private void OnPositionChanged(object source, double x, double y, double dx, double dy)
-        {
-            SetLocation(x,y);
-        }
+        
 
         public void SetFilter(ToolModel.ToolFilterTypeTitle filter)
         {
@@ -79,12 +85,7 @@ namespace NuSysApp
         {
             FilterTypeAllMetadataChanged?.Invoke(this, vm);
         }
-
-        //public void SetSize(double width, double height)
-        //{
-        //    SizeChanged?.Invoke(this, width, height);
-        //}
-
+        
         /// <summary>
         /// Adds a parent to the tool. Listens to the parent's library ids changed event. Refreshes the library ids. Invokes, outputLibraryIdsChanged, parentsLibraryIdsChanged, and numberofParentsChanged.
         /// </summary>
@@ -113,6 +114,12 @@ namespace NuSysApp
         private void ParentController_FilterTypeAllMetadataChanged(object sender, ToolViewModel vm)
         {
             AddParent(vm.Controller);
+            var linkModel = new ToolLinkModel();
+            linkModel.InAtomId = vm.Id;
+            linkModel.OutAtomId = Id;
+            var linkController = new ToolLinkController(linkModel, vm.Controller, this);
+            var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+            SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
         }
 
         /// <summary>
@@ -338,11 +345,7 @@ namespace NuSysApp
         {
             return ToolModel.ParentIds;
         }
-
-        public void SetLocation(double x, double y)
-        {
-            LocationChanged?.Invoke(this, x, y);
-        }
+        
     }
     
 }

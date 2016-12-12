@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            vm.Controller.SetLocation(x, y);
+            //vm.Controller.SetLocation(x, y);
             Vm = vm;
             xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle> ();
 
@@ -325,7 +325,7 @@ namespace NuSysApp
 
             if (vm != null)
             {
-                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
+                //vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
 
             ToolAnchorChanged?.Invoke(this, new Point2d(vm.X + x, vm.Y + y));
