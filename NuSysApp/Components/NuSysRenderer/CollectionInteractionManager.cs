@@ -117,7 +117,11 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnPointerWheelChanged(CanvasPointer pointer, float delta)
         {
             var item = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-            if (item is InteractiveBaseRenderItem)
+            if (!(item is ElementRenderItem))
+            {
+                return;
+            }
+            if ((item as ElementRenderItem)?.IsInteractable() == true)
             {
                 return;
             }
@@ -242,17 +246,26 @@ namespace NuSysApp
 
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
             {
-                var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection);
-                if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
+                var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
+                if (!(hit is BaseInteractiveUIElement))
                 {
-                    _resizerHit = true;
-                    if (_resizerHit)
+                    if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
                     {
-                        ResizerStarted?.Invoke();
+                        _resizerHit = true;
+                        if (_resizerHit)
+                        {
+                            ResizerStarted?.Invoke();
+                        }
+
                     }
-
                 }
-
+                else
+                {
+                    if ((hit as BaseInteractiveUIElement).IsInteractable())
+                    {
+                        return;
+                    }
+                }
                 RenderItemPressed?.Invoke(hit, pointer);
 
                 _selectedRenderItem = hit as ElementRenderItem;

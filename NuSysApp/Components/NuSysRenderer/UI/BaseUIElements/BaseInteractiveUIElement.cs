@@ -121,5 +121,10 @@ namespace NuSysApp
             });
         }
 
+        public virtual bool IsInteractable()
+        {
+            return true;
+        }
+
     }
 }

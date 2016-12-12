@@ -134,10 +134,16 @@ namespace NuSysApp
         }
 
 
+        public override bool IsInteractable()
+        {
+            return true;
+        }
+
         public override void Dispose()
         {
             //TODO: Remove the tool window as a child
             _filterChooserDropdownButton.Tapped -= _dropdownButton_OnPressed;
+            _filterChooserDropdownButton.Dragged -= FilterChooserDropdownButtonOnDragged;
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
             Vm.Dispose();
@@ -328,7 +334,8 @@ namespace NuSysApp
             _filterChooserDropdownButton.Bordercolor = Constants.color3;
             _filterChooserDropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _filterChooserDropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-            _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed; ;
+            _filterChooserDropdownButton.Tapped += _dropdownButton_OnPressed;
+            _filterChooserDropdownButton.Dragged += FilterChooserDropdownButtonOnDragged;
             _filterChooserDropdownButton.Transform.LocalPosition = new Vector2(0, 0);
             AddChild(_filterChooserDropdownButton);
 
@@ -345,6 +352,15 @@ namespace NuSysApp
             AddChild(_filterChooser);
         }
 
+        private void FilterChooserDropdownButtonOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
+            var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+            var delta = pointer.DeltaSinceLastUpdate;
+            var newX = Vm.X + delta.X / (transform.M11 * collection.Camera.S.M11);
+            var newY = Vm.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
+            this.Vm.Controller.SetPosition(newX,newY);
+        }
 
 
         /// <summary>
@@ -414,12 +430,18 @@ namespace NuSysApp
             {
                 Height = PARENT_OPERATOR_BUTTON_HEIGHT,
                 Width = PARENT_OPERATOR_BUTTON_WIDTH,
+                Background = Constants.color1
             };
-            _parentOperatorButton = new ButtonUIElement(this, ResourceCreator, parentOperatorRectangle);
-            _parentOperatorButton.Transform.LocalY = -PARENT_OPERATOR_BUTTON_HEIGHT;
-            _parentOperatorButton.ButtonText = "AND";
-            _parentOperatorButton.ButtonTextColor = Colors.Black;
-            _parentOperatorButton.IsVisible = false;
+            _parentOperatorButton = new ButtonUIElement(this, ResourceCreator, parentOperatorRectangle)
+            {
+                ButtonText = "AND",
+                ButtonTextSize = 32,
+                ButtonTextColor = Constants.color3,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                IsVisible = false,
+                Transform = {LocalY = -PARENT_OPERATOR_BUTTON_HEIGHT}
+            };
             _parentOperatorButton.Tapped += _parentOperatorButton_Tapped;
             AddChild(_parentOperatorButton);
 

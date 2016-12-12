@@ -166,7 +166,7 @@ namespace NuSysApp
             try
             {
                 _dataMessageWriter.WriteString(message);
-                //await _dataMessageWriter.StoreAsync();
+                await _dataMessageWriter.StoreAsync();
             }
             catch (Exception e)
             {

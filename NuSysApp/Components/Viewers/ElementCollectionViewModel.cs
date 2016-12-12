@@ -117,10 +117,23 @@ namespace NuSysApp
             CameraTranslation = new Vector2(f, f1);
         }
 
-        public void AddTool(ToolViewModel vm, ToolLinkViewModelWin2d linkvm = null)
+        /// <summary>
+        /// Adds tool to the collection
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <param name="linkvm"></param>
+        public void AddTool(ToolViewModel vm)
         {
             Elements.Add(vm);
             vm.Controller.Deleted += OnChildDeleted;
+        }
+
+        /// <summary>
+        /// Adds a tool link to the collection
+        /// </summary>
+        /// <param name="linkvm"></param>
+        public void AddToolLink(ToolLinkViewModelWin2d linkvm)
+        {
             if (linkvm != null)
             {
                 ToolLinks.Add(linkvm);

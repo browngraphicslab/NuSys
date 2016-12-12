@@ -79,7 +79,10 @@ namespace NuSysApp
                 _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
 
                 _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-                _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+                if (_vm.Controller.LibraryElementController != null)
+                {
+                    _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+                }
             }
             _vm = null;
 
@@ -88,6 +91,10 @@ namespace NuSysApp
             base.Dispose();
         }
 
+        public override bool IsInteractable()
+        {
+            return SessionController.Instance.SessionView.FreeFormViewer.Selections.Contains(this);
+        }
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
             _tagRenderItem.MaxWidth = (float)width;

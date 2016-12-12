@@ -70,6 +70,14 @@ namespace NuSysApp
         private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
+        /// <summary>
+        /// get the private transform of the free form viewer
+        /// </summary>
+        public Matrix3x2 Transform
+        {
+            get { return _transform; }
+        }
+
         public FreeFormViewer()
         {
             this.InitializeComponent();

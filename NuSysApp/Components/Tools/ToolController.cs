@@ -80,10 +80,10 @@ namespace NuSysApp
             FilterTypeAllMetadataChanged?.Invoke(this, vm);
         }
 
-        public void SetSize(double width, double height)
-        {
-            SizeChanged?.Invoke(this, width, height);
-        }
+        //public void SetSize(double width, double height)
+        //{
+        //    SizeChanged?.Invoke(this, width, height);
+        //}
 
         /// <summary>
         /// Adds a parent to the tool. Listens to the parent's library ids changed event. Refreshes the library ids. Invokes, outputLibraryIdsChanged, parentsLibraryIdsChanged, and numberofParentsChanged.

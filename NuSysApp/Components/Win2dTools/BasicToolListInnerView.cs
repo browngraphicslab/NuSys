@@ -107,7 +107,7 @@ namespace NuSysApp
             }
             if (itemsToSelect != null && itemsToSelect.Count > 0)
             {
-                _listView.ScrollTo(itemsToSelect.Last());
+                //_listView.ScrollTo(itemsToSelect.Last());
             }
         }
     }

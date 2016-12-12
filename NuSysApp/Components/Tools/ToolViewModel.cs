@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -13,7 +14,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public abstract class ToolViewModel : ElementViewModel, ToolLinkable
+    public abstract class ToolViewModel : ElementViewModel//, ToolLinkable
     {
         public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller).ToolModel.Filter; } set { (_controller).SetFilter(value); } }
 
@@ -37,7 +38,7 @@ namespace NuSysApp
         /// <summary>
         /// Listened to by links to know when to replace the tool it is connected to
         /// </summary>
-        public event EventHandler<ToolLinkable> ReplacedToolLinkAnchorPoint;
+        public event EventHandler<ElementViewModel> ReplacedToolLinkAnchorPoint;
 
         protected ToolController _controller;
         private double _width;
@@ -129,7 +130,7 @@ namespace NuSysApp
         /// <summary>
         ///So that subclasses can fire the event
         /// </summary>
-        public void FireReplacedToolLinkAnchorPoint(ToolLinkable newTool)
+        public void FireReplacedToolLinkAnchorPoint(ElementViewModel newTool)
         {
             ReplacedToolLinkAnchorPoint?.Invoke(this, newTool);
         }
@@ -381,11 +382,20 @@ namespace NuSysApp
                     foreach (var id in Controller.GetParentIds())
                     {
                         controller.AddParent(ToolController.ToolControllers[id]);
+                        var parentController = ToolController.ToolControllers[id] as ElementController;
+                        Debug.Assert(parentController != null);
+                        if (parentController != null)
+                        {
+                            var linkModel = new ToolLinkModel();
+                            linkModel.InAtomId = parentController.Id;
+                            linkModel.OutAtomId = model.Id;
+                            var linkController = new ToolLinkController(linkModel, parentController, controller);
+                            var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                            SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+                        }
                     }
-                    viewmodel.Width = 500;
-                    viewmodel.Height = 500;
-                    viewmodel.X = x;
-                    viewmodel.Y = y;
+                    controller.SetSize(500, 500);
+                    controller.SetPosition(x, y);
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
                 });
                 //var wvm = SessionController.Instance.ActiveFreeFormViewer;
@@ -410,12 +420,23 @@ namespace NuSysApp
                     foreach (var id in Controller.GetParentIds())
                     {
                         controller.AddParent(ToolController.ToolControllers[id]);
+
+                        var parentController = ToolController.ToolControllers[id] as ElementController;
+                        Debug.Assert(parentController != null);
+                        if (parentController != null)
+                        {
+                            var linkModel = new ToolLinkModel();
+                            linkModel.InAtomId = parentController.Id;
+                            linkModel.OutAtomId = model.Id;
+                            var linkController = new ToolLinkController(linkModel, parentController, controller);
+                            var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                            SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+                        }
                     }
                     viewmodel.Filter = filter;
-                    viewmodel.Width = 500;
-                    viewmodel.Height = 500;
-                    viewmodel.X = x;
-                    viewmodel.Y = y;
+                    controller.SetSize(500,500);
+                    controller.SetPosition(x, y);
+
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
                 });
                 //var wvm = SessionController.Instance.ActiveFreeFormViewer;
@@ -472,35 +493,37 @@ namespace NuSysApp
                 BasicToolModel model = new BasicToolModel();
                 BasicToolController controller = new BasicToolController(model);
                 BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-                viewmodel.Controller.AddParent(Controller);
-                viewmodel.Width = 500;
-                viewmodel.Height = 500;
-                viewmodel.X = x;
-                viewmodel.Y = y;
                 viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
+                viewmodel.Controller.AddParent(Controller);
+                controller.SetPosition(x, y);
+                controller.SetSize(500, 500);
 
                 var linkModel = new ToolLinkModel();
                 linkModel.InAtomId = this.Id;
                 linkModel.OutAtomId = model.Id;
-                var linkController = new ToolLinkController(linkModel, this, viewmodel);
+                var linkController = new ToolLinkController(linkModel, this.Controller, controller);
                 var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-                SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel, linkViewModel);
+                
+
+                //Controller.SetPosition(X, Y);
+                SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
+                SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+
 
             });
         }
 
-        /// <summary>
-        ///Adds tool as parent to existing filter picker tool. 
-        /// </summary>
-        public void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
-        {
-
-            var linkviewmodel = new ToolLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
-            var linkView = new ToolLinkView(linkviewmodel);
-            Canvas.SetZIndex(linkView, Canvas.GetZIndex(hitsStartList.First()) - 1);
-            (hitsStartList.First() as ToolFilterView).AddParentTool(this);
-            wvm.AtomViewList.Add(linkView);
-        }
+        ///// <summary>
+        /////Adds tool as parent to existing filter picker tool. 
+        ///// </summary>
+        //public void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
+        //{
+        //    var linkviewmodel = new ToolLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
+        //    var linkView = new ToolLinkView(linkviewmodel);
+        //    Canvas.SetZIndex(linkView, Canvas.GetZIndex(hitsStartList.First()) - 1);
+        //    (hitsStartList.First() as ToolFilterView).AddParentTool(this);
+        //    wvm.AtomViewList.Add(linkView);
+        //}
 
         /// <summary>
         ///Adds tool as parent to existing tool. 
@@ -515,6 +538,12 @@ namespace NuSysApp
                     //var link = new ToolLinkView(linkviewmodel);
                     //Canvas.SetZIndex(link, Canvas.GetZIndex(hitsStartList.First()) - 1);
                     //wvm.AtomViewList.Add(link);
+                    var linkModel = new ToolLinkModel();
+                    linkModel.InAtomId = this.Id;
+                    linkModel.OutAtomId = toolViewModel.Id;
+                    var linkController = new ToolLinkController(linkModel, this.Controller, toolViewModel.Controller);
+                    var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                    SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
                     toolViewModel.Controller.AddParent(Controller);
                 }
             }

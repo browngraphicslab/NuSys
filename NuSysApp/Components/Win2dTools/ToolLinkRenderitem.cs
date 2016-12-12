@@ -18,8 +18,8 @@ namespace NuSysApp
         public ToolLinkRenderitem(ToolLinkViewModelWin2d vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
             _vm = vm;
-            _vm.Controller.InElement.ToolAnchorChanged += OnAnchorChanged;
-            _vm.Controller.OutElement.ToolAnchorChanged += OnAnchorChanged;
+            _vm.Controller.InElement.AnchorChanged += OnAnchorChanged;
+            _vm.Controller.OutElement.AnchorChanged += OnAnchorChanged;
         }
 
         private void OnAnchorChanged(object sender, Point2d point2D)
@@ -32,8 +32,8 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
-            _vm.Controller.InElement.ToolAnchorChanged -= OnAnchorChanged;
-            _vm.Controller.OutElement.ToolAnchorChanged -= OnAnchorChanged;
+            _vm.Controller.InElement.AnchorChanged -= OnAnchorChanged;
+            _vm.Controller.OutElement.AnchorChanged -= OnAnchorChanged;
 
             _path.Dispose();
             _path = null;
@@ -48,15 +48,15 @@ namespace NuSysApp
 
             base.Update(parentLocalToScreenTransform);
 
-            if (!IsDirty)
+            if (!IsDirty && false)
                 return;
 
 
             var controller = (ToolLinkController)_vm.Controller;
             if (controller.InElement == null || controller.OutElement == null)
                 return;
-            var anchor1 = new Vector2((float)controller.InElement.ToolAnchor.X, (float)controller.InElement.ToolAnchor.Y);
-            var anchor2 = new Vector2((float)controller.OutElement.ToolAnchor.X, (float)controller.OutElement.ToolAnchor.Y);
+            var anchor1 = new Vector2((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
+            var anchor2 = new Vector2((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
 
             var distanceX = (float)anchor1.X - anchor2.X;
             var distanceY = (float)anchor1.Y - anchor2.Y;
@@ -88,8 +88,8 @@ namespace NuSysApp
         {
             var worldPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
             var controller = _vm.Controller;
-            var anchor1 = new Point((float)controller.InElement.ToolAnchor.X, (float)controller.InElement.ToolAnchor.Y);
-            var anchor2 = new Point((float)controller.OutElement.ToolAnchor.X, (float)controller.OutElement.ToolAnchor.Y);
+            var anchor1 = new Point((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
+            var anchor2 = new Point((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
 
             var distanceX = (float)anchor1.X - anchor2.X;
 

@@ -16,8 +16,8 @@ namespace NuSysApp
 
         //public LibraryElementController LibraryElementController { get; private set; }
 
-        public ToolLinkable InElement { get; private set; }
-        public ToolLinkable OutElement { get; private set; }
+        public ElementController InElement { get; private set; }
+        public ElementController OutElement { get; private set; }
         public ToolLinkModel Model { get; private set; }
 
         public string Id
@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             get
             {
-                return new Point2d((InElement.ToolAnchor.X + OutElement.ToolAnchor.X) / 2, (OutElement.ToolAnchor.Y + InElement.ToolAnchor.Y) / 2);
+                return new Point2d((InElement.Anchor.X + OutElement.Anchor.X) / 2, (OutElement.Anchor.Y + InElement.Anchor.Y) / 2);
             }
         }
 
@@ -50,7 +50,7 @@ namespace NuSysApp
         //    }
         //}
 
-        public ToolLinkController(ToolLinkModel model, ToolViewModel inVm, ToolViewModel outVm)
+        public ToolLinkController(ToolLinkModel model, ElementController inVm, ElementController outVm)
         {
             Debug.Assert(model != null);
             Debug.Assert(model.InAtomId != null);
@@ -65,8 +65,8 @@ namespace NuSysApp
             InElement = inVm;
             OutElement = outVm;
 
-            InElement.ToolAnchorChanged += ChangeAnchor;
-            OutElement.ToolAnchorChanged += ChangeAnchor;
+            InElement.AnchorChanged += ChangeAnchor;
+            OutElement.AnchorChanged += ChangeAnchor;
             //controller.TitleChanged += ChangeTitle;
 
             //controller.Disposed += Dispose;
@@ -86,16 +86,16 @@ namespace NuSysApp
             AnchorChanged?.Invoke(this, Anchor);
         }
 
-        public void Dispose(object sender, string s)
+        public void Dispose(object sender, EventArgs eventArgs)
         {
             if (InElement != null)
             {
-                InElement.ToolAnchorChanged -= ChangeAnchor;
+                InElement.AnchorChanged -= ChangeAnchor;
                 InElement.Disposed -= Dispose;
             }
             if (OutElement != null)
             {
-                OutElement.ToolAnchorChanged -= ChangeAnchor;
+                OutElement.AnchorChanged -= ChangeAnchor;
                 OutElement.Disposed -= Dispose;
             }
             Disposed?.Invoke(this, EventArgs.Empty);

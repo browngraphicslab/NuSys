@@ -121,7 +121,7 @@ namespace NuSysApp
             {
                 return;
             }
-            (DataContext as GroupNodeViewModel).FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+            //(DataContext as GroupNodeViewModel).FilterIconDropped(hitsStart, wvm, r.X, r.Y);
         }
 
         /// <summary>

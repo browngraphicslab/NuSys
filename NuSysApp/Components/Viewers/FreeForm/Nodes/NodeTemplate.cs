@@ -242,12 +242,12 @@ namespace NuSysApp
                 BaseToolView baseToolView = new BaseToolView(basicToolViewModel, centerpoint.X + metadataToolView.Width * 1.25, centerpoint.Y);
                 basicToolController.AddParent(metadataToolController);
 
-                var linkviewmodel = new ToolLinkViewModel(metadataToolViewModel, basicToolViewModel);
-                var link = new ToolLinkView(linkviewmodel);
-                Canvas.SetZIndex(link, Canvas.GetZIndex(metadataToolView) - 1);
+                //var linkviewmodel = new ToolLinkViewModel(metadataToolViewModel, basicToolViewModel);
+                //var link = new ToolLinkView(linkviewmodel);
+                //Canvas.SetZIndex(link, Canvas.GetZIndex(metadataToolView) - 1);
 
-                wvm.AtomViewList.Add(link);
-                wvm.AtomViewList.Add(baseToolView);
+                //wvm.AtomViewList.Add(link);
+                //wvm.AtomViewList.Add(baseToolView);
 
             }
         }
