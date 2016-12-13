@@ -16,6 +16,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Mathematics;
@@ -264,9 +265,13 @@ namespace NuSysApp
                 Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
             }
 
+            if (SessionController.Instance.NuSessionView.FilterMenu.HasBrushAvailable)
+            {
+                Mask = BrushToMask.FilterMask(SessionController.Instance.NuSessionView.FilterMenu.BrushedElementControllers,
+                    ResourceCreator, Mask);
+            }
 
-
-            using (ds.CreateLayer(1f, Mask))
+            using (ds.CreateLayer(1, Mask))
             {
                 ds.Transform = Transform.LocalToScreenMatrix;
                 ds.FillRectangle(GetLocalBounds(), Colors.White);

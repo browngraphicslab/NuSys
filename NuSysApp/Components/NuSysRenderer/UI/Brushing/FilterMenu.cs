@@ -84,12 +84,21 @@ namespace NuSysApp
         private float rightMargin = 5;
         private float spacing = 5;
 
+
+        private ButtonUIElement _removeFilterButton;
+
+        public bool HasBrushAvailable { get; private set; }
+
+        public HashSet<ElementController> BrushedElementControllers { get; private set; }
+
+
         public FilterMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             IsDraggable = false;
             topMargin = TopBarHeight;
             KeepAspectRatio = false;
             TopBarColor = Colors.Azure;
+            HasBrushAvailable = false;
 
             // initialize the button layout manager so buttons are stretched horizontally and stay at the top 
             // of the window
@@ -146,6 +155,22 @@ namespace NuSysApp
             _filterMenuButtons.Add(_applyFilterbutton);
             _applyFilterbutton.Tapped += OnApplyFilterButtonTapped;
 
+            _removeFilterButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
+            {
+                Background = Colors.Gray,
+                SelectedBorder = Colors.LightGray,
+                BorderWidth = 5,
+                Bordercolor = Colors.Gray,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                ButtonTextColor = Colors.Black,
+                ButtonText = "Remove Filter"
+            };
+            AddChild(_removeFilterButton);
+            _buttonLayoutManager.AddElement(_removeFilterButton);
+            _filterMenuButtons.Add(_removeFilterButton);
+            _removeFilterButton.Tapped += OnRemoveFilterButtonTapped;
+
             _filterSubMenu = new FilterSubMenu(this, ResourceCreator);
             AddChild(_filterSubMenu);
 
@@ -158,8 +183,13 @@ namespace NuSysApp
 
         private void OnApplyFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            var x = _filterSubMenu.GetLibraryElementControllers();
-            var y = _filterSubMenu.GetElementControllersForCurrentCollection();
+            BrushedElementControllers = _filterSubMenu.GetElementControllersForCurrentCollection();
+            HasBrushAvailable = true;
+        }
+
+        private void OnRemoveFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            HasBrushAvailable = false;
         }
 
         /// <summary>
@@ -203,10 +233,11 @@ namespace NuSysApp
         {
             foreach (var button in _filterMenuButtons)
             {
-                if (button != _applyFilterbutton)
+                if (button != _applyFilterbutton && button != _removeFilterButton)
                     button.Tapped -= OnCategoryButtonTapped;
             }
             _applyFilterbutton.Tapped -= OnApplyFilterButtonTapped;
+            _removeFilterButton.Tapped -= OnRemoveFilterButtonTapped;
             base.Dispose();
         }
 

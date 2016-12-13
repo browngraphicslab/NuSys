@@ -123,18 +123,20 @@ namespace NuSysApp
                 Background = Colors.LightGray,
                 TextColor = Colors.Black,
                 BorderWidth = 2,
-                Bordercolor = Colors.Black
+                Bordercolor = Colors.Black,
+                IsVisible = false
             };
             AddChild(_creationDateHeader);
 
             _lastEditedDateHeader = new TextboxUIElement(this, ResourceCreator)
             {
-                Text = "Creation Date Range",
+                Text = "Last Edited Date Range",
                 Height = 50,
                 Background = Colors.LightGray,
                 TextColor = Colors.Black,
                 BorderWidth = 2,
-                Bordercolor = Colors.Black
+                Bordercolor = Colors.Black,
+                IsVisible = false
             };
             AddChild(_lastEditedDateHeader);
 
@@ -191,6 +193,9 @@ namespace NuSysApp
             _creationEndDateSelector.DateChanged += DateChanged;
             _lastEditedStartDateSelector.DateChanged += DateChanged;
             _lastEditedEndDateSelector.DateChanged += DateChanged;
+
+            // instantiate displaying the creator category
+            DisplayViewFromCategory(FilterMenu.FilterCategory.Creator);
         }
 
         /// <summary>
@@ -327,6 +332,10 @@ namespace NuSysApp
                 NusysConstants.ElementType.Text,
                 NusysConstants.ElementType.Video,            
             });
+            foreach (var type in _currFilter.Types)
+            {
+                _elementTypeListView.SelectItem(type);
+            }
             _elementTypeListView.IsVisible = true;
         }
 
