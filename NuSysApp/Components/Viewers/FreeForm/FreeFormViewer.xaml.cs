@@ -164,7 +164,7 @@ namespace NuSysApp
             ScrollableTextboxUIElement stb2 = new ScrollableTextboxUIElement(_renderRoot, RenderCanvas, true, false)
             {
                 Width = 200,
-                Height = 200,
+                Height = 90,
                 Background = Colors.LightSeaGreen
             };
 

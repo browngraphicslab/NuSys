@@ -88,10 +88,12 @@ namespace NuSysApp
             _scrollVert = scrollVert;
             _hasSelection = false;
             TextVerticalAlignment = CanvasVerticalAlignment.Top;
+
             // Don't wrap text if it is a horizontally scrolling textbox
             Wrapping = scrollVert ? CanvasWordWrapping.WholeWord : CanvasWordWrapping.NoWrap;
             TrimmingSign = CanvasTrimmingSign.None;
 
+            // Initializing the textformat
             _textFormat = new CanvasTextFormat
             {
                 HorizontalAlignment = TextHorizontalAlignment,
@@ -108,8 +110,8 @@ namespace NuSysApp
             _yOffset = 0;
 
             TextLayout = new CanvasTextLayout(resourceCreator, Text, _textFormat,
-                Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
-                Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+                                              Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
+                                              Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
 
             // Get the size the cursor should be
             CursorCharacterIndex = -1;
@@ -129,8 +131,8 @@ namespace NuSysApp
             // Add cursor as child of the textbox
             this.AddChild(_cursor);
 
+            // Set up events
             this.Pressed += EditableTextboxUIElement_Pressed;
-
             this.OnFocusGained += EditableTextboxUIElement_OnFocusGained;
             this.OnFocusLost += EditableTextboxUIElement_OnFocusLost;
             this.KeyPressed += EditableTextboxUIElement_KeyPressed;
@@ -141,11 +143,21 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Fired whenever a drag that was started on this element is completed
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dragging = false;
         }
 
+        /// <summary>
+        /// Fired whenever a drag is started on this element
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dragging = true;
@@ -210,7 +222,7 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Back)
             {
                 _currCursorX = 0;              
-                if (CursorCharacterIndex > 0)
+                if (CursorCharacterIndex >= 0)
                 {
                     Text = Text.Remove(CursorCharacterIndex, 1);
                     OnTextChanged(Text);
@@ -250,13 +262,14 @@ namespace NuSysApp
                 }
             }
             // Move cursor up
-            // TODO: Deal with scrolling vertically here
             else if (args.VirtualKey == VirtualKey.Up)
             {
                 CanvasTextLayoutRegion textLayoutRegion;
                 TextLayout.GetCaretPosition(CursorCharacterIndex, false, out textLayoutRegion);
 
                 Rect bounds = textLayoutRegion.LayoutBounds;
+                bounds.X += _xOffset;
+                bounds.Y += _yOffset;
                 Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
                                           (float)(bounds.Top - _cursor.Height / 2));
                 if (_currCursorX != 0)
@@ -274,6 +287,8 @@ namespace NuSysApp
                 TextLayout.GetCaretPosition(CursorCharacterIndex, false, out textLayoutRegion);
 
                 Rect bounds = textLayoutRegion.LayoutBounds;
+                bounds.X += _xOffset;
+                bounds.Y += _yOffset;
                 Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
                                           (float)(bounds.Bottom + _cursor.Height / 2));
                 if (_currCursorX != 0)
@@ -310,7 +325,6 @@ namespace NuSysApp
             // Type the letter into the box
             else
             {
-
                 String s = KeyCodeToUnicode(args.VirtualKey);
                 if (s.Length > 0)
                 {
@@ -321,8 +335,6 @@ namespace NuSysApp
 
                 }
             }
-            Debug.WriteLine("INDEX: " + CursorCharacterIndex);
-            //CheckTextInBounds();
         }
 
         /// <summary>
@@ -356,7 +368,20 @@ namespace NuSysApp
         /// <param name="ds"></param>
         private void DrawCursor(CanvasDrawingSession ds)
         {
+            UpdateCursorLoc();
+            _cursor.Draw(ds);
+        }
+
+        /// <summary>
+        /// Updates the cursors location before drawing it to ensure it sta
+        /// </summary>
+        private void UpdateCursorLoc()
+        {
+            Vector2 newCursorLoc;
             CanvasTextLayoutRegion textLayoutRegion;
+            // Sets the cursor's location based on the offsets
+            // Cursor should be to the right of characters except when it is -1, then it should
+            // be to the left of the first character
             if (CursorCharacterIndex > -1)
             {
                 TextLayout.GetCaretPosition(CursorCharacterIndex, false, out textLayoutRegion);
@@ -365,8 +390,8 @@ namespace NuSysApp
                 bounds.X += _xOffset;
                 bounds.Y += _yOffset;
 
-                _cursor.Transform.LocalPosition = new Vector2((float)bounds.Right + UIDefaults.XTextPadding + BorderWidth, (
-                    float)bounds.Top + UIDefaults.YTextPadding);
+                newCursorLoc = new Vector2((float)bounds.Right + UIDefaults.XTextPadding + BorderWidth,
+                                           (float)bounds.Top + UIDefaults.YTextPadding);
             } else
             {
                 TextLayout.GetCaretPosition(0, false, out textLayoutRegion);
@@ -375,15 +400,16 @@ namespace NuSysApp
                 bounds.X += _xOffset;
                 bounds.Y += _yOffset;
 
-                _cursor.Transform.LocalPosition = new Vector2((float)bounds.Left + UIDefaults.XTextPadding + BorderWidth, (
-                    float)bounds.Top + UIDefaults.YTextPadding);
+                newCursorLoc = new Vector2((float)bounds.Left + UIDefaults.XTextPadding + BorderWidth,
+                                           (float)bounds.Top + UIDefaults.YTextPadding);
             }
 
-            _cursor.Draw(ds);
+            // Only want to shift the box if the cursor is visible
             if (_cursor.IsVisible)
             {
-                CheckTextInBounds();
-            }           
+                CheckTextInBounds(newCursorLoc);
+            }
+            _cursor.Transform.LocalPosition = newCursorLoc;
         }
 
         /// <summary>
@@ -410,7 +436,9 @@ namespace NuSysApp
                     r.X += _xOffset;
                     r.Y += _yOffset;
 
-                    using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, 0, 0, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height)))
+                    // Only draw selection within the bounds of the textbox
+                    using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, 0, 0, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), 
+                                                                            Height - (UIDefaults.YTextPadding + 2*BorderWidth))))
                     {
                         ds.FillRectangle(r, b);
                     }
@@ -422,12 +450,13 @@ namespace NuSysApp
         {
             base.Draw(ds);
 
+            // Shift the textbox based on where the user is dragging
             if (_dragging)
             {
                 ShiftTextOnDrag();
             }
-
-            //CheckTextInBounds();
+            // Make sure the text fits to the box if able
+            ShiftTextToFit();
 
             DrawCursor(ds);
 
@@ -443,7 +472,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Shifts the text to stay visible as the user is selecting text
+        /// Shifts the text to stay visible as the user is highlighting text
         /// </summary>
         private void ShiftTextOnDrag()
         {
@@ -451,18 +480,29 @@ namespace NuSysApp
             Vector2 pos = new Vector2(_draggedPointer.CurrentPoint.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X,
                                       _draggedPointer.CurrentPoint.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
             _selectionEndIndex = GetHitIndex(pos);
-            //Debug.WriteLine(_selectionEndIndex);
-            CanvasTextLayoutRegion textLayoutRegion;
-            TextLayout.GetCaretPosition(_selectionEndIndex, false, out textLayoutRegion);
 
-            Rect r = textLayoutRegion.LayoutBounds;
-            r.X += _xOffset;
-            r.Y += _yOffset;
-
-            //if (r.X < 0 || r.X > (Width - 2*UIDefaults.XTextPadding))
-            //{
-                //Debug.WriteLine("MAX: " + _maxXOffset);
-                //Debug.WriteLine("CURR: " + _xOffset);
+            // Update y offset if vertical scrolling textbox, x offset otherwise
+            if (_scrollVert)
+            {
+                if (pos.Y < 0)
+                {
+                    double under = -pos.Y;
+                    _yOffset += under;
+                    if (_yOffset > 0)
+                    {
+                        _yOffset = 0;
+                    }
+                } else if (pos.Y > (Height - 2*UIDefaults.YTextPadding))
+                {
+                    double over = pos.Y - (Height - 2 * UIDefaults.YTextPadding);
+                    _yOffset -= over;
+                    if (_yOffset < -_maxYOffset)
+                    {
+                        _yOffset = -_maxYOffset;
+                    }
+                }
+            } else
+            {
                 if (pos.X < 0)
                 {
                     double under = -pos.X;
@@ -474,7 +514,6 @@ namespace NuSysApp
                 }
                 else if (pos.X > (Width - 2 * UIDefaults.XTextPadding))
                 {
-                    //Debug.WriteLine("OVER: " + pos.X);
                     double over = pos.X - (Width - 2 * UIDefaults.XTextPadding);
                     _xOffset -= over;
                     if (_xOffset < -_maxXOffset)
@@ -482,7 +521,46 @@ namespace NuSysApp
                         _xOffset = -_maxXOffset;
                     }
                 }
-            //}
+            }  
+        }
+
+        /// <summary>
+        /// Shifts the text to fill the box as much as possible. Looks for empty shifts text accordingly.
+        /// </summary>
+        private void ShiftTextToFit()
+        {
+            if (Text.Length == 0)
+            {
+                return;
+            }
+            CanvasTextLayoutRegion textLayoutRegion;
+            TextLayout.GetCaretPosition(Text.Length-1, false, out textLayoutRegion);
+            Rect r = textLayoutRegion.LayoutBounds;
+            r.X += _xOffset;
+            r.Y += _yOffset;
+
+            if (_scrollVert)
+            {
+                double h = TextLayout.LayoutBounds.Height;
+                double end = r.Bottom;
+                double size = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                if (end < size && h > size)
+                {
+                    double under = size - end;
+                    _yOffset += under;
+                }
+            } else
+            {
+                double w = TextLayout.LayoutBounds.Width;
+                double end = r.Right;
+                double size = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
+                if (end < size && w > size)
+                {
+                    double under = size - end;
+                    _xOffset += under;
+                }
+            }
+            
         }
 
         /// <summary>
@@ -575,6 +653,7 @@ namespace NuSysApp
 
                 Debug.Assert(Width - 2 * BorderWidth > 0 && Height - 2 * BorderWidth > 0, "these must be greater than zero or drawText crashes below");
 
+                // Only draw text in bounds of textbox
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
                                                                         Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
                                                                         Height - 2 * (BorderWidth + UIDefaults.YTextPadding))))
@@ -639,7 +718,6 @@ namespace NuSysApp
                     CursorCharacterIndex = -1;
                 }
                 OnTextChanged(Text);
-                CheckTextInBounds();
                 // Unhighlight selected text
                 ClearSelection();
             }
@@ -670,35 +748,52 @@ namespace NuSysApp
                 if (CursorCharacterIndex != -1)
                 {
                     Debug.Assert(CursorCharacterIndex <= (Text.Length - 1));
-                    Text = Text.Insert(CursorCharacterIndex, text);
+                    Text = Text.Insert(CursorCharacterIndex+1, text);
                 } else
                 {
                     CursorCharacterIndex++;
-                    Text = Text.Insert(0, text);
+                    Text = Text.Insert(CursorCharacterIndex+1, text);
                 }  
-                CursorCharacterIndex += (text.Length-1);
+                CursorCharacterIndex += text.Length;
                 OnTextChanged(Text);
-                CheckTextInBounds();
             }
         }
 
-        private void CheckTextInBounds()
+        /// <summary>
+        /// Checks whether the text to be drawn is in bounds based on the cursor position
+        /// </summary>
+        private void CheckTextInBounds(Vector2 cursorLoc)
         {
-            Rect r = _cursor.GetScreenBounds();
-            r.X -= this.GetScreenBounds().X;
-            r.Y -= this.GetScreenBounds().Y;
-            //Debug.WriteLine(r.X);
-            //Debug.WriteLine(r.Y);
-
-            if (r.X > (Width - (UIDefaults.XTextPadding + BorderWidth)))
+            if (_scrollVert)
             {
-                double over = r.X - (Width - (UIDefaults.XTextPadding + BorderWidth));
-                _xOffset -= over;
-            } else if (r.X < (UIDefaults.XTextPadding))
+                if ((cursorLoc.Y + _cursor.Height) > (Height - (UIDefaults.YTextPadding + BorderWidth)))
+                {
+                    double over = (cursorLoc.Y + _cursor.Height) - (Height - (UIDefaults.YTextPadding + BorderWidth));
+                    _yOffset -= over;
+                    UpdateCursorLoc();
+                }
+                else if (cursorLoc.Y < (UIDefaults.YTextPadding))
+                {
+                    double under = (UIDefaults.YTextPadding) - cursorLoc.Y;
+                    _yOffset += under;
+                    UpdateCursorLoc();
+                }
+            } else
             {
-                double under = (UIDefaults.XTextPadding) - r.X;
-                _xOffset += under;
+                if (cursorLoc.X > (Width - (UIDefaults.XTextPadding + BorderWidth)))
+                {
+                    double over = cursorLoc.X - (Width - (UIDefaults.XTextPadding + BorderWidth));
+                    _xOffset -= over;
+                    UpdateCursorLoc();
+                }
+                else if (cursorLoc.X < (UIDefaults.XTextPadding))
+                {
+                    double under = (UIDefaults.XTextPadding) - cursorLoc.X;
+                    _xOffset += under + _cursor.Width;
+                    UpdateCursorLoc();
+                }
             }
+            
         }
 
         /// <summary>
