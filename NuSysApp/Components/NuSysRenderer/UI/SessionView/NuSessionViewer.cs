@@ -44,8 +44,6 @@ namespace NuSysApp
 
         public BreadCrumbContainer TrailBox;
 
-        public FilterMenu FilterMenu => _floatingMenu.FilterMenu;
-
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;

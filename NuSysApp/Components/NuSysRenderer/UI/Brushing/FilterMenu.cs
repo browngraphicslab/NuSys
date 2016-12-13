@@ -87,18 +87,12 @@ namespace NuSysApp
 
         private ButtonUIElement _removeFilterButton;
 
-        public bool HasBrushAvailable { get; private set; }
-
-        public HashSet<ElementController> BrushedElementControllers { get; private set; }
-
-
         public FilterMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             IsDraggable = false;
             topMargin = TopBarHeight;
             KeepAspectRatio = false;
             TopBarColor = Colors.Azure;
-            HasBrushAvailable = false;
 
             // initialize the button layout manager so buttons are stretched horizontally and stay at the top 
             // of the window
@@ -183,13 +177,12 @@ namespace NuSysApp
 
         private void OnApplyFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            BrushedElementControllers = _filterSubMenu.GetElementControllersForCurrentCollection();
-            HasBrushAvailable = true;
+            BrushManager.ApplyBrush(_filterSubMenu.CurrBrush.GetLibraryElementControllers());
         }
 
         private void OnRemoveFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            HasBrushAvailable = false;
+            BrushManager.RemoveBrush();
         }
 
         /// <summary>
