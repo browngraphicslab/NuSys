@@ -386,6 +386,7 @@
     <Compile Include="Components\NuSysRenderer\UI\DetailViewImageRegionContent.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListViewHeaderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListTextColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewHeader.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListViewRowUIElement.cs" />

@@ -360,7 +360,14 @@ namespace NuSysApp
             }
             var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
             var items = _itemsSource;
+            /*
+            bool isDirty = (startIndex != items.IndexOf(Rows[0].Item));
 
+            if (!isDirty)
+            {
+                return;
+            }
+            */
             foreach (var row in Rows)
             {
                 if (row == null)
@@ -374,6 +381,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
+
 
                 row.Item = items[index];
 
@@ -493,6 +501,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
         {
+            //SelectItem(rowUIElement.Item);
             //calculate bounds of listview
             var minX = this.Transform.Parent.LocalX;
             var maxX = minX + Width;
@@ -513,7 +522,7 @@ namespace NuSysApp
             else
             {
                 //scroll if in bounds
-                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / Height;
+                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (_itemsSource.Count * RowHeight);
 
                 ScrollBar.ChangePosition(deltaY);
 

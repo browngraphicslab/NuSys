@@ -187,6 +187,8 @@ namespace NuSysApp
             {
                 // get the current position of the pointer relative to the local matrix
                 var position = pointer.StartPoint;
+
+   
                 // convert the list of selected library element models from the libraryListView into a list of controllers
                 var selectedControllers =
                     libraryListView.GetSelectedItems()
@@ -225,8 +227,14 @@ namespace NuSysApp
         {
             libraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
             {
-                MultipleSelections = true
+                MultipleSelections = false
             };
+
+
+            var listImgColumn = new ListImageColumn<LibraryElementModel>();
+            listImgColumn.Title = "";
+            listImgColumn.RelativeWidth = 1;
+            listImgColumn.ColumnFunction = model => model.SmallIconUrl;
 
             var listColumn = new ListTextColumn<LibraryElementModel>();
             listColumn.Title = "Title";
@@ -244,9 +252,10 @@ namespace NuSysApp
             listColumn3.RelativeWidth = 3;
             listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
 
-            libraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn, listColumn2, listColumn3 });
+            libraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listImgColumn, listColumn, listColumn2, listColumn3 });
 
 
+            
             libraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());
 
