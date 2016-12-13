@@ -861,6 +861,7 @@ namespace NuSysApp
             return result.ToString();
         }
 
+        // FUNCTIONS TO CONVERT KEYCODE TO STRING UNICODE CHARACTER
         [DllImport("user32.dll")]
         static extern bool GetKeyboardState(byte[] lpKeyState);
 
