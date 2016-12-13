@@ -24,8 +24,10 @@ namespace NuSysApp
         public event EventHandler<string> Disposed;
         public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
-        public ObservableCollection<IdViewModelable> Elements { get; set; } = new ObservableCollection<IdViewModelable>();
+        public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel>();
         public ObservableCollection<LinkViewModel> Links { get; set; } = new ObservableCollection<LinkViewModel>();
+
+        public ObservableCollection<ToolLinkViewModelWin2d> ToolLinks = new ObservableCollection<ToolLinkViewModelWin2d>();
 
         public ObservableCollection<PresentationLinkViewModel> Trails { get; set; } = new ObservableCollection<PresentationLinkViewModel>();
         /// <summary>
@@ -115,9 +117,27 @@ namespace NuSysApp
             CameraTranslation = new Vector2(f, f1);
         }
 
+        /// <summary>
+        /// Adds tool to the collection
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <param name="linkvm"></param>
         public void AddTool(ToolViewModel vm)
         {
             Elements.Add(vm);
+            vm.Controller.Deleted += OnChildDeleted;
+        }
+
+        /// <summary>
+        /// Adds a tool link to the collection
+        /// </summary>
+        /// <param name="linkvm"></param>
+        public void AddToolLink(ToolLinkViewModelWin2d linkvm)
+        {
+            if (linkvm != null)
+            {
+                ToolLinks.Add(linkvm);
+            }
         }
 
         public async Task CreateChildren()
@@ -199,6 +219,14 @@ namespace NuSysApp
                         linkViewModel.LinkModel.OutAtomId == soughtChild.Id)
                     {
                         Links.Remove(linkViewModel);
+                    }
+                }
+                foreach (var linkViewModel in ToolLinks.ToList())
+                {
+                    if (linkViewModel.LinkModel.InAtomId == soughtChild.Id ||
+                        linkViewModel.LinkModel.OutAtomId == soughtChild.Id)
+                    {
+                         ToolLinks.Remove(linkViewModel);
                     }
                 }
 

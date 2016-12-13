@@ -36,8 +36,7 @@ namespace NuSysApp
             _listView.RowDragged += _listView_RowDragged;
             _listView.RowDragCompleted += _listView_RowDragCompleted;
             _listView.RowDoubleTapped += _listView_RowDoubleTapped;
-
-            _listView.AddItems(new List<string>() { "1", "2", "3", "4", "5", "6", "7", "9", "10", });
+            
             AddChild(_listView);
         }
 
@@ -56,7 +55,7 @@ namespace NuSysApp
             Item_Dragging(pointer);
         }
 
-        private void _listView_RowTapped(string item, string columnName, CanvasPointer pointer)
+        private void _listView_RowTapped(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             Item_OnTapped(item, pointer);
         }
@@ -108,7 +107,7 @@ namespace NuSysApp
             }
             if (itemsToSelect != null && itemsToSelect.Count > 0)
             {
-                _listView.ScrollTo(itemsToSelect.Last());
+                //_listView.ScrollTo(itemsToSelect.Last());
             }
         }
     }

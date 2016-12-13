@@ -78,8 +78,8 @@ namespace NuSysApp
 
             // set the initial title
             Title = IsCollection
-                ? CollectionController.LibraryElementModel.Title
-                : ElementController.LibraryElementModel.Title;
+                ? CollectionController.LibraryElementModel?.Title
+                : ElementController.LibraryElementModel?.Title ?? "";
 
             // set the color of the breadcrumb based on the hash of the collection controller's library element id
             Color = MediaUtil.GetHashColorFromString(CollectionController.LibraryElementModel.LibraryElementId);

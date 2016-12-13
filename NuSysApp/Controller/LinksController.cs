@@ -84,8 +84,12 @@ namespace NuSysApp
         /// <param name="linkable"></param>
         public void AddLinkable(ILinkable linkable)
         {
-            Debug.Assert(linkable != null && linkable.Id != null && linkable.ContentId != null);
-            var linkableContentId = linkable.ContentId;
+            if (linkable == null || linkable.Id == null || linkable.LibraryElementId == null)
+            {
+                return;
+            }
+            Debug.Assert(linkable != null && linkable.Id != null && linkable.LibraryElementId != null);
+            var linkableContentId = linkable.LibraryElementId;
             _linkableIdToLinkableController.TryAdd(linkable.Id, linkable);
             if (!_contentIdToLinkableIds.ContainsKey(linkableContentId))
             {
@@ -145,7 +149,7 @@ namespace NuSysApp
                     Debug.Assert(linkLibElemController != null);
                     Debug.Assert(linkable.Id != toLinkTo.Id);
 
-                    if (linkLibElemController.LinkLibraryElementModel.InAtomId.Equals(linkable.ContentId))
+                    if (linkLibElemController.LinkLibraryElementModel.InAtomId.Equals(linkable.LibraryElementId))
                     {
                         CreateBezierLinkBetween(linkable, toLinkTo);
                     }
@@ -293,7 +297,7 @@ namespace NuSysApp
                     foreach (var linkViewModel in collectionLibraryIdToLinkViewModel.Value.ToArray())
                     {
 
-                        if (linkViewModel.Controller.ContentId == linkLibraryElementModel.OutAtomId || linkViewModel.Controller.ContentId == linkLibraryElementModel.InAtomId)
+                        if (linkViewModel.Controller.LibraryElementId == linkLibraryElementModel.OutAtomId || linkViewModel.Controller.LibraryElementId == linkLibraryElementModel.InAtomId)
                         {
                             collectionLibraryIdToLinkViewModel.Value.Remove(linkViewModel);
                         }
@@ -351,10 +355,10 @@ namespace NuSysApp
             Debug.Assert(linkControllerId != null);
             var linkController = GetLinkable(linkControllerId) as LinkController;
 
-            var contentId1 = linkController?.InElement?.ContentId;
+            var contentId1 = linkController?.InElement?.LibraryElementId;
             Debug.Assert(contentId1 != null);
 
-            var contentId2 = linkController?.OutElement?.ContentId;
+            var contentId2 = linkController?.OutElement?.LibraryElementId;
             Debug.Assert(contentId2 != null);
 
             var linkable1 = SessionController.Instance.ContentController.GetLibraryElementController(contentId1);
@@ -488,11 +492,11 @@ namespace NuSysApp
         private LinkLibraryElementController GetLinkLibraryElementControllerBetweenLinkables(ILinkable one, ILinkable two)
         {
 
-            Debug.Assert(one != null && one.ContentId != null);
-            Debug.Assert(two != null && two.ContentId != null);
+            Debug.Assert(one != null && one.LibraryElementId != null);
+            Debug.Assert(two != null && two.LibraryElementId != null);
 
-            var oneLinkLEMId = _contentIdToLinkContentIds[one.ContentId];
-            var twoLinkLEMId = _contentIdToLinkContentIds[two.ContentId];
+            var oneLinkLEMId = _contentIdToLinkContentIds[one.LibraryElementId];
+            var twoLinkLEMId = _contentIdToLinkContentIds[two.LibraryElementId];
             var intersect = oneLinkLEMId.Intersect(twoLinkLEMId).ToList();
             Debug.Assert(intersect.Count < 2, "There can be zero or one link library element controllers between any two linkables");
             // if there is no link LEC
@@ -626,13 +630,13 @@ namespace NuSysApp
             _linkableIdToLinkableController.TryRemove(linkableId, out outLinkable);
 
             Debug.Assert(outLinkable != null);
-            Debug.Assert(outLinkable.ContentId != null);
+            Debug.Assert(outLinkable.LibraryElementId != null);
 
-            if (_contentIdToLinkableIds.ContainsKey(outLinkable.ContentId) &&
-                _contentIdToLinkableIds[outLinkable.ContentId].Contains(linkableId))
+            if (_contentIdToLinkableIds.ContainsKey(outLinkable.LibraryElementId) &&
+                _contentIdToLinkableIds[outLinkable.LibraryElementId].Contains(linkableId))
             {
 
-                _contentIdToLinkableIds[outLinkable.ContentId].Remove(linkableId);
+                _contentIdToLinkableIds[outLinkable.LibraryElementId].Remove(linkableId);
             }
 
             HashSet<string> outObj;

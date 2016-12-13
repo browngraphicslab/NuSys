@@ -73,7 +73,7 @@ namespace NuSysApp
             {
                 var vm = Vm as MetadataToolViewModel;
                 if (vm.Selection != null &&
-                    (vm.Controller as MetadataToolController).Model.Selected &&
+                    (vm.Controller as MetadataToolController).ToolModel.Selected &&
                     vm.Selection.Item1 != null)
                 {
                     if (!_metadataKeysList.GetSelectedItems().Any() || _metadataKeysList.GetSelectedItems().First() != vm.Selection.Item1)
@@ -132,7 +132,7 @@ namespace NuSysApp
         {
             UITask.Run(delegate {
                 var vm = (Vm as MetadataToolViewModel);
-                if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
+                if (vm?.Selection?.Item1 != null && vm.Controller.ToolModel.Selected)
                 {
                     var filteredList = FilterValuesList(""); //FilterValuesList(xSearchBox.Text);
                     if (!ScrambledEquals(_metadataValuesList.GetItems().Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
@@ -384,10 +384,10 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadataValuesList_RowTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        private void _metadataValuesList_RowTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             var vm = (Vm as MetadataToolViewModel);
-            if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
+            if (vm.Controller.ToolModel.Selected && vm.Selection.Item2 != null &&
                 vm.Selection.Item2.Contains(item.Key))
             {
                 if (pointer.DeviceType == PointerDeviceType.Pen) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
@@ -440,10 +440,10 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void metadataKeysList_RowTapped(string item, string columnName, CanvasPointer pointer)
+        private void metadataKeysList_RowTapped(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             var vm = (Vm as MetadataToolViewModel);
-            if (vm.Controller.Model.Selected &&
+            if (vm.Controller.ToolModel.Selected &&
                 vm.Selection.Item1.Equals(item))
             {
                 vm.Controller.UnSelect();

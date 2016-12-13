@@ -71,29 +71,32 @@ namespace NuSysApp
         /// <param name="listview"></param>
         public void RefreshTitles(List<ListColumn<T>> listColumns, float width, float sumOfColRelWidths, ICanvasResourceCreatorWithDpi resourceCreator)
         {
-            var indexPointer = 0f;
-            foreach (var child in _children)
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                var header = child as ListViewHeaderItem<T>;
-                Debug.Assert(header != null);
-                RemoveHeaderHandlers(header);
-            }
-            ClearChildren();
-            foreach (ListColumn<T> c in listColumns)
-            {
-                var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
-                headerItem.BorderWidth = 2;
-                headerItem.Background = Colors.LightGray;
-                headerItem.ButtonTextColor = Colors.Black;
-                headerItem.ButtonText = c.Title;
-                //headerItem.ButtonFontSize = 15;
-                headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
-                headerItem.Height = Height;
-                headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
-                AddHeaderHandlers(headerItem);
-                this.AddChild(headerItem);
-                indexPointer += headerItem.Width;
-            }
+                var indexPointer = 0f;
+                foreach (var child in _children)
+                {
+                    var header = child as ListViewHeaderItem<T>;
+                    Debug.Assert(header != null);
+                    RemoveHeaderHandlers(header);
+                }
+                ClearChildren();
+                foreach (ListColumn<T> c in listColumns)
+                {
+                    var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+                    headerItem.BorderWidth = 2;
+                    headerItem.Background = Colors.LightGray;
+                    headerItem.ButtonTextColor = Colors.Black;
+                    headerItem.ButtonText = c.Title;
+                    //headerItem.ButtonFontSize = 15;
+                    headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
+                    headerItem.Height = Height;
+                    headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
+                    AddHeaderHandlers(headerItem);
+                    this.AddChild(headerItem);
+                    indexPointer += headerItem.Width;
+                }
+            });
         }
 
         /// <summary>

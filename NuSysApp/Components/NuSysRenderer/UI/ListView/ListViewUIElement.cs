@@ -24,7 +24,7 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
-        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer);
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
 
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
@@ -449,6 +449,7 @@ namespace NuSysApp
                 _isDragging = false;
             }else
             {
+                bool _isSelected = false;
                 var t = Transform.ScreenToLocalMatrix;
                 var np = Vector2.Transform(pointer.CurrentPoint, t);
                 if (rowUIElement.HitTest(pointer.CurrentPoint) == null)
@@ -470,12 +471,12 @@ namespace NuSysApp
                 {
                     if (!DisableSelectionByClick)
                     {
-                        SelectItem(item); 
+                        SelectItem(item);
+                        _isSelected = true;
                     }
                 }
+                RowTapped?.Invoke(item, colTitle, pointer, _isSelected);
 
-                RowTapped?.Invoke(item, colTitle, pointer);
-                
             }
         }
         
@@ -509,7 +510,7 @@ namespace NuSysApp
             else
             {
                 //scroll if in bounds
-                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / Height;
+                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _itemsSource.Count);
 
                 ScrollBar.ChangePosition(deltaY);
 
@@ -896,13 +897,23 @@ namespace NuSysApp
         /// <returns></returns>
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
+
+            var clippingRect = new Rect(0, 0, Width, Height);
+            var localPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
+            //If the point being hittested is not inside the visible part of the ListView (ie, the clipping rect), we return null.
+            if (!clippingRect.Contains(localPoint.ToPoint()))
+            {
+                return null;
+            }
+
+
             //If scroll bar is hit, return that instead of the row underneath.
             var scrollBarht = ScrollBar.HitTest(screenPoint);
-            if(scrollBarht != null)
+            if (scrollBarht != null)
             {
                 return scrollBarht;
             }
-            foreach(var row in Rows)
+            foreach (var row in Rows)
             {
                 var ht = row.HitTest(screenPoint);
                 if (ht != null)

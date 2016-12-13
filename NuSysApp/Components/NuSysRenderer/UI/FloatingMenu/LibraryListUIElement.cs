@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
@@ -18,25 +17,46 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using NusysIntermediate;
 using WinRTXamlToolkit.Imaging;
+using Buffer = Windows.Storage.Streams.Buffer;
 
 namespace NuSysApp
 {
     public class LibraryListUIElement : ResizeableWindowUIElement
     {
+
+        /// <summary>
+        /// The actual list view used to display the library
+        /// </summary>
         public ListViewUIElementContainer<LibraryElementModel> libraryListView;
 
+        /// <summary>
+        /// list of RectangleUIElements which are used to display icons while dragging
+        /// </summary>
         private List<RectangleUIElement> _libraryDragElements;
 
+        /// <summary>
+        /// True if the drag icons are visible false otherwise
+        /// </summary>
         private bool _isDragVisible;
 
+        /// <summary>
+        /// how much each of the dragged icons and dropped library elements will be offset from eachother in postive x and positive y pixel coordinates
+        /// </summary>
         private float _itemDropOffset = 10;
 
+        /// <summary>
+        /// The add file button on the top right corner of the library list
+        /// </summary>
         private ButtonUIElement _addFileButton;
 
+        /// <summary>
+        /// A dictionary of fileids to access types, static because the adding files methods have to be static
+        /// </summary>
         private static Dictionary<string, NusysConstants.AccessType> _fileIdToAccessMap = new Dictionary<string, NusysConstants.AccessType>();
 
         /// <summary>
@@ -58,13 +78,41 @@ namespace NuSysApp
             High
         }
 
+        /// <summary>
+        /// Search bar for the LibraryListUIElement
+        /// </summary>
+        private TextboxUIElement _searchBar;
+
+        /// <summary>
+        /// The height of the searchbar
+        /// </summary>
+        private float _searchBarHeight = 25;
+
+        /// <summary>
+        /// Filter button for activating the filter menu
+        /// </summary>
+        private ButtonUIElement _filterButton;
+
+        /// <summary>
+        /// the width of the filter button
+        /// </summary>
+
+        private float _filterButtonWidth = 50;
+
+        /// <summary>
+        /// the menu used for filtering library elements
+        /// </summary>
+        public FilterMenu FilterMenu { get; }
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
-
+            // initialize the ui of the library listview
             InitializeLibraryList();
+            // add the libary list view as a child
             AddChild(libraryListView);
 
+            // set up the ui of the add file button
             _addFileButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, Canvas))
             {
                 BorderWidth = 3,
@@ -72,18 +120,71 @@ namespace NuSysApp
                 Background = TopBarColor,
                 Bordercolor = TopBarColor
             };
+            // set the image bounds for the addfile button
+            _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, _addFileButton.Width - 2 * BorderWidth, _addFileButton.Height - 2 * BorderWidth);
+            // add the addfile button to the window
             AddButton(_addFileButton, TopBarPosition.Right);
-            _addFileButton.Tapped += AddFileButtonTapped;
 
+            // initialize the search bar
+            _searchBar = new TextboxUIElement(this, Canvas)
+            {
+                Height = _searchBarHeight,
+                Text = "Todo: add a search bar",
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
+                TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
+                FontSize = 14,
+                BorderWidth = 3,
+                Bordercolor = Colors.Gray
+            };
+            AddChild(_searchBar);
+
+            // initialize the filter button
+            _filterButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
+            {
+                Width = _filterButtonWidth,
+                Height = _searchBarHeight,
+                ButtonText = "Filter",
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                Background = Colors.Gray,
+                ButtonTextColor = Colors.Black,
+                ButtonTextSize = 14,
+                SelectedBorder = Colors.LightGray,
+                BorderWidth = 3,
+                Bordercolor = Colors.Gray
+            };
+            AddChild(_filterButton);
+
+            FilterMenu = new FilterMenu(this, Canvas)
+            {
+                IsVisible = false
+            };
+            AddChild(FilterMenu);
+            
+
+            // initialize the list of library drag elements
             _libraryDragElements = new List<RectangleUIElement>();
 
+            // add the add file button tapped event
+            _addFileButton.Tapped += AddFileButtonTapped;
+
+            // add dragging events
             libraryListView.RowDragged += LibraryListView_RowDragged;
             libraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
             libraryListView.RowTapped += OnLibraryItemSelected;
 
+            _filterButton.Tapped += OnFilterButtonTapped;
+
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
+        }
+
+        private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            FilterMenu.IsVisible = !FilterMenu.IsVisible;
+            FilterMenu.Height = 400;
+            FilterMenu.Width = 200;
         }
 
         /// <summary>
@@ -92,7 +193,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             if (!SessionController.Instance.ContentController.ContainsContentDataModel(item.ContentDataModelId))
             {
@@ -114,12 +215,21 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Loads any async resources we need
+        /// </summary>
+        /// <returns></returns>
         public override async Task Load()
         {
             _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/add from file dark.png"));
             base.Load(); 
         }
 
+        /// <summary>
+        /// Called when the addfile button is tapped, triggers the adding file sequence of events
+        /// </summary>
+        /// <param name="interactiveBaseRenderItem"></param>
+        /// <param name="pointer"></param>
         private void AddFileButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             UITask.Run(() =>
@@ -129,9 +239,15 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Fired when the drag event is completed, removes any drag icons from the display, and adds each of the dragged elements to the current collection
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
         private void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
-
+            // remove each of the drag elements
             foreach (var rect in _libraryDragElements.ToArray())
             {
                 rect.Dispose();
@@ -140,42 +256,28 @@ namespace NuSysApp
             }
             _isDragVisible = false;
 
-            // convert the current point of the drag event to a point on the collection
-            var collectionPoint = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(
-                                                            pointer.CurrentPoint, SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
-
+            // add each of the items to the collection
             foreach (var lem in libraryListView.GetSelectedItems())
             {
-                //Before we add the node, we need to check if the access settings for the library element and the workspace are incompatible
-                // If they are different we simply return 
-                var currWorkSpaceAccessType =
-                    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
-                var currWorkSpaceLibraryElementId =
-                    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
-
-                // if the item is private and the workspace is public or the item is the current workspace then continue
-                if ((lem.AccessType == NusysConstants.AccessType.Private &&
-                    currWorkSpaceAccessType == NusysConstants.AccessType.Public) || lem.LibraryElementId == currWorkSpaceLibraryElementId)
-                {
-                    continue;
-                }
-
-                // otherwise add the item to the workspace at the current point
                 var libraryElementController =
                     SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-                libraryElementController.AddElementAtPosition(collectionPoint.X, collectionPoint.Y);
 
-                // increment the collectionPoint by itemDropOffset
-                collectionPoint += new Vector2(_itemDropOffset, _itemDropOffset);
-              
+                StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
             }
         }
 
+        /// <summary>
+        /// Fired when a row is dragged from
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
         private async void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
             // if we are currently dragging
             if (_isDragVisible)
             {
+                // simply move each of the element sto the new drag location
                 var position = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
                 foreach (var element in _libraryDragElements)
                 {
@@ -185,6 +287,9 @@ namespace NuSysApp
             }
             else
             {
+                // set drag visible to true so future calls of this event do not reach this control flow branch
+                _isDragVisible = true;
+
                 // get the current position of the pointer relative to the local matrix
                 var position = pointer.StartPoint;
                 // convert the list of selected library element models from the libraryListView into a list of controllers
@@ -195,7 +300,8 @@ namespace NuSysApp
                                 SessionController.Instance.ContentController.GetLibraryElementController(
                                     model.LibraryElementId))
                         .ToList();
-                _isDragVisible = true;
+
+                // add each of the controllers smalliconurls as drag icons
                 foreach (var controller in selectedControllers)
                 {
                     var rect = new RectangleUIElement(this, ResourceCreator);
@@ -215,17 +321,23 @@ namespace NuSysApp
             libraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
             libraryListView.RowTapped -= OnLibraryItemSelected;
 
+            _filterButton.Tapped -= OnFilterButtonTapped;
+
+
             SessionController.Instance.ContentController.OnNewLibraryElement -= UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete -= UpdateLibraryListToRemoveElement;
             _addFileButton.Tapped -= AddFileButtonTapped;
             base.Dispose();
         }
 
+        /// <summary>
+        /// Initialize the UI for the library list 
+        /// </summary>
         public void InitializeLibraryList()
         {
             libraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
             {
-                MultipleSelections = true
+                MultipleSelections = false
             };
 
             var listColumn = new ListTextColumn<LibraryElementModel>();
@@ -261,11 +373,19 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Removes an element from the libary list when it is deleted
+        /// </summary>
+        /// <param name="element"></param>
         private void UpdateLibraryListToRemoveElement(LibraryElementModel element)
         {
             libraryListView.RemoveItems(new List<LibraryElementModel> {element});
         }
 
+        /// <summary>
+        /// Adds an element to the library list when it is added to the library
+        /// </summary>
+        /// <param name="libraryElement"></param>
         private void UpdateLibraryListWithNewElement(LibraryElementModel libraryElement)
         {
             libraryListView.AddItems(new List<LibraryElementModel> {libraryElement});
@@ -273,11 +393,15 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            // make the library fill the resizeable window leaving room for the search bar and filter button
             libraryListView.Width = Width - 2 * BorderWidth;
-            libraryListView.Height = Height - TopBarHeight - BorderWidth;
+            libraryListView.Height = Height - TopBarHeight - BorderWidth - _searchBarHeight;
             libraryListView.Transform.LocalPosition = new Vector2(BorderWidth, TopBarHeight);
+            _searchBar.Width = Width - 2*BorderWidth - _filterButtonWidth;
+            _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - _searchBarHeight);
+            _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - _searchBarHeight);
+            FilterMenu.Transform.LocalPosition = new Vector2(Width, 0);
 
-            _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, _addFileButton.Width - 2*BorderWidth, _addFileButton.Height-2*BorderWidth);
             base.Update(parentLocalToScreenTransform);
         }
 
@@ -351,7 +475,7 @@ namespace NuSysApp
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
 
                     var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
-                    aspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+                    aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;
 
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
@@ -359,7 +483,7 @@ namespace NuSysApp
                 {
                     elementType = NusysConstants.ElementType.Word;
 
-                    byte[] fileBytes = null;
+                    byte[] fileBytes;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {
                         fileBytes = new byte[stream.Size];
@@ -412,7 +536,7 @@ namespace NuSysApp
                         var image = new WriteableBitmap(width, height);
 
                         // create a buffer to draw the page on
-                        IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                        IBuffer buf = new Buffer(image.PixelBuffer.Capacity);
                         buf.Length = image.PixelBuffer.Length;
 
                         // draw the page onto the buffer
@@ -457,7 +581,7 @@ namespace NuSysApp
                     }
 
                     var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
-                    aspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+                    aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;
 
                     data = Convert.ToBase64String(fileBytes);
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
@@ -467,7 +591,7 @@ namespace NuSysApp
                     elementType = NusysConstants.ElementType.Audio;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
-                    byte[] fileBytes = null;
+                    byte[] fileBytes;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {
                         fileBytes = new byte[stream.Size];
@@ -496,7 +620,7 @@ namespace NuSysApp
                     //if there is pdf text, add it to the request
                     if (pdfTextByPage.Any())
                     {
-                        args = new CreateNewPdfContentRequestArgs()
+                        args = new CreateNewPdfContentRequestArgs
                         {
                             PdfText = JsonConvert.SerializeObject(pdfTextByPage),
                             PageCount = pdfPageCount

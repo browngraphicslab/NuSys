@@ -71,5 +71,11 @@ namespace NuSysApp
         public static float floatingMenuHeight = 60;
         public static float floatingMenuWidth = 130;
 
+        public static float CheckBoxUIElementHeight = 25;
+        public static float CheckBoxUIElementWidth = 125;
+        public static CheckBoxUIElement.CheckBoxLabelPosition CheckBoxLabelPosition = CheckBoxUIElement.CheckBoxLabelPosition.Right;
+        public static CanvasHorizontalAlignment CheckBoxLabelTextHorizontalAlignmentAlignment = CanvasHorizontalAlignment.Left;
+        public static float CheckBoxHeight = 15;
+        public static float CheckBoxWidth = 15;
     }
 }

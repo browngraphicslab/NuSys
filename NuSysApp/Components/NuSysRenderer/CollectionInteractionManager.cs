@@ -117,7 +117,11 @@ namespace NuSysApp
         private void CanvasInteractionManagerOnPointerWheelChanged(CanvasPointer pointer, float delta)
         {
             var item = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-            if (item is InteractiveBaseRenderItem)
+            if (!(item is ElementRenderItem))
+            {
+                return;
+            }
+            if ((item as ElementRenderItem)?.IsInteractable() == true)
             {
                 return;
             }
@@ -130,6 +134,9 @@ namespace NuSysApp
             var menu = _freeFormViewer.RenderEngine.NodeMarkingMenu;
             menu.IsVisible = false;
             _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
+
+            
+
             if (menu.CurrentIndex == 0)
                 LinkCreated?.Invoke(_potentiaLink.Item1, _potentiaLink.Item2);
             if (menu.CurrentIndex == 1)
@@ -243,16 +250,25 @@ namespace NuSysApp
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
             {
                 var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-                if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
+                if (!(hit is BaseInteractiveUIElement))
                 {
-                    _resizerHit = true;
-                    if (_resizerHit)
+                    if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
                     {
-                        ResizerStarted?.Invoke();
+                        _resizerHit = true;
+                        if (_resizerHit)
+                        {
+                            ResizerStarted?.Invoke();
+                        }
+
                     }
-
                 }
-
+                else
+                {
+                    if ((hit as BaseInteractiveUIElement).IsInteractable())
+                    {
+                        return;
+                    }
+                }
                 RenderItemPressed?.Invoke(hit, pointer);
 
                 _selectedRenderItem = hit as ElementRenderItem;
@@ -485,7 +501,7 @@ namespace NuSysApp
         {
             var element = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
 
-            if (element is NodeMenuButtonRenderItem || element is InteractiveBaseRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
+            if (element is NodeMenuButtonRenderItem || element is PseudoElementRenderItem || element is PdfPageButtonRenderItem)
                 return;
 
             if (element is LinkRenderItem)

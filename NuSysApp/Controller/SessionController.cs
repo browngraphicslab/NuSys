@@ -64,6 +64,7 @@ namespace NuSysApp
 
         private SessionController()
         {
+            SessionSettings = new SessionSettingsData();
             IdToControllers = new ConcurrentDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
         }
@@ -108,6 +109,8 @@ namespace NuSysApp
                 WorkspaceChanged?.Invoke(this, _activeFreeFormViewer);
             }
         }
+
+        public SessionSettingsData SessionSettings;
 
         public static SessionController Instance
         {

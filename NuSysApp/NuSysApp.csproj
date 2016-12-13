@@ -335,6 +335,7 @@
     <Compile Include="Components\Misc\ReadonlyFloatingMenuView.xaml.cs">
       <DependentUpon>ReadonlyFloatingMenuView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\SessionSettingsData.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
@@ -361,6 +362,13 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushToMask.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\DateSelector.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterSubMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbUIElement.cs" />
@@ -378,6 +386,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\SessionSettingsMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElements\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseUIElement.cs" />
@@ -512,8 +521,13 @@
     <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\iLink.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkController.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkRenderitem.cs" />
+    <Compile Include="Components\Win2dTools\ToolLinkViewModelWin2d.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />

@@ -303,7 +303,7 @@ namespace NuSysApp
         /// <param name="index"></param>
         public void UpdateContent(ListColumn<T> column, int index)
         {
-            column.UpdateColumnCellFromItem(Item, _children[index] as RectangleUIElement);
+            column.UpdateColumnCellFromItem(Item, _children[index] as RectangleUIElement, _isSelected);
         }
     }
 }

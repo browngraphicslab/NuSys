@@ -23,7 +23,6 @@ namespace NuSysApp
             Debug.Assert(viewModel != null);
             Vm = viewModel;
             SetUpDragFilterItem();
-
         }
 
         /// <summary>
@@ -57,7 +56,7 @@ namespace NuSysApp
         public void Item_OnTapped(string selection, CanvasPointer pointer)
         {
             var type = pointer.DeviceType;
-            if (Vm.Selection != null && Vm.Controller.Model.Selected && Vm.Selection.Contains(selection))
+            if (Vm.Selection != null && Vm.Controller.ToolModel.Selected && Vm.Selection.Contains(selection))
             {
                 if (type == PointerDeviceType.Pen) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
                 {
@@ -95,7 +94,7 @@ namespace NuSysApp
         /// </summary>
         public void Item_OnDoubleTapped(string selection)
         {
-            if (!Vm.Selection.Contains(selection) && Vm.Selection.Count == 0 || Vm.Controller.Model.Selected == false)
+            if (!Vm.Selection.Contains(selection) && Vm.Selection.Count == 0 || Vm.Controller.ToolModel.Selected == false)
             {
                 Vm.Selection = new HashSet<string> { selection };
             }

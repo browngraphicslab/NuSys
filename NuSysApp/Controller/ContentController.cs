@@ -68,9 +68,21 @@ namespace NuSysApp
         {
             get { return _contents.Count; }
         }
+
+        /// <summary>
+        /// Returns all the library elment models for every item in the library
+        /// </summary>
         public HashSet<LibraryElementModel> AllLibraryElementModels
         {
             get { return new HashSet<LibraryElementModel>(_contents.Values); }
+        }
+
+        /// <summary>
+        /// Returns all the library element controllers for every item in the library
+        /// </summary>
+        public HashSet<LibraryElementController> AllLibraryElementControllers
+        {
+            get { return new HashSet<LibraryElementController>(_contentControllers.Values);}
         }
 
         public HashSet<string> IdList
@@ -78,12 +90,22 @@ namespace NuSysApp
             get { return new HashSet<string>(_contents.Keys); }
         }
 
+        /// <summary>
+        /// Returns a library element model given the passed in library element model id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public LibraryElementModel GetLibraryElementModel(string id)
         {
             Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
+        /// <summary>
+        /// Returns a library element controller associated with the passed in library element model id
+        /// </summary>
+        /// <param name="libraryElementModelId"></param>
+        /// <returns></returns>
         public LibraryElementController GetLibraryElementController(string libraryElementModelId)
         {
             if (libraryElementModelId == null)
@@ -99,7 +121,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// returns whether the queried content data model exists lcoally.   
+        /// returns whether the queried content data model exists locally.   
         /// If not, that content is not yet loaded.  
         /// This should replace the "containsAndLoaded" method. 
         /// </summary>

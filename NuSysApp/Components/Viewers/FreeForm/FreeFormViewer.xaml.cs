@@ -70,6 +70,14 @@ namespace NuSysApp
         private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
+        /// <summary>
+        /// get the private transform of the free form viewer
+        /// </summary>
+        public Matrix3x2 Transform
+        {
+            get { return _transform; }
+        }
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -308,6 +316,11 @@ namespace NuSysApp
 
             _minimap?.SwitchCollection(collection);
             
+        }
+
+        public void InvalidateMinimap()
+        {
+            _minimap.Invalidate();
         }
 
         private async void BtnDeleteOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -996,12 +1009,21 @@ namespace NuSysApp
         {
             AddToSelections(element);
             // add the bread crumb
-            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
-            
+
+            if (element?.ViewModel?.Controller?.LibraryElementModel != null)
+            {
+                SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(
+                    CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
+            }
+
         }
 
         public void AddToSelections(ElementRenderItem element)
         {
+            if (element is ToolWindow)
+            {
+                return;
+            }
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
             _minimap.Invalidate();

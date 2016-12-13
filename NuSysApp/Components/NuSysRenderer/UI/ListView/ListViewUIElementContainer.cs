@@ -22,7 +22,7 @@ namespace NuSysApp
         /// </summary>
         private ListViewUIElement<T> _listview;
 
-        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer);
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
@@ -518,9 +518,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="columnName"></param>
-        private void ListViewRowTapped(T item, string columnName, CanvasPointer pointer)
+        private void ListViewRowTapped(T item, string columnName, CanvasPointer pointer, bool isSelected)
         {
-            RowTapped?.Invoke(item, columnName, pointer);
+            RowTapped?.Invoke(item, columnName, pointer, isSelected);
         }
 
 

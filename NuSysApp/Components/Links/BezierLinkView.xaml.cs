@@ -190,7 +190,7 @@ namespace NuSysApp
         {
             var vm = DataContext as LinkViewModel;
             Debug.Assert(vm != null);
-            var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(vm?.Controller.ContentId);
+            var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(vm?.Controller.LibraryElementId);
             Debug.Assert(linkController != null);
             SessionController.Instance.NuSessionView.ShowDetailView(linkController);
         }
