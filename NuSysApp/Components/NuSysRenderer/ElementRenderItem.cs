@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Text;
@@ -15,11 +16,12 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using WinRTXamlToolkit.IO.Extensions;
 
 namespace NuSysApp
 {
 
-    public class ElementRenderItem : BaseRenderItem
+    public class ElementRenderItem : RectangleUIElement
     {
         private ElementViewModel _vm;
         private CanvasTextLayout _textLayout;
@@ -37,7 +39,10 @@ namespace NuSysApp
                 Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
                 _vm.Controller.PositionChanged += ControllerOnPositionChanged;
                 _vm.Controller.SizeChanged += ControllerOnSizeChanged;
-                _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
+                if (_vm?.Controller?.LibraryElementController != null)
+                {
+                    _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
+                }
                 _tagRenderItem = new WrapRenderItem((float)_vm.Width, parent, resourceCreator);
                 _vm.Tags.CollectionChanged += TagsOnCollectionChanged;
 
@@ -74,7 +79,10 @@ namespace NuSysApp
                 _vm.Controller.PositionChanged -= ControllerOnPositionChanged;
 
                 _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-                _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+                if (_vm.Controller.LibraryElementController != null)
+                {
+                    _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+                }
             }
             _vm = null;
 
@@ -83,6 +91,10 @@ namespace NuSysApp
             base.Dispose();
         }
 
+        public override bool IsInteractable()
+        {
+            return SessionController.Instance.SessionView.FreeFormViewer.Selections.Contains(this);
+        }
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
             _tagRenderItem.MaxWidth = (float)width;
@@ -167,13 +179,22 @@ namespace NuSysApp
 
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), _transform);
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), _transform);
-            
-            ds.Transform = Matrix3x2.Identity;
-            Color color = this != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection
-                ? Color.FromArgb(0xdd,0,0,0)
-                : Colors.White;
-            ds.DrawTextLayout(_textLayout, new Vector2(sp.X + (spr.X-sp.X - 200f)/2f, sp.Y - (float)_textLayout.DrawBounds.Height-18), color);
 
+            Color color = this != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection ? Color.FromArgb(0xdd, 0, 0, 0) : Colors.White;
+
+            if (SessionController.Instance.SessionSettings.ResizeElementTitles)
+            {
+                ds.Transform = Transform.LocalToScreenMatrix;
+                ds.DrawTextLayout(_textLayout,new Vector2(0,-(float)_textLayout.DrawBounds.Height - 20),color );
+            }
+            else
+            {
+                ds.Transform = Matrix3x2.Identity;
+
+                ds.DrawTextLayout(_textLayout,
+                    new Vector2(sp.X + (spr.X - sp.X - 200f)/2f, sp.Y - (float) _textLayout.DrawBounds.Height - 18),
+                    color);
+            }
             ds.Transform = oldTransform;
             base.Draw(ds);
             ds.Transform = oldTransform;
@@ -240,5 +261,6 @@ namespace NuSysApp
                 return new Rect();
             return new Rect(0, 0, ViewModel.Width, ViewModel.Height);
         }
+
     }
 }

@@ -107,7 +107,7 @@ namespace NuSysApp
             NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderPowerpointTransferName);
             NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderMediaName);
             NuSysStorages.OfficeToPdfFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
-
+           
             NuSysStorages.FirstTimeWord = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimeWord);
             NuSysStorages.FirstTimePowerpoint = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimePowerpoint);
             return true;

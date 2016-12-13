@@ -12,7 +12,7 @@ using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
-    public abstract class ToolWindow : ResizeableWindowUIElement
+    public abstract class ToolWindow : ElementRenderItem
     {
         /// <summary>
         /// The delete to delete the tool
@@ -70,7 +70,7 @@ namespace NuSysApp
         private const int MIN_HEIGHT = 300;
 
         private const int MIN_WIDTH = 200;
-
+        /*
         public override float Width
         {
             set
@@ -92,7 +92,7 @@ namespace NuSysApp
                 }
             }
         }
-
+        */
         private bool _setUpComponents;
 
         /// <summary>
@@ -103,15 +103,14 @@ namespace NuSysApp
         public ToolViewModel Vm { get; private set; }
 
         private const int BUTTON_MARGIN = 10;
-        public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(parent, resourceCreator)
+        public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(vm,parent as CollectionRenderItem, resourceCreator)
         {
             //Set up draggable and resizable attributes
-            TopBarColor = Constants.color3;
-            KeepAspectRatio = false;
+            //TopBarColor = Constants.color3;
+            //KeepAspectRatio = false;
 
             Vm = vm;
             SetUpButtons();
-            SetUpFilterDropDown();
             SetUpDraggableIcons();
             SetUpBottomButtonBar();
             Vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
@@ -121,7 +120,14 @@ namespace NuSysApp
             Transform.LocalX = (float)Vm.X;
             Transform.LocalY = (float)Vm.Y;
         }
-        
+
+
+        public override Task Load()
+        {
+            SetUpFilterDropDown();
+            return base.Load();
+        }
+
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
@@ -129,9 +135,15 @@ namespace NuSysApp
         }
 
 
+        public override bool IsInteractable()
+        {
+            return true;
+        }
+
         public override void Dispose()
         {
             //TODO: Remove the tool window as a child
+            _filterChooser.Dragged -= FilterChooserDropdownButtonOnDragged;
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
             Vm.Dispose();
@@ -146,7 +158,7 @@ namespace NuSysApp
             if (numOfParents > 1)
             {
                 _parentOperatorButton.IsVisible = true;
-                _parentOperatorButton.ButtonText = Vm.Controller.Model.ParentOperator.ToString();
+                _parentOperatorButton.ButtonText = Vm.Controller.ToolModel.ParentOperator.ToString();
             }
             else
             {
@@ -313,6 +325,7 @@ namespace NuSysApp
         /// </summary>
         private void SetUpFilterDropDown()
         {
+
             // create a new dropdown ui element and set the ui for it
             _filterChooser = new DropdownUIElement(this, ResourceCreator)
             {
@@ -320,19 +333,35 @@ namespace NuSysApp
                 Height = FILTER_CHOOSER_HEIGHT,
                 RowHeight = FILTER_CHOOSER_HEIGHT,
                 ButtonTextColor = Constants.color3,
-                BorderWidth = 0,
+                BorderWidth = 2,
                 Bordercolor = Constants.color3,
-                Transform = {LocalPosition = new Vector2(0, TopBarHeight)}
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center
+
             };
             // add a method for when an item is selected in the dropdown
             _filterChooser.Selected += FilterChooserItem_Clicked; //TODO DISPOSE OF THIS
 
             // add all the filter options to the dropdown
+            _filterChooser.Dragged += FilterChooserDropdownButtonOnDragged;
+
             foreach (var filterType in Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>())
             {
                 _filterChooser.AddOption(filterType.ToString());
             }
+            _filterChooser.CurrentSelection = Vm.Filter.ToString();
             AddChild(_filterChooser);
+        }
+
+        private void FilterChooserDropdownButtonOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
+            var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+            var delta = pointer.DeltaSinceLastUpdate;
+            var newX = Vm.X + delta.X / (transform.M11 * collection.Camera.S.M11);
+            var newY = Vm.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
+            this.Vm.Controller.SetPosition(newX,newY);
+            SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
         }
 
         /// <summary>
@@ -342,30 +371,22 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void FilterChooserItem_Clicked(DropdownUIElement sender, string item)
         {
-            _filterChooser.IsVisible = false;
-            //var vm = Vm as BasicToolViewModel;
             var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item);
-            var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2((float)Transform.Position.X, (float)Transform.Position.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+
             if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
-                //TODO: I think dispose is getting called before switching to all metadata tool
-                await Vm.SwitchToAllMetadataTool((float)canvasCoordinate.X, (float)canvasCoordinate.Y);
-                this.Dispose();
+                await Vm.SwitchToAllMetadataTool((float)Transform.LocalX, (float)Transform.LocalY);
+                Delete();
             }
             else if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
-                await Vm.SwitchToBasicTool(filter, (float)canvasCoordinate.X, (float)canvasCoordinate.Y);
-                this.Dispose();
+                await Vm.SwitchToBasicTool(filter, (float)Transform.LocalX, (float)Transform.LocalY);
+                Delete();
             }
             else
             {
                 Vm.Filter = filter;
             }
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            base.Draw(ds);
         }
 
         /// <summary>
@@ -377,12 +398,18 @@ namespace NuSysApp
             {
                 Height = PARENT_OPERATOR_BUTTON_HEIGHT,
                 Width = PARENT_OPERATOR_BUTTON_WIDTH,
+                Background = Constants.color1
             };
-            _parentOperatorButton = new ButtonUIElement(this, ResourceCreator, parentOperatorRectangle);
-            _parentOperatorButton.Transform.LocalY = -PARENT_OPERATOR_BUTTON_HEIGHT;
-            _parentOperatorButton.ButtonText = "AND";
-            _parentOperatorButton.ButtonTextColor = Colors.Black;
-            _parentOperatorButton.IsVisible = false;
+            _parentOperatorButton = new ButtonUIElement(this, ResourceCreator, parentOperatorRectangle)
+            {
+                ButtonText = "AND",
+                ButtonTextSize = 32,
+                ButtonTextColor = Constants.color3,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                IsVisible = false,
+                Transform = {LocalY = -PARENT_OPERATOR_BUTTON_HEIGHT}
+            };
             _parentOperatorButton.Tapped += _parentOperatorButton_Tapped;
             AddChild(_parentOperatorButton);
 
@@ -418,8 +445,17 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _deleteButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void _deleteButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            Delete();
+        }
+
+        public async void Delete()
+        {
+            await UITask.Run(() =>
+            {
+                Vm.Controller.Delete(this);
+            });
             Dispose();
         }
 
@@ -442,12 +478,12 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _parentOperatorButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
                 _parentOperatorButton.ButtonText = "OR";
             }
-            else if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            else if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.Or)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
                 _parentOperatorButton.ButtonText = "AND";
@@ -455,13 +491,15 @@ namespace NuSysApp
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {            
+        {
+
             //Make the width of the filter chooser and the button always fill the window
             if (_filterChooser != null)
             {
                 _filterChooser.Width = Width;
             }
 
+            
 
             if (_parentOperatorButton != null)
             {

@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            vm.Controller.SetLocation(x, y);
+            //vm.Controller.SetLocation(x, y);
             Vm = vm;
             xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle> ();
 
@@ -191,7 +191,7 @@ namespace NuSysApp
         /// </summary>
         private void OnSelectionChanged(object sender)
         {
-            if (Vm.Selection != null && (Vm.Controller as BasicToolController).Model.Selected)
+            if (Vm.Selection != null && (Vm.Controller as BasicToolController).ToolModel.Selected)
             {
                 _toolView.SetVisualSelection(Vm.Selection);
             }
@@ -325,7 +325,7 @@ namespace NuSysApp
 
             if (vm != null)
             {
-                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
+                //vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
 
             ToolAnchorChanged?.Invoke(this, new Point2d(vm.X + x, vm.Y + y));
@@ -347,12 +347,12 @@ namespace NuSysApp
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             
-            if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
                 xParentOperatorText.Text = "OR";
             }
-            else if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            else if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.Or)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
                 xParentOperatorText.Text = "AND";
@@ -367,7 +367,7 @@ namespace NuSysApp
         public void Item_OnTapped(string selection, PointerDeviceType type)
         {
 
-            if (Vm.Selection != null && Vm.Controller.Model.Selected && Vm.Selection.Contains(selection))
+            if (Vm.Selection != null && Vm.Controller.ToolModel.Selected && Vm.Selection.Contains(selection))
             {
                 if (type == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
@@ -405,7 +405,7 @@ namespace NuSysApp
         /// </summary>
         public void Item_OnDoubleTapped(string selection)
         {
-            if (!Vm.Selection.Contains(selection) && Vm.Selection.Count == 0 || Vm.Controller.Model.Selected == false)
+            if (!Vm.Selection.Contains(selection) && Vm.Selection.Count == 0 || Vm.Controller.ToolModel.Selected == false)
             {
                 Vm.Selection = new HashSet<string> { selection };
             }

@@ -79,8 +79,6 @@ namespace NuSysApp
             _isInitialized = true;
             var collectionId = WaitingRoomView.InitialWorkspaceId;
             await SessionController.Instance.EnterCollection(collectionId);
-
-
         }
 
         public void ShowBlockingScreen(bool visible)

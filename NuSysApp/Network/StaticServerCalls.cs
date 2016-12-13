@@ -250,11 +250,9 @@ namespace NuSysApp
                             var viewModel = new BasicToolViewModel(controller)
                             {
                                 Filter = ToolModel.ToolFilterTypeTitle.Title,
-                                Width = 500,
-                                Height = 500,
-                                X = collectionPoint.X,
-                                Y = collectionPoint.Y
                             };
+                            controller.SetSize(500,500);
+                            controller.SetPosition(collectionPoint.X, collectionPoint.Y);
                             SessionController.Instance.ActiveFreeFormViewer.AddTool(viewModel);
                         });
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -22,6 +23,16 @@ namespace NuSysApp
         private ButtonUIElement _chatButton;
 
         private ButtonUIElement _snapshotButton;
+
+        /// <summary>
+        /// button for the settings of the session
+        /// </summary>
+        private ButtonUIElement _settingsButton;
+
+        /// <summary>
+        /// The menu UI for the settings of the session
+        /// </summary>
+        private SessionSettingsMenu _settingsMenu;
 
         private ChatBoxUIElement _chatBox;
 
@@ -56,6 +67,25 @@ namespace NuSysApp
 
             TrailBox = new BreadCrumbContainer(this, Canvas);
             AddChild(TrailBox);
+
+            _settingsButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
+            {
+                Width = 50,
+                Height = 50,
+                Background = Colors.Purple
+            };
+            AddChild(_settingsButton);
+
+            _settingsMenu = new SessionSettingsMenu(this, canvas)
+            {
+                Width = 250,
+                Height = 250,
+                Background = Colors.Purple,
+                IsVisible =  false,
+                KeepAspectRatio = false
+            };
+            AddChild(_settingsMenu);
+            _settingsMenu.Transform.LocalPosition = new Vector2(200,200);
 
             _chatButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
             {
@@ -116,6 +146,17 @@ namespace NuSysApp
             _snapshotButton.Tapped += SnapShotButtonTapped;
             _chatButton.Tapped += ChatButtonOnTapped;
             _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
+            _settingsButton.Tapped += SettingsButtonOnTapped;
+        }
+
+        /// <summary>
+        /// the event handler for when the settings button is tapped.  should simply toggle the settings menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void SettingsButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _settingsMenu.IsVisible = !_settingsMenu.IsVisible;
         }
 
         /// <summary>
@@ -156,6 +197,7 @@ namespace NuSysApp
             //_currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
             _chatButton.Transform.LocalPosition = new Vector2(10, Height - _chatButton.Height - 10);
             _snapshotButton.Transform.LocalPosition = new Vector2(10, 10);
+            _settingsButton.Transform.LocalPosition = new Vector2(80, 10);
             _chatBox.Transform.LocalPosition = new Vector2(10, Height - _chatBox.Height - 70);
             _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoomButton.Height/2);
             _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
@@ -185,6 +227,9 @@ namespace NuSysApp
             _snapshotButton.Image = _snapshotButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/snapshot_icon.png"));
             _snapshotButton.ImageBounds = new Rect(_snapshotButton.Width / 4, _snapshotButton.Height / 4, _snapshotButton.Width / 2, _snapshotButton.Height / 2);
 
+            //load and set the settings icon
+            _settingsButton.Image = _settingsButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon white.png"));
+            _settingsButton.ImageBounds = new Rect(_settingsButton.Width / 4, _settingsButton.Height / 4, _settingsButton.Width / 2, _settingsButton.Height / 2);
 
             // set the image for the _backToWaitingRoomButton
             _backToWaitingRoomButton.Image = _backToWaitingRoomButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/back icon triangle.png"));
@@ -194,9 +239,15 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            Debug.Assert(_settingsButton != null);
+            if (_settingsButton != null)
+            {
+                _settingsButton.Tapped -= SettingsButtonOnTapped;
+            }
             Canvas.SizeChanged -= OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped -= OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped -= SnapShotButtonTapped;
+            
             base.Dispose();
         }
 

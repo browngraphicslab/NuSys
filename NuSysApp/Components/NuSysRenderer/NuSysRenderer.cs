@@ -44,6 +44,8 @@ namespace NuSysApp
         private RenderItemInteractionManager _interactionManager;
         private bool _isInitialized;
 
+        /// button for export
+        public NodeMenuButtonRenderItem BtnExportTrail;
         public NuSysRenderer(CanvasAnimatedControl canvas, SessionRootRenderItem root) : base(canvas, root)
         {
             _interactionManager = new RenderItemInteractionManager(this, canvas);
@@ -126,18 +128,32 @@ namespace NuSysApp
                     if (childCollection != null)
                     {
 
-                        if (currentLevel + 1 < maxLevel)
+                        //if (currentLevel + 1 < maxLevel)
+                        //{
+                        //    var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
+                        //    if (result != item)
+                        //        return result;
+                        //}
+                        //else
+                        //{
+                        //    if (childCollection.HitTest(screenPoint) != null)
+                        //    {
+                        //        return childCollection;
+                        //    }
+                        //}
+                        if (childCollection.HitTest(screenPoint) != null)
                         {
-                            var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
-                            if (result != item)
-                                return result;
+                            if (currentLevel + 1 < maxLevel)
+                            {
+                                var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
+                                if (result != item)
+                                    return result;
+                            }
+                            return childCollection;
                         }
                         else
                         {
-                            if (childCollection.HitTest(screenPoint) != null)
-                            {
-                                return childCollection;
-                            }
+
                         }
                     }
                     if (currentLevel + 1 < maxLevel)
@@ -200,10 +216,15 @@ namespace NuSysApp
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", Root, CanvasAnimatedControl);
             BtnDelete.IsVisible = false;
+
+            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", Root, CanvasAnimatedControl);
+            BtnExportTrail.IsVisible = false;
+
             Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
             Root.AddChild(InkOptions);
             Root.AddChild(BtnDelete);
+            Root.AddChild(BtnExportTrail);
 
             _isInitialized = true;
         }

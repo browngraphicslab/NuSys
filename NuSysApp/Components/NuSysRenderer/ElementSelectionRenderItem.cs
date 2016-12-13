@@ -27,6 +27,7 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
+        public NodeMenuButtonRenderItem BtnExport;
         public NodeMenuButtonRenderItem BtnLayoutTool;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
@@ -42,6 +43,7 @@ namespace NuSysApp
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
             BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
+            BtnExport = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
             BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
@@ -58,7 +60,8 @@ namespace NuSysApp
                 BtnPdfLeft,
                 BtnPdfRight,
                 BtnEnterCollection,
-                Resizer
+                Resizer,
+                BtnExport
             };
             _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection };
 

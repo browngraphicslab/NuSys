@@ -270,7 +270,7 @@ namespace NuSysApp
             }
             
             //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, startIndex + numberOfRows);
+            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
 
             foreach (var itemSource in rowList)
             {
@@ -355,9 +355,9 @@ namespace NuSysApp
                 return;
             }
             var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
-            var items = _itemsSource.ToArray();
+            var items = _itemsSource;
 
-            foreach (var row in Rows.ToArray())
+            foreach (var row in Rows)
             {
                 if (row == null)
                 {
@@ -476,7 +476,7 @@ namespace NuSysApp
                     }
                 }
                 RowTapped?.Invoke(item, colTitle, pointer, _isSelected);
-                
+
             }
         }
         
@@ -510,7 +510,7 @@ namespace NuSysApp
             else
             {
                 //scroll if in bounds
-                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / Height;
+                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _itemsSource.Count);
 
                 ScrollBar.ChangePosition(deltaY);
 
@@ -678,7 +678,13 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void ScrollTo(T item)
         {
-            
+            var i = _itemsSource.IndexOf(item);
+            if(i < 0)
+            {
+                return;
+            }
+            //Sets the position of the ScrollBar to the position of the item in the list
+            ScrollBar.Position = (float)i / _itemsSource.Count;
         }
 
         /// <summary>
@@ -843,7 +849,7 @@ namespace NuSysApp
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
-            foreach (var row in Rows.ToArray())
+            foreach (var row in Rows)
             {
                 row?.Update(parentLocalToScreenTransform);
             }
@@ -891,13 +897,23 @@ namespace NuSysApp
         /// <returns></returns>
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
+
+            var clippingRect = new Rect(0, 0, Width, Height);
+            var localPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
+            //If the point being hittested is not inside the visible part of the ListView (ie, the clipping rect), we return null.
+            if (!clippingRect.Contains(localPoint.ToPoint()))
+            {
+                return null;
+            }
+
+
             //If scroll bar is hit, return that instead of the row underneath.
             var scrollBarht = ScrollBar.HitTest(screenPoint);
-            if(scrollBarht != null)
+            if (scrollBarht != null)
             {
                 return scrollBarht;
             }
-            foreach(var row in Rows)
+            foreach (var row in Rows)
             {
                 var ht = row.HitTest(screenPoint);
                 if (ht != null)

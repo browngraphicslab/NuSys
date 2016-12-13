@@ -79,7 +79,7 @@ namespace NuSysApp
         private void OnSelectionChanged(object sender)
         {
             var vm = Vm as BasicToolViewModel;
-            if (vm.Selection != null && (Vm.Controller as BasicToolController).Model.Selected)
+            if (vm.Selection != null && (Vm.Controller as BasicToolController).ToolModel.Selected)
             {
                 _toolView.SetVisualSelection(vm.Selection);
             }

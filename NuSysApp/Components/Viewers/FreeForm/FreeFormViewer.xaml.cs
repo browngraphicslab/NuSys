@@ -10,11 +10,13 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
+using Windows.Storage;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Extensions;
 using NuSysApp.Components.NuSysRenderer.UI;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
@@ -67,6 +69,14 @@ namespace NuSysApp
 
         private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
+
+        /// <summary>
+        /// get the private transform of the free form viewer
+        /// </summary>
+        public Matrix3x2 Transform
+        {
+            get { return _transform; }
+        }
 
         public FreeFormViewer()
         {
@@ -142,7 +152,86 @@ namespace NuSysApp
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
             RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
 
+            RenderEngine.BtnExportTrail.Tapped -= BtnExportTrailOnTapped;
+            RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
+
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+        }
+
+        /// <summary>
+        /// exports trail to HTML when export button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_selectedLink is TrailRenderItem)
+            {
+                //get trail as a list of nodes
+                List<LibraryElementController> trailList = GetTrailAsList((_selectedLink as TrailRenderItem).ViewModel.Model);
+
+                for (int i = 0; i < trailList.Count; i++)
+                {
+                    var currElement = trailList[i];
+                    string prev = null;
+                    string next = null;
+                    if (i > 0)
+                    {
+                        prev = trailList[i - 1].Title;
+                    }
+                    if (i < trailList.Count - 1)
+                    {
+                        next = trailList[i + 1].Title;
+                    }
+
+                    currElement.ExportToHTML(prev, next);
+                }
+                
+                //OpenInBrowser(trailList);  <---- currently commented out, will probably work when this is not happening on the UI thread
+            }
+        }
+
+        /// <summary>
+        /// opens the exported trail in internet browser
+        /// </summary>
+        /// <param name="trailList"></param>
+        private async void OpenInBrowser(List<LibraryElementController> trailList)
+        {
+            StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+            var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
+            //open the exported html in browser
+            Windows.System.Launcher.LaunchFileAsync(firstPage);
+        }
+
+        /// <summary>
+        /// gets trail elements as a list
+        /// </summary>
+        /// <param name="trail"></param>
+        /// <returns></returns>
+        private List<LibraryElementController> GetTrailAsList(PresentationLinkModel trail)
+        {
+            List<LibraryElementController> elements = new List<LibraryElementController>();
+            var currTrail = trail;
+            while (currTrail != null) 
+            {
+                var inNode = SessionController.Instance.IdToControllers[currTrail.OutElementId].LibraryElementController;
+                var outNode =
+                    SessionController.Instance.IdToControllers[currTrail.InElementId].LibraryElementController;
+                if (!elements.Contains(inNode))
+                {
+                    elements.Add(inNode);
+                }
+                if (elements.Contains(outNode))
+                {
+                    break;
+                }
+                elements.Add(outNode);
+
+                currTrail =
+                    PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currTrail.InElementId);
+            }
+
+            return elements;
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -229,6 +318,11 @@ namespace NuSysApp
             
         }
 
+        public void InvalidateMinimap()
+        {
+            _minimap.Invalidate();
+        }
+
         private async void BtnDeleteOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_selectedLink is LinkRenderItem)
@@ -246,16 +340,27 @@ namespace NuSysApp
 
         private void OnRenderItemPressed(BaseRenderItem item, CanvasPointer point)
         {
-            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem))
+            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem || item == RenderEngine.BtnExportTrail))
             {
                 RenderEngine.BtnDelete.IsVisible = false;
+                RenderEngine.BtnExportTrail.IsVisible = false;
             }
         }
 
+        /// <summary>
+        /// made edits to include HTML export
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
             RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -40);
             RenderEngine.BtnDelete.IsVisible = true;
+
+            //HTML export
+            RenderEngine.BtnExportTrail.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, 40);
+            RenderEngine.BtnExportTrail.IsVisible = true;
+
             _selectedLink = element;
         }
 
@@ -634,6 +739,11 @@ namespace NuSysApp
                 await SessionController.Instance.EnterCollection(id);
             }
 
+            if (item == RenderEngine.ElementSelectionRect.BtnExport)
+            {
+                
+            }
+
             if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
             {
                 var selection = (PdfElementRenderItem) Selections[0];
@@ -899,12 +1009,21 @@ namespace NuSysApp
         {
             AddToSelections(element);
             // add the bread crumb
-            SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
-            
+
+            if (element?.ViewModel?.Controller?.LibraryElementModel != null)
+            {
+                SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(
+                    CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
+            }
+
         }
 
         public void AddToSelections(ElementRenderItem element)
         {
+            if (element is ToolWindow)
+            {
+                return;
+            }
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
             _minimap.Invalidate();

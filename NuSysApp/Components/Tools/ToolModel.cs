@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public abstract class ToolModel
+    public abstract class ToolModel: ElementModel
     {
         public ToolFilterTypeTitle Filter { get; protected set; }
 
@@ -35,10 +36,8 @@ namespace NuSysApp
         public HashSet<string> OutputLibraryIds { get; private set; }
         public HashSet<string> ParentIds { get; private set; }
         public bool Selected { get; private set; }
-        public string Id { get; set; }
-        public ToolModel()
+        public ToolModel() :base(SessionController.Instance.GenerateId())
         {
-            Id = SessionController.Instance.GenerateId();
             ParentIds = new HashSet<string>();
             OutputLibraryIds = new HashSet<string>();
             ParentOperator = ParentOperatorType.Or;

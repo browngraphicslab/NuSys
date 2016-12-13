@@ -10,15 +10,14 @@ using NetTopologySuite.Utilities;
 using NusysIntermediate;
 using NuSysApp.Tools;
 using SharpDX.DirectWrite;
+using Wintellect.PowerCollections;
 
 namespace NuSysApp
 {
-    public abstract class ToolController : ToolStartable
+    public abstract class ToolController : ElementController, ToolStartable
     {
         public static Dictionary<string, ToolStartable> ToolControllers = new Dictionary<string, ToolStartable>();
         public delegate void FilterChangedEventHandler(object sender, ToolModel.ToolFilterTypeTitle filter);
-        public delegate void LocationChangedEventHandler(object sender, double x, double y);
-        public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public delegate void IdsToDisplayChangedEventHandler();
         public delegate void NumberOfParentsChangedEventHandler (int numberOfParents);
         public event FilterChangedEventHandler FilterChanged;
@@ -28,8 +27,6 @@ namespace NuSysApp
         /// properties displayed
         /// </summary>
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
-        public event LocationChangedEventHandler LocationChanged;
-        public event SizeChangedEventHandler SizeChanged;
         public event EventHandler<string> Disposed;
         public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
@@ -39,19 +36,42 @@ namespace NuSysApp
         public event IdsToDisplayChangedEventHandler IdsToDisplayChanged;
         public event NumberOfParentsChangedEventHandler NumberOfParentsChanged;
 
-        public ToolModel Model { get;}
+        public override Point2d Anchor
+        {
+            get
+            {
+                if (GetParentIds().Count() > 1)
+                {
+                    return new Point2d(Model.X + Model.Width / 2, Model.Y);
+                }
+                else
+                {
+                    return new Point2d(Model.X + Model.Width / 2, Model.Y + 20);
+                }
+            }
+        }
 
-        public ToolController(ToolModel model)
+        public string ContentId
+        {
+            get { return null; }
+        }
+
+        public ToolModel ToolModel
+        {
+            get { return Model as ToolModel; }
+        }
+        public ToolController(ToolModel model):base(model)
         {
             Debug.Assert(model != null);
-            Model = model;
             ToolControllers.Add(model.Id, this);
-            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            _blockServerInteractionCount++;//never send server updates about tool information
         }
+        
 
         public void SetFilter(ToolModel.ToolFilterTypeTitle filter)
         {
-            Model.SetFilter(filter);
+            ToolModel.SetFilter(filter);
             FilterChanged?.Invoke(this, filter);
             FireIdsToDisplayChanged();
             FireOutputLibraryIdsChanged();
@@ -65,12 +85,7 @@ namespace NuSysApp
         {
             FilterTypeAllMetadataChanged?.Invoke(this, vm);
         }
-
-        public void SetSize(double width, double height)
-        {
-            SizeChanged?.Invoke(this, width, height);
-        }
-
+        
         /// <summary>
         /// Adds a parent to the tool. Listens to the parent's library ids changed event. Refreshes the library ids. Invokes, outputLibraryIdsChanged, parentsLibraryIdsChanged, and numberofParentsChanged.
         /// </summary>
@@ -78,15 +93,15 @@ namespace NuSysApp
         {
             if (parentController != null)
             {
-                if (Model.ParentIds.Add(parentController.GetID()))
+                if (ToolModel.ParentIds.Add(parentController.GetID()))
                 {
                     parentController.OutputLibraryIdsChanged += IdsToDiplayChanged;
                     parentController.FilterTypeAllMetadataChanged += ParentController_FilterTypeAllMetadataChanged;
-                    Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-                    OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+                    ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+                    OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
                     IdsToDisplayChanged?.Invoke();
                     parentController.Disposed += OnParentDisposed;
-                    NumberOfParentsChanged?.Invoke(Model.ParentIds.Count);
+                    NumberOfParentsChanged?.Invoke(ToolModel.ParentIds.Count);
                 }
             }
         }
@@ -99,6 +114,12 @@ namespace NuSysApp
         private void ParentController_FilterTypeAllMetadataChanged(object sender, ToolViewModel vm)
         {
             AddParent(vm.Controller);
+            var linkModel = new ToolLinkModel();
+            linkModel.InAtomId = vm.Id;
+            linkModel.OutAtomId = Id;
+            var linkController = new ToolLinkController(linkModel, vm.Controller, this);
+            var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+            SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
         }
 
         /// <summary>
@@ -106,9 +127,9 @@ namespace NuSysApp
         /// </summary>
         public void SetParentOperator(ToolModel.ParentOperatorType parentOperator)
         {
-            Model.SetParentOperator(parentOperator);
-            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+            ToolModel.SetParentOperator(parentOperator);
+            ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
         }
 
@@ -118,8 +139,8 @@ namespace NuSysApp
         public void OnParentDisposed(object sender, string parentid)
         {
             RemoveParent(ToolControllers[parentid]);
-            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+            ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
             ToolControllers[parentid].Disposed -= OnParentDisposed;
         }
@@ -129,14 +150,14 @@ namespace NuSysApp
         /// </summary>
         public virtual void RemoveParent(ToolStartable parentController)
         {
-            if (Model.RemoveParentId(parentController?.GetID()))
+            if (ToolModel.RemoveParentId(parentController?.GetID()))
             {
                 if (parentController != null)
                 {
                     parentController.OutputLibraryIdsChanged -= IdsToDiplayChanged;
                 }
             }
-            NumberOfParentsChanged?.Invoke(Model.ParentIds.Count);
+            NumberOfParentsChanged?.Invoke(ToolModel.ParentIds.Count);
 
         }
 
@@ -152,7 +173,7 @@ namespace NuSysApp
         /// </summary>
         public virtual void Dispose()
         {
-            foreach(var parentController in new List<ToolStartable>(Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
+            foreach(var parentController in new List<ToolStartable>(ToolModel.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
             {
                 RemoveParent(parentController);
             }
@@ -165,7 +186,7 @@ namespace NuSysApp
         /// </summary>
         public IEnumerable<string> Filter(IEnumerable<string> ids)
         {
-            if (!Model.Selected)
+            if (!ToolModel.Selected)
             {
                 return ids;
             }
@@ -177,7 +198,7 @@ namespace NuSysApp
         /// </summary>
         public void FireOutputLibraryIdsChanged()
         {
-            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
         }
 
         /// <summary>
@@ -254,8 +275,8 @@ namespace NuSysApp
         /// </summary>
         private void IdsToDiplayChanged(object sender, HashSet<string> libraryIds)
         {
-            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+            ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
         }
 
@@ -265,7 +286,7 @@ namespace NuSysApp
         /// </summary>
         public IEnumerable<string> GetUpdatedDataList()
         {
-            var controllers = Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
+            var controllers = ToolModel.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
             if (controllers == null || !controllers.Any())
             {
                 return SessionController.Instance.ContentController.IdList;
@@ -276,7 +297,7 @@ namespace NuSysApp
             IEnumerable<string> list = first.GetOutputLibraryIds();//get the first parent's list of elements
             foreach (var enumerable in controllers.Skip(1).Select(controller => controller.GetOutputLibraryIds()))
             {
-                switch (Model.ParentOperator)
+                switch (ToolModel.ParentOperator)
                 {
                     case ToolModel.ParentOperatorType.And:
                         list = list.Intersect(enumerable);
@@ -296,13 +317,13 @@ namespace NuSysApp
         /// </summary>
         public void RefreshFromTopOfChain()
         {
-            if (!Model.ParentIds.Any())
+            if (!ToolModel.ParentIds.Any())
             {
-                Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+                ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
                 FireOutputLibraryIdsChanged();
                 IdsToDisplayChanged?.Invoke();
             }
-            foreach (var parentController in Model.ParentIds.Select(parentId => ToolController.ToolControllers[parentId]))
+            foreach (var parentController in ToolModel.ParentIds.Select(parentId => ToolController.ToolControllers[parentId]))
             {
                 parentController.RefreshFromTopOfChain();
             }
@@ -317,18 +338,14 @@ namespace NuSysApp
         /// <returns></returns>
         public HashSet<string> GetOutputLibraryIds()
         {
-            return Model.OutputLibraryIds;
+            return ToolModel.OutputLibraryIds;
         }
 
         public HashSet<string> GetParentIds()
         {
-            return Model.ParentIds;
+            return ToolModel.ParentIds;
         }
-
-        public void SetLocation(double x, double y)
-        {
-            LocationChanged?.Invoke(this, x, y);
-        }
+        
     }
     
 }
