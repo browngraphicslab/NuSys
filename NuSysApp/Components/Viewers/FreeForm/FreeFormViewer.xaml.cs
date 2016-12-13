@@ -32,7 +32,7 @@ namespace NuSysApp
     public sealed partial class FreeFormViewer
     {
         private List<PointModel> _latestStroke;
-        private CanvasInteractionManager _canvasInteractionManager;
+        private RenderItemInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
 
         private FreeFormViewerViewModel _vm;
@@ -120,7 +120,7 @@ namespace NuSysApp
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
-                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+                _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
             }
 
             FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
