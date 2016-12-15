@@ -154,8 +154,8 @@ namespace NusysServer
                         fileUrl = Constants.SERVER_ADDRESS + contentDataModelId + fileExtension;
                         break;
                     case NusysConstants.ContentType.Word:
-                        //var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
-
+                        var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
+                        return pdfUrl;
                         break;
 
                     case NusysConstants.ContentType.PDF:
@@ -165,7 +165,7 @@ namespace NusysServer
                         // Active the pdf document
                         ActivateDocument(doc);
                         var listOfUrls = new List<string>();
-                        for (int page = 1; page < GetNumPages() + 1; page++)
+                        for (int page = 0; page < GetNumPages() ; page++)
                         {
                             // Goto a page
                             GotoPage(page);
@@ -185,7 +185,8 @@ namespace NusysServer
                             try
                             {
                                 Marshal.Copy(buffer, mngdArray, 0, numBytes);
-                                filePath = Constants.WWW_ROOT + contentDataModelId + "_" + page + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
+                                filePath = Constants.WWW_ROOT + contentDataModelId + "_" + page +
+                                           NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
 
                                 var stream1 = File.Create(filePath);
                                 stream1.Dispose();
@@ -195,14 +196,23 @@ namespace NusysServer
                                     var bytes = mngdArray;
                                     fstream.Write(bytes, 0, bytes.Length);
                                 }
-                                listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + page + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                                listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + page +
+                                               NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
                             }
                             catch (Exception e)
                             {
                                 throw new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
                             }
                         }
-                        Dispose(doc);
+                        try
+                        {
+                            Dispose(doc);
+                        }
+                        catch (Exception e)
+                        {
+                            return JsonConvert.SerializeObject(listOfUrls);
+                        }
+                        return JsonConvert.SerializeObject(listOfUrls);
                         break;
                     case NusysConstants.ContentType.Text:
                         filePath = "";

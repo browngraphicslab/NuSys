@@ -80,7 +80,7 @@ namespace NuSysApp
         }
 
         public override void Draw(CanvasDrawingSession ds) {
-            if (IsDisposed)
+            if (IsDisposed || !SessionController.Instance.SessionSettings.LinksVisible)
                 return;
 
             if (_path != null)

@@ -29,12 +29,12 @@ namespace NuSysApp
         /// <summary>
         /// private version of the ResizeElementTitles.
         /// </summary>
-        private bool _resizeElementTitles;
+        private bool _resizeElementTitles = false;
 
         /// <summary>
         /// The private version of LinksVisible. 
         /// </summary>
-        private bool _linksVisible;
+        private bool _linksVisible = true;
 
         /// <summary>
         /// Boolean representing whether the links are visible or not for regular semantic links.

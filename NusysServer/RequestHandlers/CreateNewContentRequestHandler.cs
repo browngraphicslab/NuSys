@@ -40,7 +40,6 @@ namespace NusysServer
             //if content has been successfully added remove the content part of the message and add a new library element model
             message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY);
             message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY);
-            message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES);
 
             var createNewLibraryRequest = new Request(new Request(NusysConstants.RequestType.CreateNewLibraryElementRequest, message).GetFinalMessage());
             var createNewLibraryElementRequestHandler = new CreateNewLibraryElementRequestHandler();
