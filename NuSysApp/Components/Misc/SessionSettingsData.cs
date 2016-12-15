@@ -48,8 +48,8 @@ namespace NuSysApp
         private LinkVisibilityOption _linksVisible = LinkVisibilityOption.AllLinks;
 
         /// <summary>
-        /// Boolean representing whether the links are visible or not for regular semantic links.
-        /// This might be changed later to an enum representing different links visibility options (always, never, when focused, when selected, etc).
+        /// Enum representing the visibility of links and trails in the session.
+        /// This might be changed later to have more link visibility options  (when focused, when filtered etc).
         /// The custom setter will fire the event notifying of the setting changed.
         /// </summary>
         public LinkVisibilityOption LinksVisible
