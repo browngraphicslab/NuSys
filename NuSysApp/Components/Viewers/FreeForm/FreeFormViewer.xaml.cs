@@ -32,7 +32,7 @@ namespace NuSysApp
     public sealed partial class FreeFormViewer
     {
         private List<PointModel> _latestStroke;
-        private CanvasInteractionManager _canvasInteractionManager;
+        private RenderItemInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
 
         private FreeFormViewerViewModel _vm;
@@ -77,6 +77,9 @@ namespace NuSysApp
         {
             get { return _transform; }
         }
+        // Manages the focus of the render items, instantiated in constructor
+        public FocusManager FocusManager { get; private set; }
+
 
         public FreeFormViewer()
         {
@@ -125,9 +128,11 @@ namespace NuSysApp
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
-                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+                _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
             }
-       
+
+            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -263,6 +268,8 @@ namespace NuSysApp
                 _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
 
                 _collectionInteractionManager.Dispose();
+                //Remove focus from FocusManager
+                FocusManager.ClearFocus();
             }
 
             CurrentCollection = collection;
@@ -293,6 +300,12 @@ namespace NuSysApp
                 _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = false;
+            } else
+            {
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = true;
             }
 
             _collectionInteractionManager.RenderItemPressed += OnRenderItemPressed;

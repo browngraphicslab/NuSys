@@ -80,7 +80,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ShowLinksButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SessionController.Instance.SessionSettings.LinksVisible = !SessionController.Instance.SessionSettings.LinksVisible;
+            SessionController.Instance.SessionSettings.LinksVisible++;
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="b"></param>
-        private void SessionSettingsOnLinkVisibilityChanged(object sender, bool b)
+        private void SessionSettingsOnLinkVisibilityChanged(object sender, LinkVisibilityOption b)
         {
             SetButtonText();  
         }

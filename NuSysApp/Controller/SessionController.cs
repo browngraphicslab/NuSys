@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NusysIntermediate;
 using WinRTXamlToolkit.Tools;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace NuSysApp
 {
@@ -43,7 +44,7 @@ namespace NuSysApp
         /// This should be used to determine what elements are needed and what collections to keep track of.
         /// The Ids are the Library element model Ids.
         /// </summary>
-        public HashSet<string> CollectionIdsInUse { get; private set; }  = new HashSet<string>();
+        public HashSet<string> CollectionIdsInUse { get; private set; } = new HashSet<string>();
 
         private CapturedStateModel _capturedState;
 
@@ -67,6 +68,7 @@ namespace NuSysApp
             SessionSettings = new SessionSettingsData();
             IdToControllers = new ConcurrentDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
+            DataPackage = new DataPackage();
         }
 
         public NuSysNetworkSession NuSysNetworkSession
@@ -84,7 +86,7 @@ namespace NuSysApp
         {
             get { return _contentController; }
         }
-        
+
         public RegionsController RegionsController
         {
             get { return _regionsController; }
@@ -93,6 +95,12 @@ namespace NuSysApp
         {
             get { return _linksController; }
         }
+
+        public FocusManager FocusManager
+        {
+            get { return SessionView.FreeFormViewer.FocusManager; }
+        }
+
         public SpeechRecognizer Recognizer { get; set; }
 
 
@@ -193,6 +201,8 @@ namespace NuSysApp
         {
             OnModeChanged?.Invoke(this, mode);
         }
+
+        public DataPackage DataPackage { get; }
 
         /// <summary>
         /// Method to be called when the application goes into a suspended state or loses internet connection.
@@ -302,6 +312,8 @@ namespace NuSysApp
             }
 
             SessionController.Instance.IdToControllers[model.Id] = controller;
+
+            controller.LibraryElementController.FireAliasAdded(model);
 
             await UITask.Run(async delegate
             {

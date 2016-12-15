@@ -92,7 +92,9 @@ namespace NuSysApp
         }
 
         public override void Draw(CanvasDrawingSession ds) {
-            if (IsDisposed)
+            if (IsDisposed || SessionController.Instance.SessionSettings.LinksVisible == LinkVisibilityOption.NoLinks || SessionController.Instance.SessionSettings.LinksVisible == LinkVisibilityOption.NoTrails ||
+                (SessionController.Instance.SessionSettings.LinksVisible == LinkVisibilityOption.VisibleWhenSelected &&
+                !SessionController.Instance.SessionView.FreeFormViewer.Selections.Any(i => i.ViewModel.Controller.Id == _vm.Model.InElementId|| i.ViewModel.Controller.Id == _vm.Model.OutElementId)))
                 return;
 
             if (_path != null)
