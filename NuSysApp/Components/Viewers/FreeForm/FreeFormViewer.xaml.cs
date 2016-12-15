@@ -163,7 +163,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_selectedLink is TrailRenderItem)
             {
@@ -184,23 +184,14 @@ namespace NuSysApp
                         next = trailList[i + 1].Title;
                     }
 
-                    currElement.ExportToHTML(prev, next);
+                    await currElement.ExportToHTML(prev, next);
                 }
                 
-                //OpenInBrowser(trailList);  <---- currently commented out, will probably work when this is not happening on the UI thread
+                StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+                var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
+                //open the exported html in browser
+                await Windows.System.Launcher.LaunchFileAsync(firstPage);
             }
-        }
-
-        /// <summary>
-        /// opens the exported trail in internet browser
-        /// </summary>
-        /// <param name="trailList"></param>
-        private async void OpenInBrowser(List<LibraryElementController> trailList)
-        {
-            StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
-            var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
-            //open the exported html in browser
-            Windows.System.Launcher.LaunchFileAsync(firstPage);
         }
 
         /// <summary>
