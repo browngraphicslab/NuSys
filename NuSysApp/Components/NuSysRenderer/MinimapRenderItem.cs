@@ -96,7 +96,7 @@ namespace NuSysApp
 
         public void Draw(CanvasDrawingSession ds)
         {
-            if (_isDisposed)
+            if (_isDisposed || !SessionController.Instance.SessionSettings.MinimapVisible)
             {
                 return;
             }

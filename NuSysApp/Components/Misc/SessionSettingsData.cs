@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// The options for link visiblity.
+    /// </summary>
     public enum LinkVisibilityOption
     {
         AllLinks,
@@ -22,10 +25,6 @@ namespace NuSysApp
     public class SessionSettingsData
     {
         /// <summary>
-        /// The options for link visiblity.
-        /// </summary>
-
-        /// <summary>
         /// Event fired whenever the link visibility is changed. 
         /// Don't overlisten to this event, aka dont have every link listening to this.
         /// </summary>
@@ -36,6 +35,25 @@ namespace NuSysApp
         /// </summary>
         public event EventHandler<bool> ResizeElementTitlesChanged;
 
+        /// <summary>
+        /// event fired whenever the visibility of the bread crumb trail changes
+        /// </summary>
+        public event EventHandler<bool> BreadCrumbVisibilityChanged;
+
+        /// <summary>
+        /// event fired whenever the visibility of the minimap changes
+        /// </summary>
+        public event EventHandler<bool> MinimapVisiblityChanged;
+        
+        /// <summary>
+        /// private version of the bradcrumb visibility bool
+        /// </summary>
+        private bool _breadCrumbsVisible = true;
+
+        /// <summary>
+        /// private version of the minimap visiblity bool
+        /// </summary>
+        private bool _minimapVisible = true;
 
         /// <summary>
         /// private version of the ResizeElementTitles.
@@ -73,6 +91,33 @@ namespace NuSysApp
             {
                 _resizeElementTitles = value;
                 ResizeElementTitlesChanged?.Invoke(this, value);
+            }
+        }
+
+        /// <summary>
+        /// Boolean representing whether the bread crumb trail is visible.   
+        /// Setting this will fire this class's event for when the boolean changes.
+        /// </summary>
+        public bool BreadCrumbsVisible
+        {
+            get { return _breadCrumbsVisible; }
+            set
+            {
+                _breadCrumbsVisible = value;
+                BreadCrumbVisibilityChanged?.Invoke(this, _breadCrumbsVisible);
+            }
+        }
+
+        /// <summary>
+        /// Boolean representing whether the minimap is visible.   
+        /// Setting this will fire this class's event for when the boolean changes.
+        /// </summary>
+        public bool MinimapVisible
+        {
+            get { return _minimapVisible; }
+            set {
+                _minimapVisible = value;
+                MinimapVisiblityChanged?.Invoke(this, value);
             }
         }
     }
