@@ -80,7 +80,8 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ShowLinksButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SessionController.Instance.SessionSettings.LinksVisible++;
+            //Weird syntax but just modularly increments enum valure
+            SessionController.Instance.SessionSettings.LinksVisible = (LinkVisibilityOption)(((int)SessionController.Instance.SessionSettings.LinksVisible + 1 ) % Enum.GetNames(typeof(LinkVisibilityOption)).Length);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="b"></param>
-        private void SessionSettingsOnLinkVisibilityChanged(object sender, LinkVisibilityOption b)
+        private void SessionSettingsOnLinkVisibilityChanged(object sender, LinkVisibilityOption visibility)
         {
             SetButtonText();  
         }
