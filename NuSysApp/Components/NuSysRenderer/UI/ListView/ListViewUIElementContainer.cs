@@ -69,6 +69,7 @@ namespace NuSysApp
                 _showHeader = value;
             }
         }
+        
 
         public bool DisableSelectionByClick
         {
@@ -119,7 +120,7 @@ namespace NuSysApp
             {
                 if (ListView != null)
                 {
-                    //ListView.Background = value;
+                    ListView.Background = value;
                 }
             }
         }
@@ -341,6 +342,17 @@ namespace NuSysApp
             _listview.SortByCol(columnIndex);
         }
 
+        public override float BorderWidth
+        {
+            get { return _listview?.BorderWidth ?? 0; }
+            set
+            {
+                if(_listview != null)
+                {
+                    _listview.BorderWidth = value;
+                }
+            }
+        }
 
 
         #region RouterFunctions

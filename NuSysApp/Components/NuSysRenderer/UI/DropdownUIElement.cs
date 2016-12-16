@@ -64,6 +64,20 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             }
         }
 
+        public Color ListBackground
+        {
+            get { return _dropDownList.Background; }
+            set { _dropDownList.Background = value; }
+        }
+
+        public float ListBorder
+        {
+            get { return _dropDownList.BorderWidth; }
+            set { _dropDownList.BorderWidth = value; }
+        }
+
+        
+
         /// <summary>
         /// The height of the dropdown list
         /// </summary>

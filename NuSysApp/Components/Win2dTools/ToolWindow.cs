@@ -336,8 +336,11 @@ namespace NuSysApp
                 BorderWidth = 2,
                 Bordercolor = Constants.color3,
                 ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center
-
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                Background = Constants.color1,
+                ListBackground = Constants.color2,
+                ListBorder = 3
+                
             };
             // add a method for when an item is selected in the dropdown
             _filterChooser.Selected += FilterChooserItem_Clicked; //TODO DISPOSE OF THIS

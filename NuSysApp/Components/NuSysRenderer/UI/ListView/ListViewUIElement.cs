@@ -15,6 +15,7 @@ using Windows.Foundation;
 using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.GeometriesGraph;
 using WinRTXamlToolkit.Controls.DataVisualization.Charting;
+using Color = Windows.UI.Color;
 
 namespace NuSysApp
 {
@@ -74,6 +75,26 @@ namespace NuSysApp
         /// </summary>
         private List<ListColumn<T>> _listColumns;
 
+        /// <summary>
+        /// This is the rectangle that goes behind all the row elements. We have to use this and not the default background inherited from rectangleuielement because we manually draw our rows, 
+        /// and if we set a background color on the list, then it will cover the all the elements
+        /// </summary>
+        private RectangleUIElement _backgroundRectangle;
+
+        /// <summary>
+        /// Changes the color of the background of the list.
+        /// </summary>
+        public Color Background
+        {
+            get { return _backgroundRectangle?.Background ?? Colors.Transparent; }
+            set
+            {
+                if (_backgroundRectangle != null)
+                {
+                    _backgroundRectangle.Background = value;
+                }
+            }
+        }
 
         /// <summary>
         /// A hashset of the selected rows
@@ -129,6 +150,7 @@ namespace NuSysApp
                 UpdateRowBorder();
             }
         }
+        
 
         public float Height
         {
@@ -201,7 +223,17 @@ namespace NuSysApp
             RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
+            SetUpBackgroundRectangle();
 
+        }
+
+        private void SetUpBackgroundRectangle()
+        {
+            _backgroundRectangle = new RectangleUIElement(this, ResourceCreator)
+            {
+                Width = this.Width,
+                Height = this.Height,
+            };
         }
 
         /// <summary>
@@ -276,7 +308,7 @@ namespace NuSysApp
             {
                 var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                 listViewRowUIElement.Item = itemSource;
-                listViewRowUIElement.Background = Colors.White;
+                listViewRowUIElement.Background = Colors.Transparent;
                 listViewRowUIElement.Bordercolor = Colors.Black;
                 listViewRowUIElement.BorderWidth = RowBorderThickness;
                 listViewRowUIElement.Width = Width - BorderWidth * 2;
@@ -846,6 +878,9 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
         {
+            _backgroundRectangle.Width = this.Width;
+            _backgroundRectangle.Height = this.Height;
+            _backgroundRectangle.Background = Colors.Red;
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
@@ -865,6 +900,8 @@ namespace NuSysApp
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
+            //_backgroundRectangle.Draw(ds);
+
             // Creates a clipping of the drawing session based on _clippingrect
             using (ds.CreateLayer(1f, _clippingRect))
             {
@@ -888,6 +925,8 @@ namespace NuSysApp
             base.Draw(ds);
 
         }
+
+
 
         /// <summary>
         /// Hit tests every row in Rows.
