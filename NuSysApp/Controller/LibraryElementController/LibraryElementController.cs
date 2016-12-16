@@ -80,8 +80,10 @@ namespace NuSysApp
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event EventHandler<LinkViewModel> LinkAdded;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
+        public event EventHandler<ElementModel> AliasAdded;
+        public event EventHandler<ElementModel> AliasRemoved;
 
         /// <summary>
         /// the event that is fired when the access type of this controller's library element changes. 
@@ -703,9 +705,19 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
-        public void AddLink(LinkViewModel linkViewModel)
+        public void FireAliasRemoved(ElementModel elementModel)
         {
-            LinkAdded?.Invoke(this, linkViewModel);
+            AliasRemoved?.Invoke(this, elementModel);
+        }
+
+        public void FireAliasAdded(ElementModel elementModel)
+        {
+            AliasAdded?.Invoke(this,elementModel);
+        }
+
+        public void FireLinkAdded(LinkLibraryElementController LinkLibraryElementController)
+        {
+            LinkAdded?.Invoke(this, LinkLibraryElementController);
         }
 
         #region Linking methods
@@ -714,7 +726,7 @@ namespace NuSysApp
         /// are assured that the link has been removed successfully
         /// </summary>
         /// <param name="linkLibraryElementID"></param>
-        public void InvokeLinkRemoved(string linkLibraryElementID)
+        public void FireLinkRemoved(string linkLibraryElementID)
         {
             LinkRemoved?.Invoke(this, linkLibraryElementID);
         }
@@ -862,7 +874,7 @@ namespace NuSysApp
         /// 
         /// takes in previous and next node as options for trail export
         /// </summary>
-        public async void ExportToHTML(string previous = null, string next = null)
+        public async Task ExportToHTML(string previous = null, string next = null)
         {
             /// create the node's HTML file in the HTML folder
             /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
@@ -936,7 +948,7 @@ namespace NuSysApp
             ///replace metadata
             ///first, turn metadata list into a string that puts new line characters at end of each key value pair
             string metadataString = "";
-            foreach (var metadata in LibraryElementModel.Metadata)
+            foreach (var metadata in LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>())
             {
                 metadataString += metadata.Value.GetMetadataAsString() + "<br>";
             }

@@ -262,64 +262,68 @@ namespace NuSysApp
         /// </summary>
         private void CreateListViewRowUIElements()
         {
-            Debug.Assert(_itemsSource != null);
-
-            //Remove handlers of rows
-            foreach(var row in Rows)
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                RemoveRowHandlers(row);
-            }
-            //Clear the rows.
-            Rows.Clear();
+                Debug.Assert(_itemsSource != null);
 
-            //If itemssource is empty, no need to create rows.
-            if (_itemsSource.Count == 0)
-            {
-                return;
-            }
+                //Remove handlers of rows
+                foreach(var row in Rows)
+                {
+                    RemoveRowHandlers(row);
+                }
+                //Clear the rows.
+                Rows.Clear();
 
+                //If itemssource is empty, no need to create rows.
+                if (_itemsSource.Count == 0)
+                {
+                    return;
+                }
 
-            var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
             
-            //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
-            if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
-            {
-                if (ScrollBar != null) ScrollBar.Position = 0;
-                position = (ScrollBar == null) ? 0 : ScrollBar.Position;
 
-            }
+                var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
 
-            //Start index is the itemsource-index of the first item shown on the listview 
-            var startIndex = (int)Math.Floor(position * _itemsSource.Count);
+                //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
+                if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
+                {
+                    if (ScrollBar != null) ScrollBar.Position = 0;
+                    position = (ScrollBar == null) ? 0 : ScrollBar.Position;
 
-            //Number of rows needed to cover the screen at all times
-            //Make sures that the number of rows created does not exceed the number of rows in the source
-            var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1); 
-            
-            if (numberOfRows > _itemsSource.Count)
-            {
-                numberOfRows = _itemsSource.Count;
-            }
-            
-            //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
+                }
 
-            foreach (var itemSource in rowList)
-            {
-                var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
-                listViewRowUIElement.Item = itemSource;
-                listViewRowUIElement.Background = Colors.Transparent;
-                listViewRowUIElement.Bordercolor = Colors.Black;
-                listViewRowUIElement.BorderWidth = RowBorderThickness;
-                listViewRowUIElement.Width = Width - BorderWidth * 2;
-                listViewRowUIElement.Height = RowHeight;
-                PopulateListRow(listViewRowUIElement);
-                listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
-                listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
-                listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
-                listViewRowUIElement.RowDoubleTapped += ListViewRowUIElement_RowDoubleTapped;
-                Rows.Add(listViewRowUIElement);
-            }
+                //Start index is the itemsource-index of the first item shown on the listview 
+                var startIndex = (int)Math.Floor(position * _itemsSource.Count);
+
+                //Number of rows needed to cover the screen at all times
+                //Make sures that the number of rows created does not exceed the number of rows in the source
+                var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
+
+                if (numberOfRows > _itemsSource.Count)
+                {
+                    numberOfRows = _itemsSource.Count;
+                }
+
+                //Creates the row UI elements and adds them to the list.
+                var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
+
+                foreach (var itemSource in rowList)
+                {
+                    var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
+                    listViewRowUIElement.Item = itemSource;
+                    listViewRowUIElement.Background = Colors.Transparent;
+                    listViewRowUIElement.Bordercolor = Colors.Black;
+                    listViewRowUIElement.BorderWidth = RowBorderThickness;
+                    listViewRowUIElement.Width = Width - BorderWidth * 2;
+                    listViewRowUIElement.Height = RowHeight;
+                    PopulateListRow(listViewRowUIElement);
+                    listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
+                    listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
+                    listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
+                    listViewRowUIElement.RowDoubleTapped += ListViewRowUIElement_RowDoubleTapped;
+                    Rows.Add(listViewRowUIElement);
+                }
+            });
 
         }
         /// <summary>
@@ -556,6 +560,8 @@ namespace NuSysApp
         /// <param name="columnIndex"></param>
         public void SortByCol(int columnIndex)
         {
+
+            //TODO:NIC WE NEED TO COME UP WITH A SOLUTION TO FIX THIS
             Debug.Assert(columnIndex < _listColumns.Count);
             //If it isn't sorted by this index then just sort it normally
             if (columnIndex != _columnIndexSortedBy)
@@ -880,7 +886,6 @@ namespace NuSysApp
         {
             _backgroundRectangle.Width = this.Width;
             _backgroundRectangle.Height = this.Height;
-            _backgroundRectangle.Background = Colors.Red;
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();

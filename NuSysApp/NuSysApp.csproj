@@ -369,6 +369,8 @@
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterSubMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\DetailViewAliasesPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbUIElement.cs" />
@@ -528,6 +530,7 @@
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkRenderitem.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkViewModelWin2d.cs" />
+    <Compile Include="Components\Win2dTools\ToolResizerRenderItem.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />
@@ -547,6 +550,7 @@
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="FocusManager.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />

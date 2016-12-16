@@ -41,15 +41,13 @@ namespace NuSysApp
         public InkOptionsRenderItem InkOptions;
         public NodeMenuButtonRenderItem BtnDelete;
         private bool _isStopped;
-        private RenderItemInteractionManager _interactionManager;
         private bool _isInitialized;
 
         /// button for export
         public NodeMenuButtonRenderItem BtnExportTrail;
         public NuSysRenderer(CanvasAnimatedControl canvas, SessionRootRenderItem root) : base(canvas, root)
         {
-            _interactionManager = new RenderItemInteractionManager(this, canvas);
-            
+
         }
 
         public override void Start()

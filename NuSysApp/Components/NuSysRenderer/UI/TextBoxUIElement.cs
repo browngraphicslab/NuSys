@@ -78,6 +78,7 @@ namespace NuSysApp
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
             BorderWidth = 0;
+            Text = "";
         }
 
         /// <summary>
@@ -101,7 +102,7 @@ namespace NuSysApp
         /// Draws the text within the textbox
         /// </summary>
         /// <param name="ds"></param>
-        public void DrawText(CanvasDrawingSession ds)
+        public virtual void DrawText(CanvasDrawingSession ds)
         {
             // save the current transform of the drawing session
             var orgTransform = ds.Transform;
@@ -127,8 +128,13 @@ namespace NuSysApp
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created textFormat
+                //ds.DrawText(Text,
+                //    new Rect(BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
+                //    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
+                //    TextColor, textFormat);
                 ds.DrawText(Text,
-                    new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth),
+                    new Rect(BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
+                    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
                     TextColor, textFormat);
             }
 

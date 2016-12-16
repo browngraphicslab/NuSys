@@ -32,7 +32,7 @@ namespace NuSysApp
     public sealed partial class FreeFormViewer
     {
         private List<PointModel> _latestStroke;
-        private CanvasInteractionManager _canvasInteractionManager;
+        private RenderItemInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
 
         private FreeFormViewerViewModel _vm;
@@ -77,6 +77,9 @@ namespace NuSysApp
         {
             get { return _transform; }
         }
+        // Manages the focus of the render items, instantiated in constructor
+        public FocusManager FocusManager { get; private set; }
+
 
         public FreeFormViewer()
         {
@@ -125,9 +128,11 @@ namespace NuSysApp
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
-                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+                _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
             }
-       
+
+            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -163,7 +168,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_selectedLink is TrailRenderItem)
             {
@@ -184,23 +189,14 @@ namespace NuSysApp
                         next = trailList[i + 1].Title;
                     }
 
-                    currElement.ExportToHTML(prev, next);
+                    await currElement.ExportToHTML(prev, next);
                 }
                 
-                //OpenInBrowser(trailList);  <---- currently commented out, will probably work when this is not happening on the UI thread
+                StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+                var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
+                //open the exported html in browser
+                await Windows.System.Launcher.LaunchFileAsync(firstPage);
             }
-        }
-
-        /// <summary>
-        /// opens the exported trail in internet browser
-        /// </summary>
-        /// <param name="trailList"></param>
-        private async void OpenInBrowser(List<LibraryElementController> trailList)
-        {
-            StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
-            var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
-            //open the exported html in browser
-            Windows.System.Launcher.LaunchFileAsync(firstPage);
         }
 
         /// <summary>
@@ -272,6 +268,8 @@ namespace NuSysApp
                 _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
 
                 _collectionInteractionManager.Dispose();
+                //Remove focus from FocusManager
+                FocusManager.ClearFocus();
             }
 
             CurrentCollection = collection;
@@ -302,6 +300,12 @@ namespace NuSysApp
                 _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = false;
+            } else
+            {
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = true;
             }
 
             _collectionInteractionManager.RenderItemPressed += OnRenderItemPressed;

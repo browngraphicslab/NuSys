@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
 using NusysIntermediate;
@@ -12,6 +13,29 @@ namespace NusysServer
 {
     public class FileHelper
     {
+
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr Open(byte[] data, int length);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ActivateDocument(IntPtr document);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int RenderPage(int width, int height);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetTextBytes(byte[] sb);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetBuffer();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetPageWidth();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetPageHeight();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetNumComponents();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetNumPages();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GotoPage(int page);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Dispose(IntPtr pointer);
         /// <summary>
         /// the encoding when writing bytes to a file.
         /// </summary>
@@ -130,30 +154,63 @@ namespace NusysServer
                         fileUrl = Constants.SERVER_ADDRESS + contentDataModelId + fileExtension;
                         break;
                     case NusysConstants.ContentType.Word:
-                        //var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
-
+                        var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
+                        return pdfUrl;
                         break;
+
                     case NusysConstants.ContentType.PDF:
-                        //creates a file and url for each page image and returns a serialized list of urls
-                        var listOfBytes = JsonConvert.DeserializeObject<List<string>>(contentData);
-                        List<string> listOfUrls = new List<string>();
-                        int i = 0;
-                        foreach (var bytesOfImage in listOfBytes)
+                        var pdfBytes = Convert.FromBase64String(contentData);
+                        var doc = Open(pdfBytes, pdfBytes.Length);
+
+                        // Active the pdf document
+                        ActivateDocument(doc);
+                        var listOfUrls = new List<string>();
+                        for (int page = 0; page < GetNumPages() ; page++)
                         {
-                            filePath = Constants.WWW_ROOT + contentDataModelId + "_" + i +
-                                       NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
-                            var stream1 = File.Create(filePath);
-                            stream1.Dispose();
+                            // Goto a page
+                            GotoPage(page);
 
-                            using (var fstream = File.OpenWrite(filePath))
+                            // Get aspect ratio of the page
+                            var aspectRatio = GetPageWidth()/(double) GetPageHeight();
+
+                            // Render the Page
+                            var size = 2000;
+                            var numBytes = RenderPage((int) (size*aspectRatio), size);
+
+                            // Get a reference to the buffer that contains the rendererd page
+                            var buffer = GetBuffer();
+
+                            // Copy the buffer from unmanaged to managed memory (mngdArray contains the bytes of the pdf page rendered as PNG)
+                            byte[] mngdArray = new byte[numBytes];
+                            try
                             {
-                                var bytes = Convert.FromBase64String(bytesOfImage);
-                                fstream.Write(bytes, 0, bytes.Length);
-                            }
+                                Marshal.Copy(buffer, mngdArray, 0, numBytes);
+                                filePath = Constants.WWW_ROOT + contentDataModelId + "_" + page +
+                                           NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
 
-                            listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + i +
-                                           NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
-                            i++;
+                                var stream1 = File.Create(filePath);
+                                stream1.Dispose();
+
+                                using (var fstream = File.OpenWrite(filePath))
+                                {
+                                    var bytes = mngdArray;
+                                    fstream.Write(bytes, 0, bytes.Length);
+                                }
+                                listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + page +
+                                               NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
+                            }
+                        }
+                        try
+                        {
+                            Dispose(doc);
+                        }
+                        catch (Exception e)
+                        {
+                            return JsonConvert.SerializeObject(listOfUrls);
                         }
                         return JsonConvert.SerializeObject(listOfUrls);
                         break;

@@ -48,10 +48,10 @@ namespace NuSysApp
         {
             base.Update(parentLocalToScreenTransform);
             _metadataKeysList.Width = Width/2;
-            _metadataKeysList.Height = Height - FILTER_CHOOSER_HEIGHT - UIDefaults.TopBarHeight - BUTTON_BAR_HEIGHT;
+            _metadataKeysList.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT;
 
             _metadataValuesList.Width = Width / 2;
-            _metadataValuesList.Height = Height - FILTER_CHOOSER_HEIGHT - UIDefaults.TopBarHeight - BUTTON_BAR_HEIGHT;
+            _metadataValuesList.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT;
             _metadataValuesList.Transform.LocalX = Width/2;
         }
 
@@ -243,7 +243,7 @@ namespace NuSysApp
             _metadataKeysList.RowDragCompleted += _metadataKeysList_RowDragCompleted; ;
 
             _metadataKeysList.AddItems(new List<string>() { "1", "2", "3", "4", "5", "6", "7", "9", "10", });
-            _metadataKeysList.Transform.LocalPosition = new Vector2(0, FILTER_CHOOSER_HEIGHT + UIDefaults.TopBarHeight);
+            _metadataKeysList.Transform.LocalPosition = new Vector2(0, FILTER_CHOOSER_HEIGHT);
             _metadataKeysList.AddItems((Vm as MetadataToolViewModel)?.AllMetadataDictionary.Keys.ToList());
 
             AddChild(_metadataKeysList);
@@ -265,7 +265,7 @@ namespace NuSysApp
             _metadataValuesList.RowDragged += _metadataValuesList_RowDragged; ;
             _metadataValuesList.RowDragCompleted += _metadataValuesList_RowDragCompleted; ;
             _metadataValuesList.RowDoubleTapped += _metadataValuesList_RowDoubleTapped; ;
-            _metadataValuesList.Transform.LocalPosition = new Vector2(Width/2, FILTER_CHOOSER_HEIGHT + UIDefaults.TopBarHeight);
+            _metadataValuesList.Transform.LocalPosition = new Vector2(Width/2, FILTER_CHOOSER_HEIGHT);
 
 
             AddChild(_metadataValuesList);

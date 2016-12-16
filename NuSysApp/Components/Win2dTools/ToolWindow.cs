@@ -7,6 +7,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Converters;
 using NuSysApp.Components.NuSysRenderer.UI;
 
@@ -52,6 +53,11 @@ namespace NuSysApp
         /// </summary>
         private ButtonUIElement _parentOperatorButton;
 
+        /// <summary>
+        /// This is the resizer triangle that allows you to resize a tool
+        /// </summary>
+        private ToolResizerRenderItem _resizer;
+
 
         /// <summary>
         /// The height of the rows and button for the filter chooser dropdown menu
@@ -70,30 +76,7 @@ namespace NuSysApp
         private const int MIN_HEIGHT = 300;
 
         private const int MIN_WIDTH = 200;
-        /*
-        public override float Width
-        {
-            set
-            {
-                if (value > MIN_WIDTH)
-                {
-                    base.Width = value;
-                }
-            }
-        }
 
-        public override float Height
-        {
-            set
-            {
-                if (value > MIN_HEIGHT)
-                {
-                    base.Height = value;
-                }
-            }
-        }
-        */
-        private bool _setUpComponents;
 
         /// <summary>
         /// The rectangle at the bottom of the tool window
@@ -113,6 +96,7 @@ namespace NuSysApp
             SetUpButtons();
             SetUpDraggableIcons();
             SetUpBottomButtonBar();
+            SetUpResizer();
             Vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
             this.BorderWidth = 0;
             Height = (float)Vm.Height;
@@ -121,6 +105,47 @@ namespace NuSysApp
             Transform.LocalY = (float)Vm.Y;
         }
 
+        private void SetUpResizer()
+        {
+            _resizer = new ToolResizerRenderItem(this, ResourceCreator)
+            {
+                Width = 60,
+                Height = 60,
+                Background = Colors.Black
+            };
+            //_resizer.
+            _resizer.Dragged += _resizer_Dragged;
+            AddChild(_resizer);
+
+        }
+
+        private void _resizer_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
+            var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+            var delta = pointer.DeltaSinceLastUpdate;
+            var newX = Vm.Width + delta.X / (transform.M11 * collection.Camera.S.M11);
+            var newY = Vm.Height + delta.Y / (transform.M22 * collection.Camera.S.M22);
+            if (newX > MIN_WIDTH && newY > MIN_HEIGHT)
+            {
+                this.Vm.Controller.SetSize(newX, newY);
+
+            }
+            else if (newX > MIN_WIDTH)
+            {
+                this.Vm.Controller.SetSize(newX, Vm.Height);
+            }
+            else if (newY > MIN_HEIGHT)
+            {
+                this.Vm.Controller.SetSize(Vm.Width, newY);
+            }
+            else
+            {
+                return;
+            }
+            SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
+
+        }
 
         public override Task Load()
         {
@@ -339,20 +364,21 @@ namespace NuSysApp
                 ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
                 Background = Constants.color1,
                 ListBackground = Constants.color2,
-                ListBorder = 3
+                ListBorder = 1
                 
             };
+            foreach (var filterType in Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>())
+            {
+                _filterChooser.AddOption(filterType.ToString());
+            }
+            _filterChooser.CurrentSelection = Vm.Filter.ToString();
+
             // add a method for when an item is selected in the dropdown
             _filterChooser.Selected += FilterChooserItem_Clicked; //TODO DISPOSE OF THIS
 
             // add all the filter options to the dropdown
             _filterChooser.Dragged += FilterChooserDropdownButtonOnDragged;
 
-            foreach (var filterType in Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>())
-            {
-                _filterChooser.AddOption(filterType.ToString());
-            }
-            _filterChooser.CurrentSelection = Vm.Filter.ToString();
             AddChild(_filterChooser);
         }
 
@@ -495,7 +521,9 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-
+            _resizer.Transform.LocalPosition = new Vector2((float)(Width - _resizer.Width), (float)(Height - _resizer.Height));
+            Height = (float) Vm.Height;
+            Width = (float) Vm.Width;
             //Make the width of the filter chooser and the button always fill the window
             if (_filterChooser != null)
             {
