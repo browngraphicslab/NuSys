@@ -111,7 +111,6 @@ namespace NuSysApp
             {
                 Width = 60,
                 Height = 60,
-                Background = Colors.Black
             };
             //_resizer.
             _resizer.Dragged += _resizer_Dragged;

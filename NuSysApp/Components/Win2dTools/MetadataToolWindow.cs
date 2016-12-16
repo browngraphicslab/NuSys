@@ -32,14 +32,15 @@ namespace NuSysApp
         /// <summary>
         /// Sets up the item to be shown under the pointer when you drag a row
         /// </summary>
-        private void SetUpDragFilterItem()
+        private async void SetUpDragFilterItem()
         {
             _dragFilterItem = new RectangleUIElement(this, ResourceCreator)
             {
                 Height = 50,
                 Width = 50,
-                Background = Colors.Red
+                Background = Colors.Transparent
             };
+            _dragFilterItem.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/filter.png"));
             AddChild(_dragFilterItem);
             _dragFilterItem.IsVisible = false;
         }
