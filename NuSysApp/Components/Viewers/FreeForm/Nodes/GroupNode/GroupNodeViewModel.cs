@@ -88,10 +88,10 @@ namespace NuSysApp
 
 
 
-        public ToolStartable GetToolStartable()
-        {
-            return this;
-        }
+        //public ToolStartable GetToolStartable()
+        //{
+        //    //return this;
+        //}
 
         ///// <summary>
         ///// Will either add this tool as a parent if dropped on top of an existing tool, or create a brand new tool filter chooser view. 

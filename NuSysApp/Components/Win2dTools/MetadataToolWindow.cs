@@ -80,7 +80,7 @@ namespace NuSysApp
                     if (!_metadataKeysList.GetSelectedItems().Any() || _metadataKeysList.GetSelectedItems().First() != vm.Selection.Item1)
                     {
                         _metadataKeysList.SelectItem(vm.Selection.Item1);
-                        _metadataKeysList.ScrollTo(vm.Selection.Item1);
+                        //_metadataKeysList.ScrollTo(vm.Selection.Item1);
                     }
                 }
                 else
