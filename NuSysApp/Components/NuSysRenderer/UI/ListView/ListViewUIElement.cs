@@ -889,9 +889,17 @@ namespace NuSysApp
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
-            foreach (var row in Rows)
+            var cellVerticalOffset = BorderWidth;
+            var headerOffset = Transform.LocalPosition.Y;
+            var scrollOffset = _scrollOffset % RowHeight;
+            //Draws every row
+            foreach (var row in Rows.ToArray())
             {
+                //Position is the position of the bottom of the row
+                var position = cellVerticalOffset - scrollOffset + headerOffset;
+                row.Transform.LocalPosition = new Vector2(BorderWidth, position);
                 row?.Update(parentLocalToScreenTransform);
+                cellVerticalOffset += row.Height;
             }
             base.Update(parentLocalToScreenTransform);
         }
@@ -910,19 +918,11 @@ namespace NuSysApp
             // Creates a clipping of the drawing session based on _clippingrect
             using (ds.CreateLayer(1f, _clippingRect))
             {
-
-                var cellVerticalOffset = BorderWidth;
-                var headerOffset = Transform.LocalPosition.Y;
-                var scrollOffset = _scrollOffset % RowHeight;
+                
                 //Draws every row
                 foreach (var row in Rows.ToArray())
                 {
-                    //Position is the position of the bottom of the row
-                    var position = cellVerticalOffset - scrollOffset + headerOffset;
-                    row.Transform.LocalPosition = new Vector2(BorderWidth, position);
                     row.Draw(ds);
-
-                    cellVerticalOffset += row.Height;
                 }
 
             }
