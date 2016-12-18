@@ -264,7 +264,7 @@ namespace NuSysApp
         /// children know they have a new parent and let the links know to replace the basic tool view with the new metadata tool view. After, it disposes of the 
         /// basic tool.
         /// </summary>
-        public async Task SwitchToAllMetadataTool(float x, float y)
+        public async Task SwitchToAllMetadataTool()
         {
             if ((this as MetadataToolViewModel) == null)
             {
@@ -289,8 +289,8 @@ namespace NuSysApp
                             //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
                         }
                     }
-                    controller.SetSize(500, 500);
-                    controller.SetPosition(x, y);
+                    controller.SetSize(Width, Height);
+                    controller.SetPosition(X, Y);
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
                     Controller.FireFilterTypeAllMetadataChanged(viewmodel);
 
@@ -304,7 +304,7 @@ namespace NuSysApp
         }
 
         //Switches to the basic tool view from metadatatoolview. It will not do anything if it is already a basic tool
-        public async Task SwitchToBasicTool(ToolModel.ToolFilterTypeTitle filter, float x, float y)
+        public async Task SwitchToBasicTool(ToolModel.ToolFilterTypeTitle filter)
         {
             if ((this as BasicToolViewModel) == null)
             {
@@ -330,8 +330,8 @@ namespace NuSysApp
                         }
                     }
                     viewmodel.Filter = filter;
-                    controller.SetSize(500,500);
-                    controller.SetPosition(x, y);
+                    controller.SetSize(Width, Height);
+                    controller.SetPosition(X, Y);
 
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
                     Controller.FireFilterTypeAllMetadataChanged(viewmodel);

@@ -403,12 +403,12 @@ namespace NuSysApp
 
             if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
-                await Vm.SwitchToAllMetadataTool((float)Transform.LocalX, (float)Transform.LocalY);
+                await Vm.SwitchToAllMetadataTool();
                 Delete();
             }
             else if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
-                await Vm.SwitchToBasicTool(filter, (float)Transform.LocalX, (float)Transform.LocalY);
+                await Vm.SwitchToBasicTool(filter);
                 Delete();
             }
             else
