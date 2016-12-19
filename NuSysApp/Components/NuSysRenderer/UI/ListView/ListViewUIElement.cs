@@ -265,15 +265,18 @@ namespace NuSysApp
                     return;
                 }
 
-            
 
-                var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+
+                var position = GetPosition();
 
                 //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
                 if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
                 {
-                    if (ScrollBar != null) ScrollBar.Position = 0;
-                    position = (ScrollBar == null) ? 0 : ScrollBar.Position;
+                    if (ScrollBar != null)
+                    {
+                        SetPosition(0);
+                    }
+                    position = GetPosition();
 
                 }
 
@@ -311,6 +314,35 @@ namespace NuSysApp
             });
 
         }
+
+        private float GetPosition()
+        {
+            return (ScrollBar == null) ? 0 : ScrollBar.Position;
+        }
+        private void SetPosition(float position)
+        {
+            _scrollOffset = position * (_heightOfAllRows);
+            ScrollBar.Position = position;
+
+        }
+
+        private void ChangePosition(float delta)
+        {
+            var currentPosition = GetPosition();
+            if (delta < 0)
+            {
+                //If you're going up (position going down), set position + delta, with 0 as min.
+                SetPosition(Math.Max(0, currentPosition + delta));
+            }
+
+            if (delta > 0)
+            {
+                //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                var pos = (currentPosition + delta + ScrollBar.Range > 1f) ? 1f - ScrollBar.Range : currentPosition + delta;
+                SetPosition(pos);
+            }
+
+        }
         /// <summary>
         /// Fires RowDoubleTapped event listened by container
         /// </summary>
@@ -340,15 +372,13 @@ namespace NuSysApp
             
             if(delta < 0)
             {
-                ScrollBar.ChangePosition(0.035);
+                ChangePosition(1f/_itemsSource.Count);
 
             }
             else if(delta> 0)
             {
-                ScrollBar.ChangePosition(-0.035);
-
+                ChangePosition(-1f/_itemsSource.Count);
             }
-
 
         }
 
@@ -534,7 +564,6 @@ namespace NuSysApp
                 var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _itemsSource.Count);
 
                 ScrollBar.ChangePosition(deltaY);
-
                 
             }
         }
@@ -707,7 +736,7 @@ namespace NuSysApp
                 return;
             }
             //Sets the position of the ScrollBar to the position of the item in the list
-            ScrollBar.Position = (float)i / _itemsSource.Count;
+            SetPosition((float)i / _itemsSource.Count);
         }
 
         /// <summary>
@@ -858,9 +887,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="source"></param>
         /// <param name="position"></param>
-        public override void ScrollBarPositionChanged(object source, double position)
+        public override void ScrollBarPositionChanged(object source, float position)
         {
-            _scrollOffset = (float) position * (_heightOfAllRows);
+            SetPosition(position);
+        
         }
         /// <summary>
         /// Calls update on every row, since rows are not children.
@@ -871,13 +901,24 @@ namespace NuSysApp
         {
             _backgroundRectangle.Width = this.Width;
             _backgroundRectangle.Height = this.Height;
-            ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
+            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
+
+            var cellVerticalOffset = BorderWidth;
+            var headerOffset = Transform.LocalPosition.Y;
+            var scrollOffset = _scrollOffset % RowHeight;
             foreach (var row in Rows)
             {
+                //Position is the position of the bottom of the row
+                var position = cellVerticalOffset - scrollOffset + headerOffset;
+                row.Transform.LocalPosition = new Vector2(BorderWidth, position);
+
                 row?.Update(parentLocalToScreenTransform);
+                cellVerticalOffset += row.Height;
+
             }
+
             base.Update(parentLocalToScreenTransform);
         }
         /// <summary>
@@ -895,19 +936,10 @@ namespace NuSysApp
             // Creates a clipping of the drawing session based on _clippingrect
             using (ds.CreateLayer(1f, _clippingRect))
             {
-
-                var cellVerticalOffset = BorderWidth;
-                var headerOffset = Transform.LocalPosition.Y;
-                var scrollOffset = _scrollOffset % RowHeight;
                 //Draws every row
                 foreach (var row in Rows.ToArray())
                 {
-                    //Position is the position of the bottom of the row
-                    var position = cellVerticalOffset - scrollOffset + headerOffset;
-                    row.Transform.LocalPosition = new Vector2(BorderWidth, position);
                     row.Draw(ds);
-
-                    cellVerticalOffset += row.Height;
                 }
 
             }
@@ -934,7 +966,6 @@ namespace NuSysApp
             {
                 return null;
             }
-
 
             //If scroll bar is hit, return that instead of the row underneath.
             var scrollBarht = ScrollBar.HitTest(screenPoint);
@@ -966,10 +997,6 @@ namespace NuSysApp
             _selectedElements?.Clear();
             _itemsSource?.Clear();
             _listColumns?.Clear();
-            //Rows = null;
-            //_selectedElements = null;
-            //_itemsSource = null;
-            //_listColumns = null;
             base.Dispose();
         }
 
