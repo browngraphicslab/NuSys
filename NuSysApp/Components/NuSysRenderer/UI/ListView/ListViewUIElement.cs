@@ -314,18 +314,32 @@ namespace NuSysApp
             });
 
         }
-
+        /// <summary>
+        /// Returns the position of the ScrollBar if it has been initialized.
+        /// Otherwise, returns 0.
+        /// </summary>
+        /// <returns></returns>
         private float GetPosition()
         {
             return (ScrollBar == null) ? 0 : ScrollBar.Position;
         }
+        /// <summary>
+        /// Sets the position of the listview to the position passed in.
+        /// Also updates the scrollbar.
+        /// </summary>
+        /// <param name="position"></param>
         private void SetPosition(float position)
         {
             _scrollOffset = position * (_heightOfAllRows);
             ScrollBar.Position = position;
 
         }
-
+        /// <summary>
+        /// Changes the position by the float passed in.
+        /// If delta is negative, then Position is going down and the bar is being lowered
+        /// If delta is positive, then Position is going up and the bar is being raised
+        /// </summary>
+        /// <param name="delta"></param>
         private void ChangePosition(float delta)
         {
             var currentPosition = GetPosition();
@@ -372,12 +386,12 @@ namespace NuSysApp
             
             if(delta < 0)
             {
-                ChangePosition(1f/_itemsSource.Count);
+                ChangePosition(1f/_itemsSource.Count); //This moves the listview down by the height of one row.
 
             }
             else if(delta> 0)
             {
-                ChangePosition(-1f/_itemsSource.Count);
+                ChangePosition(-1f/_itemsSource.Count); //This moves the listview up by the height of one row.
             }
 
         }
