@@ -940,7 +940,6 @@ namespace NuSysApp
         /// <returns></returns>
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
-
             var clippingRect = new Rect(0, 0, Width, Height);
             var localPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
             //If the point being hittested is not inside the visible part of the ListView (ie, the clipping rect), we return null.
@@ -948,7 +947,6 @@ namespace NuSysApp
             {
                 return null;
             }
-
 
             //If scroll bar is hit, return that instead of the row underneath.
             var scrollBarht = ScrollBar.HitTest(screenPoint);

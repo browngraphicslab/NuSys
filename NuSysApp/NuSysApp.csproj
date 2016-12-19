@@ -311,6 +311,8 @@
     <Compile Include="Components\MediaPlayer\BaseMediaPlayer.cs" />
     <Compile Include="Components\MediaPlayer\MediaPlayerProgressBar.cs" />
     <Compile Include="Components\MediaPlayer\VideoPlayer.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartElement.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartUIElement.cs" />
     <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
       <DependentUpon>ChatBoxView.xaml</DependentUpon>
     </Compile>
@@ -522,6 +524,7 @@
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Win2dTools\BarToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />

@@ -40,7 +40,7 @@ namespace NuSysApp
         private BasicToolViewModel _vm;
         private BasicToolListInnerView _listInnerView;
         private PieToolInnerView _pieInnerView;
-
+        private BarToolInnerView _barInnerView;
 
 
         public BasicToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
@@ -66,12 +66,15 @@ namespace NuSysApp
         {
             _listInnerView = new BasicToolListInnerView(this, ResourceCreator, _vm);
             _pieInnerView = new PieToolInnerView(this, ResourceCreator, _vm);
+            _barInnerView = new BarToolInnerView(this, ResourceCreator, _vm);
 
             _listInnerView.IsVisible = true;
             _pieInnerView.IsVisible = false;
+            _barInnerView.IsVisible = false;
 
             AddChild(_listInnerView);
             AddChild(_pieInnerView);
+            AddChild(_barInnerView);
 
             _currentViewMode = ViewMode.List;
 
@@ -200,6 +203,7 @@ namespace NuSysApp
             //RemoveChild(_toolView);
             _listInnerView.IsVisible = true;
             _pieInnerView.IsVisible = false;
+            _barInnerView.IsVisible = false;
 
             _toolView = _listInnerView;
             //AddChild(_toolView);
@@ -219,6 +223,8 @@ namespace NuSysApp
             //RemoveChild(_toolView);
             _listInnerView.IsVisible = false;
             _pieInnerView.IsVisible = true;
+            _barInnerView.IsVisible = false;
+
             _toolView = _pieInnerView;
             //AddChild(_toolView);
 
@@ -235,7 +241,16 @@ namespace NuSysApp
                 return;
             }
 
-            
+            _listInnerView.IsVisible = false;
+            _pieInnerView.IsVisible = false;
+            _barInnerView.IsVisible = true;
+
+            _toolView = _barInnerView;
+            //AddChild(_toolView);
+
+            _vm.ReloadPropertiesToDisplay();
+            _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
+            _currentViewMode = ViewMode.BarChart;
 
         }
 
