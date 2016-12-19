@@ -48,15 +48,15 @@ namespace NuSysApp
             _vm = vm;
             SetUpBottomButtons();
             SetUpInnerViews();
-            _toolView = new BasicToolListInnerView(this, ResourceCreator, vm);
-            AddChild(_toolView);
+            _toolView = _listInnerView;
+
+            //AddChild(_toolView);
 
             //vm.Controller.SetLocation(x, y);
 
 
             vm.ReloadPropertiesToDisplay();
             _toolView.SetProperties((Vm as BasicToolViewModel).PropertiesToDisplay);
-            _currentViewMode = ViewMode.List;
             //SetSize(250, 450);
             (vm.Controller as BasicToolController).SelectionChanged += OnSelectionChanged;
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
@@ -67,7 +67,16 @@ namespace NuSysApp
             _listInnerView = new BasicToolListInnerView(this, ResourceCreator, _vm);
             _pieInnerView = new PieToolInnerView(this, ResourceCreator, _vm);
 
-            
+            _listInnerView.IsVisible = true;
+            _pieInnerView.IsVisible = false;
+
+            AddChild(_listInnerView);
+            AddChild(_pieInnerView);
+
+            _currentViewMode = ViewMode.List;
+
+
+
         }
 
         public override void Dispose()
@@ -188,14 +197,16 @@ namespace NuSysApp
             {
                 return;
             }
-            RemoveChild(_toolView);
+            //RemoveChild(_toolView);
+            _listInnerView.IsVisible = true;
+            _pieInnerView.IsVisible = false;
+
             _toolView = _listInnerView;
-            AddChild(_toolView);
+            //AddChild(_toolView);
 
             _vm.ReloadPropertiesToDisplay();
             _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
             _currentViewMode = ViewMode.List;
-            MoveFilterChooserToTop();
 
         }
 
@@ -205,14 +216,15 @@ namespace NuSysApp
             {
                 return;
             }
-            RemoveChild(_toolView);
+            //RemoveChild(_toolView);
+            _listInnerView.IsVisible = false;
+            _pieInnerView.IsVisible = true;
             _toolView = _pieInnerView;
-            AddChild(_toolView);
+            //AddChild(_toolView);
 
             _vm.ReloadPropertiesToDisplay();
             _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
             _currentViewMode = ViewMode.PieChart;
-            MoveFilterChooserToTop();
 
         }
 
@@ -223,7 +235,7 @@ namespace NuSysApp
                 return;
             }
 
-            MoveFilterChooserToTop();
+            
 
         }
 

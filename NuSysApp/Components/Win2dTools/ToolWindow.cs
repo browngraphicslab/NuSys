@@ -391,12 +391,6 @@ namespace NuSysApp
         }
 
 
-        public void MoveFilterChooserToTop()
-        {
-            RemoveChild(_filterChooser);
-            AddChild(_filterChooser);
-        }
-
         private void FilterChooserDropdownButtonOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
