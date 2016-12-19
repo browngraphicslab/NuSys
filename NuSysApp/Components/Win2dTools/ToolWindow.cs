@@ -168,9 +168,17 @@ namespace NuSysApp
         {
             //TODO: Remove the tool window as a child
             _filterChooser.Dragged -= FilterChooserDropdownButtonOnDragged;
+            _filterChooser.Selected -= FilterChooserItem_Clicked;
+            _resizer.Dragged -= _resizer_Dragged;
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
-            Vm.Dispose();
+            _draggableCollectionElement.Dragged -= CollectionOrStack_Dragging;
+            _draggableCollectionElement.DragCompleted -= CollectionOrStack_DragCompleted; 
+            _draggableStackElement.Dragged -= CollectionOrStack_Dragging; 
+            _draggableStackElement.DragCompleted -= CollectionOrStack_DragCompleted; 
+            _deleteButton.Tapped -= _deleteButton_Tapped;
+            _refreshButton.Tapped -= _refreshButton_Tapped;
+            //Vm.Dispose();
             base.Dispose();
         }
 
@@ -408,15 +416,15 @@ namespace NuSysApp
         private async void FilterChooserItem_Clicked(DropdownUIElement sender, string item)
         {
             var filter = (ToolModel.ToolFilterTypeTitle)Enum.Parse(typeof(ToolModel.ToolFilterTypeTitle), item);
-
+            _filterChooser.HideDropDown();
             if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
-                await Vm.SwitchToAllMetadataTool((float)Transform.LocalX, (float)Transform.LocalY);
+                await Vm.SwitchToAllMetadataTool();
                 Delete();
             }
             else if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
-                await Vm.SwitchToBasicTool(filter, (float)Transform.LocalX, (float)Transform.LocalY);
+                await Vm.SwitchToBasicTool(filter);
                 Delete();
             }
             else
@@ -492,7 +500,7 @@ namespace NuSysApp
             {
                 Vm.Controller.Delete(this);
             });
-            Dispose();
+            //Dispose();
         }
 
         /// <summary>

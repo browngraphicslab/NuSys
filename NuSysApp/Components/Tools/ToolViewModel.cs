@@ -230,41 +230,11 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns a boolean representing if creating a tool chain from this tool to the passed in tool will create a loop
-        /// </summary>
-        public bool CreatesLoop(ToolViewModel toolViewModel)
-        {
-            bool createsLoop = false;
-            var controllers = new List<ToolStartable>(Controller.ToolModel.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
-
-            while (controllers != null && controllers.Count != 0)
-            {
-                if (controllers.Contains(toolViewModel.Controller))
-                {
-                    createsLoop = true;
-                    break;
-                }
-                var tempControllers = new List<ToolStartable>();
-                foreach (var controller in controllers)
-                {
-                    tempControllers = new List<ToolStartable>(tempControllers.Union(new List<ToolStartable>(
-                            controller.GetParentIds().Select(
-                                item =>
-                                    ToolController.ToolControllers.ContainsKey(item)
-                                        ? ToolController.ToolControllers[item]
-                                        : null))));
-                }
-                controllers = tempControllers;
-            }
-            return createsLoop;
-        }
-
-        /// <summary>
         /// Switches from basic tool view to all metadata tool view. Transfers all parents from basic tool view to metadata toolview. Fires events to let 
         /// children know they have a new parent and let the links know to replace the basic tool view with the new metadata tool view. After, it disposes of the 
         /// basic tool.
         /// </summary>
-        public async Task SwitchToAllMetadataTool(float x, float y)
+        public async Task SwitchToAllMetadataTool()
         {
             if ((this as MetadataToolViewModel) == null)
             {
@@ -289,22 +259,16 @@ namespace NuSysApp
                             //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
                         }
                     }
-                    controller.SetSize(500, 500);
-                    controller.SetPosition(x, y);
+                    controller.SetSize(Width, Height);
+                    controller.SetPosition(X, Y);
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
                     Controller.FireFilterTypeAllMetadataChanged(viewmodel);
-
                 });
-                //var wvm = SessionController.Instance.ActiveFreeFormViewer;
-                //wvm.AtomViewList.Add(view);
-
-                //this.FireReplacedToolLinkAnchorPoint(viewmodel);
             }
-            //this.Dispose();
         }
 
         //Switches to the basic tool view from metadatatoolview. It will not do anything if it is already a basic tool
-        public async Task SwitchToBasicTool(ToolModel.ToolFilterTypeTitle filter, float x, float y)
+        public async Task SwitchToBasicTool(ToolModel.ToolFilterTypeTitle filter)
         {
             if ((this as BasicToolViewModel) == null)
             {
@@ -315,137 +279,30 @@ namespace NuSysApp
                     BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
                     foreach (var id in Controller.GetParentIds())
                     {
-                        controller.AddParent(ToolController.ToolControllers[id]);
-
-                        var parentController = ToolController.ToolControllers[id] as ElementController;
+                        var parentController = ToolController.ToolControllers[id] as ToolStartable;
                         Debug.Assert(parentController != null);
-                        if (parentController != null)
-                        {
-                            //var linkModel = new ToolLinkModel();
-                            //linkModel.InAtomId = parentController.Id;
-                            //linkModel.OutAtomId = model.Id;
-                            //var linkController = new ToolLinkController(linkModel, parentController, controller);
-                            //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-                            //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
-                        }
+                        controller.AddParent(parentController);
                     }
                     viewmodel.Filter = filter;
-                    controller.SetSize(500,500);
-                    controller.SetPosition(x, y);
+                    controller.SetSize(Width, Height);
+                    controller.SetPosition(X, Y);
 
                     SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
                     Controller.FireFilterTypeAllMetadataChanged(viewmodel);
 
                 });
-                //var wvm = SessionController.Instance.ActiveFreeFormViewer;
-                //wvm.AtomViewList.Add(view);
-
-                //this.FireReplacedToolLinkAnchorPoint(viewmodel);
             }
         }
-
-        /// <summary>
-        /// Will either add this tool as a parent if dropped on top of an existing tool, or create a brand new tool filter chooser view.
-        /// </summary>
-        public void FilterIconDropped(ToolWindow dragDestination, double x, double y)
-        {
-            //if (hitsStart.Where(uiElem => (uiElem is FrameworkElement) && (uiElem as FrameworkElement).DataContext is ToolViewModel).ToList().Any())
-            //{
-            //    var hitsStartList = hitsStart.Where(uiElem => (uiElem is AnimatableUserControl) && (uiElem as AnimatableUserControl).DataContext is ToolViewModel).ToList();
-            //    AddFilterToExistingTool(hitsStartList, wvm);
-            //}
-            //else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
-            //{
-            //    var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
-            //    AddFilterToFilterToolView(hitsStartList, wvm);
-            //}
-
-            if (dragDestination != null)
-            {
-                var toolViewModel = dragDestination.Vm;
-                AddFilterToExistingTool(toolViewModel, null); //FIX THIS SHIT
-            }
-            else
-            {
-                AddNewFilterTool(x, y);
-            }
-        }
-
-        /// <summary>
-        ///creates new filter tool at specified location
-        /// </summary>
-        public void AddNewFilterTool(double x, double y)
-        {
-            //var toolFilter = new ToolFilterView(x, y, this);
-
-            //var linkviewmodel = new ToolLinkViewModelWin2d(this, toolFilter);
-            //var link = new ToolLinkView(linkviewmodel);
-
-            //Canvas.SetZIndex(link, Canvas.GetZIndex(toolFilter) - 1);
-            //wvm.AtomViewList.Add(toolFilter);
-            //wvm.AtomViewList.Add(link);
-            UITask.Run(() =>
-            {
-
-                BasicToolModel model = new BasicToolModel();
-                BasicToolController controller = new BasicToolController(model);
-                BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-                viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
-                viewmodel.Controller.AddParent(Controller);
-                controller.SetPosition(x, y);
-                controller.SetSize(500, 500);
-
-                //var linkModel = new ToolLinkModel();
-                //linkModel.InAtomId = this.Id;
-                //linkModel.OutAtomId = model.Id;
-                //var linkController = new ToolLinkController(linkModel, this.Controller, controller);
-                //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-                
-
-                //Controller.SetPosition(X, Y);
-                SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
-                //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
-
-
-            });
-        }
-        
-
-        /// <summary>
-        ///Adds tool as parent to existing tool. 
-        /// </summary>
-        public void AddFilterToExistingTool(ToolViewModel toolViewModel, FreeFormViewerViewModel wvm)
-        {
-            if (toolViewModel != null && toolViewModel != this)
-            {
-                if (!CreatesLoop(toolViewModel))
-                {
-                    //var linkviewmodel = new ToolLinkViewModelWin2d(this, toolViewModel);
-                    //var link = new ToolLinkView(linkviewmodel);
-                    //Canvas.SetZIndex(link, Canvas.GetZIndex(hitsStartList.First()) - 1);
-                    //wvm.AtomViewList.Add(link);
-                    //var linkModel = new ToolLinkModel();
-                    //linkModel.InAtomId = this.Id;
-                    //linkModel.OutAtomId = toolViewModel.Id;
-                    //var linkController = new ToolLinkController(linkModel, this.Controller, toolViewModel.Controller);
-                    //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-                    //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
-                    toolViewModel.Controller.AddParent(Controller);
-                }
-            }
-        }
-
-       
 
         /// <summary>
         /// Removes all the listeners and calls dispose on the controller
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             _controller.IdsToDisplayChanged -= ControllerOnLibraryIdsToDisplayChanged;
             Controller.SizeChanged -= OnSizeChanged;
-            Controller.Dispose();
-            //Disposed?.Invoke(this, Controller.GetID());
+            //Controller.Dispose();
+            base.Dispose();
         }
 
         /// <summary>

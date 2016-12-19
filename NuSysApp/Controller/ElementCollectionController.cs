@@ -9,7 +9,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class ElementCollectionController : ElementController, ToolStartable
+    public class ElementCollectionController : ToolStartable
     {
 
         public delegate void CameraPositionChangedHandler(float x, float y);
@@ -129,11 +129,15 @@ namespace NuSysApp
         public void AddChild( ElementController child )
         {
             ChildAdded?.Invoke(this, child);
+            var outputLibraryIds = GetOutputLibraryIds();
+            FireOutputLibraryIdsChanged(outputLibraryIds);
         }
 
         public void RemoveChild(ElementController child)
         {
             ChildRemoved?.Invoke(this, child);
+            var outputLibraryIds = GetOutputLibraryIds();
+            FireOutputLibraryIdsChanged(outputLibraryIds);
         }
 
         public void SetCameraPosition(float x, float y)
@@ -173,7 +177,7 @@ namespace NuSysApp
         /// The bool recursively reload does nothing because the collection can only ever be the
         /// start of a tool chain.
         /// </summary>
-        public HashSet<string> GetOutputLibraryIds()
+        public override HashSet<string> GetOutputLibraryIds()
         {
             var libraryElementIds = new HashSet<string>();
             var collectionLibraryElementModel =
@@ -196,15 +200,15 @@ namespace NuSysApp
         /// </summary>
         /// <param name="recursiveRefresh"></param>
         /// <returns></returns>
-        public IEnumerable<string> GetUpdatedDataList()
+        public override IEnumerable<string> GetUpdatedDataList()
         {
             return GetOutputLibraryIds();
         }
 
-        public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
-        public event EventHandler<string> Disposed;
-        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
-        public string GetID()
+        //public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
+        //public event EventHandler<string> Disposed;
+        //public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+        public override string GetID()
         {
             return Id;
         }
@@ -212,14 +216,15 @@ namespace NuSysApp
         /// <summary>
         /// Returns an empty hashset because a collection has no parents
         /// </summary>
-        public HashSet<string> GetParentIds()
+        public override HashSet<string> GetParentIds()
         {
             return new HashSet<string>();
         }
 
-        public void RefreshFromTopOfChain()
+        public override void RefreshFromTopOfChain()
         {
-            OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
+            var outputLibraryIds = GetOutputLibraryIds();
+            FireOutputLibraryIdsChanged(outputLibraryIds);
         }
     }
 }

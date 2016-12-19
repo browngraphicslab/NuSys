@@ -44,7 +44,7 @@ namespace NuSysApp
 
         public abstract void SetProperties(List<string> propertiesList);
 
-        public override void Dispose()
+        public virtual void Dispose()
         {
             base.Dispose();
         }
@@ -168,10 +168,10 @@ namespace NuSysApp
                 //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
                 //var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
                 //var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
-                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                //var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
+                //var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
 
-                Vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
+                Vm.Controller.FilterIconDropped(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
             }
 
 

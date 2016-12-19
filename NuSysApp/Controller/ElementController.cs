@@ -207,7 +207,6 @@ namespace NuSysApp
         {
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer?.DeselectAll();
-
             Dispose();
         }
 

@@ -54,6 +54,7 @@ namespace NuSysApp
             }
 
             controller.Deleted += ControllerOnDeleted;
+            controller.Disposed += OnDisposed;
             controller.LinksUpdated += ControllerLinksUpdated;
 
             Tags = new ObservableCollection<string>();

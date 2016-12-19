@@ -990,16 +990,16 @@ namespace NuSysApp
                         SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[
                             WaitingRoomView.UserID];
                     var creator =
-                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
+                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController?.FullMetadata["Creator"
                             ].Values[0];
-                    if (loginName != "rms" && creator.ToLower() == "rms")
+                    if (loginName != "rms" && creator?.ToLower() == "rms")
                         return;
                 }
                 catch (Exception e)
                 {
                     // do nothing.
                 }
-                var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
+                var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel?.LibraryElementId;
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
                 SessionController.Instance.NuSessionView.ShowDetailView(controller);
             } else if (item is LinkRenderItem)

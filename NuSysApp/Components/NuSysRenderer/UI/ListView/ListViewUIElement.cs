@@ -41,6 +41,11 @@ namespace NuSysApp
         public event RowDoubleTappedEventHandler RowDoubleTapped;
 
         /// <summary>
+        /// This is the index of the item in the itemsSource of the first row displayed ontop of the list. (Changes when you scroll).
+        /// </summary>
+        private int _startIndex;
+
+        /// <summary>
         /// If this is true, the color will not change when you click on an item, and it will not be added to the selected list.
         /// </summary>
         public bool DisableSelectionByClick { get; set; }
@@ -140,6 +145,9 @@ namespace NuSysApp
 
         private float _rowBorderThickness;
 
+        //Set this to true when you should update the rows.
+        private bool _shouldUpdateRows;
+
         /// <summary>
         /// This is the thickness of row ui element border
         /// </summary>
@@ -237,6 +245,7 @@ namespace NuSysApp
             _itemsSource.AddRange(itemsToAdd);
             //Make RowUIElements
             CreateListViewRowUIElements();
+            _shouldUpdateRows = true;
         }
 
         /// <summary>
@@ -375,7 +384,7 @@ namespace NuSysApp
             {
                 return;
             }
-            var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
+            var newStartIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
             var items = _itemsSource;
 
             foreach (var row in Rows)
@@ -385,7 +394,7 @@ namespace NuSysApp
                     continue;
                 }
 
-                var index = startIndex + Rows.IndexOf(row);
+                var index = newStartIndex + Rows.IndexOf(row);
                 //Accounts for the last, empty row.
                 if (index >= _itemsSource.Count)
                 {
@@ -402,16 +411,17 @@ namespace NuSysApp
                 {
                     DeselectRow(row);
                 }
-
-                foreach (var column in _listColumns)
+                if (_startIndex != newStartIndex)// || _shouldUpdateRows)
                 {
-                    row.UpdateContent(column, _listColumns.IndexOf(column));
+                    _shouldUpdateRows = false;
+
+                    foreach (var column in _listColumns)
+                    {
+                        row.UpdateContent(column, _listColumns.IndexOf(column));
+                    }
                 }
-
-
-
-
             }
+            _startIndex = newStartIndex;
         }
         /// <summary>
         /// This method simply clears all the cells in each of the rows and repopulates each row using the list of columns
@@ -874,18 +884,24 @@ namespace NuSysApp
             ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
 
+
             var cellVerticalOffset = BorderWidth;
             var headerOffset = Transform.LocalPosition.Y;
             var scrollOffset = _scrollOffset % RowHeight;
             //Draws every row
+
             foreach (var row in Rows.ToArray())
             {
                 //Position is the position of the bottom of the row
                 var position = cellVerticalOffset - scrollOffset + headerOffset;
                 row.Transform.LocalPosition = new Vector2(BorderWidth, position);
                 cellVerticalOffset += row.Height;
+
                 row?.Update(parentLocalToScreenTransform);
             }
+
+            UpdateListRows();
+
             base.Update(parentLocalToScreenTransform);
         }
         /// <summary>
@@ -904,21 +920,14 @@ namespace NuSysApp
             using (ds.CreateLayer(1f, _clippingRect))
             {
 
-                foreach(var row in Rows.ToArray())
+                foreach (var row in Rows.ToArray())
                 {
                     row.Draw(ds);
-
                 }
 
+                ds.Transform = orgTransform;
+                base.Draw(ds);
             }
-
-            
-
-            UpdateListRows();
-
-            ds.Transform = orgTransform;
-            base.Draw(ds);
-
         }
 
 

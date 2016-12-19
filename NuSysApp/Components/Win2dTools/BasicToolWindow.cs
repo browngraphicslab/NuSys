@@ -52,15 +52,7 @@ namespace NuSysApp
             AddChild(_toolView);
 
             //vm.Controller.SetLocation(x, y);
-            /*
-            var pc = new PieChartUIElement(this, ResourceCreator) {
-                Width = Width,
-                Height = Height
-            };
 
-            pc.AddElement("fuck", 999);
-            AddChild(pc);
-            */
 
             vm.ReloadPropertiesToDisplay();
             _toolView.SetProperties((Vm as BasicToolViewModel).PropertiesToDisplay);

@@ -286,8 +286,10 @@ namespace NuSysApp
         /// <param name="tabToOpenTo"></param>
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
-
-            _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
+            if (viewable?.LibraryElementModel?.LibraryElementId != null)
+            {
+                _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
+            }
 
         }
     }
