@@ -153,16 +153,6 @@ namespace NuSysApp
             RenderEngine.Root.AddChild(InitialCollection);
 
 
-            PieChartUIElement pieChart = new PieChartUIElement(_renderRoot, RenderCanvas)
-            {
-                Height = 500,
-                Width = 500
-            };
-            pieChart.Transform.LocalPosition = new Vector2(500, 200);
-            _renderRoot.AddChild(pieChart);
-
-
-
 
             RenderEngine.Start();
 

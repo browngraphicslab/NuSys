@@ -62,6 +62,8 @@ namespace NuSysApp
         /// <param name="element"></param>
         public delegate void PieChartElementDeselectedEventHandler(object source, PieChartElement<string> element);
         public event PieChartElementDeselectedEventHandler ElementDeselected;
+
+
         /// <summary>
         /// Element is the PieChartElement that represents the piece of the pie being dragged.
         /// Pointer is the location of the pointer
@@ -80,6 +82,13 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         public delegate void PieChartElementDragCompletedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
         public event PieChartElementDragCompletedEventHandler ElementDragCompleted;
+
+
+        public delegate void PieChartElementTappedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public event PieChartElementTappedEventHandler ElementTapped;
+
+        public delegate void PieChartElementDoubleTappedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public event PieChartElementDoubleTappedEventHandler ElementDoubleTapped;
         #endregion events
 
         #region private variables
@@ -114,15 +123,27 @@ namespace NuSysApp
             _elements = new List<PieChartElement<string>>();
             _selectedElements = new HashSet<PieChartElement<string>>();
 
-            //These elements are added in as an example. Remove the following lines as needed.
-            AddElement("A", 5);
-            AddElement("B", 3);
-            AddElement("C", 12);
-            AddElement("D", 7);
+  
 
+            DoubleTapped += PieChartUIElement_DoubleTapped;
             Released += PieChartUIElement_Released;
             Dragged += PieChartUIElement_Dragged;
         }
+
+        private void PieChartUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var element = GetElementFromAngle(GetAngleFromPoint(point));
+
+            if (element == null)
+            {
+                return;
+            }
+
+            ElementDoubleTapped?.Invoke(this, element, pointer);
+
+        }
+
         /// <summary>
         /// Creates an element and adds it to the list of elements.
         /// Takes in the item and value 
@@ -141,6 +162,34 @@ namespace NuSysApp
             element.Item = item;
             element.Value = value;
             _elements?.Add(element);
+
+        }
+
+        public void AddItems(List<string> items)
+        {
+            var dict = new Dictionary<string, int>();
+            foreach (var item in items)
+            {
+                if (!dict.ContainsKey(item))
+                {
+                    dict[item] = 1;
+                } else
+                {
+                    dict[item] += 1;
+                }
+
+            }
+
+            foreach (var kvp in dict)
+            {
+                AddElement(kvp.Key, kvp.Value);
+            }
+        }
+
+        public void ClearElements()
+        {
+            _elements.Clear();
+            _selectedElements.Clear();
 
         }
         /// <summary>
@@ -190,6 +239,8 @@ namespace NuSysApp
                 {
                     return;
                 }
+
+                ElementTapped?.Invoke(this, element, pointer);
                 if (_selectedElements.Contains(element))
                 {
                     if (!DisableSelectionByClick)
@@ -214,7 +265,7 @@ namespace NuSysApp
         /// If MultiSelect is off, we deselect everything else first.
         /// </summary>
         /// <param name="element"></param>
-        private void SelectElement(PieChartElement<string> element)
+        public void SelectElement(PieChartElement<string> element)
         {
             if (element == null)
             {
@@ -233,6 +284,17 @@ namespace NuSysApp
             }
             _selectedElements.Add(element);
             ElementSelected?.Invoke(this, element);
+
+        }
+
+        public void SelectElement(string name)
+        {
+            var pieChartElement = from element in _elements where (name == element.Item) select element;
+            if (pieChartElement.ToList().Count != 1)
+            {
+                return;
+            }
+            SelectElement(pieChartElement.Single());
 
         }
         /// <summary>
@@ -257,6 +319,11 @@ namespace NuSysApp
             ElementDeselected?.Invoke(this, element);
 
             
+        }
+
+        public void DeselectElement()
+        {
+
         }
         /// <summary>
         /// Finds the element where the angle lies by iterating through the elements.
@@ -417,6 +484,12 @@ namespace NuSysApp
             ds.Transform = orgTransform;
 
         }
+
+        public void DeselectAllElements()
+        {
+            _selectedElements.Clear();
+        }
+
         /// <summary>
         /// HitTest is overriden so that we hit PieChartUIElement iff the point is within the pie chart.
         /// </summary>

@@ -379,6 +379,14 @@ namespace NuSysApp
             _filterChooser.Dragged += FilterChooserDropdownButtonOnDragged;
 
             AddChild(_filterChooser);
+
+        }
+
+
+        public void MoveFilterChooserToTop()
+        {
+            RemoveChild(_filterChooser);
+            AddChild(_filterChooser);
         }
 
         private void FilterChooserDropdownButtonOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)

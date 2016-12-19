@@ -527,6 +527,7 @@
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
     <Compile Include="Components\Win2dTools\iLink.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\PieToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkController.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
