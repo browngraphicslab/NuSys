@@ -38,7 +38,9 @@ namespace NuSysApp
         {
             MetadataToolModel.SetFilter(filter);
             FilterChanged?.Invoke(this, filter);
-            FireOutputLibraryIdsChanged();
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
+            //FireOutputLibraryIdsChanged();
         }
 
         /// <summary>
@@ -81,7 +83,9 @@ namespace NuSysApp
             MetadataToolModel.SetSelected(false);
             MetadataToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
-            FireOutputLibraryIdsChanged();
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
+            //FireOutputLibraryIdsChanged();
         }
 
         /// <summary>
@@ -93,7 +97,9 @@ namespace NuSysApp
             MetadataToolModel.SetSelected(true);
             MetadataToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
-            FireOutputLibraryIdsChanged();
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
+            //FireOutputLibraryIdsChanged();
         }
 
         /// <summary>

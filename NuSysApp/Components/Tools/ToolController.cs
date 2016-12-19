@@ -14,7 +14,7 @@ using Wintellect.PowerCollections;
 
 namespace NuSysApp
 {
-    public abstract class ToolController : ElementController, ToolStartable
+    public abstract class ToolController : ToolStartable
     {
         public static Dictionary<string, ToolStartable> ToolControllers = new Dictionary<string, ToolStartable>();
         public delegate void FilterChangedEventHandler(object sender, ToolModel.ToolFilterTypeTitle filter);
@@ -26,9 +26,8 @@ namespace NuSysApp
         /// Fires when its library ids change. Its children tools listen to this event on when to refresh the 
         /// properties displayed
         /// </summary>
-        public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
-        public event EventHandler<string> Disposed;
-        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+        //public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
+        //public event EventHandler<string> Disposed;
 
         /// <summary>
         /// Fires when the properties to display change (e.g. when a parent tool changes selection). View listens to this for when to show the AND/OR box.
@@ -74,17 +73,12 @@ namespace NuSysApp
             ToolModel.SetFilter(filter);
             FilterChanged?.Invoke(this, filter);
             FireIdsToDisplayChanged();
-            FireOutputLibraryIdsChanged();
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
+            //FireOutputLibraryIdsChanged();
         }
 
-        /// <summary>
-        /// So that subclasses can fire filter type all metadata changed
-        /// </summary>
-        /// <param name="vm"></param>
-        public void FireFilterTypeAllMetadataChanged(ToolViewModel vm)
-        {
-            FilterTypeAllMetadataChanged?.Invoke(this, vm);
-        }
+       
         
         /// <summary>
         /// Adds a parent to the tool. Listens to the parent's library ids changed event. Refreshes the library ids. Invokes, outputLibraryIdsChanged, parentsLibraryIdsChanged, and numberofParentsChanged.
@@ -107,7 +101,7 @@ namespace NuSysApp
                     
                     parentController.FilterTypeAllMetadataChanged += ParentController_FilterTypeAllMetadataChanged;
                     ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-                    OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
+                    FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
                     IdsToDisplayChanged?.Invoke();
                     parentController.Disposed += OnParentDisposed;
                     NumberOfParentsChanged?.Invoke(ToolModel.ParentIds.Count);
@@ -138,18 +132,24 @@ namespace NuSysApp
         {
             ToolModel.SetParentOperator(parentOperator);
             ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
+            //OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
         }
 
         /// <summary>
         /// Stops listening to deleted parent events, removes from parent IDS, resets output library ids invokes output ids changed, invokes ids to display changed. Called when the the parent gets deleted.
         /// </summary>
-        public void OnParentDisposed(object sender, string parentid)
+        public void OnParentDisposed(object sender, EventArgs eventArgs)
         {
-            RemoveParent(ToolControllers[parentid]);
+            var toolStartable = sender as ToolStartable;
+            Debug.Assert(toolStartable != null);
+            RemoveParent(toolStartable);
             ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
+            //OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
             IdsToDisplayChanged?.Invoke();
             //ToolControllers[parentid].Disposed -= OnParentDisposed;
         }
@@ -172,7 +172,7 @@ namespace NuSysApp
 
         }
 
-        public string GetID()
+        public override string GetID()
         {
             return Model?.Id;
         }
@@ -182,14 +182,15 @@ namespace NuSysApp
         /// <summary>
         /// Deletes the current node and removes itself from parents's knowledge
         /// </summary>
-        public virtual void Dispose()
+        public override void Dispose()
         {
             foreach(var parentController in new List<ToolStartable>(ToolModel.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
             {
                 RemoveParent(parentController);
             }
-            Disposed?.Invoke(this, GetID());
+            //Disposed?.Invoke(this, GetID());
             ToolControllers.Remove(GetID());
+            base.Dispose();
         }
 
         /// <summary>
@@ -204,13 +205,13 @@ namespace NuSysApp
             return ids.Where(id => GetFunc()(id));
         }
 
-        /// <summary>
-        /// So that subclasses can fire the event
-        /// </summary>
-        public void FireOutputLibraryIdsChanged()
-        {
-            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
-        }
+        ///// <summary>
+        ///// So that subclasses can fire the event
+        ///// </summary>
+        //public void FireOutputLibraryIdsChanged()
+        //{
+        //    OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
+        //}
 
         /// <summary>
         /// So that subclasses can fire the event
@@ -287,7 +288,9 @@ namespace NuSysApp
         private void IdsToDiplayChanged(object sender, HashSet<string> libraryIds)
         {
             ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-            OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
+            //OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
         }
 
@@ -295,7 +298,7 @@ namespace NuSysApp
         ///Gets all the output library ids of each of the parents and creates a hashset of those ids based on the parent operator (AND/OR).  
         /// recursive refresh boolean represents whether this controller should take its parents' cached IDs or if all its parents should update entirely.
         /// </summary>
-        public IEnumerable<string> GetUpdatedDataList()
+        public override IEnumerable<string> GetUpdatedDataList()
         {
             var controllers = ToolModel.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
             if (controllers == null || !controllers.Any())
@@ -326,12 +329,13 @@ namespace NuSysApp
         /// This should refresh the entire tool chain. It recursively finds the orphans, reloads its output library ids and fires the event 
         /// signaling that the library ids have changed.
         /// </summary>
-        public void RefreshFromTopOfChain()
+        public override void RefreshFromTopOfChain()
         {
             if (!ToolModel.ParentIds.Any())
             {
                 ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
-                FireOutputLibraryIdsChanged();
+                //FireOutputLibraryIdsChanged();
+                FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
                 IdsToDisplayChanged?.Invoke();
             }
             foreach (var parentController in ToolModel.ParentIds.Select(parentId => ToolController.ToolControllers[parentId]))
@@ -347,12 +351,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="recursivelyRefresh"></param>
         /// <returns></returns>
-        public HashSet<string> GetOutputLibraryIds()
+        public override HashSet<string> GetOutputLibraryIds()
         {
             return ToolModel.OutputLibraryIds;
         }
 
-        public HashSet<string> GetParentIds()
+        public override HashSet<string> GetParentIds()
         {
             return ToolModel.ParentIds;
         }

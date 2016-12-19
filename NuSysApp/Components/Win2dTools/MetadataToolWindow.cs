@@ -29,6 +29,13 @@ namespace NuSysApp
             vm.ReloadPropertiesToDisplay();
         }
 
+        public override void Dispose()
+        {
+            Vm.PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
+            (Vm.Controller as MetadataToolController).SelectionChanged -= On_SelectionChanged;
+            base.Dispose();
+        }
+
         /// <summary>
         /// Sets up the item to be shown under the pointer when you drag a row
         /// </summary>
@@ -285,9 +292,9 @@ namespace NuSysApp
                 _dragFilterItem.IsVisible = false;
                 var vm = (Vm as MetadataToolViewModel);
                 vm.Selection = new Tuple<string, HashSet<string>>(item, new HashSet<string>());
-                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
-                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
-                vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
+                //var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
+                //var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                vm.Controller.FilterIconDropped(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
             }
         }
 
@@ -324,10 +331,10 @@ namespace NuSysApp
                     vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
                         new HashSet<string>() { item.Key });
                 }
-                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
-                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                //var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
+                //var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
 
-                vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
+                vm.Controller.FilterIconDropped(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
             }
         }
 

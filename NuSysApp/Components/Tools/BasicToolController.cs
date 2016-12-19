@@ -80,7 +80,7 @@ namespace NuSysApp
             BasicToolModel.SetSelected(false);
             BasicToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
-            FireOutputLibraryIdsChanged();
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
         }
 
         /// <summary>
@@ -92,7 +92,9 @@ namespace NuSysApp
             BasicToolModel.SetSelected(selection.Count>0);
             BasicToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
-            FireOutputLibraryIdsChanged();
+            FireOutputLibraryIdsChanged(ToolModel.OutputLibraryIds);
+
+            //FireOutputLibraryIdsChanged();
         }
 
         /// <summary>

@@ -62,6 +62,7 @@ namespace NuSysApp
                 AddChild(_tagRenderItem);
             }
         }
+        
 
         public override void Dispose()
         {
