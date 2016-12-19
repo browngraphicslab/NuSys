@@ -579,6 +579,9 @@ namespace NuSysApp
                 var s = collection.Camera.LocalToScreenMatrix.M11;
                 var nw = elem.ViewModel.Width + delta.X/s;
                 var nh = elem.ViewModel.Height + delta.Y/s;
+                elem.ViewModel.Width = nw;
+                elem.ViewModel.Height = nh;
+               
                 item.ViewModel.Controller.SetSize(nw, nh);
                 if(_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
                 {

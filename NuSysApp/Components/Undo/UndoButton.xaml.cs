@@ -25,7 +25,7 @@ namespace NuSysApp
     /// </summary>
     public enum UndoButtonState
     {
-        Active,Inactive
+        ActiveUndo, ActiveRedo, Inactive
     }
 
     /// <summary>
@@ -89,7 +89,14 @@ namespace NuSysApp
         /// </summary>
         public void Activate(IUndoable action)
         {
-            _state = UndoButtonState.Active;
+            if(_state == UndoButtonState.Inactive)
+            {
+                _state = UndoButtonState.ActiveUndo;
+            }else
+            {
+                _state = (_state == UndoButtonState.ActiveUndo) ? UndoButtonState.ActiveRedo : UndoButtonState.ActiveUndo;
+            }
+
             Visibility = Visibility.Visible;
             OriginalAction = action;
 
@@ -101,6 +108,7 @@ namespace NuSysApp
 
            
         }
+
 
         /// <summary>
         /// Deactivates button by removing timer and setting appropriate references
@@ -125,11 +133,13 @@ namespace NuSysApp
             {
                 return;
             }
-            var undoAction = OriginalAction.GetInverse();
-            undoAction.ExecuteAction();
+
+            OriginalAction =  OriginalAction.GetInverse();
+            OriginalAction.ExecuteAction();
+
             ActionExecuted = true;
-            _state = UndoButtonState.Inactive;
-            Dispose();
+
+            Activate(OriginalAction);
         }
 
         /// <summary>
