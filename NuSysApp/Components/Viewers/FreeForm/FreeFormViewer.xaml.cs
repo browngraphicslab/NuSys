@@ -29,6 +29,7 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class FreeFormViewer
     {
+        private static float ARRANGE_BORDER = 55.0f;
         private List<PointModel> _latestStroke;
         private CanvasInteractionManager _canvasInteractionManager;
         private CollectionInteractionManager _collectionInteractionManager;
@@ -796,22 +797,22 @@ namespace NuSysApp
                 switch (style)
                 {
                     case LayoutStyle.Horizontal:
-                        nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
+                        nextPosition.X = (float)(nextPosition.X + ARRANGE_BORDER + elementRenderItem.ViewModel.Width);
                         break;
                     case LayoutStyle.Vertical:
-                        nextPosition.Y = (float)(nextPosition.Y + 35.0f + elementRenderItem.ViewModel.Height);
+                        nextPosition.Y = (float)(nextPosition.Y + ARRANGE_BORDER + elementRenderItem.ViewModel.Height);
                         break;
                     case LayoutStyle.Grid:
                         maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
                         if (i % rows == rows - 1)
                         {
-                            nextPosition.Y = (float)(nextPosition.Y + 35.0f + maxHeight);
+                            nextPosition.Y = (float)(nextPosition.Y + ARRANGE_BORDER + maxHeight);
                             nextPosition.X = start.X;
                             maxHeight = 0.0f;
                         }
                         else
                         {
-                            nextPosition.X = (float)(nextPosition.X + 35.0f + elementRenderItem.ViewModel.Width);
+                            nextPosition.X = (float)(nextPosition.X + ARRANGE_BORDER + elementRenderItem.ViewModel.Width);
                         }
                         i++;
                         break;
