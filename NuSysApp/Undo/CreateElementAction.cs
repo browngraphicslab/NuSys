@@ -31,8 +31,8 @@ namespace NuSysApp
 
         }
         /// <summary>
-        /// Using position and element controller, calls libraryelementcontroller's addelementatposition method.
-        /// Adds a copy of the removed element to the workspace in its old position.
+        /// This is effectively the same as calling the libraryelementcontroller's addelementatposition method
+        /// The difference is we store reference to the new ElementController from the returned model.
         /// </summary>
         public async void ExecuteAction()
         {
@@ -79,14 +79,16 @@ namespace NuSysApp
             if (request.WasSuccessful() == true) //if it returned sucesssfully
             {
                 await request.AddReturnedElementToSessionAsync();
+                //Get model
                 var model = request.GetReturnedElementModel();
+                //Get controller from model
                 var controller = SessionController.Instance.IdToControllers[model.Id];// model.Id;
 
                 if(_elementController == null)
                 {
                     return;
                 }
-
+                //Store Controller so that we pass in the correct Controller when GetInverse is called. 
                 _elementController = controller;
 
 

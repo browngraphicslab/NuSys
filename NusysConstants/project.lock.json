@@ -1,5 +1,4 @@
 {
-  "locked": false,
   "version": 2,
   "targets": {
     ".NETPortable,Version=v4.5,Profile=Profile7": {
@@ -21,6 +20,7 @@
     "Core.Spire.Presentation/1.0.0": {
       "sha512": "SEQtNKm7RZG05PJlPb9UJIqM5pjz+SDnEWA4AwugI9bvsEMr618Gg1g9V20DQBzhMfZBAji8iWhoUrCzbFpZMQ==",
       "type": "package",
+      "path": "core.spire.presentation/1.0.0",
       "files": [
         "ClassLibrary2/App.Config",
         "ClassLibrary2/Client.cs",
@@ -1863,6 +1863,7 @@
     "Newtonsoft.Json/9.0.1": {
       "sha512": "U82mHQSKaIk+lpSVCbWYKNavmNH1i5xrExDEquU1i6I5pV6UMOqRnJRSlKO3cMPfcpp0RgDY+8jUXHdQ4IfXvw==",
       "type": "package",
+      "path": "newtonsoft.json/9.0.1",
       "files": [
         "Newtonsoft.Json.9.0.1.nupkg.sha512",
         "Newtonsoft.Json.nuspec",
@@ -1890,5 +1891,24 @@
       "Newtonsoft.Json >= 9.0.1"
     ],
     ".NETPortable,Version=v4.5,Profile=Profile7": []
+  },
+  "packageFolders": {
+    "C:\\Users\\nico\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "restore": {
+      "projectUniqueName": "C:\\Users\\nico\\Documents\\gfx\\NuSys\\NusysConstants\\NusysIntermediate.csproj",
+      "projectName": "NusysIntermediate",
+      "projectPath": "C:\\Users\\nico\\Documents\\gfx\\NuSys\\NusysConstants\\NusysIntermediate.csproj",
+      "projectJsonPath": "C:\\Users\\nico\\Documents\\gfx\\NuSys\\NusysConstants\\project.json",
+      "outputType": "UAP"
+    },
+    "dependencies": {
+      "Core.Spire.Presentation": "1.0.0",
+      "Newtonsoft.Json": "9.0.1"
+    },
+    "frameworks": {
+      "portable45-net45+win8": {}
+    }
   }
 }

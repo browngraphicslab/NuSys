@@ -19,5 +19,19 @@ namespace NuSysApp
         {
 
         }
+
+        /// <summary>
+        /// For proper image element resizing, first maintain ratio before calling SetSize on Controller
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="saveToServer"></param>
+        public override void SetSize(double width, double height, bool saveToServer = true)
+        {
+            var ratio = Model.Width / Model.Height;
+            base.SetSize(height * ratio, height, saveToServer); //preserve ratio
+        }
+        
+
     }
 }

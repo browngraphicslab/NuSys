@@ -122,7 +122,7 @@ namespace NuSysApp
        
         /// <summary>
         /// When the button is tapped, find and then do the logical inverse of the original
-        /// action. Then remove the button from the workspace.
+        /// action. 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -138,7 +138,7 @@ namespace NuSysApp
             OriginalAction.ExecuteAction();
 
             ActionExecuted = true;
-
+            //We activate the undo button again, passing in the inverse of the old OriginalAction, effectively making this a Redo button
             Activate(OriginalAction);
         }
 
