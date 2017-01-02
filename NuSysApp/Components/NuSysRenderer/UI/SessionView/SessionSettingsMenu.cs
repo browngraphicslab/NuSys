@@ -43,39 +43,31 @@ namespace NuSysApp
         public SessionSettingsMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             Background = Colors.Aquamarine;
-            _resizeElementTitlesButton = new ButtonUIElement(this,resourceCreator,new RectangleUIElement(_resizeElementTitlesButton,resourceCreator))
+            _resizeElementTitlesButton = new ButtonUIElement(this,resourceCreator)
             {
                 Width = 200,
                 Height = 50,
-                Background = Colors.Blue,
-                ButtonTextColor = Colors.Red
             };
             AddChild(_resizeElementTitlesButton);
 
-            _showLinksButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(_showLinksButton, resourceCreator))
+            _showLinksButton = new ButtonUIElement(this, resourceCreator)
             {
                 Width = 200,
                 Height = 50,
-                Background = Colors.Blue,
-                ButtonTextColor = Colors.Red
             };
             AddChild(_showLinksButton);
 
-            _showMinimapButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(_showMinimapButton, resourceCreator))
+            _showMinimapButton = new ButtonUIElement(this, resourceCreator)
             {
                 Width = 200,
-                Height = 50,
-                Background = Colors.Blue,
-                ButtonTextColor = Colors.Red
+                Height = 50
             };
             AddChild(_showMinimapButton);
 
-            _showBreadCrumbsButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(_showBreadCrumbsButton, resourceCreator))
+            _showBreadCrumbsButton = new ButtonUIElement(this, resourceCreator)
             {
                 Width = 200,
-                Height = 50,
-                Background = Colors.Blue,
-                ButtonTextColor = Colors.Red
+                Height = 50
             };
             AddChild(_showBreadCrumbsButton);
 

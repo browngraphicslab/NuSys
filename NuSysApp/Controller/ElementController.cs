@@ -95,7 +95,6 @@ namespace NuSysApp
         public virtual void Dispose()
         {
             IsDisposed = true;
-            Debug.Assert(LibraryElementController != null);
             if (LibraryElementController != null)
             {
                 LibraryElementController?.FireAliasRemoved(Model);

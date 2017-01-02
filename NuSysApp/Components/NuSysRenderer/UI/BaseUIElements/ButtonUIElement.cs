@@ -79,6 +79,11 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Enables or disables the button
+        /// </summary>
+        public Boolean Enabled { get; set; }
+
+        /// <summary>
         /// The background color to be set while the button is in the pressed state.
         /// </summary>
         public Color? SelectedBackground { get; set; }
@@ -133,9 +138,20 @@ namespace NuSysApp
             set { Shape.ImageBounds = value; }
         }
 
-        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
+
+        /// <summary>
+        /// For instantiating a button, pass is the usual parent and resource creator.  
+        /// Then pass in another baseInteractiveUIElement to be used as the shape of the button.
+        /// 
+        /// The button will encapsulate that shape.  
+        /// FOR MOST CASES, YOU WILL NOT NEED TO PASS IN ANYTHING AS THE SHAPE SINCE THE DEFAULT WILL KEEP UI CONSISTENT.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
+        /// <param name="shapeElement"></param>
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement = null) : base(parent, resourceCreator)
         {
-            Shape = shapeElement;
+            Shape = shapeElement ?? new RectangleUIElement(this, ResourceCreator); //This is important so all buttons should have the same base appearence
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -145,7 +161,9 @@ namespace NuSysApp
             Shape.Released += Shape_Released;
             Shape.Dragged += Shape_Dragged;
             Shape.Tapped += Shape_Tapped;
-            Shape.DoubleTapped += Shape_DoubleTapped;       
+            Shape.DoubleTapped += Shape_DoubleTapped;
+
+            Enabled = true;   
         }
 
 
@@ -195,6 +213,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         public override void OnReleased(CanvasPointer pointer)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+           
             // reset the Background and Bordercolor to the original colors
             Background = _orgBackground;
             Bordercolor = _orgBorder;
@@ -218,6 +241,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         public override void OnPressed(CanvasPointer pointer)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             // save the Background and Bordercolor to reset them when the button is no longer pressed
             _orgBackground = Background;
             _orgBorder = Bordercolor;

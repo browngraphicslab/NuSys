@@ -125,17 +125,20 @@ namespace NuSysApp
             });
         }
 
+        public InkStroke CurrentInkStrokeWithEndpoint(CanvasPointer e)
+        {
+            var np = Vector2.Transform(e.CurrentPoint, _transform);
+            _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+            var builder = new InkStrokeBuilder();
+            builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+            return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
+        }
+
         public void StopInkByEvent(CanvasPointer e)
         {
+            LatestStroke = CurrentInkStrokeWithEndpoint(e);
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
-                var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
-
-                var builder = new InkStrokeBuilder();
-                builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-                LatestStroke = builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
-
                 if (_isEraser)
                 {
                     var allStrokes = _inkManager.GetStrokes().ToArray();
@@ -171,7 +174,6 @@ namespace NuSysApp
                 {
                     _inkManager.AddStroke(LatestStroke);
                     LatestStrokeAdded = DateTime.Now;
-
                     SendInkStrokeAddedRequest();
                 }
 

@@ -368,6 +368,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Brushing\DateSelector.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterSubMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DetailViewAliasesPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ScrollableTextboxUIElement.cs" />

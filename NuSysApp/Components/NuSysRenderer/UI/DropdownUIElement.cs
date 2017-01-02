@@ -11,9 +11,9 @@ using Microsoft.Graphics.Canvas.Text;
 using Windows.UI;
 using RTools_NTS.Util;
 
-namespace NuSysApp.Components.NuSysRenderer.UI
+namespace NuSysApp
 {
-    class DropdownUIElement : ButtonUIElement
+    public class DropdownUIElement : ButtonUIElement
     {
         /// <summary>
         /// helper variable for the current selection property

@@ -8,7 +8,6 @@ using Windows.UI;
 using System.Numerics;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
@@ -22,7 +21,7 @@ namespace NuSysApp
         Title, Date
     }
 
-    class LayoutWindowUIElement : DraggableWindowUIElement
+    public class LayoutWindowUIElement : DraggableWindowUIElement
     {
         private static float PANEL_WIDTH = 300.0f;
         private static float PANEL_HEIGHT = 503.0f;
@@ -42,12 +41,14 @@ namespace NuSysApp
         private static Vector2 GRID_BUTTON_POSITION = new Vector2(PANEL_INSET + BUTTON_PADDING, HORIZONTAL_BUTTON_POSITION.Y + BUTTON_SIZE + BUTTON_PADDING);
         private static Vector2 CUSTOM_BUTTON_POSITION = new Vector2(VERTICAL_BUTTON_POSITION.X, GRID_BUTTON_POSITION.Y);
         private static float DROPDOWN_INSET = 2.0f * PANEL_INSET;
-        private static LayoutStyle _layoutStyle = LayoutStyle.Horizontal;
-        private static LayoutSorting _layoutSorting = LayoutSorting.Title;
         private static string LAYOUT_STYLE_TITLE_TEXT = "title";
         private static string LAYOUT_STYLE_DATE_TEXT = "date";
         private static string CLOSE_BUTTON_TEXT = "X X X X X";
         private static float CLOSE_BUTTON_SIZE = 100.0f;
+        private static String CUSTOM_LAYOUT_TEXT = "Draw to arrange";
+
+        private LayoutStyle _layoutStyle = LayoutStyle.Horizontal;
+        private LayoutSorting _layoutSorting = LayoutSorting.Title;
 
         // Buttons
         private ButtonUIElement _arrangeButton;
@@ -69,6 +70,11 @@ namespace NuSysApp
         public delegate void LayoutHandler(LayoutStyle style, LayoutSorting sorting);
         public event LayoutHandler DoLayout;
 
+        /// <summary>
+        /// A window with controls for laying out nodes.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
         public LayoutWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             Width = PANEL_WIDTH;
@@ -86,7 +92,7 @@ namespace NuSysApp
             _arrangeButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             _arrangeButton.Transform.LocalPosition = ARRANGE_BUTTON_POSITION;
 
-            _arrangeButton.Tapped += _arrangeButton_Tapped;
+            _arrangeButton.Tapped += ArrangeButtonTapped;
             AddChild(_arrangeButton);
             
             // horizontal layout button
@@ -95,7 +101,9 @@ namespace NuSysApp
             _horizontalLayoutButton.SelectedBackground = Colors.LightGray;
             _horizontalLayoutButton.SelectedBorder = Colors.LightGray;
             _horizontalLayoutButton.Transform.LocalPosition = HORIZONTAL_BUTTON_POSITION;
-            _horizontalLayoutButton.Tapped += _horizontalButton_Tapped;
+
+            _horizontalLayoutButton.Tapped += HorizontalButtonTapped;
+
             AddChild(_horizontalLayoutButton);
 
             // vertical layout button
@@ -104,7 +112,9 @@ namespace NuSysApp
             _verticalLayoutButton.SelectedBackground = Colors.LightGray;
             _verticalLayoutButton.SelectedBorder = Colors.LightGray;
             _verticalLayoutButton.Transform.LocalPosition = VERTICAL_BUTTON_POSITION;
-            _verticalLayoutButton.Tapped += _verticalButton_Tapped;
+
+            _verticalLayoutButton.Tapped += VerticalButtonTapped;
+
             AddChild(_verticalLayoutButton);
 
             // grid layout button
@@ -113,7 +123,9 @@ namespace NuSysApp
             _gridLayoutButton.SelectedBackground = Colors.LightGray;
             _gridLayoutButton.SelectedBorder = Colors.LightGray;
             _gridLayoutButton.Transform.LocalPosition = GRID_BUTTON_POSITION;
-            _gridLayoutButton.Tapped += _gridButton_Tapped;
+
+            _gridLayoutButton.Tapped += GridButtonTapped;
+
             AddChild(_gridLayoutButton);
 
             // custom layout button
@@ -122,7 +134,9 @@ namespace NuSysApp
             _customLayoutButton.SelectedBackground = Colors.LightGray;
             _customLayoutButton.SelectedBorder = Colors.LightGray;
             _customLayoutButton.Transform.LocalPosition = CUSTOM_BUTTON_POSITION;
-            _customLayoutButton.Tapped += _customButton_Tapped;
+
+            _customLayoutButton.Tapped += CustomButtonTapped;
+
             AddChild(_customLayoutButton);
 
             ResetButtonColors();
@@ -150,19 +164,24 @@ namespace NuSysApp
             _dropdownButton.SelectedBorder = Colors.Black;
             _dropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _dropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-            _dropdownButton.Tapped += _viewListButton_Tapped;
+
+            _dropdownButton.Tapped += ViewListButtonTapped;
+
             _dropdownButton.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, ARRANGE_BY_TEXT_POSITION.Y + _arrangeByLabel.Height);
             AddChild(_dropdownButton);
 
             // dropdown menu
-            _dropdown = new DropdownUIElement(this, resourceCreator, PANEL_WIDTH - 2 * DROPDOWN_INSET);
-            _dropdown.AddOption("title", _listButton_Tapped);
-            _dropdown.AddOption("date", _listButton_Tapped);
-            _dropdown.Layout();
+            _dropdown = new DropdownUIElement(this, resourceCreator);
+            _dropdown.Width = PANEL_WIDTH - 2 * DROPDOWN_INSET;
+            _dropdown.AddOption("title");
+            _dropdown.AddOption("date");
+            _dropdown.Selected += ListButtonTapped;
             _dropdown.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, _dropdownButton.Transform.LocalPosition.Y + _dropdownButton.Height);
             _dropdown.IsVisible = false;
             AddChild(_dropdown);
+        }
 
+/*
             // close button
             _closePanelButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
             _closePanelButton.ButtonText = CLOSE_BUTTON_TEXT;
@@ -174,56 +193,126 @@ namespace NuSysApp
             _closePanelButton.Tapped += _closeButton_Tapped;
             _closePanelButton.Transform.LocalPosition = new Vector2(0.0f, 0.0f);
             //AddChild(_closePanelButton);
+*/
+        /// <summary>
+        /// Calls the arrange callback.
+        /// </summary>
+        public void Arrange()
+        {
+            DoLayout?.Invoke(_layoutStyle, _layoutSorting);
         }
 
+        /// <summary>
+        /// Calls the arrange callback if the arrange configuration is custom.
+        /// </summary>
+        public void NotifyArrangeCustom()
+        {
+            if (_layoutStyle == LayoutStyle.Custom)
+            {
+                DoLayout?.Invoke(_layoutStyle, _layoutSorting);
+            }
+        }
+
+        /// <summary>
+        /// Helper method for adding images to buttons.
+        /// </summary>
+        /// <param name="resourceCreator"></param>
+        /// <param name="uri"></param>
+        /// <param name="button"></param>
         private async void AddImageToButton(ICanvasResourceCreatorWithDpi resourceCreator, string uri, ButtonUIElement button)
         {
             var bmp = await CanvasBitmap.LoadAsync(resourceCreator, new Uri(uri));
             button.Image = bmp;
         }
 
-        private void _arrangeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Callback for when the arrange button is tapped.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ArrangeButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            DoLayout?.Invoke(_layoutStyle, _layoutSorting);
+            Arrange();
         }
 
-        private void _horizontalButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Callback for the horizontal arrange button.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void HorizontalButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ResetButtonColors();
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Horizontal;
+            _arrangeButton.ButtonText = ARRANGE_TEXT;
+            _arrangeButton.Background = Colors.Green;
+            _arrangeButton.Enabled = true;
         }
-        private void _verticalButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+
+        /// <summary>
+        /// Callback for the vertical arrange button.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void VerticalButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ResetButtonColors();
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Vertical;
+            _arrangeButton.ButtonText = ARRANGE_TEXT;
+            _arrangeButton.Background = Colors.Green;
+            _arrangeButton.Enabled = true;
         }
 
-        private void _gridButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Callback for the grid arrange button.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void GridButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ResetButtonColors();
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Grid;
+            _arrangeButton.ButtonText = ARRANGE_TEXT;
+            _arrangeButton.Background = Colors.Green;
+            _arrangeButton.Enabled = true;
         }
 
-        private void _customButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Callback for the custom arrange button.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void CustomButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ResetButtonColors();
             var button = (ButtonUIElement)item;
             button.Background = Colors.LightGray;
             _layoutStyle = LayoutStyle.Custom;
+            _arrangeButton.ButtonText = CUSTOM_LAYOUT_TEXT;
+            _arrangeButton.Background = Colors.LightGray;
+            _arrangeButton.Enabled = false;
         }
 
-        private void _viewListButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Callback for the arrange type list button.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ViewListButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dropdown.IsVisible = true;
             _dropdownButton.Background = Colors.Gray;
         }
 
+        /// <summary>
+        /// Resets the button colors to their defaults.
+        /// </summary>
         private void ResetButtonColors()
         {
             _horizontalLayoutButton.Background = Colors.Black;
@@ -232,10 +321,14 @@ namespace NuSysApp
             _customLayoutButton.Background = Colors.Black;
         }
 
-        private void _listButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Called when one of the arrange type list types is selected.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ListButtonTapped(DropdownUIElement sender, string item)
         {
-            var button = (ButtonUIElement)item;
-            switch (button.ButtonText)
+            switch (item)
             {
                 case "title":
                     _layoutSorting = LayoutSorting.Title;
@@ -252,14 +345,10 @@ namespace NuSysApp
             _dropdownButton.Background = Colors.White;
         }
 
-        private void _closeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-
-        }
-
         public override void Dispose()
         {
-            _arrangeButton.Tapped -= _arrangeButton_Tapped;
+            _arrangeButton.Tapped -= ArrangeButtonTapped;
+
             base.Dispose();
         }
     }

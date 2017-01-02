@@ -8,7 +8,6 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using MyToolkit.Converters;
-using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
