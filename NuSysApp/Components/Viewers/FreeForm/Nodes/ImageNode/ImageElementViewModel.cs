@@ -58,5 +58,16 @@ namespace NuSysApp
             SetSize(height * GetRatio(), height);
 
         }
+        /// <summary>
+        /// For proper image element resizing, first maintain ratio before calling SetSize on ViewModel.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public override void SetSize(double width, double height)
+        {
+            var ratio = Model.Width / Model.Height;
+            base.SetSize(height * ratio, height); //Preserve ratio
+        }
+        
     }
 }

@@ -581,6 +581,9 @@ namespace NuSysApp
                 var s = collection.Camera.LocalToScreenMatrix.M11;
                 var nw = elem.ViewModel.Width + delta.X/s;
                 var nh = elem.ViewModel.Height + delta.Y/s;
+
+                elem.ViewModel.SetSize(nw, nh); //You need to first set size of view model for proper image resizing
+               
                 item.ViewModel.Controller.SetSize(nw, nh);
                 if(_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
                 {
