@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -12,6 +13,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Serialization;
 
 
 namespace NuSysApp
@@ -32,6 +34,8 @@ namespace NuSysApp
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
+        public ButtonUIElement BtnTools;
+        private RectangleUIElement DragToolsRect;
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
         private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
         private bool _isSinglePdfSelected;
@@ -49,6 +53,8 @@ namespace NuSysApp
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
+            SetUpToolButton();
+
 
 
             Buttons = new List<BaseRenderItem>
@@ -61,9 +67,10 @@ namespace NuSysApp
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer,
-                BtnExport
+                BtnExport,
+                BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection };
+            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -78,7 +85,81 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
         }
 
- 
+        public override void Dispose()
+        {
+            BtnTools.Dragged -= BtnTools_Dragged;
+            base.Dispose();
+        }
+
+        /// <summary>
+        /// Sets up the tool button to be dragged and the dragging rectangle that shows up when you start to drag.
+        /// </summary>
+        /// <returns></returns>
+        private async Task SetUpToolButton()
+        {
+            
+            BtnTools = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
+            {
+                Height = 20,
+                Width = 20,
+                Background = Colors.Transparent,
+                Bordercolor = Colors.Transparent,
+                SelectedBorder = Colors.LightGray,
+                BorderWidth = 2,
+            };
+            BtnTools.DragCompleted += BtnTools_DragCompleted;
+            BtnTools.Dragged += BtnTools_Dragged; 
+
+            DragToolsRect = new RectangleUIElement(this, ResourceCreator)
+            {
+                Height = 20,
+                Width = 20,
+                Background = Colors.Transparent,
+            };
+            DragToolsRect.IsVisible = false;
+            AddChild(DragToolsRect);
+
+
+        }
+
+        /// <summary>
+        /// Make the drag tools rect follow the pointer when trying to drag out a new tool
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BtnTools_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            DragToolsRect.IsVisible = true;
+            DragToolsRect.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+        }
+
+        /// <summary>
+        /// When the tool button has been dragged, either create new tool or add the collection as a parent to the tool dragged ontop of
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BtnTools_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            DragToolsRect.IsVisible = false;
+
+            Debug.Assert(_isSingleCollectionSelected);
+            var collectionVm = (_selectedItems.First()?.ViewModel as ElementViewModel)?.Controller as ElementCollectionController;
+            Debug.Assert(collectionVm != null);
+            collectionVm.CreateToolFromCollection(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
+        }
+
+        
+
+        public override async Task Load()
+        {
+            base.Load();
+            BtnTools.Image =
+                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
+            DragToolsRect.Image =
+                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
+        }
+        
+
         private void SelectionsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             if (args.Action == NotifyCollectionChangedAction.Reset)
@@ -110,6 +191,7 @@ namespace NuSysApp
             _isSingleCollectionSelected = _selectedItems.Count == 1 && _selectedItems[0] is CollectionRenderItem;
 
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
+            BtnTools.IsVisible = _isSingleCollectionSelected;
 
 
             BtnDelete.IsVisible = !SessionController.IsReadonly;
@@ -183,7 +265,16 @@ namespace NuSysApp
             {
                 if (!btn.IsVisible)
                     continue;
-                btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
+                //Make sure the tool button is a ligned because its a different type of button from the rest
+                if (btn == BtnTools)
+                {
+                    btn.Transform.LocalPosition = new Vector2((float) _screenRect.X + leftOffset - BtnTools.Width/2,
+                        (float) _screenRect.Y + 20 + count*35);
+                }
+                else
+                {
+                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
+                }
                 count++;
             }
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;

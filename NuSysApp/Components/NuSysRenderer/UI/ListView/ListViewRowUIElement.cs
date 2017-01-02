@@ -121,7 +121,7 @@ namespace NuSysApp
         /// </summary>
         public void Deselect(InteractiveBaseRenderItem cell = null)
         {
-            Background = Colors.White;
+            Background = Colors.Transparent;
             _isSelected = false;
         }
 
@@ -217,6 +217,7 @@ namespace NuSysApp
             left.Width += sizeChange;
             right.Width -= sizeChange;
             right.Transform.LocalX += sizeChange;
+           
         }
 
         /// <summary>

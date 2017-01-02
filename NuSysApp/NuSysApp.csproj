@@ -488,9 +488,11 @@
       <DependentUpon>MetadataToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
+    <Compile Include="Components\Tools\PieChartElement.cs" />
     <Compile Include="Components\Tools\PieChartToolView.xaml.cs">
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\PieChartUIElement.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
@@ -531,6 +533,7 @@
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkRenderitem.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkViewModelWin2d.cs" />
+    <Compile Include="Components\Win2dTools\ToolResizerRenderItem.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />

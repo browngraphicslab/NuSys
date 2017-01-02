@@ -95,7 +95,16 @@ namespace NuSysApp
             {
                 if (ToolModel.ParentIds.Add(parentController.GetID()))
                 {
+                    var linkModel = new ToolLinkModel();
+                    linkModel.InAtomId = this.Id;
+                    linkModel.OutAtomId = parentController.GetID();
+                    Debug.Assert((parentController as ElementController) != null);
+                    var linkController = new ToolLinkController(linkModel, this, parentController as ElementController);
+                    var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                    SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+
                     parentController.OutputLibraryIdsChanged += IdsToDiplayChanged;
+                    
                     parentController.FilterTypeAllMetadataChanged += ParentController_FilterTypeAllMetadataChanged;
                     ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
                     OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
@@ -114,12 +123,12 @@ namespace NuSysApp
         private void ParentController_FilterTypeAllMetadataChanged(object sender, ToolViewModel vm)
         {
             AddParent(vm.Controller);
-            var linkModel = new ToolLinkModel();
-            linkModel.InAtomId = vm.Id;
-            linkModel.OutAtomId = Id;
-            var linkController = new ToolLinkController(linkModel, vm.Controller, this);
-            var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-            SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+            //var linkModel = new ToolLinkModel();
+            //linkModel.InAtomId = vm.Id;
+            //linkModel.OutAtomId = Id;
+            //var linkController = new ToolLinkController(linkModel, vm.Controller, this);
+            //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+            //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
         }
 
         /// <summary>
@@ -142,7 +151,7 @@ namespace NuSysApp
             ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
-            ToolControllers[parentid].Disposed -= OnParentDisposed;
+            //ToolControllers[parentid].Disposed -= OnParentDisposed;
         }
 
         /// <summary>
@@ -154,7 +163,9 @@ namespace NuSysApp
             {
                 if (parentController != null)
                 {
+                    parentController.FilterTypeAllMetadataChanged -= ParentController_FilterTypeAllMetadataChanged;
                     parentController.OutputLibraryIdsChanged -= IdsToDiplayChanged;
+                    parentController.Disposed -= OnParentDisposed;
                 }
             }
             NumberOfParentsChanged?.Invoke(ToolModel.ParentIds.Count);

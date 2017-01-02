@@ -154,6 +154,8 @@ namespace NuSysApp
 
             RenderEngine.Root.AddChild(InitialCollection);
 
+
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;

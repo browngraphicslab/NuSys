@@ -92,9 +92,9 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _toolView.Height = Height - FILTER_CHOOSER_HEIGHT - UIDefaults.TopBarHeight - BUTTON_BAR_HEIGHT;
+            _toolView.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT;
             _toolView.Width = Width;
-            _toolView.Transform.LocalPosition = new Vector2(0, UIDefaults.TopBarHeight+FILTER_CHOOSER_HEIGHT);
+            _toolView.Transform.LocalPosition = new Vector2(0, FILTER_CHOOSER_HEIGHT);
             
             base.Update(parentLocalToScreenTransform);
         }

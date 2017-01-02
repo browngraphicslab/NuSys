@@ -18,7 +18,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class ElementCollectionViewModel: ElementViewModel, ToolStartable
+    public class ElementCollectionViewModel: ElementViewModel//, ToolStartable
     {
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event EventHandler<string> Disposed;
@@ -33,7 +33,7 @@ namespace NuSysApp
         /// <summary>
         /// The unique ID used in the tool startable dictionary
         /// </summary>
-        private string _toolStartableId;
+        //private string _toolStartableId;
 
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
         protected FreeFormElementViewModelFactory _elementVmFactory = new FreeFormElementViewModelFactory();
@@ -88,8 +88,7 @@ namespace NuSysApp
 
 
             AtomViewList = new ObservableCollection<FrameworkElement>();
-            _toolStartableId = SessionController.Instance.GenerateId();
-            ToolController.ToolControllers.Add(_toolStartableId, this);
+            //_toolStartableId = SessionController.Instance.GenerateId();
         }
 
         private void LibElemControllerOnOnTrailAdded(PresentationLinkViewModel vm)
@@ -162,8 +161,8 @@ namespace NuSysApp
             libElemController.OnTrailRemoved -= LibElemControllerOnOnTrailRemoved;
 
             base.Dispose();
-            Disposed?.Invoke(this, _toolStartableId);
-            ToolController.ToolControllers.Remove(_toolStartableId);
+            //Disposed?.Invoke(this, _toolStartableId);
+            //ToolController.ToolControllers.Remove(_toolStartableId);
         }
 
         private async void OnChildAdded(object source, ElementController elementController)
@@ -171,6 +170,8 @@ namespace NuSysApp
             await CreateChild(elementController);
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }
+
+       
 
         private async Task CreateChild(ElementController controller)
         {
@@ -291,14 +292,14 @@ namespace NuSysApp
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }
 
-        /// <summary>
-        /// Returns the tool startable id that is used in the dictionary from id to controller.
-        /// </summary>
-        /// <returns></returns>
-        public string GetID()
-        {
-            return _toolStartableId;
-        }
+        /////// <summary>
+        /////// Returns the tool startable id that is used in the dictionary from id to controller.
+        /////// </summary>
+        /////// <returns></returns>
+        ////public string GetID()
+        ////{
+        ////    //return _toolStartableId;
+        ////}
 
         /// <summary>
         /// Returns an empty hashset because a collection has no parents
