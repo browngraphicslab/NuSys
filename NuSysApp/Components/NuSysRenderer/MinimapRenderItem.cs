@@ -16,7 +16,7 @@ using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
-    public class MinimapRenderItem 
+    public class MinimapRenderItem
     {
         private Rect _rect;
         private Rect _bb;
