@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -47,6 +48,8 @@ namespace NuSysApp
         /// The color of the title of the tab
         /// </summary>
         public Color TitleColor { get; set; }
+
+        public CanvasHorizontalAlignment TextAlignment { get; set; }
 
         /// <summary>
         /// True if the tab is closeable false otherwise
@@ -149,13 +152,11 @@ namespace NuSysApp
 
             _backgroundButton.ButtonText = Title;
             _backgroundButton.ButtonTextColor = TitleColor;
+            _backgroundButton.ButtonTextHorizontalAlignment = TextAlignment;
             _backgroundButton.Background = Background;
             _backgroundButton.BorderWidth = 0;
             _backgroundButton.Width = Width - _closeButton.Width * 3;
             _backgroundButton.Height = Height;
         }
-
-
-
     }
 }

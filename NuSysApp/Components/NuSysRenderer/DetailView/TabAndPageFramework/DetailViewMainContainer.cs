@@ -23,29 +23,45 @@ namespace NuSysApp
         private DetailViewPageContainer _pageContainer;
 
         /// <summary>
-        /// the layout manager for the _mainTabContainer
+        /// the layout manager for the _mainTabContainer, currently expands the mainTabContainer to fill the entire detail viewer window
         /// </summary>
         private StackLayoutManager _mainTabLayoutManager;
 
+        /// <summary>
+        /// Dictionary of library element ids to the currTabOpen. So that if we were on the regions tab in one page
+        /// and we click to another tab, when we return we open to the regions tab again
+        /// </summary>
         private Dictionary<string, DetailViewPageTabType> _libElemToCurrTabOpen;
 
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            // create the _mainTabContainer
-            _mainTabContainer = new TabContainerUIElement<string>(this, Canvas);
+            // create the _mainTabContainer, this is the tabs at the top of the page which represent different elements open in the detail view
+            // the page of the mainTabContainer is the _pageContainer, which will dynamically be updated to display the correct item
+            // in the detail viewer when a tab on the mainTabContainer is clicked
+            _mainTabContainer = new TabContainerUIElement<string>(this, Canvas)
+            {
+                TabSpacing = 5,
+            };
+            AddChild(_mainTabContainer);
 
-            // add the page to the _mainTabContainer, the page
+            // add the pageContainer as the page to the main tab container
             _pageContainer = new DetailViewPageContainer(this, Canvas);
+            _mainTabContainer.SetPage(_pageContainer); // adds the pageContainer as a child of the mainTabContainer as a side effect
 
-            _mainTabLayoutManager = new StackLayoutManager();
-
+            // dictionary of library element ids
             _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
 
-            _mainTabContainer.SetPage(_pageContainer);
-
-            AddChild(_mainTabContainer);
+            // setup the mainTabLayoutManager so that the mainTabContainer fills the entire detail viewer window
+            _mainTabLayoutManager = new StackLayoutManager
+            {
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            _mainTabLayoutManager.SetMargins(BorderWidth);
+            _mainTabLayoutManager.TopMargin = TopBarHeight;
             _mainTabLayoutManager.AddElement(_mainTabContainer);
 
+            // detail view defaults to invisible. visible on click
             IsVisible = false;
 
             // add events
@@ -142,11 +158,9 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _mainTabLayoutManager.SetMargins(BorderWidth);
-            _mainTabLayoutManager.TopMargin = TopBarHeight;
+            // set the size to the new width and height, then arrange items
+            // this makes the mainTabContainer fill the entire window
             _mainTabLayoutManager.SetSize(Width, Height);
-            _mainTabLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _mainTabLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _mainTabLayoutManager.ArrangeItems();
 
             base.Update(parentLocalToScreenTransform);

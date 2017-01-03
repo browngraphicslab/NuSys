@@ -16,6 +16,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.GeometriesGraph;
 using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 using Color = Windows.UI.Color;
+using Matrix3x2 = System.Numerics.Matrix3x2;
 
 namespace NuSysApp
 {
@@ -906,12 +907,13 @@ namespace NuSysApp
             SetPosition(position);
         
         }
+
         /// <summary>
         /// Calls update on every row, since rows are not children.
         /// Also updates clipping rect to be based on the width and height.
         /// </summary>
         /// <param name="parentLocalToScreenTransform"></param>
-        public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             _backgroundRectangle.Width = this.Width;
             _backgroundRectangle.Height = this.Height;

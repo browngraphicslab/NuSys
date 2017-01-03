@@ -13,40 +13,53 @@ namespace NuSysApp
 {
     public class DetailViewPageContainer : RectangleUIElement
     {
-
+        /// <summary>
+        /// The current library elment controller being displayed
+        /// </summary>
         private LibraryElementController _currentController;
 
+        /// <summary>
+        /// The tab container used to display the different page types, regions, home, metadata etc.
+        /// </summary>
         private TabContainerUIElement<DetailViewPageTabType> _pageTabContainer;
 
-        private TextboxUIElement _titleTextBox;
-
+        /// <summary>
+        /// layout manager used to make sure the _pageTabContainer fills the window
+        /// </summary>
         private StackLayoutManager _tabContainerLayoutManager;
-
-        private StackLayoutManager _titleLayoutManager;
 
         public delegate void OnDetailViewPageTabChanged(string libraryElementId , DetailViewPageTabType page);
 
         public event OnDetailViewPageTabChanged OnPageTabChanged;
 
+        private TextboxUIElement _titleBox;
+
 
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas);
-            _pageTabContainer.TabsIsCloseable = false;
-
-            _titleTextBox = new TextboxUIElement(this, Canvas)
+            _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
             {
-                TextVerticalAlignment = CanvasVerticalAlignment.Center,
-                TextHorizontalAlignment = CanvasHorizontalAlignment.Left
+                TabsIsCloseable = false,
+                TabHorizontalAlignment = HorizontalAlignment.Stretch,
+                TabTextAlignment = CanvasHorizontalAlignment.Center,
+                TabColor = Colors.DarkSlateGray,
+                TabSpacing = 25
             };
 
-            _titleLayoutManager = new StackLayoutManager();
-            _titleLayoutManager.AddElement(_titleTextBox);
+            _titleBox = new TextboxUIElement(this, Canvas)
+            {
+                Height = 100,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
+                TextVerticalAlignment = CanvasVerticalAlignment.Center,
+                FontSize = 30,
+                Wrapping = CanvasWordWrapping.Character
+            };
+            AddChild(_titleBox);
+
             _tabContainerLayoutManager = new StackLayoutManager();
             _tabContainerLayoutManager.AddElement(_pageTabContainer);
             BorderWidth = 0;
             AddChild(_pageTabContainer);
-            AddChild(_titleTextBox);
 
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
         }
@@ -66,6 +79,7 @@ namespace NuSysApp
             var rect = await DetailViewPageFactory.GetPage(this, Canvas, tabType.Type, _currentController);
             if (rect != null)
             {
+                _titleBox.Text = _currentController.Title;
                 _pageTabContainer.SetPage(rect);
                 OnPageTabChanged?.Invoke(_currentController.LibraryElementModel.LibraryElementId, tabType);
             }
@@ -85,8 +99,6 @@ namespace NuSysApp
 
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-
-            _titleTextBox.Text = _currentController.Title;
 
             // clear all the old tabs
             _pageTabContainer.ClearTabs();
@@ -145,19 +157,13 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            var titleHeight = 25;
-
-            _titleLayoutManager.SetSize(Width, Height);
-            _titleLayoutManager.SetMargins(BorderWidth);
-            _titleLayoutManager.VerticalAlignment = VerticalAlignment.Top;
-            _titleLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _titleLayoutManager.ItemHeight = titleHeight;
-            _titleLayoutManager.ArrangeItems();
-
+            _titleBox.Transform.LocalPosition = new Vector2(BorderWidth);
+            _titleBox.Width = Width - 2*BorderWidth;
+            _titleBox.Height = 50;
 
             _tabContainerLayoutManager.SetSize(Width, Height);
             _tabContainerLayoutManager.SetMargins(BorderWidth);
-            _tabContainerLayoutManager.TopMargin = titleHeight  + 2 * BorderWidth;
+            _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth;
             _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
             _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _tabContainerLayoutManager.ArrangeItems();

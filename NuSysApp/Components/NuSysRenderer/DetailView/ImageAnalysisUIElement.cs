@@ -61,7 +61,7 @@ namespace NuSysApp
 
             // add the description header
             _descriptionHeader = new TextboxUIElement(this, resourceCreator);
-            _descriptionHeader.Text = "Description: ";
+            _descriptionHeader.Text = "Description";
             AddChild(_descriptionHeader);
             _textLayoutManager.AddElement(_descriptionHeader);
             SetHeaderUI(_descriptionHeader);
@@ -74,7 +74,7 @@ namespace NuSysApp
 
             // add the categories header
             _categoriesHeader = new TextboxUIElement(this, resourceCreator);
-            _categoriesHeader.Text = "Categories: ";
+            _categoriesHeader.Text = "Categories";
             AddChild(_categoriesHeader);
             _textLayoutManager.AddElement(_categoriesHeader);
             SetHeaderUI(_categoriesHeader);
@@ -87,7 +87,7 @@ namespace NuSysApp
 
             // add the tags header
             _tagsHeader = new TextboxUIElement(this, resourceCreator);
-            _tagsHeader.Text = "Tags: ";
+            _tagsHeader.Text = "Tags";
             AddChild(_tagsHeader);
             _textLayoutManager.AddElement(_tagsHeader);
             SetHeaderUI(_tagsHeader);
@@ -116,8 +116,8 @@ namespace NuSysApp
         {
             header.TextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             header.TextVerticalAlignment = CanvasVerticalAlignment.Center;
-            header.Background = Colors.Azure;
             header.TextColor = Colors.DarkSlateGray;
+            header.FontSize = 15;
         }
 
         /// <summary>
@@ -128,9 +128,7 @@ namespace NuSysApp
         {
             text.TextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             text.TextVerticalAlignment = CanvasVerticalAlignment.Center;
-            text.Background = Colors.Azure;
             text.TextColor = Colors.DarkSlateGray;
-
         }
 
 
@@ -163,12 +161,24 @@ namespace NuSysApp
                 }
                 _categoriesText.Text = string.Join(", ", categories.Select(category => string.Join(", ", category.Name)));
             }
+            else
+            {
+                _categoriesText.Text = "No categories found for this element";
+            }
 
 
             //get tag list and order them in order of confidence
             var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
-            //add to items control of suggested tags
-            _tagsText.Text = string.Join(", ", taglist.Select(tag => string.Join(", ", tag.Name)));
+            if (taglist.Any())
+            {
+                //add to items control of suggested tags
+                _tagsText.Text = string.Join(", ", taglist.Select(tag => string.Join(", ", tag.Name)));
+            }
+            else
+            {
+                _tagsText.Text = "No tags found for this element";
+            }
+
         }
 
         /// <summary>
@@ -180,7 +190,6 @@ namespace NuSysApp
             _textLayoutManager.SetSize(Width, Height);
             _textLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _textLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _textLayoutManager.Spacing = 5;
             _textLayoutManager.SetMargins(20);
             _textLayoutManager.ArrangeItems();
             base.Update(parentLocalToScreenTransform);

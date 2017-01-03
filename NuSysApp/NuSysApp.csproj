@@ -380,11 +380,11 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAudioPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewImagePage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinksPage.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMainContainer.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageContainer.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageFactory.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageType.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageTabType.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewMainContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageFactory.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageType.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageTabType.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
@@ -420,8 +420,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackLayoutManager.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\TabButtonUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\TabContainerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabContainerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\User Bubbles\UserBubbleContainerUIElement.cs" />
