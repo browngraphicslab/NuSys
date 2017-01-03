@@ -37,10 +37,10 @@ namespace NuSysApp
             // set the default background
             Background = Colors.Transparent;
 
-            _addElementButton = new EllipseButtonUIElement(this, Canvas, 0, "add element");
+            _addElementButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "add element");
             AddChild(_addElementButton);
 
-            _openLibraryButton = new EllipseButtonUIElement(this, Canvas, 0, "open library");
+            _openLibraryButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "open library");
             AddChild(_openLibraryButton);
 
             _addElementMenu = new AddElementMenuUIElement(this, Canvas)

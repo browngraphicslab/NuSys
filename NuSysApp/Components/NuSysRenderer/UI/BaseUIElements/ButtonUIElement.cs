@@ -144,14 +144,15 @@ namespace NuSysApp
         /// Then pass in another baseInteractiveUIElement to be used as the shape of the button.
         /// 
         /// The button will encapsulate that shape.  
-        /// FOR MOST CASES, YOU WILL NOT NEED TO USE THIS CONSTRUCTOR - YOU SHOULD BE INSTANTIATING EITHER AN ELLIPSE BUTTON OR A RECTANGLE BUTTON.
+        /// FOR MOST CASES, YOU WILL NOT NEED TO USE THIS CONSTRUCTOR - YOU SHOULD BE INSTANTIATING A SPECIFIC BUTTON.
+        /// See EllipseButtonUIElement, DraggableButtonUIElement, RoundedRectButtonUIElement and RectangleButtonUIElement.
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
         /// <param name="shapeElement"></param>
-        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement = null) : base(parent, resourceCreator)
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shape) : base(parent, resourceCreator)
         {
-            Shape = shapeElement ?? new RectangleUIElement(this, ResourceCreator); //This is important so all buttons should have the same base appearance
+            Shape = shape;
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);

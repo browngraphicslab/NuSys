@@ -47,13 +47,18 @@ namespace NuSysApp
                     break;
                 ///secondary style for ellipse
                 case 1:
-                    Ellipse.Background = Constants.LIGHT_BLUE;
+                    Ellipse.Background = Constants.MED_BLUE;
+                    break;
+                case 2:
+                    Ellipse.Background = Constants.RED;
                     break;
             }
 
             ///set button text and color
             ButtonText = text;
             ButtonTextColor = Constants.DARK_BLUE;
+            Height = 50;
+            Width = 50;
         }
 
         /// <summary>

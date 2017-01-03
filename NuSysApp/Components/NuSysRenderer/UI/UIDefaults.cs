@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.StartScreen;
 using Windows.UI.Text;
 using Microsoft.Graphics.Canvas.Text;
 
@@ -23,6 +24,10 @@ namespace NuSysApp
         public static float TopBarHeight = 25;
         public static Color TopBarColor = Colors.Transparent;
         public static float ErrorMargin = 15;
+
+        public static int PrimaryStyle = 0;
+        public static int SecondaryStyle = 1;
+        public static int AccentStyle = 2;
 
         #endregion
 
@@ -70,10 +75,6 @@ namespace NuSysApp
         public static CanvasHorizontalAlignment ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
         public static CanvasVerticalAlignment ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
         public static float ButtonTextSize = 14;
-        
-        public static Color ButtonPrimaryColor = Constants.DARK_BLUE;
-        public static Color ButtonLabelColor = Constants.DARK_BLUE;
-        public static Color ButtonSecondaryColor = Constants.LIGHT_BLUE;
 
         #endregion
 
@@ -132,5 +133,6 @@ namespace NuSysApp
 
         #endregion
 
+        public static int CornerRadius = 5;
     }
 }

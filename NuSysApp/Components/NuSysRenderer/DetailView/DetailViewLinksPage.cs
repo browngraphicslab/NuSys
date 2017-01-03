@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 
 namespace NuSysApp
 {
@@ -42,7 +43,7 @@ namespace NuSysApp
             _linkTitleSearchBar = new RectangleUIElement(parent, resourceCreator);
             _linkToSearchBar = new RectangleUIElement(parent, resourceCreator);
             _tagsSearchBar = new RectangleUIElement(parent, resourceCreator);
-            _createLinkButton = new ButtonUIElement(parent, resourceCreator, new RoundedRectangleUIElement(parent, resourceCreator));
+            _createLinkButton = new RoundedRectButtonUIElement(parent, resourceCreator);
 
             // Set Background colors
             _linkTitleSearchBar.Background = Colors.Aquamarine;

@@ -74,48 +74,32 @@ namespace NuSysApp
             TrailBox = new BreadCrumbContainer(this, Canvas);
             AddChild(TrailBox);
 
-            _settingsButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
-            {
-                Width = 50,
-                Height = 50,
-                Background = Colors.Purple
-            };
-            AddChild(_settingsButton);
+            _settingsButton = new EllipseButtonUIElement(this, canvas, UIDefaults.PrimaryStyle);
+            //AddChild(_settingsButton);
 
             _settingsMenu = new SessionSettingsMenu(this, canvas)
             {
                 Width = 250,
                 Height = 250,
-                Background = Colors.Purple,
+                Background = Constants.LIGHT_BLUE,
                 IsVisible =  false,
                 KeepAspectRatio = false
             };
-            AddChild(_settingsMenu);
-            _settingsMenu.Transform.LocalPosition = new Vector2(200,200);
+            //AddChild(_settingsMenu);
 
-            _chatButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
-            {
-                Width = 50,
-                Height = 50,
-                Background = Colors.Purple
-            };
+            _chatButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle);
             AddChild(_chatButton);
 
-            _snapshotButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
-            {
-                Width = 50,
-                Height = 50,
-                Background = Colors.Purple
-            };
+            _snapshotButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle);
             AddChild(_snapshotButton);
 
+            //custom button
             _backToWaitingRoomButton = new ButtonUIElement(this, canvas, new RectangleUIElement(this, canvas))
             {
                 Width = 25,
                 Height = 50,
                 SelectedBackground = Colors.Gray,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
+                BorderWidth =  0,
                 Bordercolor = Colors.Transparent,
                 Background = Colors.Transparent
             };
@@ -124,7 +108,7 @@ namespace NuSysApp
                 _backToWaitingRoomButton.Width - 2*_backToWaitingRoomButton.BorderWidth,
                 _backToWaitingRoomButton.Height - 2*_backToWaitingRoomButton.BorderWidth);
 
-            AddChild(_backToWaitingRoomButton);
+            //AddChild(_backToWaitingRoomButton);
 
             // add the user bubble container before the chatbox so user bubble names do not overlap the bottom of the chatbox
             _userBubbleContainer = new UserBubbleContainerUIElement(this, canvas);
@@ -149,7 +133,7 @@ namespace NuSysApp
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
-            _snapshotButton.Tapped += SnapShotButtonTapped;
+            _snapshotButton.Tapped += SnapShotButtonTapped; 
             _chatButton.Tapped += ChatButtonOnTapped;
             _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
@@ -162,9 +146,9 @@ namespace NuSysApp
                 Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title,
                 TextColor = Constants.ALMOST_BLACK,
                 Background = Colors.Transparent,
-                FontSize = 45,
+                FontSize = 55,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                Width = 50 * SessionController.Instance.CurrentCollectionLibraryElementModel.Title.Length,
+                Width = 60 * SessionController.Instance.CurrentCollectionLibraryElementModel.Title.Length,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center
             };
             AddChild(_titleBox);
@@ -173,8 +157,13 @@ namespace NuSysApp
 
             _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2, 
                 _titleBox.Height/2 - _settingsButton.Height/2);
+            AddChild(_settingsButton);
             _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2,
                 _titleBox.Height / 2 - _backToWaitingRoomButton.Height / 2);
+            AddChild(_backToWaitingRoomButton);
+            _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width/2 - _settingsMenu.Width/2,
+                _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
+            AddChild(_settingsMenu);
         }
 
         /// <summary>
@@ -233,6 +222,7 @@ namespace NuSysApp
             _detailViewer.Height = Height;
             _detailViewer.Width = Width;
             TrailBox.Transform.LocalPosition = new Vector2(Width - TrailBox.Width, 0);
+
         }
 
         /// <summary>

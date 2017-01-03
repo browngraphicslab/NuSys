@@ -9,6 +9,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 
 namespace NuSysApp
 {
@@ -121,50 +122,22 @@ namespace NuSysApp
             // create a button for each filter category
             foreach (var category in Enum.GetValues(typeof(FilterCategory)).Cast<FilterCategory>())
             {
-                var button = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
-                {
-                    Background = Colors.Gray,
-                    SelectedBorder = Colors.LightGray,
-                    BorderWidth = 5,
-                    Bordercolor = Colors.Gray,
-                    ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                    ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                    ButtonTextColor = Colors.Black
-                };
+                var button = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle);
                 InitializeFilterButton(category, button);
                 _buttonLayoutManager.AddElement(button);
                 _filterMenuButtons.Add(button);
                 AddChild(button);
             }
 
-            _applyFilterbutton = new ButtonUIElement(this, ResourceCreator,
-                new RectangleUIElement(this, ResourceCreator))
-            {
-                Background = Colors.Gray,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5,
-                Bordercolor = Colors.Gray,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                ButtonTextColor = Colors.Black,
-                ButtonText = "Apply Filter"
-            };
+            _applyFilterbutton = new RectangleButtonUIElement(this, ResourceCreator,
+                UIDefaults.SecondaryStyle, "Apply Filter");
             AddChild(_applyFilterbutton);
             _buttonLayoutManager.AddElement(_applyFilterbutton);
             _filterMenuButtons.Add(_applyFilterbutton);
             _applyFilterbutton.Tapped += OnApplyFilterButtonTapped;
 
-            _removeFilterButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
-            {
-                Background = Colors.Gray,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5,
-                Bordercolor = Colors.Gray,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                ButtonTextColor = Colors.Black,
-                ButtonText = "Remove Filter"
-            };
+            _removeFilterButton = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle,
+                "Remove Filter");
             AddChild(_removeFilterButton);
             _buttonLayoutManager.AddElement(_removeFilterButton);
             _filterMenuButtons.Add(_removeFilterButton);

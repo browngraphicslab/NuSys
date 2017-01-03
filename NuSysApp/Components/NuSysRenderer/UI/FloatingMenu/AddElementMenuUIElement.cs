@@ -40,7 +40,7 @@ namespace NuSysApp
         private float _menuButtonHeight = 50;
         private float _menuButtonSpacing = 10;
         private float _menuButtonTopAndBottomMargins = 15;
-        private float _menuButtonLeftAndRightMargins = 5;
+        private float _menuButtonLeftAndRightMargins = 15;
 
         /// <summary>
         /// This list of menu buttons determines the order they are drawn
@@ -58,18 +58,18 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-            _addTextNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "text");
+            _addTextNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "text");
             AddChild(_addTextNodeButton);
 
-            _addCollectionNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "collection");
+            _addCollectionNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "collection");
 
             AddChild(_addCollectionNodeButton);
 
-            _addToolNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "tools");
+            _addToolNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "tools");
 
             AddChild(_addToolNodeButton);
 
-            _addRecordingNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "record");
+            _addRecordingNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "record");
 
             AddChild(_addRecordingNodeButton);
 
@@ -91,7 +91,7 @@ namespace NuSysApp
             Background = Colors.White;
             Bordercolor = Constants.DARK_BLUE;
 
-            Radius = 5;
+            Radius = UIDefaults.CornerRadius;
             
             // create a new stack layout manager using the ui variables
             _buttonLayoutManager = new StackLayoutManager

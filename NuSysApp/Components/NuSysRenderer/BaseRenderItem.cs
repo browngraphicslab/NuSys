@@ -24,15 +24,7 @@ namespace NuSysApp
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
-        public bool IsDirty {
-            get { return fuckyou2; }
-            set
-            {
-                fuckyou2 = value;
-            }
-        }
-
-        private bool fuckyou2 = true;
+        public bool IsDirty { get; set; } = true;
 
         // Boolean which determines whether this render item can gain focus
         public bool IsFocusable { get; set; } = true;
@@ -43,16 +35,7 @@ namespace NuSysApp
 
         public bool IsDisposed { get; protected set; }
 
-        public bool IsVisible {
-            get { return _fuckyou; }
-            set
-            {
-                _fuckyou = value;
-            } 
-        }
-            
-
-        private bool _fuckyou = true;
+        public bool IsVisible { get; set; } = true;
 
         public bool IsHitTestVisible
         {
