@@ -32,6 +32,11 @@ namespace NuSysApp
         /// The passed string is the LibraryId of the newly entered collection.  
         /// </summary>
         public event EventHandler<string> EnterNewCollectionStarting;
+
+        /// <summary>
+        /// fires when entering the new collection has completed
+        /// passed in string is library id of newly entered collection
+        /// </summary>
         public event EventHandler<string> EnterNewCollectionCompleted;
 
         /// <summary>
@@ -533,6 +538,7 @@ namespace NuSysApp
             Instance.NuSessionView.TrailBox.AddBreadCrumb(controller);
 
             SessionView.ShowBlockingScreen(false);
+            EnterNewCollectionCompleted?.Invoke(this,collectionLibraryId);
         }
 
 

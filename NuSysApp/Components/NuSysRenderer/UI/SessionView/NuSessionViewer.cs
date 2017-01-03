@@ -9,8 +9,11 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NuSysApp.Network.Requests;
+using ReverseMarkdown.Converters;
+using WinRTXamlToolkit.Controls.DataVisualization;
 
 namespace NuSysApp
 {
@@ -44,6 +47,8 @@ namespace NuSysApp
 
         public BreadCrumbContainer TrailBox;
 
+        public TextboxUIElement _titleBox;
+
         public FilterMenu FilterMenu => _floatingMenu.FilterMenu;
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
@@ -65,6 +70,7 @@ namespace NuSysApp
             //};
             //AddChild(_currCollDetailViewButton);
 
+            SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
             TrailBox = new BreadCrumbContainer(this, Canvas);
             AddChild(TrailBox);
 
@@ -105,8 +111,8 @@ namespace NuSysApp
 
             _backToWaitingRoomButton = new ButtonUIElement(this, canvas, new RectangleUIElement(this, canvas))
             {
-                Width = 50,
-                Height = 100,
+                Width = 25,
+                Height = 50,
                 SelectedBackground = Colors.Gray,
                 SelectedBorder = Colors.LightGray,
                 BorderWidth = 3,
@@ -147,6 +153,28 @@ namespace NuSysApp
             _chatButton.Tapped += ChatButtonOnTapped;
             _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
+        }
+
+        private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
+        {
+            _titleBox = new TextboxUIElement(this, Canvas)
+            {
+                Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title,
+                TextColor = Constants.ALMOST_BLACK,
+                Background = Colors.Transparent,
+                FontSize = 45,
+                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
+                Width = 50 * SessionController.Instance.CurrentCollectionLibraryElementModel.Title.Length,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
+            };
+            AddChild(_titleBox);
+            _titleBox.Transform.LocalPosition =
+                new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
+
+            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2, 
+                _titleBox.Height/2 - _settingsButton.Height/2);
+            _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2,
+                _titleBox.Height / 2 - _backToWaitingRoomButton.Height / 2);
         }
 
         /// <summary>
@@ -247,7 +275,7 @@ namespace NuSysApp
             Canvas.SizeChanged -= OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped -= OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped -= SnapShotButtonTapped;
-            
+            SessionController.Instance.EnterNewCollectionCompleted -= InstanceOnEnterNewCollectionCompleted;
             base.Dispose();
         }
 
