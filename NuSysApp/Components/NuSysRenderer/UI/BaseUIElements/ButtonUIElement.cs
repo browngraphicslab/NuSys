@@ -110,7 +110,7 @@ namespace NuSysApp
         /// <summary>
         /// The color of the text on the button
         /// </summary>
-        public Color ButtonTextColor { get; set; }
+        public Color ButtonTextColor { get; set; } = UIDefaults.TextColor;
 
         /// <summary>
         /// The size of the text on the button

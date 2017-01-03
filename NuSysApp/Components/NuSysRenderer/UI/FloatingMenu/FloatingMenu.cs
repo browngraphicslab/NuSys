@@ -11,7 +11,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    class FloatingMenu : RectangleUIElement
+    public class FloatingMenu : RectangleUIElement
     {
         private ButtonUIElement _addElementButton;
         private ButtonUIElement _openLibraryButton;
@@ -111,6 +111,7 @@ namespace NuSysApp
             if (_library == null)
             {
                 _library = new LibraryListUIElement(this, Canvas);
+                _library.KeepAspectRatio = false;
                 AddChild(_library);
             }
             _library.IsVisible = false;

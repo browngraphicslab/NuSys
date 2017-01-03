@@ -133,7 +133,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             // draw the border inside the rectangle
-            ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Bordercolor, BorderWidth);
+            ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth,0), Height - BorderWidth), Bordercolor, BorderWidth);
 
             ds.Transform = orgTransform;
         }
