@@ -12,7 +12,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class AddElementMenuUIElement : RectangleUIElement
+    public class AddElementMenuUIElement : RoundedRectangleUIElement
     {
         // variables for all the buttons
         private ButtonUIElement _addTextNodeButton;
@@ -39,7 +39,7 @@ namespace NuSysApp
         private float _menuButtonWidth = 50;
         private float _menuButtonHeight = 50;
         private float _menuButtonSpacing = 10;
-        private float _menuButtonTopAndBottomMargins = 5;
+        private float _menuButtonTopAndBottomMargins = 15;
         private float _menuButtonLeftAndRightMargins = 5;
 
         /// <summary>
@@ -58,52 +58,19 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-            _addTextNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addTextNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "text");
             AddChild(_addTextNodeButton);
 
-            _addCollectionNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addCollectionNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "collection");
+
             AddChild(_addCollectionNodeButton);
 
-            _addToolNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addToolNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "tools");
+
             AddChild(_addToolNodeButton);
 
-            _addRecordingNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addRecordingNodeButton = new DraggableButtonUIElement(this, Canvas, 0, "record");
+
             AddChild(_addRecordingNodeButton);
 
             // initialize a list of menu buttons which is useful for writing short code
@@ -120,8 +87,11 @@ namespace NuSysApp
             Width = _menuButtons.Count*_menuButtonWidth + (_menuButtons.Count - 1)*_menuButtonSpacing +
                     2*_menuButtonLeftAndRightMargins;
 
-            BorderWidth = 3;
-            Bordercolor = Colors.LightGray;
+            BorderWidth = 1;
+            Background = Colors.White;
+            Bordercolor = Constants.DARK_BLUE;
+
+            Radius = 5;
             
             // create a new stack layout manager using the ui variables
             _buttonLayoutManager = new StackLayoutManager

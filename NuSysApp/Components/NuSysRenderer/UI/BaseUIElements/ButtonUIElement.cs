@@ -140,18 +140,18 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// For instantiating a button, pass is the usual parent and resource creator.  
+        /// For instantiating a button, pass in the usual parent and resource creator.  
         /// Then pass in another baseInteractiveUIElement to be used as the shape of the button.
         /// 
         /// The button will encapsulate that shape.  
-        /// FOR MOST CASES, YOU WILL NOT NEED TO PASS IN ANYTHING AS THE SHAPE SINCE THE DEFAULT WILL KEEP UI CONSISTENT.
+        /// FOR MOST CASES, YOU WILL NOT NEED TO USE THIS CONSTRUCTOR - YOU SHOULD BE INSTANTIATING EITHER AN ELLIPSE BUTTON OR A RECTANGLE BUTTON.
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
         /// <param name="shapeElement"></param>
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement = null) : base(parent, resourceCreator)
         {
-            Shape = shapeElement ?? new RectangleUIElement(this, ResourceCreator); //This is important so all buttons should have the same base appearence
+            Shape = shapeElement ?? new RectangleUIElement(this, ResourceCreator); //This is important so all buttons should have the same base appearance
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -282,26 +282,43 @@ namespace NuSysApp
 
             if (ButtonText != null)
             {
-                // create a text format object
-                var textFormat = new CanvasTextFormat
-                {
-                    HorizontalAlignment = ButtonTextHorizontalAlignment,
-                    VerticalAlignment = ButtonTextVerticalAlignment,
-                    WordWrapping = CanvasWordWrapping.NoWrap,
-                    TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
-                    FontSize = ButtonTextSize
-
-                };
-
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created textFormat
-                ds.DrawText(ButtonText,
-                    new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth),
-                    ButtonTextColor, textFormat);
+                ds.DrawText(ButtonText, GetTextBoundingBox(),ButtonTextColor, GetCanvasTextFormat());
             }
 
             ds.Transform = orgTransform;
+        }
+
+        /// <summary>
+        /// get text bounding box. this is overriden in classes where the shape is not a rectangle/the text is not to be drawn
+        /// inside the button shape.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Rect GetTextBoundingBox()
+        {
+            return new Rect(BorderWidth, BorderWidth, Width - 2*BorderWidth, Height - 2*BorderWidth);
+        }
+
+        /// <summary>
+        /// get canvas text format. this will be overridden if you need to change the wrapping style, etc. for text that is not drawn inside
+        /// the button shape.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual CanvasTextFormat GetCanvasTextFormat()
+        {
+            // create a text format object
+            var textFormat = new CanvasTextFormat
+            {
+                HorizontalAlignment = ButtonTextHorizontalAlignment,
+                VerticalAlignment = ButtonTextVerticalAlignment,
+                WordWrapping = CanvasWordWrapping.NoWrap,
+                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
+                TrimmingSign = CanvasTrimmingSign.Ellipsis,
+                FontSize = ButtonTextSize
+            };
+
+            return textFormat;
         }
 
 
