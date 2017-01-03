@@ -44,7 +44,12 @@ namespace NuSysApp
         /// event fired whenever the visibility of the minimap changes
         /// </summary>
         public event EventHandler<bool> MinimapVisiblityChanged;
-        
+
+        /// <summary>
+        /// event fired whenever the visibility of the minimap changes
+        /// </summary>
+        public event EventHandler<double> TextScaleChanged;
+
         /// <summary>
         /// private version of the bradcrumb visibility bool
         /// </summary>
@@ -66,6 +71,31 @@ namespace NuSysApp
         private LinkVisibilityOption _linksVisible = LinkVisibilityOption.AllLinks;
 
         /// <summary>
+        /// Accessibility setting for increasing the size of fonts and some buttons.
+        /// </summary>
+        private double _textScale = 1;
+
+        /// <summary>
+        /// Accessibility setting for increasing the size of fonts and some buttons.
+        /// </summary>
+        public double TextScale
+        {
+            get
+            {
+                return _textScale;
+            }
+            set
+            {
+                var fireEvent = _textScale != value;
+                _textScale = value;
+                if (fireEvent)
+                {
+                    TextScaleChanged?.Invoke(this, value);
+                }
+            }
+        }
+
+        /// <summary>
         /// Enum representing the visibility of links and trails in the session.
         /// This might be changed later to have more link visibility options  (when focused, when filtered etc).
         /// The custom setter will fire the event notifying of the setting changed.
@@ -75,8 +105,12 @@ namespace NuSysApp
             get { return _linksVisible; }
             set
             {
+                var fireEvent = _linksVisible != value;
                 _linksVisible = value;
-                LinkVisibilityChanged?.Invoke(this,value);
+                if (fireEvent)
+                {
+                    LinkVisibilityChanged?.Invoke(this, value);
+                }
             }
         }
 

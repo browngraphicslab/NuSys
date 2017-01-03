@@ -21,7 +21,7 @@ namespace NuSysApp
 
         private AddElementMenuUIElement _addElementMenu;
 
-        public FilterMenu FilterMenu => _library.FilterMenu;
+        public FilterMenu FilterMenu => _library?.FilterMenu;
 
         /// <summary>
         ///  the initial drag position of the floating menu view

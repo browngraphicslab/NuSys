@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     public static class UIDefaults
     {
-        public static  float Width = 100;
+        public static float Width = 100;
         public static float Height = 100;
         public static float Borderwidth = 0;
         public static Color Background = Colors.White;

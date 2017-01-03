@@ -119,7 +119,7 @@ namespace NuSysApp
                     TrimmingGranularity = TrimmingGranularity,
                     TrimmingSign = TrimmingSign,
                     FontFamily = FontFamily,
-                    FontSize = FontSize,
+                    FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale,
                     FontStyle = FontStyle,
                 };
 
@@ -132,10 +132,11 @@ namespace NuSysApp
                 //    new Rect(BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
                 //    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
                 //    TextColor, textFormat);
-                ds.DrawText(Text,
-                    new Rect(BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
-                    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
-                    TextColor, textFormat);
+                var x = BorderWidth + UIDefaults.XTextPadding;
+                var y = BorderWidth + UIDefaults.YTextPadding;
+                var width = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
+                var height = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                ds.DrawText(Text, new Rect(x, y,width, height),TextColor, textFormat);
             }
 
             ds.Transform = orgTransform;

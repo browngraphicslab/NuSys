@@ -46,13 +46,8 @@ namespace NuSysApp
                 _tagRenderItem = new WrapRenderItem((float)_vm.Width, parent, resourceCreator);
                 _vm.Tags.CollectionChanged += TagsOnCollectionChanged;
 
-                _format = new CanvasTextFormat
-                {
-                    FontSize = 17f,
-                    WordWrapping = CanvasWordWrapping.Wrap,
-                    HorizontalAlignment = CanvasHorizontalAlignment.Center,
-                    FontFamily = "/Assets/fonts/freightsans.ttf#FreightSans BookSC"
-                };
+
+                UpdateTextFormat();
 
                 foreach (var tag in _vm.Tags)
                 {
@@ -61,6 +56,24 @@ namespace NuSysApp
 
                 AddChild(_tagRenderItem);
             }
+            SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
+        }
+
+        private void SessionSettingsTextScaleChanged(object sender, double e)
+        {
+            UpdateTextFormat();
+        }
+
+        private void UpdateTextFormat()
+        {
+            _format = new CanvasTextFormat
+            {
+                FontSize = 17f * (float)SessionController.Instance.SessionSettings.TextScale,
+                WordWrapping = CanvasWordWrapping.Wrap,
+                HorizontalAlignment = CanvasHorizontalAlignment.Center,
+                FontFamily = "/Assets/fonts/freightsans.ttf#FreightSans BookSC"
+            };
+            _needsTitleUpdate = true;
         }
 
         public override void Dispose()
@@ -88,6 +101,7 @@ namespace NuSysApp
 
             _textLayout?.Dispose();
             _textLayout = null;
+            SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
             base.Dispose();
         }
 
@@ -182,17 +196,19 @@ namespace NuSysApp
 
             Color color = this != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection ? Color.FromArgb(0xdd, 0, 0, 0) : Colors.White;
 
+            var drawBoundsHeight = (float)_textLayout.DrawBounds.Height;
+
             if (SessionController.Instance.SessionSettings.ResizeElementTitles)
             {
                 ds.Transform = Transform.LocalToScreenMatrix;
-                ds.DrawTextLayout(_textLayout,new Vector2(0,-(float)_textLayout.DrawBounds.Height - 20),color );
+                ds.DrawTextLayout(_textLayout,new Vector2(0,-drawBoundsHeight - 20),color );
             }
             else
             {
                 ds.Transform = Matrix3x2.Identity;
 
                 ds.DrawTextLayout(_textLayout,
-                    new Vector2(sp.X + (spr.X - sp.X - 200f)/2f, sp.Y - (float) _textLayout.DrawBounds.Height - 18),
+                    new Vector2(sp.X + (spr.X - sp.X - 200f)/2f, sp.Y - drawBoundsHeight - 18),
                     color);
             }
             ds.Transform = oldTransform;
