@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
 {
@@ -42,6 +43,8 @@ namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
             ButtonTextColor = Colors.White;
             Width = 200;
             Height = 50;
+            ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+            ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
         }
     }
 }
