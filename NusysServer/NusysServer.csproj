@@ -310,7 +310,7 @@
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiTopicProcessingTopic.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiTopicProcessingTopicAssignment.cs" />
     <Compile Include="Static_Classes\CognitiveApi\ICognitiveApiDocumentable.cs" />
-    <Compile Include="Static_Classes\ContentController.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\ContentController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\DocSave.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Document.cs" />

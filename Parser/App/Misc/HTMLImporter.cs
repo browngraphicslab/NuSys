@@ -173,6 +173,11 @@ namespace Parser
 
         private string RecursiveSpan(HtmlNode node)
         {
+            if (node.Name == "script")
+            {
+                return "";
+            }
+
             var s = "";
             if ( node.NodeType == HtmlNodeType.Text)
             {

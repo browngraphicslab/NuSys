@@ -95,6 +95,15 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="App\CogServ\CognitiveApiConstants.cs" />
+    <Compile Include="App\CogServ\CognitiveApiDocument.cs" />
+    <Compile Include="App\CogServ\CognitiveApiSendObject.cs" />
+    <Compile Include="App\CogServ\CognitiveApiTopicModel.cs" />
+    <Compile Include="App\CogServ\CognitiveApiTopicProcessingResult.cs" />
+    <Compile Include="App\CogServ\CognitiveApiTopicProcessingTopic.cs" />
+    <Compile Include="App\CogServ\CognitiveApiTopicProcessingTopicAssignment.cs" />
+    <Compile Include="App\CogServ\ICognitiveApiDocumentable.cs" />
+    <Compile Include="App\CogServ\TextProcessor.cs" />
     <Compile Include="App\Models\AudioDataHolder.cs" />
     <Compile Include="App\Models\DataHolder.cs" />
     <Compile Include="App\Misc\HTMLImporter.cs" />

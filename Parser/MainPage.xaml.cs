@@ -26,7 +26,7 @@ namespace Parser
         public MainPage()
         {
             this.InitializeComponent();
-            this.DataContext = new HTMLParserDataContext(@"http://historycooperative.org/a-history-of-crochet-patterns/");
+            this.DataContext = new HTMLParserDataContext(null);
         }
 
         private async void Grid_Loaded(object sender, RoutedEventArgs e)
