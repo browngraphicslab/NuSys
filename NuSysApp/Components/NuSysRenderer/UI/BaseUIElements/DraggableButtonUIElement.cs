@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
@@ -63,6 +64,11 @@ namespace NuSysApp
             textFormat.TrimmingGranularity = CanvasTextTrimmingGranularity.None;
             return textFormat;
         }
-        
+
+        public override void Resize(double e)
+        {
+            base.Resize(e);
+            ImageBounds = new Rect(0, 0, _menuButtonWidth * e, _menuButtonHeight * e);
+        }.
     }
 }

@@ -188,6 +188,18 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// resizes all component buttons of the add element menu
+        /// </summary>
+        /// <param name="e"></param>
+        public void Resize(double e)
+        {
+            _addTextNodeButton.Resize(e);
+            _addToolNodeButton.Resize(e);
+            _addCollectionNodeButton.Resize(e);
+            _addRecordingNodeButton.Resize(e);
+        }
+
+        /// <summary>
         /// Sets the drag image of the dragrect based on the current _elementType, call setElementType with the clicked on button
         /// to set the element type correctly
         /// </summary>
