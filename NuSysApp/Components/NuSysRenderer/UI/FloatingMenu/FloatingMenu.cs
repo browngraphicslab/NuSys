@@ -21,7 +21,7 @@ namespace NuSysApp
 
         private AddElementMenuUIElement _addElementMenu;
 
-        public FilterMenu FilterMenu => _library.FilterMenu;
+        public FilterMenu FilterMenu => _library?.FilterMenu;
 
         /// <summary>
         ///  the initial drag position of the floating menu view
@@ -110,7 +110,7 @@ namespace NuSysApp
             }
             _library.IsVisible = false;
 
-            _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_mainmenu_add_node.png"));
+            _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
             _addElementButton.ImageBounds = new Rect(_addElementButton.Width / 4, _addElementButton.Height/4, _addElementButton.Width/2, _addElementButton.Height/2);
             _openLibraryButton.Image = _openLibraryButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_library.png"));
             _openLibraryButton.ImageBounds = new Rect(_openLibraryButton.Width / 4, _openLibraryButton.Height / 4, _openLibraryButton.Width / 2, _openLibraryButton.Height / 2);

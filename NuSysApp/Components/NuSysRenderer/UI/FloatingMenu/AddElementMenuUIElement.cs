@@ -86,12 +86,12 @@ namespace NuSysApp
             
             ///***RADIAL DESIGN***
             /// hardcoding this for now
-            _addTextNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y - _addTextNodeButton.Height*1.5f);
-            _addCollectionNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addCollectionNodeButton.Width*1.5f, 
-                Transform.LocalPosition.Y - _addCollectionNodeButton.Height*.75f);
-            _addToolNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addToolNodeButton.Width*1.5f, 
-                Transform.LocalPosition.Y + _addToolNodeButton.Height*.75f);
-            _addRecordingNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y + _addRecordingNodeButton.Height*1.5f);
+            _addTextNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y - _addTextNodeButton.Height*2f);
+            _addCollectionNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addCollectionNodeButton.Width*2f, 
+                Transform.LocalPosition.Y - _addCollectionNodeButton.Height);
+            _addToolNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addToolNodeButton.Width*2f, 
+                Transform.LocalPosition.Y + _addToolNodeButton.Height);
+            _addRecordingNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y + _addRecordingNodeButton.Height*2f);
 
             ///***PREVIOUS DESIGN - box***
             // create a new stack layout manager using the ui variables
@@ -132,20 +132,20 @@ namespace NuSysApp
         public override async Task Load()
         {
             // set the images for all the buttons
-            _addRecordingNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/audio main menu.png"));
-            _addTextNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/text node main menu.png"));
-            _addCollectionNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection main menu.png"));
-            _addToolNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/tools icon.png"));
+            _addRecordingNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
+            _addTextNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
+            _addCollectionNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
+            _addToolNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
 
             // load the images for the drag icon
             _textNodeDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/library_thumbnails/text.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
             _collectionDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
             _recordingDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/audio main menu.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
             _toolDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/tools icon.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
             base.Load();
         }
 

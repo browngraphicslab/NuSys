@@ -74,7 +74,10 @@ namespace NuSysApp
             TrailBox = new BreadCrumbContainer(this, Canvas);
             AddChild(TrailBox);
 
-            _settingsButton = new EllipseButtonUIElement(this, canvas, UIDefaults.PrimaryStyle);
+            _settingsButton = new EllipseButtonUIElement(this, canvas)
+            {
+                Background = Colors.Transparent
+            };
             //AddChild(_settingsButton);
 
             _settingsMenu = new SessionSettingsMenu(this, canvas)
@@ -246,11 +249,11 @@ namespace NuSysApp
             _snapshotButton.ImageBounds = new Rect(_snapshotButton.Width / 4, _snapshotButton.Height / 4, _snapshotButton.Width / 2, _snapshotButton.Height / 2);
 
             //load and set the settings icon
-            _settingsButton.Image = _settingsButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon white.png"));
+            _settingsButton.Image = _settingsButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/gear.png"));
             _settingsButton.ImageBounds = new Rect(_settingsButton.Width / 4, _settingsButton.Height / 4, _settingsButton.Width / 2, _settingsButton.Height / 2);
 
             // set the image for the _backToWaitingRoomButton
-            _backToWaitingRoomButton.Image = _backToWaitingRoomButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/back icon triangle.png"));
+            _backToWaitingRoomButton.Image = _backToWaitingRoomButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons back.png"));
             
             base.Load();
         }
