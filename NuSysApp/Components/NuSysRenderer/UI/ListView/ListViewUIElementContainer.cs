@@ -478,6 +478,10 @@ namespace NuSysApp
             return ListView.GetSelectedItems();
         }
 
+        /// <summary>
+        /// Sort by the column at the specified index.
+        /// </summary>
+        /// <param name="colIndex"></param>
         public void SortByCol(int colIndex)
         {
             _listview.SortByCol(colIndex);

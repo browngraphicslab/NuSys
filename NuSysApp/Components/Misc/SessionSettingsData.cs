@@ -91,6 +91,7 @@ namespace NuSysApp
                 if (fireEvent)
                 {
                     TextScaleChanged?.Invoke(this, value);
+                    SaveToFile();
                 }
             }
         }
@@ -110,6 +111,7 @@ namespace NuSysApp
                 if (fireEvent)
                 {
                     LinkVisibilityChanged?.Invoke(this, value);
+                    SaveToFile();
                 }
             }
         }
@@ -125,6 +127,7 @@ namespace NuSysApp
             {
                 _resizeElementTitles = value;
                 ResizeElementTitlesChanged?.Invoke(this, value);
+                SaveToFile();
             }
         }
 
@@ -139,6 +142,7 @@ namespace NuSysApp
             {
                 _breadCrumbsVisible = value;
                 BreadCrumbVisibilityChanged?.Invoke(this, _breadCrumbsVisible);
+                SaveToFile();
             }
         }
 
@@ -152,7 +156,17 @@ namespace NuSysApp
             set {
                 _minimapVisible = value;
                 MinimapVisiblityChanged?.Invoke(this, value);
+                SaveToFile();
             }
+        }
+
+
+        /// <summary>
+        /// saves file to folder so we can get the same settings on the same machine every time.  
+        /// </summary>
+        private void SaveToFile()
+        {
+            Task.Run(async delegate { StorageUtil.SaveSettings(this); });
         }
     }
 }

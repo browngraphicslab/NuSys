@@ -64,8 +64,7 @@ namespace NuSysApp
         public double ScreenHeight => ActiveFreeFormViewer.Height;
 
         private SessionController()
-        {
-            SessionSettings = new SessionSettingsData();
+        { 
             IdToControllers = new ConcurrentDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
             DataPackage = new DataPackage();
@@ -118,7 +117,7 @@ namespace NuSysApp
             }
         }
 
-        public SessionSettingsData SessionSettings;
+        public SessionSettingsData SessionSettings { get; set; }
 
         public static SessionController Instance
         {

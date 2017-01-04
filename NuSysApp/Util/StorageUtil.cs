@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -30,6 +32,41 @@ namespace NuSysApp
     Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile file = await StorageFile.GetFileFromPathAsync(filepath);
             await FileIO.WriteBytesAsync(file, bytes);
+        }
+
+        /// <summary>
+        /// method used to fetch a from the save folder any saved settings object.  
+        /// If it finds one, it will override the sessionController's version.
+        /// Be careful of race conditions here.
+        /// </summary>
+        public static SessionSettingsData LoadSavedSettings()
+        {
+            if (File.Exists(NuSysStorages.SaveFolder.Path + "settings.txt"))
+            {
+                try
+                {
+                    return JsonConvert.DeserializeObject<SessionSettingsData>(File.ReadAllText(NuSysStorages.SaveFolder.Path + "settings.txt"));
+                }
+                catch(Exception e)
+                {
+                    return new SessionSettingsData();
+                }
+            }
+            return new SessionSettingsData();
+        }
+
+
+        /// <summary>
+        /// used to save the settings to file for later reading
+        /// </summary>
+        /// <param name="data"></param>
+        public static void SaveSettings(SessionSettingsData data)
+        {
+            using (var stream = File.OpenWrite(NuSysStorages.SaveFolder.Path + "settings.txt"))
+            {
+                var bytes = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(data));
+                stream.Write(bytes, 0, bytes.Length);
+            }
         }
 
     }
