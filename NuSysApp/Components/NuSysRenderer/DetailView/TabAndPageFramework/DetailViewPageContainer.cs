@@ -32,7 +32,7 @@ namespace NuSysApp
 
         public event OnDetailViewPageTabChanged OnPageTabChanged;
 
-        private TextboxUIElement _titleBox;
+        private ScrollableTextboxUIElement _titleBox;
 
 
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -46,22 +46,29 @@ namespace NuSysApp
                 TabSpacing = 25
             };
 
-            _titleBox = new TextboxUIElement(this, Canvas)
-            {
-                Height = 100,
-                TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
-                TextVerticalAlignment = CanvasVerticalAlignment.Center,
-                FontSize = 30,
-                Wrapping = CanvasWordWrapping.Character
-            };
-            AddChild(_titleBox);
-
             _tabContainerLayoutManager = new StackLayoutManager();
             _tabContainerLayoutManager.AddElement(_pageTabContainer);
             BorderWidth = 0;
             AddChild(_pageTabContainer);
 
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
+        }
+
+        public override Task Load()
+        {
+
+            //todo figure out why ScrollableTextbox breaks if you put these in the constructor. 
+            _titleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            {
+                Height = 100,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
+                TextVerticalAlignment = CanvasVerticalAlignment.Center,
+                FontSize = 30
+            };
+            AddChild(_titleBox);
+            _titleBox.TextChanged += OnTitleTextChanged;
+
+            return base.Load();
         }
 
         public override void Dispose()
@@ -79,10 +86,33 @@ namespace NuSysApp
             var rect = await DetailViewPageFactory.GetPage(this, Canvas, tabType.Type, _currentController);
             if (rect != null)
             {
-                _titleBox.Text = _currentController.Title;
                 _pageTabContainer.SetPage(rect);
                 OnPageTabChanged?.Invoke(_currentController.LibraryElementModel.LibraryElementId, tabType);
             }
+        }
+
+        /// <summary>
+        /// Fired whenever the current controllers title changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCurrentControllerTitleChanged(object sender, string e)
+        {
+            _titleBox.TextChanged -= OnTitleTextChanged;
+            _titleBox.Text = e;
+            _titleBox.TextChanged += OnTitleTextChanged;
+        }
+
+        /// <summary>
+        /// Fired whenever the user changes the text of the title
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="text"></param>
+        private void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
+        {
+            _currentController.TitleChanged -= OnCurrentControllerTitleChanged;
+            _currentController.Title = text;
+            _currentController.TitleChanged += OnCurrentControllerTitleChanged;
         }
 
         /// <summary>
@@ -97,8 +127,16 @@ namespace NuSysApp
                 return;
             }
 
+            if (_currentController != null)
+            {
+                _currentController.TitleChanged -= OnCurrentControllerTitleChanged;
+            }
+
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+            _titleBox.Text = _currentController.Title;
+            _currentController.TitleChanged += OnCurrentControllerTitleChanged;
+            
 
             // clear all the old tabs
             _pageTabContainer.ClearTabs();
