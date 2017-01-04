@@ -138,6 +138,13 @@ namespace NuSysApp
             set { Shape.ImageBounds = value; }
         }
 
+        /// <summary>
+        /// saves original height, width, and text size in case you need to resize the button.
+        /// </summary>
+        protected float _originalHeight;
+        protected float _originalWidth;
+        protected float _originalTextSize;
+
 
         /// <summary>
         /// For instantiating a button, pass in the usual parent and resource creator.  
@@ -164,9 +171,20 @@ namespace NuSysApp
             Shape.Tapped += Shape_Tapped;
             Shape.DoubleTapped += Shape_DoubleTapped;
 
-            Enabled = true;   
+            Enabled = true;
+            ImageBounds = new Rect(0,0,Width, Height);
         }
 
+        /// <summary>
+        /// sets original values to height width and size.
+        /// should be called at end of constructor for individual button types.
+        /// </summary>
+        protected void SetOriginalValues()
+        {
+            _originalHeight = Height;
+            _originalWidth = Width;
+            _originalTextSize = ButtonTextSize;
+        }
 
         /// <summary>
         /// Fired the double tapped event on the button when the shape double tap event is fired
@@ -377,6 +395,17 @@ namespace NuSysApp
         public override void RemoveChild(BaseRenderItem child)
         {
             Shape.RemoveChild(child);
+        }
+
+        /// <summary>.
+        /// this is for accessibility resizing.
+        /// </summary>
+        /// <param name="e"></param>
+        public virtual void Resize(double e)
+        {
+            Height = _originalHeight * (float)e;
+            Width = _originalWidth * (float)e;
+            ButtonTextSize = _originalTextSize * (float)e;
         }
     }
 }

@@ -75,6 +75,8 @@ namespace NuSysApp
         /// </summary>
         private bool _showRegions;
 
+        private float _imageHeight;
+
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
             // set the controller properly
@@ -191,15 +193,15 @@ namespace NuSysApp
 
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
-            var imageHeight = Height * heightMultiplier;
+            _imageHeight = Height * heightMultiplier;
 
             // set the image
             var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
-            _contentLayoutManager.SetSize(Width - imageOffsetFromRegionButton, imageHeight);
+            _contentLayoutManager.SetSize(Width - imageOffsetFromRegionButton, _imageHeight);
             _contentLayoutManager.VerticalAlignment = VerticalAlignment.Top;
             _contentLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
             _contentLayoutManager.ItemWidth = Width - imageOffsetFromRegionButton - 20;
-            _contentLayoutManager.ItemHeight = imageHeight;
+            _contentLayoutManager.ItemHeight = _imageHeight;
             _contentLayoutManager.TopMargin = 20;
             _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
 
@@ -207,10 +209,10 @@ namespace NuSysApp
             if (_showsImageAnalysis)
             {
                 // set the image analysis
-                _imageAnalysisLayoutManager.SetSize(Width, Height - imageHeight);
+                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin);
                 _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, imageHeight));
+                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin));
             }
 
 

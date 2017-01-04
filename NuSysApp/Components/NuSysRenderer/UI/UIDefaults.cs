@@ -25,6 +25,9 @@ namespace NuSysApp
         public static Color TopBarColor = Colors.Transparent;
         public static float ErrorMargin = 15;
 
+        public static string FontFamily = "Arial";//"/Assets/fonts/freightsans.ttf#FreightSans BookSC";
+
+
         public static int PrimaryStyle = 0;
         public static int SecondaryStyle = 1;
         public static int AccentStyle = 2;
@@ -131,8 +134,18 @@ namespace NuSysApp
         public static float CheckBoxHeight = 15;
         public static float CheckBoxWidth = 15;
 
+
         #endregion
 
         public static int CornerRadius = 5;
+
+        public static float TabSpacing = 0;
+        public static float TabBarHeight = 50;
+        public static Color TabBarBackground = Colors.White;
+        public static float TabBarBorderWidth = 0;
+        public static HorizontalAlignment TabHorizontalAlignment = HorizontalAlignment.Left;
+        public static VerticalAlignment TabVerticalAlignment = VerticalAlignment.Center;
+        public static CanvasHorizontalAlignment TabTextAlignment = CanvasHorizontalAlignment.Left;
+
     }
 }

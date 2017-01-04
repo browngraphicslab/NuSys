@@ -78,6 +78,10 @@ namespace NuSysApp
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
             }
+            await Task.Run(async delegate
+            {
+                await SetupDirectories();
+            });
 
             if (rootFrame.Content == null)
             {
@@ -89,7 +93,7 @@ namespace NuSysApp
             // Ensure the current window is active
             Window.Current.Activate();
 
-            await SetupDirectories();
+
             //await AccessList.ReadFileTokens();
         }
 
@@ -110,6 +114,8 @@ namespace NuSysApp
            
             NuSysStorages.FirstTimeWord = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimeWord);
             NuSysStorages.FirstTimePowerpoint = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimePowerpoint);
+
+            SessionController.Instance.SessionSettings = StorageUtil.LoadSavedSettings();
             return true;
         }
 

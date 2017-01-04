@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -23,7 +24,8 @@ namespace NuSysApp
         private TabButtonUIElement<T> _currentlySelectedTab;
 
         /// <summary>
-        /// The tab that is currently selected in the tab container
+        /// The tab that is currently selected in the tab container, when this property is set the OnCurrentTabChanged event is fired.
+        /// This could cause an infinite loop.
         /// </summary>
         public TabButtonUIElement<T> CurrentlySelectedTab
         {
@@ -46,6 +48,20 @@ namespace NuSysApp
         /// The maximum width of the tabs in the tab container
         /// </summary>
         public float TabMaxWidth { get; set; }
+
+        public float TabSpacing { get; set; }
+
+        public float TabBarHeight { get; set; }
+
+        public HorizontalAlignment TabHorizontalAlignment { get; set; }
+
+        public VerticalAlignment TabVerticalAlignment { get; set; }
+
+        public Color TabBarBackground { get; set; }
+
+        public Color TabBarBorderColor { get; set; }
+
+        public float TabBarBorderWidth { get; set; }
 
         /// <summary>
         /// Fired when all the tabs in the tab container are closed
@@ -89,8 +105,14 @@ namespace NuSysApp
         /// </summary>
         private StackLayoutManager _pageStackLayoutManager;
 
+        /// <summary>
+        /// helper variable for public property TabsIsCloseable
+        /// </summary>
         private bool _tabsIsCloseable;
 
+        /// <summary>
+        /// True if the tabs are closeable, false otherwise
+        /// </summary>
         public bool TabsIsCloseable
         {
             get { return _tabsIsCloseable; }
@@ -109,22 +131,37 @@ namespace NuSysApp
         /// </summary>
         public RectangleUIElement Page { get; set; }
 
+        private RectangleUIElement _tabBar;
+
+        public CanvasHorizontalAlignment TabTextAlignment { get; set; }
+
         public TabContainerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            // initialize the _tabList
+            // initialize the _tabList and the layout managers
             _tabList = new List<TabButtonUIElement<T>>();
             _tabStackLayoutManager = new StackLayoutManager();
             _pageStackLayoutManager = new StackLayoutManager();
 
+            // initialize the page for the tab container
             Page = new RectangleUIElement(this, Canvas);
             Page.Background = Colors.Red;
             _pageStackLayoutManager.AddElement(Page);
             AddChild(Page);
 
-            // initialize defaults
+            _tabBar = new RectangleUIElement(this,Canvas);
+            AddChild(_tabBar);
+
+            // initialize defaults for the ui
             TabHeight = UIDefaults.TabHeight;
             TabColor = UIDefaults.TabColor;
             TabMaxWidth = UIDefaults.TabMaxWidth;
+            TabBarHeight = UIDefaults.TabBarHeight;
+            TabBarBackground = UIDefaults.TabBarBackground;
+            TabBarBorderWidth = UIDefaults.TabBarBorderWidth;
+            TabSpacing = UIDefaults.TabSpacing;
+            TabHorizontalAlignment = UIDefaults.TabHorizontalAlignment;
+            TabVerticalAlignment = UIDefaults.TabVerticalAlignment;
+            TabTextAlignment = UIDefaults.TabTextAlignment;
             BorderWidth = 0;
             TabsIsCloseable = UIDefaults.TabIsCloseable;
 
@@ -132,7 +169,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Sets the page to be displayed in the tab container
+        /// Sets the page to be displayed in the tab container, this takes care of adding the child so do not do it separately
         /// </summary>
         /// <param name="newPage"></param>
         public void SetPage(RectangleUIElement newPage)
@@ -195,13 +232,16 @@ namespace NuSysApp
         /// <returns></returns>
         private TabButtonUIElement<T> InitializeNewTab(T tab, string title)
         {
-            var button = new TabButtonUIElement<T>(this, Canvas, tab);
-            button.Title = title;
-            button.TitleColor = Colors.Black;
-            button.Background = TabColor;
-            button.Height = TabHeight;
-            button.Width = Math.Min((Width - 2 * BorderWidth) / _tabList.Count, TabMaxWidth);
-            button.IsCloseable = TabsIsCloseable;
+            var button = new TabButtonUIElement<T>(this, Canvas, tab)
+            {
+                Title = title,
+                TitleColor = Colors.Black,
+                Background = TabColor,
+                Height = TabHeight,
+                Width = Math.Min((Width - 2*BorderWidth)/_tabList.Count, TabMaxWidth),
+                IsCloseable = TabsIsCloseable,
+                TextAlignment = TabTextAlignment
+            };
             return button;
         }
 
@@ -334,16 +374,16 @@ namespace NuSysApp
             // draw the background and the border and the tabs
             base.Draw(ds);
 
-            var index = _tabList.IndexOf(CurrentlySelectedTab);
+            //var index = _tabList.IndexOf(CurrentlySelectedTab);
 
-            var lineWidth = 4f;
+            //var lineWidth = 4f;
 
-            var tabWidth = _tabStackLayoutManager.ItemWidth;
+            //var tabWidth = _tabStackLayoutManager.ItemWidth;
 
-            // draw the line under the tabs up to the currently selected tab
-            ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Math.Max(index, 0) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
-            // draw the line after the currently selected tab to the end of the list
-            ds.DrawLine(new Vector2((index + 1) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Width - BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
+            //// draw the line under the tabs up to the currently selected tab
+            //ds.DrawLine(new Vector2(BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Math.Max(index, 0) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
+            //// draw the line after the currently selected tab to the end of the list
+            //ds.DrawLine(new Vector2((index + 1) * tabWidth + BorderWidth, TabHeight + BorderWidth + lineWidth / 2), new Vector2(Width - BorderWidth, TabHeight + BorderWidth + lineWidth / 2), Bordercolor, 3);
 
             ds.Transform = orgTransform;
         }
@@ -354,22 +394,31 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            _tabBar.Height = TabBarHeight;
+            _tabBar.Width = Width - 2*BorderWidth;
+            _tabBar.Transform.LocalPosition = new Vector2(BorderWidth);
+            _tabBar.Background = Colors.LightGray;
+            _tabBar.Bordercolor = TabBarBorderColor;
+            _tabBar.BorderWidth = TabBarBorderWidth;
+
             // arrange the tabs
             _tabStackLayoutManager.SetMargins(BorderWidth);
             _tabStackLayoutManager.ItemHeight = TabHeight;
             _tabStackLayoutManager.ItemWidth = Math.Min((Width - 2*BorderWidth)/_tabList.Count, TabMaxWidth);
-            _tabStackLayoutManager.SetSize(Width, Height);
-            _tabStackLayoutManager.HorizontalAlignment = HorizontalAlignment.Left;
-            _tabStackLayoutManager.VerticalAlignment = VerticalAlignment.Top;
+            _tabStackLayoutManager.Spacing = TabSpacing;
+            _tabStackLayoutManager.LeftMargin = TabSpacing;
+            _tabStackLayoutManager.RightMargin = TabSpacing;
+            _tabStackLayoutManager.SetSize(Width, TabBarHeight);
+            _tabStackLayoutManager.HorizontalAlignment = TabHorizontalAlignment;
+            _tabStackLayoutManager.VerticalAlignment = TabVerticalAlignment;
             _tabStackLayoutManager.ArrangeItems();
 
             // arrange the page
             _pageStackLayoutManager.SetMargins(BorderWidth);
-            _pageStackLayoutManager.TopMargin = TabHeight;
+            _pageStackLayoutManager.TopMargin = TabBarHeight;
             _pageStackLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _pageStackLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _pageStackLayoutManager.Width = Width;
-            _pageStackLayoutManager.Height = Height;
+            _pageStackLayoutManager.SetSize(Width, Height);
             _pageStackLayoutManager.ArrangeItems();
 
             base.Update(parentLocalToScreenTransform);

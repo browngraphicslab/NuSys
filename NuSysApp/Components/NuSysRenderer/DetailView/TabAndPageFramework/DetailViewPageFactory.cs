@@ -51,18 +51,13 @@ namespace NuSysApp
                     switch (elementType)
                     {
                         case NusysConstants.ElementType.Text:
-                            break;
                         case NusysConstants.ElementType.Image:
-                            break;
                         case NusysConstants.ElementType.Collection:
-                            break;
                         case NusysConstants.ElementType.PDF:
-                            break;
                         case NusysConstants.ElementType.Audio:
-                            break;
                         case NusysConstants.ElementType.Video:
-                            break;
                         case NusysConstants.ElementType.Link:
+                            rectangle = new DetailViewMetadataPage(parent, resourceCreator, controller);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementType),

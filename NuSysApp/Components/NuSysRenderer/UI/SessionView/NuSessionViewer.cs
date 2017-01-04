@@ -99,8 +99,8 @@ namespace NuSysApp
             //custom button
             _backToWaitingRoomButton = new ButtonUIElement(this, canvas, new RectangleUIElement(this, canvas))
             {
-                Width = 25,
-                Height = 50,
+                Width = 15,
+                Height = 30,
                 SelectedBackground = Colors.Gray,
                 BorderWidth =  0,
                 Bordercolor = Colors.Transparent,
@@ -108,8 +108,8 @@ namespace NuSysApp
             };
             _backToWaitingRoomButton.ImageBounds = new Rect(_backToWaitingRoomButton.BorderWidth,
                 _backToWaitingRoomButton.BorderWidth,
-                _backToWaitingRoomButton.Width - 2*_backToWaitingRoomButton.BorderWidth,
-                _backToWaitingRoomButton.Height - 2*_backToWaitingRoomButton.BorderWidth);
+                _backToWaitingRoomButton.Width,
+                _backToWaitingRoomButton.Height);
 
             //AddChild(_backToWaitingRoomButton);
 
@@ -129,7 +129,7 @@ namespace NuSysApp
                 Width = 500,
                 Height = 500,
                 MinWidth = 400,
-                MinHeight = 400,
+                MinHeight = 600,
                 KeepAspectRatio = true
             };
             AddChild(_detailViewer);
@@ -144,6 +144,10 @@ namespace NuSysApp
 
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
+            if (GetChildren().Contains(_titleBox))
+            {
+                RemoveChild(_titleBox);
+            }
             _titleBox = new TextboxUIElement(this, Canvas)
             {
                 Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title,
@@ -151,17 +155,17 @@ namespace NuSysApp
                 Background = Colors.Transparent,
                 FontSize = 55,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                Width = 60 * SessionController.Instance.CurrentCollectionLibraryElementModel.Title.Length,
+                Width = 300,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center
             };
             AddChild(_titleBox);
             _titleBox.Transform.LocalPosition =
                 new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
 
-            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2, 
+            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2 + 50, 
                 _titleBox.Height/2 - _settingsButton.Height/2);
             AddChild(_settingsButton);
-            _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2,
+            _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
                 _titleBox.Height / 2 - _backToWaitingRoomButton.Height / 2);
             AddChild(_backToWaitingRoomButton);
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width/2 - _settingsMenu.Width/2,
@@ -223,7 +227,7 @@ namespace NuSysApp
             _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
-            _detailViewer.Width = Width;
+            _detailViewer.Width = Width/2;
             TrailBox.Transform.LocalPosition = new Vector2(Width - TrailBox.Width, 0);
 
         }
@@ -253,7 +257,7 @@ namespace NuSysApp
             _settingsButton.ImageBounds = new Rect(_settingsButton.Width / 4, _settingsButton.Height / 4, _settingsButton.Width / 2, _settingsButton.Height / 2);
 
             // set the image for the _backToWaitingRoomButton
-            _backToWaitingRoomButton.Image = _backToWaitingRoomButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons back.png"));
+            _backToWaitingRoomButton.Image = _backToWaitingRoomButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/back.png"));
             
             base.Load();
         }

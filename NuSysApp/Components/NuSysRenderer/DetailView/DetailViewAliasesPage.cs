@@ -10,17 +10,27 @@ namespace NuSysApp
 {
     internal class DetailViewAliasesPage : RectangleUIElement
     {
+        /// <summary>
+        /// list view for the aliases
+        /// </summary>
         private ListViewUIElementContainer<ElementModel> _listView;
-        private readonly LibraryElementController _controller;
 
+        /// <summary>
+        /// The controller for this page of the detail view
+        /// </summary>
+        private LibraryElementController _controller;
+
+        /// <summary>
+        /// The list of aliases, requests from the server async
+        /// </summary>
         private List<ElementModel> _aliasList;
-        private bool _isLoading;
 
         public DetailViewAliasesPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) :
             base(parent, resourceCreator)
         {
-            _isLoading = true;
             _controller = controller;
+
+            // add events for the controller so that aliases are automatically added and removed from the list
             _controller.AliasAdded += OnAliasAdded;
             _controller.AliasRemoved += OnAliasRemoved;
         }
@@ -44,9 +54,13 @@ namespace NuSysApp
             base.Dispose();
         }
 
+        /// <summary>
+        /// Get the list of aliases async
+        /// </summary>
+        /// <returns></returns>
         public override async Task Load()
         {
-            GetAliasesOfLibraryElementRequest req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
+            var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
             _aliasList = req.GetReturnedElementModels();
             CreateAliasList();
@@ -95,8 +109,12 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _listView.Height = Height;
-            _listView.Width = Width;
+            var vertical_spacing = 20;
+            var horizontal_spacing = 20;
+
+            _listView.Height = Height - 2 * vertical_spacing;
+            _listView.Width = Width - 2 * horizontal_spacing;
+            _listView.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
             base.Update(parentLocalToScreenTransform);
         }
     }

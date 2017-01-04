@@ -73,6 +73,11 @@ namespace NuSysApp
         public delegate void DeletedEventHandler(object sender);
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
+
+        /// <summary>
+        /// Invoked whenever the metadata is changed, the library element controller whose metadata was changed
+        /// is sent along with the event, just update everything using the new metadata dictionary
+        /// </summary>
         public event MetadataChangedEventHandler MetadataChanged;
         public event EventHandler Disposed;
         public event EventHandler<string> TitleChanged;
@@ -81,6 +86,10 @@ namespace NuSysApp
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
         public event EventHandler<LinkLibraryElementController> LinkAdded;
+
+        /// <summary>
+        /// Fired with the linkLibraryElementId of the link that was removed
+        /// </summary>
         public event EventHandler<string> LinkRemoved;
         public event EventHandler<ElementModel> AliasAdded;
         public event EventHandler<ElementModel> AliasRemoved;
