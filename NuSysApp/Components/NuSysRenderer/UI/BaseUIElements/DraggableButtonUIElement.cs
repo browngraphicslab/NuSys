@@ -69,6 +69,6 @@ namespace NuSysApp
         {
             base.Resize(e);
             ImageBounds = new Rect(0, 0, _menuButtonWidth * e, _menuButtonHeight * e);
-        }.
+        }
     }
 }

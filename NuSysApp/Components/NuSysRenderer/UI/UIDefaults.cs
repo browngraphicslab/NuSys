@@ -18,7 +18,7 @@ namespace NuSysApp
         public static float Width = 100;
         public static float Height = 100;
         public static float Borderwidth = 0;
-        public static Color Background = Constants.LIGHT_BLUE;
+        public static Color Background = Colors.White;
         public static Color Bordercolor = Colors.Transparent;
         public static Color SelectedBorderColor = Constants.DARK_BLUE;
         public static float TopBarHeight = 25;

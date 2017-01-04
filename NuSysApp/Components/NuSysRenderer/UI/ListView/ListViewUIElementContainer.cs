@@ -554,9 +554,9 @@ namespace NuSysApp
             if (_listview != null)
             {
                 _header.Transform.LocalPosition = new Vector2(0,0);
-                _header.BorderWidth = 0;
-                _header.Bordercolor = Colors.Black;
-                _header.Background = Colors.Black;
+                _header.BorderWidth = 1;
+                _header.Bordercolor = Constants.MED_BLUE;
+                _header.Background = Colors.White;
                 _header.Width = this.Width;
                 _header.Height = _listview.RowHeight + 10;
                 _listYPos = _header.Height;
