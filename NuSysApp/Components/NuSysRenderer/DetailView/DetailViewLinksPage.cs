@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;

@@ -125,7 +125,7 @@ namespace NuSysApp
                 Width = VIEW_BUTTON_HEIGHT,
             };
             _pieToolViewButton = new ButtonUIElement(this, ResourceCreator, pieButtonRectangle);
-            _pieToolViewButton.ButtonTextColor = Constants.color3;
+            _pieToolViewButton.ButtonTextColor = Constants.ALMOST_BLACK;
             _pieToolViewButton.Transform.LocalPosition =
                 new Vector2(_listToolViewButton.Transform.LocalX + _listToolViewButton.Width + VIEW_BUTTON_MARGIN,
                     ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
@@ -138,10 +138,10 @@ namespace NuSysApp
                 Height = VIEW_BUTTON_HEIGHT,
                 Width = VIEW_BUTTON_HEIGHT,
                 BorderWidth = 1,
-                Bordercolor = Constants.color2
+                Bordercolor = Constants.DARK_BLUE
             };
             _barToolViewButton = new ButtonUIElement(this, ResourceCreator, barButtonRectangle);
-            _barToolViewButton.ButtonTextColor = Colors.Black;
+            _barToolViewButton.ButtonTextColor = Constants.ALMOST_BLACK;
             _barToolViewButton.Transform.LocalPosition =
                 new Vector2(_pieToolViewButton.Transform.LocalX + _pieToolViewButton.Width + VIEW_BUTTON_MARGIN,
                     ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);

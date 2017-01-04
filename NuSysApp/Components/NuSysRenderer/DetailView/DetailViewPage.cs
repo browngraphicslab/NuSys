@@ -9,6 +9,7 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 
 namespace NuSysApp
 {
@@ -91,13 +92,8 @@ namespace NuSysApp
             _showRegions = showRegions;
 
             // initialize the add region button and the _addRegionButtonLayoutManager
-            _addRegionButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
-            {
-                Background = Colors.Azure,
-                ButtonText = "+",
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
-            };
+            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "+");
+
             _addRegionButtonLayoutManager = new StackLayoutManager();
             AddChild(_addRegionButton);
             _addRegionButtonLayoutManager.AddElement(_addRegionButton);

@@ -73,7 +73,7 @@ namespace NuSysApp
             TextColor = UIDefaults.TextColor;
             FontStyle = UIDefaults.FontStyle;
             FontSize = UIDefaults.FontSize;
-            FontFamily = UIDefaults.FontFamily;
+            FontFamily = UIDefaults.TitleFont;
             Wrapping = UIDefaults.Wrapping;
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;

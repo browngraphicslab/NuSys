@@ -1724,7 +1724,7 @@
           Background="{TemplateBinding Background}">
                         <Grid.Resources>
                             <Style x:Key="BaseContentControlStyle" TargetType="ContentControl">
-                                <Setter Property="FontFamily" Value="XamlAutoFontFamily"/>
+                                <Setter Property="FontFamily" Value="XamlAutoTitleFont"/>
                                 <Setter Property="FontWeight" Value="SemiBold"/>
                                 <Setter Property="FontSize" Value="15"/>
                                 <Setter Property="Template">
