@@ -12,7 +12,14 @@ namespace NusysIntermediate
 {
     public class LinkLibraryElementModel: LibraryElementModel
     {
+        /// <summary>
+        /// This is the library element id of the in library element 
+        /// </summary>
         public string InAtomId { get; set; }
+
+        /// <summary>
+        /// This is the library element id of the out library element
+        /// </summary>
         public string OutAtomId { get; set; }
 
         //public Color Color { get; set; }

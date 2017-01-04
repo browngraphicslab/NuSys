@@ -165,22 +165,6 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-            var lineLeftRightSpacing = 15 + BorderWidth;
-
-            base.Draw(ds);
-            if (_showsImageAnalysis)
-            {
-                ds.DrawLine(new Vector2(lineLeftRightSpacing, _imageHeight), new Vector2(Width - 2 * lineLeftRightSpacing, _imageHeight), Colors.Black, 3);
-            }
-            ds.Transform = orgTransform;
-
-
-        }
-
         /// <summary>
         /// The update method, manage the layout here, update the transform here, called before draw
         /// </summary>
@@ -229,10 +213,10 @@ namespace NuSysApp
             if (_showsImageAnalysis)
             {
                 // set the image analysis
-                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight);
+                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin);
                 _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight));
+                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin));
             }
 
 

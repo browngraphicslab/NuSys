@@ -49,6 +49,8 @@ namespace NuSysApp
         /// </summary>
         private TextboxUIElement _tagsText;
 
+        private TextboxUIElement _imageAnalysisLabelText;
+
         /// <summary>
         /// the actual text layout manager
         /// </summary>
@@ -56,6 +58,15 @@ namespace NuSysApp
 
         public ImageAnalysisUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
+
+            _imageAnalysisLabelText = new TextboxUIElement(this, resourceCreator)
+            {
+                Text = "Image Analysis",
+                Height = 30,
+                FontSize = 30,
+            };
+            AddChild(_imageAnalysisLabelText);
+
             //initialize the layout manager
             _textLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
 
@@ -187,11 +198,12 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _textLayoutManager.SetSize(Width, Height);
+            _imageAnalysisLabelText.Width = Width;
+            _textLayoutManager.SetSize(Width, Height - _imageAnalysisLabelText.Height);
             _textLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _textLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
             _textLayoutManager.SetMargins(20);
-            _textLayoutManager.ArrangeItems();
+            _textLayoutManager.ArrangeItems(new Vector2(0, _imageAnalysisLabelText.Height));
             base.Update(parentLocalToScreenTransform);
         }
     }

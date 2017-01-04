@@ -136,7 +136,7 @@ namespace NuSysApp
                 Width = 500,
                 Height = 500,
                 MinWidth = 400,
-                MinHeight = 400,
+                MinHeight = 600,
                 KeepAspectRatio = true
             };
             AddChild(_detailViewer);
