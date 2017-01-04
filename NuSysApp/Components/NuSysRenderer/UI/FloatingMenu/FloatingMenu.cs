@@ -83,7 +83,7 @@ namespace NuSysApp
             _addElementMenu.IsVisible = !_addElementMenu.IsVisible;
             var addElementButton = interactiveBaseRenderItem as ButtonUIElement;
             Debug.Assert(addElementButton != null, "The add element button should be a button ui element, make sure something else isn't causing this to open");
-            _addElementMenu.Transform.LocalPosition = addElementButton.Transform.LocalPosition + new Vector2(-_addElementMenu.Width/2 + addElementButton.Width/2, -_addElementMenu.Height - 10);
+            _addElementMenu.Transform.LocalPosition = new Vector2(_addElementButton.Transform.LocalPosition.X - 15, _addElementButton.Transform.LocalPosition.Y);
         }
 
         private void OpenLibraryButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)

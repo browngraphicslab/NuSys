@@ -33,7 +33,7 @@ namespace NuSysApp
         private NusysConstants.ElementType _elementType;
 
         // the layout manager for thebuttons
-        private StackLayoutManager _buttonLayoutManager;
+        //private StackLayoutManager _buttonLayoutManager;
 
         // ui variables
         private float _menuButtonWidth = 50;
@@ -82,29 +82,30 @@ namespace NuSysApp
                 _addToolNodeButton
             };
 
-            // initialize the height and width based on the number of buttons
-            Height = _menuButtonHeight + 2*_menuButtonTopAndBottomMargins;
-            Width = _menuButtons.Count*_menuButtonWidth + (_menuButtons.Count - 1)*_menuButtonSpacing +
-                    2*_menuButtonLeftAndRightMargins;
-
-            BorderWidth = 1;
-            Background = Colors.White;
-            Bordercolor = Constants.DARK_BLUE;
-
-            Radius = UIDefaults.CornerRadius;
+            Background = Constants.LIGHT_BLUE;
             
+            ///***RADIAL DESIGN***
+            /// hardcoding this for now
+            _addTextNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y - _addTextNodeButton.Height*1.5f);
+            _addCollectionNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addCollectionNodeButton.Width*1.5f, 
+                Transform.LocalPosition.Y - _addCollectionNodeButton.Height*.75f);
+            _addToolNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addToolNodeButton.Width*1.5f, 
+                Transform.LocalPosition.Y + _addToolNodeButton.Height*.75f);
+            _addRecordingNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y + _addRecordingNodeButton.Height*1.5f);
+
+            ///***PREVIOUS DESIGN - box***
             // create a new stack layout manager using the ui variables
-            _buttonLayoutManager = new StackLayoutManager
-            {
-                Spacing = _menuButtonSpacing,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Center,
-                Width = Width,
-                Height = Height,
-                ItemHeight = _menuButtonHeight,
-                ItemWidth = _menuButtonWidth
-            };
-            _buttonLayoutManager.SetMargins(_menuButtonLeftAndRightMargins, _menuButtonTopAndBottomMargins);
+            //_buttonLayoutManager = new StackLayoutManager
+            //{
+            //    Spacing = _menuButtonSpacing,
+            //    HorizontalAlignment = HorizontalAlignment.Stretch,
+            //    VerticalAlignment = VerticalAlignment.Center,
+            //    Width = Width,
+            //    Height = Height,
+            //    ItemHeight = _menuButtonHeight,
+            //    ItemWidth = _menuButtonWidth
+            //};
+            //_buttonLayoutManager.SetMargins(_menuButtonLeftAndRightMargins, _menuButtonTopAndBottomMargins);
 
             // add each button the the stack layout manager and then add dragging and drag completed methods
             foreach (var button in _menuButtons)
@@ -112,7 +113,7 @@ namespace NuSysApp
                 button.Dragged += MenuButton_OnDragging;
                 button.DragCompleted += MenuButton_DragCompleted;
                 button.DragStarted += MenuButton_DragStarted;
-                _buttonLayoutManager.AddElement(button);
+                //_buttonLayoutManager.AddElement(button);
             }
         }
 
@@ -247,7 +248,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _buttonLayoutManager.ArrangeItems();
+            //_buttonLayoutManager.ArrangeItems();
             base.Update(parentLocalToScreenTransform);
         }
     }
