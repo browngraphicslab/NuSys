@@ -38,8 +38,6 @@ namespace NuSysApp
             BorderWidth = 0;
             ImageBounds = new Rect(_menuButtonWidth/4, _menuButtonHeight/4, _menuButtonWidth/2, _menuButtonHeight/2);
             ButtonText = label;
-            base.Shape.Height = _menuButtonHeight;
-            base.Shape.Width = _menuButtonWidth;
         }
 
         /// <summary>
