@@ -49,6 +49,8 @@ namespace NuSysApp
         /// </summary>
         private TextboxUIElement _tagsText;
 
+        private TextboxUIElement _imageAnalysisLabelText;
+
         /// <summary>
         /// the actual text layout manager
         /// </summary>
@@ -56,12 +58,21 @@ namespace NuSysApp
 
         public ImageAnalysisUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
+
+            _imageAnalysisLabelText = new TextboxUIElement(this, resourceCreator)
+            {
+                Text = "Image Analysis",
+                Height = 30,
+                FontSize = 30,
+            };
+            AddChild(_imageAnalysisLabelText);
+
             //initialize the layout manager
             _textLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
 
             // add the description header
             _descriptionHeader = new TextboxUIElement(this, resourceCreator);
-            _descriptionHeader.Text = "Description: ";
+            _descriptionHeader.Text = "Description";
             AddChild(_descriptionHeader);
             _textLayoutManager.AddElement(_descriptionHeader);
             SetHeaderUI(_descriptionHeader);
@@ -74,7 +85,7 @@ namespace NuSysApp
 
             // add the categories header
             _categoriesHeader = new TextboxUIElement(this, resourceCreator);
-            _categoriesHeader.Text = "Categories: ";
+            _categoriesHeader.Text = "Categories";
             AddChild(_categoriesHeader);
             _textLayoutManager.AddElement(_categoriesHeader);
             SetHeaderUI(_categoriesHeader);
@@ -87,7 +98,7 @@ namespace NuSysApp
 
             // add the tags header
             _tagsHeader = new TextboxUIElement(this, resourceCreator);
-            _tagsHeader.Text = "Tags: ";
+            _tagsHeader.Text = "Tags";
             AddChild(_tagsHeader);
             _textLayoutManager.AddElement(_tagsHeader);
             SetHeaderUI(_tagsHeader);
@@ -116,8 +127,8 @@ namespace NuSysApp
         {
             header.TextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             header.TextVerticalAlignment = CanvasVerticalAlignment.Center;
-            header.Background = Colors.Azure;
             header.TextColor = Colors.DarkSlateGray;
+            header.FontSize = 15;
         }
 
         /// <summary>
@@ -128,9 +139,7 @@ namespace NuSysApp
         {
             text.TextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             text.TextVerticalAlignment = CanvasVerticalAlignment.Center;
-            text.Background = Colors.Azure;
             text.TextColor = Colors.DarkSlateGray;
-
         }
 
 
@@ -163,12 +172,24 @@ namespace NuSysApp
                 }
                 _categoriesText.Text = string.Join(", ", categories.Select(category => string.Join(", ", category.Name)));
             }
+            else
+            {
+                _categoriesText.Text = "No categories found for this element";
+            }
 
 
             //get tag list and order them in order of confidence
             var taglist = _analysisModel.Tags?.ToList().OrderByDescending(x => x.Confidence);
-            //add to items control of suggested tags
-            _tagsText.Text = string.Join(", ", taglist.Select(tag => string.Join(", ", tag.Name)));
+            if (taglist.Any())
+            {
+                //add to items control of suggested tags
+                _tagsText.Text = string.Join(", ", taglist.Select(tag => string.Join(", ", tag.Name)));
+            }
+            else
+            {
+                _tagsText.Text = "No tags found for this element";
+            }
+
         }
 
         /// <summary>
@@ -177,12 +198,12 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _textLayoutManager.SetSize(Width, Height);
+            _imageAnalysisLabelText.Width = Width;
+            _textLayoutManager.SetSize(Width, Height - _imageAnalysisLabelText.Height);
             _textLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _textLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _textLayoutManager.Spacing = 5;
             _textLayoutManager.SetMargins(20);
-            _textLayoutManager.ArrangeItems();
+            _textLayoutManager.ArrangeItems(new Vector2(0, _imageAnalysisLabelText.Height));
             base.Update(parentLocalToScreenTransform);
         }
     }

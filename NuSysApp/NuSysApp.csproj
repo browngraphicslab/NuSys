@@ -362,6 +362,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushToMask.cs" />
@@ -370,7 +371,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterSubMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\DetailViewAliasesPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAliasesPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
@@ -380,11 +381,11 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAudioPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewImagePage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinksPage.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMainContainer.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageContainer.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageFactory.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageType.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageTabType.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewMainContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageFactory.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageType.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageTabType.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
@@ -420,8 +421,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackLayoutManager.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\TabButtonUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\TabContainerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabContainerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\User Bubbles\UserBubbleContainerUIElement.cs" />

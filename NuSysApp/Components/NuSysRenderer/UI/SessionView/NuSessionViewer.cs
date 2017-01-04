@@ -136,7 +136,7 @@ namespace NuSysApp
                 Width = 500,
                 Height = 500,
                 MinWidth = 400,
-                MinHeight = 400,
+                MinHeight = 600,
                 KeepAspectRatio = true
             };
             AddChild(_detailViewer);
@@ -203,7 +203,7 @@ namespace NuSysApp
             _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
-            _detailViewer.Width = Width;
+            _detailViewer.Width = Width/2;
             TrailBox.Transform.LocalPosition = new Vector2(Width - TrailBox.Width, 0);
         }
 
