@@ -295,7 +295,7 @@ namespace NuSysApp
                 };
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
-                // just created textFormat
+                // just created TextFormat
                 ds.DrawText(ButtonText,
                     new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth),
                     ButtonTextColor, textFormat);

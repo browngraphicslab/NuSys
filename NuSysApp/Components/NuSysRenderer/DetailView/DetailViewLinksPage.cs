@@ -21,17 +21,17 @@ namespace NuSysApp
         /// <summary>
         /// Textbox used to input the title of the link to be added, found at the top of the detail view links page
         /// </summary>
-        private PlaceHolderTextBox _addLinkTitleBox;
+        private ScrollableTextboxUIElement _addLinkTitleBox;
 
         /// <summary>
         /// Textbox used to input the title of the element the new link is to be linked to.
         /// </summary>
-        private PlaceHolderTextBox _addLinkToElementBox;
+        private ScrollableTextboxUIElement _addLinkToElementBox;
 
         /// <summary>
         /// Textbox used to input tags for the new link
         /// </summary>
-        private PlaceHolderTextBox _addLinkTagsBox;
+        private ScrollableTextboxUIElement _addLinkTagsBox;
 
         /// <summary>
         /// button pressed to indicate that the new link should be created
@@ -53,7 +53,7 @@ namespace NuSysApp
         {
             _controller = controller;
 
-            _addLinkTitleBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addLinkTitleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "link title...",
                 Background = Colors.Azure,
@@ -62,7 +62,7 @@ namespace NuSysApp
             };
             AddChild(_addLinkTitleBox);
 
-            _addLinkToElementBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addLinkToElementBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "link to...",
                 Background = Colors.Azure,
@@ -71,7 +71,7 @@ namespace NuSysApp
             };
             AddChild(_addLinkToElementBox);
 
-            _addLinkTagsBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addLinkTagsBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 Background = Colors.Azure,
                 BorderWidth = 3,
@@ -96,7 +96,12 @@ namespace NuSysApp
 
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
+            _createLinkButton.Tapped += OnCreateLinkButtonTapped;
 
+        }
+
+        private void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
         }
 
         /// <summary>
