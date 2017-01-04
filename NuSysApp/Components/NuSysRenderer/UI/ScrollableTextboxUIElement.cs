@@ -200,8 +200,8 @@ namespace NuSysApp
             ClearSelection();
 
             var loc = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X, 
-                                      loc.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
+            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding, 
+                                      loc.Y - UIDefaults.YTextPadding);
             int charIndex = GetHitIndex(pos);
             CursorCharacterIndex = charIndex;
             if (Text == "")
@@ -479,8 +479,8 @@ namespace NuSysApp
         private void ShiftTextOnDrag()
         {
             var loc = Vector2.Transform(_draggedPointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X,
-                                      loc.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
+            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding,
+                                      loc.Y - UIDefaults.YTextPadding);
             _selectionEndIndex = GetHitIndex(pos);
 
             // Update y offset if vertical scrolling textbox, x offset otherwise
