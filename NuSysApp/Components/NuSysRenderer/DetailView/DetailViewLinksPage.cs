@@ -21,17 +21,17 @@ namespace NuSysApp
         /// <summary>
         /// Textbox used to input the title of the link to be added, found at the top of the detail view links page
         /// </summary>
-        private ScrollableTextboxUIElement _addLinkTitleBox;
+        private PlaceHolderTextBox _addLinkTitleBox;
 
         /// <summary>
         /// Textbox used to input the title of the element the new link is to be linked to.
         /// </summary>
-        private ScrollableTextboxUIElement _addLinkToElementBox;
+        private PlaceHolderTextBox _addLinkToElementBox;
 
         /// <summary>
         /// Textbox used to input tags for the new link
         /// </summary>
-        private ScrollableTextboxUIElement _addLinkTagsBox;
+        private PlaceHolderTextBox _addLinkTagsBox;
 
         /// <summary>
         /// button pressed to indicate that the new link should be created
@@ -53,30 +53,30 @@ namespace NuSysApp
         {
             _controller = controller;
 
-            _addLinkTitleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _addLinkTitleBox = new PlaceHolderTextBox(this, Canvas, false, false)
             {
-                Text = "link title...",
+                PlaceHolderText = "link title...",
                 Background = Colors.Azure,
                 BorderWidth = 2,
                 Bordercolor = Colors.DarkSlateGray
             };
             AddChild(_addLinkTitleBox);
 
-            _addLinkToElementBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _addLinkToElementBox = new PlaceHolderTextBox(this, Canvas, false, false)
             {
-                Text = "link to...",
+                PlaceHolderText = "link to...",
                 Background = Colors.Azure,
                 BorderWidth = 2,
                 Bordercolor = Colors.DarkSlateGray
             };
             AddChild(_addLinkToElementBox);
 
-            _addLinkTagsBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _addLinkTagsBox = new PlaceHolderTextBox(this, Canvas, false, false)
             {
                 Background = Colors.Azure,
                 BorderWidth = 3,
                 Bordercolor = Colors.DarkSlateGray,
-                Text = "tags - spearate with commas"
+                PlaceHolderText = "tags - spearate with commas"
             };
             AddChild(_addLinkTagsBox);
 

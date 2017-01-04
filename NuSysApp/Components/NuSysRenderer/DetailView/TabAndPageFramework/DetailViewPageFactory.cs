@@ -86,11 +86,9 @@ namespace NuSysApp
                     break;
                 case DetailViewPageType.Aliases:
                     rectangle = new DetailViewAliasesPage(parent, resourceCreator, controller);
-                    await rectangle.Load();
                     break;
                 case DetailViewPageType.Links:
                     rectangle = new DetailViewLinksPage(parent, resourceCreator, controller);
-                    await rectangle.Load();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pageType), pageType, null);

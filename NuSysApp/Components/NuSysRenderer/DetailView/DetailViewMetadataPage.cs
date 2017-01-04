@@ -14,13 +14,13 @@ namespace NuSysApp
     public class DetailViewMetadataPage : RectangleUIElement
     {
 
-        private ScrollableTextboxUIElement _addNameBox;
+        private PlaceHolderTextBox _addKeyBox;
 
-        private ScrollableTextboxUIElement _addValueBox;
+        private PlaceHolderTextBox _addValueBox;
 
-        private ButtonUIElement _addNameValueButton;
+        private ButtonUIElement _addKeyValueButton;
 
-        private ScrollableTextboxUIElement _searchTextBox;
+        private PlaceHolderTextBox _searchTextBox;
 
         private ListViewUIElementContainer<MetadataEntry> _metadata_listview;
 
@@ -30,33 +30,33 @@ namespace NuSysApp
         {
             _controller = controller;
 
-            _addNameBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _addKeyBox = new PlaceHolderTextBox(this, Canvas, false, false)
             {
-                Text = "Enter a Key",
+                PlaceHolderText = "Enter a Key",
                 Background = Colors.Azure,
                 BorderWidth = 2,
                 Bordercolor = Colors.DarkSlateGray
             };
-            AddChild(_addNameBox);
+            AddChild(_addKeyBox);
 
-            _addValueBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _addValueBox = new PlaceHolderTextBox(this, Canvas, false, false)
             {
-                Text = "Enter Values",
+                PlaceHolderText = "Enter Values",
                 Background = Colors.Azure,
                 BorderWidth = 2,
                 Bordercolor = Colors.DarkSlateGray
             };
             AddChild(_addValueBox);
 
-            _addNameValueButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
-            AddChild(_addNameValueButton);
+            _addKeyValueButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
+            AddChild(_addKeyValueButton);
 
-            _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _searchTextBox = new PlaceHolderTextBox(this, Canvas, false, false)
             {
                 Background = Colors.Azure,
                 BorderWidth = 3,
                 Bordercolor = Colors.DarkSlateGray,
-                Text = "Search"
+                PlaceHolderText = "Search"
             };
             AddChild(_searchTextBox);
 
@@ -64,6 +64,54 @@ namespace NuSysApp
             CreateListView();
 
             _controller.MetadataChanged += _controller_MetadataChanged;
+            _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
+        }
+
+        /// <summary>
+        /// Adds a key value pair to metadata
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void AddKeyValuePairToMetadata(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // get the key of the metadata to be updated
+            var key = _addKeyBox.Text;
+
+            // get the value of the metadata to be updated
+            var values = new List<string>(_addValueBox.Text.Split(new[] {", ", ","}, StringSplitOptions.RemoveEmptyEntries));
+
+            // get the metadata entry of the key to be updated if the key exists, otherwise create a new metadata entry
+            var metaDataEntry = _controller.GetMetadata().ContainsKey(key)
+                ? _controller.GetMetadata()[key]
+                : new MetadataEntry(key, new List<string>(), MetadataMutability.MUTABLE);
+
+            // if the key already exists update the metadata entry
+            if (_controller.GetMetadata().ContainsKey(key))
+            {
+                var updateMetadataEntryRequestArgs = new UpdateMetadataEntryRequestArgs()
+                {
+                    Entry = metaDataEntry,
+                    LibraryElementId = _controller.LibraryElementModel.LibraryElementId,
+                    NewValues = values
+                };
+
+                UpdateMetadataEntryRequest request = new UpdateMetadataEntryRequest(updateMetadataEntryRequestArgs);
+                request.ExecuteRequestFunction();
+
+            }
+            else // otherwise create a new metadata entry
+            {
+                var createNewMetadataRequestArgs = new CreateNewMetadataRequestArgs()
+                {
+                    Entry = metaDataEntry,
+                    LibraryElementId = _controller.LibraryElementModel.LibraryElementId
+                };
+
+                CreateNewMetadataRequest request = new CreateNewMetadataRequest(createNewMetadataRequestArgs);
+                request.ExecuteRequestFunction();
+            }
+
+
         }
 
         private void _controller_MetadataChanged(object source)
@@ -101,7 +149,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _addNameValueButton.Image =
+            _addKeyValueButton.Image =
                     await
                         CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/icon_metadata_plus.png"),
                             ResourceCreator.Dpi);
@@ -117,17 +165,17 @@ namespace NuSysApp
 
             // layout all the elments to add a metadata key value pair
             var addMetadataItemsHeight = 50;
-            _addNameValueButton.Width = 50;
-            _addNameValueButton.Height = addMetadataItemsHeight;
-            _addNameValueButton.Transform.LocalPosition = new Vector2(Width - _addNameValueButton.Width - horizontal_spacing, vertical_spacing);
+            _addKeyValueButton.Width = 50;
+            _addKeyValueButton.Height = addMetadataItemsHeight;
+            _addKeyValueButton.Transform.LocalPosition = new Vector2(Width - _addKeyValueButton.Width - horizontal_spacing, vertical_spacing);
 
-            var textboxWidth = (Width - 4* horizontal_spacing - _addNameValueButton.Width)/2;
-            _addNameBox.Height = addMetadataItemsHeight;
-            _addNameBox.Width = textboxWidth;
-            _addNameBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            var textboxWidth = (Width - 4* horizontal_spacing - _addKeyValueButton.Width)/2;
+            _addKeyBox.Height = addMetadataItemsHeight;
+            _addKeyBox.Width = textboxWidth;
+            _addKeyBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
             _addValueBox.Height = addMetadataItemsHeight;
             _addValueBox.Width = textboxWidth;
-            _addValueBox.Transform.LocalPosition = new Vector2(2 * horizontal_spacing + _addNameBox.Width, vertical_spacing);
+            _addValueBox.Transform.LocalPosition = new Vector2(2 * horizontal_spacing + _addKeyBox.Width, vertical_spacing);
 
             // layout all the elements for search
             vertical_spacing += 20 + addMetadataItemsHeight;
