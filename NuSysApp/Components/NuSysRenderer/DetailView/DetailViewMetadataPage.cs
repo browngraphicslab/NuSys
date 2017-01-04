@@ -65,10 +65,37 @@ namespace NuSysApp
 
             _controller.MetadataChanged += _controller_MetadataChanged;
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
+            _searchTextBox.TextChanged += OnSearchTextChanged;
+        }
+
+        private void OnSearchTextChanged(InteractiveBaseRenderItem item, string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                _metadata_listview.ClearItems();
+                _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
+            }
+            else
+            {
+                _metadata_listview.ClearItems();
+                _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values.Where(entry => entry.Key.Contains(text) || entry.Values.Contains(text))));
+            }
+
+
+        }
+
+        public override void Dispose()
+        {
+
+            _controller.MetadataChanged -= _controller_MetadataChanged;
+            _addKeyValueButton.Tapped -= AddKeyValuePairToMetadata;
+            _searchTextBox.TextChanged -= OnSearchTextChanged;
+
+            base.Dispose();
         }
 
         /// <summary>
-        /// Adds a key value pair to metadata
+        /// Adds a key value pair to metadata, called when the button is pressed to add a key value pair ot metadata
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
@@ -83,33 +110,21 @@ namespace NuSysApp
             // get the metadata entry of the key to be updated if the key exists, otherwise create a new metadata entry
             var metaDataEntry = _controller.GetMetadata().ContainsKey(key)
                 ? _controller.GetMetadata()[key]
-                : new MetadataEntry(key, new List<string>(), MetadataMutability.MUTABLE);
+                : new MetadataEntry(key, values, MetadataMutability.MUTABLE);
+
 
             // if the key already exists update the metadata entry
             if (_controller.GetMetadata().ContainsKey(key))
             {
-                var updateMetadataEntryRequestArgs = new UpdateMetadataEntryRequestArgs()
-                {
-                    Entry = metaDataEntry,
-                    LibraryElementId = _controller.LibraryElementModel.LibraryElementId,
-                    NewValues = values
-                };
-
-                UpdateMetadataEntryRequest request = new UpdateMetadataEntryRequest(updateMetadataEntryRequestArgs);
-                request.ExecuteRequestFunction();
-
+                _controller.UpdateMetadata(metaDataEntry, key, new List<string>(metaDataEntry.Values.Concat(values)) );
             }
             else // otherwise create a new metadata entry
             {
-                var createNewMetadataRequestArgs = new CreateNewMetadataRequestArgs()
-                {
-                    Entry = metaDataEntry,
-                    LibraryElementId = _controller.LibraryElementModel.LibraryElementId
-                };
-
-                CreateNewMetadataRequest request = new CreateNewMetadataRequest(createNewMetadataRequestArgs);
-                request.ExecuteRequestFunction();
+                _controller.AddMetadata(metaDataEntry);
             }
+
+            _addValueBox.Text = string.Empty;
+            _addKeyBox.Text = string.Empty;
 
 
         }
@@ -117,7 +132,7 @@ namespace NuSysApp
         private void _controller_MetadataChanged(object source)
         {
             _metadata_listview.ClearItems();
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.LibraryElementModel.Metadata.Values));
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         private void CreateListView()
@@ -144,7 +159,7 @@ namespace NuSysApp
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> {listColumn, listColumn2});
 
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.LibraryElementModel.Metadata.Values));
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         public override async Task Load()

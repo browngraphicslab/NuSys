@@ -86,5 +86,6 @@ namespace NuSysApp
         public static HorizontalAlignment TabHorizontalAlignment = HorizontalAlignment.Left;
         public static VerticalAlignment TabVerticalAlignment = VerticalAlignment.Center;
         public static CanvasHorizontalAlignment TabTextAlignment = CanvasHorizontalAlignment.Left;
+        public static Color PlaceHolderTextColor = Colors.DarkGray;
     }
 }

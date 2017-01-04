@@ -198,10 +198,8 @@ namespace NuSysApp
         private void EditableTextboxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ClearSelection();
-
-            var loc = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X, 
-                                      loc.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
+            Vector2 pos = new Vector2(pointer.CurrentPoint.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X, 
+                                      pointer.CurrentPoint.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
             int charIndex = GetHitIndex(pos);
             CursorCharacterIndex = charIndex;
             if (Text == "")
@@ -478,9 +476,9 @@ namespace NuSysApp
         /// </summary>
         private void ShiftTextOnDrag()
         {
-            var loc = Vector2.Transform(_draggedPointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X,
-                                      loc.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
+            
+            Vector2 pos = new Vector2(_draggedPointer.CurrentPoint.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X,
+                                      _draggedPointer.CurrentPoint.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
             _selectionEndIndex = GetHitIndex(pos);
 
             // Update y offset if vertical scrolling textbox, x offset otherwise

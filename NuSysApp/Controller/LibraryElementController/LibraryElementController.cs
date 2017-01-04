@@ -317,6 +317,7 @@ namespace NuSysApp
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key, entry);
+            MetadataChanged?.Invoke(this);
             return true;
 
         }
@@ -355,12 +356,14 @@ namespace NuSysApp
         public bool RemoveMetadataLocally(string key)
         {
             MetadataEntry outobj;
+            MetadataChanged?.Invoke(this);
             return _libraryElementModel.Metadata.TryRemove(key, out outobj);
             
         }
 
         /// <summary>
-        /// Updates the passed in metadata with the passed in key and values
+        /// Updates the passed in metadata with the passed in key and values, the values should include all the
+        /// new values as well as all the old values
         /// </summary>
         /// <param name="original"></param>
         /// <param name="key"></param>
@@ -410,11 +413,12 @@ namespace NuSysApp
 
             // Updates the metadata entry
             var newEntry = new MetadataEntry(originalKey, values, MetadataMutability.MUTABLE);
-            _libraryElementModel.Metadata.TryUpdate(originalKey, newEntry, newEntry);
+            _libraryElementModel.Metadata[originalKey] = newEntry;
+            MetadataChanged?.Invoke(this);
             return true;
         }
 
-        /// <summary>
+        /// <summary> 
         /// Returns the value of the metadata at the specified key
         /// null if not exist
         /// </summary>
