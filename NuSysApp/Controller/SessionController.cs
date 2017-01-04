@@ -64,8 +64,7 @@ namespace NuSysApp
         public double ScreenHeight => ActiveFreeFormViewer.Height;
 
         private SessionController()
-        {
-            SessionSettings = new SessionSettingsData();
+        { 
             IdToControllers = new ConcurrentDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
             DataPackage = new DataPackage();
@@ -118,7 +117,7 @@ namespace NuSysApp
             }
         }
 
-        public SessionSettingsData SessionSettings;
+        public SessionSettingsData SessionSettings { get; set; }
 
         public static SessionController Instance
         {
@@ -499,7 +498,6 @@ namespace NuSysApp
                 var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
                 contentController.AddInk(inkModel);
             }
-
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
             CollectionIdsInUse.Add(collectionLibraryId);
@@ -602,6 +600,7 @@ namespace NuSysApp
             Instance?.IdToControllers?.Clear();//TODO actually unload all of these.  very important
             PresentationLinkViewModel.Models?.Clear();
             Instance?.CollectionIdsInUse?.Clear();
+            ToolController.ToolControllers?.Clear();
         }
 
         #endregion

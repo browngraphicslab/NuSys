@@ -137,7 +137,7 @@ namespace NuSysApp
         /// <summary>
         /// THis is the heigh of each of the rows
         /// </summary>
-        public float RowHeight { get; set; }
+        public float RowHeight { get; set; } = 40; //TODO drop this hard-code
 
         private float _rowBorderThickness;
 
@@ -206,11 +206,20 @@ namespace NuSysApp
             _columnIndexSortedBy = -1;
             //RowBorderThickness = 5;
             Rows = new List<ListViewRowUIElement<T>>();
-            RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
             SetUpBackgroundRectangle();
+            SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
+        }
 
+        /// <summary>
+        /// event handler called whenever the session changes its text accessibility setting.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SessionSettingsTextScaleChanged(object sender, double e)
+        {
+            CreateListViewRowUIElements();
         }
 
         private void SetUpBackgroundRectangle()
@@ -304,7 +313,7 @@ namespace NuSysApp
                     listViewRowUIElement.Bordercolor = Colors.Black;
                     listViewRowUIElement.BorderWidth = RowBorderThickness;
                     listViewRowUIElement.Width = Width - BorderWidth * 2;
-                    listViewRowUIElement.Height = RowHeight;
+                    listViewRowUIElement.Height = RowHeight * (float)SessionController.Instance.SessionSettings.TextScale;
                     PopulateListRow(listViewRowUIElement);
                     listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
                     listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
@@ -439,6 +448,8 @@ namespace NuSysApp
 
                 row.Item = items[index];
 
+
+                //there MUST be a better way to do selection than this, this is crazy
                 if (_selectedElements.Contains(row.Item))
                 {
                     SelectRow(row);
@@ -500,8 +511,9 @@ namespace NuSysApp
         /// <returns></returns>
         private RectangleUIElement CreateCell(ListColumn<T> column, T itemSource, ListViewRowUIElement<T> listViewRowUIElement)
         {
-                return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
-                    RowHeight - RowBorderThickness * 2, _sumOfColumnRelativeWidths);
+            var height = RowHeight * (float)SessionController.Instance.SessionSettings.TextScale;
+            return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
+                    height - RowBorderThickness * 2, _sumOfColumnRelativeWidths);
 
         }
 
@@ -923,7 +935,7 @@ namespace NuSysApp
 
             var cellVerticalOffset = BorderWidth;
             var headerOffset = Transform.LocalPosition.Y;
-            var scrollOffset = _scrollOffset % RowHeight;
+            var scrollOffset = _scrollOffset % (RowHeight*(float)SessionController.Instance.SessionSettings.TextScale);
             foreach (var row in Rows)
             {
                 //Position is the position of the bottom of the row
@@ -1013,6 +1025,7 @@ namespace NuSysApp
             _selectedElements?.Clear();
             _itemsSource?.Clear();
             _listColumns?.Clear();
+            SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
             base.Dispose();
         }
 

@@ -159,7 +159,6 @@ namespace NusysServer
                         break;
 
                     case NusysConstants.ContentType.PDF:
-                        ErrorLog.AddErrorString("\n\nMaking pdf\n\n");
                         var pdfBytes = Convert.FromBase64String(contentData);
                         var doc = Open(pdfBytes, pdfBytes.Length);
 
