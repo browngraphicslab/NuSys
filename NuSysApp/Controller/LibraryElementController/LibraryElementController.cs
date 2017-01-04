@@ -477,6 +477,44 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Tries to add a link form this library element controller to another library element controller,
+        /// optional argument to give tags to the link
+        /// </summary>
+        /// <param name="link_to"></param>
+        public async void TryAddLinkTo(LibraryElementController link_to, HashSet<Keyword> tags = null)
+        {
+            // Diable linking to links and tools
+            // TODO: Enable linking to links 
+            if (LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                LibraryElementModel.Type == NusysConstants.ElementType.Tools ||
+                link_to.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                link_to.LibraryElementModel.Type == NusysConstants.ElementType.Tools)
+            {
+                return;
+            }
+            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs
+            {
+                LibraryElementModelInId = LibraryElementModel.LibraryElementId,
+                LibraryElementType = NusysConstants.ElementType.Link,
+                LibraryElementModelOutId = link_to.LibraryElementModel.LibraryElementId,
+                Title = $"Link from {LibraryElementModel.Title} to {link_to.LibraryElementModel.Title}",
+                Keywords = tags ?? new HashSet<Keyword>()
+            };
+            if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=
+                createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId &&
+                SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelInId,
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
+            {
+                var contentRequestArgs = new CreateNewContentRequestArgs();
+                contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                var request = new CreateNewContentRequest(contentRequestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.AddReturnedLibraryElementToLibrary();
+            }
+        }
+
+        /// <summary>
         /// Returns the date the library element controller was created as a DateTime
         /// </summary>
         /// <returns></returns>

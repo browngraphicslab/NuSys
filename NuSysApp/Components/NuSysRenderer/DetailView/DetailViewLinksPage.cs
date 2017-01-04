@@ -9,6 +9,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
@@ -26,7 +27,7 @@ namespace NuSysApp
         /// <summary>
         /// Textbox used to input the title of the element the new link is to be linked to.
         /// </summary>
-        private ScrollableTextboxUIElement _addLinkToElementBox;
+        private AutoSuggestTextBox<LibraryElementModel> _addLinkToElementBox;
 
         /// <summary>
         /// Textbox used to input tags for the new link
@@ -62,14 +63,21 @@ namespace NuSysApp
             };
             AddChild(_addLinkTitleBox);
 
-            _addLinkToElementBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _addLinkToElementBox = new AutoSuggestTextBox<LibraryElementModel>(this, Canvas)
             {
                 PlaceHolderText = "link to...",
                 Background = Colors.Azure,
                 BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Bordercolor = Colors.DarkSlateGray,
+                ColumnFunction = elementController => elementController.Title,
+                FilterFunction = delegate(string s)
+                {
+                    return
+                        new List<LibraryElementModel>(
+                            SessionController.Instance.ContentController.AllLibraryElementModels.Where(
+                                lem => lem.Title.Contains(s)));
+                },
             };
-            AddChild(_addLinkToElementBox);
 
             _addLinkTagsBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
@@ -98,10 +106,35 @@ namespace NuSysApp
             _controller.LinkRemoved += OnLinkRemoved;
             _createLinkButton.Tapped += OnCreateLinkButtonTapped;
 
+            // always add this as the last child since it has a drop down
+            AddChild(_addLinkToElementBox);
+
         }
 
+        /// <summary>
+        /// Called when the create link button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            // if the auto suggest button has a selection chosen, and there isn't an empty title then create a link
+            if (_addLinkToElementBox.HasSelection && !string.IsNullOrEmpty(_addLinkTitleBox.Text))
+            {
+
+                // get the tags from the tags box
+                var tag_strings = _addLinkTagsBox.Text.Split(new string[] {", ", " ", " ,", ",", " , "},
+                    StringSplitOptions.RemoveEmptyEntries);
+
+                var keywords = new HashSet<Keyword>();
+                foreach (var tagString in tag_strings)
+                {
+                    keywords.Add(new Keyword(tagString));
+                }
+
+                // try to add a link between the two controllers
+                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), keywords);
+            }
         }
 
         /// <summary>
@@ -131,6 +164,8 @@ namespace NuSysApp
         {
             _controller.LinkAdded -= OnLinkAdded;
             _controller.LinkRemoved -= OnLinkRemoved;
+            _createLinkButton.Tapped -= OnCreateLinkButtonTapped;
+
             base.Dispose();
         }
 

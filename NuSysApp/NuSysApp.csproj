@@ -363,6 +363,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AutoSuggestTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushToMask.cs" />
