@@ -17016,7 +17016,6 @@
     "Core.Spire.Presentation/1.0.0": {
       "sha512": "SEQtNKm7RZG05PJlPb9UJIqM5pjz+SDnEWA4AwugI9bvsEMr618Gg1g9V20DQBzhMfZBAji8iWhoUrCzbFpZMQ==",
       "type": "package",
-      "path": "core.spire.presentation/1.0.0",
       "files": [
         "ClassLibrary2/App.Config",
         "ClassLibrary2/Client.cs",

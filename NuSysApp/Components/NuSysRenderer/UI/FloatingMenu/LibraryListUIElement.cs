@@ -187,7 +187,7 @@ namespace NuSysApp
         /// <param name="text"></param>
         private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
