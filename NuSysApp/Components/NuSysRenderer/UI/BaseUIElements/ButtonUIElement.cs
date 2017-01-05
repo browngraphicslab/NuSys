@@ -144,6 +144,7 @@ namespace NuSysApp
         protected float _originalHeight;
         protected float _originalWidth;
         protected float _originalTextSize;
+        protected Rect _originalImageBounds;
 
 
         /// <summary>
@@ -172,7 +173,6 @@ namespace NuSysApp
             Shape.DoubleTapped += Shape_DoubleTapped;
 
             Enabled = true;
-            ImageBounds = new Rect(0,0,Width, Height);
         }
 
         /// <summary>
@@ -184,6 +184,7 @@ namespace NuSysApp
             _originalHeight = Height;
             _originalWidth = Width;
             _originalTextSize = ButtonTextSize;
+            _originalImageBounds = ImageBounds ?? GetLocalBounds();
         }
 
         /// <summary>

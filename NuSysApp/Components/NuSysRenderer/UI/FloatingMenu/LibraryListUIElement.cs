@@ -127,11 +127,17 @@ namespace NuSysApp
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 FontSize = 14,
-                BorderWidth = 3,
-                Bordercolor = Colors.Gray
+                BorderWidth = 1,
+                Bordercolor = Constants.MED_BLUE,
+                Background = Colors.White
             };
             _searchBar.TextChanged += SearchBarTextChanged;
             AddChild(_searchBar);
+
+            TopBarColor = Constants.LIGHT_BLUE;
+            Background = Colors.White;
+            Bordercolor = Constants.MED_BLUE;
+            BorderWidth = 1;
 
             // initialize the filter button
             _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")

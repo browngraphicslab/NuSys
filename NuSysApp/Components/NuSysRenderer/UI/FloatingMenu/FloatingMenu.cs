@@ -28,11 +28,15 @@ namespace NuSysApp
         /// </summary>
         private Vector2 _initialDragPosition;
 
+        private float _originalHeight;
+        private float _originalWidth;
+
         public FloatingMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the default height and width of the floating menu view
             Height = UIDefaults.floatingMenuHeight;
             Width = UIDefaults.floatingMenuWidth;
+
 
             // set the default background
             Background = Colors.Transparent;
@@ -62,6 +66,10 @@ namespace NuSysApp
             _buttonLayoutManager.AddElement(_openLibraryButton);
             _buttonLayoutManager.ArrangeItems(); // arrange the items only so widths and heights are properly instantiated
 
+            _originalWidth = Width;
+            _originalHeight = Height;
+
+            SetAccessibilitySize(1);
 
             DragStarted += FloatingMenu_DragStarted;
             _addElementButton.DragStarted += FloatingMenu_DragStarted;
@@ -76,7 +84,18 @@ namespace NuSysApp
 
         private void SessionSettings_TextScaleChanged(object sender, double e)
         {
-            //SessionController.Instance.SessionSettings.TextScale;
+            SetAccessibilitySize(e);
+        }
+
+        private void SetAccessibilitySize(double e)
+        {
+            _addElementButton.Resize(e);
+            _openLibraryButton.Resize(e);
+            _addElementMenu.Resize(e);
+
+            Height = _originalHeight * (float)e;
+            Width = _originalWidth * (float)e;
+            _buttonLayoutManager.SetSize(Width, Height);
         }
 
         private void FloatingMenu_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -141,6 +160,7 @@ namespace NuSysApp
             DragStarted -= FloatingMenu_DragStarted;
             _addElementButton.DragStarted -= FloatingMenu_DragStarted;
             _openLibraryButton.DragStarted -= FloatingMenu_DragStarted;
+            SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettings_TextScaleChanged;
 
             base.Dispose();
         }

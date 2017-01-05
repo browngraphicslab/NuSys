@@ -84,9 +84,10 @@ namespace NuSysApp
                 foreach (ListColumn<T> c in listColumns)
                 {
                     var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
-                    headerItem.BorderWidth = 2;
-                    headerItem.Background = Colors.LightGray;
-                    headerItem.ButtonTextColor = Colors.Black;
+                    headerItem.BorderWidth = 1;
+                    headerItem.Bordercolor = Constants.LIGHT_BLUE;
+                    headerItem.Background = Colors.White;
+                    headerItem.ButtonTextColor = Constants.ALMOST_BLACK;
                     headerItem.ButtonText = c.Title;
                     //headerItem.ButtonFontSize = 15;
                     headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;

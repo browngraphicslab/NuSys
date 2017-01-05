@@ -59,6 +59,7 @@ namespace NuSysApp
             ButtonTextColor = Constants.DARK_BLUE;
             Height = 50;
             Width = 50;
+            SetOriginalValues();
         }
 
         /// <summary>
@@ -82,5 +83,12 @@ namespace NuSysApp
             textFormat.TrimmingGranularity = CanvasTextTrimmingGranularity.None;
             return textFormat;
         }
+
+        public override void Resize(double e)
+        {
+            base.Resize(e);
+            //ImageBounds = new Rect(_originalImageBounds.X, _originalImageBounds.Y, _originalWidth * e, _originalHeight * e);
+        }
+
     }
 }
