@@ -32,6 +32,7 @@ namespace NuSysApp
                             rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Collection:
+                            rectangle = new DetailViewCollectionPage(parent, resourceCreator, controller as CollectionLibraryElementController);
                             break;
                         case NusysConstants.ElementType.PDF:
                             rectangle = new DetailViewPdfPage(parent, resourceCreator, controller as PdfLibraryElementController, true, false);

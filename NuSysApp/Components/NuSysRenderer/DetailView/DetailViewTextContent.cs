@@ -35,7 +35,9 @@ namespace NuSysApp
             _mainTextBox = new ScrollableTextboxUIElement(this, resourceCreator, true, true)
             {
                 BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                Bordercolor = Colors.DarkSlateGray,
+                PlaceHolderText = "Enter text here...",
+                Text = _controller.ContentDataController.ContentDataModel.Data
             };
             AddChild(_mainTextBox);
 

@@ -168,47 +168,42 @@ namespace NuSysApp
 
             switch (_currentController.LibraryElementModel.Type)
             {
-                case NusysConstants.ElementType.Text:
-                    break;
                 case NusysConstants.ElementType.Image:
                     _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
-
-                    break;
-                case NusysConstants.ElementType.Word:
-                    break;
-                case NusysConstants.ElementType.Powerpoint:
-                    break;
-                case NusysConstants.ElementType.Collection:
                     break;
                 case NusysConstants.ElementType.PDF:
                     _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
-
                     break;
                 case NusysConstants.ElementType.Audio:
                     _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
-
                     break;
                 case NusysConstants.ElementType.Video:
                     _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Region), "Regions", false);
                     break;
-                case NusysConstants.ElementType.Tag:
+            }
+            switch (_currentController.LibraryElementModel.Type)
+            {
+                case NusysConstants.ElementType.Text:
+                case NusysConstants.ElementType.Image:
+                case NusysConstants.ElementType.Collection:
+                case NusysConstants.ElementType.PDF:
+                case NusysConstants.ElementType.Audio:
+                case NusysConstants.ElementType.Video:
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Links), "Links", false);
                     break;
-                case NusysConstants.ElementType.Web:
-                    break;
-                case NusysConstants.ElementType.Area:
-                    break;
-                case NusysConstants.ElementType.Link:
-                    break;
-                case NusysConstants.ElementType.Recording:
-                    break;
-                case NusysConstants.ElementType.Tools:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
 
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Links), "Links", false);
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Aliases), "Aliases", false);
+            switch (_currentController.LibraryElementModel.Type)
+            {
+                case NusysConstants.ElementType.Text:
+                case NusysConstants.ElementType.Image:
+                case NusysConstants.ElementType.Collection:
+                case NusysConstants.ElementType.PDF:
+                case NusysConstants.ElementType.Audio:
+                case NusysConstants.ElementType.Video:
+                    _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Aliases), "Aliases", false);
+                    break;
+            }
 
             // show the passed in page on the detail viewer
             ShowPageType(pageToShow);
@@ -219,10 +214,10 @@ namespace NuSysApp
             if (_loaded)
             {
                 _titleBox.Transform.LocalPosition = new Vector2(BorderWidth);
-                _titleBox.Width = Width - 2 * BorderWidth - _settingsButton.Width;
+                _titleBox.Width = Width - 2*BorderWidth - _settingsButton.Width;
 
                 _settingsButton.Transform.LocalPosition = new Vector2(Width - _settingsButton.Width - BorderWidth, BorderWidth);
-                _settingsButton.ImageBounds = new Rect(_settingsButton.Width/4, _settingsButton.Height/4, _settingsButton.Width/2, _settingsButton.Height/2 );
+                _settingsButton.ImageBounds = new Rect(_settingsButton.Width/4, _settingsButton.Height/4, _settingsButton.Width/2, _settingsButton.Height/2);
 
                 _tabContainerLayoutManager.SetSize(Width, Height);
                 _tabContainerLayoutManager.SetMargins(BorderWidth);
@@ -231,7 +226,6 @@ namespace NuSysApp
                 _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _tabContainerLayoutManager.ArrangeItems();
             }
-
 
 
             base.Update(parentLocalToScreenTransform);

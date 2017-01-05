@@ -51,12 +51,12 @@ namespace NuSysApp
 
             _vm = null;
             _htmlParser = null;
-            _textItemLayout.Dispose();
+            _textItemLayout?.Dispose();
             _textItemLayout = null;
             _textboxtext = null;
-            _clippingRect.Dispose();
+            _clippingRect?.Dispose();
             _clippingRect = null;
-            _strokeStyle.Dispose();
+            _strokeStyle?.Dispose();
             _strokeStyle = null;
             base.Dispose();
         }

@@ -65,9 +65,45 @@ namespace NuSysApp
             {
                 PlaceHolderText = "Link annotations...",
                 BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                Bordercolor = Colors.DarkSlateGray,
+                Text = _controller.ContentDataController.ContentDataModel.Data
             };
             AddChild(_linkAnnotationsInputBox);
+
+            // event for when the controllers text changes or the user changes the text
+            _controller.ContentDataController.ContentDataUpdated += ContentDataController_ContentDataUpdated;
+            _linkAnnotationsInputBox.TextChanged += _linkAnnotationsInputBox_TextChanged;
+        }
+
+        public override void Dispose()
+        {
+            _controller.ContentDataController.ContentDataUpdated += ContentDataController_ContentDataUpdated;
+            _linkAnnotationsInputBox.TextChanged += _linkAnnotationsInputBox_TextChanged;
+            base.Dispose();
+        }
+
+        /// <summary>
+        /// Called whenever the content data controllers data is updated, changes the text in the text input box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ContentDataController_ContentDataUpdated(object sender, string e)
+        {
+            _linkAnnotationsInputBox.TextChanged -= _linkAnnotationsInputBox_TextChanged;
+            _linkAnnotationsInputBox.Text = e;
+            _linkAnnotationsInputBox.TextChanged += _linkAnnotationsInputBox_TextChanged;
+        }
+
+        /// <summary>
+        /// Called whenever the user inputs text into the annotations box, changes the data on the server
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="text"></param>
+        private void _linkAnnotationsInputBox_TextChanged(InteractiveBaseRenderItem item, string text)
+        {
+            _controller.ContentDataController.ContentDataUpdated -= ContentDataController_ContentDataUpdated;
+            _controller.ContentDataController.SetData(text);
+            _controller.ContentDataController.ContentDataUpdated += ContentDataController_ContentDataUpdated;
         }
 
         public override async Task Load()

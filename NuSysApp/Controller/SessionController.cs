@@ -426,6 +426,7 @@ namespace NuSysApp
         /// The id is the libraryElementId of the collection you want to enter. 
         /// The elementModelId is the id of the element model you wish to zoom in on in that collection
         /// THis method will take care of all the clearing and crap for you, just call it with the id you want to use.
+        /// MUST BE CALLED WITHIN UITask.Run()!!!!
         /// </summary>
         /// <param name="id"></param>
         /// <param name="elementModelId"></param>
