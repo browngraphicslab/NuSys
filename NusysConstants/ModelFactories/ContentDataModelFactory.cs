@@ -37,6 +37,7 @@ namespace NusysIntermediate
             switch (contentType)
             {
                 case NusysConstants.ContentType.PDF:
+                case NusysConstants.ContentType.Word:
                     model = new PdfContentDataModel(contentId,data);
                     break;
                 default:
@@ -64,7 +65,8 @@ namespace NusysIntermediate
                 //if its type requires a second, more specialized deserialization, do so
                 switch (model.ContentType)
                 {
-                    case NusysConstants.ContentType.PDF:
+                    case NusysConstants.ContentType.PDF: //TODO make an actual word content data model
+                    case NusysConstants.ContentType.Word:
                         model = JsonConvert.DeserializeObject<PdfContentDataModel>(contentDataModelJSON);
                         break;
                 }

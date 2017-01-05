@@ -8,6 +8,7 @@ using Windows.UI;
 using System.Numerics;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 
 namespace NuSysApp
 {
@@ -82,14 +83,10 @@ namespace NuSysApp
 
             // Buttons
             // arrange button
-            _arrangeButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+            _arrangeButton = new RectangleButtonUIElement(this, resourceCreator);
             _arrangeButton.ButtonText = ARRANGE_TEXT;
             _arrangeButton.Width = ARRANGE_BUTTON_WIDTH;
             _arrangeButton.Height = ARRANGE_BUTTON_HEIGHT;
-            _arrangeButton.ButtonTextColor = Colors.White;
-            _arrangeButton.Background = Colors.Green;
-            _arrangeButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
-            _arrangeButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             _arrangeButton.Transform.LocalPosition = ARRANGE_BUTTON_POSITION;
 
             _arrangeButton.Tapped += ArrangeButtonTapped;
@@ -155,7 +152,7 @@ namespace NuSysApp
             _arrangeByLabel.Transform.LocalPosition = ARRANGE_BY_TEXT_POSITION;
             AddChild(_arrangeByLabel);
 
-            // dropdown menu button
+            // dropdown menu button - custom button
             _dropdownButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
             _dropdownButton.ButtonText = LAYOUT_STYLE_TITLE_TEXT;
             _dropdownButton.Width = PANEL_WIDTH - 2 * DROPDOWN_INSET;

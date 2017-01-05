@@ -89,6 +89,18 @@ namespace NusysServer
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_TYPE_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY];
 
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = FileHelper.CreateDataFile(originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY), contentType, originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES), originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION));
+
+
+            //hack to not recreate word icons
+            if(originalMessage.GetEnum<NusysConstants.ContentType>(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY) == NusysConstants.ContentType.Word)
+            {
+                //yes hacky, but intentionally needs to be contentDataModel Id instead of library id.
+                var contentDataModelId = originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY);
+                originalMessage.Add(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL, Constants.SERVER_ADDRESS + NusysConstants.GetDefaultThumbnailFileName(contentDataModelId, NusysConstants.ThumbnailSize.Small) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION);
+                originalMessage.Add(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL, Constants.SERVER_ADDRESS +  NusysConstants.GetDefaultThumbnailFileName(contentDataModelId, NusysConstants.ThumbnailSize.Medium) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION);
+                originalMessage.Add(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL, Constants.SERVER_ADDRESS +  NusysConstants.GetDefaultThumbnailFileName(contentDataModelId, NusysConstants.ThumbnailSize.Large) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION);
+            }
+
             return addContentToDatabaseMessage;
         }
 

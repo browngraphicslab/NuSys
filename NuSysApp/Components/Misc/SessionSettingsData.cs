@@ -166,6 +166,10 @@ namespace NuSysApp
         /// </summary>
         private void SaveToFile()
         {
+            if(SessionController.Instance.SessionSettings == null)
+            {
+                return;
+            }
             Task.Run(async delegate { StorageUtil.SaveSettings(this); });
         }
     }
