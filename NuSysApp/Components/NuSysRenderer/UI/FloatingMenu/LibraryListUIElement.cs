@@ -633,6 +633,12 @@ namespace NuSysApp
                             imageArgs.AspectRatio = aspectRatio;
                             libraryElementArgs = imageArgs;
                             break;
+                        case NusysConstants.ElementType.Word:
+                            var wordArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                            wordArgs.PdfPageStart = 0;
+                            wordArgs.PdfPageEnd = pdfPageCount;
+                            libraryElementArgs = wordArgs;
+                            break;
                         case NusysConstants.ElementType.PDF:
                             var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
                             pdfArgs.PdfPageStart = 0;

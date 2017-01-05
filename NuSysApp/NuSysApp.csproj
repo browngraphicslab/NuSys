@@ -472,6 +472,7 @@
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
+    <Compile Include="Components\NuSysRenderer\WordElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
       <DependentUpon>AudioRegionBound.xaml</DependentUpon>

@@ -12,15 +12,8 @@ namespace NusysIntermediate
 
         public int CurrentPageNumber {
             get { return _currentPageNumber; }
-            set
-            {
-                _currentPageNumber = value;
-                PageChange?.Invoke(value);
-            }
+            set { _currentPageNumber = value;}
         }
-        
-        public event PageChangeHandler PageChange;
-        public delegate void PageChangeHandler(int page);
 
         public PdfNodeModel(string id) : base(id)
         {
