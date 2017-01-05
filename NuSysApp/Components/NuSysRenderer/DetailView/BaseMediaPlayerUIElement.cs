@@ -11,7 +11,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
-using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 
 namespace NuSysApp
 {

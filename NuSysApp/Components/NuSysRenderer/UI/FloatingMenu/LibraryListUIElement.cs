@@ -21,7 +21,6 @@ using Microsoft.Graphics.Canvas.Text;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using NusysIntermediate;
-using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using WinRTXamlToolkit.Imaging;
 using Buffer = Windows.Storage.Streams.Buffer;
 
@@ -53,7 +52,7 @@ namespace NuSysApp
         /// <summary>
         /// The add file button on the top right corner of the library list
         /// </summary>
-        private ButtonUIElement _addFileButton;
+        private TransparentButtonUIElement _addFileButton;
 
         /// <summary>
         /// A dictionary of fileids to access types, static because the adding files methods have to be static
@@ -105,6 +104,7 @@ namespace NuSysApp
         /// </summary>
         public FilterMenu FilterMenu { get; }
 
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -114,9 +114,10 @@ namespace NuSysApp
             AddChild(LibraryListView);
 
             // set up the ui of the add file button
-            _addFileButton = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
-            // set the image bounds for the addfile button
-            _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, _addFileButton.Width - 2 * BorderWidth, _addFileButton.Height - 2 * BorderWidth);
+            _addFileButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
+            {
+                ImageBounds = new Rect(10,10,30,30)
+            };
             // add the addfile button to the window
             AddButton(_addFileButton, TopBarPosition.Right);
 
@@ -135,6 +136,7 @@ namespace NuSysApp
             AddChild(_searchBar);
 
             TopBarColor = Constants.LIGHT_BLUE;
+            TopBarHeight = 50;
             Background = Colors.White;
             Bordercolor = Constants.MED_BLUE;
             BorderWidth = 1;
@@ -223,7 +225,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/add from file dark.png"));
+            _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
             base.Load(); 
         }
 

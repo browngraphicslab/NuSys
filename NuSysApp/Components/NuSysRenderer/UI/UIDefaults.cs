@@ -18,7 +18,7 @@ namespace NuSysApp
         public static float Width = 100;
         public static float Height = 100;
         public static float Borderwidth = 0;
-        public static Color Background = Colors.White;
+        public static Color Background = Constants.LIGHT_BLUE;
         public static Color Bordercolor = Colors.Transparent;
         public static Color SelectedBorderColor = Constants.DARK_BLUE;
         public static float TopBarHeight = 25;
@@ -27,7 +27,7 @@ namespace NuSysApp
 
         public static string FontFamily = "Arial";//"/Assets/fonts/freightsans.ttf#FreightSans BookSC";
 
-
+        public static float Padding = 2;
         public static int PrimaryStyle = 0;
         public static int SecondaryStyle = 1;
         public static int AccentStyle = 2;

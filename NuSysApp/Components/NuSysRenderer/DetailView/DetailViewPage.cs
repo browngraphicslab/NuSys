@@ -9,7 +9,6 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
-using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 
 namespace NuSysApp
 {

@@ -98,7 +98,7 @@ namespace NuSysApp
         private async Task SetUpToolButton()
         {
 
-            BtnTools = new DraggableButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
+            BtnTools = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
             BtnTools.DragCompleted += BtnTools_DragCompleted;
             BtnTools.Dragged += BtnTools_Dragged; 
 

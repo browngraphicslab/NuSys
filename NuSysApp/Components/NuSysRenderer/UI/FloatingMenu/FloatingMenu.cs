@@ -116,7 +116,7 @@ namespace NuSysApp
             _library.IsVisible = !_library.IsVisible;
             var openLibraryButton = interactiveBaseRenderItem as ButtonUIElement;
             Debug.Assert(openLibraryButton != null, "The open library button should be a button ui element");
-            _library.Transform.LocalPosition = openLibraryButton.Transform.LocalPosition + new Vector2(-_library.Width/2 + openLibraryButton.Width/2, openLibraryButton.Height + 10);
+            _library.Transform.LocalPosition = openLibraryButton.Transform.LocalPosition + new Vector2(openLibraryButton.Width*2, openLibraryButton.Height);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace NuSysApp
             }
             _library.IsVisible = false;
 
-            _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
+            _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements white.png"));
             _addElementButton.ImageBounds = new Rect(_addElementButton.Width / 4, _addElementButton.Height/4, _addElementButton.Width/2, _addElementButton.Height/2);
             _openLibraryButton.Image = _openLibraryButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection main menu.png"));
             _openLibraryButton.ImageBounds = new Rect(_openLibraryButton.Width / 4, _openLibraryButton.Height / 4, _openLibraryButton.Width / 2, _openLibraryButton.Height / 2);

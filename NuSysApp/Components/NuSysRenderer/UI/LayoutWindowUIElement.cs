@@ -8,7 +8,6 @@ using Windows.UI;
 using System.Numerics;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 
 namespace NuSysApp
 {

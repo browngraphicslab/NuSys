@@ -8,7 +8,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 
-namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
+namespace NuSysApp
 {
     /// <summary>
     /// rounded rectangle button class. automatically sets radius of rounded rect to 5 in accordance with styles.
