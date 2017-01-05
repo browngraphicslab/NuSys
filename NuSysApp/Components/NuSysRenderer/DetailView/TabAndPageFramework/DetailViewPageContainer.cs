@@ -57,9 +57,6 @@ namespace NuSysApp
             };
             AddChild(_titleBox);
 
-            _settingsButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Settings");
-            AddChild(_settingsButton);
-
             _tabContainerLayoutManager = new StackLayoutManager();
             _tabContainerLayoutManager.AddElement(_pageTabContainer);
             BorderWidth = 0;
@@ -68,11 +65,6 @@ namespace NuSysApp
 
 
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
-        }
-
-        public override async Task Load()
-        {
-            _settingsButton.Image = _settingsButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/gear.png"));
         }
 
         public override void Dispose()
