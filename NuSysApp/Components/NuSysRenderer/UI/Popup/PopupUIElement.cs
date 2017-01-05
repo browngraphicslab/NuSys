@@ -65,11 +65,11 @@ namespace NuSysApp
             _dismissText = "";
 
             //11/13/16 - if this is uncommented right now, the right click to trigger popup will immediately also dismiss it...
-            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed +=
-            //    CanvasInteractionManager_ClosePopup;
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed +=
+                CanvasInteractionManager_ClosePopup;
         }
 
-        ///***USE LOSE FOCUS*** - BASE INTERACTIVE RENDER ITEM
+
 
         /// <summary>
         /// this closes the popup if the pointer is not within the popup's bounds, and disposes of the handler for close popup.
@@ -79,11 +79,12 @@ namespace NuSysApp
         private void CanvasInteractionManager_ClosePopup(CanvasPointer pointer)
         {
             var hittest = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
-            if (hittest != this && _dismissable)
+            if (hittest.Parent != this && _dismissable)
             {
                 DismissPopup();
             }
         }
+
 
         /// <summary>
         /// shows popup. usually triggered by some sort of action.
@@ -161,8 +162,9 @@ namespace NuSysApp
             {
                 _dismissButton.Tapped -= DismissButton_Tapped;
             }
-            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ScreenPointerPressed -=
-            //    CanvasInteractionManager_ClosePopup;
+           
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed -=
+                CanvasInteractionManager_ClosePopup;
             base.Dispose();
         }
     }
