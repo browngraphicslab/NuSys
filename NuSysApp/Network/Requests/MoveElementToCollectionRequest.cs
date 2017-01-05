@@ -93,14 +93,14 @@ namespace NuSysApp
         private async Task<bool> MoveElementToCollection(string elementId, string newParentCollectionId, double x, double y)
         {
             if (string.IsNullOrEmpty(elementId) || string.IsNullOrEmpty(newParentCollectionId) ||
-                !SessionController.Instance.IdToControllers.ContainsKey(elementId)) //if it fails those debugs, return false.
+                !SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId)) //if it fails those debugs, return false.
             {
                 return false;
             }
 
 
             ElementController elementController;  
-            SessionController.Instance.IdToControllers.TryRemove(elementId, out elementController);//get the controller for the given id
+            SessionController.Instance.ElementModelIdToElementController.TryRemove(elementId, out elementController);//get the controller for the given id
             var model = elementController?.Model; //get the existing element model for the given id
 
 

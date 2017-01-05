@@ -166,9 +166,9 @@ namespace NuSysApp
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
         /// <param name="shapeElement"></param>
-        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shape) : base(parent, resourceCreator)
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shape = null) : base(parent, resourceCreator)
         {
-            Shape = shape;
+            Shape = shape ?? new RectangleUIElement(parent, ResourceCreator); //This is important so all buttons should have the same base appearence
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -313,7 +313,6 @@ namespace NuSysApp
             if (ButtonText != null)
             {
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
-                // just created textFormat
                 ds.DrawText(ButtonText, GetTextBoundingBox(),ButtonTextColor, GetCanvasTextFormat());
             }
 
@@ -327,7 +326,7 @@ namespace NuSysApp
         /// <returns></returns>
         protected virtual Rect GetTextBoundingBox()
         {
-            return new Rect(Padding, Padding, Width - 2*Padding, Height - 2*Padding);
+            return new Rect(Padding, Padding,Math.Max(Width - 2*Padding,0), Math.Max(Height - 2*Padding,0));
         }
 
         /// <summary>

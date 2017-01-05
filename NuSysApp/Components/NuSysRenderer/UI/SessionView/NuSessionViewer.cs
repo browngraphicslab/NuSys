@@ -142,6 +142,14 @@ namespace NuSysApp
             _settingsButton.Tapped += SettingsButtonOnTapped;
         }
 
+        private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var currCollectionController =
+                SessionController.Instance.ContentController.GetLibraryElementController(
+                    SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSessionView.ShowDetailView(currCollectionController);
+        }
+
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
             if (GetChildren().Contains(_titleBox))
@@ -161,6 +169,8 @@ namespace NuSysApp
             AddChild(_titleBox);
             _titleBox.Transform.LocalPosition =
                 new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
+            _titleBox.DoubleTapped += _titleBox_DoubleTapped;
+
 
             _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2 + 50, 
                 _titleBox.Height/2 - _settingsButton.Height/2);
@@ -268,6 +278,10 @@ namespace NuSysApp
             if (_settingsButton != null)
             {
                 _settingsButton.Tapped -= SettingsButtonOnTapped;
+            }
+            if (_titleBox != null)
+            {
+                _titleBox.DoubleTapped -= _titleBox_DoubleTapped;
             }
             Canvas.SizeChanged -= OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped -= OnCurrCollDetailViewButtonTapped;

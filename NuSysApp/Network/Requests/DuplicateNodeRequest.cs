@@ -17,7 +17,7 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString("id");
-            var model = SessionController.Instance.IdToControllers[id].Model;
+            var model = SessionController.Instance.ElementModelIdToElementController[id].Model;
             
             NusysConstants.ElementType type = model.ElementType;
 
@@ -26,8 +26,8 @@ namespace NuSysApp
                 var childList = _message.GetList<string>("groupChildren");
                 foreach (var childId in childList)
                 {
-                    var childModel = SessionController.Instance.IdToControllers[childId].Model;
-                    var group = (SessionController.Instance.IdToControllers[childId].LibraryElementController.GetMetadata("groups"));
+                    var childModel = SessionController.Instance.ElementModelIdToElementController[childId].Model;
+                    var group = (SessionController.Instance.ElementModelIdToElementController[childId].LibraryElementController.GetMetadata("groups"));
                     var groups = new List<string>();
                     groups.AddRange(group);
 
@@ -47,7 +47,7 @@ namespace NuSysApp
             var request = new NewElementRequest(msg);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
-            var duplicateModel = SessionController.Instance.IdToControllers[msg.GetString("id")].Model;
+            var duplicateModel = SessionController.Instance.ElementModelIdToElementController[msg.GetString("id")].Model;
 
             if (!(duplicateModel is CollectionElementModel))
                 return;

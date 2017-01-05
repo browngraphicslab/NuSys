@@ -317,6 +317,7 @@ namespace NuSysApp
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key, entry);
+            MetadataChanged?.Invoke(this);
             return true;
 
         }
@@ -355,12 +356,14 @@ namespace NuSysApp
         public bool RemoveMetadataLocally(string key)
         {
             MetadataEntry outobj;
+            MetadataChanged?.Invoke(this);
             return _libraryElementModel.Metadata.TryRemove(key, out outobj);
             
         }
 
         /// <summary>
-        /// Updates the passed in metadata with the passed in key and values
+        /// Updates the passed in metadata with the passed in key and values, the values should include all the
+        /// new values as well as all the old values
         /// </summary>
         /// <param name="original"></param>
         /// <param name="key"></param>
@@ -410,11 +413,12 @@ namespace NuSysApp
 
             // Updates the metadata entry
             var newEntry = new MetadataEntry(originalKey, values, MetadataMutability.MUTABLE);
-            _libraryElementModel.Metadata.TryUpdate(originalKey, newEntry, newEntry);
+            _libraryElementModel.Metadata[originalKey] = newEntry;
+            MetadataChanged?.Invoke(this);
             return true;
         }
 
-        /// <summary>
+        /// <summary> 
         /// Returns the value of the metadata at the specified key
         /// null if not exist
         /// </summary>
@@ -469,6 +473,46 @@ namespace NuSysApp
             if (!_blockServerInteraction)
             {
                 _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY, _libraryElementModel.Keywords);
+            }
+        }
+
+        /// <summary>
+        /// Tries to add a link form this library element controller to another library element controller,
+        /// optional argument to give tags to the link
+        /// </summary>
+        /// <param name="link_to"></param>
+        /// <param name="text"></param>
+        /// <param name="tags"></param>
+        public async void TryAddLinkTo(LibraryElementController link_to, string title = null, HashSet<Keyword> tags = null)
+        {
+            // Diable linking to links and tools
+            // TODO: Enable linking to links 
+            if (LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                LibraryElementModel.Type == NusysConstants.ElementType.Tools ||
+                link_to.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                link_to.LibraryElementModel.Type == NusysConstants.ElementType.Tools)
+            {
+                return;
+            }
+            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs
+            {
+                LibraryElementModelInId = LibraryElementModel.LibraryElementId,
+                LibraryElementType = NusysConstants.ElementType.Link,
+                LibraryElementModelOutId = link_to.LibraryElementModel.LibraryElementId,
+                Title = title ?? $"Link from {LibraryElementModel.Title} to {link_to.LibraryElementModel.Title}",
+                Keywords = tags ?? new HashSet<Keyword>()
+            };
+            if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=
+                createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId &&
+                SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelInId,
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
+            {
+                var contentRequestArgs = new CreateNewContentRequestArgs();
+                contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                var request = new CreateNewContentRequest(contentRequestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.AddReturnedLibraryElementToLibrary();
             }
         }
 

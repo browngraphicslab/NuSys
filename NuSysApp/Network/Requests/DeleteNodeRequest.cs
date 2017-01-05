@@ -74,12 +74,12 @@ namespace NuSysApp
         /// <returns></returns>
         private bool RemoveElementWithId(string elementId)
         {
-            if (!SessionController.Instance.IdToControllers.ContainsKey(elementId))
+            if (!SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId))
             {
                 return false;
             }
 
-            var controller = SessionController.Instance.IdToControllers[elementId];
+            var controller = SessionController.Instance.ElementModelIdToElementController[elementId];
             if (controller.Model != null)
             {
                 var parent = SessionController.Instance.ContentController.GetLibraryElementModel(controller.Model.ParentCollectionId) as CollectionLibraryElementModel;
@@ -87,7 +87,7 @@ namespace NuSysApp
             }
             controller.Delete(this);
             ElementController removed;
-            SessionController.Instance.IdToControllers.TryRemove(elementId, out removed);
+            SessionController.Instance.ElementModelIdToElementController.TryRemove(elementId, out removed);
             return true;
         }
     }

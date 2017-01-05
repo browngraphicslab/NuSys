@@ -161,7 +161,7 @@ namespace NuSysApp
                 {
                     UITask.Run(() =>
                     {
-                        var newNodeController = SessionController.Instance.IdToControllers[s];
+                        var newNodeController = SessionController.Instance.ElementModelIdToElementController[s];
                         newNodeController.LibraryElementController.AddMetadata(new MetadataEntry("visualCopyOf",new List<string> {nodeToTag.Id}, MetadataMutability.MUTABLE));
                         //newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
                     });

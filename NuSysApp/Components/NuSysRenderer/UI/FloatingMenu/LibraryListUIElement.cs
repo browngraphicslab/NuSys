@@ -118,6 +118,7 @@ namespace NuSysApp
             {
                 ImageBounds = new Rect(10,10,30,30)
             };
+
             // add the addfile button to the window
             AddButton(_addFileButton, TopBarPosition.Right);
 
