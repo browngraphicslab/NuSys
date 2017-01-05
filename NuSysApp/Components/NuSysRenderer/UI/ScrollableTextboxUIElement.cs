@@ -140,7 +140,65 @@ namespace NuSysApp
             this.TextChanged += EditableTextboxUIElement_TextChanged;
             this.DragStarted += ScrollableTextboxUIElement_DragStarted;
             this.DragCompleted += ScrollableTextboxUIElement_DragCompleted;
+            this.DoubleTapped += ScrollableTextboxUIElement_DoubleTapped;
 
+        }
+
+        /// <summary>
+        /// Used to select a whole word when the box is double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ScrollableTextboxUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ClearSelection();
+
+            var loc = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding,
+                                      loc.Y - UIDefaults.YTextPadding);
+            int charIndex = GetHitIndex(pos);
+            if (Text == "")
+            {
+                return;
+            }
+
+            char c = Text[charIndex];
+
+            if (Char.IsWhiteSpace(c))
+            {
+                return;
+            }
+            int start = charIndex;
+            int end = charIndex;
+
+            while (start > 0)
+            {
+                char prevC = Text[start - 1];
+                if (Char.IsWhiteSpace(prevC))
+                {
+                    break;
+                } else
+                {
+                    start--;
+                }
+            }
+
+            while (end < (Text.Length - 1))
+            {
+                char nextC = Text[end + 1];
+                if (Char.IsWhiteSpace(nextC))
+                {
+                    break;
+                }
+                else
+                {
+                    end++;
+                }
+            }
+
+            _hasSelection = true;
+            _selectionStartIndex = start;
+            _selectionEndIndex = end;
         }
 
         /// <summary>
@@ -223,8 +281,21 @@ namespace NuSysApp
             //Backspace Key
             if (args.VirtualKey == VirtualKey.Back)
             {
-                _currCursorX = 0;              
-                if (CursorCharacterIndex >= 0)
+                _currCursorX = 0;
+                if (_hasSelection)
+                {
+                    int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                    int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+
+                    Text = Text.Remove(firstIndex, length);
+                    CursorCharacterIndex -= length;
+                    if (CursorCharacterIndex < -1)
+                    {
+                        CursorCharacterIndex = -1;
+                    }
+                    OnTextChanged(Text);
+                    ClearSelection();
+                } else if (CursorCharacterIndex >= 0)
                 {
                     Text = Text.Remove(CursorCharacterIndex, 1);
                     OnTextChanged(Text);
@@ -235,7 +306,20 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.Delete)
             {
                 _currCursorX = 0;
-                if (CursorCharacterIndex < (Text.Length-1))
+                if (_hasSelection)
+                {
+                    int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                    int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+
+                    Text = Text.Remove(firstIndex, length);
+                    CursorCharacterIndex -= length;
+                    if (CursorCharacterIndex < -1)
+                    {
+                        CursorCharacterIndex = -1;
+                    }
+                    OnTextChanged(Text);
+                    ClearSelection();
+                } else if (CursorCharacterIndex < (Text.Length-1))
                 {
                     Text = Text.Remove(CursorCharacterIndex+1, 1);
                     OnTextChanged(Text);
@@ -861,6 +945,11 @@ namespace NuSysApp
             ToUnicodeEx(virtualKeyCode, scanCode, keyboardState, result, (int)5, (uint)0, inputLocaleIdentifier);
 
             return result.ToString();
+        } 
+
+        private String GetSelectedWord(int charIndex)
+        {
+            return "";
         }
 
         // FUNCTIONS TO CONVERT KEYCODE TO STRING UNICODE CHARACTER
