@@ -9,6 +9,7 @@ namespace Parser
     public class TextDataHolder : DataHolder
     {
         public String Text { get; set; }
+        public List<string> links { get; set; }
         public TextDataHolder(string text,string title="") : base(DataType.Text,title)
         {
 

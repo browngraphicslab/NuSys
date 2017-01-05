@@ -258,5 +258,15 @@ namespace NusysIntermediate
         {
             return _dictionary.GetEnumerator();
         }
+
+
+        public static T Deserialize<T>(string message)
+        {
+            return JsonConvert.DeserializeObject<T>(message);
+        }
+        public static string Serialize(object message)
+        {
+            return JsonConvert.SerializeObject(message);
+        }
     }
 }

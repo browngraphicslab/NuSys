@@ -32,9 +32,24 @@ namespace Parser
         private async void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             var dc = this.DataContext as HTMLParserDataContext;
+            // We then take the results of the document and go through each node and parse different information that exists 
+            // in the html
             await dc.loadResults();
+            var docs = new List<CognitiveApiDocument>();
+
+            
+
             foreach(var dh in dc.DataObjects)
             {
+                if (dh is TextDataHolder)
+                {
+                    docs.Add(new CognitiveApiDocument(""+(dh as TextDataHolder).Text.GetHashCode(), (dh as TextDataHolder).Text));
+                    docs.Add(new CognitiveApiDocument(""+(dh as TextDataHolder).Text.GetHashCode()+1, (dh as TextDataHolder).Text));
+                    docs.Add(new CognitiveApiDocument(""+(dh as TextDataHolder).Text.GetHashCode()+2, (dh as TextDataHolder).Text));
+                    docs.Add(new CognitiveApiDocument(""+(dh as TextDataHolder).Text.GetHashCode()+3, (dh as TextDataHolder).Text));
+                }
+
+
                 var stack = new StackPanel();
                 //stack.Width = 500;
                 
@@ -43,7 +58,13 @@ namespace Parser
                 {
                     case DataType.Text:
                         var tb = new TextBlock {Text = (dh as TextDataHolder).Text,TextWrapping=TextWrapping.WrapWholeWords};
+                        var links = new TextBlock();
+                        foreach(var link in (dh as TextDataHolder).links)
+                        {
+                            links.Text += link + "\n";
+                        }
                         stack.Children.Add(tb);
+                        stack.Children.Add(links);
                         break;
                     case DataType.Image:
                         var im = new BitmapImage() { UriSource = (dh as ImageDataHolder).Uri};
@@ -67,8 +88,38 @@ namespace Parser
                         break;
                 }
                 stack.Children.Add(cap);
+                stack.DataContext = dh;
                 xItems.Items.Add(stack);
             }
+
+            //////////
+            // END OF RENDERING, START OF TAGGING 
+            //////////
+            var d = await TextProcessor.GetTextTopicsAsync(docs);
+            
+            foreach(var ta in d.operationProcessingResult.topicAssignments)
+            {
+                foreach(var stack in xItems.Items.Where(f=>(f as StackPanel)?.DataContext is TextDataHolder && ""+((f as StackPanel).DataContext as TextDataHolder).Text.GetHashCode() == ta.documentId))
+                {
+                    (stack as StackPanel).Children.Add(new TextBox() { Text = d.operationProcessingResult.topics.First(f => f.id == ta.topicId).keyPhrase });
+                }
+            }
+            //////////
+            // END OF TAGGING, START OF DICTIONARY MAKING
+            //////////
+            var DocumentIdToTopic = new Dictionary<string, HashSet<string>>();
+
+            foreach (var ta in d.operationProcessingResult.topicAssignments)
+            {
+                if (!DocumentIdToTopic.Keys.Contains(ta.documentId))
+                {
+                    DocumentIdToTopic.Add(ta.documentId, new HashSet<string>());
+                }
+                    DocumentIdToTopic[ta.documentId].Add(d.operationProcessingResult.topics.First(f => f.id == ta.topicId).keyPhrase);
+            }
+            //////////
+            // THIS WILL BE USED WHEN EVERYTHING IS SERVER SIDE IN NUSYS AND THEN WE CAN JUST POINT EACH TAG TO AN EXISTING ID
+            //////////
         }
     }
 }

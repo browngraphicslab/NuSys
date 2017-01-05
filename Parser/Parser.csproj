@@ -143,6 +143,12 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NusysConstants\NusysIntermediate.csproj">
+      <Project>{7296c25f-88e9-478d-a489-8a1c13e8b846}</Project>
+      <Name>NusysIntermediate</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
