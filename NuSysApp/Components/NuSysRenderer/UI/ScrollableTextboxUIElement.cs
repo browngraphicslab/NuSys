@@ -20,6 +20,24 @@ namespace NuSysApp
         // Delegate for the TextChanged event: Takes in the new string of text
         public delegate void TextHandler(InteractiveBaseRenderItem item, String text);
 
+        private string text { get; set; }
+
+        /// <summary>
+        /// The text to be displayed in the textbox.
+        /// </summary>
+        public override string Text
+        {
+            get { return text; }
+            set
+            {
+                text = value;
+                if (_constructed)
+                {
+                    EditableTextboxUIElement_TextChanged(this, value);
+                }
+            }
+        }
+
         // Text events
         public event TextHandler TextChanged;
         public event TextHandler TextCopied;
@@ -86,6 +104,8 @@ namespace NuSysApp
         /// </summary>
         public string PlaceHolderText { get; set; } = string.Empty;
 
+        private bool _constructed;
+
         /// <summary>
         /// Models a text box which the user can type into and edit
         /// Inherits from TextboxUIElement
@@ -138,6 +158,8 @@ namespace NuSysApp
 
             _dragging = false;
 
+            _constructed = true;
+
             // Add cursor as child of the textbox
             this.AddChild(_cursor);
 
@@ -147,7 +169,6 @@ namespace NuSysApp
             this.OnFocusLost += EditableTextboxUIElement_OnFocusLost;
             this.KeyPressed += EditableTextboxUIElement_KeyPressed;
             this.KeyReleased += EditableTextboxUIElement_KeyReleased;
-            this.TextChanged += EditableTextboxUIElement_TextChanged;
             this.DragStarted += ScrollableTextboxUIElement_DragStarted;
             this.DragCompleted += ScrollableTextboxUIElement_DragCompleted;
 

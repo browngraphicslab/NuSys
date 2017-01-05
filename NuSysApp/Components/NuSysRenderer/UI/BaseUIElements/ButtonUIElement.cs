@@ -151,7 +151,7 @@ namespace NuSysApp
         /// <param name="shapeElement"></param>
         public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement = null) : base(parent, resourceCreator)
         {
-            Shape = shapeElement ?? new RectangleUIElement(this, ResourceCreator); //This is important so all buttons should have the same base appearence
+            Shape = shapeElement ?? new RectangleUIElement(parent, ResourceCreator); //This is important so all buttons should have the same base appearence
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);

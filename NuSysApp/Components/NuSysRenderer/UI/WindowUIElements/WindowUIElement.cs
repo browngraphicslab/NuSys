@@ -75,8 +75,18 @@ namespace NuSysApp
         private List<ButtonUIElement> _topBarRightButtons;
 
         private StackLayoutManager _rightButtonLayoutManager;
-        public float RightButtonWidth => TopBarHeight;
-        public float RightButtonHeight => TopBarHeight;
+
+        /// <summary>
+        /// The width of buttons on the top bar, added using AddButton
+        /// </summary>
+        public float TopBarButtonWidth => TopBarHeight;
+
+        /// <summary>
+        /// The height of buttons on the top bar, added using AddButton
+        /// </summary>
+        public float TopBarButtonHeight => TopBarHeight;
+
+
         private float _buttonSpacing = 1;
 
         /// <summary>
@@ -229,8 +239,8 @@ namespace NuSysApp
             _topBar.Width = Width;
 
             _rightButtonLayoutManager.SetSize(_topBar.Width, _topBar.Height);
-            _rightButtonLayoutManager.ItemWidth = RightButtonWidth;
-            _rightButtonLayoutManager.ItemHeight = RightButtonHeight;
+            _rightButtonLayoutManager.ItemWidth = TopBarButtonWidth;
+            _rightButtonLayoutManager.ItemHeight = TopBarButtonHeight;
             _rightButtonLayoutManager.ArrangeItems();
 
 

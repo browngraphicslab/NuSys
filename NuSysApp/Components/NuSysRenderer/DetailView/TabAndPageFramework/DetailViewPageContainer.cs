@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -32,8 +33,17 @@ namespace NuSysApp
 
         public event OnDetailViewPageTabChanged OnPageTabChanged;
 
+        /// <summary>
+        /// The title of the library element
+        /// </summary>
         private ScrollableTextboxUIElement _titleBox;
 
+        private ButtonUIElement _settingsButton;
+
+        /// <summary>
+        /// True if the page has called the Load method
+        /// </summary>
+        private bool _loaded;
 
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -46,6 +56,13 @@ namespace NuSysApp
                 TabSpacing = 25
             };
 
+            _settingsButton = new ButtonUIElement(this, resourceCreator)
+            {
+                Width = 50,
+                Height = 50,
+            };
+            AddChild(_settingsButton);
+
             _tabContainerLayoutManager = new StackLayoutManager();
             _tabContainerLayoutManager.AddElement(_pageTabContainer);
             BorderWidth = 0;
@@ -54,13 +71,13 @@ namespace NuSysApp
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
         }
 
-        public override Task Load()
+        public override async Task Load()
         {
 
             //todo figure out why ScrollableTextbox breaks if you put these in the constructor. 
             _titleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Height = 100,
+                Height = 50,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center,
                 FontSize = 30
@@ -68,7 +85,11 @@ namespace NuSysApp
             AddChild(_titleBox);
             _titleBox.TextChanged += OnTitleTextChanged;
 
-            return base.Load();
+            _settingsButton.Image =
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
+
+             _loaded = true;
+            base.Load();
         }
 
         public override void Dispose()
@@ -111,7 +132,7 @@ namespace NuSysApp
         private void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
         {
             _currentController.TitleChanged -= OnCurrentControllerTitleChanged;
-            _currentController.Title = text;
+            _currentController.SetTitle(text);
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
         }
 
@@ -195,16 +216,24 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _titleBox.Transform.LocalPosition = new Vector2(BorderWidth);
-            _titleBox.Width = Width - 2*BorderWidth;
-            _titleBox.Height = 50;
+            if (_loaded)
+            {
+                _titleBox.Transform.LocalPosition = new Vector2(BorderWidth);
+                _titleBox.Width = Width - 2 * BorderWidth - _settingsButton.Width;
 
-            _tabContainerLayoutManager.SetSize(Width, Height);
-            _tabContainerLayoutManager.SetMargins(BorderWidth);
-            _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth;
-            _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _tabContainerLayoutManager.ArrangeItems();
+                _settingsButton.Transform.LocalPosition = new Vector2(Width - _settingsButton.Width - BorderWidth, BorderWidth);
+                _settingsButton.ImageBounds = new Rect(_settingsButton.Width/4, _settingsButton.Height/4, _settingsButton.Width/2, _settingsButton.Height/2 );
+
+                _tabContainerLayoutManager.SetSize(Width, Height);
+                _tabContainerLayoutManager.SetMargins(BorderWidth);
+                _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth;
+                _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
+                _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
+                _tabContainerLayoutManager.ArrangeItems();
+            }
+
+
+
             base.Update(parentLocalToScreenTransform);
         }
     }
