@@ -271,11 +271,12 @@ namespace NuSysApp
                 Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
             }
 
-            if (SessionController.Instance.NuSessionView.FilterMenu.HasBrushAvailable)
-            {
-                Mask = BrushToMask.FilterMask(SessionController.Instance.NuSessionView.FilterMenu.BrushedElementControllers,
-                    ResourceCreator, Mask);
-            }
+            // leftover from full screen brushing, can probably be removed at beta release
+            //if (SessionController.Instance.NuSessionView.FilterMenu.HasBrushAvailable)
+            //{
+            //    Mask = BrushToMask.FilterMask(SessionController.Instance.NuSessionView.FilterMenu.BrushedElementControllers,
+            //        ResourceCreator, Mask);
+            //}
 
             using (ds.CreateLayer(1, Mask))
             {
@@ -494,6 +495,12 @@ namespace NuSysApp
             else if (vm is PdfNodeViewModel)
             {
                 item = new PdfElementRenderItem((PdfNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+            else if (vm is WordNodeViewModel)
+            {
+                item = new WordElementRenderItem((WordNodeViewModel)vm, this, ResourceCreator);
                 await item.Load();
                 _renderItems2?.Add(item);
             }

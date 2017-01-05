@@ -309,8 +309,8 @@ namespace NuSysApp
                 {
                     var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                     listViewRowUIElement.Item = itemSource;
-                    listViewRowUIElement.Background = Colors.Transparent;
-                    listViewRowUIElement.Bordercolor = Colors.Black;
+                    listViewRowUIElement.Background = Colors.White;
+                    listViewRowUIElement.Bordercolor = Constants.MED_BLUE;
                     listViewRowUIElement.BorderWidth = RowBorderThickness;
                     listViewRowUIElement.Width = Width - BorderWidth * 2;
                     listViewRowUIElement.Height = RowHeight * (float)SessionController.Instance.SessionSettings.TextScale;

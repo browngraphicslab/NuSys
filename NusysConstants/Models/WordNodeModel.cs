@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace NusysIntermediate
 {
-    public class WordNodeModel : ElementModel
+    public class WordNodeModel : PdfNodeModel
     {
         public WordNodeModel(string id) : base(id)
         {

@@ -28,25 +28,23 @@ namespace NuSysApp
         /// </summary>
         private Vector2 _initialDragPosition;
 
+        private float _originalHeight;
+        private float _originalWidth;
+
         public FloatingMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the default height and width of the floating menu view
             Height = UIDefaults.floatingMenuHeight;
             Width = UIDefaults.floatingMenuWidth;
 
+
             // set the default background
             Background = Colors.Transparent;
 
-            _addElementButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
-            {
-                Background = Colors.DarkSlateGray
-            };
+            _addElementButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "add element");
             AddChild(_addElementButton);
 
-            _openLibraryButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
-            {
-                Background = Colors.DarkSlateGray
-            };
+            _openLibraryButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "open library");
             AddChild(_openLibraryButton);
 
             _addElementMenu = new AddElementMenuUIElement(this, Canvas)
@@ -68,6 +66,10 @@ namespace NuSysApp
             _buttonLayoutManager.AddElement(_openLibraryButton);
             _buttonLayoutManager.ArrangeItems(); // arrange the items only so widths and heights are properly instantiated
 
+            _originalWidth = Width;
+            _originalHeight = Height;
+
+            SetAccessibilitySize(1);
 
             DragStarted += FloatingMenu_DragStarted;
             _addElementButton.DragStarted += FloatingMenu_DragStarted;
@@ -77,6 +79,23 @@ namespace NuSysApp
             _openLibraryButton.Dragged += FloatingMenuOnDragged;
             _openLibraryButton.Tapped += OpenLibraryButtonOnTapped;
             _addElementButton.Tapped += ShowAddElementMenu;
+            SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettings_TextScaleChanged;
+        }
+
+        private void SessionSettings_TextScaleChanged(object sender, double e)
+        {
+            SetAccessibilitySize(e);
+        }
+
+        private void SetAccessibilitySize(double e)
+        {
+            _addElementButton.Resize(e);
+            _openLibraryButton.Resize(e);
+            _addElementMenu.Resize(e);
+
+            Height = _originalHeight * (float)e;
+            Width = _originalWidth * (float)e;
+            _buttonLayoutManager.SetSize(Width, Height);
         }
 
         private void FloatingMenu_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -89,7 +108,7 @@ namespace NuSysApp
             _addElementMenu.IsVisible = !_addElementMenu.IsVisible;
             var addElementButton = interactiveBaseRenderItem as ButtonUIElement;
             Debug.Assert(addElementButton != null, "The add element button should be a button ui element, make sure something else isn't causing this to open");
-            _addElementMenu.Transform.LocalPosition = addElementButton.Transform.LocalPosition + new Vector2(-_addElementMenu.Width/2 + addElementButton.Width/2, -_addElementMenu.Height - 10);
+            _addElementMenu.Transform.LocalPosition = new Vector2(_addElementButton.Transform.LocalPosition.X - 15, _addElementButton.Transform.LocalPosition.Y);
         }
 
         private void OpenLibraryButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
@@ -116,11 +135,8 @@ namespace NuSysApp
             }
             _library.IsVisible = false;
 
-            _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_mainmenu_add_node.png"));
-            _addElementButton.ImageBounds = new Rect(_addElementButton.Width / 4, _addElementButton.Height/4, _addElementButton.Width/2, _addElementButton.Height/2);
-            _openLibraryButton.Image = _openLibraryButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_library.png"));
-            _openLibraryButton.ImageBounds = new Rect(_openLibraryButton.Width / 4, _openLibraryButton.Height / 4, _openLibraryButton.Width / 2, _openLibraryButton.Height / 2);
-
+            _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
+            _openLibraryButton.Image = _openLibraryButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection main menu.png"));
 
             base.Load();
         }
@@ -141,6 +157,7 @@ namespace NuSysApp
             DragStarted -= FloatingMenu_DragStarted;
             _addElementButton.DragStarted -= FloatingMenu_DragStarted;
             _openLibraryButton.DragStarted -= FloatingMenu_DragStarted;
+            SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettings_TextScaleChanged;
 
             base.Dispose();
         }

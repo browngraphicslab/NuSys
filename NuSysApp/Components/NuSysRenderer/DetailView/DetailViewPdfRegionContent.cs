@@ -49,25 +49,18 @@ namespace NuSysApp
             AddChild(_pdfContent);
 
             // initailize the left page button
-            _leftPageButton = new ButtonUIElement(this, resourceCreator, new EllipseUIElement(this, resourceCreator));
+            _leftPageButton = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle);
             _leftPageButton.Tapped += _leftPageButton_Tapped;
             _leftButtonLayoutManager = new StackLayoutManager();
-            InitializeButtonUI(_leftPageButton);
             _leftButtonLayoutManager.AddElement(_leftPageButton);
             AddChild(_leftPageButton);
 
             // initialize the right page button
-            _rightPageButton = new ButtonUIElement(this, resourceCreator, new EllipseUIElement(this, resourceCreator));
+            _rightPageButton = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle);
             _rightPageButton.Tapped += _rightPageButton_Tapped;
-            InitializeButtonUI(_rightPageButton);
             _rightButtonLayoutManager = new StackLayoutManager();
             _rightButtonLayoutManager.AddElement(_rightPageButton);
             AddChild(_rightPageButton);
-        }
-
-        public void InitializeButtonUI(ButtonUIElement button)
-        {
-            button.Background = Colors.Black;
         }
 
         /// <summary>

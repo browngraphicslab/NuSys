@@ -97,16 +97,8 @@ namespace NuSysApp
         /// <returns></returns>
         private async Task SetUpToolButton()
         {
-            
-            BtnTools = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
-            {
-                Height = 20,
-                Width = 20,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 2,
-            };
+
+            BtnTools = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
             BtnTools.DragCompleted += BtnTools_DragCompleted;
             BtnTools.Dragged += BtnTools_Dragged; 
 

@@ -64,24 +64,22 @@ namespace NuSysApp
 
         #endregion Ink Node
 
+        #region NewColors
+
+        public static Color DARK_BLUE = Color.FromArgb(255, 23, 73, 151);
+        public static Color MED_BLUE = Color.FromArgb(255, 117, 133, 158);
+        public static Color LIGHT_BLUE = Color.FromArgb(255, 195, 209, 231);
+        public static Color ALMOST_BLACK = Color.FromArgb(255, 15, 47, 98);
+        public static Color RED = Color.FromArgb(255, 151, 60, 23);
+
+        public static Color RED_TRANSLUCENT = Color.FromArgb(127, 151, 60, 23);
+        #endregion
+
         #region Color
 
-        /*
-        public static Color color1 = Color.FromArgb(255, 230, 237, 236);   // lightest blue
-        public static Color color2 = Color.FromArgb(255, 156, 197, 194);   // medium blue
-        public static Color color3 = Color.FromArgb(255, 131, 166, 163);   // darkest blue
-        public static Color color4 = Color.FromArgb(255, 197, 158, 156);   // red
-        public static Color color5 = Color.FromArgb(255, 143, 152, 161);   // dark gray blue
-        public static Color color6 = Colors.White;                         // white
-        public static Color foreground6 = Colors.Black;                    // foreground white
-        public static Color color7 = Colors.LightGray;                     // light gray
-        public static Color color8 = Colors.DarkGray;                      // dark gray
-        public static Color salmonColor = Colors.DarkSalmon;                    // dark salmon
-        */
-
-        public static Color color1 = Color.FromArgb(255, 199, 222, 222); // lightest blue
-        public static Color color2 = Color.FromArgb(255, 107, 147, 151); // medium blue
-        public static Color color3 = Color.FromArgb(255, 17, 61, 64); // darkest blue
+        public static Color color1 = LIGHT_BLUE; //Color.FromArgb(255, 199, 222, 222); // lightest blue
+        public static Color color2 = MED_BLUE; //Color.FromArgb(255, 107, 147, 151); // medium blue
+        public static Color color3 = DARK_BLUE; //Color.FromArgb(255, 17, 61, 64); // darkest blue
         public static Color color4 = Color.FromArgb(255, 152, 26, 77); // red 
         public static Color color4light = Color.FromArgb(255, 219, 151, 179);//light red
         public static Color color5 = Color.FromArgb(255, 230, 230, 230); // dv bg blue

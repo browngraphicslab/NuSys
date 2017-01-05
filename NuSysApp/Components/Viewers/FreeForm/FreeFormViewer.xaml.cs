@@ -33,6 +33,15 @@ namespace NuSysApp
         private static float ARRANGE_BORDER = 55.0f;
         private List<PointModel> _latestStroke;
         private RenderItemInteractionManager _canvasInteractionManager;
+
+        /// <summary>
+        /// getter for canvasinteractionmanager
+        /// </summary>
+        public RenderItemInteractionManager CanvasInteractionManager
+        {
+            get { return _canvasInteractionManager; }
+        }
+
         private CollectionInteractionManager _collectionInteractionManager;
 
         private FreeFormViewerViewModel _vm;

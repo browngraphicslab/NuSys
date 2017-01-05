@@ -8,6 +8,7 @@ using System.Text;
 using System.Web;
 using NusysIntermediate;
 using Newtonsoft.Json;
+using GemBox.Document;
 
 namespace NusysServer
 {
@@ -154,7 +155,14 @@ namespace NusysServer
                         fileUrl = Constants.SERVER_ADDRESS + contentDataModelId + fileExtension;
                         break;
                     case NusysConstants.ContentType.Word:
-                        var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
+                        var wordPath = Constants.GetWordDocumentFilePath(contentDataModelId);
+
+                        //convert from word to pdf, and save word doc elsewhere
+                        var pdfByteData = GetWordBytes(contentData, contentDataModelId, wordPath);
+                        
+                        MakeWordThumbnails(pdfByteData, contentDataModelId);
+
+                        var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, Convert.ToBase64String(pdfByteData), fileExtension);
                         return pdfUrl;
                         break;
 
@@ -228,6 +236,42 @@ namespace NusysServer
             catch (Exception e)
             {
                 throw new Exception(e.Message + "  FileHelper Method: CreateDataFile");
+            }
+        }
+
+        private static void MakeWordThumbnails(byte[] pdfBytes, string contentDataModelId)
+        {
+            if (contentDataModelId == null)
+            {
+                throw new Exception("the contentDataModelId cannot be null when creating a word thumbnail");
+            }
+
+            var doc = Open(pdfBytes, pdfBytes.Length);
+            ActivateDocument(doc);
+            GotoPage(0);
+            var aspectRatio = GetPageWidth() / (double)GetPageHeight();
+
+            foreach (var s in Enum.GetValues(typeof(NusysConstants.ThumbnailSize)))
+            {
+                var size = (NusysConstants.ThumbnailSize)s;
+                var fileName = NusysConstants.GetDefaultThumbnailFileName(contentDataModelId, size) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
+
+                //hard to read but just switches on size and sets the width accordingly
+                var height = size == NusysConstants.ThumbnailSize.Small ? 100 : (size == NusysConstants.ThumbnailSize.Medium ? 250 : 500);
+
+                var numBytes = RenderPage((int)(height * aspectRatio), height);
+                var buffer = GetBuffer();
+
+                byte[] mngdArray = new byte[numBytes];
+
+                var fileStream = File.Create(Constants.WWW_ROOT + fileName);
+                fileStream.Dispose();
+
+                Marshal.Copy(buffer, mngdArray, 0, numBytes);
+                using (var fstream = File.OpenWrite(Constants.WWW_ROOT + fileName))
+                {
+                    fstream.Write(mngdArray, 0, mngdArray.Length);
+                }
             }
         }
 
@@ -320,5 +364,90 @@ namespace NusysServer
         {
             return Constants.WWW_ROOT + url.Substring(Constants.SERVER_ADDRESS.Length);
         }
+
+        /// <summary>
+        /// This method will save the word document in the correct location, and then return the pdf bytes for the document.
+        /// You must use a word file path ending in '.docx'.
+        /// This will also give the save word document a special property.  
+        /// The special property will be named the 'customContentIdPropertyKey' parameter and its value will be the 'contentDataModelId' parameter.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static byte[] GetWordBytes(string data, string contentDataModelId, string wordPath, string customContentIdPropertyKey = "contentDataModelId")
+        {
+            if (!wordPath.EndsWith(".docx"))
+            {
+                throw new Exception("path to save word document to must end in '.docx'");
+            }
+            ComponentInfo.SetLicense("DORJ-JFGF-MSBP-2XUV");
+            DocumentModel doc = null;
+            try
+            {
+                var bytes = Convert.FromBase64String(data);
+                Stream stream = new MemoryStream(bytes);
+                doc = DocumentModel.Load(stream, LoadOptions.DocxDefault);
+                doc.DocumentProperties.Custom[customContentIdPropertyKey] = contentDataModelId;
+                var pdfPath = wordPath.Substring(0, wordPath.Length - 4) + "pdf";
+                doc.Save(wordPath);
+                doc.Save(pdfPath);
+                var returnBytes = File.ReadAllBytes(pdfPath);
+                File.Delete(pdfPath);
+
+                return returnBytes;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("docx too large. "+e.Message);
+            }
+        }
+
+
+        //TODO fix, but dont delete this
+        /*
+        public static string UpdateWordDoc(byte[] bytes)
+        {
+            ComponentInfo.SetLicense("FREE-LIMITED-KEY");
+            try
+            {
+                string retString = "";
+                Stream stream = new MemoryStream(bytes);
+                var doc = DocumentModel.Load(stream, LoadOptions.DocxDefault);
+                if (!doc.DocumentProperties.Custom.ContainsKey("libraryId"))
+                {
+                    retString = "bytes sucessfully parsed to document but couldn't find library Id in document metadata";
+                }
+                var id = doc.DocumentProperties.Custom["libraryId"];
+                var docPath = NusysContent.BaseFolder + id + ".docx";
+                var pdfPath = NusysContent.BaseFolder + id + ".pdf";
+                var dataPath = NusysContent.BaseFolder + id + ".data";
+                doc.Save(docPath);
+                doc.Save(pdfPath);//must be done with .pdf extension so gembox knows what file type to save as
+                var pdfBytes = File.ReadAllBytes(pdfPath);
+                var base64String = Convert.ToBase64String(pdfBytes);
+                var writableBytes = Encoding.UTF8.GetBytes(base64String);
+                using (FileStream pdfstream = new FileStream(dataPath, FileMode.Create, FileAccess.Write))
+                {
+                    pdfstream.Write(writableBytes, 0, writableBytes.Length);
+                    pdfstream.Close();
+                }
+                File.Delete(pdfPath);
+                if (id is string && ContentsHolder.Instance.Contents.ContainsKey(id as string))
+                {
+                    var content = ContentsHolder.Instance.Contents[id as string];
+                    if (content != null)
+                    {
+                        NuWebSocketHandler.BroadcastContentDataUpdate(content);
+                    }
+                }
+                return "success!";
+            }
+            catch (Exception e)
+            {
+                return "Could not convert bytes to gem box word doc: ERROR MESSAGE: " + e.Message + "   ";
+            }
+            return null;
+        }
+        */
     }
 }

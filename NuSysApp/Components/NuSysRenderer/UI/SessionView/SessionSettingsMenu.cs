@@ -47,32 +47,16 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         public SessionSettingsMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-             _resizeElementTitlesButton = new ButtonUIElement(this,resourceCreator)
-            {
-                Width = 200,
-                Height = 50,
-            };
+            _resizeElementTitlesButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_resizeElementTitlesButton);
 
-            _showLinksButton = new ButtonUIElement(this, resourceCreator)
-            {
-                Width = 200,
-                Height = 50,
-            };
+            _showLinksButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_showLinksButton);
 
-            _showMinimapButton = new ButtonUIElement(this, resourceCreator)
-            {
-                Width = 200,
-                Height = 50
-            };
+            _showMinimapButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_showMinimapButton);
 
-            _showBreadCrumbsButton = new ButtonUIElement(this, resourceCreator)
-            {
-                Width = 200,
-                Height = 50
-            };
+            _showBreadCrumbsButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_showBreadCrumbsButton);
 
             _textSizeSlider = new SliderUIElement(this, resourceCreator, 1, 10)

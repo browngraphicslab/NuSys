@@ -104,6 +104,7 @@ namespace NuSysApp
         /// </summary>
         public FilterMenu FilterMenu { get; }
 
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -113,13 +114,7 @@ namespace NuSysApp
             AddChild(LibraryListView);
 
             // set up the ui of the add file button
-            _addFileButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, Canvas))
-            {
-                BorderWidth = 3,
-                SelectedBorder = Colors.LightGray,
-                Background = TopBarColor,
-                Bordercolor = TopBarColor
-            };
+            _addFileButton = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
             // set the image bounds for the addfile button
             _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, _addFileButton.Width - 2 * BorderWidth, _addFileButton.Height - 2 * BorderWidth);
             // add the addfile button to the window
@@ -132,26 +127,23 @@ namespace NuSysApp
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 FontSize = 14,
-                BorderWidth = 3,
-                Bordercolor = Colors.Gray
+                BorderWidth = 1,
+                Bordercolor = Constants.MED_BLUE,
+                Background = Colors.White
             };
             _searchBar.TextChanged += SearchBarTextChanged;
             AddChild(_searchBar);
 
+            TopBarColor = Constants.LIGHT_BLUE;
+            Background = Colors.White;
+            Bordercolor = Constants.MED_BLUE;
+            BorderWidth = 1;
+
             // initialize the filter button
-            _filterButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
+            _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
             {
                 Width = _filterButtonWidth,
                 Height = _searchBarHeight,
-                ButtonText = "Filter",
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                Background = Colors.Gray,
-                ButtonTextColor = Colors.Black,
-                ButtonTextSize = 14,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                Bordercolor = Colors.Gray
             };
             AddChild(_filterButton);
 
@@ -646,6 +638,12 @@ namespace NuSysApp
                             var imageArgs = new CreateNewImageLibraryElementRequestArgs();
                             imageArgs.AspectRatio = aspectRatio;
                             libraryElementArgs = imageArgs;
+                            break;
+                        case NusysConstants.ElementType.Word:
+                            var wordArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                            wordArgs.PdfPageStart = 0;
+                            wordArgs.PdfPageEnd = pdfPageCount;
+                            libraryElementArgs = wordArgs;
                             break;
                         case NusysConstants.ElementType.PDF:
                             var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
