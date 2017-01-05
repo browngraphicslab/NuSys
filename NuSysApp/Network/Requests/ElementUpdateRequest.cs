@@ -45,9 +45,9 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY);
-            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(id))
             {
-                var controller = SessionController.Instance.IdToControllers[id];
+                var controller = SessionController.Instance.ElementModelIdToElementController[id];
                 
                 await controller.UnPack(_message);
                 if(_message.ContainsKey("sender_user_id") && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey((string)_message["sender_user_id"]))
