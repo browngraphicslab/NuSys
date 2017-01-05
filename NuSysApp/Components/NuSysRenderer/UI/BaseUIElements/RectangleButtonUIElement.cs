@@ -8,7 +8,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 
-namespace NuSysApp.Components.NuSysRenderer.UI.BaseUIElements
+namespace NuSysApp
 {
     /// <summary>
     /// Another widely used button class to factor out styles, extending from ButtonUIElement.

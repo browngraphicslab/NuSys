@@ -21,7 +21,6 @@ using Microsoft.Graphics.Canvas.Text;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using NusysIntermediate;
-using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using WinRTXamlToolkit.Imaging;
 using Buffer = Windows.Storage.Streams.Buffer;
 
@@ -105,6 +104,10 @@ namespace NuSysApp
         /// </summary>
         public FilterMenu FilterMenu { get; }
 
+        private RectangleButtonUIElement _testbutton;
+
+        private ICanvasResourceCreatorWithDpi _resourceCreator;
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -167,9 +170,27 @@ namespace NuSysApp
 
             _filterButton.Tapped += OnFilterButtonTapped;
 
+            _resourceCreator = resourceCreator;
+            _testbutton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "test");
+            AddChild(_testbutton);
+            _testbutton.Transform.LocalPosition = new Vector2(100, 100);
+            _testbutton.Tapped += TestbuttonOnTapped;
+
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
+        }
+
+        private void TestbuttonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            FlyoutPopup columnMenu = new FlyoutPopup(this, _resourceCreator);
+            columnMenu.ShowPopup();
+            
+            //add appropriate handlers here!
+            columnMenu.AddFlyoutItem("Add Column", null, _resourceCreator);
+            columnMenu.AddFlyoutItem("Delete Column", null, _resourceCreator);
+
+            AddChild(columnMenu);
         }
 
         /// <summary>

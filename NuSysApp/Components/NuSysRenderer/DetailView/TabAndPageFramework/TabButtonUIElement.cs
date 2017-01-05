@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
-using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
