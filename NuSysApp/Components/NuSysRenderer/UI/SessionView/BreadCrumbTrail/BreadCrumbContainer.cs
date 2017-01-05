@@ -71,7 +71,6 @@ namespace NuSysApp
 
             _maskRect = new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth);
 
-
             _scrollBar = new RectangleUIElement(this, resourceCreator)
             {
                 Width = Width,

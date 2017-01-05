@@ -46,7 +46,7 @@ namespace NuSysApp
 
         // Keeps track of whether the user has highlighted
         // any text
-        public  bool _hasSelection;
+        private  bool _hasSelection;
         // Boolean for when this textbox has focus
         private bool _hasFocus;
         // Boolean for when the control key is held down in order to handle
@@ -66,7 +66,7 @@ namespace NuSysApp
         private bool _scrollVert;
 
         // The rectangle representing the cursor
-        public RectangleUIElement _cursor;
+        private RectangleUIElement _cursor;
         // Holds the index in the text string that the cursor is
         // currently located at
         public int CursorCharacterIndex { get; set; }
