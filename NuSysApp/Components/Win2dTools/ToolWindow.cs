@@ -222,7 +222,7 @@ namespace NuSysApp
                 ButtonTextSize = 10,
                 ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                ButtonTextColor = Constants.color3
+                ButtonTextColor = Constants.DARK_BLUE
             };
             _draggableCollectionElement.ImageBounds = new Rect(_draggableCollectionElement.Width/4,
                 _draggableCollectionElement.Height/4, _draggableCollectionElement.Width/2,
@@ -256,7 +256,7 @@ namespace NuSysApp
                 ButtonTextSize = 10,
                 ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                ButtonTextColor = Constants.color3
+                ButtonTextColor = Constants.DARK_BLUE
             };
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
             _draggableStackElement.ImageBounds = new Rect(_draggableStackElement.Width/4, _draggableStackElement.Height/4, _draggableStackElement.Width/2, _draggableStackElement.Height/2);
@@ -425,7 +425,7 @@ namespace NuSysApp
             {
                 Height = PARENT_OPERATOR_BUTTON_HEIGHT,
                 Width = PARENT_OPERATOR_BUTTON_WIDTH,
-                Background = Constants.color1
+                Background = Constants.LIGHT_BLUE
             };
             _parentOperatorButton = new ButtonUIElement(this, ResourceCreator, parentOperatorRectangle)
             {
@@ -441,26 +441,15 @@ namespace NuSysApp
             AddChild(_parentOperatorButton);
 
 
-            var deleteCircleShape = new EllipseUIElement(this, ResourceCreator)
-            {
-                Background = Constants.color1,
-                Width = 50,
-                Height = 50,
-            };
-            _deleteButton = new ButtonUIElement(this, ResourceCreator, deleteCircleShape);
+            _deleteButton = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle);
             _deleteButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/delete.png"));
             _deleteButton.ImageBounds = new Rect(_deleteButton.Width/4, _deleteButton.Height/4, _deleteButton.Width/2, _deleteButton.Height/2);
             _deleteButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Height / 2 + BUTTON_MARGIN);
             _deleteButton.Tapped += _deleteButton_Tapped;
             AddChild(_deleteButton);
 
-            var refreshCircleShape = new EllipseUIElement(this, ResourceCreator)
-            {
-                Background = Constants.color1,
-                Width = 50,
-                Height = 50,
-            };
-            _refreshButton = new ButtonUIElement(this, ResourceCreator, refreshCircleShape);
+
+            _refreshButton = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle);
             _refreshButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/refresh icon.png"));
             _refreshButton.ImageBounds = new Rect(_refreshButton.Width / 4, _refreshButton.Height / 4, _refreshButton.Width / 2, _refreshButton.Height / 2);
             _refreshButton.Tapped += _refreshButton_Tapped;

@@ -113,17 +113,17 @@ namespace NuSysApp
 
         private void AddChildById(string id)
         {
-            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(id))
             {
-                AddChild(SessionController.Instance.IdToControllers[id]);
+                AddChild(SessionController.Instance.ElementModelIdToElementController[id]);
             }
         }
 
         private void RemoveChildById(string id)
         {
-            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(id))
             {
-                RemoveChild(SessionController.Instance.IdToControllers[id]);
+                RemoveChild(SessionController.Instance.ElementModelIdToElementController[id]);
             }
         }
         public void AddChild( ElementController child )
@@ -181,10 +181,10 @@ namespace NuSysApp
                     CollectionLibraryElementModel;
             foreach (var node in collectionLibraryElementModel.Children)
             {
-                if (SessionController.Instance.IdToControllers.ContainsKey(node))
+                if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(node))
                 {
                     libraryElementIds.Add(
-                        SessionController.Instance.IdToControllers[node]?
+                        SessionController.Instance.ElementModelIdToElementController[node]?
                             .LibraryElementModel?.LibraryElementId);
                 }
             }

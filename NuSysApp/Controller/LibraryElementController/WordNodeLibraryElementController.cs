@@ -8,7 +8,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class WordNodeLibraryElementController : LibraryElementController, ILockable
+    public class WordNodeLibraryElementController : PdfLibraryElementController, ILockable
     {
         public delegate void LockedEventHandler(object sender, NetworkUser user);
         public delegate void UnLockedEventHandler(object sender);
@@ -29,7 +29,7 @@ namespace NuSysApp
         /// </summary>
         public bool IsLocked { get; set; }
 
-        public WordNodeLibraryElementController(LibraryElementModel model) : base(model)
+        public WordNodeLibraryElementController(PdfLibraryElementModel model) : base(model)
         {
             Debug.Assert(model.Type == NusysConstants.ElementType.Word);
         }

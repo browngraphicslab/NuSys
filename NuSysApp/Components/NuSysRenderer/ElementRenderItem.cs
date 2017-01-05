@@ -57,6 +57,7 @@ namespace NuSysApp
                 AddChild(_tagRenderItem);
             }
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
+            base.Background = Colors.Transparent;
         }
 
         private void SessionSettingsTextScaleChanged(object sender, double e)

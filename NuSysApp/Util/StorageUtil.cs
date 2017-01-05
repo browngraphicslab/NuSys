@@ -41,11 +41,12 @@ namespace NuSysApp
         /// </summary>
         public static SessionSettingsData LoadSavedSettings()
         {
-            if (File.Exists(NuSysStorages.SaveFolder.Path + "settings.txt"))
+            if (File.Exists(NuSysStorages.SaveFolder.Path + "\\settings.txt"))
             {
                 try
                 {
-                    return JsonConvert.DeserializeObject<SessionSettingsData>(File.ReadAllText(NuSysStorages.SaveFolder.Path + "settings.txt"));
+                    var text = File.ReadAllText(NuSysStorages.SaveFolder.Path + "\\settings.txt");
+                    return JsonConvert.DeserializeObject<SessionSettingsData>(text);
                 }
                 catch(Exception e)
                 {
@@ -62,10 +63,13 @@ namespace NuSysApp
         /// <param name="data"></param>
         public static void SaveSettings(SessionSettingsData data)
         {
-            using (var stream = File.OpenWrite(NuSysStorages.SaveFolder.Path + "settings.txt"))
+            try
             {
-                var bytes = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(data));
-                stream.Write(bytes, 0, bytes.Length);
+                File.WriteAllText(NuSysStorages.SaveFolder.Path + "\\settings.txt", JsonConvert.SerializeObject(data));
+            }
+            catch(Exception e)
+            {
+                return;
             }
         }
 

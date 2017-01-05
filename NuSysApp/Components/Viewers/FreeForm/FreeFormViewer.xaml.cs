@@ -214,9 +214,9 @@ namespace NuSysApp
             var currTrail = trail;
             while (currTrail != null) 
             {
-                var inNode = SessionController.Instance.IdToControllers[currTrail.OutElementId].LibraryElementController;
+                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId].LibraryElementController;
                 var outNode =
-                    SessionController.Instance.IdToControllers[currTrail.InElementId].LibraryElementController;
+                    SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId].LibraryElementController;
                 if (!elements.Contains(inNode))
                 {
                     elements.Add(inNode);

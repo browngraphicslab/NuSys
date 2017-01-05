@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
@@ -64,10 +65,10 @@ namespace NuSysApp
         public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T tab) : base(parent, resourceCreator)
         {
             // create a close button
-            _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
+            _closeButton = new RectangleButtonUIElement(this, Canvas);
 
             // create a background button
-            _backgroundButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(parent, resourceCreator));
+            _backgroundButton = new RectangleButtonUIElement(this, Canvas);
 
             // set the current tab
             Tab = tab;

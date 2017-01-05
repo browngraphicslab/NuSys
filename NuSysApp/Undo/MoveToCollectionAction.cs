@@ -37,7 +37,7 @@ namespace NuSysApp
         /// </summary>
         public void ExecuteAction()
         {
-            var controller = SessionController.Instance.IdToControllers[ElementID];
+            var controller = SessionController.Instance.ElementModelIdToElementController[ElementID];
             controller?.RequestMoveToCollection(NewCollectionID, NewLocation.X, NewLocation.Y);
         }
         /// <summary>

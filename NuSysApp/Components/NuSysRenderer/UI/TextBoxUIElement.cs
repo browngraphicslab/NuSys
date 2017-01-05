@@ -18,7 +18,7 @@ namespace NuSysApp
         /// <summary>
         /// The text to be displayed in the textbox
         /// </summary>
-        public string Text { get; set; }
+        public virtual string Text { get; set; }
 
         /// <summary>
         /// The horizontal alignment of the text within the textbox
@@ -73,7 +73,7 @@ namespace NuSysApp
             TextColor = UIDefaults.TextColor;
             FontStyle = UIDefaults.FontStyle;
             FontSize = UIDefaults.FontSize;
-            FontFamily = UIDefaults.FontFamily;
+            FontFamily = UIDefaults.TitleFont;
             Wrapping = UIDefaults.Wrapping;
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
@@ -96,6 +96,8 @@ namespace NuSysApp
 
             // draw the text
             DrawText(ds);
+
+
         }
 
         /// <summary>
@@ -127,11 +129,11 @@ namespace NuSysApp
                 Debug.Assert(Width - 2*BorderWidth > 0 && Height - 2*BorderWidth > 0, "these must be greater than zero or drawText crashes below");
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
-                // just created textFormat
+                // just created TextFormat
                 //ds.DrawText(Text,
                 //    new Rect(BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
                 //    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
-                //    TextColor, textFormat);
+                //    TextColor, TextFormat);
                 var x = BorderWidth + UIDefaults.XTextPadding;
                 var y = BorderWidth + UIDefaults.YTextPadding;
                 var width = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);

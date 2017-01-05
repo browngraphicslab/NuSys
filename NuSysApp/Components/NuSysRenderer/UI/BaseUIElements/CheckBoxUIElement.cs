@@ -237,7 +237,7 @@ namespace NuSysApp
             Width = UIDefaults.CheckBoxUIElementWidth;
             LabelPosition = UIDefaults.CheckBoxLabelPosition;
 
-            // add the checkbox
+            // add the checkbox - OK to make ButtonUIElement here since this is a custom button
             _checkBoxButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
             {
                 BorderWidth = 1,

@@ -82,7 +82,7 @@ namespace NuSysApp
                 //Get model
                 var model = request.GetReturnedElementModel();
                 //Get controller from model
-                var controller = SessionController.Instance.IdToControllers[model.Id];// model.Id;
+                var controller = SessionController.Instance.ElementModelIdToElementController[model.Id];// model.Id;
 
                 if(_elementController == null)
                 {

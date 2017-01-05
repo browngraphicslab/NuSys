@@ -14,15 +14,17 @@ namespace NuSysApp
     public class DetailViewMetadataPage : RectangleUIElement
     {
 
-        private PlaceHolderTextBox _addKeyBox;
+        private ScrollableTextboxUIElement _addKeyBox;
 
-        private PlaceHolderTextBox _addValueBox;
+        private ScrollableTextboxUIElement _addValueBox;
 
         private ButtonUIElement _addKeyValueButton;
 
-        private PlaceHolderTextBox _searchTextBox;
+        private ScrollableTextboxUIElement _searchTextBox;
 
         private ListViewUIElementContainer<MetadataEntry> _metadata_listview;
+
+        private CheckBoxUIElement _showImmutableCheckbox;
 
         private LibraryElementController _controller;
 
@@ -30,7 +32,7 @@ namespace NuSysApp
         {
             _controller = controller;
 
-            _addKeyBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addKeyBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "Enter a Key",
                 Background = Colors.Azure,
@@ -39,7 +41,7 @@ namespace NuSysApp
             };
             AddChild(_addKeyBox);
 
-            _addValueBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addValueBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "Enter Values",
                 Background = Colors.Azure,
@@ -51,7 +53,7 @@ namespace NuSysApp
             _addKeyValueButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
             AddChild(_addKeyValueButton);
 
-            _searchTextBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 Background = Colors.Azure,
                 BorderWidth = 3,
@@ -63,12 +65,68 @@ namespace NuSysApp
             // create the list view to display the metadata
             CreateListView();
 
+            _showImmutableCheckbox = new CheckBoxUIElement(this, ResourceCreator, false)
+            {
+                LabelText = "Show Immutable"
+            };
+            AddChild(_showImmutableCheckbox);
+
             _controller.MetadataChanged += _controller_MetadataChanged;
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
+            _searchTextBox.TextChanged += OnSearchTextChanged;
+            _showImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
+        }
+
+        private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool show_immutable)
+        {
+            filterlist();
+        }
+
+        private void filterlist()
+        {
+            _metadata_listview.ClearItems();
+            var filtered_metadata = filter_by_mutability(new List<MetadataEntry>(_controller.GetMetadata().Values),
+                _showImmutableCheckbox.IsSelected);
+            filtered_metadata = filter_by_search_text(filtered_metadata, _searchTextBox.Text);
+            _metadata_listview.AddItems(filtered_metadata);
+        }
+
+        private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool show_immutable)
+        {
+            if (show_immutable)
+            {
+                return new List<MetadataEntry>(metadataToBeFiltered.Where(entry => entry.Mutability == MetadataMutability.IMMUTABLE));
+            }
+            return metadataToBeFiltered;
+        }
+
+        private List<MetadataEntry> filter_by_search_text(List<MetadataEntry> metadataToBeFiltered, string searchText)
+        {
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return metadataToBeFiltered;
+            }
+            return new List<MetadataEntry>(metadataToBeFiltered.Where(entry => entry.Key.Contains(searchText) || entry.Values.Contains(searchText)));
+        }
+
+        private void OnSearchTextChanged(InteractiveBaseRenderItem item, string text)
+        {
+            filterlist();
+        }
+
+        public override void Dispose()
+        {
+
+            _controller.MetadataChanged -= _controller_MetadataChanged;
+            _addKeyValueButton.Tapped -= AddKeyValuePairToMetadata;
+            _searchTextBox.TextChanged -= OnSearchTextChanged;
+            _showImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
+
+            base.Dispose();
         }
 
         /// <summary>
-        /// Adds a key value pair to metadata
+        /// Adds a key value pair to metadata, called when the button is pressed to add a key value pair ot metadata
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
@@ -83,33 +141,21 @@ namespace NuSysApp
             // get the metadata entry of the key to be updated if the key exists, otherwise create a new metadata entry
             var metaDataEntry = _controller.GetMetadata().ContainsKey(key)
                 ? _controller.GetMetadata()[key]
-                : new MetadataEntry(key, new List<string>(), MetadataMutability.MUTABLE);
+                : new MetadataEntry(key, values, MetadataMutability.MUTABLE);
+
 
             // if the key already exists update the metadata entry
             if (_controller.GetMetadata().ContainsKey(key))
             {
-                var updateMetadataEntryRequestArgs = new UpdateMetadataEntryRequestArgs()
-                {
-                    Entry = metaDataEntry,
-                    LibraryElementId = _controller.LibraryElementModel.LibraryElementId,
-                    NewValues = values
-                };
-
-                UpdateMetadataEntryRequest request = new UpdateMetadataEntryRequest(updateMetadataEntryRequestArgs);
-                request.ExecuteRequestFunction();
-
+                _controller.UpdateMetadata(metaDataEntry, key, new List<string>(metaDataEntry.Values.Concat(values)) );
             }
             else // otherwise create a new metadata entry
             {
-                var createNewMetadataRequestArgs = new CreateNewMetadataRequestArgs()
-                {
-                    Entry = metaDataEntry,
-                    LibraryElementId = _controller.LibraryElementModel.LibraryElementId
-                };
-
-                CreateNewMetadataRequest request = new CreateNewMetadataRequest(createNewMetadataRequestArgs);
-                request.ExecuteRequestFunction();
+                _controller.AddMetadata(metaDataEntry);
             }
+
+            _addValueBox.Text = string.Empty;
+            _addKeyBox.Text = string.Empty;
 
 
         }
@@ -117,7 +163,7 @@ namespace NuSysApp
         private void _controller_MetadataChanged(object source)
         {
             _metadata_listview.ClearItems();
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.LibraryElementModel.Metadata.Values));
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         private void CreateListView()
@@ -144,7 +190,7 @@ namespace NuSysApp
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> {listColumn, listColumn2});
 
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.LibraryElementModel.Metadata.Values));
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         public override async Task Load()
@@ -185,9 +231,18 @@ namespace NuSysApp
 
             //layout all the elements for the list view
             vertical_spacing += 20 + (int) _searchTextBox.Height;
+            var immutable_checkbox_height = 40;
+
             _metadata_listview.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
             _metadata_listview.Width = Width - 2*horizontal_spacing;
-            _metadata_listview.Height = Height - 20 - vertical_spacing;
+            _metadata_listview.Height = Height - 20 - vertical_spacing - immutable_checkbox_height - 20;
+
+            // layout the show immutable checkbox
+            vertical_spacing += 20 + (int)_metadata_listview.Height;
+
+            _showImmutableCheckbox.Height = immutable_checkbox_height;
+            _showImmutableCheckbox.Width = 150;
+            _showImmutableCheckbox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
 
 
 

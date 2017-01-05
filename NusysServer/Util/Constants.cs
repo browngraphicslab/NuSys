@@ -308,6 +308,10 @@ namespace NusysServer
             return new Message(properties.ToDictionary(kvp => kvp.Key.Contains(".") ? kvp.Key.Substring(kvp.Key.IndexOf(".") + 1) : kvp.Key, kvp => kvp.Value));
         }
 
+        public static string GetWordDocumentFilePath(string libraryElementId)
+        {
+            return Constants.WWW_ROOT + libraryElementId + NusysConstants.DEFAULT_WORD_DOCUMENT_EXTENSION;
+        }
 
         /// <summary>
         /// method to return the name of the sql table

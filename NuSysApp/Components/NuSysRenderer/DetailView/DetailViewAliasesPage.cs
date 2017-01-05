@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -35,6 +37,39 @@ namespace NuSysApp
             _controller.AliasRemoved += OnAliasRemoved;
         }
 
+        private void ListView_OnRowDoubleTapped(ElementModel item, string columnName, CanvasPointer pointer)
+        {
+            // get collection library element controller for the parent of the alias
+            var itemParentCollectionController =
+                SessionController.Instance.ContentController.GetLibraryElementController(item.ParentCollectionId) as
+                    CollectionLibraryElementController;
+            Debug.Assert(itemParentCollectionController != null);
+
+            // get the element controller of the elementModel we clicked on
+            var elementController = itemParentCollectionController.CollectionModel.Children.Where(id => SessionController.Instance.ElementModelIdToElementController.ContainsKey(id) && id == item.Id).Select(id => SessionController.Instance.ElementModelIdToElementController[id]).FirstOrDefault();
+            Debug.Assert(elementController != null);
+
+
+            // if the item is in the current collection
+            if (itemParentCollectionController.LibraryElementModel == SessionController.Instance.CurrentCollectionLibraryElementModel)
+            {
+                UITask.Run(() =>
+                    {
+                        // move the camera to the element the crumb represents
+                        SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
+                            elementController.Id);
+                    });
+            }
+            else
+            {
+                // otherwise enter the collection and try to zoom in on the element model that the crumb represents
+                UITask.Run(() =>
+                {
+                    SessionController.Instance.EnterCollection(itemParentCollectionController.LibraryElementModel.LibraryElementId, elementController?.Id);
+                });
+            }
+        }
+
         private void OnAliasRemoved(object sender, ElementModel e)
         {
             _listView.RemoveItems(new List<ElementModel> { e });
@@ -49,6 +84,7 @@ namespace NuSysApp
         {
             _controller.AliasAdded -= OnAliasAdded;
             _controller.AliasRemoved -= OnAliasRemoved;
+            _listView.RowDoubleTapped -= ListView_OnRowDoubleTapped;
 
 
             base.Dispose();
@@ -105,6 +141,9 @@ namespace NuSysApp
             _listView.AddColumns(cols);
 
             AddChild(_listView);
+
+            _listView.RowDoubleTapped += ListView_OnRowDoubleTapped;
+
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

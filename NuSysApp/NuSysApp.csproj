@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\graphics_lab\Desktop\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\Trent\Desktop\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -121,6 +121,14 @@
     <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
     <Content Include="Assets\layout_icons\layout_icon.png" />
     <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
+    <Content Include="Assets\new icons\add elements.png" />
+    <Content Include="Assets\new icons\back.png" />
+    <Content Include="Assets\new icons\collection.png" />
+    <Content Include="Assets\new icons\gear.png" />
+    <Content Include="Assets\new icons\node.png" />
+    <Content Include="Assets\new icons\recording.png" />
+    <Content Include="Assets\new icons\text.png" />
+    <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
@@ -362,8 +370,20 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionGridView.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinkContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinkPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AutoSuggestTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\DraggableButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RectangleButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RoundedRectButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushToMask.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\DateSelector.cs" />
@@ -372,7 +392,6 @@
     <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAliasesPage.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\PlaceHolderTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
@@ -461,6 +480,7 @@
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
+    <Compile Include="Components\NuSysRenderer\WordElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
       <DependentUpon>AudioRegionBound.xaml</DependentUpon>

@@ -117,7 +117,7 @@ namespace NuSysApp
                 var newPos =
                     SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
                         new Point(screenX, screenY));
-                var controller = SessionController.Instance.IdToControllers[_draggedVm.Id];
+                var controller = SessionController.Instance.ElementModelIdToElementController[_draggedVm.Id];
 
                 _dragItem = null;
                 _counter = 0;

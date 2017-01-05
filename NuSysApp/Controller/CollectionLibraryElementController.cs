@@ -76,7 +76,7 @@ namespace NuSysApp
         {
             if (!CollectionModel.Children.Contains(id))
             {
-                var elementController = SessionController.Instance.IdToControllers[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
                 elementController.Deleted += ElementControllerOnDeleted;
 
                 CollectionModel.Children.Add(id);
@@ -97,7 +97,7 @@ namespace NuSysApp
         {
             if (CollectionModel.Children.Contains(id))
             {
-                var elementController = SessionController.Instance.IdToControllers[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
                 elementController.Deleted -= ElementControllerOnDeleted;
                 CollectionModel.Children.Remove(id);
                 OnChildRemoved?.Invoke(id);

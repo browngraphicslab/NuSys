@@ -757,16 +757,16 @@ namespace NuSysApp
             // create a new presentation link view
             //   var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
             //TODO use this collectionController stuff, check if the collection exists
-            //var collectionController = SessionController.Instance.IdToControllers[model.ParentCollectionId] as ElementCollectionController;
+            //var collectionController = SessionController.Instance.ElementModelIdToElementController[model.ParentCollectionId] as ElementCollectionController;
             // Debug.Assert(collectionController != null, "the collectionController is not an element collection controller, check that parent collection id is being set correctly for presentation link models");
             //collectionController.AddChild(view);
 
             // Add the model to the list of models
             // create a new presentation link view model
-            if (!(SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.InElementId)))
+            if (!(SessionController.Instance.ElementModelIdToElementController.ContainsKey(model.OutElementId) && SessionController.Instance.ElementModelIdToElementController.ContainsKey(model.InElementId)))
                 return false;
 
-            var inElementController = SessionController.Instance.IdToControllers[model.OutElementId];
+            var inElementController = SessionController.Instance.ElementModelIdToElementController[model.OutElementId];
             var parentCollectionId = inElementController.GetParentCollectionId();
             var parentCollectionController = (CollectionLibraryElementController) SessionController.Instance.ContentController.GetLibraryElementController(parentCollectionId);
 

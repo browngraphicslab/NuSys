@@ -6,12 +6,17 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using NuSysApp.Components.NuSysRenderer.UI.BaseUIElements;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// This is the page for links which appears for all types of elements in the detail view
+    /// </summary>
     public class DetailViewLinksPage : RectangleUIElement
     {
 
@@ -21,17 +26,17 @@ namespace NuSysApp
         /// <summary>
         /// Textbox used to input the title of the link to be added, found at the top of the detail view links page
         /// </summary>
-        private PlaceHolderTextBox _addLinkTitleBox;
+        private ScrollableTextboxUIElement _addLinkTitleBox;
 
         /// <summary>
         /// Textbox used to input the title of the element the new link is to be linked to.
         /// </summary>
-        private PlaceHolderTextBox _addLinkToElementBox;
+        private AutoSuggestTextBox<LibraryElementModel> _addLinkToElementBox;
 
         /// <summary>
         /// Textbox used to input tags for the new link
         /// </summary>
-        private PlaceHolderTextBox _addLinkTagsBox;
+        private ScrollableTextboxUIElement _addLinkTagsBox;
 
         /// <summary>
         /// button pressed to indicate that the new link should be created
@@ -53,7 +58,7 @@ namespace NuSysApp
         {
             _controller = controller;
 
-            _addLinkTitleBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addLinkTitleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "link title...",
                 Background = Colors.Azure,
@@ -62,16 +67,23 @@ namespace NuSysApp
             };
             AddChild(_addLinkTitleBox);
 
-            _addLinkToElementBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addLinkToElementBox = new AutoSuggestTextBox<LibraryElementModel>(this, Canvas)
             {
                 PlaceHolderText = "link to...",
                 Background = Colors.Azure,
                 BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Bordercolor = Colors.DarkSlateGray,
+                ColumnFunction = elementController => elementController.Title,
+                FilterFunction = delegate(string s)
+                {
+                    return
+                        new List<LibraryElementModel>(
+                            SessionController.Instance.ContentController.AllLibraryElementModels.Where(
+                                lem => lem.Title.Contains(s)));
+                },
             };
-            AddChild(_addLinkToElementBox);
 
-            _addLinkTagsBox = new PlaceHolderTextBox(this, Canvas, false, false)
+            _addLinkTagsBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 Background = Colors.Azure,
                 BorderWidth = 3,
@@ -96,7 +108,37 @@ namespace NuSysApp
 
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
+            _createLinkButton.Tapped += OnCreateLinkButtonTapped;
 
+            // always add this as the last child since it has a drop down
+            AddChild(_addLinkToElementBox);
+
+        }
+
+        /// <summary>
+        /// Called when the create link button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // if the auto suggest button has a selection chosen, and there isn't an empty title then create a link
+            if (_addLinkToElementBox.HasSelection && !string.IsNullOrEmpty(_addLinkTitleBox.Text))
+            {
+
+                // get the tags from the tags box
+                var tag_strings = _addLinkTagsBox.Text.Split(new string[] {", ", " ", " ,", ",", " , "},
+                    StringSplitOptions.RemoveEmptyEntries);
+
+                var keywords = new HashSet<Keyword>();
+                foreach (var tagString in tag_strings)
+                {
+                    keywords.Add(new Keyword(tagString));
+                }
+
+                // try to add a link between the two controllers
+                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), _addLinkTitleBox.Text,keywords);
+            }
         }
 
         /// <summary>
@@ -126,6 +168,8 @@ namespace NuSysApp
         {
             _controller.LinkAdded -= OnLinkAdded;
             _controller.LinkRemoved -= OnLinkRemoved;
+            _createLinkButton.Tapped -= OnCreateLinkButtonTapped;
+
             base.Dispose();
         }
 
@@ -149,7 +193,7 @@ namespace NuSysApp
 
             var listColumn2 = new ListTextColumn<LinkLibraryElementController>();
             listColumn2.Title = "Linked To";
-            listColumn2.RelativeWidth = 2;
+            listColumn2.RelativeWidth = 1;
             listColumn2.ColumnFunction = getOppositeLinkedToTitle;
 
             _link_listview.AddColumns(new List<ListColumn<LinkLibraryElementController>> {listColumn, listColumn2});

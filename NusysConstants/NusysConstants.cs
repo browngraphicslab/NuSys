@@ -1766,6 +1766,11 @@ namespace NusysIntermediate
         /// the default file extension for pdf page images.  
         /// </summary>
         public static readonly string DEFAULT_PDF_PAGE_IMAGE_EXTENSION = ".jpg";
+
+        /// <summary>
+        /// the default file extension for word documents  
+        /// </summary>
+        public static readonly string DEFAULT_WORD_DOCUMENT_EXTENSION = ".docx";
         #endregion Misc
 
         #region staticMethods
