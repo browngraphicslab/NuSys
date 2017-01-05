@@ -481,7 +481,9 @@ namespace NuSysApp
         /// optional argument to give tags to the link
         /// </summary>
         /// <param name="link_to"></param>
-        public async void TryAddLinkTo(LibraryElementController link_to, HashSet<Keyword> tags = null)
+        /// <param name="text"></param>
+        /// <param name="tags"></param>
+        public async void TryAddLinkTo(LibraryElementController link_to, string title = null, HashSet<Keyword> tags = null)
         {
             // Diable linking to links and tools
             // TODO: Enable linking to links 
@@ -497,7 +499,7 @@ namespace NuSysApp
                 LibraryElementModelInId = LibraryElementModel.LibraryElementId,
                 LibraryElementType = NusysConstants.ElementType.Link,
                 LibraryElementModelOutId = link_to.LibraryElementModel.LibraryElementId,
-                Title = $"Link from {LibraryElementModel.Title} to {link_to.LibraryElementModel.Title}",
+                Title = title ?? $"Link from {LibraryElementModel.Title} to {link_to.LibraryElementModel.Title}",
                 Keywords = tags ?? new HashSet<Keyword>()
             };
             if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=

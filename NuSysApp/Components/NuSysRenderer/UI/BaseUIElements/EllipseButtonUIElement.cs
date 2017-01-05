@@ -57,8 +57,8 @@ namespace NuSysApp
             ///set button text and color
             ButtonText = text;
             ButtonTextColor = Constants.DARK_BLUE;
-            Height = 60;
-            Width = 60;
+            Height = 50;
+            Width = 50;
             ImageBounds = new Rect(10, 10, 30, 30);
             SetOriginalValues();
             

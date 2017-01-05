@@ -116,7 +116,7 @@ namespace NuSysApp
             // set up the ui of the add file button
             _addFileButton = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
             // set the image bounds for the addfile button
-            _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, _addFileButton.Width - 2 * BorderWidth, _addFileButton.Height - 2 * BorderWidth);
+            _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, TopBarButtonWidth, TopBarButtonHeight);
             // add the addfile button to the window
             AddButton(_addFileButton, TopBarPosition.Right);
 

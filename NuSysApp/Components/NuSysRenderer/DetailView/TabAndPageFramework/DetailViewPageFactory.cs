@@ -26,11 +26,13 @@ namespace NuSysApp
                     switch (elementType)
                     {
                         case NusysConstants.ElementType.Text:
+                            rectangle = new DetailViewTextPage(parent, resourceCreator, controller);
                             break;
                         case NusysConstants.ElementType.Image:
                             rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Collection:
+                            rectangle = new DetailViewCollectionPage(parent, resourceCreator, controller as CollectionLibraryElementController);
                             break;
                         case NusysConstants.ElementType.PDF:
                             rectangle = new DetailViewPdfPage(parent, resourceCreator, controller as PdfLibraryElementController, true, false);
@@ -41,6 +43,7 @@ namespace NuSysApp
                         case NusysConstants.ElementType.Video:
                             break;
                         case NusysConstants.ElementType.Link:
+                            rectangle = new DetailViewLinkPage(parent, resourceCreator, controller as LinkLibraryElementController);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementType),

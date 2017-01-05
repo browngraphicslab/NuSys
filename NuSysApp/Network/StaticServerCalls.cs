@@ -38,7 +38,7 @@ namespace NuSysApp
             var libraryElementRequest = new CreateNewLibraryElementRequest(m);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(libraryElementRequest);
 
-            var children = SessionController.Instance.IdToControllers.Where(item => item.Value.Model.ParentCollectionId == libraryId).ToArray();
+            var children = SessionController.Instance.ElementModelIdToElementController.Where(item => item.Value.Model.ParentCollectionId == libraryId).ToArray();
 
             foreach (var child in children)
             {
@@ -94,9 +94,9 @@ namespace NuSysApp
                 await elementRequest.AddReturnedElementToSessionAsync();
 
                 //get and return the element collection controller
-                if (SessionController.Instance.IdToControllers.ContainsKey(requestArgs.Id))
+                if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(requestArgs.Id))
                 {
-                    return (ElementCollectionController)SessionController.Instance.IdToControllers[requestArgs.Id];
+                    return (ElementCollectionController)SessionController.Instance.ElementModelIdToElementController[requestArgs.Id];
                 }
                 return null;
             });

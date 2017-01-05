@@ -178,7 +178,7 @@ namespace NuSysApp
             _prevCollectionController = collectionController;
 
             // get all element controllers that are in the passed in collection
-            var elementControllers = collectionController.CollectionModel.Children.Where(id => SessionController.Instance.IdToControllers.ContainsKey(id)).Select(id => SessionController.Instance.IdToControllers[id]);
+            var elementControllers = collectionController.CollectionModel.Children.Where(id => SessionController.Instance.ElementModelIdToElementController.ContainsKey(id)).Select(id => SessionController.Instance.ElementModelIdToElementController[id]);
 
             // get a list of library element controllers that fulfill the brush constraints
             var filteredLibraryElementControllers = GetLibraryElementControllers();

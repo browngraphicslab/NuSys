@@ -45,7 +45,7 @@ namespace NuSysApp
             IsDeleted = true;
             OnDeleteInqLine?.Invoke(this, this);
             ElementController removed;
-            SessionController.Instance.IdToControllers.TryRemove(Id, out removed);
+            SessionController.Instance.ElementModelIdToElementController.TryRemove(Id, out removed);
         }
 
         public override void UnPackFromDatabaseMessage(Message props)

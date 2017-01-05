@@ -18,7 +18,7 @@ namespace NuSysApp
         /// <summary>
         /// The text to be displayed in the textbox
         /// </summary>
-        public string Text { get; set; }
+        public virtual string Text { get; set; }
 
         /// <summary>
         /// The horizontal alignment of the text within the textbox

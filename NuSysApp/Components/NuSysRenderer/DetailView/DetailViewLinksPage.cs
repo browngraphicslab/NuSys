@@ -13,6 +13,9 @@ using NuSysApp.Components.NuSysRenderer.UI;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// This is the page for links which appears for all types of elements in the detail view
+    /// </summary>
     public class DetailViewLinksPage : RectangleUIElement
     {
 
@@ -133,7 +136,7 @@ namespace NuSysApp
                 }
 
                 // try to add a link between the two controllers
-                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), keywords);
+                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), _addLinkTitleBox.Text,keywords);
             }
         }
 
@@ -189,7 +192,7 @@ namespace NuSysApp
 
             var listColumn2 = new ListTextColumn<LinkLibraryElementController>();
             listColumn2.Title = "Linked To";
-            listColumn2.RelativeWidth = 2;
+            listColumn2.RelativeWidth = 1;
             listColumn2.ColumnFunction = getOppositeLinkedToTitle;
 
             _link_listview.AddColumns(new List<ListColumn<LinkLibraryElementController>> {listColumn, listColumn2});
