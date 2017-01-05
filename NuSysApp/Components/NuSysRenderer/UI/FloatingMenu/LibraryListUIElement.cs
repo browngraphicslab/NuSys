@@ -643,6 +643,9 @@ namespace NuSysApp
                             var wordArgs = new CreateNewPdfLibraryElementModelRequestArgs();
                             wordArgs.PdfPageStart = 0;
                             wordArgs.PdfPageEnd = pdfPageCount;
+                            wordArgs.AspectRatio = aspectRatio;
+                            wordArgs.NormalizedHeight = 1;
+                            wordArgs.NormalizedWidth = 1;
                             libraryElementArgs = wordArgs;
                             break;
                         case NusysConstants.ElementType.PDF:

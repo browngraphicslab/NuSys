@@ -29,7 +29,7 @@ namespace NuSysApp
         /// </summary>
         public bool IsLocked { get; set; }
 
-        public WordNodeLibraryElementController(PdfLibraryElementModel model) : base(model)
+        public WordNodeLibraryElementController(WordLibraryElementModel model) : base(model)
         {
             Debug.Assert(model.Type == NusysConstants.ElementType.Word);
         }

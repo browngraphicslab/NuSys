@@ -70,7 +70,7 @@ namespace NusysIntermediate
                         model = JsonConvert.DeserializeObject<PdfContentDataModel>(contentDataModelJSON);
                         break;
                 }
-                
+                Debug.Assert(model?.ContentId != null);
                 return model;
             }
             catch (JsonException jsonException)

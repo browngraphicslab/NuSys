@@ -144,6 +144,9 @@ namespace NuSysApp
                 case NusysConstants.NotificationType.RemoveUser:
                     handler = new DropUserNotificationHandler();
                     break;
+                case NusysConstants.NotificationType.WordChanged:
+                    handler = new WordChangedNotificationHandler();
+                    break;
                 case NusysConstants.NotificationType.AnalysisModelMade:
                     handler = new AnalysisModelMadeNotificationHandler();
                     break;

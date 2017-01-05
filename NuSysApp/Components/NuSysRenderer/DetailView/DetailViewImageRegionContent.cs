@@ -125,8 +125,8 @@ namespace NuSysApp
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            _controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
 
@@ -134,8 +134,8 @@ namespace NuSysApp
         {
             IsDisposed = true;
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
 
             base.Dispose();
         }

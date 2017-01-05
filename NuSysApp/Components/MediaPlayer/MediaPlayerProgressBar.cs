@@ -114,8 +114,8 @@ namespace NuSysApp
             Debug.Assert(libaryElementController != null);
             RemoveOldController(CurrentLibraryElementController);
             
-            libaryElementController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            libaryElementController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            libaryElementController.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            libaryElementController.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
 
 
             CurrentLibraryElementController = libaryElementController;
@@ -189,8 +189,8 @@ namespace NuSysApp
             }
             if (controller.ContentDataController?.ContentDataModel != null)
             {
-                controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-                controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+                controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+                controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             }
             
         }
@@ -227,8 +227,8 @@ namespace NuSysApp
 
             if (CurrentLibraryElementController.ContentDataController?.ContentDataModel != null)
             {
-                CurrentLibraryElementController.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-                CurrentLibraryElementController.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+                CurrentLibraryElementController.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+                CurrentLibraryElementController.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             }
         }
 
