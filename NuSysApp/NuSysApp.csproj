@@ -121,6 +121,7 @@
     <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
     <Content Include="Assets\layout_icons\layout_icon.png" />
     <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
+    <Content Include="Assets\new icons\add elements white.png" />
     <Content Include="Assets\new icons\add elements.png" />
     <Content Include="Assets\new icons\back.png" />
     <Content Include="Assets\new icons\collection.png" />
@@ -373,7 +374,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseButtonUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\DraggableButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\TransparentButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RectangleButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RoundedRectButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />

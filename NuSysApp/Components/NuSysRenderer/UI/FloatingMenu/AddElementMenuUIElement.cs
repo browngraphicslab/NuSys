@@ -58,18 +58,18 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-            _addTextNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "text");
+            _addTextNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "text");
             AddChild(_addTextNodeButton);
 
-            _addCollectionNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "collection");
+            _addCollectionNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "collection");
 
             AddChild(_addCollectionNodeButton);
 
-            _addToolNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "tools");
+            _addToolNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "tools");
 
             AddChild(_addToolNodeButton);
 
-            _addRecordingNodeButton = new DraggableButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "record");
+            _addRecordingNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "record");
 
             AddChild(_addRecordingNodeButton);
 

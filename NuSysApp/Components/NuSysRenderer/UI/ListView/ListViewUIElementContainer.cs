@@ -65,7 +65,7 @@ namespace NuSysApp
             set
             {
                 _header.IsVisible = value;
-                _listYPos = value ? _header.Height : 0;
+                _headerHeight = value ? _header.Height : 0;
                 _showHeader = value;
             }
         }
@@ -82,7 +82,7 @@ namespace NuSysApp
         /// <summary>
         /// where listview will draw itself
         /// </summary>
-        private float _listYPos;
+        private float _headerHeight;
 
         /// <summary>
         /// This is the header ui element
@@ -208,7 +208,7 @@ namespace NuSysApp
         public ListViewUIElementContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _resourceCreator = resourceCreator;
-            _listYPos = 0;
+            _headerHeight = 0;
             ListView = new ListViewUIElement<T>(this, resourceCreator);
 
             ListView.RowTapped += ListViewRowTapped;
@@ -554,12 +554,8 @@ namespace NuSysApp
             if (_listview != null)
             {
                 _header.Transform.LocalPosition = new Vector2(0,0);
-                _header.BorderWidth = 1;
-                _header.Bordercolor = Constants.MED_BLUE;
-                _header.Background = Colors.White;
                 _header.Width = this.Width;
-                _header.Height = _listview.RowHeight + 10;
-                _listYPos = _header.Height;
+                _header.Height = 40;
                 _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
         }
@@ -572,7 +568,7 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             //draw the listview below the header
-            _listview.Transform.LocalPosition = new Vector2(0, _listYPos);
+            _listview.Transform.LocalPosition = new Vector2(0, 42);
             base.Draw(ds);
         }
     }

@@ -107,6 +107,14 @@ namespace NuSysApp
             set { Shape.Image = value; }
         }
 
+        public float Padding
+        {
+            get { return _padding; }
+            set { _padding = value; }
+        }
+
+        private float _padding;
+
         /// <summary>
         /// The color of the text on the button
         /// </summary>
@@ -153,7 +161,7 @@ namespace NuSysApp
         /// 
         /// The button will encapsulate that shape.  
         /// FOR MOST CASES, YOU WILL NOT NEED TO USE THIS CONSTRUCTOR - YOU SHOULD BE INSTANTIATING A SPECIFIC BUTTON.
-        /// See EllipseButtonUIElement, DraggableButtonUIElement, RoundedRectButtonUIElement and RectangleButtonUIElement.
+        /// See EllipseButtonUIElement, TransparentButtonUIElement, RoundedRectButtonUIElement and RectangleButtonUIElement.
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
@@ -173,6 +181,8 @@ namespace NuSysApp
             Shape.DoubleTapped += Shape_DoubleTapped;
 
             Enabled = true;
+
+            Padding = 7;
         }
 
         /// <summary>
@@ -317,7 +327,7 @@ namespace NuSysApp
         /// <returns></returns>
         protected virtual Rect GetTextBoundingBox()
         {
-            return new Rect(BorderWidth, BorderWidth, Width - 2*BorderWidth, Height - 2*BorderWidth);
+            return new Rect(Padding, Padding, Width - 2*Padding, Height - 2*Padding);
         }
 
         /// <summary>
