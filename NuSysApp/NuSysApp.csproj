@@ -124,12 +124,15 @@
     <Content Include="Assets\new icons\add elements white.png" />
     <Content Include="Assets\new icons\add elements.png" />
     <Content Include="Assets\new icons\back.png" />
+    <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\node.png" />
+    <Content Include="Assets\new icons\present white.png" />
     <Content Include="Assets\new icons\recording.png" />
     <Content Include="Assets\new icons\text.png" />
     <Content Include="Assets\new icons\tools.png" />
+    <Content Include="Assets\new icons\trash can white.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />

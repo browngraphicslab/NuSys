@@ -25,30 +25,48 @@ namespace NuSysApp
         private FreeFormViewerViewModel _vm;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
 
-        public NodeMenuButtonRenderItem BtnDelete;
-        public NodeMenuButtonRenderItem BtnPresent;
-        public NodeMenuButtonRenderItem BtnGroup;
-        public NodeMenuButtonRenderItem BtnEnterCollection;
-        public NodeMenuButtonRenderItem BtnExport;
-        public NodeMenuButtonRenderItem BtnLayoutTool;
+        //public NodeMenuButtonRenderItem BtnDelete;
+        //public NodeMenuButtonRenderItem BtnPresent;
+        //public NodeMenuButtonRenderItem BtnGroup;
+        //public NodeMenuButtonRenderItem BtnEnterCollection;
+        //public NodeMenuButtonRenderItem BtnExport;
+        //public NodeMenuButtonRenderItem BtnLayoutTool;
+
+
+        public EllipseButtonUIElement BtnDelete;
+        public EllipseButtonUIElement BtnPresent;
+        public EllipseButtonUIElement BtnGroup;
+        public EllipseButtonUIElement BtnEnterCollection;
+        public EllipseButtonUIElement BtnExport;
+        public EllipseButtonUIElement BtnLayoutTool;
+
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
         public ButtonUIElement BtnTools;
         private RectangleUIElement DragToolsRect;
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
-        private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
+        private List<BaseInteractiveUIElement> _menuButtons = new List<BaseInteractiveUIElement>();
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;
 
+        private StackLayoutManager _buttonLayout;
+
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
-            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
-            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
-            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
-            BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
-            BtnExport = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
-            BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+            //BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
+            //BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
+            //BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
+            //BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
+            //BtnExport = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
+            //BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+
+            BtnDelete = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "delete");
+            BtnPresent = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "present");
+            BtnGroup = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "group");
+            BtnEnterCollection = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "enter collection");
+            BtnExport = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.AccentStyle, "export");
+            BtnLayoutTool = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "layout options");
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
@@ -70,7 +88,7 @@ namespace NuSysApp
                 BtnExport,
                 BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
+            _menuButtons = new List<BaseInteractiveUIElement> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -78,6 +96,22 @@ namespace NuSysApp
             foreach (var btn in Buttons)
             {
                 AddChild(btn);
+            }
+
+            _buttonLayout = new StackLayoutManager(StackAlignment.Vertical)
+            {
+                Spacing = 15,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Width = 80,
+                Height = 300,
+                ItemHeight = 50,
+                ItemWidth = 50
+            };
+
+            foreach (var button in _menuButtons)
+            {
+               _buttonLayout.AddElement(button);
             }
 
             AddChild(Resizer);
@@ -149,6 +183,10 @@ namespace NuSysApp
                 await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
             DragToolsRect.Image =
                 await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
+
+            BtnDelete.Image =  await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/trash can white.png"));
+            BtnGroup.Image = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/collection white.png"));
+            BtnPresent.Image = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/present white.png"));
         }
         
 
@@ -253,22 +291,25 @@ namespace NuSysApp
             }
 
             var count = 0;
-            foreach (var btn in _menuButtons)
-            {
-                if (!btn.IsVisible)
-                    continue;
-                //Make sure the tool button is a ligned because its a different type of button from the rest
-                if (btn == BtnTools)
-                {
-                    btn.Transform.LocalPosition = new Vector2((float) _screenRect.X + leftOffset - BtnTools.Width/2,
-                        (float) _screenRect.Y + 20 + count*35);
-                }
-                else
-                {
-                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
-                }
-                count++;
-            }
+            //foreach (var btn in _menuButtons)
+            //{
+            //    if (!btn.IsVisible)
+            //        continue;
+            //    //Make sure the tool button is aligned because its a different type of button from the rest
+            //    if (btn == BtnTools)
+            //    {
+            //        btn.Transform.LocalPosition = new Vector2((float) _screenRect.X + leftOffset - BtnTools.Width/2,
+            //            (float) _screenRect.Y + 20 + count*35);
+            //    }
+            //    else
+            //    {
+            //        btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
+            //    }
+            //    count++;
+            //}
+
+            _buttonLayout.ArrangeItems();
+
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;
             BtnPdfRight.IsVisible = _isSinglePdfSelected;
 
