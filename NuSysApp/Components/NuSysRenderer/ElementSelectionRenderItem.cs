@@ -48,7 +48,7 @@ namespace NuSysApp
             BtnPresent.Label = "present";
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/collection white.png", parent, resourceCreator);
             BtnGroup.Label = "collection";
-            BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
+            BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/enter collection white.png", parent, resourceCreator);
             BtnEnterCollection.Label = "enter collection";
             BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
             BtnLayoutTool.Label = "edit layout";
