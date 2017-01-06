@@ -143,7 +143,7 @@ namespace NuSysApp
                 MinHeight = 600,
                 KeepAspectRatio = true
             };
-            AddChild(_detailViewer);
+            
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
@@ -246,9 +246,7 @@ namespace NuSysApp
                 _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2,
                     _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
                 AddChild(_settingsMenu);
-
-                Debug.WriteLine("TrailBox Visibility: " + TrailBox.IsVisible);
-                Debug.WriteLine("TrailBox Pos: " + TrailBox.Transform.LocalPosition);
+                AddChild(_detailViewer);
             }
             
             

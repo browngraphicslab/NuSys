@@ -201,6 +201,10 @@ namespace NuSysApp
         {
             SessionController.Instance.SessionSettings.BreadCrumbsDocked = !SessionController.Instance.SessionSettings.BreadCrumbsDocked;
             SessionController.Instance.NuSessionView.UpdateUI();
+            if (SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            {
+                SessionController.Instance.NuSessionView.TrailBox.IsVisible = true;
+            }
         }
 
         /// <summary>
