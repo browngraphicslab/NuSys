@@ -100,7 +100,7 @@ namespace NuSysApp
 
             _buttonLayout = new StackLayoutManager(StackAlignment.Vertical)
             {
-                Spacing = 15,
+                Spacing = 20,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Width = 80,
@@ -291,24 +291,8 @@ namespace NuSysApp
             }
 
             var count = 0;
-            //foreach (var btn in _menuButtons)
-            //{
-            //    if (!btn.IsVisible)
-            //        continue;
-            //    //Make sure the tool button is aligned because its a different type of button from the rest
-            //    if (btn == BtnTools)
-            //    {
-            //        btn.Transform.LocalPosition = new Vector2((float) _screenRect.X + leftOffset - BtnTools.Width/2,
-            //            (float) _screenRect.Y + 20 + count*35);
-            //    }
-            //    else
-            //    {
-            //        btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
-            //    }
-            //    count++;
-            //}
 
-            _buttonLayout.ArrangeItems();
+            _buttonLayout.ArrangeItems(new Vector2(-80,60));
 
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;
             BtnPdfRight.IsVisible = _isSinglePdfSelected;
