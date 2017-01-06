@@ -209,17 +209,6 @@ namespace NuSysApp
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
             SetUpBackgroundRectangle();
-            SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
-        }
-
-        /// <summary>
-        /// event handler called whenever the session changes its text accessibility setting.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SessionSettingsTextScaleChanged(object sender, double e)
-        {
-            CreateListViewRowUIElements();
         }
 
         private void SetUpBackgroundRectangle()
@@ -313,7 +302,7 @@ namespace NuSysApp
                     listViewRowUIElement.Bordercolor = Constants.MED_BLUE;
                     listViewRowUIElement.BorderWidth = RowBorderThickness;
                     listViewRowUIElement.Width = Width - BorderWidth * 2;
-                    listViewRowUIElement.Height = RowHeight * (float)SessionController.Instance.SessionSettings.TextScale;
+                    listViewRowUIElement.Height = RowHeight;
                     PopulateListRow(listViewRowUIElement);
                     listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
                     listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
@@ -511,7 +500,7 @@ namespace NuSysApp
         /// <returns></returns>
         private RectangleUIElement CreateCell(ListColumn<T> column, T itemSource, ListViewRowUIElement<T> listViewRowUIElement)
         {
-            var height = RowHeight * (float)SessionController.Instance.SessionSettings.TextScale;
+            var height = RowHeight;
             return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
                     height - RowBorderThickness * 2, _sumOfColumnRelativeWidths);
 
@@ -935,7 +924,7 @@ namespace NuSysApp
 
             var cellVerticalOffset = BorderWidth;
             var headerOffset = Transform.LocalPosition.Y;
-            var scrollOffset = _scrollOffset % (RowHeight*(float)SessionController.Instance.SessionSettings.TextScale);
+            var scrollOffset = _scrollOffset % (RowHeight);
             foreach (var row in Rows)
             {
                 //Position is the position of the bottom of the row
@@ -1025,7 +1014,6 @@ namespace NuSysApp
             _selectedElements?.Clear();
             _itemsSource?.Clear();
             _listColumns?.Clear();
-            SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
             base.Dispose();
         }
 

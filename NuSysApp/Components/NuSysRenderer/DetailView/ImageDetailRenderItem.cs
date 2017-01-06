@@ -49,8 +49,8 @@ namespace NuSysApp
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
-            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
         public ImageDetailRenderItem(PdfLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -64,8 +64,8 @@ namespace NuSysApp
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
-            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
         public override void Dispose()
@@ -73,8 +73,8 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             _controller.LocationChanged -= ControllerOnLocationChanged;
             _controller.SizeChanged -= ControllerOnSizeChanged;
 

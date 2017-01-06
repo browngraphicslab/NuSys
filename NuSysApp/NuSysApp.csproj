@@ -374,6 +374,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\CollectionGridViewUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionGridView.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionPage.cs" />
@@ -753,6 +754,7 @@
     <Compile Include="Network\Requests\NotificationHandlers\AnalysisModelMadeNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\WordChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewAudioLibraryElementRequestArgs.cs" />

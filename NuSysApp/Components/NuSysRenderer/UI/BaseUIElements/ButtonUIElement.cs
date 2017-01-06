@@ -326,7 +326,7 @@ namespace NuSysApp
         /// <returns></returns>
         protected virtual Rect GetTextBoundingBox()
         {
-            return new Rect(Padding, Padding, Width - 2*Padding, Height - 2*Padding);
+            return new Rect(Padding, Padding,Math.Max(Width - 2*Padding,0), Math.Max(Height - 2*Padding,0));
         }
 
         /// <summary>

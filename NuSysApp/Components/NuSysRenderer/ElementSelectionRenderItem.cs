@@ -292,7 +292,7 @@ namespace NuSysApp
 
             var count = 0;
 
-            //_buttonLayout.ArrangeItems(new Vector2(-80,60));
+            _buttonLayout.ArrangeItems(new Vector2(-80, 60));
 
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;
             BtnPdfRight.IsVisible = _isSinglePdfSelected;

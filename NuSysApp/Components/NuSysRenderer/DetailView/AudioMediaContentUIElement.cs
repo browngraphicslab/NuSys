@@ -90,8 +90,8 @@ namespace NuSysApp
             _controller.TimeChanged += OnStartTimeChanged;
             _controller.DurationChanged += OnDurationChanged;
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded += OnRegionRemoved;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved += OnRegionAdded;
+            _controller.ContentDataController.OnRegionAdded += OnRegionRemoved;
+            _controller.ContentDataController.OnRegionRemoved += OnRegionAdded;
 
             // compute all the regions so they are displayed
             ComputeRegions();
@@ -190,8 +190,8 @@ namespace NuSysApp
             _controller.TimeChanged -= OnStartTimeChanged;
             _controller.DurationChanged -= OnDurationChanged; //todo find out why this is unpredictable
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= OnRegionRemoved;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= OnRegionAdded;
+            _controller.ContentDataController.OnRegionAdded -= OnRegionRemoved;
+            _controller.ContentDataController.OnRegionRemoved -= OnRegionAdded;
 
             var children = GetChildren();
             foreach (var child in children)

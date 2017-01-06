@@ -61,8 +61,8 @@ namespace NuSysApp
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;          
+            _controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;          
         }
 
         protected override void ComputeRegions()

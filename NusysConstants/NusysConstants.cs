@@ -802,6 +802,15 @@ namespace NusysIntermediate
 
             #endregion AnalysisModelMade
 
+            #region WordChanged
+
+            /// <summary>
+            /// key used in the Word Document Changed notification that represents the content data model id of the word document
+            /// </summary>
+            public static readonly string WORD_CHANGED_NOTIFICATION_CONTENT_DATA_MODEL_ID_KEY = "content_data_model_id";
+
+            #endregion WordChanged
+
         #endregion NotificationKeys
 
         #region NotificationManagementKeys
@@ -1728,7 +1737,12 @@ namespace NusysIntermediate
             /// <summary>
             /// to notify that an analysis model for an uploaded content has finished being made
             /// </summary>
-            AnalysisModelMade
+            AnalysisModelMade,
+
+            /// <summary>
+            /// Notification for telling all clients about an updated word document.
+            /// </summary>
+            WordChanged
         }
 
         /// <summary>

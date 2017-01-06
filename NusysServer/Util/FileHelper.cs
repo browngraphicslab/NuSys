@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Web;
 using NusysIntermediate;
 using Newtonsoft.Json;
 using GemBox.Document;
@@ -33,6 +32,7 @@ namespace NusysServer
         public static extern int GetNumComponents();
         [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumPages();
+
         [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GotoPage(int page);
         [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
@@ -366,15 +366,45 @@ namespace NusysServer
         }
 
         /// <summary>
+        /// method called from the UploadWordDocController to update an existing word document. 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string UpdateWordDoc(string wordByteDataString, string customContentIdPropertyKey = "contentDataModelId")
+        {
+            ComponentInfo.SetLicense("DORJ-JFGF-MSBP-2XUV");
+            var bytes = Convert.FromBase64String(wordByteDataString);
+            Stream stream = new MemoryStream(bytes);
+            var doc = DocumentModel.Load(stream, LoadOptions.DocxDefault);
+            if (!doc.DocumentProperties.Custom.ContainsKey(customContentIdPropertyKey))
+            {
+                return "document did not have the correct custom property id";
+            }
+            var contentDataModelId = doc.DocumentProperties.Custom[customContentIdPropertyKey].ToString();
+            try
+            {
+                CreateDataFile(contentDataModelId, NusysConstants.ContentType.Word, wordByteDataString);
+                var notification = new WordChangedNotification(new WordChangedNotificationArgs() { ContentDataModelId = contentDataModelId});
+                NuWebSocketHandler.NotifyAll(notification);
+                return "Success!";
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+
+        /// <summary>
         /// This method will save the word document in the correct location, and then return the pdf bytes for the document.
         /// You must use a word file path ending in '.docx'.
         /// This will also give the save word document a special property.  
         /// The special property will be named the 'customContentIdPropertyKey' parameter and its value will be the 'contentDataModelId' parameter.
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="wordByteData"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static byte[] GetWordBytes(string data, string contentDataModelId, string wordPath, string customContentIdPropertyKey = "contentDataModelId")
+        public static byte[] GetWordBytes(string wordByteData, string contentDataModelId, string wordPath, string customContentIdPropertyKey = "contentDataModelId")
         {
             if (!wordPath.EndsWith(".docx"))
             {
@@ -384,7 +414,7 @@ namespace NusysServer
             DocumentModel doc = null;
             try
             {
-                var bytes = Convert.FromBase64String(data);
+                var bytes = Convert.FromBase64String(wordByteData);
                 Stream stream = new MemoryStream(bytes);
                 doc = DocumentModel.Load(stream, LoadOptions.DocxDefault);
                 doc.DocumentProperties.Custom[customContentIdPropertyKey] = contentDataModelId;

@@ -79,12 +79,12 @@ namespace NuSysApp
             _clippingParentIdToRegionLibraryElementIds[clippingParentId].Add(regionModel.LibraryElementId);
             _contentDataModelIdToRegionLibraryElementIds[contentId].Add(regionModel.LibraryElementId);
 
-            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
-            if (contentDataModel == null)
+            var contentDataController = SessionController.Instance.ContentController.GetContentDataController(contentId);
+            if (contentDataController == null)
             {
                 return;
             }
-            contentDataModel.AddRegion(regionModel.LibraryElementId);
+            contentDataController.AddRegion(regionModel.LibraryElementId);
         }
 
         public void RemoveRegion(LibraryElementModel regionModel)
@@ -104,8 +104,8 @@ namespace NuSysApp
             _clippingParentIdToRegionLibraryElementIds[clippingParentId].Remove(regionModel.LibraryElementId);
             _contentDataModelIdToRegionLibraryElementIds[contentId].Remove(regionModel.LibraryElementId);
 
-            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
-            contentDataModel.RemoveRegion(regionModel.LibraryElementId);
+            var contentDataController= SessionController.Instance.ContentController.GetContentDataController(contentId);
+            contentDataController.RemoveRegion(regionModel.LibraryElementId);
         }
 
     }
