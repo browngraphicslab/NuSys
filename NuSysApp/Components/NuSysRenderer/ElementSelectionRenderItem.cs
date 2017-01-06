@@ -37,7 +37,7 @@ namespace NuSysApp
         public EllipseButtonUIElement BtnPresent;
         public EllipseButtonUIElement BtnGroup;
         public EllipseButtonUIElement BtnEnterCollection;
-        public EllipseButtonUIElement BtnExport;
+        //public EllipseButtonUIElement BtnExport;
         public EllipseButtonUIElement BtnLayoutTool;
 
         public PdfPageButtonRenderItem BtnPdfLeft;
@@ -65,7 +65,7 @@ namespace NuSysApp
             BtnPresent = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "present");
             BtnGroup = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "group");
             BtnEnterCollection = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "enter collection");
-            BtnExport = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.AccentStyle, "export");
+            //BtnExport = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.AccentStyle, "export");
             BtnLayoutTool = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "layout options");
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
@@ -85,7 +85,7 @@ namespace NuSysApp
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer,
-                BtnExport,
+                //BtnExport,
                 BtnTools
             };
             _menuButtons = new List<BaseInteractiveUIElement> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
