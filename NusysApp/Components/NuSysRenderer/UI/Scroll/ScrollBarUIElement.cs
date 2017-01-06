@@ -7,6 +7,7 @@ using Microsoft.Graphics.Canvas;
 using System.Numerics;
 using Windows.Foundation;
 using Windows.UI;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -48,7 +49,11 @@ namespace NuSysApp
         /// <summary>
         /// Color of the scroll bar. 
         /// </summary>
-        public Color ScrollBarColor = Colors.Gray;
+        public Color ScrollBarColor = Constants.MED_BLUE;
+
+        public float BarLength { set; get; }
+
+        public float BarWidth { set; get; }
 
         /// <summary>
         /// Invoked when the user slides the scroll bar to a new position. Position is
@@ -106,10 +111,21 @@ namespace NuSysApp
         public ScrollBarUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, Orientation orientation) : base(parent, resourceCreator)
         {
             _orientation = orientation;
+            if (_orientation == Orientation.Horizontal)
+            {
+                BarWidth = Height;
+                BarLength = Width - 2*BarWidth;
+            }else if (_orientation == Orientation.Vertical)
+            {
+                BarWidth = Width;
+                BarLength = Height - 2*BarWidth;
+            }
+            Background = Constants.LIGHT_BLUE;
             Position = 0;
             Range = 0;
             _isdragging = false;
             _scrollVelocity = 0.08;
+            
             BorderWidth = 0;
 
             Dragged += ScrollBarUIElement_Dragged;
@@ -128,10 +144,67 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-            // draw the slide bar onto the rectangle
-            ds.FillRectangle(new Rect(0, Position * Height, Width, Height * Range), ScrollBarColor);
+
+            if (_orientation == Orientation.Horizontal)
+            {
+                DrawHorizontal(ds);
+            }
+            else if (_orientation == Orientation.Vertical)
+            {
+                DrawVertical(ds);
+            }
+
+ 
             ds.Transform = orgTransform;
 
+
+        }
+
+        private void DrawVertical(CanvasDrawingSession ds)
+        {
+            // draw the upper arrow
+
+            var upper_pts = new Vector2[3]
+            {
+                new Vector2(0.5f*BarWidth, 1/3f*BarWidth), new Vector2(2/3f*BarWidth, 2/3f*BarWidth),
+                new Vector2(1/3f*BarWidth, 2/3f*BarWidth)
+            };
+            ds.FillGeometry(CanvasGeometry.CreatePolygon(ResourceCreator, upper_pts), new Vector2(0, 0), Constants.MED_BLUE);  //No offset needed
+
+            //draw the lower arrow
+
+            var lower_pts = new Vector2[3]
+            {
+                new Vector2(0.5f*BarWidth, 2/3f*BarWidth), new Vector2(1/3f*BarWidth, 1/3f*BarWidth),
+                new Vector2(2/3f*BarWidth, 1/3f*BarWidth)
+            };
+            ds.FillGeometry(CanvasGeometry.CreatePolygon(ResourceCreator, lower_pts), new Vector2(0, BarLength - BarWidth), Constants.MED_BLUE);
+
+            // draw the slide bar onto the rectangle
+            ds.FillRectangle(new Rect(0, Position * BarLength, BarWidth, BarLength * Range), ScrollBarColor);
+        }
+
+        private void DrawHorizontal(CanvasDrawingSession ds)
+        {
+            //draw the left arrow
+
+            var left_pts = new Vector2[3]
+            {
+                new Vector2(1/3f*BarWidth, 1/2f*BarWidth), new Vector2(2/3f*BarWidth, 1/3f*BarWidth),
+                new Vector2(2/3f*BarWidth, 1/3f*BarWidth)
+            };
+            ds.FillGeometry(CanvasGeometry.CreatePolygon(ResourceCreator, left_pts), new Vector2(0, 0), Constants.MED_BLUE);  //No offset needed
+
+            //draw the right arrow
+            var right_pts = new Vector2[3]
+            {
+                new Vector2(1/3f*BarWidth, 1/3f*BarWidth), new Vector2(2/3f*BarWidth, 1/2f*BarWidth),
+                new Vector2(1/3f*BarWidth, 2/3f*BarWidth)
+            };
+            ds.FillGeometry(CanvasGeometry.CreatePolygon(ResourceCreator, right_pts), new Vector2(BarLength - BarWidth, 0), Constants.MED_BLUE);
+
+            // draw the slide bar onto the rectangle
+            ds.FillRectangle(new Rect(Position * BarLength, 0, BarLength * Range, BarWidth), ScrollBarColor);
 
         }
 

@@ -164,6 +164,14 @@ namespace NuSysApp
             RenderEngine.Root.AddChild(InitialCollection);
 
 
+            var sb = new ScrollBarUIElement(_renderRoot, RenderCanvas, ScrollBarUIElement.Orientation.Vertical)
+            {
+                Height = 300,
+                Width = 50
+            };
+            sb.Transform.LocalPosition = new Vector2(500, 200);
+
+            RenderEngine.Root.AddChild(sb);
 
             RenderEngine.Start();
 
