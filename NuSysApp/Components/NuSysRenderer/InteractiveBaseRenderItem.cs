@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -22,10 +23,19 @@ namespace NuSysApp
         public event PointerHandler Dragged;
         public event PointerHandler DragStarted;
         public event PointerHandler DragCompleted;
+        public event PointerHandler PenPointerPressed;
+        public event PointerHandler PenPointerReleased;
+        public event PointerHandler PenPointerDragged;
+        public event PointerHandler PenPointerCompleted;
+        public event PointerHandler PenPointerDragStarted;
+
+
+
 
         private bool _isDragging;
+        private bool _isPenDragging;
 
-        
+
         public delegate void PointerWheelHandler(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta);
         // Delegate for the KeyPressed event
         public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
@@ -46,6 +56,11 @@ namespace NuSysApp
         public virtual void OnPressed(CanvasPointer pointer)
         {
             Pressed?.Invoke(this, pointer);
+
+            if (pointer.DeviceType == PointerDeviceType.Pen)
+            {
+                PenPointerPressed?.Invoke(this, pointer);
+            }
         }
 
         public virtual void OnReleased(CanvasPointer pointer)
@@ -56,8 +71,19 @@ namespace NuSysApp
                 OnDragCompleted(pointer);
                 _isDragging = false;
             }
-            
+
             Released?.Invoke(this, pointer);
+
+            if (pointer.DeviceType == PointerDeviceType.Pen)
+            {
+                if (_isPenDragging)
+                {
+                    PenPointerCompleted?.Invoke(this, pointer);
+                    _isPenDragging = false;
+                }
+
+                PenPointerReleased?.Invoke(this, pointer);
+            }
         }
 
         public virtual void OnPointerWheelChanged(CanvasPointer pointer, float delta)
@@ -83,8 +109,19 @@ namespace NuSysApp
                 OnDragStarted(pointer);
                 _isDragging = true;
             }
-            
+
             Dragged?.Invoke(this, pointer);
+
+
+            if (pointer.DeviceType == PointerDeviceType.Pen)
+            {
+                if (!_isPenDragging)
+                {
+                    PenPointerDragStarted?.Invoke(this, pointer);
+                    _isPenDragging = true;
+                }
+                PenPointerDragged?.Invoke(this, pointer);
+            }       
         }
 
         // Function fired when key is pressed on this render item
