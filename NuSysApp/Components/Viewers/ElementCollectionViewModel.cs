@@ -69,7 +69,7 @@ namespace NuSysApp
 
             foreach (var childId in model.Children)
             {
-                var childController =  SessionController.Instance.IdToControllers[childId];
+                var childController =  SessionController.Instance.ElementModelIdToElementController[childId];
                 Debug.Assert(childController != null);
                 CreateChild(childController);
             }
@@ -144,7 +144,7 @@ namespace NuSysApp
             var model = (CollectionLibraryElementModel) Controller.LibraryElementModel;
             foreach (var id in model.Children )
             {
-                var childController = SessionController.Instance.IdToControllers[id];
+                var childController = SessionController.Instance.ElementModelIdToElementController[id];
                 await CreateChild(childController);
             }
         }
@@ -274,10 +274,10 @@ namespace NuSysApp
                     CollectionLibraryElementModel;
             foreach (var node in collectionLibraryElementModel.Children)
             {
-                if (SessionController.Instance.IdToControllers.ContainsKey(node))
+                if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(node))
                 {
                     libraryElementIds.Add(
-                        SessionController.Instance.IdToControllers[node]?
+                        SessionController.Instance.ElementModelIdToElementController[node]?
                             .LibraryElementModel?.LibraryElementId);
                 }
             }

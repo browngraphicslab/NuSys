@@ -59,7 +59,9 @@ namespace NuSysApp
             ButtonTextColor = Constants.DARK_BLUE;
             Height = 50;
             Width = 50;
+            ImageBounds = new Rect(10, 10, 30, 30);
             SetOriginalValues();
+            
         }
 
         /// <summary>
@@ -87,7 +89,7 @@ namespace NuSysApp
         public override void Resize(double e)
         {
             base.Resize(e);
-            //ImageBounds = new Rect(_originalImageBounds.X, _originalImageBounds.Y, _originalWidth * e, _originalHeight * e);
+            ImageBounds = new Rect(_originalImageBounds.X, _originalImageBounds.Y, _originalImageBounds.Width * e, _originalImageBounds.Height * e);
         }
 
     }

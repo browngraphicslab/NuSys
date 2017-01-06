@@ -20,6 +20,24 @@ namespace NuSysApp
         // Delegate for the TextChanged event: Takes in the new string of text
         public delegate void TextHandler(InteractiveBaseRenderItem item, String text);
 
+        private string text { get; set; }
+
+        /// <summary>
+        /// The text to be displayed in the textbox.
+        /// </summary>
+        public override string Text
+        {
+            get { return text; }
+            set
+            {
+                text = value;
+                if (_constructed)
+                {
+                    EditableTextboxUIElement_TextChanged(this, value);
+                }
+            }
+        }
+
         // Text events
         public event TextHandler TextChanged;
         public event TextHandler TextCopied;
@@ -42,7 +60,7 @@ namespace NuSysApp
         public CanvasTextLayout TextLayout { get; set; }
 
         // Text format currently being used
-        private CanvasTextFormat _textFormat;
+        protected CanvasTextFormat TextFormat;
 
         // Direction this textbox scrolls
         private bool _scrollVert;
@@ -77,6 +95,18 @@ namespace NuSysApp
         private int _minIndex;
 
         /// <summary>
+        /// The color of the placeholder text
+        /// </summary>
+        public Color PlaceHolderTextColor { get; set; } = UIDefaults.PlaceHolderTextColor;
+
+        /// <summary>
+        /// The placeholder text to display on the Scrollable textbox
+        /// </summary>
+        public string PlaceHolderText { get; set; } = string.Empty;
+
+        private bool _constructed;
+
+        /// <summary>
         /// Models a text box which the user can type into and edit
         /// Inherits from TextboxUIElement
         /// </summary>
@@ -94,7 +124,7 @@ namespace NuSysApp
             TrimmingSign = CanvasTrimmingSign.None;
 
             // Initializing the textformat
-            _textFormat = new CanvasTextFormat
+            TextFormat = new CanvasTextFormat
             {
                 HorizontalAlignment = TextHorizontalAlignment,
                 VerticalAlignment = TextVerticalAlignment,
@@ -109,7 +139,7 @@ namespace NuSysApp
             _xOffset = 0;
             _yOffset = 0;
 
-            TextLayout = new CanvasTextLayout(resourceCreator, Text, _textFormat,
+            TextLayout = new CanvasTextLayout(resourceCreator, Text, TextFormat,
                                               Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
                                               Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
 
@@ -128,6 +158,8 @@ namespace NuSysApp
 
             _dragging = false;
 
+            _constructed = true;
+
             // Add cursor as child of the textbox
             this.AddChild(_cursor);
 
@@ -137,10 +169,67 @@ namespace NuSysApp
             this.OnFocusLost += EditableTextboxUIElement_OnFocusLost;
             this.KeyPressed += EditableTextboxUIElement_KeyPressed;
             this.KeyReleased += EditableTextboxUIElement_KeyReleased;
-            this.TextChanged += EditableTextboxUIElement_TextChanged;
             this.DragStarted += ScrollableTextboxUIElement_DragStarted;
             this.DragCompleted += ScrollableTextboxUIElement_DragCompleted;
+            this.DoubleTapped += ScrollableTextboxUIElement_DoubleTapped;
 
+        }
+
+        /// <summary>
+        /// Used to select a whole word when the box is double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ScrollableTextboxUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ClearSelection();
+
+            var loc = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding,
+                                      loc.Y - UIDefaults.YTextPadding);
+            int charIndex = GetHitIndex(pos);
+            if (Text == "")
+            {
+                return;
+            }
+
+            char c = Text[charIndex];
+
+            if (Char.IsWhiteSpace(c))
+            {
+                return;
+            }
+            int start = charIndex;
+            int end = charIndex;
+
+            while (start > 0)
+            {
+                char prevC = Text[start - 1];
+                if (Char.IsWhiteSpace(prevC))
+                {
+                    break;
+                } else
+                {
+                    start--;
+                }
+            }
+
+            while (end < (Text.Length - 1))
+            {
+                char nextC = Text[end + 1];
+                if (Char.IsWhiteSpace(nextC))
+                {
+                    break;
+                }
+                else
+                {
+                    end++;
+                }
+            }
+
+            _hasSelection = true;
+            _selectionStartIndex = start;
+            _selectionEndIndex = end;
         }
 
         /// <summary>
@@ -198,10 +287,9 @@ namespace NuSysApp
         private void EditableTextboxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ClearSelection();
-
             var loc = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X, 
-                                      loc.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
+            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding, 
+                                      loc.Y - UIDefaults.YTextPadding);
             int charIndex = GetHitIndex(pos);
             CursorCharacterIndex = charIndex;
             if (Text == "")
@@ -223,8 +311,21 @@ namespace NuSysApp
             //Backspace Key
             if (args.VirtualKey == VirtualKey.Back)
             {
-                _currCursorX = 0;              
-                if (CursorCharacterIndex >= 0)
+                _currCursorX = 0;
+                if (_hasSelection)
+                {
+                    int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                    int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+
+                    Text = Text.Remove(firstIndex, length);
+                    CursorCharacterIndex -= length;
+                    if (CursorCharacterIndex < -1)
+                    {
+                        CursorCharacterIndex = -1;
+                    }
+                    OnTextChanged(Text);
+                    ClearSelection();
+                } else if (CursorCharacterIndex >= 0)
                 {
                     Text = Text.Remove(CursorCharacterIndex, 1);
                     OnTextChanged(Text);
@@ -235,7 +336,20 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.Delete)
             {
                 _currCursorX = 0;
-                if (CursorCharacterIndex < (Text.Length-1))
+                if (_hasSelection)
+                {
+                    int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+                    int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
+
+                    Text = Text.Remove(firstIndex, length);
+                    CursorCharacterIndex -= length;
+                    if (CursorCharacterIndex < -1)
+                    {
+                        CursorCharacterIndex = -1;
+                    }
+                    OnTextChanged(Text);
+                    ClearSelection();
+                } else if (CursorCharacterIndex < (Text.Length-1))
                 {
                     Text = Text.Remove(CursorCharacterIndex+1, 1);
                     OnTextChanged(Text);
@@ -469,6 +583,9 @@ namespace NuSysApp
 
             DrawSelection(ds);
 
+            DrawPlaceHolderText(ds);
+
+
             ds.Transform = orgTransform;
 
         }
@@ -478,9 +595,10 @@ namespace NuSysApp
         /// </summary>
         private void ShiftTextOnDrag()
         {
+
             var loc = Vector2.Transform(_draggedPointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding - (float)this.Transform.LocalPosition.X,
-                                      loc.Y - UIDefaults.YTextPadding - (float)this.Transform.LocalPosition.Y);
+            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding,
+                                      loc.Y - UIDefaults.YTextPadding);
             _selectionEndIndex = GetHitIndex(pos);
 
             // Update y offset if vertical scrolling textbox, x offset otherwise
@@ -625,9 +743,9 @@ namespace NuSysApp
         /// <returns></returns>
         public virtual CanvasTextLayout CreateTextLayout(ICanvasResourceCreator resourceCreator)
         {
-            var textLayout = _scrollVert ? new CanvasTextLayout(resourceCreator, Text, _textFormat,
+            var textLayout = _scrollVert ? new CanvasTextLayout(resourceCreator, Text, TextFormat,
                                            Width - 2 * (BorderWidth + UIDefaults.XTextPadding), float.MaxValue) :
-                                           new CanvasTextLayout(resourceCreator, Text, _textFormat, float.MaxValue,
+                                           new CanvasTextLayout(resourceCreator, Text, TextFormat, float.MaxValue,
                                            Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
 
             return textLayout;
@@ -665,13 +783,13 @@ namespace NuSysApp
                         ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                                     BorderWidth + UIDefaults.YTextPadding + _yOffset,
                                     Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
-                                    TextColor, _textFormat);
+                                    TextColor, TextFormat);
                     } else
                     {
                         ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                                     BorderWidth + UIDefaults.YTextPadding + _yOffset, double.MaxValue,
                                     Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
-                                    TextColor, _textFormat);
+                                    TextColor, TextFormat);
                     }
                 }
             }
@@ -799,6 +917,24 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Draws the placeholder text if the textbox is empty
+        /// </summary>
+        /// <param name="ds"></param>
+        private void DrawPlaceHolderText(CanvasDrawingSession ds)
+        {
+            if (string.IsNullOrEmpty(Text))
+            {
+                var orgTransform = ds.Transform;
+                ds.Transform = Transform.LocalToScreenMatrix;
+                ds.DrawText(PlaceHolderText, new Rect(BorderWidth + UIDefaults.XTextPadding,
+            BorderWidth + UIDefaults.YTextPadding,
+            Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
+            PlaceHolderTextColor, TextFormat);
+                ds.Transform = orgTransform;
+            }
+        }
+
+        /// <summary>
         /// Fired when the text of this textbox is changed
         /// Fires the TextChanged event when possible
         /// </summary>
@@ -861,6 +997,11 @@ namespace NuSysApp
             ToUnicodeEx(virtualKeyCode, scanCode, keyboardState, result, (int)5, (uint)0, inputLocaleIdentifier);
 
             return result.ToString();
+        } 
+
+        private String GetSelectedWord(int charIndex)
+        {
+            return "";
         }
 
         // FUNCTIONS TO CONVERT KEYCODE TO STRING UNICODE CHARACTER

@@ -128,19 +128,19 @@ namespace NuSysApp
             p.X -= 150;
             p.Y -= 150;//TODO not have this heere, factor out to half on a constantly-defined default width and height
 
-            if (!SessionController.Instance.IdToControllers.ContainsKey(draggedId))
+            if (!SessionController.Instance.ElementModelIdToElementController.ContainsKey(draggedId))
             {
                 return;
             }
 
-            if (!SessionController.Instance.IdToControllers.ContainsKey(hoveredId))
+            if (!SessionController.Instance.ElementModelIdToElementController.ContainsKey(hoveredId))
             {
                 return;
             }
 
             // get the element controllers from the ids
-            var draggedController = SessionController.Instance.IdToControllers[draggedId];
-            var hoveredController = SessionController.Instance.IdToControllers[hoveredId];
+            var draggedController = SessionController.Instance.ElementModelIdToElementController[draggedId];
+            var hoveredController = SessionController.Instance.ElementModelIdToElementController[hoveredId];
 
             var draggedIsCollection = draggedController is ElementCollectionController;
             var hoverIsCollection = hoveredController is ElementCollectionController;

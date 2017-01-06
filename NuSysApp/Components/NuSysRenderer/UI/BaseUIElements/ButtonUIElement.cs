@@ -166,9 +166,9 @@ namespace NuSysApp
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
         /// <param name="shapeElement"></param>
-        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shape) : base(parent, resourceCreator)
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shape = null) : base(parent, resourceCreator)
         {
-            Shape = shape;
+            Shape = shape ?? new RectangleUIElement(parent, ResourceCreator); //This is important so all buttons should have the same base appearence
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -179,7 +179,6 @@ namespace NuSysApp
             Shape.Dragged += Shape_Dragged;
             Shape.Tapped += Shape_Tapped;
             Shape.DoubleTapped += Shape_DoubleTapped;
-
             Enabled = true;
 
             Padding = 7;
@@ -189,12 +188,12 @@ namespace NuSysApp
         /// sets original values to height width and size.
         /// should be called at end of constructor for individual button types.
         /// </summary>
-        protected void SetOriginalValues()
+        protected virtual void SetOriginalValues()
         {
             _originalHeight = Height;
             _originalWidth = Width;
             _originalTextSize = ButtonTextSize;
-            _originalImageBounds = ImageBounds ?? GetLocalBounds();
+            _originalImageBounds = ImageBounds ?? new Rect(0,0,GetLocalBounds().Width - 20, GetLocalBounds().Height);
         }
 
         /// <summary>

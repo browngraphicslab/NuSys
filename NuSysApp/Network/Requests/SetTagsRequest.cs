@@ -37,7 +37,7 @@ namespace NuSysApp
             {
                 tagKeywords.Add(new Keyword(tag));
             }
-            SessionController.Instance.IdToControllers[_message.GetString("id")].LibraryElementController.SetKeywords(new HashSet<Keyword>(tagKeywords));
+            SessionController.Instance.ElementModelIdToElementController[_message.GetString("id")].LibraryElementController.SetKeywords(new HashSet<Keyword>(tagKeywords));
         }
     }
 }

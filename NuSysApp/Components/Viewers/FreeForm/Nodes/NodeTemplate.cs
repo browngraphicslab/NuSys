@@ -449,8 +449,8 @@ namespace NuSysApp
             Debug.Assert(elementId1 != null);
             Debug.Assert(elementId2 != null);
             Debug.Assert(currentCollection != null);
-            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId1));
-            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId2));
+            Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId1));
+            Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId2));
 
             //SessionController.Instance.NuSysNetworkSession.AddPresentationLink(elementId1, elementId2, currentCollection);
         }

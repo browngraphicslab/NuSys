@@ -374,7 +374,15 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionGridView.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinkContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinkPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AutoSuggestTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\TransparentButtonUIElement.cs" />
