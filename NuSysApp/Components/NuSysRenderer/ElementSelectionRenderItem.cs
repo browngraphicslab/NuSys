@@ -25,51 +25,33 @@ namespace NuSysApp
         private FreeFormViewerViewModel _vm;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
 
-        //public NodeMenuButtonRenderItem BtnDelete;
-        //public NodeMenuButtonRenderItem BtnPresent;
-        //public NodeMenuButtonRenderItem BtnGroup;
-        //public NodeMenuButtonRenderItem BtnEnterCollection;
-        //public NodeMenuButtonRenderItem BtnExport;
-        //public NodeMenuButtonRenderItem BtnLayoutTool;
-
-
-        public EllipseButtonUIElement BtnDelete;
-        public EllipseButtonUIElement BtnPresent;
-        public EllipseButtonUIElement BtnGroup;
-        public EllipseButtonUIElement BtnEnterCollection;
-        //public EllipseButtonUIElement BtnExport;
-        public EllipseButtonUIElement BtnLayoutTool;
-
+        public NodeMenuButtonRenderItem BtnDelete;
+        public NodeMenuButtonRenderItem BtnPresent;
+        public NodeMenuButtonRenderItem BtnGroup;
+        public NodeMenuButtonRenderItem BtnEnterCollection;
+        public NodeMenuButtonRenderItem BtnExport;
+        public NodeMenuButtonRenderItem BtnLayoutTool;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
         public ButtonUIElement BtnTools;
         private RectangleUIElement DragToolsRect;
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
-        private List<BaseInteractiveUIElement> _menuButtons = new List<BaseInteractiveUIElement>();
+        private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;
 
-        private StackLayoutManager _buttonLayout;
-
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
-            //BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
-            //BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
-            //BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
-            //BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
-            //BtnExport = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
-            //BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
+            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
+            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
+            BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
+            BtnExport = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
+            BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
 
-            BtnDelete = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "delete");
-            BtnPresent = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "present");
-            BtnGroup = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "group");
-            BtnEnterCollection = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "enter collection");
-            //BtnExport = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.AccentStyle, "export");
-            BtnLayoutTool = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.AccentStyle, "layout options");
-
-            BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
-            BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
+            BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
+            BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
             SetUpToolButton();
 
@@ -85,10 +67,10 @@ namespace NuSysApp
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer,
-                //BtnExport,
+                BtnExport,
                 BtnTools
             };
-            _menuButtons = new List<BaseInteractiveUIElement> {BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -96,22 +78,6 @@ namespace NuSysApp
             foreach (var btn in Buttons)
             {
                 AddChild(btn);
-            }
-
-            _buttonLayout = new StackLayoutManager(StackAlignment.Vertical)
-            {
-                Spacing = 20,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Width = 80,
-                Height = 300,
-                ItemHeight = 50,
-                ItemWidth = 50
-            };
-
-            foreach (var button in _menuButtons)
-            {
-               _buttonLayout.AddElement(button);
             }
 
             AddChild(Resizer);
@@ -134,7 +100,7 @@ namespace NuSysApp
 
             BtnTools = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
             BtnTools.DragCompleted += BtnTools_DragCompleted;
-            BtnTools.Dragged += BtnTools_Dragged; 
+            BtnTools.Dragged += BtnTools_Dragged;
 
             DragToolsRect = new RectangleUIElement(this, ResourceCreator)
             {
@@ -174,7 +140,7 @@ namespace NuSysApp
             collectionVm.CreateToolFromCollection(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
         }
 
-        
+
 
         public override async Task Load()
         {
@@ -183,12 +149,8 @@ namespace NuSysApp
                 await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
             DragToolsRect.Image =
                 await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
-
-            BtnDelete.Image =  await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/trash can white.png"));
-            BtnGroup.Image = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/collection white.png"));
-            BtnPresent.Image = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/present white.png"));
         }
-        
+
 
         private void SelectionsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
@@ -207,10 +169,11 @@ namespace NuSysApp
                 }
             }
 
-            if (args.NewItems != null) { 
+            if (args.NewItems != null)
+            {
                 foreach (var newItem in args.NewItems)
                 {
-                    var item = (ElementRenderItem) newItem;
+                    var item = (ElementRenderItem)newItem;
                     _selectedItems.Add(item);
                     item.ViewModel.Controller.PositionChanged += OnSelectedItemPositionChanged;
                     item.ViewModel.Controller.SizeChanged += OnSelectedItemSizeChanged;
@@ -280,7 +243,7 @@ namespace NuSysApp
 
             Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
 
-        
+
             float leftOffset = -40;
             if (_isSinglePdfSelected)
             {
@@ -291,9 +254,22 @@ namespace NuSysApp
             }
 
             var count = 0;
-
-            _buttonLayout.ArrangeItems(new Vector2(-80, 60));
-
+            foreach (var btn in _menuButtons)
+            {
+                if (!btn.IsVisible)
+                    continue;
+                //Make sure the tool button is a ligned because its a different type of button from the rest
+                if (btn == BtnTools)
+                {
+                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset - BtnTools.Width / 2,
+                        (float)_screenRect.Y + 20 + count * 35);
+                }
+                else
+                {
+                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
+                }
+                count++;
+            }
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;
             BtnPdfRight.IsVisible = _isSinglePdfSelected;
 
@@ -332,36 +308,36 @@ namespace NuSysApp
             _screenRect.X = 0;
             _screenRect.Y = 0;
 
-            
+
             Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
 
             var old = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
 
-          
+
 
             base.Draw(ds);
 
             ds.Transform = old;
         }
 
-        private Rect GetBoundingRect(List<Rect> rects )
+        private Rect GetBoundingRect(List<Rect> rects)
         {
             var minX = double.PositiveInfinity;
-            var  minY = double.PositiveInfinity;
+            var minY = double.PositiveInfinity;
             var maxW = double.NegativeInfinity;
             var maxH = double.NegativeInfinity;
             foreach (var rect in rects)
             {
-                if (double.IsNaN(rect.X) || double.IsNaN(rect.Y) || double.IsNaN(rect.Width) || double.IsNaN(rect.Height) )
-                    return new Rect(0,0,0,0);
+                if (double.IsNaN(rect.X) || double.IsNaN(rect.Y) || double.IsNaN(rect.Width) || double.IsNaN(rect.Height))
+                    return new Rect(0, 0, 0, 0);
                 minX = rect.X < minX ? rect.X : minX;
                 minY = rect.Y < minY ? rect.Y : minY;
                 maxW = rect.X + rect.Width > maxW ? rect.X + rect.Width : maxW;
                 maxH = rect.Y + rect.Height > maxH ? rect.Y + rect.Height : maxH;
             }
-            return new Rect(minX, minY, maxW-minX, maxH-minY);
+            return new Rect(minX, minY, maxW - minX, maxH - minY);
         }
 
         public override Rect GetLocalBounds()
