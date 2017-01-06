@@ -100,7 +100,7 @@ namespace NuSysApp
         private async Task SetUpToolButton()
         {
 
-            BtnTools = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle);
+            BtnTools = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle, "drag tools");
             BtnTools.DragCompleted += BtnTools_DragCompleted;
             BtnTools.Dragged += BtnTools_Dragged;
 
@@ -148,9 +148,9 @@ namespace NuSysApp
         {
             base.Load();
             BtnTools.Image =
-                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
+                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
             DragToolsRect.Image =
-                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/tools icon.png"));
+                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
         }
 
 
@@ -263,8 +263,8 @@ namespace NuSysApp
                 //Make sure the tool button is a ligned because its a different type of button from the rest
                 if (btn == BtnTools)
                 {
-                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset - BtnTools.Width / 2,
-                        (float)_screenRect.Y + 20 + count * 35);
+                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + 20 + (float)_screenRect.Width,
+                        (float)_screenRect.Y);
                 }
                 else
                 {
