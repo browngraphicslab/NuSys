@@ -123,12 +123,12 @@ namespace NusysIntermediate
 
         #endregion GetEntireWorkspaceRequest
 
-            #region CreateNewContentRequest
+        #region CreateNewContentRequest
 
-        /// <summary>
-        /// The key used to hold the type of content being added
-        /// </summary>
-        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
+            /// <summary>
+            /// The key used to hold the type of content being added
+            /// </summary>
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
 
             /// <summary>
             /// The key used to hold the content id.
@@ -1606,7 +1606,8 @@ namespace NusysIntermediate
             Image,
             Video,
             Audio,
-            Word
+            Word, 
+            Collection
         }
 
         /// <summary>
@@ -1817,6 +1818,10 @@ namespace NusysIntermediate
                     return ContentType.PDF;
                 case ElementType.Word:
                     return ContentType.Word;
+                case ElementType.Collection:
+                    return ContentType.Collection;
+                case ElementType.Text:
+                    return ContentType.Text;
                 default:
                     return ContentType.Text;
             }

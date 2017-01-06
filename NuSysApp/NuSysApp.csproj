@@ -124,12 +124,17 @@
     <Content Include="Assets\new icons\add elements white.png" />
     <Content Include="Assets\new icons\add elements.png" />
     <Content Include="Assets\new icons\back.png" />
+    <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
+    <Content Include="Assets\new icons\enter collection white.png" />
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\node.png" />
+    <Content Include="Assets\new icons\present white.png" />
     <Content Include="Assets\new icons\recording.png" />
     <Content Include="Assets\new icons\text.png" />
+    <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
+    <Content Include="Assets\new icons\trash can white.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
@@ -563,6 +568,7 @@
     <Compile Include="Components\Win2dTools\ToolResizerRenderItem.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
+    <Compile Include="Controller\CollectionContentDataController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
     <Compile Include="Controller\ContentDataController.cs" />
@@ -756,6 +762,7 @@
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewAudioLibraryElementRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewCollectionContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewImageLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />

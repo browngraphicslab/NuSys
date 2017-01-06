@@ -56,7 +56,7 @@ namespace NuSysApp
                 _nodeManipulationMode.Deactivate();
                 //_panZoomMode.Deactivate(); //this should be commented out when panning and zooming isn't buggy anymore
             }
-            var shapePoints = (SessionController.Instance.ContentController.GetLibraryElementModel(collElementModel.LibraryId) as CollectionLibraryElementModel).ShapePoints;
+            var shapePoints = (SessionController.Instance.ContentController.GetContentDataController(collElementModel.LibraryId) as CollectionContentDataController)?.CollectionModel?.Shape?.ShapePoints;
 
 
             var adornment = new AdornmentView(new List<Point>(shapePoints?.Select(p => new Point(p.X, p.Y)) ?? new List<Point>()));

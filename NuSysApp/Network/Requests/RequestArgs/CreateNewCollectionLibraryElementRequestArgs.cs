@@ -29,26 +29,6 @@ namespace NuSysApp
         /// </summary>
         public bool? IsFiniteCollection { get; set; }
 
-        /// <summary>
-        /// the list of points used to represent the outer bounds of a bounded collection.  
-        /// If this is null, it wont be included in the request
-        /// </summary>
-        public List<PointModel> ShapePoints { get; set; }
-
-        /// <summary>
-        /// the double aspect ratio of the collection if it is shaped.  
-        /// This is not requiresd, but should be used if the ShapePoints list is used.
-        /// will only be included in the request if this nullable double is not null.
-        /// Should be calculated as width/height.
-        /// </summary>
-        public double? AspectRatio { get; set; }
-
-        /// <summary>
-        /// The ColorModel that represents the color of the shape of the collection.  
-        /// If there is no color, don't set this.
-        /// A null value will mean that the value won't be included in the request.
-        /// </summary>
-        public ColorModel Color { get; set; }
 
         /// <summary>
         /// this override pack to request keys simply calls the base class's method to get a message.
@@ -61,18 +41,6 @@ namespace NuSysApp
             if (IsFiniteCollection != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_COLLECTION_FINITE_BOOLEAN_KEY] = IsFiniteCollection.Value;
-            }
-            if (ShapePoints != null)
-            {
-                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_POINTS_KEY] = ShapePoints;
-            }
-            if (AspectRatio != null)
-            {
-                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_ASPECT_RATIO_KEY] = AspectRatio.Value;
-            }
-            if(Color != null)
-            {
-                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SHAPED_COLLECTION_COLOR_KEY] = Color;
             }
             return message;
         }

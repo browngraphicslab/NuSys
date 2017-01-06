@@ -243,8 +243,9 @@ namespace NuSysApp
 
             if (ViewModel.IsShaped || ViewModel.IsFinite)
             {
-                var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
-                var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
+                var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
+                Debug.Assert(controller != null);
+                var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
                 _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
 
             }

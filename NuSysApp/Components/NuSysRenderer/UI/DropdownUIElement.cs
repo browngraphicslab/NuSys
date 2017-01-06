@@ -167,7 +167,6 @@ namespace NuSysApp
             {
                 ColumnFunction = text => text,
                 RelativeWidth = 1,
-                Title = "+"
             };
             _dropDownList.AddColumn(_dropDownItems);          
 
@@ -193,9 +192,10 @@ namespace NuSysApp
         /// <param name="isSelected"></param>
         private void OnRowSelected(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
+            CurrentSelection = item;
+
             if (isSelected)
             {
-                CurrentSelection = item;
             }
         }
 
@@ -277,8 +277,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _dropDownList.Transform.LocalPosition = new Vector2(0, Height);
-            _dropDownList.Background = Colors.White;
+            _dropDownList.Transform.LocalPosition = new Vector2(0, 0);
             _dropDownList.ShowHeader = false;
             _dropDownList.Width = Width;
 

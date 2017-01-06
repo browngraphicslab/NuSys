@@ -658,7 +658,7 @@ namespace NuSysApp
             }
 
 
-            var createNewContentRequestArgs = new CreateNewContentRequestArgs
+            var createNewContentRequestArgs = new CreateNewCollectionContentRequestArgs()
             {
                 LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
                 {
@@ -668,12 +668,13 @@ namespace NuSysApp
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
                     IsFiniteCollection = finite,
-                    ShapePoints = shapePoints,
-                    AspectRatio = targetRectInCollection.Width/ targetRectInCollection.Height,
-                    Color = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
-
                 },
-                ContentId = SessionController.Instance.GenerateId()
+                ContentId = SessionController.Instance.GenerateId(),
+                Shape = new CollectionShapeModel() {
+                    ShapePoints = shapePoints,
+                    AspectRatio = targetRectInCollection.Width / targetRectInCollection.Height,
+                    ShapeColor = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
+                }
             };
 
             // execute the content request
@@ -757,11 +758,6 @@ namespace NuSysApp
             {
                 var id = Selections[0].ViewModel.LibraryElementId;
                 await SessionController.Instance.EnterCollection(id);
-            }
-
-            if (item == RenderEngine.ElementSelectionRect.BtnExport)
-            {
-                
             }
 
             if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
