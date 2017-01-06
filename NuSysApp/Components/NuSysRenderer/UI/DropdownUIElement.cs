@@ -193,10 +193,6 @@ namespace NuSysApp
         private void OnRowSelected(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             CurrentSelection = item;
-
-            if (isSelected)
-            {
-            }
         }
 
         /// <summary>

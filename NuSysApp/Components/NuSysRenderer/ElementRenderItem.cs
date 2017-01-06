@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -31,7 +32,17 @@ namespace NuSysApp
         public ElementViewModel ViewModel => _vm;
         private bool _needsTitleUpdate = true;
         private CanvasTextFormat _format;
-   
+
+        /// <summary>
+        ///  true if the element is currently highlighted
+        /// </summary>
+        private bool _isHighlighted;
+
+        /// <summary>
+        /// the highlight background color
+        /// </summary>
+        private Color _highlightBackground = UIDefaults.HighlightColor;
+
         public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;
@@ -56,8 +67,20 @@ namespace NuSysApp
 
                 AddChild(_tagRenderItem);
             }
+
+            vm.Controller.LibraryElementController.HighlightChanged += LibraryElementController_HighlightChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
             base.Background = Colors.Transparent;
+        }
+
+        private void LibraryElementController_HighlightChanged(LibraryElementController sender, bool isHighlighted)
+        {
+            if (sender.LibraryElementModel == SessionController.Instance.CurrentCollectionLibraryElementModel)
+            {
+                return;
+            }
+
+            _isHighlighted = isHighlighted;
         }
 
         private void SessionSettingsTextScaleChanged(object sender, double e)
@@ -81,6 +104,7 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
+            _vm.Controller.LibraryElementController.HighlightChanged -= LibraryElementController_HighlightChanged;
 
             _tagRenderItem?.Dispose();
             _tagRenderItem = null;
@@ -211,6 +235,19 @@ namespace NuSysApp
                 ds.DrawTextLayout(_textLayout,
                     new Vector2(sp.X + (spr.X - sp.X - 200f)/2f, sp.Y - drawBoundsHeight - 18),
                     color);
+            }
+
+            // draw highlights if we are highlighted
+            if (_isHighlighted)
+            {
+                var highlightRect = GetLocalBounds();
+                var margin = 3;
+                highlightRect.X -= margin;
+                highlightRect.Y -= margin;
+                highlightRect.Width += margin * 2;
+                highlightRect.Height += margin * 2;
+                ds.Transform = Transform.LocalToScreenMatrix;
+                ds.DrawRectangle(highlightRect, _highlightBackground, 10);
             }
             ds.Transform = oldTransform;
             base.Draw(ds);

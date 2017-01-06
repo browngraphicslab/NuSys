@@ -16,8 +16,14 @@ namespace NuSysApp
             {
                 controller.RemoveHighlight();
             }
+            _oldControllers.Clear();
 
             foreach (var controller in controllers)
+            {
+                _oldControllers.Add(controller);
+            }
+
+            foreach (var controller in _oldControllers)
             {
                 controller.AddHighlight();
             }
@@ -30,6 +36,8 @@ namespace NuSysApp
             {
                 controller.RemoveHighlight();
             }
+
+            _oldControllers.Clear();
         }
 
     }

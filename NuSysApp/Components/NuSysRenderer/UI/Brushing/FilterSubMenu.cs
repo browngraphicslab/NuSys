@@ -70,6 +70,11 @@ namespace NuSysApp
 
         public BrushFilter CurrBrush { get; }
 
+        /// <summary>
+        /// Event fired whenever the brush is updated in the filter sub menu
+        /// </summary>
+        public event EventHandler<BrushFilter> BrushUpdated;
+
         public FilterSubMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
@@ -220,6 +225,8 @@ namespace NuSysApp
             {
                 Debug.Fail("we should never hit this");
             }
+
+            OnBrushUpdated();
         }
 
         /// <summary>
@@ -239,6 +246,8 @@ namespace NuSysApp
             {
                 CurrBrush.Types.Remove(item);
             }
+
+            OnBrushUpdated();
         }
 
         public override void Dispose()
@@ -270,6 +279,13 @@ namespace NuSysApp
             {
                 CurrBrush.Creators.Remove(item);
             }
+
+            OnBrushUpdated();
+        }
+
+        private void OnBrushUpdated()
+        {
+            BrushUpdated?.Invoke(this, CurrBrush);
         }
 
         /// <summary>
