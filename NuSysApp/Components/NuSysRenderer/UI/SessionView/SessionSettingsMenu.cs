@@ -31,9 +31,9 @@ namespace NuSysApp
         private ButtonUIElement _showMinimapButton;
 
         /// <summary>
-        /// the button for toggling the visibility of the bread crumb trail.
+        /// the button for docking the bread crumb trail to the side of the window.
         /// </summary>
-        private ButtonUIElement _showBreadCrumbsButton;
+        private ButtonUIElement _dockBreadCrumbsButton;
 
         /// <summary>
         /// slider for changing the session's font and button sizes. 
@@ -56,8 +56,8 @@ namespace NuSysApp
             _showMinimapButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_showMinimapButton);
 
-            _showBreadCrumbsButton = new RectangleButtonUIElement(this, resourceCreator);
-            AddChild(_showBreadCrumbsButton);
+            _dockBreadCrumbsButton = new RectangleButtonUIElement(this, resourceCreator);
+            AddChild(_dockBreadCrumbsButton);
 
             _textSizeSlider = new SliderUIElement(this, resourceCreator, 1, 10)
             {
@@ -73,16 +73,16 @@ namespace NuSysApp
             _resizeElementTitlesButton.Transform.LocalPosition = new Vector2(10, 35);
             _showLinksButton.Transform.LocalPosition = new Vector2(10, 100);
             _showMinimapButton.Transform.LocalPosition = new Vector2(10, 165);
-            _showBreadCrumbsButton.Transform.LocalPosition = new Vector2(10, 230);
+            _dockBreadCrumbsButton.Transform.LocalPosition = new Vector2(10, 230);
             _textSizeSlider.Transform.LocalPosition = new Vector2(10, 295);
             _resizeElementTitlesButton.Tapped += ResizeElementTitlesButtonOnTapped;
             _showLinksButton.Tapped += ShowLinksButtonOnTapped;
             _showMinimapButton.Tapped += ShowMinimapTapped;
-            _showBreadCrumbsButton.Tapped += ShowBreadCrumbsButton_Tapped;
+            _dockBreadCrumbsButton.Tapped += DockBreadCrumbsButtonTapped;
             _textSizeSlider.OnSliderMoved += SliderChanged;
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged += SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged += SessionSettingsOnLinkVisibilityChanged;
-            SessionController.Instance.SessionSettings.BreadCrumbVisibilityChanged += SessionSettingsBreadCrumbVisibilityChanged;
+            SessionController.Instance.SessionSettings.BreadCrumbPositionChanged += SessionSettingsBreadCrumbPositionChanged;
             SessionController.Instance.SessionSettings.MinimapVisiblityChanged += SessionSettingsMinimapVisiblityChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
             SetButtonText();
@@ -96,11 +96,11 @@ namespace NuSysApp
             _resizeElementTitlesButton.Tapped -= ResizeElementTitlesButtonOnTapped;
             _showLinksButton.Tapped -= ShowLinksButtonOnTapped;
             _showMinimapButton.Tapped -= ShowMinimapTapped;
-            _showBreadCrumbsButton.Tapped -= ShowBreadCrumbsButton_Tapped;
+            _dockBreadCrumbsButton.Tapped -= DockBreadCrumbsButtonTapped;
             _textSizeSlider.OnSliderMoved -= SliderChanged;
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged -= SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged -= SessionSettingsOnLinkVisibilityChanged;
-            SessionController.Instance.SessionSettings.BreadCrumbVisibilityChanged -= SessionSettingsBreadCrumbVisibilityChanged;
+            SessionController.Instance.SessionSettings.BreadCrumbPositionChanged -= SessionSettingsBreadCrumbPositionChanged;
             SessionController.Instance.SessionSettings.MinimapVisiblityChanged -= SessionSettingsMinimapVisiblityChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
         }
@@ -113,7 +113,7 @@ namespace NuSysApp
             _resizeElementTitlesButton.ButtonText = "Resize Titles: " + SessionController.Instance.SessionSettings.ResizeElementTitles.ToString();
             _showLinksButton.ButtonText = "Show Links: "+SessionController.Instance.SessionSettings.LinksVisible.ToString();
             _showMinimapButton.ButtonText = "Show Minimap: " + SessionController.Instance.SessionSettings.MinimapVisible.ToString();
-            _showBreadCrumbsButton.ButtonText = "Show Bread Crumb Trail: " + SessionController.Instance.SessionSettings.BreadCrumbsVisible.ToString();
+            _dockBreadCrumbsButton.ButtonText = "Dock Bread Crumb Trail: " + SessionController.Instance.SessionSettings.BreadCrumbsDocked.ToString();
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SessionSettingsBreadCrumbVisibilityChanged(object sender, bool e)
+        private void SessionSettingsBreadCrumbPositionChanged(object sender, bool e)
         {
             SetButtonText();
         }
@@ -197,9 +197,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ShowBreadCrumbsButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DockBreadCrumbsButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SessionController.Instance.SessionSettings.BreadCrumbsVisible = !SessionController.Instance.SessionSettings.BreadCrumbsVisible;
+            SessionController.Instance.SessionSettings.BreadCrumbsDocked = !SessionController.Instance.SessionSettings.BreadCrumbsDocked;
+            SessionController.Instance.NuSessionView.UpdateUI();
         }
 
         /// <summary>
