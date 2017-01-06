@@ -24,183 +24,72 @@ namespace NuSysApp
         /// <summary>
         /// the collection element models on the collection associated with the controller
         /// </summary>
-        private List<ElementModel> _collectionElementModels; 
+        private List<ElementModel> _collectionElementModels;
 
         /// <summary>
-        /// Search box used to filter the elements currently in the grid
+        /// options for how to sort the grid
         /// </summary>
-        private ScrollableTextboxUIElement _gridSearchBox;
+        public enum GridSortOption
+        {
+            Title,
+            Date,
+            Creator
+        }
 
         /// <summary>
-        /// A dropdown menu offering different sorting options for the grid view
+        /// the list ui elements which are displayed on the grid
         /// </summary>
-        private DropdownUIElement _gridSortDropDown;
-
-        /// <summary>
-        /// The handle we use to scroll through the breadcrumb trail
-        /// </summary>
-        private RectangleUIElement _scrollHandle;
-
-        /// <summary>
-        /// The actual scroll bar behind the handle
-        /// </summary>
-        private RectangleUIElement _scrollBar;
-
-        /// <summary>
-        /// Mask rect used to mask CollectionGridViewUIElements in the draw call
-        /// </summary>
-        private Rect _maskRect;
-        
-
-        public enum GridSortOption { Title, Date, Creator}
-
-        private float _scrollBarWidth = 15;
-
-        private bool refreshUI;
-
-        private Vector2 _scrollHandleInitialDragPosition;
-        private float _totalGridHeightIfRendered;
-        private Rect _cropRect;
-        private List<CollectionGridViewUIElement> _visibleCollectionGridElements;
-
         private List<CollectionGridViewUIElement> _collectionGridElements;
 
-        public DetailViewCollectionGridView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, CollectionLibraryElementController controller) : base(parent, resourceCreator)
+        public DetailViewCollectionGridView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
+            CollectionLibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
 
             _collectionGridElements = new List<CollectionGridViewUIElement>();
 
-            _visibleCollectionGridElements = new List<CollectionGridViewUIElement>();
-
-            _gridSearchBox = new ScrollableTextboxUIElement(this, resourceCreator, false, false)
-            {
-                //ColumnFunction = elementModel => elementModel.Title,
-                //FilterFunction = s => new List<ElementModel>(_collectionElementModels.Where(em => em.Title.Contains(s))),
-            };
-            AddChild(_gridSearchBox);
-
-            _gridSortDropDown = new DropdownUIElement(this, resourceCreator)
-            {
-                Width = 100,
-                Height = 30,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                Prompt = "Sort By..."
-            };
-            AddChild(_gridSortDropDown);
-
-            _gridSortDropDown.AddOptionRange(new List<string>
-            {
-                string.Empty,
-                GridSortOptionToString(GridSortOption.Creator),
-                GridSortOptionToString(GridSortOption.Date),
-                GridSortOptionToString(GridSortOption.Title)
-            });
-
-            _scrollBar = new RectangleUIElement(this, resourceCreator)
-            {
-                Width = _scrollBarWidth,
-                Background = Colors.DimGray
-            };
-            AddChild(_scrollBar);
-            _scrollBar.Transform.LocalPosition = new Vector2(Width- _scrollBar.Width, 0);
-
-            _scrollHandle = new RectangleUIElement(this, resourceCreator)
-            {
-                Width = _scrollBarWidth,
-                Background = Colors.LightGray
-            };
-            AddChild(_scrollHandle);
-            _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollBar.Width, 0);
+            _controller.OnChildAdded += _controller_OnChildAdded;
+            _controller.OnChildRemoved += _controller_OnChildRemoved;
 
 
-            _scrollBar.Tapped += OnScrollBarTapped;
-            _scrollHandle.DragStarted += OnScrollHandleDragStarted;
-            _scrollHandle.Dragged += OnScrollHandleDragged;
-            _gridSortDropDown.Selected += _gridSortDropDown_Selected;
-            Dragged += MainBackgroundDragged;
-            DragStarted += MainBackgroundOnDragStarted;
-        }
-
-        private void MainBackgroundOnDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _scrollHandleInitialDragPosition = _scrollHandle.Transform.LocalPosition;
-        }
-
-        private void MainBackgroundDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var normalizedDiff = pointer.Delta.Y / _totalGridHeightIfRendered;
-            var _scrollDiff = -normalizedDiff * Width;
-            _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(0, _scrollDiff);
-            BoundScrollHandle();
-            refreshUI = true;
-        }
-
-        private void OnScrollHandleDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(0, pointer.Delta.Y);
-            BoundScrollHandle();
-
-
-            refreshUI = true;
-        }
-
-        private void BoundScrollHandle()
-        {
-            // bound the handle to the bounds
-            if (_scrollHandle.Transform.LocalPosition.Y < 0)
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(_scrollHandle.Transform.LocalX, 0);
-            }
-            else if (_scrollHandle.Transform.LocalPosition.Y + _scrollHandle.Height > Height)
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(_scrollHandle.Transform.LocalX, Height - _scrollHandle.Height);
-            }
-        }
-
-        private void OnScrollHandleDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _scrollHandleInitialDragPosition = _scrollHandle.Transform.LocalPosition;
-        }
-
-        private void OnScrollBarTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var currPointer = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-
-            if (currPointer.Y + _scrollHandle.Height < Height)
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(_scrollHandle.Transform.LocalX, currPointer.Y);
-            }
-            else
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(_scrollHandle.Transform.LocalX, currPointer.Y - _scrollHandle.Height);
-            }
-
-            refreshUI = true;
         }
 
         public override void Dispose()
         {
-            _scrollBar.Tapped -= OnScrollBarTapped;
-            _scrollHandle.DragStarted -= OnScrollHandleDragStarted;
-            _scrollHandle.Dragged -= OnScrollHandleDragged;
-            _gridSortDropDown.Selected -= _gridSortDropDown_Selected;
-            Dragged -= MainBackgroundDragged;
-            DragStarted -= MainBackgroundOnDragStarted;
-
+            _controller.OnChildAdded -= _controller_OnChildAdded;
+            _controller.OnChildRemoved -= _controller_OnChildRemoved;
             base.Dispose();
         }
 
-        private void _gridSortDropDown_Selected(DropdownUIElement sender, string item)
+        /// <summary>
+        /// Called whenever a child is removed from the controller assocaited with this collection
+        /// removes the child from the grid view
+        /// </summary>
+        /// <param name="elementModelId"></param>
+        private void _controller_OnChildRemoved(string elementModelId)
         {
-            SortGridBy(StringToGridSortOption(item));
+            var elementController = SessionController.Instance.ElementModelIdToElementController[elementModelId];
+            var gridElementToBeRemoved = _collectionGridElements.FirstOrDefault(item => item.Controller == elementController.LibraryElementController);
+            Debug.Assert(gridElementToBeRemoved != null);
+            _collectionGridElements.Remove(gridElementToBeRemoved);
+            var elementModelToBeRemoved =
+                _collectionElementModels.FirstOrDefault(item => item.LibraryId == elementController.LibraryElementId);
+            Debug.Assert(elementModelToBeRemoved != null);
+            _collectionElementModels.Remove(elementModelToBeRemoved);
         }
 
-        private void SortGridBy(GridSortOption sortOption)
+        /// <summary>
+        /// Called whenever a child is added to the controller associated with this collection
+        /// adds the child to the grid view
+        /// </summary>
+        /// <param name="elementModelId"></param>
+        private void _controller_OnChildAdded(string elementModelId)
         {
-            throw new NotImplementedException();
+            var elementController = SessionController.Instance.ElementModelIdToElementController[elementModelId];
+            _collectionGridElements.Add(new CollectionGridViewUIElement(this, Canvas, elementController.LibraryElementController));
+            _collectionElementModels.Add(elementController.Model);
         }
+
 
         /// <summary>
         /// helper method to convert a string to a GridSortOption
@@ -254,156 +143,9 @@ namespace NuSysApp
             if (request.WasSuccessful() == true)
             {
                 _collectionElementModels = request.GetReturnedElementModels();
-                ComputeScrollHandleSize();
-                _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
-                refreshUI = true;
-            }
-
-            Debug.Assert(_collectionElementModels != null);
-            foreach (var elementModel in _collectionElementModels)
-            {
-                Debug.Assert(elementModel != null);
-                var newElement = new CollectionGridViewUIElement(this, Canvas,
-                    SessionController.Instance.ContentController.GetLibraryElementController(elementModel.LibraryId));
-                Debug.Assert(newElement != null);
-                _collectionGridElements.Add(newElement);
-                AddChild(newElement);
             }
 
             base.Load();
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            if (IsDisposed)
-            {
-                return;
-            }
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-            using (ds.CreateLayer(1, _maskRect))
-            {
-                base.Draw(ds);
-            }
-            ds.Transform = orgTransform;
-        }
-
-
-        /// <summary>
-        /// Return true if the upper left, or lower right points are at least partically contained in the cropRect
-        /// </summary>
-        /// <param name="upperLeft"></param>
-        /// <param name="lowerRight"></param>
-        /// <param name="cropRect"></param>
-        /// <returns></returns>
-        private bool IsPartiallyContained(Vector2 upperLeft, Vector2 lowerRight, Rect cropRect)
-        {
-            return lowerRight.X > cropRect.Left && lowerRight.X < cropRect.Right ||
-                   upperLeft.X < cropRect.Right && upperLeft.X > cropRect.Left;
-        }
-
-        private bool ExtendsBeyondRight(Vector2 upperLeft, Vector2 lowerRight, Rect cropRect)
-        {
-            return lowerRight.X > cropRect.Right;
-        }
-
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            ComputeScrollHandleSize();
-            ReRender();
-            base.Update(parentLocalToScreenTransform);
-        }
-
-        private void ReRender()
-        {
-            if (!refreshUI)
-            {
-                return;
-            }
-
-            ComputeCrop();
-
-            // dispose of all the previous bread crumbs
-            foreach (var gridElement in _visibleCollectionGridElements)
-            {
-                gridElement.IsVisible = false;
-            }
-
-            Vector2 upperLeft = new Vector2(CollectionGridViewUIElement.DefaultSpacing, 0);
-            Vector2 lowerRight = new Vector2(upperLeft.X + CollectionGridViewUIElement.DefaultWidth, upperLeft.Y + CollectionGridViewUIElement.DefaultHeight);
-            Vector2 horizontalDiff = new Vector2(CollectionGridViewUIElement.DefaultWidth + CollectionGridViewUIElement.DefaultSpacing, 0);
-            Vector2 verticalDiff = new Vector2(0, CollectionGridViewUIElement.DefaultHeight + CollectionGridViewUIElement.DefaultSpacing);
-            foreach (var gridElement in _collectionGridElements.ToArray())
-            {
-                if (ExtendsBeyondRight(upperLeft, lowerRight, _cropRect))
-                {
-                    upperLeft = new Vector2(CollectionGridViewUIElement.DefaultSpacing, upperLeft.Y + verticalDiff.Y);
-                    lowerRight = new Vector2(upperLeft.X + CollectionGridViewUIElement.DefaultWidth, upperLeft.Y + CollectionGridViewUIElement.DefaultHeight);
-                }
-
-                if (IsPartiallyContained(upperLeft, lowerRight, _cropRect))
-                {
-                    gridElement.IsVisible = true;
-                    gridElement.Transform.LocalPosition = new Vector2((float)(upperLeft.X - _cropRect.Left), upperLeft.Y);
-                    _visibleCollectionGridElements.Add(gridElement);
-                    AddElementEvents(gridElement);
-                    AddChild(gridElement);
-                }
-
-                // shift the positions for the new calculations
-                upperLeft += horizontalDiff;
-                lowerRight += horizontalDiff;
-            }
-
-
-            refreshUI = false;
-        }
-
-        private void AddElementEvents(CollectionGridViewUIElement gridElement)
-        {
-        }
-
-        private void RemoveElementEvents(CollectionGridViewUIElement gridElement)
-        {
-        }
-
-        private void ComputeCrop()
-        {
-            _cropRect = new Rect(0, _totalGridHeightIfRendered * _scrollHandle.Transform.LocalY / Height, Width - _scrollBarWidth, Height);
-        }
-
-        private void ComputeScrollHandleSize()
-        {
-            var numHorizontalElements =
-                Math.Floor((Width - CollectionGridViewUIElement.DefaultSpacing - _scrollBarWidth) /
-                           (CollectionGridViewUIElement.DefaultWidth + CollectionGridViewUIElement.DefaultSpacing));
-            var numVerticalElements = Math.Ceiling(_collectionElementModels.Count/numHorizontalElements);
-            // calculate the total height needed to display all the breadcrumbs
-            _totalGridHeightIfRendered = (float) numVerticalElements * CollectionGridViewUIElement.DefaultHeight +
-                                (_collectionElementModels.Count + 1) * CollectionGridViewUIElement.DefaultSpacing;
-
-            // calculate the ratio of the height needed for the scroll handle
-            var ratio = Math.Min(1, Height / _totalGridHeightIfRendered);
-
-            // if all the elements can fit on the grid don't display the scrollbar
-            if (Math.Abs(ratio - 1) < .001)
-            {
-                _scrollHandle.IsVisible = false;
-                _scrollBar.IsVisible = false;
-            }
-            else
-            {
-                _scrollHandle.IsVisible = true;
-                _scrollBar.IsVisible = true;
-            }
-
-            // set the new heigt of the _scrollHandle
-            _scrollHandle.Height = Height * ratio;
-
-            // update the position of the scroll bar so the crop rect is maintained
-            var normalizedOffset = _cropRect.Left / _totalGridHeightIfRendered;
-            _scrollHandle.Transform.LocalPosition = new Vector2(_scrollHandle.Transform.LocalX, (float)normalizedOffset * Height);
-            BoundScrollHandle();
         }
     }
 }

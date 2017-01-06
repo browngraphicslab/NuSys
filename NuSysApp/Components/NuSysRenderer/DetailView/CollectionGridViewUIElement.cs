@@ -17,7 +17,7 @@ namespace NuSysApp
         /// <summary>
         /// The library element controller associated with this collection grid view ui element
         /// </summary>
-        private LibraryElementController _controller;
+        public LibraryElementController Controller;
 
         /// <summary>
         /// the image rect used to display an icon of the element on the grid view ui element
@@ -52,7 +52,7 @@ namespace NuSysApp
 
         public CollectionGridViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
-            _controller = controller;
+            Controller = controller;
 
             // UI Defaults
             DisplayMetadata = DetailViewCollectionGridView.GridSortOption.Title; // automatically display titles
@@ -67,14 +67,14 @@ namespace NuSysApp
 
             _metadataLabel = new TextboxUIElement(this, resourceCreator)
             {
-                Text = _controller.LibraryElementModel.Title,
+                Text = Controller.LibraryElementModel.Title,
                 IsHitTestVisible = false,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center
             };
             AddChild(_metadataLabel);
 
-            _controller.TitleChanged += _controller_TitleChanged;
+            Controller.TitleChanged += _controller_TitleChanged;
             Tapped += CollectionGridViewUIElement_Tapped;
         }
 
@@ -85,7 +85,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             Tapped -= CollectionGridViewUIElement_Tapped;
-            _controller.TitleChanged -= _controller_TitleChanged;
+            Controller.TitleChanged -= _controller_TitleChanged;
 
             base.Dispose();
         }
@@ -113,15 +113,15 @@ namespace NuSysApp
             switch (metaDataToDisplay)
             {
                 case DetailViewCollectionGridView.GridSortOption.Title:
-                    _metadataLabel.Text = _controller.Title;
+                    _metadataLabel.Text = Controller.Title;
                     break;
                 case DetailViewCollectionGridView.GridSortOption.Date:
-                    _metadataLabel.Text = _controller.GetCreationDate().ToString("MM/DD/YY");
+                    _metadataLabel.Text = Controller.GetCreationDate().ToString("MM/DD/YY");
                     break;
                 case DetailViewCollectionGridView.GridSortOption.Creator:
                     _metadataLabel.Text =
                         SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(
-                            _controller.LibraryElementModel.Creator);
+                            Controller.LibraryElementModel.Creator);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(metaDataToDisplay), metaDataToDisplay, null);
@@ -130,7 +130,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _imageRect.Image = await CanvasBitmap.LoadAsync(Canvas, _controller.SmallIconUri);
+            _imageRect.Image = await CanvasBitmap.LoadAsync(Canvas, Controller.SmallIconUri);
             base.Load();
         }
 

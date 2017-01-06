@@ -23,10 +23,14 @@ namespace NuSysApp
         public event TrailEventHandler OnTrailAdded;
         public event TrailEventHandler OnTrailRemoved;
 
-        public delegate void ChildAddedEventHandler(string id);
+        public delegate void ChildAddedEventHandler(string elementModelId);
+
+        /// <summary>
+        /// the element model id of the child that was added
+        /// </summary>
         public event ChildAddedEventHandler OnChildAdded;
 
-        public delegate void ChildRemovedEventHandler(string id);
+        public delegate void ChildRemovedEventHandler(string elementModelId);
         public event ChildRemovedEventHandler OnChildRemoved;
 
         public event EventHandler<LinkViewModel> LinkAddedToCollection;
@@ -72,15 +76,20 @@ namespace NuSysApp
             OnInkAdded?.Invoke(id);
         }
 
-        public bool AddChild(string id)
+        /// <summary>
+        /// Adds the associated elementModelId as a child
+        /// </summary>
+        /// <param name="elementModelId"></param>
+        /// <returns></returns>
+        public bool AddChild(string elementModelId)
         {
-            if (!CollectionModel.Children.Contains(id))
+            if (!CollectionModel.Children.Contains(elementModelId))
             {
-                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[elementModelId];
                 elementController.Deleted += ElementControllerOnDeleted;
 
-                CollectionModel.Children.Add(id);
-                OnChildAdded?.Invoke(id);
+                CollectionModel.Children.Add(elementModelId);
+                OnChildAdded?.Invoke(elementModelId);
                 return true;
             }
             return false;
@@ -93,14 +102,16 @@ namespace NuSysApp
             CollectionModel.Children.Remove(elementController.Model.Id);
         }
 
-        public bool RemoveChild(string id)
+
+        //todo this should be called
+        public bool RemoveChild(string elementModelId)
         {
-            if (CollectionModel.Children.Contains(id))
+            if (CollectionModel.Children.Contains(elementModelId))
             {
-                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[elementModelId];
                 elementController.Deleted -= ElementControllerOnDeleted;
-                CollectionModel.Children.Remove(id);
-                OnChildRemoved?.Invoke(id);
+                CollectionModel.Children.Remove(elementModelId);
+                OnChildRemoved?.Invoke(elementModelId);
                 return true;
             }
             return false;
