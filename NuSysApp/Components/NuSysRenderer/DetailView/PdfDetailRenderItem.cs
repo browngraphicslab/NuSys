@@ -25,12 +25,6 @@ namespace NuSysApp
 
             _controller = controller;
             _canvasSize = maxSize;
-
-            _controller.LocationChanged += ControllerOnLocationChanged;
-            _controller.SizeChanged += ControllerOnSizeChanged;
-
-            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
         protected override void ComputeRegions()
@@ -67,6 +61,15 @@ namespace NuSysApp
             });
 
             FireRedraw();
+        }
+
+
+        /// <summary>
+        /// removes region event handlers 
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
         }
     }
 }

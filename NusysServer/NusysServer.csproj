@@ -207,9 +207,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="mupdfapi.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="scripts\ai.0.22.9-build00167.js" />
     <Content Include="scripts\ai.0.22.9-build00167.min.js" />
     <None Include="Properties\PublishProfiles\NusysRepo %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\NuSysTest - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\NuSysTest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\NuSysTest.pubxml" />
     <None Include="scripts\jquery-3.1.0.intellisense.js" />
     <None Include="scripts\jquery-3.1.1-vsdoc.js" />
@@ -221,7 +226,9 @@
     <Content Include="scripts\jquery.signalR-2.2.1.min.js" />
     <Content Include="Web.config" />
     <Content Include="Metadata\deploymentTemplates\apiappconfig.azureresource.json" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -232,8 +239,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Clients\NusysClient.cs" />
     <Compile Include="Clients\NusysLogins.cs" />
+    <Compile Include="Controllers\MuPdfRenderController.cs" />
+    <Compile Include="Controllers\MuPdfTextController.cs" />
     <Compile Include="Controllers\NusysLoginController.cs" />
     <Compile Include="Controllers\NusysConnectController.cs" />
+    <Compile Include="Controllers\UploadWordDocController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -259,6 +269,8 @@
     <Compile Include="Notifications\NotificationArgs\AnalysisModelMadeNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\NewUserNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
+    <Compile Include="Notifications\NotificationArgs\WordChangedNotificationArgs.cs" />
+    <Compile Include="Notifications\WordChangedNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\AddNewLastUsedCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\ChatRequestHandler.cs" />

@@ -16,6 +16,15 @@ namespace NuSysApp
     /// </summary>
     public class ContentDataController
     {
+
+        public delegate void RegionAddedEventHandler(string regionLibraryElementModelId);
+
+        public event RegionAddedEventHandler OnRegionAdded;
+        public delegate void RegionRemovedEventHandler(string regionLibraryElementModelId);
+
+        public event RegionRemovedEventHandler OnRegionRemoved;
+
+
         /// <summary>
         /// the private bool used to indicate when the controller is being updated form the server. 
         /// It should be set true whenerver we are in the process of updating the controller from a server request.
@@ -77,7 +86,7 @@ namespace NuSysApp
         /// <param name="data"></param>
         public void SetData(string data)
         {
-            ContentDataModel.Data = data;
+            ContentDataModel.SetData(data);
             ContentDataUpdated?.Invoke(this, data);
 
             //if we are not already updating from the server
@@ -117,6 +126,24 @@ namespace NuSysApp
             _blockServerInteractionCount++;
             SetData(newData);
             _blockServerInteractionCount--;
+        }
+
+        /// <summary>
+        /// Invokes OnRegionAdded Event which updates the RectangleWrapper's region views
+        /// </summary>
+        /// <param name="regionLibraryElementModelId"></param>
+        public void AddRegion(string regionLibraryElementModelId)
+        {
+            OnRegionAdded?.Invoke(regionLibraryElementModelId);
+        }
+
+        /// <summary>
+        /// Invokes OnRegionRemoved Event which updates the RectangleWrapper's region views
+        /// </summary>
+        /// <param name="regionLibraryElementModelId"></param>
+        public void RemoveRegion(string regionLibraryElementModelId)
+        {
+            OnRegionRemoved?.Invoke(regionLibraryElementModelId);
         }
 
         /// <summary>

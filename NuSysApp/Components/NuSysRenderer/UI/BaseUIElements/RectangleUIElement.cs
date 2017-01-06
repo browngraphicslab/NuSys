@@ -69,7 +69,7 @@ namespace NuSysApp
         /// <summary>
         /// The background of the rectangle
         /// </summary>
-        public override Color Background { get; set; }
+        public override Windows.UI.Color Background { get; set; }
 
         /// <summary>
         /// The width of the border of the rectangle
@@ -93,7 +93,7 @@ namespace NuSysApp
         /// <summary>
         /// The BorderColor of the Rectangle
         /// </summary>
-        public override Color Bordercolor { get; set; }
+        public override Windows.UI.Color Bordercolor { get; set; }
 
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             // draw the border inside the rectangle
-            ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Bordercolor, BorderWidth);
+            ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth,0), Height - BorderWidth), Bordercolor, BorderWidth);
 
             ds.Transform = orgTransform;
         }

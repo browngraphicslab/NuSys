@@ -19,7 +19,7 @@ namespace NuSysApp
             this._title = title;
 
             // The list item needs to update live as the title of the item is changed elsewhere.
-            var itemController = SessionController.Instance.IdToControllers[id].LibraryElementController;
+            var itemController = SessionController.Instance.ElementModelIdToElementController[id].LibraryElementController;
             itemController.TitleChanged += ItemControllerOnTitleChanged;
         }
 
@@ -63,7 +63,7 @@ namespace NuSysApp
             _title = null;
 
             // Remove the title changed event handler
-            var itemController = SessionController.Instance.IdToControllers[Id].LibraryElementController;
+            var itemController = SessionController.Instance.ElementModelIdToElementController[Id].LibraryElementController;
             itemController.TitleChanged -= ItemControllerOnTitleChanged;
 
         }

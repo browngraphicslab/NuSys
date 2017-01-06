@@ -32,7 +32,7 @@ namespace NuSysApp
         /// <summary>
         /// The actual list view used to display the library
         /// </summary>
-        public ListViewUIElementContainer<LibraryElementModel> libraryListView;
+        public ListViewUIElementContainer<LibraryElementModel> LibraryListView;
 
         /// <summary>
         /// list of RectangleUIElements which are used to display icons while dragging
@@ -52,7 +52,7 @@ namespace NuSysApp
         /// <summary>
         /// The add file button on the top right corner of the library list
         /// </summary>
-        private ButtonUIElement _addFileButton;
+        private TransparentButtonUIElement _addFileButton;
 
         /// <summary>
         /// A dictionary of fileids to access types, static because the adding files methods have to be static
@@ -73,7 +73,7 @@ namespace NuSysApp
             /// </summary>
             Medium,
             /// <summary>
-            /// Medium Quality, somewhat blurry on three region levels
+            /// High Quality, somewhat blurry on three region levels
             /// </summary>
             High
         }
@@ -81,7 +81,7 @@ namespace NuSysApp
         /// <summary>
         /// Search bar for the LibraryListUIElement
         /// </summary>
-        private TextboxUIElement _searchBar;
+        private ScrollableTextboxUIElement _searchBar;
 
         /// <summary>
         /// The height of the searchbar
@@ -104,54 +104,49 @@ namespace NuSysApp
         /// </summary>
         private FilterMenu _filterMenu { get; }
 
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
             // initialize the ui of the library listview
             InitializeLibraryList();
             // add the libary list view as a child
-            AddChild(libraryListView);
+            AddChild(LibraryListView);
 
             // set up the ui of the add file button
-            _addFileButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, Canvas))
+            _addFileButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
-                BorderWidth = 3,
-                SelectedBorder = Colors.LightGray,
-                Background = TopBarColor,
-                Bordercolor = TopBarColor
+                ImageBounds = new Rect(10,10,30,30)
             };
-            // set the image bounds for the addfile button
-            _addFileButton.ImageBounds = new Rect(_addFileButton.BorderWidth, _addFileButton.BorderWidth, _addFileButton.Width - 2 * BorderWidth, _addFileButton.Height - 2 * BorderWidth);
+
             // add the addfile button to the window
             AddButton(_addFileButton, TopBarPosition.Right);
 
             // initialize the search bar
-            _searchBar = new TextboxUIElement(this, Canvas)
+            _searchBar = new ScrollableTextboxUIElement(this, Canvas,false,true)
             {
                 Height = _searchBarHeight,
-                Text = "Todo: add a search bar",
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 FontSize = 14,
-                BorderWidth = 3,
-                Bordercolor = Colors.Gray
+                BorderWidth = 1,
+                Bordercolor = Constants.MED_BLUE,
+                Background = Colors.White
             };
+            _searchBar.TextChanged += SearchBarTextChanged;
             AddChild(_searchBar);
 
+            TopBarColor = Constants.LIGHT_BLUE;
+            TopBarHeight = 50;
+            Background = Colors.White;
+            Bordercolor = Constants.MED_BLUE;
+            BorderWidth = 1;
+
             // initialize the filter button
-            _filterButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
+            _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
             {
                 Width = _filterButtonWidth,
                 Height = _searchBarHeight,
-                ButtonText = "Filter",
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                Background = Colors.Gray,
-                ButtonTextColor = Colors.Black,
-                ButtonTextSize = 14,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                Bordercolor = Colors.Gray
             };
             AddChild(_filterButton);
 
@@ -169,15 +164,25 @@ namespace NuSysApp
             _addFileButton.Tapped += AddFileButtonTapped;
 
             // add dragging events
-            libraryListView.RowDragged += LibraryListView_RowDragged;
-            libraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
-            libraryListView.RowTapped += OnLibraryItemSelected;
+            LibraryListView.RowDragged += LibraryListView_RowDragged;
+            LibraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
+            LibraryListView.RowTapped += OnLibraryItemSelected;
 
             _filterButton.Tapped += OnFilterButtonTapped;
 
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
+        }
+
+        /// <summary>
+        /// Event handler for when the text of the library search bar changes
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="text"></param>
+        private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
+        {
+            //throw new NotImplementedException();
         }
 
         private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -221,7 +226,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/add from file dark.png"));
+            _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
             base.Load(); 
         }
 
@@ -257,7 +262,7 @@ namespace NuSysApp
             _isDragVisible = false;
 
             // add each of the items to the collection
-            foreach (var lem in libraryListView.GetSelectedItems())
+            foreach (var lem in LibraryListView.GetSelectedItems())
             {
                 var libraryElementController =
                     SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
@@ -294,7 +299,7 @@ namespace NuSysApp
                 var position = pointer.StartPoint;
                 // convert the list of selected library element models from the libraryListView into a list of controllers
                 var selectedControllers =
-                    libraryListView.GetSelectedItems()
+                    LibraryListView.GetSelectedItems()
                         .Select(
                             model =>
                                 SessionController.Instance.ContentController.GetLibraryElementController(
@@ -317,9 +322,9 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            libraryListView.RowDragged -= LibraryListView_RowDragged;
-            libraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
-            libraryListView.RowTapped -= OnLibraryItemSelected;
+            LibraryListView.RowDragged -= LibraryListView_RowDragged;
+            LibraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
+            LibraryListView.RowTapped -= OnLibraryItemSelected;
 
             _filterButton.Tapped -= OnFilterButtonTapped;
 
@@ -327,6 +332,8 @@ namespace NuSysApp
             SessionController.Instance.ContentController.OnNewLibraryElement -= UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete -= UpdateLibraryListToRemoveElement;
             _addFileButton.Tapped -= AddFileButtonTapped;
+
+            _searchBar.TextChanged -= SearchBarTextChanged;
             base.Dispose();
         }
 
@@ -335,7 +342,7 @@ namespace NuSysApp
         /// </summary>
         public void InitializeLibraryList()
         {
-            libraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
+            LibraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
             {
                 MultipleSelections = false
             };
@@ -356,10 +363,10 @@ namespace NuSysApp
             listColumn3.RelativeWidth = 3;
             listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
 
-            libraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn, listColumn2, listColumn3 });
+            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn, listColumn2, listColumn3 });
 
 
-            libraryListView.AddItems(
+            LibraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());
 
             BorderWidth = 5;
@@ -379,7 +386,7 @@ namespace NuSysApp
         /// <param name="element"></param>
         private void UpdateLibraryListToRemoveElement(LibraryElementModel element)
         {
-            libraryListView.RemoveItems(new List<LibraryElementModel> {element});
+            LibraryListView.RemoveItems(new List<LibraryElementModel> {element});
         }
 
         /// <summary>
@@ -388,15 +395,15 @@ namespace NuSysApp
         /// <param name="libraryElement"></param>
         private void UpdateLibraryListWithNewElement(LibraryElementModel libraryElement)
         {
-            libraryListView.AddItems(new List<LibraryElementModel> {libraryElement});
+            LibraryListView.AddItems(new List<LibraryElementModel> {libraryElement});
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             // make the library fill the resizeable window leaving room for the search bar and filter button
-            libraryListView.Width = Width - 2 * BorderWidth;
-            libraryListView.Height = Height - TopBarHeight - BorderWidth - _searchBarHeight;
-            libraryListView.Transform.LocalPosition = new Vector2(BorderWidth, TopBarHeight);
+            LibraryListView.Width = Width - 2 * BorderWidth;
+            LibraryListView.Height = Height - TopBarHeight - BorderWidth - _searchBarHeight;
+            LibraryListView.Transform.LocalPosition = new Vector2(BorderWidth, TopBarHeight);
             _searchBar.Width = Width - 2*BorderWidth - _filterButtonWidth;
             _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - _searchBarHeight);
             _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - _searchBarHeight);
@@ -517,52 +524,39 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
+                    data = Convert.ToBase64String(fileBytes);
+                    var MuPdfDoc = await MediaUtil.DataToPDF(data);
 
                     pdfPageCount = MuPdfDoc.PageCount;
 
-                    // convert each page of the pdf into an image file, and store it in the pdfPages list
-                    for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
-                    {
-                        // set the pdf text by page for the current page number
-                        pdfTextByPage.Add(MuPdfDoc.GetAllTexts(pageNumber));
+                    // get variables for drawing the page
+                    var pageSize = MuPdfDoc.GetPageSize(0);
+                    var width = pageSize.X;
+                    var height = pageSize.Y;
 
-                        // get variables for drawing the page
-                        var pageSize = MuPdfDoc.GetPageSize(pageNumber);
-                        var width = pageSize.X;
-                        var height = pageSize.Y;
+                    // create an image to use for converting
+                    var image = new WriteableBitmap(width, height);
 
-                        // create an image to use for converting
-                        var image = new WriteableBitmap(width, height);
+                    // create a buffer to draw the page on
+                    IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                    buf.Length = image.PixelBuffer.Length;
 
-                        // create a buffer to draw the page on
-                        IBuffer buf = new Buffer(image.PixelBuffer.Capacity);
-                        buf.Length = image.PixelBuffer.Length;
+                    // draw the page onto the buffer
+                    MuPdfDoc.DrawPage(0, buf, 0, 0, width, height, false);
+                    var ss = buf.AsStream();
 
-                        // draw the page onto the buffer
-                        MuPdfDoc.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-                        var ss = buf.AsStream();
+                    // copy the buffer to the image
+                    await ss.CopyToAsync(image.PixelBuffer.AsStream());
+                    image.Invalidate();
 
-                        // copy the buffer to the image
-                        await ss.CopyToAsync(image.PixelBuffer.AsStream());
-                        image.Invalidate();
+                    // save the image as a file (temporarily)
+                    var x = await image.SaveAsync(NuSysStorages.SaveFolder);
 
-                        // save the image as a file (temporarily)
-                        var x = await image.SaveAsync(NuSysStorages.SaveFolder);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(x);
 
-                        // use the system to convert the file to a byte array
-                        pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
-                        if (pageNumber == 0)
-                        {
-                            // if we are on the first apge, get thumbnails of the file from the system
-                            thumbnails = await MediaUtil.GetThumbnailDictionary(x);
-                        }
+                    // delete the image file that we saved
+                    await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
 
-                        // delete the image file that we saved
-                        await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
-                    }
-
-                    data = JsonConvert.SerializeObject(pdfPages);
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
@@ -647,6 +641,15 @@ namespace NuSysApp
                             var imageArgs = new CreateNewImageLibraryElementRequestArgs();
                             imageArgs.AspectRatio = aspectRatio;
                             libraryElementArgs = imageArgs;
+                            break;
+                        case NusysConstants.ElementType.Word:
+                            var wordArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                            wordArgs.PdfPageStart = 0;
+                            wordArgs.PdfPageEnd = pdfPageCount;
+                            wordArgs.AspectRatio = aspectRatio;
+                            wordArgs.NormalizedHeight = 1;
+                            wordArgs.NormalizedWidth = 1;
+                            libraryElementArgs = wordArgs;
                             break;
                         case NusysConstants.ElementType.PDF:
                             var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();

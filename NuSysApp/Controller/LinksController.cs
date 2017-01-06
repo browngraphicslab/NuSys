@@ -210,7 +210,16 @@ namespace NuSysApp
             }
             _contentIdToLinkContentIds[inId].Add(libraryId);
             _contentIdToLinkContentIds[outId].Add(libraryId);
-         }
+
+            //now we are going to fire the event so that the endpoints' library element controllers get the 'LinkAdded' event fired
+            var inLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(inId);
+            var outLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(outId);
+            if (inLibraryElementController != null && outLibraryElementController != null)
+            {
+                inLibraryElementController?.FireLinkAdded(controller);
+                outLibraryElementController?.FireLinkAdded(controller);
+            }
+        }
 
         /// <summary>
         /// Gets the list of linkable ids that correspond to LINKS OR NODES that are instances of the given contetn
@@ -407,8 +416,9 @@ namespace NuSysApp
             }
             _collectionLibraryIdToLinkViewModels[oneParentCollectionId].Add(vm);
 
-            var parentCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(oneParentCollectionId);
-            parentCollectionController.AddLink(new LinkViewModel(controller));
+            var parentCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(oneParentCollectionId) as CollectionLibraryElementController;
+            Debug.Assert(parentCollectionController != null);
+            parentCollectionController.AddLinkToCollection(new LinkViewModel(controller));
 
             return;
             /*
@@ -670,6 +680,7 @@ namespace NuSysApp
         {
             // get the linkLibraryElementController from the link id
             var linkLibraryElementController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(linkLibraryElementId);
+            Debug.Assert(linkLibraryElementController != null);
 
             var request = new DeleteLibraryElementRequest(linkLibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
@@ -681,14 +692,14 @@ namespace NuSysApp
                 var inLibElemController =
                     SessionController.Instance.ContentController.GetLibraryElementController(inLibraryElementId);
                 if (inLibElemController != null) {
-                    inLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                    inLibElemController.FireLinkRemoved(linkLibraryElementId);
                 }
                 var outLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.OutAtomId;
                 var outLibElemController =
                     SessionController.Instance.ContentController.GetLibraryElementController(outLibraryElementId);
                 if (outLibElemController != null)
                 {
-                    outLibElemController.InvokeLinkRemoved(linkLibraryElementId);
+                    outLibElemController.FireLinkRemoved(linkLibraryElementId);
                 }
 
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.RemoveLink(linkLibraryElementId);
@@ -746,16 +757,16 @@ namespace NuSysApp
             // create a new presentation link view
             //   var view = new PresentationLinkView(vm); //todo remove add to atom view list from presentation link view constructor
             //TODO use this collectionController stuff, check if the collection exists
-            //var collectionController = SessionController.Instance.IdToControllers[model.ParentCollectionId] as ElementCollectionController;
+            //var collectionController = SessionController.Instance.ElementModelIdToElementController[model.ParentCollectionId] as ElementCollectionController;
             // Debug.Assert(collectionController != null, "the collectionController is not an element collection controller, check that parent collection id is being set correctly for presentation link models");
             //collectionController.AddChild(view);
 
             // Add the model to the list of models
             // create a new presentation link view model
-            if (!(SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.InElementId)))
+            if (!(SessionController.Instance.ElementModelIdToElementController.ContainsKey(model.OutElementId) && SessionController.Instance.ElementModelIdToElementController.ContainsKey(model.InElementId)))
                 return false;
 
-            var inElementController = SessionController.Instance.IdToControllers[model.OutElementId];
+            var inElementController = SessionController.Instance.ElementModelIdToElementController[model.OutElementId];
             var parentCollectionId = inElementController.GetParentCollectionId();
             var parentCollectionController = (CollectionLibraryElementController) SessionController.Instance.ContentController.GetLibraryElementController(parentCollectionId);
 

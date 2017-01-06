@@ -97,6 +97,7 @@ namespace NuSysApp
             IsDisposed = true;
             if (LibraryElementController != null)
             {
+                LibraryElementController?.FireAliasRemoved(Model);
                 LibraryElementController.Deleted -= Delete;
             }
             Disposed?.Invoke(this, EventArgs.Empty);

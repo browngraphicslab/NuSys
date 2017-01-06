@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -95,6 +96,8 @@ namespace NuSysApp
         public ListViewHeaderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator, shapeElement)
         {
             _borderBeingDragged = false;
+            ButtonTextColor = Constants.ALMOST_BLACK;
+            ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
         }
 
         /// <summary>

@@ -13,19 +13,21 @@ namespace NuSysApp
 {
     public class BaseRenderItem : IDisposable
     {
+        // Delegate and events to manage the focus of this element
+        public delegate void BaseRenderItemFocusEvent(BaseRenderItem item);
+        // Event fired when this render item gains focus
+        public event BaseRenderItemFocusEvent OnFocusGained;
+        // Event fired when this render item loses focus
+        public event BaseRenderItemFocusEvent OnFocusLost;
+
         private bool _isHitTestVisible = true;
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
-        public bool IsDirty {
-            get { return fuckyou2; }
-            set
-            {
-                fuckyou2 = value;
-            }
-        }
+        public bool IsDirty { get; set; } = true;
 
-        private bool fuckyou2 = true;
+        // Boolean which determines whether this render item can gain focus
+        public bool IsFocusable { get; set; } = true;
 
         public BaseRenderItem Parent { get; set; }
 
@@ -33,16 +35,7 @@ namespace NuSysApp
 
         public bool IsDisposed { get; protected set; }
 
-        public bool IsVisible {
-            get { return _fuckyou; }
-            set
-            {
-                _fuckyou = value;
-            } 
-        }
-            
-
-        private bool _fuckyou = true;
+        public bool IsVisible { get; set; } = true;
 
         public bool IsHitTestVisible
         {
@@ -191,6 +184,18 @@ namespace NuSysApp
         public virtual Rect GetScreenBounds()
         {
             return Win2dUtil.TransformRect(GetLocalBounds(), Transform.LocalToScreenMatrix);
+        }
+
+        // Called when this item gains focus - fires event
+        public virtual void GotFocus()
+        {
+            OnFocusGained?.Invoke(this);
+        }
+
+        // Called when this item loses focus - fires event
+        public virtual void LostFocus()
+        {
+            OnFocusLost?.Invoke(this);
         }
     }
 }

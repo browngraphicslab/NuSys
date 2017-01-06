@@ -27,8 +27,8 @@ namespace NuSysApp
         public TrailRenderItem(PresentationLinkViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
             _vm = vm;
-            _elementController1 = SessionController.Instance.IdToControllers[_vm.Model.InElementId];
-            _elementController2 = SessionController.Instance.IdToControllers[_vm.Model.OutElementId];
+            _elementController1 = SessionController.Instance.ElementModelIdToElementController[_vm.Model.InElementId];
+            _elementController2 = SessionController.Instance.ElementModelIdToElementController[_vm.Model.OutElementId];
             _elementController1.PositionChanged += ElementController1OnPositionChanged;
             _elementController1.SizeChanged += ElementController1OnSizeChanged;
             _elementController2.PositionChanged += ElementController1OnPositionChanged;
@@ -92,7 +92,9 @@ namespace NuSysApp
         }
 
         public override void Draw(CanvasDrawingSession ds) {
-            if (IsDisposed)
+            if (IsDisposed || SessionController.Instance.SessionSettings.LinksVisible == LinkVisibilityOption.NoLinks || SessionController.Instance.SessionSettings.LinksVisible == LinkVisibilityOption.NoTrails ||
+                (SessionController.Instance.SessionSettings.LinksVisible == LinkVisibilityOption.VisibleWhenSelected &&
+                !SessionController.Instance.SessionView.FreeFormViewer.Selections.Any(i => i.ViewModel.Controller.Id == _vm.Model.InElementId|| i.ViewModel.Controller.Id == _vm.Model.OutElementId)))
                 return;
 
             if (_path != null)

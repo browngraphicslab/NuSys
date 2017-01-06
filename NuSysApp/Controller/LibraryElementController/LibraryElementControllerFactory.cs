@@ -18,6 +18,7 @@ namespace NuSysApp
         public static LibraryElementController CreateFromModel(LibraryElementModel model)
         {
             LibraryElementController controller;
+            //Do debug.asserts above the controller instantiation to make sure the model types are correct
             switch (model.Type)
             {
                 case NusysConstants.ElementType.Image:
@@ -41,8 +42,8 @@ namespace NuSysApp
                     controller = new VideoLibraryElementController(videoModel);
                     break;
                 case NusysConstants.ElementType.Word:
-                    //Do debug.asserts above the controller instantiation to make sure the model types are correct
-                    controller = new WordNodeLibraryElementController(model);
+                    var wordModel = model as WordLibraryElementModel; //TODO maybe make an actual word library element model at some point
+                    controller = new WordNodeLibraryElementController(wordModel);
                     SessionController.Instance.NuSysNetworkSession.LockController.AddLockable((ILockable)controller);
                     break;
                 case NusysConstants.ElementType.Collection:

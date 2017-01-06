@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -63,6 +64,9 @@ namespace NuSysApp
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _headerBeingDragged = false;
+            BorderWidth = 3;
+            Bordercolor = Constants.DARK_BLUE;
+            Background = Constants.LIGHT_BLUE;
         }
 
         /// <summary>
@@ -84,13 +88,13 @@ namespace NuSysApp
                 foreach (ListColumn<T> c in listColumns)
                 {
                     var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
-                    headerItem.BorderWidth = 2;
-                    headerItem.Background = Colors.LightGray;
-                    headerItem.ButtonTextColor = Colors.Black;
                     headerItem.ButtonText = c.Title;
-                    //headerItem.ButtonFontSize = 15;
+                    headerItem.ButtonTextColor = Constants.ALMOST_BLACK;
                     headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
-                    headerItem.Height = Height;
+                    headerItem.Height = 40;
+                    headerItem.Background = Colors.White;
+                    headerItem.BorderWidth = 0;
+                    headerItem.Bordercolor = Colors.White;
                     headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
                     AddHeaderHandlers(headerItem);
                     this.AddChild(headerItem);
@@ -98,6 +102,8 @@ namespace NuSysApp
                 }
             });
         }
+
+        
 
         /// <summary>
         /// This just repositions all the titles.

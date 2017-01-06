@@ -157,6 +157,13 @@ namespace NuSysApp
             return model;
         }
 
+        /// <summary>
+        /// Addds a library element model to the content controller.
+        /// Also creates and adds the corresponding library element controller.
+        /// Returns the library element id of the added model or null if the ID is invalid or already exists in this controller
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public string Add(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.LibraryElementId) && !_contents.ContainsKey(model.LibraryElementId))
@@ -194,6 +201,14 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// removes a passed in library element model from the list of library element models.  
+        /// Also removes it from the list of controllers.
+        /// 
+        /// Returns whether it was successfully removed.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public bool Remove(LibraryElementModel model)
         {
             if (!_contents.ContainsKey(model.LibraryElementId))
@@ -341,6 +356,37 @@ namespace NuSysApp
         {
             AnalysisModelController outAnalysisModel;
             return _analysisModels.TryRemove(contentDataModelId, out outAnalysisModel);
+        }
+
+        /// <summary>
+        /// Method used to delete and re-fetch a content data model.
+        /// This will not delete the controller, but will re-point the controller to the newly-fetched content data.
+        /// This can be used when the content may have expired.
+        /// This will fail if the content data model isn't already local.
+        /// Pass in the id of the content data model to re-fetch.
+        /// Returns true if successful.
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public async Task<bool> ReFetchContentData(string contentDataModelId)
+        {
+            if (!_contentDataModels.ContainsKey(contentDataModelId))
+            {
+                return false;
+            }
+            var request = new GetContentDataModelRequest(contentDataModelId);//create a request to fetch the contentDataModel
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            if (request.WasSuccessful() != true)
+            {
+                return false;
+            }
+            var model = request.GetReturnedContentDataModel();
+            Debug.Assert(model != null);
+            Debug.Assert(_contentDataControllers.ContainsKey(contentDataModelId));
+            var controller = _contentDataControllers[contentDataModelId];
+            controller.UpdateFromServer(model?.Data);
+            return true;
+
         }
     }
 }

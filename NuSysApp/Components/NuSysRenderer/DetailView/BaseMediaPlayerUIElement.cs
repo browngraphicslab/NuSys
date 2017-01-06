@@ -65,10 +65,10 @@ namespace NuSysApp
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
-            _playPauseButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+            _playPauseButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_playPauseButton);
 
-            _volumeButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+            _volumeButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_volumeButton);
 
             _volumeSlider = new SliderUIElement(this, resourceCreator, 0, 100)

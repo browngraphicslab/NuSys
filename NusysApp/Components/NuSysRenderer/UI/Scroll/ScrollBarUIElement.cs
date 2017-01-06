@@ -16,11 +16,11 @@ namespace NuSysApp
         /// <summary>
         /// Position of the (start of the) slider bar
         /// </summary>
-        private double _position;
+        private float _position;
         /// <summary>
         /// Normalized length of the slider. The end - start.
         /// </summary>
-        private double _range;
+        private float _range;
         /// <summary>
         /// Orientation can be either vertical or horizontal
         /// </summary>
@@ -53,13 +53,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="source"></param>
         /// <param name="position"></param>
-        public delegate void ScrollBarPositionChangedHandler(object source, double position);
+        public delegate void ScrollBarPositionChangedHandler(object source, float position);
         public event ScrollBarPositionChangedHandler ScrollBarPositionChanged;
 
         /// <summary>
         /// Range is the normalized length of the slider. The end position - start position.
         /// </summary>
-        public double Range
+        public float Range
         {
             set
             {
@@ -71,15 +71,16 @@ namespace NuSysApp
                 return _range;
             }
         }
+
+        
         /// <summary>
         /// Position of the (start of the) slider bar
         /// </summary>
-        public double Position
+        public float Position
         {
             set
             {
                 _position = value;
-                ScrollBarPositionChanged?.Invoke(this, Position);
             }
             get
             {
@@ -131,7 +132,7 @@ namespace NuSysApp
         /// Call this method to change the position based on the (normalized) delta passed in.
         /// </summary>
         /// <param name="delta"></param>
-        public void ChangePosition(double delta)
+        public void ChangePosition(float delta)
         {
 
             if (delta < 0)
@@ -143,24 +144,28 @@ namespace NuSysApp
             if (delta > 0)
             {
                 //If you're going down (position going up), set position + delta, with 1-range being maximum.
-                Position = (Position + delta + Range > 1) ? 1 - Range : Position + delta;
+                Position = (Position + delta + Range > 1f) ? 1f - Range : Position + delta;
 
             }
+
+            ScrollBarPositionChanged?.Invoke(this, Position);
         }
         private void ScrollBarUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
         {
             if (delta < 0)
             {
                 //If you're going up (position going down), set position + delta, with 0 as min.
-                Position = Math.Max(0, Position -0.035);
+                Position = (float) Math.Max(0, Position - 0.035f);
             }
 
             if (delta > 0)
             {
                 //If you're going down (position going up), set position + delta, with 1-range being maximum.
-                Position = (Position + 0.035 + Range > 1) ? 1 - Range : Position + 0.035;
+                Position = (Position + 0.035 + Range > 1f) ? 1f - Range : Position + 0.035f;
 
             }
+            ScrollBarPositionChanged?.Invoke(this, Position);
+
         }
 
         public override void Dispose()
@@ -208,7 +213,7 @@ namespace NuSysApp
         /// <returns></returns>
         private bool SlideBarHit(Vector2 point)
         {
-            if (point.Y / Height >= Position && point.Y / Height < Position + Range)
+            if (point.Y / Height >= Position - 0.1f && point.Y / Height < Position + Range + 0.1f)
             {
                 return true;
             }

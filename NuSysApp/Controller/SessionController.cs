@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NusysIntermediate;
 using WinRTXamlToolkit.Tools;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace NuSysApp
 {
@@ -31,6 +32,11 @@ namespace NuSysApp
         /// The passed string is the LibraryId of the newly entered collection.  
         /// </summary>
         public event EventHandler<string> EnterNewCollectionStarting;
+
+        /// <summary>
+        /// fires when entering the new collection has completed
+        /// passed in string is library id of newly entered collection
+        /// </summary>
         public event EventHandler<string> EnterNewCollectionCompleted;
 
         /// <summary>
@@ -43,7 +49,7 @@ namespace NuSysApp
         /// This should be used to determine what elements are needed and what collections to keep track of.
         /// The Ids are the Library element model Ids.
         /// </summary>
-        public HashSet<string> CollectionIdsInUse { get; private set; }  = new HashSet<string>();
+        public HashSet<string> CollectionIdsInUse { get; private set; } = new HashSet<string>();
 
         private CapturedStateModel _capturedState;
 
@@ -63,10 +69,10 @@ namespace NuSysApp
         public double ScreenHeight => ActiveFreeFormViewer.Height;
 
         private SessionController()
-        {
-            SessionSettings = new SessionSettingsData();
-            IdToControllers = new ConcurrentDictionary<string, ElementController>();
+        { 
+            ElementModelIdToElementController = new ConcurrentDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
+            DataPackage = new DataPackage();
         }
 
         public NuSysNetworkSession NuSysNetworkSession
@@ -74,7 +80,11 @@ namespace NuSysApp
             get { return _nuSysNetworkSession; }
         }
         public string LocalUserID { set; get; }
-        public ConcurrentDictionary<string, ElementController> IdToControllers { set; get; }
+
+        /// <summary>
+        /// This is the element model id
+        /// </summary>
+        public ConcurrentDictionary<string, ElementController> ElementModelIdToElementController { set; get; }
 
         public SessionView SessionView { get; set; }
 
@@ -84,7 +94,7 @@ namespace NuSysApp
         {
             get { return _contentController; }
         }
-        
+
         public RegionsController RegionsController
         {
             get { return _regionsController; }
@@ -93,6 +103,12 @@ namespace NuSysApp
         {
             get { return _linksController; }
         }
+
+        public FocusManager FocusManager
+        {
+            get { return SessionView.FreeFormViewer.FocusManager; }
+        }
+
         public SpeechRecognizer Recognizer { get; set; }
 
 
@@ -110,7 +126,7 @@ namespace NuSysApp
             }
         }
 
-        public SessionSettingsData SessionSettings;
+        public SessionSettingsData SessionSettings { get; set; }
 
         public static SessionController Instance
         {
@@ -193,6 +209,8 @@ namespace NuSysApp
         {
             OnModeChanged?.Invoke(this, mode);
         }
+
+        public DataPackage DataPackage { get; }
 
         /// <summary>
         /// Method to be called when the application goes into a suspended state or loses internet connection.
@@ -282,7 +300,7 @@ namespace NuSysApp
                 return false;///could happen naturally if someone adds an public element to a private collection
             }
 
-            if (IdToControllers.ContainsKey(model.Id))
+            if (ElementModelIdToElementController.ContainsKey(model.Id))
             {
                 return false;
             }
@@ -301,7 +319,9 @@ namespace NuSysApp
                 CollectionIdsInUse.Add(controller.LibraryElementController.LibraryElementModel.LibraryElementId);
             }
 
-            SessionController.Instance.IdToControllers[model.Id] = controller;
+            SessionController.Instance.ElementModelIdToElementController[model.Id] = controller;
+
+            controller.LibraryElementController.FireAliasAdded(model);
 
             await UITask.Run(async delegate
             {
@@ -315,10 +335,10 @@ namespace NuSysApp
                     var existingChildren = ((CollectionLibraryElementModel) (controller.LibraryElementModel))?.Children;
                     foreach (var childId in existingChildren ?? new HashSet<string>())
                     {
-                        if (SessionController.Instance.IdToControllers.ContainsKey(childId))
+                        if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(childId))
                         {
                             ((ElementCollectionController) controller).AddChild(
-                                SessionController.Instance.IdToControllers[childId]);
+                                SessionController.Instance.ElementModelIdToElementController[childId]);
                         }
                     }
                 }
@@ -411,6 +431,7 @@ namespace NuSysApp
         /// The id is the libraryElementId of the collection you want to enter. 
         /// The elementModelId is the id of the element model you wish to zoom in on in that collection
         /// THis method will take care of all the clearing and crap for you, just call it with the id you want to use.
+        /// MUST BE CALLED WITHIN UITask.Run()!!!!
         /// </summary>
         /// <param name="id"></param>
         /// <param name="elementModelId"></param>
@@ -487,9 +508,8 @@ namespace NuSysApp
                 var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
                 contentController.AddInk(inkModel);
             }
-
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
-            IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
+            ElementModelIdToElementController[elementCollectionInstance.Id] = elementCollectionInstanceController;
             CollectionIdsInUse.Add(collectionLibraryId);
 
             var freeFormViewerViewModel = new FreeFormViewerViewModel(elementCollectionInstanceController);
@@ -521,6 +541,7 @@ namespace NuSysApp
             Instance.NuSessionView.TrailBox.AddBreadCrumb(controller);
 
             SessionView.ShowBlockingScreen(false);
+            EnterNewCollectionCompleted?.Invoke(this,collectionLibraryId);
         }
 
 
@@ -586,10 +607,11 @@ namespace NuSysApp
             //Instance?.ContentController?.ClearAllContentDataModels();
             Instance?.LinksController.ClearVisualLinks();
             Instance?.ActiveFreeFormViewer?.AtomViewList?.Clear();
-            Instance?.IdToControllers?.ForEach(kvp => kvp.Value?.Dispose());
-            Instance?.IdToControllers?.Clear();//TODO actually unload all of these.  very important
+            Instance?.ElementModelIdToElementController?.ForEach(kvp => kvp.Value?.Dispose());
+            Instance?.ElementModelIdToElementController?.Clear();//TODO actually unload all of these.  very important
             PresentationLinkViewModel.Models?.Clear();
             Instance?.CollectionIdsInUse?.Clear();
+            ToolController.ToolControllers?.Clear();
         }
 
         #endregion

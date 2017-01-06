@@ -22,7 +22,7 @@ namespace NusysServer
                     case "leandro":
                         return Directory.Exists("C:/Users/leandro/Downloads/NuSys/NuSys/NusysServer/") ? "C:/Users/leandro/Downloads/NuSys/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/Trent_Nusys/nusys5/nusys/NusysServer/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/Trent/") ? @"C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\" : "D:/home/site/wwwroot/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/" : "D:/home/site/wwwroot/";
                     case "miranda":
@@ -63,7 +63,7 @@ namespace NusysServer
                     case "leandro":
                         return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "C:/Users/leandro/Downloads/NuSys/" : "D:/home/site/wwwroot/files/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/files/";
+                        return Directory.Exists(@"C:\Users\Trent\") ? @"C:\Users\Trent\Desktop\" : "D:/home/site/wwwroot/files/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "C:/ Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/" : "D:/home/site/wwwroot/files/";
                     case "miranda":
@@ -308,6 +308,10 @@ namespace NusysServer
             return new Message(properties.ToDictionary(kvp => kvp.Key.Contains(".") ? kvp.Key.Substring(kvp.Key.IndexOf(".") + 1) : kvp.Key, kvp => kvp.Value));
         }
 
+        public static string GetWordDocumentFilePath(string libraryElementId)
+        {
+            return Constants.WWW_ROOT + libraryElementId + NusysConstants.DEFAULT_WORD_DOCUMENT_EXTENSION;
+        }
 
         /// <summary>
         /// method to return the name of the sql table

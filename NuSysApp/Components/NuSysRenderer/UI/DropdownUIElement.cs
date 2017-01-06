@@ -11,9 +11,9 @@ using Microsoft.Graphics.Canvas.Text;
 using Windows.UI;
 using RTools_NTS.Util;
 
-namespace NuSysApp.Components.NuSysRenderer.UI
+namespace NuSysApp
 {
-    class DropdownUIElement : ButtonUIElement
+    public class DropdownUIElement : ButtonUIElement
     {
         /// <summary>
         /// helper variable for the current selection property
@@ -63,6 +63,20 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 _dropDownList.RowHeight = value;
             }
         }
+
+        public Color ListBackground
+        {
+            get { return _dropDownList.Background; }
+            set { _dropDownList.Background = value; }
+        }
+
+        public float ListBorder
+        {
+            get { return _dropDownList.BorderWidth; }
+            set { _dropDownList.BorderWidth = value; }
+        }
+
+        
 
         /// <summary>
         /// The height of the dropdown list
@@ -153,6 +167,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             {
                 ColumnFunction = text => text,
                 RelativeWidth = 1,
+                Title = "+"
             };
             _dropDownList.AddColumn(_dropDownItems);          
 
@@ -263,6 +278,8 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             _dropDownList.Transform.LocalPosition = new Vector2(0, Height);
+            _dropDownList.Background = Colors.White;
+            _dropDownList.ShowHeader = false;
             _dropDownList.Width = Width;
 
             base.Update(parentLocalToScreenTransform);

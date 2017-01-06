@@ -111,7 +111,7 @@ namespace NuSysApp
         /// </summary>
         public void Select(InteractiveBaseRenderItem cell = null)
         {
-            Background = Colors.CadetBlue;
+            Background = Constants.LIGHT_BLUE;
             _isSelected = true;
         }
 
@@ -217,6 +217,7 @@ namespace NuSysApp
             left.Width += sizeChange;
             right.Width -= sizeChange;
             right.Transform.LocalX += sizeChange;
+           
         }
 
         /// <summary>

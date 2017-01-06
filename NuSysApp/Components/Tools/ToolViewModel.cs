@@ -281,12 +281,12 @@ namespace NuSysApp
                         Debug.Assert(parentController != null);
                         if (parentController != null)
                         {
-                            var linkModel = new ToolLinkModel();
-                            linkModel.InAtomId = parentController.Id;
-                            linkModel.OutAtomId = model.Id;
-                            var linkController = new ToolLinkController(linkModel, parentController, controller);
-                            var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-                            SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+                            //var linkModel = new ToolLinkModel();
+                            //linkModel.InAtomId = parentController.Id;
+                            //linkModel.OutAtomId = model.Id;
+                            //var linkController = new ToolLinkController(linkModel, parentController, controller);
+                            //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                            //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
                         }
                     }
                     controller.SetSize(500, 500);
@@ -321,12 +321,12 @@ namespace NuSysApp
                         Debug.Assert(parentController != null);
                         if (parentController != null)
                         {
-                            var linkModel = new ToolLinkModel();
-                            linkModel.InAtomId = parentController.Id;
-                            linkModel.OutAtomId = model.Id;
-                            var linkController = new ToolLinkController(linkModel, parentController, controller);
-                            var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-                            SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+                            //var linkModel = new ToolLinkModel();
+                            //linkModel.InAtomId = parentController.Id;
+                            //linkModel.OutAtomId = model.Id;
+                            //var linkController = new ToolLinkController(linkModel, parentController, controller);
+                            //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                            //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
                         }
                     }
                     viewmodel.Filter = filter;
@@ -395,16 +395,16 @@ namespace NuSysApp
                 controller.SetPosition(x, y);
                 controller.SetSize(500, 500);
 
-                var linkModel = new ToolLinkModel();
-                linkModel.InAtomId = this.Id;
-                linkModel.OutAtomId = model.Id;
-                var linkController = new ToolLinkController(linkModel, this.Controller, controller);
-                var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                //var linkModel = new ToolLinkModel();
+                //linkModel.InAtomId = this.Id;
+                //linkModel.OutAtomId = model.Id;
+                //var linkController = new ToolLinkController(linkModel, this.Controller, controller);
+                //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
                 
 
                 //Controller.SetPosition(X, Y);
                 SessionController.Instance.ActiveFreeFormViewer.AddTool(viewmodel);
-                SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+                //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
 
 
             });
@@ -424,12 +424,12 @@ namespace NuSysApp
                     //var link = new ToolLinkView(linkviewmodel);
                     //Canvas.SetZIndex(link, Canvas.GetZIndex(hitsStartList.First()) - 1);
                     //wvm.AtomViewList.Add(link);
-                    var linkModel = new ToolLinkModel();
-                    linkModel.InAtomId = this.Id;
-                    linkModel.OutAtomId = toolViewModel.Id;
-                    var linkController = new ToolLinkController(linkModel, this.Controller, toolViewModel.Controller);
-                    var linkViewModel = new ToolLinkViewModelWin2d(linkController);
-                    SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
+                    //var linkModel = new ToolLinkModel();
+                    //linkModel.InAtomId = this.Id;
+                    //linkModel.OutAtomId = toolViewModel.Id;
+                    //var linkController = new ToolLinkController(linkModel, this.Controller, toolViewModel.Controller);
+                    //var linkViewModel = new ToolLinkViewModelWin2d(linkController);
+                    //SessionController.Instance.ActiveFreeFormViewer.AddToolLink(linkViewModel);
                     toolViewModel.Controller.AddParent(Controller);
                 }
             }

@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\graphics_lab\Desktop\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\Trent\Desktop\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -121,6 +121,15 @@
     <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
     <Content Include="Assets\layout_icons\layout_icon.png" />
     <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
+    <Content Include="Assets\new icons\add elements white.png" />
+    <Content Include="Assets\new icons\add elements.png" />
+    <Content Include="Assets\new icons\back.png" />
+    <Content Include="Assets\new icons\collection.png" />
+    <Content Include="Assets\new icons\gear.png" />
+    <Content Include="Assets\new icons\node.png" />
+    <Content Include="Assets\new icons\recording.png" />
+    <Content Include="Assets\new icons\text.png" />
+    <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
@@ -362,14 +371,33 @@
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioRegionResizerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\CollectionGridViewUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionGridView.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewCollectionPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinkContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinkPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\AutoSuggestTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\TransparentButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RectangleButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RoundedRectButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushToMask.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\DateSelector.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterSubMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAliasesPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbUIElement.cs" />
@@ -378,11 +406,11 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAudioPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewImagePage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewLinksPage.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMainContainer.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageContainer.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageFactory.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageType.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPageTabType.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewMainContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageContainer.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageFactory.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageType.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\DetailViewPageTabType.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
@@ -418,8 +446,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackLayoutManager.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\TabButtonUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\TabContainerUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabButtonUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabContainerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\TextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\User Bubbles\UserBubbleContainerUIElement.cs" />
@@ -457,6 +485,7 @@
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
+    <Compile Include="Components\NuSysRenderer\WordElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\WrapRenderItem.cs" />
     <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
       <DependentUpon>AudioRegionBound.xaml</DependentUpon>
@@ -486,9 +515,11 @@
       <DependentUpon>MetadataToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
+    <Compile Include="Components\Tools\PieChartElement.cs" />
     <Compile Include="Components\Tools\PieChartToolView.xaml.cs">
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\PieChartUIElement.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
@@ -529,6 +560,7 @@
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkRenderitem.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkViewModelWin2d.cs" />
+    <Compile Include="Components\Win2dTools\ToolResizerRenderItem.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />
@@ -548,6 +580,7 @@
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="FocusManager.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
@@ -719,6 +752,7 @@
     <Compile Include="Network\Requests\NotificationHandlers\AnalysisModelMadeNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\WordChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewAudioLibraryElementRequestArgs.cs" />

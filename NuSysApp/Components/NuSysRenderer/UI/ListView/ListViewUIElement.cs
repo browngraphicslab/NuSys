@@ -15,6 +15,8 @@ using Windows.Foundation;
 using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.GeometriesGraph;
 using WinRTXamlToolkit.Controls.DataVisualization.Charting;
+using Color = Windows.UI.Color;
+using Matrix3x2 = System.Numerics.Matrix3x2;
 
 namespace NuSysApp
 {
@@ -74,6 +76,26 @@ namespace NuSysApp
         /// </summary>
         private List<ListColumn<T>> _listColumns;
 
+        /// <summary>
+        /// This is the rectangle that goes behind all the row elements. We have to use this and not the default background inherited from rectangleuielement because we manually draw our rows, 
+        /// and if we set a background color on the list, then it will cover the all the elements
+        /// </summary>
+        private RectangleUIElement _backgroundRectangle;
+
+        /// <summary>
+        /// Changes the color of the background of the list.
+        /// </summary>
+        public Color Background
+        {
+            get { return _backgroundRectangle?.Background ?? Colors.Transparent; }
+            set
+            {
+                if (_backgroundRectangle != null)
+                {
+                    _backgroundRectangle.Background = value;
+                }
+            }
+        }
 
         /// <summary>
         /// A hashset of the selected rows
@@ -115,7 +137,7 @@ namespace NuSysApp
         /// <summary>
         /// THis is the heigh of each of the rows
         /// </summary>
-        public float RowHeight { get; set; }
+        public float RowHeight { get; set; } = 40; //TODO drop this hard-code
 
         private float _rowBorderThickness;
 
@@ -129,6 +151,7 @@ namespace NuSysApp
                 UpdateRowBorder();
             }
         }
+        
 
         public float Height
         {
@@ -167,21 +190,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// x and y positions necessary to see if canvas pointer is moving within the listview.
-        /// these should be set by the listviewcontainer.
-        /// </summary>
-        private float _x;
-        private float _y;
-        public float X
-        {
-            set { _x = value; }
-        }
-        public float Y
-        {
-            set { _y = value; }
-        }
-
-        /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
         /// </summary>
         /// <param name="parent"></param>
@@ -198,10 +206,18 @@ namespace NuSysApp
             _columnIndexSortedBy = -1;
             //RowBorderThickness = 5;
             Rows = new List<ListViewRowUIElement<T>>();
-            RowHeight = 40;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
+            SetUpBackgroundRectangle();
+        }
 
+        private void SetUpBackgroundRectangle()
+        {
+            _backgroundRectangle = new RectangleUIElement(this, ResourceCreator)
+            {
+                Width = this.Width,
+                Height = this.Height,
+            };
         }
 
         /// <summary>
@@ -230,63 +246,113 @@ namespace NuSysApp
         /// </summary>
         private void CreateListViewRowUIElements()
         {
-            Debug.Assert(_itemsSource != null);
-
-            //Remove handlers of rows
-            foreach(var row in Rows)
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                RemoveRowHandlers(row);
+                Debug.Assert(_itemsSource != null);
+
+                //Remove handlers of rows
+                foreach(var row in Rows)
+                {
+                    RemoveRowHandlers(row);
+                }
+                //Clear the rows.
+                Rows.Clear();
+
+                //If itemssource is empty, no need to create rows.
+                if (_itemsSource.Count == 0)
+                {
+                    return;
+                }
+
+
+
+                var position = GetPosition();
+
+                //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
+                if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
+                {
+                    if (ScrollBar != null)
+                    {
+                        SetPosition(0);
+                    }
+                    position = GetPosition();
+
+                }
+
+                //Start index is the itemsource-index of the first item shown on the listview 
+                var startIndex = (int)Math.Floor(position * _itemsSource.Count);
+
+                //Number of rows needed to cover the screen at all times
+                //Make sures that the number of rows created does not exceed the number of rows in the source
+                var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
+
+                if (numberOfRows > _itemsSource.Count)
+                {
+                    numberOfRows = _itemsSource.Count;
+                }
+
+                //Creates the row UI elements and adds them to the list.
+                var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
+
+                foreach (var itemSource in rowList)
+                {
+                    var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
+                    listViewRowUIElement.Item = itemSource;
+                    listViewRowUIElement.Background = Colors.White;
+                    listViewRowUIElement.Bordercolor = Constants.MED_BLUE;
+                    listViewRowUIElement.BorderWidth = RowBorderThickness;
+                    listViewRowUIElement.Width = Width - BorderWidth * 2;
+                    listViewRowUIElement.Height = RowHeight;
+                    PopulateListRow(listViewRowUIElement);
+                    listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
+                    listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
+                    listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
+                    listViewRowUIElement.RowDoubleTapped += ListViewRowUIElement_RowDoubleTapped;
+                    Rows.Add(listViewRowUIElement);
+                }
+            });
+
+        }
+        /// <summary>
+        /// Returns the position of the ScrollBar if it has been initialized.
+        /// Otherwise, returns 0.
+        /// </summary>
+        /// <returns></returns>
+        private float GetPosition()
+        {
+            return (ScrollBar == null) ? 0 : ScrollBar.Position;
+        }
+        /// <summary>
+        /// Sets the position of the listview to the position passed in.
+        /// Also updates the scrollbar.
+        /// </summary>
+        /// <param name="position"></param>
+        private void SetPosition(float position)
+        {
+            _scrollOffset = position * (_heightOfAllRows);
+            ScrollBar.Position = position;
+
+        }
+        /// <summary>
+        /// Changes the position by the float passed in.
+        /// If delta is negative, then Position is going down and the bar is being lowered
+        /// If delta is positive, then Position is going up and the bar is being raised
+        /// </summary>
+        /// <param name="delta"></param>
+        private void ChangePosition(float delta)
+        {
+            var currentPosition = GetPosition();
+            if (delta < 0)
+            {
+                //If you're going up (position going down), set position + delta, with 0 as min.
+                SetPosition(Math.Max(0, currentPosition + delta));
             }
-            //Clear the rows.
-            Rows.Clear();
 
-            //If itemssource is empty, no need to create rows.
-            if (_itemsSource.Count == 0)
+            if (delta > 0)
             {
-                return;
-            }
-
-
-            var position = (ScrollBar == null) ? 0 : ScrollBar.Position;
-            
-            //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
-            if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
-            {
-                if (ScrollBar != null) ScrollBar.Position = 0;
-                position = (ScrollBar == null) ? 0 : ScrollBar.Position;
-
-            }
-
-            //Start index is the itemsource-index of the first item shown on the listview 
-            var startIndex = (int)Math.Floor(position * _itemsSource.Count);
-
-            //Number of rows needed to cover the screen at all times
-            //Make sures that the number of rows created does not exceed the number of rows in the source
-            var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1); 
-            
-            if (numberOfRows > _itemsSource.Count)
-            {
-                numberOfRows = _itemsSource.Count;
-            }
-            
-            //Creates the row UI elements and adds them to the list.
-            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
-
-            foreach (var itemSource in rowList)
-            {
-                var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
-                listViewRowUIElement.Item = itemSource;
-                listViewRowUIElement.Background = Colors.White;
-                listViewRowUIElement.Bordercolor = Colors.Black;
-                listViewRowUIElement.BorderWidth = RowBorderThickness;
-                listViewRowUIElement.Width = Width - BorderWidth * 2;
-                listViewRowUIElement.Height = RowHeight;
-                PopulateListRow(listViewRowUIElement);
-                listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
-                listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
-                listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
-                listViewRowUIElement.RowDoubleTapped += ListViewRowUIElement_RowDoubleTapped;
-                Rows.Add(listViewRowUIElement);
+                //If you're going down (position going up), set position + delta, with 1-range being maximum.
+                var pos = (currentPosition + delta + ScrollBar.Range > 1f) ? 1f - ScrollBar.Range : currentPosition + delta;
+                SetPosition(pos);
             }
 
         }
@@ -319,15 +385,13 @@ namespace NuSysApp
             
             if(delta < 0)
             {
-                ScrollBar.ChangePosition(0.035);
+                ChangePosition(1f/_itemsSource.Count); //This moves the listview down by the height of one row.
 
             }
             else if(delta> 0)
             {
-                ScrollBar.ChangePosition(-0.035);
-
+                ChangePosition(-1f/_itemsSource.Count); //This moves the listview up by the height of one row.
             }
-
 
         }
 
@@ -373,6 +437,8 @@ namespace NuSysApp
 
                 row.Item = items[index];
 
+
+                //there MUST be a better way to do selection than this, this is crazy
                 if (_selectedElements.Contains(row.Item))
                 {
                     SelectRow(row);
@@ -434,8 +500,9 @@ namespace NuSysApp
         /// <returns></returns>
         private RectangleUIElement CreateCell(ListColumn<T> column, T itemSource, ListViewRowUIElement<T> listViewRowUIElement)
         {
-                return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
-                    RowHeight - RowBorderThickness * 2, _sumOfColumnRelativeWidths);
+            var height = RowHeight;
+            return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
+                    height - RowBorderThickness * 2, _sumOfColumnRelativeWidths);
 
         }
 
@@ -513,7 +580,6 @@ namespace NuSysApp
                 var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _itemsSource.Count);
 
                 ScrollBar.ChangePosition(deltaY);
-
                 
             }
         }
@@ -524,6 +590,8 @@ namespace NuSysApp
         /// <param name="columnIndex"></param>
         public void SortByCol(int columnIndex)
         {
+
+            //TODO:NIC WE NEED TO COME UP WITH A SOLUTION TO FIX THIS
             Debug.Assert(columnIndex < _listColumns.Count);
             //If it isn't sorted by this index then just sort it normally
             if (columnIndex != _columnIndexSortedBy)
@@ -684,7 +752,7 @@ namespace NuSysApp
                 return;
             }
             //Sets the position of the ScrollBar to the position of the item in the list
-            ScrollBar.Position = (float)i / _itemsSource.Count;
+            SetPosition((float)i / _itemsSource.Count);
         }
 
         /// <summary>
@@ -835,24 +903,39 @@ namespace NuSysApp
         /// </summary>
         /// <param name="source"></param>
         /// <param name="position"></param>
-        public override void ScrollBarPositionChanged(object source, double position)
+        public override void ScrollBarPositionChanged(object source, float position)
         {
-            _scrollOffset = (float) position * (_heightOfAllRows);
+            SetPosition(position);
+        
         }
+
         /// <summary>
         /// Calls update on every row, since rows are not children.
         /// Also updates clipping rect to be based on the width and height.
         /// </summary>
         /// <param name="parentLocalToScreenTransform"></param>
-        public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            ScrollBar.Range = (double)(Height - BorderWidth * 2) / (_heightOfAllRows);
+            _backgroundRectangle.Width = this.Width;
+            _backgroundRectangle.Height = this.Height;
+            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             UpdateListRows();
+
+            var cellVerticalOffset = BorderWidth;
+            var headerOffset = Transform.LocalPosition.Y;
+            var scrollOffset = _scrollOffset % (RowHeight);
             foreach (var row in Rows)
             {
+                //Position is the position of the bottom of the row
+                var position = cellVerticalOffset - scrollOffset + headerOffset;
+                row.Transform.LocalPosition = new Vector2(BorderWidth, position);
+
                 row?.Update(parentLocalToScreenTransform);
+                cellVerticalOffset += row.Height;
+
             }
+
             base.Update(parentLocalToScreenTransform);
         }
         /// <summary>
@@ -865,22 +948,15 @@ namespace NuSysApp
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
+            //_backgroundRectangle.Draw(ds);
+
             // Creates a clipping of the drawing session based on _clippingrect
             using (ds.CreateLayer(1f, _clippingRect))
             {
-
-                var cellVerticalOffset = BorderWidth;
-                var headerOffset = Transform.LocalPosition.Y;
-                var scrollOffset = _scrollOffset % RowHeight;
                 //Draws every row
                 foreach (var row in Rows.ToArray())
                 {
-                    //Position is the position of the bottom of the row
-                    var position = cellVerticalOffset - scrollOffset + headerOffset;
-                    row.Transform.LocalPosition = new Vector2(BorderWidth, position);
                     row.Draw(ds);
-
-                    cellVerticalOffset += row.Height;
                 }
 
             }
@@ -888,6 +964,8 @@ namespace NuSysApp
             base.Draw(ds);
 
         }
+
+
 
         /// <summary>
         /// Hit tests every row in Rows.
@@ -905,7 +983,6 @@ namespace NuSysApp
             {
                 return null;
             }
-
 
             //If scroll bar is hit, return that instead of the row underneath.
             var scrollBarht = ScrollBar.HitTest(screenPoint);
@@ -937,10 +1014,6 @@ namespace NuSysApp
             _selectedElements?.Clear();
             _itemsSource?.Clear();
             _listColumns?.Clear();
-            //Rows = null;
-            //_selectedElements = null;
-            //_itemsSource = null;
-            //_listColumns = null;
             base.Dispose();
         }
 

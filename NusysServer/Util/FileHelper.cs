@@ -3,15 +3,40 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Web;
 using NusysIntermediate;
 using Newtonsoft.Json;
+using GemBox.Document;
 
 namespace NusysServer
 {
     public class FileHelper
     {
+
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr Open(byte[] data, int length);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ActivateDocument(IntPtr document);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int RenderPage(int width, int height);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetTextBytes(byte[] sb);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetBuffer();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetPageWidth();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetPageHeight();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetNumComponents();
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetNumPages();
+
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GotoPage(int page);
+        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Dispose(IntPtr pointer);
         /// <summary>
         /// the encoding when writing bytes to a file.
         /// </summary>
@@ -130,30 +155,70 @@ namespace NusysServer
                         fileUrl = Constants.SERVER_ADDRESS + contentDataModelId + fileExtension;
                         break;
                     case NusysConstants.ContentType.Word:
-                        //var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, contentData, fileExtension);
+                        var wordPath = Constants.GetWordDocumentFilePath(contentDataModelId);
 
+                        //convert from word to pdf, and save word doc elsewhere
+                        var pdfByteData = GetWordBytes(contentData, contentDataModelId, wordPath);
+                        
+                        MakeWordThumbnails(pdfByteData, contentDataModelId);
+
+                        var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, Convert.ToBase64String(pdfByteData), fileExtension);
+                        return pdfUrl;
                         break;
+
                     case NusysConstants.ContentType.PDF:
-                        //creates a file and url for each page image and returns a serialized list of urls
-                        var listOfBytes = JsonConvert.DeserializeObject<List<string>>(contentData);
-                        List<string> listOfUrls = new List<string>();
-                        int i = 0;
-                        foreach (var bytesOfImage in listOfBytes)
+                        var pdfBytes = Convert.FromBase64String(contentData);
+                        var doc = Open(pdfBytes, pdfBytes.Length);
+
+                        // Active the pdf document
+                        ActivateDocument(doc);
+                        var listOfUrls = new List<string>();
+                        for (int page = 0; page < GetNumPages() ; page++)
                         {
-                            filePath = Constants.WWW_ROOT + contentDataModelId + "_" + i +
-                                       NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
-                            var stream1 = File.Create(filePath);
-                            stream1.Dispose();
+                            // Goto a page
+                            GotoPage(page);
 
-                            using (var fstream = File.OpenWrite(filePath))
+                            // Get aspect ratio of the page
+                            var aspectRatio = GetPageWidth()/(double) GetPageHeight();
+
+                            // Render the Page
+                            var size = 2000;
+                            var numBytes = RenderPage((int) (size*aspectRatio), size);
+
+                            // Get a reference to the buffer that contains the rendererd page
+                            var buffer = GetBuffer();
+
+                            // Copy the buffer from unmanaged to managed memory (mngdArray contains the bytes of the pdf page rendered as PNG)
+                            byte[] mngdArray = new byte[numBytes];
+                            try
                             {
-                                var bytes = Convert.FromBase64String(bytesOfImage);
-                                fstream.Write(bytes, 0, bytes.Length);
-                            }
+                                Marshal.Copy(buffer, mngdArray, 0, numBytes);
+                                filePath = Constants.WWW_ROOT + contentDataModelId + "_" + page +
+                                           NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
 
-                            listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + i +
-                                           NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
-                            i++;
+                                var stream1 = File.Create(filePath);
+                                stream1.Dispose();
+
+                                using (var fstream = File.OpenWrite(filePath))
+                                {
+                                    var bytes = mngdArray;
+                                    fstream.Write(bytes, 0, bytes.Length);
+                                }
+                                listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + page +
+                                               NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
+                            }
+                        }
+                        try
+                        {
+                            Dispose(doc);
+                        }
+                        catch (Exception e)
+                        {
+                            return JsonConvert.SerializeObject(listOfUrls);
                         }
                         return JsonConvert.SerializeObject(listOfUrls);
                         break;
@@ -171,6 +236,42 @@ namespace NusysServer
             catch (Exception e)
             {
                 throw new Exception(e.Message + "  FileHelper Method: CreateDataFile");
+            }
+        }
+
+        private static void MakeWordThumbnails(byte[] pdfBytes, string contentDataModelId)
+        {
+            if (contentDataModelId == null)
+            {
+                throw new Exception("the contentDataModelId cannot be null when creating a word thumbnail");
+            }
+
+            var doc = Open(pdfBytes, pdfBytes.Length);
+            ActivateDocument(doc);
+            GotoPage(0);
+            var aspectRatio = GetPageWidth() / (double)GetPageHeight();
+
+            foreach (var s in Enum.GetValues(typeof(NusysConstants.ThumbnailSize)))
+            {
+                var size = (NusysConstants.ThumbnailSize)s;
+                var fileName = NusysConstants.GetDefaultThumbnailFileName(contentDataModelId, size) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
+
+                //hard to read but just switches on size and sets the width accordingly
+                var height = size == NusysConstants.ThumbnailSize.Small ? 100 : (size == NusysConstants.ThumbnailSize.Medium ? 250 : 500);
+
+                var numBytes = RenderPage((int)(height * aspectRatio), height);
+                var buffer = GetBuffer();
+
+                byte[] mngdArray = new byte[numBytes];
+
+                var fileStream = File.Create(Constants.WWW_ROOT + fileName);
+                fileStream.Dispose();
+
+                Marshal.Copy(buffer, mngdArray, 0, numBytes);
+                using (var fstream = File.OpenWrite(Constants.WWW_ROOT + fileName))
+                {
+                    fstream.Write(mngdArray, 0, mngdArray.Length);
+                }
             }
         }
 
@@ -263,5 +364,120 @@ namespace NusysServer
         {
             return Constants.WWW_ROOT + url.Substring(Constants.SERVER_ADDRESS.Length);
         }
+
+        /// <summary>
+        /// method called from the UploadWordDocController to update an existing word document. 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string UpdateWordDoc(string wordByteDataString, string customContentIdPropertyKey = "contentDataModelId")
+        {
+            ComponentInfo.SetLicense("DORJ-JFGF-MSBP-2XUV");
+            var bytes = Convert.FromBase64String(wordByteDataString);
+            Stream stream = new MemoryStream(bytes);
+            var doc = DocumentModel.Load(stream, LoadOptions.DocxDefault);
+            if (!doc.DocumentProperties.Custom.ContainsKey(customContentIdPropertyKey))
+            {
+                return "document did not have the correct custom property id";
+            }
+            var contentDataModelId = doc.DocumentProperties.Custom[customContentIdPropertyKey].ToString();
+            try
+            {
+                CreateDataFile(contentDataModelId, NusysConstants.ContentType.Word, wordByteDataString);
+                var notification = new WordChangedNotification(new WordChangedNotificationArgs() { ContentDataModelId = contentDataModelId});
+                NuWebSocketHandler.NotifyAll(notification);
+                return "Success!";
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+
+        /// <summary>
+        /// This method will save the word document in the correct location, and then return the pdf bytes for the document.
+        /// You must use a word file path ending in '.docx'.
+        /// This will also give the save word document a special property.  
+        /// The special property will be named the 'customContentIdPropertyKey' parameter and its value will be the 'contentDataModelId' parameter.
+        /// </summary>
+        /// <param name="wordByteData"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static byte[] GetWordBytes(string wordByteData, string contentDataModelId, string wordPath, string customContentIdPropertyKey = "contentDataModelId")
+        {
+            if (!wordPath.EndsWith(".docx"))
+            {
+                throw new Exception("path to save word document to must end in '.docx'");
+            }
+            ComponentInfo.SetLicense("DORJ-JFGF-MSBP-2XUV");
+            DocumentModel doc = null;
+            try
+            {
+                var bytes = Convert.FromBase64String(wordByteData);
+                Stream stream = new MemoryStream(bytes);
+                doc = DocumentModel.Load(stream, LoadOptions.DocxDefault);
+                doc.DocumentProperties.Custom[customContentIdPropertyKey] = contentDataModelId;
+                var pdfPath = wordPath.Substring(0, wordPath.Length - 4) + "pdf";
+                doc.Save(wordPath);
+                doc.Save(pdfPath);
+                var returnBytes = File.ReadAllBytes(pdfPath);
+                File.Delete(pdfPath);
+
+                return returnBytes;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("docx too large. "+e.Message);
+            }
+        }
+
+
+        //TODO fix, but dont delete this
+        /*
+        public static string UpdateWordDoc(byte[] bytes)
+        {
+            ComponentInfo.SetLicense("FREE-LIMITED-KEY");
+            try
+            {
+                string retString = "";
+                Stream stream = new MemoryStream(bytes);
+                var doc = DocumentModel.Load(stream, LoadOptions.DocxDefault);
+                if (!doc.DocumentProperties.Custom.ContainsKey("libraryId"))
+                {
+                    retString = "bytes sucessfully parsed to document but couldn't find library Id in document metadata";
+                }
+                var id = doc.DocumentProperties.Custom["libraryId"];
+                var docPath = NusysContent.BaseFolder + id + ".docx";
+                var pdfPath = NusysContent.BaseFolder + id + ".pdf";
+                var dataPath = NusysContent.BaseFolder + id + ".data";
+                doc.Save(docPath);
+                doc.Save(pdfPath);//must be done with .pdf extension so gembox knows what file type to save as
+                var pdfBytes = File.ReadAllBytes(pdfPath);
+                var base64String = Convert.ToBase64String(pdfBytes);
+                var writableBytes = Encoding.UTF8.GetBytes(base64String);
+                using (FileStream pdfstream = new FileStream(dataPath, FileMode.Create, FileAccess.Write))
+                {
+                    pdfstream.Write(writableBytes, 0, writableBytes.Length);
+                    pdfstream.Close();
+                }
+                File.Delete(pdfPath);
+                if (id is string && ContentsHolder.Instance.Contents.ContainsKey(id as string))
+                {
+                    var content = ContentsHolder.Instance.Contents[id as string];
+                    if (content != null)
+                    {
+                        NuWebSocketHandler.BroadcastContentDataUpdate(content);
+                    }
+                }
+                return "success!";
+            }
+            catch (Exception e)
+            {
+                return "Could not convert bytes to gem box word doc: ERROR MESSAGE: " + e.Message + "   ";
+            }
+            return null;
+        }
+        */
     }
 }

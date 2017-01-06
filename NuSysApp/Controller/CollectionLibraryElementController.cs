@@ -29,7 +29,7 @@ namespace NuSysApp
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
 
-
+        public event EventHandler<LinkViewModel> LinkAddedToCollection;
 
 
         public CollectionLibraryElementModel CollectionModel
@@ -43,6 +43,11 @@ namespace NuSysApp
         public CollectionLibraryElementController(CollectionLibraryElementModel collectionLibraryElementModel) : base(collectionLibraryElementModel)
         {
             InkLines = new HashSet<string>();
+        }
+
+        public void AddLinkToCollection(LinkViewModel linkViewModel)
+        {
+            LinkAddedToCollection?.Invoke(this,linkViewModel);
         }
 
         public void AddTrail(PresentationLinkViewModel trailViewModel)
@@ -71,7 +76,7 @@ namespace NuSysApp
         {
             if (!CollectionModel.Children.Contains(id))
             {
-                var elementController = SessionController.Instance.IdToControllers[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
                 elementController.Deleted += ElementControllerOnDeleted;
 
                 CollectionModel.Children.Add(id);
@@ -92,7 +97,7 @@ namespace NuSysApp
         {
             if (CollectionModel.Children.Contains(id))
             {
-                var elementController = SessionController.Instance.IdToControllers[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
                 elementController.Deleted -= ElementControllerOnDeleted;
                 CollectionModel.Children.Remove(id);
                 OnChildRemoved?.Invoke(id);

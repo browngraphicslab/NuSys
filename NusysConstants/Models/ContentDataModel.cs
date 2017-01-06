@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace NusysIntermediate
 {
+    /// <summary>
+    /// The base model class that actually hold the information for all content. 
+    /// This is where text strings, image urls, pdf page urls, mp3 urls, etc should be contained.
+    /// This should also be just a data holding class and not contain any events.
+    /// </summary>
     public class ContentDataModel
     {
-        public delegate void RegionAddedEventHandler(string regionLibraryElementModelId);
-
-        public event RegionAddedEventHandler OnRegionAdded;
-        public delegate void RegionRemovedEventHandler(string regionLibraryElementModelId);
-
-        public event RegionRemovedEventHandler OnRegionRemoved;
-
         public string ContentId { get; set; }
 
         public string Data { get; set; }
@@ -28,27 +26,24 @@ namespace NusysIntermediate
             ContentId = contentId;
         }
 
-        public void SetData(string data)
+        /// <summary>
+        /// method used to set the data.
+        /// This should only be called through the controller for this content data model and should be the only way to set the data.
+        /// </summary>
+        /// <param name="data"></param>
+        public virtual void SetData(string data)
         {
             Data = data;
         }
 
         /// <summary>
-        /// Invokes OnRegionAdded Event which updates the RectangleWrapper's region views
+        /// Generic dispose method.
+        /// This base one only sets the data and ink strokes to null.
         /// </summary>
-        /// <param name="regionLibraryElementModelId"></param>
-        public void AddRegion(string regionLibraryElementModelId)
+        public virtual void Dispose()
         {
-            OnRegionAdded?.Invoke(regionLibraryElementModelId);
-        }
-
-        /// <summary>
-        /// Invokes OnRegionRemoved Event which updates the RectangleWrapper's region views
-        /// </summary>
-        /// <param name="regionLibraryElementModelId"></param>
-        public void RemoveRegion(string regionLibraryElementModelId)
-        {
-            OnRegionRemoved?.Invoke(regionLibraryElementModelId);
+            Data = null;
+            Strokes = null;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
@@ -8,7 +9,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class ElementCollectionController : ElementController
+    public class ElementCollectionController : ElementController, ToolStartable
     {
 
         public delegate void CameraPositionChangedHandler(float x, float y);
@@ -44,9 +45,46 @@ namespace NuSysApp
                 collectionController.OnChildAdded += AddChildById;
                 collectionController.OnChildRemoved += RemoveChildById;
             }
+            ToolController.ToolControllers.Add(Id, this);
 
             Disposed += OnDisposed;
         }
+
+        /// <summary>
+        /// Creates a tool from this collection at the point passed in. Or if there is already a tool at the point
+        /// it just adds the collection as a parent
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void CreateToolFromCollection(float x, float y)
+        {
+
+            var dragDestinationController = (SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(new Vector2(x, y), null, 2) as ToolWindow)?.Vm?.Controller; //maybe replace null w render engine.root
+
+            if (dragDestinationController != null)
+            {
+                dragDestinationController.AddParent(this);
+            }
+            else
+            {
+                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(x, y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                var model = new BasicToolModel();
+                var controller = new BasicToolController(model);
+                controller.AddParent(this);
+                UITask.Run(() =>
+                {
+                    var viewModel = new BasicToolViewModel(controller)
+                    {
+                        Filter = ToolModel.ToolFilterTypeTitle.Title,
+                    };
+                    controller.SetSize(500, 500);
+                    controller.SetPosition(canvasCoordinate.X, canvasCoordinate.Y);
+                    SessionController.Instance.ActiveFreeFormViewer.AddTool(viewModel);
+                });
+            }
+        }
+
+
 
         public void SetFinite(bool finite)
         {
@@ -68,23 +106,24 @@ namespace NuSysApp
                 collectionController.OnChildAdded -= AddChildById;
                 collectionController.OnChildRemoved -= RemoveChildById;
             }
+            ToolController.ToolControllers.Remove(Id);
 
             Disposed -= OnDisposed;
         }
 
         private void AddChildById(string id)
         {
-            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(id))
             {
-                AddChild(SessionController.Instance.IdToControllers[id]);
+                AddChild(SessionController.Instance.ElementModelIdToElementController[id]);
             }
         }
 
         private void RemoveChildById(string id)
         {
-            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(id))
             {
-                RemoveChild(SessionController.Instance.IdToControllers[id]);
+                RemoveChild(SessionController.Instance.ElementModelIdToElementController[id]);
             }
         }
         public void AddChild( ElementController child )
@@ -129,5 +168,58 @@ namespace NuSysApp
             base.UnPack(message);
         }
 
+        /// <summary>
+        /// Returns list of elements within the collection as the output library ids
+        /// The bool recursively reload does nothing because the collection can only ever be the
+        /// start of a tool chain.
+        /// </summary>
+        public HashSet<string> GetOutputLibraryIds()
+        {
+            var libraryElementIds = new HashSet<string>();
+            var collectionLibraryElementModel =
+                SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) as
+                    CollectionLibraryElementModel;
+            foreach (var node in collectionLibraryElementModel.Children)
+            {
+                if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(node))
+                {
+                    libraryElementIds.Add(
+                        SessionController.Instance.ElementModelIdToElementController[node]?
+                            .LibraryElementModel?.LibraryElementId);
+                }
+            }
+            return libraryElementIds;
+        }
+
+        /// <summary>
+        /// since this collection has no parents to merge, this method jsut returns GetOutputLibraryIds().
+        /// </summary>
+        /// <param name="recursiveRefresh"></param>
+        /// <returns></returns>
+        public IEnumerable<string> GetUpdatedDataList()
+        {
+            return GetOutputLibraryIds();
+        }
+
+        public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
+        public event EventHandler<string> Disposed;
+        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+        public string GetID()
+        {
+            return Id;
+        }
+
+        /// <summary>
+        /// Returns an empty hashset because a collection has no parents
+        /// </summary>
+        public HashSet<string> GetParentIds()
+        {
+            return new HashSet<string>();
+        }
+
+        public void RefreshFromTopOfChain()
+        {
+            OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
+        }
     }
 }

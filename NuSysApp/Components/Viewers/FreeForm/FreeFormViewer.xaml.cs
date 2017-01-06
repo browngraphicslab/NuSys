@@ -17,7 +17,6 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
 using WinRTXamlToolkit.IO.Extensions;
-using NuSysApp.Components.NuSysRenderer.UI;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
 
@@ -31,8 +30,18 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class FreeFormViewer
     {
+        private static float ARRANGE_BORDER = 55.0f;
         private List<PointModel> _latestStroke;
-        private CanvasInteractionManager _canvasInteractionManager;
+        private RenderItemInteractionManager _canvasInteractionManager;
+
+        /// <summary>
+        /// getter for canvasinteractionmanager
+        /// </summary>
+        public RenderItemInteractionManager CanvasInteractionManager
+        {
+            get { return _canvasInteractionManager; }
+        }
+
         private CollectionInteractionManager _collectionInteractionManager;
 
         private FreeFormViewerViewModel _vm;
@@ -77,6 +86,11 @@ namespace NuSysApp
         {
             get { return _transform; }
         }
+        // Manages the focus of the render items, instantiated in constructor
+        public FocusManager FocusManager { get; private set; }
+
+        private LayoutWindowUIElement _layoutWindow;
+        private bool _customLayoutDrawing = false;
 
         public FreeFormViewer()
         {
@@ -125,9 +139,11 @@ namespace NuSysApp
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
-                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+                _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
             }
-       
+
+            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+
             if (_vm != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -147,6 +163,8 @@ namespace NuSysApp
 
             RenderEngine.Root.AddChild(InitialCollection);
 
+
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
@@ -163,7 +181,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_selectedLink is TrailRenderItem)
             {
@@ -184,23 +202,14 @@ namespace NuSysApp
                         next = trailList[i + 1].Title;
                     }
 
-                    currElement.ExportToHTML(prev, next);
+                    await currElement.ExportToHTML(prev, next);
                 }
                 
-                //OpenInBrowser(trailList);  <---- currently commented out, will probably work when this is not happening on the UI thread
+                StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+                var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
+                //open the exported html in browser
+                await Windows.System.Launcher.LaunchFileAsync(firstPage);
             }
-        }
-
-        /// <summary>
-        /// opens the exported trail in internet browser
-        /// </summary>
-        /// <param name="trailList"></param>
-        private async void OpenInBrowser(List<LibraryElementController> trailList)
-        {
-            StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
-            var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
-            //open the exported html in browser
-            Windows.System.Launcher.LaunchFileAsync(firstPage);
         }
 
         /// <summary>
@@ -214,9 +223,9 @@ namespace NuSysApp
             var currTrail = trail;
             while (currTrail != null) 
             {
-                var inNode = SessionController.Instance.IdToControllers[currTrail.OutElementId].LibraryElementController;
+                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId].LibraryElementController;
                 var outNode =
-                    SessionController.Instance.IdToControllers[currTrail.InElementId].LibraryElementController;
+                    SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId].LibraryElementController;
                 if (!elements.Contains(inNode))
                 {
                     elements.Add(inNode);
@@ -272,6 +281,8 @@ namespace NuSysApp
                 _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
 
                 _collectionInteractionManager.Dispose();
+                //Remove focus from FocusManager
+                FocusManager.ClearFocus();
             }
 
             CurrentCollection = collection;
@@ -302,6 +313,12 @@ namespace NuSysApp
                 _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = false;
+            } else
+            {
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = true;
             }
 
             _collectionInteractionManager.RenderItemPressed += OnRenderItemPressed;
@@ -575,6 +592,9 @@ namespace NuSysApp
                 var s = collection.Camera.LocalToScreenMatrix.M11;
                 var nw = elem.ViewModel.Width + delta.X/s;
                 var nh = elem.ViewModel.Height + delta.Y/s;
+
+                elem.ViewModel.SetSize(nw, nh); //You need to first set size of view model for proper image resizing
+               
                 item.ViewModel.Controller.SetSize(nw, nh);
                 if(_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
                 {
@@ -754,6 +774,166 @@ namespace NuSysApp
                 var selection = (PdfElementRenderItem)Selections[0];
                 selection.GotoPage(selection.CurrentPage + 1);
             }
+            if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
+            {
+                // Show the layout panel
+                _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                _layoutWindow.DoLayout += ArrangeCallback;
+                _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
+                RenderEngine.Root.AddChild(_layoutWindow);
+            }
+        }
+
+        /// <summary>
+        /// Does the layout for a custom layout by arranging the selected nodes along a stroke.
+        /// </summary>
+        /// <param name="sortedSelections"></param>
+        private void CustomLayout(List<ElementRenderItem> sortedSelections)
+        {
+            if (sortedSelections.Count <= 1)
+            {
+                return;
+            }
+
+            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
+            var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
+            var points = latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)).ToArray();
+            if (2 <= points.Length)
+            {
+                var lineLength = 0.0f;
+                var firstPoint = points[0];
+                var pointDistances = new float[points.Length];
+                pointDistances[0] = 0.0f;
+                for (var p = 1; p < points.Length; p++)
+                {
+                    var point = points[p];
+                    lineLength += Vector2.Distance(firstPoint, point);
+                    firstPoint = point;
+                    pointDistances[p] = lineLength;
+                }
+
+                var nodeDistance = lineLength / (sortedSelections.Count - 1);
+                var nodeIndexInterval = points.Length / sortedSelections.Count;
+                for (var n = 0; n < sortedSelections.Count; n++)
+                {
+                    var a = 0;
+                    var b = 0;
+                    for (var p = 0; p < points.Length; p++)
+                    {
+                        if (n == 0)
+                        {
+                            a = 0;
+                            b = 1;
+                            break;
+                        } else if (n == sortedSelections.Count - 1)
+                        {
+                            a = points.Length - 2;
+                            b = points.Length - 1;
+                            break;
+                        } else if (pointDistances[p] > n * nodeDistance)
+                        {
+                            a = p - 1;
+                            b = p;
+
+                            break;
+                        }
+                    }
+
+                    var f = 1.0f;
+                    if ((pointDistances[b] - pointDistances[a]) != 0.0f)
+                    {
+                        f = (n * nodeDistance - pointDistances[a]) / (pointDistances[b] - pointDistances[a]);
+                    }
+
+                    var interpolatedPoint = Vector2.Lerp(points[a], points[b], f);
+                    var point = Vector2.Transform(interpolatedPoint, transform);
+                    sortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
+                }
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current selections sorted by the LayoutSorting of the layout panel.
+        /// </summary>
+        /// <param name="sorting"></param>
+        /// <returns></returns>
+        private List<ElementRenderItem> SortedSelections(LayoutSorting sorting)
+        {
+            var sortedSelections = new List<ElementRenderItem>(Selections);
+
+            switch (sorting)
+            {
+                case LayoutSorting.Title:
+                    sortedSelections.Sort((x, y) => String.Compare(x.ViewModel.Model.Title, y.ViewModel.Model.Title, StringComparison.CurrentCultureIgnoreCase));
+                    break;
+                case LayoutSorting.Date:
+                    sortedSelections.OrderBy(x => SessionController.Instance.ContentController.GetLibraryElementModel(x.ViewModel.Model.LibraryId).LastEditedTimestamp).ThenBy(x => x.ViewModel.Model.Title);
+                    break;
+            }
+
+            return sortedSelections;
+        } 
+
+        /// <summary>
+        /// Does the arrange for a given LayoutStyle and LayoutSorting.
+        /// </summary>
+        /// <param name="style"></param>
+        /// <param name="sorting"></param>
+        private void ArrangeCallback(LayoutStyle style, LayoutSorting sorting)
+        {
+            var sortedSelections = SortedSelections(sorting);
+
+            if (sortedSelections.Count <= 1)
+            {
+                return;
+            }
+
+            if (style == LayoutStyle.Custom)
+            {
+                CustomLayout(sortedSelections);
+                return;
+            }
+
+            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
+            Vector2 start = new Vector2(float.MaxValue, float.MaxValue);
+
+            // Do the layout
+            start = sortedSelections.Aggregate(start, (current, elementRenderItem) => new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, current.X), (float) Math.Min(elementRenderItem.ViewModel.Y, current.Y)));
+
+            var nextPosition = start;
+            var rows = (int) Math.Round(Math.Sqrt(sortedSelections.Count));
+            var i = 0;
+            var maxHeight = 0.0f;
+            foreach (var elementRenderItem in sortedSelections)
+            {
+                elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
+                switch (style)
+                {
+                    case LayoutStyle.Horizontal:
+                        nextPosition.X = (float)(nextPosition.X + ARRANGE_BORDER + elementRenderItem.ViewModel.Width);
+                        break;
+                    case LayoutStyle.Vertical:
+                        nextPosition.Y = (float)(nextPosition.Y + ARRANGE_BORDER + elementRenderItem.ViewModel.Height);
+                        break;
+                    case LayoutStyle.Grid:
+                        maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
+                        if (i % rows == rows - 1)
+                        {
+                            nextPosition.Y = (float)(nextPosition.Y + ARRANGE_BORDER + maxHeight);
+                            nextPosition.X = start.X;
+                            maxHeight = 0.0f;
+                        }
+                        else
+                        {
+                            nextPosition.X = (float)(nextPosition.X + ARRANGE_BORDER + elementRenderItem.ViewModel.Width);
+                        }
+                        i++;
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         private async void CollectionInteractionManagerOnSelectionInkPressed(CanvasPointer pointer,
@@ -822,27 +1002,30 @@ namespace NuSysApp
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
             CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
-            if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
+            if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds > 500)
             {
                 var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
                 var optionsBounds = RenderEngine.InkOptions.GetLocalBounds();
-                var targetPoint  = pointer.CurrentPoint;
+                var targetPoint = pointer.CurrentPoint;
                 if (targetPoint.X < screenBounds.Width/2)
                 {
                     targetPoint.X += 20;
                 }
                 else
                 {
-                    targetPoint.X -= (20 + (float)optionsBounds.Width);
+                    targetPoint.X -= (20 + (float) optionsBounds.Width);
                 }
-                targetPoint.Y -= (float)optionsBounds.Height/2;
-                targetPoint.X = (float)Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
-                targetPoint.Y = (float)Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
+                targetPoint.Y -= (float) optionsBounds.Height/2;
+                targetPoint.X = (float) Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
+                targetPoint.Y = (float) Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
                 RenderEngine.InkOptions.Transform.LocalPosition = targetPoint;
                 RenderEngine.InkOptions.IsVisible = true;
                 CurrentCollection.InkRenderItem.RemoveLatestStroke();
             }
-
+            else
+            {
+                _layoutWindow?.NotifyArrangeCustom();
+            }
         }
 
         private void CollectionInteractionManagerOnInkDrawing(CanvasPointer pointer)
@@ -993,9 +1176,12 @@ namespace NuSysApp
                 {
                     // do nothing.
                 }
-                var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
-                var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.NuSessionView.ShowDetailView(controller);
+                var libraryElementModelId = (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
+                if (libraryElementModelId != null)
+                {
+                    var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+                    SessionController.Instance.NuSessionView.ShowDetailView(controller);
+                }
             } else if (item is LinkRenderItem)
             {
                 var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;

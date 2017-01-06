@@ -77,7 +77,10 @@ namespace NuSysApp
 
         public delegate void HighlightChangedHandler(LibraryElementController sender, bool isHighlighted);
 
-
+        /// <summary>
+        /// Invoked whenever the metadata is changed, the library element controller whose metadata was changed
+        /// is sent along with the event, just update everything using the new metadata dictionary
+        /// </summary>
         public event MetadataChangedEventHandler MetadataChanged;
         public event EventHandler Disposed;
         public event EventHandler<string> TitleChanged;
@@ -85,10 +88,20 @@ namespace NuSysApp
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event EventHandler<LinkViewModel> LinkAdded;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
+
+        /// <summary>
+        /// Fired with the linkLibraryElementId of the link that was removed
+        /// </summary>
         public event EventHandler<string> LinkRemoved;
+
+        /// <summary>
+        /// Fired whenever the highlight is changed on this library element controller
+        /// </summary>
         public event HighlightChangedHandler HighlightChanged;
 
+        public event EventHandler<ElementModel> AliasAdded;
+        public event EventHandler<ElementModel> AliasRemoved;
 
         /// <summary>
         /// the event that is fired when the access type of this controller's library element changes. 
@@ -335,6 +348,7 @@ namespace NuSysApp
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key, entry);
+            MetadataChanged?.Invoke(this);
             return true;
 
         }
@@ -373,12 +387,14 @@ namespace NuSysApp
         public bool RemoveMetadataLocally(string key)
         {
             MetadataEntry outobj;
+            MetadataChanged?.Invoke(this);
             return _libraryElementModel.Metadata.TryRemove(key, out outobj);
 
         }
 
         /// <summary>
-        /// Updates the passed in metadata with the passed in key and values
+        /// Updates the passed in metadata with the passed in key and values, the values should include all the
+        /// new values as well as all the old values
         /// </summary>
         /// <param name="original"></param>
         /// <param name="key"></param>
@@ -430,11 +446,12 @@ namespace NuSysApp
 
             // Updates the metadata entry
             var newEntry = new MetadataEntry(originalKey, values, MetadataMutability.MUTABLE);
-            _libraryElementModel.Metadata.TryUpdate(originalKey, newEntry, newEntry);
+            _libraryElementModel.Metadata[originalKey] = newEntry;
+            MetadataChanged?.Invoke(this);
             return true;
         }
 
-        /// <summary>
+        /// <summary> 
         /// Returns the value of the metadata at the specified key
         /// null if not exist
         /// </summary>
@@ -489,6 +506,46 @@ namespace NuSysApp
             if (!_blockServerInteraction)
             {
                 _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY, _libraryElementModel.Keywords);
+            }
+        }
+
+        /// <summary>
+        /// Tries to add a link form this library element controller to another library element controller,
+        /// optional argument to give tags to the link
+        /// </summary>
+        /// <param name="link_to"></param>
+        /// <param name="text"></param>
+        /// <param name="tags"></param>
+        public async void TryAddLinkTo(LibraryElementController link_to, string title = null, HashSet<Keyword> tags = null)
+        {
+            // Diable linking to links and tools
+            // TODO: Enable linking to links 
+            if (LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                LibraryElementModel.Type == NusysConstants.ElementType.Tools ||
+                link_to.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                link_to.LibraryElementModel.Type == NusysConstants.ElementType.Tools)
+            {
+                return;
+            }
+            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs
+            {
+                LibraryElementModelInId = LibraryElementModel.LibraryElementId,
+                LibraryElementType = NusysConstants.ElementType.Link,
+                LibraryElementModelOutId = link_to.LibraryElementModel.LibraryElementId,
+                Title = title ?? $"Link from {LibraryElementModel.Title} to {link_to.LibraryElementModel.Title}",
+                Keywords = tags ?? new HashSet<Keyword>()
+            };
+            if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=
+                createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId &&
+                SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelInId,
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId) == null)
+            {
+                var contentRequestArgs = new CreateNewContentRequestArgs();
+                contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                var request = new CreateNewContentRequest(contentRequestArgs);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.AddReturnedLibraryElementToLibrary();
             }
         }
 
@@ -744,9 +801,19 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
-        public void AddLink(LinkViewModel linkViewModel)
+        public void FireAliasRemoved(ElementModel elementModel)
         {
-            LinkAdded?.Invoke(this, linkViewModel);
+            AliasRemoved?.Invoke(this, elementModel);
+        }
+
+        public void FireAliasAdded(ElementModel elementModel)
+        {
+            AliasAdded?.Invoke(this,elementModel);
+        }
+
+        public void FireLinkAdded(LinkLibraryElementController LinkLibraryElementController)
+        {
+            LinkAdded?.Invoke(this, LinkLibraryElementController);
         }
 
         #region Linking methods
@@ -755,7 +822,7 @@ namespace NuSysApp
         /// are assured that the link has been removed successfully
         /// </summary>
         /// <param name="linkLibraryElementID"></param>
-        public void InvokeLinkRemoved(string linkLibraryElementID)
+        public void FireLinkRemoved(string linkLibraryElementID)
         {
             LinkRemoved?.Invoke(this, linkLibraryElementID);
         }
@@ -903,7 +970,7 @@ namespace NuSysApp
         /// 
         /// takes in previous and next node as options for trail export
         /// </summary>
-        public async void ExportToHTML(string previous = null, string next = null)
+        public async Task ExportToHTML(string previous = null, string next = null)
         {
             /// create the node's HTML file in the HTML folder
             /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
@@ -977,7 +1044,7 @@ namespace NuSysApp
             ///replace metadata
             ///first, turn metadata list into a string that puts new line characters at end of each key value pair
             string metadataString = "";
-            foreach (var metadata in LibraryElementModel.Metadata)
+            foreach (var metadata in LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>())
             {
                 metadataString += metadata.Value.GetMetadataAsString() + "<br>";
             }
@@ -1006,11 +1073,17 @@ namespace NuSysApp
             await FileIO.WriteTextAsync(nodeFile, text);
         }
 
+        /// <summary>
+        /// Adds highlighting to the things related to this library element controller
+        /// </summary>
         public void AddHighlight()
         {
             HighlightChanged?.Invoke(this, true);
         }
 
+        /// <summary>
+        /// Removes highlighting from the things controlled by this libary element controller
+        /// </summary>
         public void RemoveHighlight()
         {
             HighlightChanged?.Invoke(this, false);

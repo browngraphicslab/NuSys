@@ -12,7 +12,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class AddElementMenuUIElement : RectangleUIElement
+    public class AddElementMenuUIElement : RoundedRectangleUIElement
     {
         // variables for all the buttons
         private ButtonUIElement _addTextNodeButton;
@@ -33,14 +33,14 @@ namespace NuSysApp
         private NusysConstants.ElementType _elementType;
 
         // the layout manager for thebuttons
-        private StackLayoutManager _buttonLayoutManager;
+        //private StackLayoutManager _buttonLayoutManager;
 
         // ui variables
         private float _menuButtonWidth = 50;
         private float _menuButtonHeight = 50;
         private float _menuButtonSpacing = 10;
-        private float _menuButtonTopAndBottomMargins = 5;
-        private float _menuButtonLeftAndRightMargins = 5;
+        private float _menuButtonTopAndBottomMargins = 15;
+        private float _menuButtonLeftAndRightMargins = 15;
 
         /// <summary>
         /// This list of menu buttons determines the order they are drawn
@@ -58,52 +58,19 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-            _addTextNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addTextNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "text");
             AddChild(_addTextNodeButton);
 
-            _addCollectionNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addCollectionNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "collection");
+
             AddChild(_addCollectionNodeButton);
 
-            _addToolNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addToolNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "tools");
+
             AddChild(_addToolNodeButton);
 
-            _addRecordingNodeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Height = _menuButtonHeight,
-                Width = _menuButtonWidth,
-                Background = Colors.Transparent,
-                Bordercolor = Colors.Transparent,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 3,
-                ImageBounds = new Rect(_menuButtonWidth / 4, _menuButtonHeight / 4, _menuButtonWidth / 2, _menuButtonHeight / 2)
-            };
+            _addRecordingNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "record");
+
             AddChild(_addRecordingNodeButton);
 
             // initialize a list of menu buttons which is useful for writing short code
@@ -115,26 +82,30 @@ namespace NuSysApp
                 _addToolNodeButton
             };
 
-            // initialize the height and width based on the number of buttons
-            Height = _menuButtonHeight + 2*_menuButtonTopAndBottomMargins;
-            Width = _menuButtons.Count*_menuButtonWidth + (_menuButtons.Count - 1)*_menuButtonSpacing +
-                    2*_menuButtonLeftAndRightMargins;
-
-            BorderWidth = 3;
-            Bordercolor = Colors.LightGray;
+            Background = Constants.LIGHT_BLUE;
             
+            ///***RADIAL DESIGN***
+            /// hardcoding this for now
+            _addTextNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y - _addTextNodeButton.Height*2f);
+            _addCollectionNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addCollectionNodeButton.Width*2f, 
+                Transform.LocalPosition.Y - _addCollectionNodeButton.Height);
+            _addToolNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X - _addToolNodeButton.Width*2f, 
+                Transform.LocalPosition.Y + _addToolNodeButton.Height);
+            _addRecordingNodeButton.Transform.LocalPosition = new Vector2(Transform.LocalPosition.X, Transform.LocalPosition.Y + _addRecordingNodeButton.Height*2f);
+
+            ///***PREVIOUS DESIGN - box***
             // create a new stack layout manager using the ui variables
-            _buttonLayoutManager = new StackLayoutManager
-            {
-                Spacing = _menuButtonSpacing,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Center,
-                Width = Width,
-                Height = Height,
-                ItemHeight = _menuButtonHeight,
-                ItemWidth = _menuButtonWidth
-            };
-            _buttonLayoutManager.SetMargins(_menuButtonLeftAndRightMargins, _menuButtonTopAndBottomMargins);
+            //_buttonLayoutManager = new StackLayoutManager
+            //{
+            //    Spacing = _menuButtonSpacing,
+            //    HorizontalAlignment = HorizontalAlignment.Stretch,
+            //    VerticalAlignment = VerticalAlignment.Center,
+            //    Width = Width,
+            //    Height = Height,
+            //    ItemHeight = _menuButtonHeight,
+            //    ItemWidth = _menuButtonWidth
+            //};
+            //_buttonLayoutManager.SetMargins(_menuButtonLeftAndRightMargins, _menuButtonTopAndBottomMargins);
 
             // add each button the the stack layout manager and then add dragging and drag completed methods
             foreach (var button in _menuButtons)
@@ -142,7 +113,7 @@ namespace NuSysApp
                 button.Dragged += MenuButton_OnDragging;
                 button.DragCompleted += MenuButton_DragCompleted;
                 button.DragStarted += MenuButton_DragStarted;
-                _buttonLayoutManager.AddElement(button);
+                //_buttonLayoutManager.AddElement(button);
             }
         }
 
@@ -161,20 +132,20 @@ namespace NuSysApp
         public override async Task Load()
         {
             // set the images for all the buttons
-            _addRecordingNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/audio main menu.png"));
-            _addTextNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/text node main menu.png"));
-            _addCollectionNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection main menu.png"));
-            _addToolNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/tools icon.png"));
+            _addRecordingNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
+            _addTextNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
+            _addCollectionNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
+            _addToolNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
 
             // load the images for the drag icon
             _textNodeDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/library_thumbnails/text.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
             _collectionDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
             _recordingDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/audio main menu.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
             _toolDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/tools icon.png"));
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
             base.Load();
         }
 
@@ -214,6 +185,18 @@ namespace NuSysApp
             // Add the element at the dropped location          
             StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, _elementType);
 
+        }
+
+        /// <summary>
+        /// resizes all component buttons of the add element menu
+        /// </summary>
+        /// <param name="e"></param>
+        public void Resize(double e)
+        {
+            _addTextNodeButton.Resize(e);
+            _addToolNodeButton.Resize(e);
+            _addCollectionNodeButton.Resize(e);
+            _addRecordingNodeButton.Resize(e);
         }
 
         /// <summary>
@@ -277,7 +260,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _buttonLayoutManager.ArrangeItems();
+            //_buttonLayoutManager.ArrangeItems();
             base.Update(parentLocalToScreenTransform);
         }
     }

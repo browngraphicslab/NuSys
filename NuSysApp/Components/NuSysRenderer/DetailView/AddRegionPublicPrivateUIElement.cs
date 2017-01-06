@@ -53,20 +53,14 @@ namespace NuSysApp
 
 
             // initialize the private button
-            _addPrivateButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
-            {
-                ButtonText = "Add Private",
-            };
+            _addPrivateButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Add Private");
             InitializeButtonValues(_addPrivateButton);
             AddChild(_addPrivateButton);
             _buttonLayoutManager.AddElement(_addPrivateButton);
 
 
             // initialize the public button
-            _addPublicButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
-            {
-                ButtonText = "Add Public"
-            };
+            _addPublicButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Add Public");
             InitializeButtonValues(_addPublicButton);
             AddChild(_addPublicButton);
             _buttonLayoutManager.AddElement(_addPublicButton);

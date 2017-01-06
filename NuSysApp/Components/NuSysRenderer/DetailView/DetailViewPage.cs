@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -74,6 +75,17 @@ namespace NuSysApp
         /// </summary>
         private bool _showRegions;
 
+        private float _imageHeight;
+
+        private float _imageAnalysisMinHeight = 150;
+
+        private ButtonUIElement _dragToCollectionButton;
+
+        /// <summary>
+        /// Rectangle used to display icon of dragged to collection element
+        /// </summary>
+        private RectangleUIElement _dragRect;
+
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
             // set the controller properly
@@ -89,16 +101,24 @@ namespace NuSysApp
             _showRegions = showRegions;
 
             // initialize the add region button and the _addRegionButtonLayoutManager
-            _addRegionButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator))
-            {
-                Background = Colors.Azure,
-                ButtonText = "+",
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
-            };
+            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "+");
+
             _addRegionButtonLayoutManager = new StackLayoutManager();
             AddChild(_addRegionButton);
             _addRegionButtonLayoutManager.AddElement(_addRegionButton);
+
+            _dragToCollectionButton = new ButtonUIElement(this, resourceCreator)
+            {
+                Background = Colors.Azure,
+                ButtonText = "Drag To Collection",
+                BorderWidth = 3,
+                Bordercolor = Colors.DarkSlateGray,
+                Height = 30,
+                Width = 150,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center
+            };
+            AddChild(_dragToCollectionButton);
 
             // initialize the add region ui element
             _addRegionUIElement = new AddRegionPublicPrivateUIElement(this, resourceCreator);
@@ -115,10 +135,52 @@ namespace NuSysApp
                 _imageAnalysisLayoutManager.AddElement(_analysisUIElement);
             }
 
+            _dragRect = new RectangleUIElement(this, resourceCreator)
+            {
+                IsVisible = false
+            };
+            AddChild(_dragRect);
+
 
 
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
+            _dragToCollectionButton.DragCompleted += _dragToCollectionButton_DragCompleted;
+            _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
+            _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
+        }
+
+        /// <summary>
+        /// Fired 60 times a second while the pointer is being dragged after tapping on drag to collection button
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void _dragToCollectionButton_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _dragRect.Transform.LocalPosition = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
+        }
+
+        /// <summary>
+        /// Fired once when the pointer is first dragged after tapping on the drag to collection button
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private async void _dragToCollectionButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _dragRect.Image = await CanvasBitmap.LoadAsync(Canvas, _controller.SmallIconUri);
+            _dragRect.IsVisible = true;
+        }
+
+        /// <summary>
+        /// Fired once when the pointer stops dragging after tapping on the drag to collection button
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void _dragToCollectionButton_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, _controller.LibraryElementModel.Type, _controller);
+            _dragRect.Image = null;
+            _dragRect.IsVisible = false;
         }
 
         /// <summary>
@@ -154,6 +216,11 @@ namespace NuSysApp
 
             _contentLayoutManager.Dispose();
             _addRegionButtonLayoutManager.Dispose();
+
+            _addRegionButton.Tapped -= AddRegionButton_Tapped;
+            _dragToCollectionButton.DragCompleted -= _dragToCollectionButton_DragCompleted;
+            _dragToCollectionButton.DragStarted -= _dragToCollectionButton_DragStarted;
+            _dragToCollectionButton.Dragged -= _dragToCollectionButton_Dragged;
 
             if (_showsImageAnalysis)
             {
@@ -193,28 +260,33 @@ namespace NuSysApp
                 _addRegionButton.IsVisible = false;
             }
 
+
+            _dragToCollectionButton.Transform.LocalPosition = new Vector2(20,20);
+
+            var dragToCollectionHeight = _dragToCollectionButton.Height + 20;
+
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
-            var imageHeight = Height * heightMultiplier;
+            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight, Height*heightMultiplier) - dragToCollectionHeight;
 
             // set the image
             var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
-            _contentLayoutManager.SetSize(Width - imageOffsetFromRegionButton, imageHeight);
+            _contentLayoutManager.SetSize(Width - imageOffsetFromRegionButton, _imageHeight);
             _contentLayoutManager.VerticalAlignment = VerticalAlignment.Top;
             _contentLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
             _contentLayoutManager.ItemWidth = Width - imageOffsetFromRegionButton - 20;
-            _contentLayoutManager.ItemHeight = imageHeight;
+            _contentLayoutManager.ItemHeight = _imageHeight;
             _contentLayoutManager.TopMargin = 20;
-            _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
+            _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, dragToCollectionHeight));
 
 
             if (_showsImageAnalysis)
             {
                 // set the image analysis
-                _imageAnalysisLayoutManager.SetSize(Width, Height - imageHeight);
+                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin - dragToCollectionHeight);
                 _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, imageHeight));
+                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin + dragToCollectionHeight));
             }
 
 

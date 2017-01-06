@@ -21,6 +21,12 @@ namespace NuSysApp.Tools
 
         event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         event EventHandler<string> Disposed;
+
+        /// <summary>
+        /// This is listend to by all children so that when you change from metadata to basic or basic to metadata,
+        /// The children can create a new link to the new tool and re add the new tool as a parent (since the old tool was disposed of). (The reason why the link can't listen to this is the link takes in an element controller.) It
+        /// takes an element controller beause it already has all the anchor functionality.
+        /// </summary>
         event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
 

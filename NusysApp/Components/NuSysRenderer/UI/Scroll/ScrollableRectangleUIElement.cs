@@ -61,7 +61,7 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        public virtual void ScrollBarPositionChanged(object source, double position)
+        public virtual void ScrollBarPositionChanged(object source, float position)
         {
 
         }

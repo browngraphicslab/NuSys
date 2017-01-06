@@ -71,7 +71,6 @@ namespace NuSysApp
 
             _maskRect = new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth);
 
-
             _scrollBar = new RectangleUIElement(this, resourceCreator)
             {
                 Width = Width,
@@ -331,6 +330,10 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if(IsDisposed || !SessionController.Instance.SessionSettings.BreadCrumbsVisible)
+            {
+                return;
+            }
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             using (ds.CreateLayer(1, _maskRect))

@@ -79,6 +79,11 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Enables or disables the button
+        /// </summary>
+        public Boolean Enabled { get; set; }
+
+        /// <summary>
         /// The background color to be set while the button is in the pressed state.
         /// </summary>
         public Color? SelectedBackground { get; set; }
@@ -102,10 +107,18 @@ namespace NuSysApp
             set { Shape.Image = value; }
         }
 
+        public float Padding
+        {
+            get { return _padding; }
+            set { _padding = value; }
+        }
+
+        private float _padding;
+
         /// <summary>
         /// The color of the text on the button
         /// </summary>
-        public Color ButtonTextColor { get; set; }
+        public Color ButtonTextColor { get; set; } = UIDefaults.TextColor;
 
         /// <summary>
         /// The size of the text on the button
@@ -133,9 +146,29 @@ namespace NuSysApp
             set { Shape.ImageBounds = value; }
         }
 
-        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shapeElement) : base(parent, resourceCreator)
+        /// <summary>
+        /// saves original height, width, and text size in case you need to resize the button.
+        /// </summary>
+        protected float _originalHeight;
+        protected float _originalWidth;
+        protected float _originalTextSize;
+        protected Rect _originalImageBounds;
+
+
+        /// <summary>
+        /// For instantiating a button, pass in the usual parent and resource creator.  
+        /// Then pass in another baseInteractiveUIElement to be used as the shape of the button.
+        /// 
+        /// The button will encapsulate that shape.  
+        /// FOR MOST CASES, YOU WILL NOT NEED TO USE THIS CONSTRUCTOR - YOU SHOULD BE INSTANTIATING A SPECIFIC BUTTON.
+        /// See EllipseButtonUIElement, TransparentButtonUIElement, RoundedRectButtonUIElement and RectangleButtonUIElement.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
+        /// <param name="shapeElement"></param>
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shape = null) : base(parent, resourceCreator)
         {
-            Shape = shapeElement;
+            Shape = shape ?? new RectangleUIElement(parent, ResourceCreator); //This is important so all buttons should have the same base appearence
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -145,9 +178,24 @@ namespace NuSysApp
             Shape.Released += Shape_Released;
             Shape.Dragged += Shape_Dragged;
             Shape.Tapped += Shape_Tapped;
-            Shape.DoubleTapped += Shape_DoubleTapped;       
+            Shape.DoubleTapped += Shape_DoubleTapped;
+
+            Enabled = true;
+
+            Padding = 7;
         }
 
+        /// <summary>
+        /// sets original values to height width and size.
+        /// should be called at end of constructor for individual button types.
+        /// </summary>
+        protected void SetOriginalValues()
+        {
+            _originalHeight = Height;
+            _originalWidth = Width;
+            _originalTextSize = ButtonTextSize;
+            _originalImageBounds = ImageBounds ?? GetLocalBounds();
+        }
 
         /// <summary>
         /// Fired the double tapped event on the button when the shape double tap event is fired
@@ -195,6 +243,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         public override void OnReleased(CanvasPointer pointer)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+           
             // reset the Background and Bordercolor to the original colors
             Background = _orgBackground;
             Bordercolor = _orgBorder;
@@ -218,6 +271,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         public override void OnPressed(CanvasPointer pointer)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             // save the Background and Bordercolor to reset them when the button is no longer pressed
             _orgBackground = Background;
             _orgBorder = Bordercolor;
@@ -254,26 +312,42 @@ namespace NuSysApp
 
             if (ButtonText != null)
             {
-                // create a text format object
-                var textFormat = new CanvasTextFormat
-                {
-                    HorizontalAlignment = ButtonTextHorizontalAlignment,
-                    VerticalAlignment = ButtonTextVerticalAlignment,
-                    WordWrapping = CanvasWordWrapping.NoWrap,
-                    TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                    TrimmingSign = CanvasTrimmingSign.Ellipsis,
-                    FontSize = ButtonTextSize
-
-                };
-
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
-                // just created textFormat
-                ds.DrawText(ButtonText,
-                    new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth),
-                    ButtonTextColor, textFormat);
+                ds.DrawText(ButtonText, GetTextBoundingBox(),ButtonTextColor, GetCanvasTextFormat());
             }
 
             ds.Transform = orgTransform;
+        }
+
+        /// <summary>
+        /// get text bounding box. this is overriden in classes where the shape is not a rectangle/the text is not to be drawn
+        /// inside the button shape.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Rect GetTextBoundingBox()
+        {
+            return new Rect(Padding, Padding,Math.Max(Width - 2*Padding,0), Math.Max(Height - 2*Padding,0));
+        }
+
+        /// <summary>
+        /// get canvas text format. this will be overridden if you need to change the wrapping style, etc. for text that is not drawn inside
+        /// the button shape.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual CanvasTextFormat GetCanvasTextFormat()
+        {
+            // create a text format object
+            var textFormat = new CanvasTextFormat
+            {
+                HorizontalAlignment = ButtonTextHorizontalAlignment,
+                VerticalAlignment = ButtonTextVerticalAlignment,
+                WordWrapping = CanvasWordWrapping.NoWrap,
+                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
+                TrimmingSign = CanvasTrimmingSign.Ellipsis,
+                FontSize = ButtonTextSize
+            };
+
+            return textFormat;
         }
 
 
@@ -331,6 +405,17 @@ namespace NuSysApp
         public override void RemoveChild(BaseRenderItem child)
         {
             Shape.RemoveChild(child);
+        }
+
+        /// <summary>.
+        /// this is for accessibility resizing.
+        /// </summary>
+        /// <param name="e"></param>
+        public virtual void Resize(double e)
+        {
+            Height = _originalHeight * (float)e;
+            Width = _originalWidth * (float)e;
+            ButtonTextSize = _originalTextSize * (float)e;
         }
     }
 }

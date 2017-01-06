@@ -18,7 +18,7 @@ namespace NuSysApp
         /// <summary>
         /// The text to be displayed in the textbox
         /// </summary>
-        public string Text { get; set; }
+        public virtual string Text { get; set; }
 
         /// <summary>
         /// The horizontal alignment of the text within the textbox
@@ -73,11 +73,12 @@ namespace NuSysApp
             TextColor = UIDefaults.TextColor;
             FontStyle = UIDefaults.FontStyle;
             FontSize = UIDefaults.FontSize;
-            FontFamily = UIDefaults.FontFamily;
+            FontFamily = UIDefaults.TitleFont;
             Wrapping = UIDefaults.Wrapping;
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
             BorderWidth = 0;
+            Text = "";
         }
 
         /// <summary>
@@ -95,13 +96,15 @@ namespace NuSysApp
 
             // draw the text
             DrawText(ds);
+
+
         }
 
         /// <summary>
         /// Draws the text within the textbox
         /// </summary>
         /// <param name="ds"></param>
-        public void DrawText(CanvasDrawingSession ds)
+        public virtual void DrawText(CanvasDrawingSession ds)
         {
             // save the current transform of the drawing session
             var orgTransform = ds.Transform;
@@ -118,7 +121,7 @@ namespace NuSysApp
                     TrimmingGranularity = TrimmingGranularity,
                     TrimmingSign = TrimmingSign,
                     FontFamily = FontFamily,
-                    FontSize = FontSize,
+                    FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale,
                     FontStyle = FontStyle,
                 };
 
@@ -126,10 +129,16 @@ namespace NuSysApp
                 Debug.Assert(Width - 2*BorderWidth > 0 && Height - 2*BorderWidth > 0, "these must be greater than zero or drawText crashes below");
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
-                // just created textFormat
-                ds.DrawText(Text,
-                    new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth),
-                    TextColor, textFormat);
+                // just created TextFormat
+                //ds.DrawText(Text,
+                //    new Rect(BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
+                //    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
+                //    TextColor, TextFormat);
+                var x = BorderWidth + UIDefaults.XTextPadding;
+                var y = BorderWidth + UIDefaults.YTextPadding;
+                var width = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
+                var height = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                ds.DrawText(Text, new Rect(x, y,width, height),TextColor, textFormat);
             }
 
             ds.Transform = orgTransform;
