@@ -69,7 +69,7 @@ namespace NuSysApp
         /// <summary>
         /// The background of the rectangle
         /// </summary>
-        public override Windows.UI.Color Background { get; set; }
+        public override Color Background { get; set; }
 
         /// <summary>
         /// The width of the border of the rectangle

@@ -31,8 +31,6 @@ namespace NuSysApp
             _resourceCreator = resourceCreator;
             MakeScrollBar();
             IsHitTestVisible = false;
-
-
         }
         
 
@@ -65,6 +63,7 @@ namespace NuSysApp
         {
 
         }
+
         public override void Draw(CanvasDrawingSession ds)
         {
             _scrollBar.Transform.LocalPosition = new Vector2((float)Width - _scrollBar.Width, 0);

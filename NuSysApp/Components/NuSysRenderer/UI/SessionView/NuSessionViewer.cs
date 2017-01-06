@@ -51,6 +51,8 @@ namespace NuSysApp
 
         public FilterMenu FilterMenu => _floatingMenu.FilterMenu;
 
+        private ScrollingCanvas _scrollingCanvas;
+
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -133,6 +135,30 @@ namespace NuSysApp
                 KeepAspectRatio = true
             };
             AddChild(_detailViewer);
+
+            _scrollingCanvas = new ScrollingCanvas(this, Canvas, ScrollingCanvas.ScrollOrientation.Both)
+            {
+                Width = 300,
+                Height = 300,
+                ScrollAreaSize = new Size(1000, 1000),
+                Transform = { LocalPosition = new Vector2(400, 400) }
+            };
+            AddChild(_scrollingCanvas);
+
+            for (int i = 1; i < 100; i++)
+            {
+                for (int j = 1; j < 100; j++)
+                {
+                    var element = new RectangleUIElement(this, ResourceCreator)
+                    {
+                        Width = 5,
+                        Height = 5,
+                        Background = Colors.Red
+                    };
+                    _scrollingCanvas.AddElement(element, new Vector2(i * 10, j * 10));
+                }
+            }
+
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;

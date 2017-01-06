@@ -17,18 +17,22 @@ namespace NuSysApp
         /// Position of the (start of the) slider bar
         /// </summary>
         private float _position;
+
         /// <summary>
         /// Normalized length of the slider. The end - start.
         /// </summary>
         private float _range;
+
         /// <summary>
-        /// Orientation can be either vertical or horizontal
+        /// Orientation can be either vertical, horizontal, or both
         /// </summary>
         private Orientation _orientation;
+
         /// <summary>
         /// Velocity with which the list view scrolls to the place.
         /// </summary>
         private static double _scrollVelocity;
+
         /// <summary>
         /// Bool for whether you are currently dragging the slider bar.
         /// </summary>
@@ -39,7 +43,7 @@ namespace NuSysApp
         /// <summary>
         /// TODO: Support horizontal scroll bars.
         /// </summary>
-        public enum Orientation { Horizontal, Vertical }
+        public enum Orientation { Horizontal, Vertical, HorizontalAndVertical }
 
         /// <summary>
         /// Color of the scroll bar. 
@@ -49,11 +53,14 @@ namespace NuSysApp
         /// <summary>
         /// Invoked when the user slides the scroll bar to a new position. Position is
         /// double from 0 to 1. It repreesents the "start" of the scroll bar.
-        /// 
         /// </summary>
         /// <param name="source"></param>
         /// <param name="position"></param>
         public delegate void ScrollBarPositionChangedHandler(object source, float position);
+
+        /// <summary>
+        /// Position is a float from 0 to 1 representing the start of the scroll bar
+        /// </summary>
         public event ScrollBarPositionChangedHandler ScrollBarPositionChanged;
 
         /// <summary>

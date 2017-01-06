@@ -397,6 +397,8 @@
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ScrollableTextboxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\MaskedRect.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingCanvas.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumb.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbContainer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\BreadCrumbTrail\BreadCrumbUIElement.cs" />
