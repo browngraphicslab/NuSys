@@ -29,7 +29,6 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
-        public NodeMenuButtonRenderItem BtnExport;
         public NodeMenuButtonRenderItem BtnLayoutTool;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
@@ -43,12 +42,16 @@ namespace NuSysApp
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
-            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
-            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
-            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
+            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/trash can white.png", parent, resourceCreator);
+            BtnDelete.Label = "delete";
+            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/present white.png", parent, resourceCreator);
+            BtnPresent.Label = "present";
+            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/collection white.png", parent, resourceCreator);
+            BtnGroup.Label = "collection";
             BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
-            BtnExport = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/settings-icon-white.png", parent, resourceCreator);
+            BtnEnterCollection.Label = "enter collection";
             BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+            BtnLayoutTool.Label = "edit layout";
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
@@ -67,7 +70,6 @@ namespace NuSysApp
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer,
-                BtnExport,
                 BtnTools
             };
             _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
@@ -266,7 +268,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
+                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 72);
                 }
                 count++;
             }
