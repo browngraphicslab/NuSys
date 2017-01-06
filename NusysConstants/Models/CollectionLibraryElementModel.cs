@@ -32,26 +32,7 @@ namespace NusysIntermediate
             set;
         }
 
-        /// <summary>
-        /// This list of points is used to define a custom shape that acts as the outer edge of a bounded collection.
-        /// </summary>
-        public List<PointModel> ShapePoints
-        {
-            get;
-            set;
-        }
 
-        /// <summary>
-        /// The color of the shape of the collection if it exists.  
-        /// </summary>
-        public ColorModel ShapeColor { get; set; }
-
-        /// <summary>
-        /// The double aspect ratio of a shaped collection. 
-        /// This should only be used shapepoints is not null and three or more shapepoints exist.
-        /// Should be calculated as width/height.
-        /// </summary>
-        public double AspectRatio { get; set; }
 
         /// <summary>
         /// this constructor just takes in the id of the library element.
@@ -75,6 +56,8 @@ namespace NusysIntermediate
             {
                 IsFinite = message.GetBool(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY);
             }
+
+            /*
             if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY))
             {
                 ShapePoints = message.GetList<PointModel>(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY);
@@ -87,6 +70,7 @@ namespace NusysIntermediate
             {
                 ShapeColor = message.Get<ColorModel>(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPE_COLOR_KEY);
             }
+            */
         }
     }
 }

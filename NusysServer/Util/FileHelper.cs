@@ -61,6 +61,7 @@ namespace NusysServer
                     case NusysConstants.ContentType.PDF:
                     case NusysConstants.ContentType.Word:
                     case NusysConstants.ContentType.Text:
+                    case NusysConstants.ContentType.Collection:
                         return contentUrl;
                 }
                 throw new Exception("the requested contentType is not supported yet for url-to-data conversion");
@@ -223,6 +224,7 @@ namespace NusysServer
                         return JsonConvert.SerializeObject(listOfUrls);
                         break;
                     case NusysConstants.ContentType.Text:
+                    case NusysConstants.ContentType.Collection:
                         filePath = "";
                         fileUrl = contentData ?? "";
                         break;
@@ -295,7 +297,9 @@ namespace NusysServer
                     case NusysConstants.ContentType.Video:
                     case NusysConstants.ContentType.PDF:
                     case NusysConstants.ContentType.Word:
-                        throw new Exception("only text content can be updated");
+                        throw new Exception("only text and collections content can be updated in this method");
+                        break;
+                    case NusysConstants.ContentType.Collection:
                     case NusysConstants.ContentType.Text:
                         var sqlQuery = new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.Content),
                             new List<SqlQueryEquals>() {new SqlQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY, updatedContentData)},
@@ -383,7 +387,12 @@ namespace NusysServer
             var contentDataModelId = doc.DocumentProperties.Custom[customContentIdPropertyKey].ToString();
             try
             {
-                CreateDataFile(contentDataModelId, NusysConstants.ContentType.Word, wordByteDataString);
+                var updatedContentData = CreateDataFile(contentDataModelId, NusysConstants.ContentType.Word, wordByteDataString);
+                var sqlQuery = new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.Content),
+                            new List<SqlQueryEquals>() { new SqlQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY, updatedContentData) },
+                            new SqlQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, contentDataModelId));
+                var success = sqlQuery.ExecuteCommand();
+
                 var notification = new WordChangedNotification(new WordChangedNotificationArgs() { ContentDataModelId = contentDataModelId});
                 NuWebSocketHandler.NotifyAll(notification);
                 return "Success!";

@@ -21,9 +21,10 @@ namespace NusysServer
             Debug.Assert(message.ContainsKey(NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.UPDATE_CONTENT_REQUEST_UPDATED_CONTENT_KEY));
             if (message.GetEnum<NusysConstants.ContentType>(NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY) !=
-                NusysConstants.ContentType.Text)
+                NusysConstants.ContentType.Text && message.GetEnum<NusysConstants.ContentType>(NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY) !=
+                NusysConstants.ContentType.Collection)
             {
-                throw new Exception("You can only update content of type text");
+                throw new Exception("You can only update content of type text and collection");
             }
             var success = true;
             if (message.GetBool(NusysConstants.UPDATE_CONTENT_REQUEST_SAVE_TO_SERVER_BOOLEAN, true))

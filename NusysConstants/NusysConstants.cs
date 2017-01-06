@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         /// <summary>
         /// a boolean representing whether we are using the test server by default or the live server
@@ -123,12 +123,12 @@ namespace NusysIntermediate
 
         #endregion GetEntireWorkspaceRequest
 
-            #region CreateNewContentRequest
+        #region CreateNewContentRequest
 
-        /// <summary>
-        /// The key used to hold the type of content being added
-        /// </summary>
-        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
+            /// <summary>
+            /// The key used to hold the type of content being added
+            /// </summary>
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
 
             /// <summary>
             /// The key used to hold the content id.
@@ -1606,7 +1606,8 @@ namespace NusysIntermediate
             Image,
             Video,
             Audio,
-            Word
+            Word, 
+            Collection
         }
 
         /// <summary>
@@ -1817,6 +1818,10 @@ namespace NusysIntermediate
                     return ContentType.PDF;
                 case ElementType.Word:
                     return ContentType.Word;
+                case ElementType.Collection:
+                    return ContentType.Collection;
+                case ElementType.Text:
+                    return ContentType.Text;
                 default:
                     return ContentType.Text;
             }

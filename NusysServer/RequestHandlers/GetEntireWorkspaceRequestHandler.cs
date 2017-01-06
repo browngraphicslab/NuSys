@@ -26,7 +26,15 @@ namespace NusysServer
             }
             
             var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(CreateGetEntireWorkspaceSqlQuery(workspaceId, userId, 2));
-            
+
+
+            var cmd = new SQLSelectQuery(new JoinedTable(new SqlJoinOperationArgs() {Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY).First(),
+                Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).First(),JoinOperator = Constants.JoinedType.InnerJoin, LeftTable = new SingleTable(Constants.SQLTableType.Content),RightTable = new SingleTable(Constants.SQLTableType.LibraryElement)}), new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY, workspaceId));
+            var currCollectionContentDataModelMessages = cmd.ExecuteCommand();
+            var contentDataModel = ContentDataModelFactory.CreateFromMessage(currCollectionContentDataModelMessages.Select(strippedMessage => new Message(strippedMessage.Concat(new List<KeyValuePair<string, object>>() {new KeyValuePair<string, object>(
+                NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY, FileHelper.GetDataFromContentURL( strippedMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY),strippedMessage.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY)))}).ToDictionary(x => x.Key, y => y.Value))).FirstOrDefault());
+
+
             PropertiesParser propertiesParser = new PropertiesParser();
             var concatPropertiesReturnedMessages = propertiesParser.ConcatMessageProperties(returnedMessages);
 
@@ -38,7 +46,7 @@ namespace NusysServer
                          strippedMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY),
                          strippedMessage.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY)))}).ToDictionary(x => x.Key, y => y.Value)));
 
-            var contentDataModels = cleaned.Select(m => ContentDataModelFactory.CreateFromMessage(m));
+            var contentDataModels = cleaned.Select(m => ContentDataModelFactory.CreateFromMessage(m)).Concat(new List<ContentDataModel>() {contentDataModel});
             var aliases = cleaned.Select(m => ElementModelFactory.CreateFromMessage(m));
             //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestReturnArgs();

@@ -562,6 +562,7 @@
     <Compile Include="Components\Win2dTools\ToolResizerRenderItem.cs" />
     <Compile Include="Components\Win2dTools\ToolWindow.cs" />
     <Compile Include="Controller\AnalysisModelController.cs" />
+    <Compile Include="Controller\CollectionContentDataController.cs" />
     <Compile Include="Controller\LibraryElementController\AudioLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
     <Compile Include="Controller\ContentDataController.cs" />
@@ -755,6 +756,7 @@
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewAudioLibraryElementRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewCollectionContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewImageLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />
