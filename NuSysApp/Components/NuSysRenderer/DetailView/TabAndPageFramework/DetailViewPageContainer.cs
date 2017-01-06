@@ -68,7 +68,22 @@ namespace NuSysApp
             BorderWidth = 0;
             AddChild(_pageTabContainer);
 
+            _settingsButton.Pressed += SettingsButton_Pressed;
+
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
+        }
+
+        private void SettingsButton_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var settingsPopup = new FlyoutPopup(this, Canvas);
+            settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - settingsPopup.Width/2,
+                _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
+            settingsPopup.AddFlyoutItem("Scroll To", null, Canvas);
+            settingsPopup.AddFlyoutItem("Delete", null, Canvas);
+            settingsPopup.AddFlyoutItem("Copy", null, Canvas);
+            settingsPopup.AddFlyoutItem("Change Access", null, Canvas);
+
+            AddChild(settingsPopup);
         }
 
         public override async Task Load()
