@@ -509,7 +509,7 @@ namespace NuSysApp
             foreach (var inkModel in request.GetReturnedInkModels())
             {
                 var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
-                contentController.AddInk(inkModel);
+                contentController.AddInitialInkStrokes(new List<InkModel>() { inkModel},false);
             }
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             ElementModelIdToElementController[elementCollectionInstance.Id] = elementCollectionInstanceController;

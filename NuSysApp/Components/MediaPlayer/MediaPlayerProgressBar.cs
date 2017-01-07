@@ -144,7 +144,7 @@ namespace NuSysApp
             }
         }
 
-        private void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        private void ContentDataModelOnOnRegionRemoved(object sender, string regionLibraryElementModelId)
         {
             foreach (var region in _regionViews)
             {
@@ -157,7 +157,7 @@ namespace NuSysApp
             }
         }
 
-        private void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        private void ContentDataModelOnOnRegionAdded(object sender, string regionLibraryElementModelId)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementModelId) as AudioLibraryElementController;
             if (controller != null && controller != CurrentLibraryElementController)

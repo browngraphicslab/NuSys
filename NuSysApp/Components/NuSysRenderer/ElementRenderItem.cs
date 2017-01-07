@@ -23,6 +23,7 @@ namespace NuSysApp
 {
 
     public class ElementRenderItem : RectangleUIElement
+
     {
         private ElementViewModel _vm;
         private CanvasTextLayout _textLayout;

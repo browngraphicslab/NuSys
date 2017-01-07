@@ -124,11 +124,11 @@ namespace NuSysApp
             ReRender();
         }
 
-        protected async void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        protected async void ContentDataModelOnOnRegionAdded(object sender, string regionLibraryElementModelId)
         {
             ComputeRegions();
         }
-        protected void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        protected void ContentDataModelOnOnRegionRemoved(object sender, string regionLibraryElementModelId)
         {
             ComputeRegions();
         }

@@ -46,7 +46,7 @@ namespace NuSysApp
                 try
                 {
                     var text = File.ReadAllText(NuSysStorages.SaveFolder.Path + "\\settings.txt");
-                    return JsonConvert.DeserializeObject<SessionSettingsData>(text);
+                    return JsonConvert.DeserializeObject<SessionSettingsData>(text) ?? new SessionSettingsData();
                 }
                 catch(Exception e)
                 {

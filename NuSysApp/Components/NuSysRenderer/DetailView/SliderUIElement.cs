@@ -306,7 +306,7 @@ namespace NuSysApp
             // if the tooltip is enabled set its current position and text
             if (IsTooltipEnabled && _toolTipUIElement.IsVisible)
             {
-                _toolTipUIElement.Text = Math.Ceiling(SliderPosition*MaxValue - MinValue).ToString(CultureInfo.InvariantCulture);
+                _toolTipUIElement.Text = ((int)(SliderPosition*(MaxValue - MinValue + 1))).ToString(CultureInfo.InvariantCulture);
                 _toolTipUIElement.Transform.LocalPosition = new Vector2(SliderPosition*Width - _toolTipUIElement.Width / 2, thumbVerticalOffset - _toolTipUIElement.Height);
 
             }
