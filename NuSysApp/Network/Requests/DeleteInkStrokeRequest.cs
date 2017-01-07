@@ -46,7 +46,7 @@ namespace NuSysApp
 
             var controller = SessionController.Instance.ContentController.GetContentDataController(contentId);
 
-            controller?.RemoveInk(inkStrokeId);
+            controller?.RemoveInkFromServer(inkStrokeId);
         }
 
         /// <summary>

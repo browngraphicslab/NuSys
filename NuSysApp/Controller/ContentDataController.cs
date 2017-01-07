@@ -14,15 +14,21 @@ namespace NuSysApp
     /// This class will be instantiated for every ContentDataModel in the content Controller.  
     /// This class should allow for updating the data string of the content data model. 
     /// </summary>
-    public class ContentDataController
+    public class ContentDataController : IInkController
     {
+        
+        /// <summary>
+        /// Event fired whenever a region is added to this content.
+        /// The passed string is the libraryElementModelId of the newly added region.
+        /// </summary>
+        public event EventHandler<string> OnRegionAdded;
 
-        public delegate void RegionAddedEventHandler(string regionLibraryElementModelId);
 
-        public event RegionAddedEventHandler OnRegionAdded;
-        public delegate void RegionRemovedEventHandler(string regionLibraryElementModelId);
-
-        public event RegionRemovedEventHandler OnRegionRemoved;
+        /// <summary>
+        /// event first whenever a region is removed.
+        /// This will pass to you the libraryElementId of the recently removed region
+        /// </summary>
+        public event EventHandler<string> OnRegionRemoved;
 
 
         /// <summary>
@@ -63,10 +69,17 @@ namespace NuSysApp
         /// </summary>
         protected ContentDebouncingDictionary _debouncingDictionary;
 
-        public delegate void InkAddEventHandler(InkModel inkModel);
-        public delegate void InkRemoveEventHandler(string strokeId);
-        public event InkAddEventHandler InkAdded;
-        public event InkRemoveEventHandler InkRemoved;
+        /// <summary>
+        /// event fired whenever an ink stroke is added.
+        /// The passed inkModel is the newly added stroke.
+        /// </summary>
+        public event EventHandler<InkModel> InkAdded;
+
+        /// <summary>
+        /// Event fired whenever an ink stroke is removed.
+        /// The string argument is the id of the ink stroke
+        /// </summary>
+        public event EventHandler<string> InkRemoved;
 
         /// <summary>
         /// The constructor of the controller only takes in a Content Data Model.  
@@ -96,23 +109,133 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// method to be called when adding an ink stroke from the server.  
+        /// This is the same as calling AddInk(InkModel) except that it doesn't send off a server request
+        /// </summary>
+        /// <param name="model"></param>
+        public void AddInkFromServer(InkModel model)
+        {
+            _blockServerInteractionCount++;
+            AddInk(model);
+            _blockServerInteractionCount--;
+        }
+
+        /// <summary>
+        /// method to add an ink model to this controller's contentDataModel.
+        /// This will add the stroke to the model, fire an InkAdded event
+        /// and then send a server request unless we're currently being updated from the server.
+        /// If you want to add initial ink strokes and not send new server requests, try AddInitialInkStrokes.
+        /// </summary>
+        /// <param name="inkModel"></param>
         public void AddInk(InkModel inkModel)
         {
             if (inkModel?.ContentId != null && inkModel?.InkStrokeId != null && inkModel?.InkPoints?.Any() == true)
             {
                 ContentDataModel.Strokes.Add(inkModel);
-                InkAdded?.Invoke(inkModel);
+                InkAdded?.Invoke(this,inkModel);
+                if (!_blockServerInteraction)
+                {
+                    SendCreateInkRequest(inkModel);
+                }
             }
         }
 
+        /// <summary>
+        /// This method will add all the ink strokes to the model and fire events for each.
+        /// It will not, however, make any new server calls.
+        /// To clear the ink strokes before adding these new ones, set the clearStrokes bool to 'true';
+        /// </summary>
+        /// <param name="inkModels"></param>
+        public void AddInitialInkStrokes(IEnumerable<InkModel> inkModels, bool clearStrokes = true)
+        {
+            if (clearStrokes)
+            {
+                ContentDataModel.Strokes.Clear();
+            }
+
+            //block server interaction
+            _blockServerInteractionCount++;
+            foreach (var ink in inkModels)
+            {
+                AddInk(ink);
+            }
+            //free up server interaction
+            _blockServerInteractionCount--;
+        }
+
+        /// <summary>
+        /// creates and sends a request to make an ink stroke from the given ink model
+        /// </summary>
+        /// <param name="inkModel"></param>
+        private void SendCreateInkRequest(InkModel inkModel)
+        {
+            Task.Run(async delegate
+            {
+                var args = new CreateInkStrokeRequestArgs();
+                args.ContentId = inkModel.ContentId;
+                args.InkPoints = inkModel.InkPoints;
+                args.InkStrokeId = inkModel.InkStrokeId;
+                args.Color = new ColorModel
+                {
+                    A = inkModel.Color.A,
+                    B = inkModel.Color.B,
+                    G = inkModel.Color.G,
+                    R = inkModel.Color.R,
+                };
+                args.Thickness = inkModel.Thickness;
+
+                var request = new CreateInkStrokeRequest(args);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                Debug.Assert(request.WasSuccessful() == true);
+                //TODO alert user somehow if ink didn't save
+            });
+        }
+
+        /// <summary>
+        /// method to remove ink from a server request.
+        /// This is the same as calling RemoveInk(id) but this prevents a server request from going out as well.
+        /// </summary>
+        /// <param name="strokeId"></param>
+        public void RemoveInkFromServer(string strokeId)
+        {
+            _blockServerInteractionCount++;
+            RemoveInk(strokeId);
+            _blockServerInteractionCount--;
+        }
+
+        /// <summary>
+        /// method to remove an ink stroke via its id.
+        /// This will remove the stroke, fire the InkRemoved event, and send an server request.
+        /// </summary>
+        /// <param name="strokeId"></param>
         public void RemoveInk(string strokeId)
         {
             var stroke = ContentDataModel.Strokes.Where(s => s.InkStrokeId == strokeId).FirstOrDefault();
             if (stroke != null)
             {
                 ContentDataModel.Strokes.Remove(stroke);
-                InkRemoved?.Invoke(strokeId);
+                InkRemoved?.Invoke(this,strokeId);
+                if (!_blockServerInteraction)
+                {
+                    SendRemoveInkRequest(strokeId);
+                }
             }
+        }
+
+        /// <summary>
+        /// private method to send a server request to remove an ink stroke by id.
+        /// pass in the ink id
+        /// </summary>
+        /// <param name="strokeId"></param>
+        private void SendRemoveInkRequest(string strokeId)
+        {
+            Debug.Assert(ContentDataModel?.ContentId != null);
+            Task.Run(async delegate
+            {
+                var request = new DeleteInkStrokeRequest(strokeId, ContentDataModel.ContentId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            });
         }
 
         /// <summary>
@@ -134,7 +257,7 @@ namespace NuSysApp
         /// <param name="regionLibraryElementModelId"></param>
         public void AddRegion(string regionLibraryElementModelId)
         {
-            OnRegionAdded?.Invoke(regionLibraryElementModelId);
+            OnRegionAdded?.Invoke(this,regionLibraryElementModelId);
         }
 
         /// <summary>
@@ -143,7 +266,7 @@ namespace NuSysApp
         /// <param name="regionLibraryElementModelId"></param>
         public void RemoveRegion(string regionLibraryElementModelId)
         {
-            OnRegionRemoved?.Invoke(regionLibraryElementModelId);
+            OnRegionRemoved?.Invoke(this,regionLibraryElementModelId);
         }
 
         /// <summary>

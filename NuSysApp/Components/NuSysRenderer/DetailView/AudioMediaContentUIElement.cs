@@ -101,7 +101,7 @@ namespace NuSysApp
         /// Fired whenever a region is added to this audio element
         /// </summary>
         /// <param name="regionlibraryelementmodelid"></param>
-        private void OnRegionAdded(string regionlibraryelementmodelid)
+        private void OnRegionAdded(object sender, string regionlibraryelementmodelid)
         {
             // recompute all the regions for the audio element, basically place all of them in the correct spot, and make sure
             // you have every region that exists
@@ -112,7 +112,7 @@ namespace NuSysApp
         /// Fired whenever a region is removed from this audio element
         /// </summary>
         /// <param name="regionlibraryelementmodelid"></param>
-        private void OnRegionRemoved(string regionlibraryelementmodelid)
+        private void OnRegionRemoved(object sender, string regionlibraryelementmodelid)
         {
             // recompute all the regions for the audio element, basically place all of them in the correct spot, and make
             // sure that any region that no longer exists is not being displayed

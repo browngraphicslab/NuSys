@@ -144,7 +144,7 @@ namespace NuSysApp
         /// Called when a region is removed, recomputes the regions for the entire image
         /// </summary>
         /// <param name="regionlibraryelementmodelid"></param>
-        protected void ContentDataModelOnOnRegionRemoved(string regionlibraryelementmodelid)
+        protected void ContentDataModelOnOnRegionRemoved(object sender, string regionlibraryelementmodelid)
         {
             ComputeRegions();
         }
@@ -153,7 +153,7 @@ namespace NuSysApp
         /// Called when a region is added, recomputes the regions for the entire image
         /// </summary>
         /// <param name="regionlibraryelementmodelid"></param>
-        protected void ContentDataModelOnOnRegionAdded(string regionlibraryelementmodelid)
+        protected void ContentDataModelOnOnRegionAdded(object sender, string regionlibraryelementmodelid)
         {
             ComputeRegions();
         }

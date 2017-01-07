@@ -20,8 +20,8 @@ namespace NuSysApp
 {
     public class InkRenderItem : BaseRenderItem
     {
-        
-        private ElementViewModel _vm;
+
+        private ElementController _parentCollectionController;
         private bool _isEraser;
         private List<InkPoint> _currentInkPoints = new List<InkPoint>();
         private InkStroke _currentInkStroke;
@@ -45,16 +45,17 @@ namespace NuSysApp
         public InkRenderItem(CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
             _canvas = (CanvasAnimatedControl) resourceCreator;
+            _parentCollectionController = parent.ViewModel.Controller;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkAdded += ContentDataControllerOnInkAdded;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved += ContentDataControllerOnInkRemoved;
         }
 
-        private void ContentDataControllerOnInkRemoved(string strokeId)
+        private void ContentDataControllerOnInkRemoved(object sender, string strokeId)
         {
             RemoveInkModel(strokeId);
         }
 
-        private void ContentDataControllerOnInkAdded(InkModel inkModel)
+        private void ContentDataControllerOnInkAdded(object sender, InkModel inkModel)
         {
             AddInkModel(inkModel);
         }
@@ -75,7 +76,7 @@ namespace NuSysApp
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkAdded -= ContentDataControllerOnInkAdded;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved -= ContentDataControllerOnInkRemoved;
 
-            _vm = null;
+            _parentCollectionController = null;
             _builder = null;
             _currentInkStroke = null;
             _currentInkPoints?.Clear();
@@ -162,7 +163,8 @@ namespace NuSysApp
                     foreach (var s in selected)
                     {
                         var strokeId = StrokesMap.GetKeyByValue(s);
-                        SendInkStrokeRemovedRequest(strokeId);
+                        StrokesMap.Remove(strokeId);
+                        _parentCollectionController.LibraryElementController.ContentDataController.RemoveInk(strokeId);
                     }
                     _inkManager.DeleteSelected();
                     _inkManager.SelectWithPolyLine(thisStroke);
@@ -171,10 +173,15 @@ namespace NuSysApp
 
                 }
                 else
-                {
-                    _inkManager.AddStroke(LatestStroke);
+                {     
                     LatestStrokeAdded = DateTime.Now;
-                    SendInkStrokeAddedRequest();
+
+                    var contentDataModelId = _parentCollectionController.LibraryElementController.LibraryElementModel.ContentDataModelId;
+                    var model = LatestStroke.ToInkModel(contentDataModelId, InkColor, InkSize);
+
+                    StrokesMap[model.InkStrokeId] = LatestStroke;
+
+                    _parentCollectionController.LibraryElementController.ContentDataController.AddInk(model);
                 }
 
                 _currentInkPoints = new List<InkPoint>();
@@ -184,18 +191,6 @@ namespace NuSysApp
                 _needsWetStrokeUpdate = true;
             });
         }
-
-        private async Task SendInkStrokeRemovedRequest(string strokeId)
-        {
-            StrokesMap.Remove(strokeId);
-            var parentCollection = (CollectionRenderItem)Parent;
-
-            var contentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
-            var request = new DeleteInkStrokeRequest(strokeId, contentId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            parentCollection.ViewModel.Controller.LibraryElementController.ContentDataController.RemoveInk(strokeId);
-        }
-
         private async Task SendInkStrokeAddedRequest()
         {
             var strokeId = SessionController.Instance.GenerateId();
@@ -242,6 +237,7 @@ namespace NuSysApp
                 if (StrokesMap.ContainsKey(strokeId)) // TODO not have to check, this should only be getting called from the controller if it exists
                 {
                     var inkStroke = StrokesMap[strokeId];
+                    StrokesMap.Remove(strokeId);
                     inkStroke.Selected = true;
                     _inkManager.DeleteSelected();
                     _strokesToDraw = _inkManager.GetStrokes().ToList();
@@ -257,7 +253,8 @@ namespace NuSysApp
                 {
                     LatestStroke.Selected = true;
                     var strokeId = StrokesMap.GetKeyByValue(LatestStroke);
-                    SendInkStrokeRemovedRequest(strokeId);
+                    StrokesMap.Remove(strokeId);
+                    _parentCollectionController.LibraryElementController.ContentDataController.RemoveInk(strokeId);
                     _inkManager.DeleteSelected();
                     LatestStroke = null;
                 }
