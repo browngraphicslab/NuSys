@@ -43,6 +43,17 @@ namespace NuSysApp
         /// </summary>
         private ButtonUIElement _minusArrow;
 
+        /// <summary>
+        /// BarLength represets the length of the scrollbar that can be occupied by the slider
+        /// In other words, it is the length of the entire UIElement - the lengths of the arrow buttons
+        /// </summary>
+        private float _barLength;
+
+        /// <summary>
+        /// BarWidth represents the width of the scrollbar, which is the same as the width of the
+        /// UIElement
+        /// </summary>
+        public float _barWidth;
         #endregion private members
         #region public members
         /// <summary>
@@ -61,9 +72,6 @@ namespace NuSysApp
         public Color SelectedScrollBarColor = Constants.DARK_BLUE;
 
 
-        public float BarLength { set; get; }
-
-        public float BarWidth { set; get; }
 
         /// <summary>
         /// Invoked when the user slides the scroll bar to a new position. Position is
@@ -131,12 +139,16 @@ namespace NuSysApp
 
             Pressed += ScrollBarUIElement_Pressed;
             PointerWheelChanged += ScrollBarUIElement_PointerWheelChanged;
+            
         }
-
+        /// <summary>
+        /// Initializes arrow buttons and listens to pressed events
+        /// </summary>
         private void CreateArrows()
         {
-            _plusArrow = new TransparentButtonUIElement(this, ResourceCreator);
-            _minusArrow = new TransparentButtonUIElement(this, ResourceCreator);
+            //TODO: add arrow images to these
+            _plusArrow = new EllipseButtonUIElement(this, ResourceCreator);
+            _minusArrow = new EllipseButtonUIElement(this, ResourceCreator);
 
             AddChild(_plusArrow);
             AddChild(_minusArrow);
@@ -144,22 +156,34 @@ namespace NuSysApp
             _plusArrow.Pressed += PlusArrow_Pressed;
             _minusArrow.Pressed += MinusArrow_Pressed;
         }
-
+        /// <summary>
+        /// Changes position by a negative delta (in vertical orientation, moves up
+        /// while in horizontal orientation, moves left)
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void MinusArrow_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ChangePosition(-0.05f);
         }
-
+        /// <summary>
+        /// Changes position by a positive delta (in horizontal orientation, moves to right
+        /// while in vertical orientation, moves down)
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void PlusArrow_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ChangePosition(0.05f);
         }
-
+        /// <summary>
+        /// Initializes slider and listens to its events
+        /// </summary>
         private void CreateSlider()
         {
             _slider = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Constants.MED_BLUE
+                Background = ScrollBarColor
             };
             _slider.Dragged += Slider_Dragged;
             _slider.Pressed += Slider_Pressed;
@@ -170,13 +194,19 @@ namespace NuSysApp
 
         private void Slider_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _slider.Background = ScrollBarColor;
+            _slider.Background = ScrollBarColor; 
         }
 
         private void Slider_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _slider.Background = SelectedScrollBarColor;
         }
+
+        /// <summary>
+        /// Updates position based on horizontal/vertical distance dragged
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void Slider_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
@@ -194,55 +224,47 @@ namespace NuSysApp
 
         }
 
+
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            base.Update(parentLocalToScreenTransform);
+
             if (_orientation == Orientation.Horizontal)
             {
-                BarWidth = Height;
-                BarLength = Width - 2 * BarWidth;
-                _slider.Width = BarLength * Range;
-                _slider.Height = BarWidth;
-                _slider.Transform.LocalPosition = new Vector2(BarWidth + BarLength * Position, 0);
+                _barWidth = Height;
+                _barLength = Width - 2 * _barWidth;
+                _slider.Width = _barLength * Range;
+                _slider.Height = _barWidth;
+                _slider.Transform.LocalPosition = new Vector2(_barWidth + _barLength * Position, 0);
 
-                _plusArrow.Width = BarWidth;
-                _minusArrow.Height = BarWidth;
-                _plusArrow.Transform.LocalPosition = new Vector2(Width - BarWidth, 0);
-                _minusArrow.Transform.LocalPosition = new Vector2(0,0);
+                _plusArrow.Width = _barWidth;
+                _plusArrow.Height = _barWidth;
+                _minusArrow.Width = _barWidth;
+                _minusArrow.Height = _barWidth;
+                _plusArrow.Transform.LocalPosition = new Vector2(Width - _barWidth, 0);
+                _minusArrow.Transform.LocalPosition = new Vector2(0, 0);
 
             }
             else if (_orientation == Orientation.Vertical)
             {
-                BarWidth = Width;
-                BarLength = Height - 2 * BarWidth;
-                _slider.Width = BarWidth;
-                _slider.Height = BarLength * Range;
-                _slider.Transform.LocalPosition = new Vector2(0, BarWidth + BarLength * Position);
+                _barWidth = Width;
+                _barLength = Height - 2 * _barWidth;
+                _slider.Width = _barWidth;
+                _slider.Height = _barLength * Range;
+                _slider.Transform.LocalPosition = new Vector2(0, _barWidth + _barLength * Position);
 
-                _plusArrow.Width = BarWidth;
-                _minusArrow.Height = BarWidth;
 
-                _plusArrow.Transform.LocalPosition = new Vector2(0, Height - BarWidth);
+                _plusArrow.Width = _barWidth;
+                _plusArrow.Height = _barWidth;
+                _minusArrow.Width = _barWidth;
+                _minusArrow.Height = _barWidth;
+
+                _plusArrow.Transform.LocalPosition = new Vector2(0, Height - _barWidth);
                 _minusArrow.Transform.LocalPosition = new Vector2(0, 0);
 
             }
-            base.Update(parentLocalToScreenTransform);
 
            
-        }
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            // return if the item is disposed or is not visible
-            if (IsDisposed || !IsVisible)
-                return;
-
-
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-
-            base.Draw(ds);
-
-            ds.Transform = orgTransform;
-
         }
         
 
@@ -285,7 +307,9 @@ namespace NuSysApp
             ScrollBarPositionChanged?.Invoke(this, Position);
 
         }
-
+        /// <summary>
+        /// DIsposes ScrollBar events including slider and buttons
+        /// </summary>
         public override void Dispose()
         {
             Pressed -= ScrollBarUIElement_Pressed;

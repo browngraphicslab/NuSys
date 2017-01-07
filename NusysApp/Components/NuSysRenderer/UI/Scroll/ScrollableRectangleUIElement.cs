@@ -43,10 +43,9 @@ namespace NuSysApp
 
             _scrollBar = new ScrollBarUIElement(_parent, _resourceCreator, ScrollBarUIElement.Orientation.Vertical)
             {
-                Background = Colors.LightGray,
+                Background = Constants.LIGHT_BLUE,
                 Height = this.Height,
                 Width = scrollbarwidth,
-                ScrollBarColor = Colors.Gray,
             };
 
             _scrollBar.ScrollBarPositionChanged += ScrollBarPositionChanged;
