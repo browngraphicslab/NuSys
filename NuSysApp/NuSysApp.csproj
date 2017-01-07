@@ -392,10 +392,14 @@
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RectangleButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\RoundedRectButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushFilter.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\BrushToMask.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\DateSelector.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterSubMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\GridView\GridViewColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\GridView\GridViewRow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\GridView\GridViewUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAliasesPage.cs" />

@@ -134,12 +134,42 @@ namespace NuSysApp
             };
             AddChild(_detailViewer);
 
+            var gridView = new GridViewUIElement(this, ResourceCreator)
+            {
+                Transform = {LocalPosition = new Vector2(300, 300)}
+            };
+            var gridColumn1 = new GridViewColumn(1f);
+            var gridColumn2 = new GridViewColumn(2f);
+            var gridColumn3 = new GridViewColumn(3f);
+            var gridRow1 = new GridViewRow(3f);
+            var gridRow2 = new GridViewRow(1f);
+
+            foreach (var gridColumn in new List<GridViewColumn> {gridColumn1, gridColumn2, gridColumn3})
+            {
+                gridView.AddColumn(gridColumn);
+            }
+
+            foreach (var gridRow  in new List<GridViewRow> {gridRow1, gridRow2})
+            {
+                gridView.AddRow(gridRow);
+            }
+
+            for (int row = 0; row < 2; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    gridView.AddElement(new RectangleUIElement(this, ResourceCreator), row, col );
+                }
+            }
+            AddChild(gridView);
+
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped; 
             _chatButton.Tapped += ChatButtonOnTapped;
             _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
+
         }
 
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
