@@ -181,6 +181,13 @@ namespace NuSysApp
         /// </summary>
         private void RecalculateSize()
         {
+            // return if columns or rows is null, this is because the call can be made before the item is constructed
+            // when the default Width and Height are set, this method is called
+            if (Columns == null || Rows == null)
+            {
+                return;
+            }
+
             // assign the proper widths to each column
             var totalRelativeWidth = Columns.Sum(col => col.RelativeWidth);
             var widthPerRelativeUnit = Width/totalRelativeWidth;

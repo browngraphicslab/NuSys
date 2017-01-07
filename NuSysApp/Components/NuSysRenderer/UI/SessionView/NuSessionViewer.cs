@@ -49,8 +49,6 @@ namespace NuSysApp
 
         public TextboxUIElement _titleBox;
 
-        public FilterMenu FilterMenu => _floatingMenu.FilterMenu;
-
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -136,7 +134,9 @@ namespace NuSysApp
 
             var gridView = new GridViewUIElement(this, ResourceCreator)
             {
-                Transform = {LocalPosition = new Vector2(300, 300)}
+                Transform = {LocalPosition = new Vector2(300, 300)},
+                Width = 800,
+                Height = 500
             };
             var gridColumn1 = new GridViewColumn(1f);
             var gridColumn2 = new GridViewColumn(2f);
@@ -158,7 +158,10 @@ namespace NuSysApp
             {
                 for (int col = 0; col < 3; col++)
                 {
-                    gridView.AddElement(new RectangleUIElement(this, ResourceCreator), row, col );
+                    gridView.AddElement(new RectangleUIElement(this, ResourceCreator)
+                    {
+                        Background = Colors.Red
+                    }, row, col );
                 }
             }
             AddChild(gridView);

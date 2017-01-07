@@ -17,7 +17,7 @@ namespace NuSysApp
             var buttonTranform = PlayPauseButton.RenderTransform as TranslateTransform;
             Debug.Assert(progressTransform != null && buttonTranform != null);
             progressTransform.Y = MediaElement.Height;
-            buttonTranform.Y = MediaElement.Height + ProgressBar.Height;
+            buttonTranform.Y = MediaElement.Height - ProgressBar.Height;
         }
 
         public override void SetLibraryElement(AudioLibraryElementController controller, bool autoStartWhenLoaded = true)

@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
@@ -38,7 +39,8 @@ namespace NuSysApp
 
         protected Button PlayPauseButton = new Button()
         {
-            Content = "play",
+            Content = new Image {Source = new BitmapImage(new Uri("ms-appx:///Assets/icon_audionode_play.png"))
+        },
             Width = 80,
             Height = 35,
         };
@@ -152,7 +154,10 @@ namespace NuSysApp
         {
             MediaElement.Pause();
             _tickTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            PlayPauseButton.Content = "play";
+            PlayPauseButton.Content = new Image
+            {
+                Source = new BitmapImage(new Uri("ms-appx:///Assets/icon_audionode_play.png"))
+            };
         }
 
         public void Play()
@@ -170,7 +175,10 @@ namespace NuSysApp
 
             MediaElement.Play();
             _tickTimer.Change(new TimeSpan(0, 0, 0, 0, TimerMillisecondDelay), new TimeSpan(0, 0, 0, 0, TimerMillisecondDelay));
-            PlayPauseButton.Content = "pause";
+            PlayPauseButton.Content = new Image
+            {
+                Source = new BitmapImage(new Uri("ms-appx:///Assets/icon_audionode_pause.png"))
+            }; 
         }
 
         /// <summary>

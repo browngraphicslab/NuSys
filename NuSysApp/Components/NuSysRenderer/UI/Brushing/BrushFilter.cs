@@ -140,6 +140,11 @@ namespace NuSysApp
         /// <returns></returns>
         public HashSet<LibraryElementController> GetLibraryElementControllers()
         {
+            if (IsNoFilterApplied())
+            {
+                return new HashSet<LibraryElementController>();
+            }
+
             IEnumerable<LibraryElementController> controllers = SessionController.Instance.ContentController.AllLibraryElementControllers;
             // filter all Libraryelementcontrollers to those fulfill our creator constraints if any creator constraints exist
             if (Creators.Count != 0)
@@ -174,6 +179,11 @@ namespace NuSysApp
         {
             Debug.Assert(collectionController != null);
 
+            if (IsNoFilterApplied())
+            {
+                return new HashSet<ElementController>();
+            }
+
             // update the most recently searched collection variable to reflect the new search
             _prevCollectionController = collectionController;
 
@@ -197,6 +207,16 @@ namespace NuSysApp
 
             // return all the element controllers which fulfill the brush constraints
             return _filteredElementControllers;
+        }
+
+        /// <summary>
+        /// True if no filter is applied
+        /// </summary>
+        /// <returns></returns>
+        private bool IsNoFilterApplied()
+        {
+            return !Creators.Any() && !Types.Any() && CreationDateEnd == null && CreationDateStart == null && LastEditedStart == null &&
+                   LastEditedEnd == null;
         }
 
         /// <summary>

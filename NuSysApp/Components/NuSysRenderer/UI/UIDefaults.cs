@@ -148,5 +148,6 @@ namespace NuSysApp
         public static CanvasHorizontalAlignment TabTextAlignment = CanvasHorizontalAlignment.Left;
         public static Color PlaceHolderTextColor = Colors.DarkGray;
         public static float MaxDropDownHeight = 250;
+        public static Color HighlightColor = Colors.Yellow;
     }
 }

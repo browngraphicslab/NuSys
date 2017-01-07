@@ -72,7 +72,6 @@ namespace NuSysApp
         /// </summary>
         private List<ButtonUIElement> _filterMenuButtons;
 
-
         private FilterSubMenu _filterSubMenu;
 
         private StackLayoutManager _buttonLayoutManager;
@@ -86,18 +85,12 @@ namespace NuSysApp
 
         private ButtonUIElement _removeFilterButton;
 
-        public bool HasBrushAvailable { get; private set; }
-
-        public HashSet<ElementController> BrushedElementControllers { get; private set; }
-
-
         public FilterMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             IsDraggable = false;
             topMargin = TopBarHeight;
             KeepAspectRatio = false;
             TopBarColor = Colors.Azure;
-            HasBrushAvailable = false;
 
             // initialize the button layout manager so buttons are stretched horizontally and stay at the top 
             // of the window
@@ -128,15 +121,11 @@ namespace NuSysApp
                 AddChild(button);
             }
 
-            _applyFilterbutton = new RectangleButtonUIElement(this, ResourceCreator,
-                UIDefaults.SecondaryStyle, "Apply Filter");
-            AddChild(_applyFilterbutton);
-            _buttonLayoutManager.AddElement(_applyFilterbutton);
-            _filterMenuButtons.Add(_applyFilterbutton);
-            _applyFilterbutton.Tapped += OnApplyFilterButtonTapped;
-
             _removeFilterButton = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle,
-                "Remove Filter");
+                "Remove Filter")
+            {
+                IsVisible = false
+            };
             AddChild(_removeFilterButton);
             _buttonLayoutManager.AddElement(_removeFilterButton);
             _filterMenuButtons.Add(_removeFilterButton);
@@ -146,21 +135,27 @@ namespace NuSysApp
             AddChild(_filterSubMenu);
 
 
+            _filterSubMenu.BrushUpdated += _filterSubMenu_BrushUpdated;
+
             // set the MinHeight based on the number of buttons we passed in
             MinHeight = _filterMenuButtons.Count*buttonHeight + (_filterMenuButtons.Count - 1)*spacing + topMargin + BorderWidth;
             MinWidth = 100;
 
         }
 
-        private void OnApplyFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _filterSubMenu_BrushUpdated(object sender, BrushFilter e)
         {
-            BrushedElementControllers = _filterSubMenu.GetElementControllersForCurrentCollection();
-            HasBrushAvailable = true;
+            var libElemControllers = e.GetLibraryElementControllers();
+            _removeFilterButton.IsVisible = libElemControllers.Any();
+
+            BrushManager.ApplyBrush(libElemControllers);
         }
 
         private void OnRemoveFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            HasBrushAvailable = false;
+            BrushManager.RemoveBrush();
+            _removeFilterButton.IsVisible = false;
+
         }
 
         /// <summary>
@@ -207,8 +202,8 @@ namespace NuSysApp
                 if (button != _applyFilterbutton && button != _removeFilterButton)
                     button.Tapped -= OnCategoryButtonTapped;
             }
-            _applyFilterbutton.Tapped -= OnApplyFilterButtonTapped;
             _removeFilterButton.Tapped -= OnRemoveFilterButtonTapped;
+            _filterSubMenu.BrushUpdated -= _filterSubMenu_BrushUpdated;
             base.Dispose();
         }
 
