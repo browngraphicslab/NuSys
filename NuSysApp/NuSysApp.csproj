@@ -135,6 +135,7 @@
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
+    <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />

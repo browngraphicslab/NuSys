@@ -61,17 +61,6 @@ namespace NuSysApp
             _floatingMenu = new FloatingMenu(this, canvas);
             AddChild(_floatingMenu);
 
-            //_currCollDetailViewButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
-            //{
-            //    Width = 50,
-            //    Height = 50,
-            //    Background = Colors.Transparent,
-            //    BorderWidth = 3,
-            //    SelectedBorder = Colors.LightGray,
-            //    Bordercolor = Colors.Transparent
-            //};
-            //AddChild(_currCollDetailViewButton);
-
             SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
             
 
@@ -79,7 +68,7 @@ namespace NuSysApp
             {
                 Background = Colors.Transparent
             };
-            //AddChild(_settingsButton);
+            AddChild(_settingsButton);
 
             _settingsMenu = new SessionSettingsMenu(this, canvas)
             {
@@ -89,7 +78,18 @@ namespace NuSysApp
                 IsVisible =  false,
                 KeepAspectRatio = false
             };
-            //AddChild(_settingsMenu);
+            AddChild(_settingsMenu);
+
+            _titleBox = new TextboxUIElement(this, Canvas)
+            {
+                TextColor = Constants.ALMOST_BLACK,
+                Background = Colors.Transparent,
+                FontSize = 55,
+                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
+                Width = 300,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
+            };
+            AddChild(_titleBox);
 
             _chatButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle);
             AddChild(_chatButton);
@@ -111,18 +111,20 @@ namespace NuSysApp
                 _backButton.BorderWidth,
                 _backButton.Width,
                 _backButton.Height);
+            AddChild(_backButton);
+
             TrailBox = new BreadCrumbContainer(this, Canvas)
             {
                 IsVisible = SessionController.Instance.SessionSettings.BreadCrumbsDocked
             };
+            AddChild(TrailBox);
+
             _backToWaitingRoom = new RectangleButtonUIElement(this, canvas, UIDefaults.PrimaryStyle, "back to waiting room")
             {
                 Width = TrailBox.Width,
                 IsVisible = false
             };
-            
-
-            //AddChild(_backButton);
+            AddChild(_backToWaitingRoom);
 
             // add the user bubble container before the chatbox so user bubble names do not overlap the bottom of the chatbox
             _userBubbleContainer = new UserBubbleContainerUIElement(this, canvas);
@@ -143,7 +145,9 @@ namespace NuSysApp
                 MinHeight = 600,
                 KeepAspectRatio = true
             };
-            
+            AddChild(_detailViewer);
+
+            UpdateUI();
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
@@ -176,7 +180,6 @@ namespace NuSysApp
             {
                 TrailBox.IsVisible = true;
             }
-            UpdateUI();
         }
 
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -189,67 +192,47 @@ namespace NuSysApp
 
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
-            if (GetChildren().Contains(_titleBox))
-            {
-                RemoveChild(_titleBox);
-            }
-            _titleBox = new TextboxUIElement(this, Canvas)
-            {
-                Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title,
-                TextColor = Constants.ALMOST_BLACK,
-                Background = Colors.Transparent,
-                FontSize = 55,
-                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                Width = 300,
-                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
-            };
-            AddChild(_titleBox);
-            UpdateUI();
+            _titleBox.Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title;
+
         }
 
         public void UpdateUI()
         {
-            if (_titleBox != null)
+
+            _titleBox.Transform.LocalPosition =
+            new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
+            _titleBox.DoubleTapped += _titleBox_DoubleTapped;
+            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 + _titleBox.Width / 2 - _settingsButton.Width / 2 + 50,
+            _titleBox.Height / 2 - _settingsButton.Height / 2);
+            _backButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
+                _titleBox.Height / 2 - _backButton.Height / 2);
+            
+
+            if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
-                _titleBox.Transform.LocalPosition =
-                new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
-                _titleBox.DoubleTapped += _titleBox_DoubleTapped;
-                _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 + _titleBox.Width / 2 - _settingsButton.Width / 2 + 50,
-                _titleBox.Height / 2 - _settingsButton.Height / 2);
-                AddChild(_settingsButton);
-                _backButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
-                    _titleBox.Height / 2 - _backButton.Height / 2);
-                AddChild(_backButton);
-
-                if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
-                {
-                    TrailBox.Transform.LocalPosition =
-                        new Vector2(_backButton.Transform.LocalPosition.X + _backButton.Width/2 - TrailBox.Width/2,
-                            _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
-                    _backToWaitingRoom.Transform.LocalPosition =
-                        new Vector2(
-                            _backButton.Transform.LocalPosition.X + _backButton.Width/2 - _backToWaitingRoom.Width/2,
-                            _backButton.Transform.LocalPosition.Y + _backButton.Height + TrailBox.Height + 30);
-                }
-                else
-                {
-                    TrailBox.Transform.LocalPosition =
-                        new Vector2(SessionController.Instance.NuSessionView.Width - TrailBox.Width, 0);
-                    _backToWaitingRoom.Transform.LocalPosition =
-                        new Vector2(
-                            _backButton.Transform.LocalPosition.X + _backButton.Width / 2 - _backToWaitingRoom.Width / 2,
-                            _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
-                }
-                AddChild(TrailBox);
-                AddChild(_backToWaitingRoom);
-
-                _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2,
-                    _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
-                AddChild(_settingsMenu);
-                AddChild(_detailViewer);
+                TrailBox.Transform.LocalPosition =
+                    new Vector2(_backButton.Transform.LocalPosition.X + _backButton.Width/2 - TrailBox.Width/2,
+                        _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
+                _backToWaitingRoom.Transform.LocalPosition =
+                    new Vector2(
+                        _backButton.Transform.LocalPosition.X + _backButton.Width/2 - _backToWaitingRoom.Width/2,
+                        _backButton.Transform.LocalPosition.Y + _backButton.Height + TrailBox.Height + 30);
             }
-            
-            
+            else
+            {
+                TrailBox.Transform.LocalPosition =
+                    new Vector2(SessionController.Instance.NuSessionView.Width - TrailBox.Width, 0);
+                _backToWaitingRoom.Transform.LocalPosition =
+                    new Vector2(
+                        _backButton.Transform.LocalPosition.X + _backButton.Width / 2 - _backToWaitingRoom.Width / 2,
+                        _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
+            }
+
+
+            _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2,
+                _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
+
+         
         }
 
         /// <summary>

@@ -52,8 +52,12 @@ namespace NuSysApp
                 TabsIsCloseable = false,
                 TabHorizontalAlignment = HorizontalAlignment.Stretch,
                 TabTextAlignment = CanvasHorizontalAlignment.Center,
-                TabColor = Colors.DarkSlateGray,
-                TabSpacing = 25
+                TabColor = Constants.MED_BLUE,
+                Background = Constants.LIGHT_BLUE,
+                TabBarBackground = Constants.LIGHT_BLUE,
+                TabHeight = 40,
+                TabSpacing = 25,
+                TitleColor = Colors.White
             };
 
             _settingsButton = new ButtonUIElement(this, resourceCreator)
@@ -95,7 +99,8 @@ namespace NuSysApp
                 Height = 50,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center,
-                FontSize = 30
+                FontSize = 30,
+                FontFamily = UIDefaults.FontFamily
             };
             AddChild(_titleBox);
             _titleBox.TextChanged += OnTitleTextChanged;

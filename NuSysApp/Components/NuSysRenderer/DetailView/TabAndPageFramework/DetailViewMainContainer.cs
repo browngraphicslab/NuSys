@@ -41,6 +41,9 @@ namespace NuSysApp
             _mainTabContainer = new TabContainerUIElement<string>(this, Canvas)
             {
                 TabSpacing = 5,
+                Width = Width,
+                Height = 40,
+                TabHeight = 40,
             };
             AddChild(_mainTabContainer);
 
@@ -60,6 +63,8 @@ namespace NuSysApp
             _mainTabLayoutManager.SetMargins(BorderWidth);
             _mainTabLayoutManager.TopMargin = TopBarHeight;
             _mainTabLayoutManager.AddElement(_mainTabContainer);
+
+            TopBarColor = Constants.MED_BLUE;
 
             // detail view defaults to invisible. visible on click
             IsVisible = false;

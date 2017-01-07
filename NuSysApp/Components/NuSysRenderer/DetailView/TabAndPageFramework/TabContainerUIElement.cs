@@ -110,6 +110,14 @@ namespace NuSysApp
         /// </summary>
         private bool _tabsIsCloseable;
 
+        private Color _titleColor;
+
+        public Color TitleColor
+        {
+            get { return _titleColor;}
+            set { _titleColor = value; }
+        }
+
         /// <summary>
         /// True if the tabs are closeable, false otherwise
         /// </summary>
@@ -144,7 +152,7 @@ namespace NuSysApp
 
             // initialize the page for the tab container
             Page = new RectangleUIElement(this, Canvas);
-            Page.Background = Colors.Red;
+            Page.Background = Constants.LIGHT_BLUE;
             _pageStackLayoutManager.AddElement(Page);
             AddChild(Page);
 
@@ -162,10 +170,9 @@ namespace NuSysApp
             TabHorizontalAlignment = UIDefaults.TabHorizontalAlignment;
             TabVerticalAlignment = UIDefaults.TabVerticalAlignment;
             TabTextAlignment = UIDefaults.TabTextAlignment;
+            TitleColor = UIDefaults.TitleColor;
             BorderWidth = 0;
             TabsIsCloseable = UIDefaults.TabIsCloseable;
-
-            Background = Colors.Yellow;
         }
 
         /// <summary>
@@ -217,6 +224,7 @@ namespace NuSysApp
 
             // and the button as a child
             AddChild(button);
+            button.Load();
 
             if (showTab)
             {
@@ -235,7 +243,7 @@ namespace NuSysApp
             var button = new TabButtonUIElement<T>(this, Canvas, tab)
             {
                 Title = title,
-                TitleColor = Colors.Black,
+                TitleColor = TitleColor,
                 Background = TabColor,
                 Height = TabHeight,
                 Width = Math.Min((Width - 2*BorderWidth)/_tabList.Count, TabMaxWidth),
@@ -397,7 +405,7 @@ namespace NuSysApp
             _tabBar.Height = TabBarHeight;
             _tabBar.Width = Width - 2*BorderWidth;
             _tabBar.Transform.LocalPosition = new Vector2(BorderWidth);
-            _tabBar.Background = Colors.LightGray;
+            _tabBar.Background = TabBarBackground;
             _tabBar.Bordercolor = TabBarBorderColor;
             _tabBar.BorderWidth = TabBarBorderWidth;
 

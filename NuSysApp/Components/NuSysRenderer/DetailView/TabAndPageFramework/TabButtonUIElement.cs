@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -64,7 +65,12 @@ namespace NuSysApp
         public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T tab) : base(parent, resourceCreator)
         {
             // create a close button
-            _closeButton = new RectangleButtonUIElement(this, Canvas);
+            _closeButton = new TransparentButtonUIElement(this, Canvas)
+            {
+                Height = 20,
+                Background = Constants.RED,
+                ImageBounds = new Rect(5,5,10,10)
+            };
 
             // create a background button
             _backgroundButton = new RectangleButtonUIElement(this, Canvas);
@@ -83,6 +89,11 @@ namespace NuSysApp
             _closeButton.Tapped += _closeButton_Tapped;
             _backgroundButton.Tapped += TabButtonUIElement_Tapped;
 
+        }
+
+        public override async Task Load()
+        {
+            _closeButton.Image = _closeButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x.png"));
         }
 
         /// <summary>
@@ -136,11 +147,12 @@ namespace NuSysApp
             if (IsCloseable)
             {
                 _closeButton.IsVisible = true;
-                _closeButton.Background = Colors.Red;
+                _closeButton.Background = Colors.Transparent;
+                _closeButton.SelectedBackground = Constants.RED_TRANSLUCENT;
                 _closeButton.BorderWidth = 0;
-                _closeButton.Height = Height/3;
-                _closeButton.Width = Height/3;
-                _closeButton.Transform.LocalPosition = new Vector2(Width - 2*(Height/3), Height/3);
+                _closeButton.Height = 20;
+                _closeButton.Width = _closeButton.Height;
+                _closeButton.Transform.LocalPosition = new Vector2(Width - _closeButton.Width, Height/4);
             }
             else
             {
@@ -155,7 +167,7 @@ namespace NuSysApp
             _backgroundButton.ButtonTextHorizontalAlignment = TextAlignment;
             _backgroundButton.Background = Background;
             _backgroundButton.BorderWidth = 0;
-            _backgroundButton.Width = Width - _closeButton.Width * 3;
+            _backgroundButton.Width = Math.Max(Width - _closeButton.Width * 3,0);
             _backgroundButton.Height = Height;
         }
     }
