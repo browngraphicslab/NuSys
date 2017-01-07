@@ -12,6 +12,7 @@ using System.Numerics;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI;
+using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
@@ -174,6 +175,8 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+
+            _vm.FullScreenVideo += PlayFullScreenVideo;
         }
 
         /// <summary>
@@ -1376,6 +1379,20 @@ namespace NuSysApp
             var items = _vm.AtomViewList.Where(element => element is AdornmentView);
             var adornment = items.FirstOrDefault();
             return adornment;
+        }
+
+        public void PlayFullScreenVideo(object sender, VideoLibraryElementController videoLibraryElementController)
+        {
+            xFullScreenVideoElement.Visibility = Visibility.Visible;
+            xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight - 80);
+            xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
+        }
+
+        private void XFullScreenVideoCloseButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            xFullScreenVideoElement.Visibility = Visibility.Collapsed;
+            xFullScreenVideoElement.Pause();
+
         }
     }
 }
