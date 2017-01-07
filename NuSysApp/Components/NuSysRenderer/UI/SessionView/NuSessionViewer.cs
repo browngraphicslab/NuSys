@@ -132,6 +132,7 @@ namespace NuSysApp
             };
             AddChild(_detailViewer);
 
+    
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped; 

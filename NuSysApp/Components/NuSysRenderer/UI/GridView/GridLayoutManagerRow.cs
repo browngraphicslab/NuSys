@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class GridViewRow
+    public class GridLayoutManagerRow
     {
         /// <summary>
         /// Fired whenever the relative height of this GridViewRow is changed
@@ -78,7 +78,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="relativeWidth"></param>
         /// <param name="minWidth"></param>
-        public GridViewRow(float relativeHeight, float minHeight = 0)
+        public GridLayoutManagerRow(float relativeHeight, float minHeight = 0)
         {
             RelativeHeight = relativeHeight;
             MinHeight = minHeight;

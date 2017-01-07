@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class GridViewColumn
+    public class GridLayoutManagerColumn
     {
         /// <summary>
         /// Fired whenever the relative width of this GridViewColumn is changed
@@ -78,7 +78,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="relativeWidth"></param>
         /// <param name="minWidth"></param>
-        public GridViewColumn(float relativeWidth, float minWidth = 0)
+        public GridLayoutManagerColumn(float relativeWidth, float minWidth = 0)
         {
             RelativeWidth = relativeWidth;
             MinWidth = minWidth;

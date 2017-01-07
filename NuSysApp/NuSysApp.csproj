@@ -397,9 +397,9 @@
     <Compile Include="Components\NuSysRenderer\UI\Brushing\DateSelector.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Brushing\FilterSubMenu.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\GridView\GridViewColumn.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\GridView\GridViewRow.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\GridView\GridViewUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\GridView\GridLayoutManagerColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\GridView\GridLayoutManagerRow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\GridView\GridLayoutManager.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAliasesPage.cs" />

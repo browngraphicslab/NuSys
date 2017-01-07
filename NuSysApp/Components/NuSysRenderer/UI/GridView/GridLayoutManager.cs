@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class GridViewUIElement : RectangleUIElement
+    public class GridLayoutManager : RectangleUIElement
     {
         /// <summary>
         /// The width of the grid, relative widths are calculated based off of this value
@@ -63,12 +63,12 @@ namespace NuSysApp
         /// <summary>
         /// The columns currently in the grid
         /// </summary>
-        private List<GridViewColumn> Columns { get; }
+        private List<GridLayoutManagerColumn> Columns { get; }
 
         /// <summary>
         /// The rows currently in the Grid
         /// </summary>
-        public List<GridViewRow> Rows { get; }
+        public List<GridLayoutManagerRow> Rows { get; }
 
         /// <summary>
         /// The elements that are currently displayed on the grid
@@ -83,28 +83,28 @@ namespace NuSysApp
         /// <summary>
         /// Dictionary mapping a row to the elements it contains
         /// </summary>
-        private Dictionary<GridViewRow, List<BaseInteractiveUIElement>> _rowToElements;
+        private Dictionary<GridLayoutManagerRow, List<BaseInteractiveUIElement>> _rowToElements;
 
         /// <summary>
         /// Dictionary mapping a column to the elements it contains
         /// </summary>
-        private Dictionary<GridViewColumn, List<BaseInteractiveUIElement>> _colToElements;
+        private Dictionary<GridLayoutManagerColumn, List<BaseInteractiveUIElement>> _colToElements;
 
-        public GridViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public GridLayoutManager(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            Columns = new List<GridViewColumn>();
-            Rows = new List<GridViewRow>();
+            Columns = new List<GridLayoutManagerColumn>();
+            Rows = new List<GridLayoutManagerRow>();
             Elements = new List<BaseInteractiveUIElement>();
             _elementsToLocations = new Dictionary<BaseInteractiveUIElement, GridLocation>();
-            _rowToElements = new Dictionary<GridViewRow, List<BaseInteractiveUIElement>>();
-            _colToElements = new Dictionary<GridViewColumn, List<BaseInteractiveUIElement>>();
+            _rowToElements = new Dictionary<GridLayoutManagerRow, List<BaseInteractiveUIElement>>();
+            _colToElements = new Dictionary<GridLayoutManagerColumn, List<BaseInteractiveUIElement>>();
         }
 
         /// <summary>
         /// Adds a row to the GridView
         /// </summary>
         /// <param name="row"></param>
-        public void AddRow(GridViewRow row)
+        public void AddRow(GridLayoutManagerRow row)
         {
             row.MinHeightChanged += RecalculateSize;
             row.RelativeHeightChanged += RecalculateSize;
@@ -117,7 +117,7 @@ namespace NuSysApp
         /// Removes a row from the GridView, and all the elements that are in that row
         /// </summary>
         /// <param name="row"></param>
-        public void RemoveRow(GridViewRow row)
+        public void RemoveRow(GridLayoutManagerRow row)
         {
             if (!Rows.Contains(row))
             {
@@ -142,7 +142,7 @@ namespace NuSysApp
         /// Adds a column to the grid view
         /// </summary>
         /// <param name="column"></param>
-        public void AddColumn(GridViewColumn column)
+        public void AddColumn(GridLayoutManagerColumn column)
         {
             column.MinWidthChanged += RecalculateSize;
             column.RelativeWidthChanged += RecalculateSize;
@@ -155,7 +155,7 @@ namespace NuSysApp
         /// Removes a column from the grid view
         /// </summary>
         /// <param name="column"></param>
-        public void RemoveColumn(GridViewColumn column)
+        public void RemoveColumn(GridLayoutManagerColumn column)
         {
             if (!Columns.Contains(column))
             {
@@ -238,6 +238,8 @@ namespace NuSysApp
                 SetElementPosition(element);
             }
         }
+
+        public void setrow
 
         /// <summary>
         /// Adds an element to the given row and column. Rows and columns are zero indexed
@@ -374,11 +376,11 @@ namespace NuSysApp
 
             public VerticalAlignment VerticalAlignment;
 
-            public GridViewColumn Column { get; }
+            public GridLayoutManagerColumn Column { get; }
 
-            public GridViewRow Row { get; }
+            public GridLayoutManagerRow Row { get; }
 
-            public GridLocation(GridViewRow row, GridViewColumn column, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+            public GridLocation(GridLayoutManagerRow row, GridLayoutManagerColumn column, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
             {
                 Row = row;
                 Column = column;
