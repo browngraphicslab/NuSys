@@ -1,17 +1,18 @@
-﻿using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.Brushes;
-using Microsoft.Graphics.Canvas.Geometry;
-using Microsoft.Graphics.Canvas.Text;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
-
+using Windows.UI.Core;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -31,7 +32,7 @@ namespace NuSysApp
             set
             {
                 text = value;
-                if (_constructed)
+                if (_loaded)
                 {
                     EditableTextboxUIElement_TextChanged(this, value);
                 }
@@ -51,7 +52,7 @@ namespace NuSysApp
         private bool _hasFocus;
         // Boolean for when the control key is held down in order to handle
         // cut/copy/paste events
-        private bool _isCtrlPressed = false;
+        private bool _isCtrlPressed;
 
         private CanvasPointer _draggedPointer;
         private bool _dragging;
@@ -72,15 +73,15 @@ namespace NuSysApp
         public int CursorCharacterIndex { get; set; }
         // Preserves the x position when moving the cursor up and down
         // in the text box
-        private float _currCursorX = 0;
+        private float _currCursorX;
 
         // Beginning and ending indices of the current highlighted text
-        public int _selectionStartIndex = 0;
-        public int _selectionEndIndex = 0;
+        public int _selectionStartIndex;
+        public int _selectionEndIndex;
 
         // Incremented at every update call and used to control how often
         // the cursor blinks
-        private int _blinkCounter = 0;
+        private int _blinkCounter;
 
         // Directional offsets of where the top left corner of the text is
         private double _xOffset;
@@ -93,6 +94,7 @@ namespace NuSysApp
         // Min and max indices in the text to be drawn on the screen
         private int _maxIndex;
         private int _minIndex;
+        private bool _loaded;
 
         /// <summary>
         /// The color of the placeholder text
@@ -104,7 +106,11 @@ namespace NuSysApp
         /// </summary>
         public string PlaceHolderText { get; set; } = string.Empty;
 
-        private bool _constructed;
+        public override float Width { get;
+            set; }
+
+        public override float Height { get;
+            set; }
 
         /// <summary>
         /// Models a text box which the user can type into and edit
@@ -123,6 +129,14 @@ namespace NuSysApp
             Wrapping = scrollVert ? CanvasWordWrapping.WholeWord : CanvasWordWrapping.NoWrap;
             TrimmingSign = CanvasTrimmingSign.None;
 
+        }
+
+        /// <summary>
+        /// Create the resources for the textbox, shifted to the load method
+        /// </summary>
+        /// <param name="resourceCreator"></param>
+        private void CreateResources(ICanvasResourceCreatorWithDpi resourceCreator)
+        {
             // Initializing the textformat
             TextFormat = new CanvasTextFormat
             {
@@ -133,46 +147,51 @@ namespace NuSysApp
                 TrimmingSign = TrimmingSign,
                 FontFamily = FontFamily,
                 FontSize = FontSize,
-                FontStyle = FontStyle,
+                FontStyle = FontStyle
             };
 
             _xOffset = 0;
             _yOffset = 0;
 
             TextLayout = new CanvasTextLayout(resourceCreator, Text, TextFormat,
-                                              Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
-                                              Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+                Width - 2*(BorderWidth + UIDefaults.XTextPadding),
+                Height - 2*(BorderWidth + UIDefaults.YTextPadding));
 
             // Get the size the cursor should be
             CursorCharacterIndex = -1;
             CanvasTextLayoutRegion textLayoutRegion;
-            TextLayout.GetCaretPosition(0, false, out textLayoutRegion);          
+            TextLayout.GetCaretPosition(0, false, out textLayoutRegion);
             Rect bounds = textLayoutRegion.LayoutBounds;
 
             // Initialize cursor
             _cursor = new RectangleUIElement(this, resourceCreator);
             _cursor.Width = 2;
-            _cursor.Height = (float)bounds.Height;
+            _cursor.Height = (float) bounds.Height;
             _cursor.Background = Colors.Black;
             _cursor.IsVisible = false;
 
             _dragging = false;
 
-            _constructed = true;
+            _loaded = true;
 
             // Add cursor as child of the textbox
-            this.AddChild(_cursor);
+            AddChild(_cursor);
 
             // Set up events
-            this.Pressed += EditableTextboxUIElement_Pressed;
-            this.OnFocusGained += EditableTextboxUIElement_OnFocusGained;
-            this.OnFocusLost += EditableTextboxUIElement_OnFocusLost;
-            this.KeyPressed += EditableTextboxUIElement_KeyPressed;
-            this.KeyReleased += EditableTextboxUIElement_KeyReleased;
-            this.DragStarted += ScrollableTextboxUIElement_DragStarted;
-            this.DragCompleted += ScrollableTextboxUIElement_DragCompleted;
-            this.DoubleTapped += ScrollableTextboxUIElement_DoubleTapped;
+            Pressed += EditableTextboxUIElement_Pressed;
+            OnFocusGained += EditableTextboxUIElement_OnFocusGained;
+            OnFocusLost += EditableTextboxUIElement_OnFocusLost;
+            KeyPressed += EditableTextboxUIElement_KeyPressed;
+            KeyReleased += EditableTextboxUIElement_KeyReleased;
+            DragStarted += ScrollableTextboxUIElement_DragStarted;
+            DragCompleted += ScrollableTextboxUIElement_DragCompleted;
+            DoubleTapped += ScrollableTextboxUIElement_DoubleTapped;
+        }
 
+        public override Task Load()
+        {
+            CreateResources(ResourceCreator);
+            return base.Load();
         }
 
         /// <summary>
@@ -208,10 +227,8 @@ namespace NuSysApp
                 if (Char.IsWhiteSpace(prevC))
                 {
                     break;
-                } else
-                {
-                    start--;
                 }
+                start--;
             }
 
             while (end < (Text.Length - 1))
@@ -221,10 +238,7 @@ namespace NuSysApp
                 {
                     break;
                 }
-                else
-                {
-                    end++;
-                }
+                end++;
             }
 
             _hasSelection = true;
@@ -271,7 +285,7 @@ namespace NuSysApp
         /// Fired when key is released while this element has focus
         /// </summary>
         /// <param name="args"></param>
-        private void EditableTextboxUIElement_KeyReleased(Windows.UI.Core.KeyEventArgs args)
+        private void EditableTextboxUIElement_KeyReleased(KeyEventArgs args)
         {
             if (args.VirtualKey == VirtualKey.Control)
             {
@@ -304,7 +318,7 @@ namespace NuSysApp
         /// Fired when key is pressed on the textbox while it has focus
         /// </summary>
         /// <param name="args"></param>
-        private void EditableTextboxUIElement_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        private void EditableTextboxUIElement_KeyPressed(KeyEventArgs args)
         {
             _cursor.IsVisible = true;
 
@@ -709,12 +723,12 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            this.Pressed -= EditableTextboxUIElement_Pressed;
+            Pressed -= EditableTextboxUIElement_Pressed;
 
-            this.OnFocusGained -= EditableTextboxUIElement_OnFocusGained;
-            this.OnFocusLost -= EditableTextboxUIElement_OnFocusLost;
-            this.KeyPressed -= EditableTextboxUIElement_KeyPressed;
-            this.KeyReleased -= EditableTextboxUIElement_KeyReleased;
+            OnFocusGained -= EditableTextboxUIElement_OnFocusGained;
+            OnFocusLost -= EditableTextboxUIElement_OnFocusLost;
+            KeyPressed -= EditableTextboxUIElement_KeyPressed;
+            KeyReleased -= EditableTextboxUIElement_KeyReleased;
 
             base.Dispose();
         }
@@ -810,7 +824,7 @@ namespace NuSysApp
 
                 SessionController.Instance.DataPackage.SetText(selection);
 
-                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(SessionController.Instance.DataPackage);
+                Clipboard.SetContent(SessionController.Instance.DataPackage);
                 OnTextCopied(selection);
             }
         }
@@ -828,7 +842,7 @@ namespace NuSysApp
 
                 SessionController.Instance.DataPackage.SetText(selection);
 
-                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(SessionController.Instance.DataPackage);
+                Clipboard.SetContent(SessionController.Instance.DataPackage);
                 OnTextCut(selection);
                 
                 Text = Text.Remove(firstIndex, length);
@@ -848,7 +862,7 @@ namespace NuSysApp
         /// </summary>
         private async void Paste()
         {
-            DataPackageView dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
+            DataPackageView dataPackageView = Clipboard.GetContent();
             if (dataPackageView.Contains(StandardDataFormats.Text))
             {
                 // If text is selected, paste over it
@@ -994,7 +1008,7 @@ namespace NuSysApp
             IntPtr inputLocaleIdentifier = GetKeyboardLayout(0);
 
             StringBuilder result = new StringBuilder();
-            ToUnicodeEx(virtualKeyCode, scanCode, keyboardState, result, (int)5, (uint)0, inputLocaleIdentifier);
+            ToUnicodeEx(virtualKeyCode, scanCode, keyboardState, result, 5, 0, inputLocaleIdentifier);
 
             return result.ToString();
         } 

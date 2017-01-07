@@ -239,8 +239,6 @@ namespace NuSysApp
             }
         }
 
-        public void setrow
-
         /// <summary>
         /// Adds an element to the given row and column. Rows and columns are zero indexed
         /// </summary>

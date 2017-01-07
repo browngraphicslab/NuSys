@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     public class ChatBoxUIElement : ResizeableWindowUIElement
     {
-        private RectangleUIElement _typingRect;
+        private ScrollableTextboxUIElement _typingRect;
         private RectangleUIElement _readingRect;
 
         private StackLayoutManager _baseLayoutManager;
@@ -27,10 +27,12 @@ namespace NuSysApp
 
 
             // instantiate the typing and reading rectangles
-            _typingRect = new RectangleUIElement(this, resourceCreator)
+            _typingRect = new ScrollableTextboxUIElement(this, resourceCreator, true, true)
             {
                 BorderWidth = 3,
-                Bordercolor = Colors.DarkGray
+                Bordercolor = Colors.DarkGray,
+                Width = Width,
+                Height = Height
             };
             AddChild(_typingRect);
             _readingRect = new RectangleUIElement(this, resourceCreator)
@@ -45,6 +47,7 @@ namespace NuSysApp
             _baseLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
             _baseLayoutManager.AddElement(_typingRect);
             _baseLayoutManager.AddElement(_readingRect);
+            _baseLayoutManager.SetSize(Width, Height);
             _baseLayoutManager.ArrangeItems();
         }
 
