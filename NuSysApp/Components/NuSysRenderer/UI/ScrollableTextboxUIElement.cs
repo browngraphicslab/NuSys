@@ -60,9 +60,6 @@ namespace NuSysApp
         // The current text layout
         public CanvasTextLayout TextLayout { get; set; }
 
-        // Text format currently being used
-        protected CanvasTextFormat TextFormat;
-
         // Direction this textbox scrolls
         private bool _scrollVert;
 
@@ -106,12 +103,6 @@ namespace NuSysApp
         /// </summary>
         public string PlaceHolderText { get; set; } = string.Empty;
 
-        public override float Width { get;
-            set; }
-
-        public override float Height { get;
-            set; }
-
         /// <summary>
         /// Models a text box which the user can type into and edit
         /// Inherits from TextboxUIElement
@@ -138,7 +129,7 @@ namespace NuSysApp
         private void CreateResources(ICanvasResourceCreatorWithDpi resourceCreator)
         {
             // Initializing the textformat
-            TextFormat = new CanvasTextFormat
+            CanvasTextFormat = new CanvasTextFormat
             {
                 HorizontalAlignment = TextHorizontalAlignment,
                 VerticalAlignment = TextVerticalAlignment,
@@ -153,7 +144,7 @@ namespace NuSysApp
             _xOffset = 0;
             _yOffset = 0;
 
-            TextLayout = new CanvasTextLayout(resourceCreator, Text, TextFormat,
+            TextLayout = new CanvasTextLayout(resourceCreator, Text, CanvasTextFormat,
                 Width - 2*(BorderWidth + UIDefaults.XTextPadding),
                 Height - 2*(BorderWidth + UIDefaults.YTextPadding));
 
@@ -757,9 +748,9 @@ namespace NuSysApp
         /// <returns></returns>
         public virtual CanvasTextLayout CreateTextLayout(ICanvasResourceCreator resourceCreator)
         {
-            var textLayout = _scrollVert ? new CanvasTextLayout(resourceCreator, Text, TextFormat,
+            var textLayout = _scrollVert ? new CanvasTextLayout(resourceCreator, Text, CanvasTextFormat,
                                            Width - 2 * (BorderWidth + UIDefaults.XTextPadding), float.MaxValue) :
-                                           new CanvasTextLayout(resourceCreator, Text, TextFormat, float.MaxValue,
+                                           new CanvasTextLayout(resourceCreator, Text, CanvasTextFormat, float.MaxValue,
                                            Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
 
             return textLayout;
@@ -797,13 +788,13 @@ namespace NuSysApp
                         ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                                     BorderWidth + UIDefaults.YTextPadding + _yOffset,
                                     Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
-                                    TextColor, TextFormat);
+                                    TextColor, CanvasTextFormat);
                     } else
                     {
                         ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                                     BorderWidth + UIDefaults.YTextPadding + _yOffset, double.MaxValue,
                                     Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
-                                    TextColor, TextFormat);
+                                    TextColor, CanvasTextFormat);
                     }
                 }
             }
@@ -943,7 +934,7 @@ namespace NuSysApp
                 ds.DrawText(PlaceHolderText, new Rect(BorderWidth + UIDefaults.XTextPadding,
             BorderWidth + UIDefaults.YTextPadding,
             Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
-            PlaceHolderTextColor, TextFormat);
+            PlaceHolderTextColor, CanvasTextFormat);
                 ds.Transform = orgTransform;
             }
         }

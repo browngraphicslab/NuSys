@@ -14,6 +14,46 @@ namespace NuSysApp
 {
     public class TextboxUIElement : RectangleUIElement
     {
+        /// <summary>
+        /// private helper for the public property TextHorizontalAlignment
+        /// </summary>
+        private CanvasHorizontalAlignment _textHorizontalAlignment { get; set; }
+
+        /// <summary>
+        /// private helper for the public property TextVerticalAlignment
+        /// </summary>
+        private CanvasVerticalAlignment _textVerticalAlignment { get; set; }
+
+        /// <summary>
+        /// private helper for public property WordWrapping
+        /// </summary>
+        private CanvasWordWrapping _wordWrapping { get; set; }
+
+        /// <summary>
+        /// private helper for public property TrimmingGranularity
+        /// </summary>
+        private CanvasTextTrimmingGranularity _trimmingGranularity { get; set; }
+
+        /// <summary>
+        /// private helper for public property TrimmingSign
+        /// </summary>
+        private CanvasTrimmingSign _trimmingSign { get; set; }
+
+        /// <summary>
+        /// private helper for public property FontFamily
+        /// </summary>
+        private string _fontFamily { get; set; }
+
+        /// <summary>
+        /// private helper for public property FontSize
+        /// </summary>
+        private float _fontSize { get; set; }
+
+        /// <summary>
+        /// private helper for public property FontStyle
+        /// </summary>
+        private FontStyle _fontStyle { get; set; }
+
 
         /// <summary>
         /// The text to be displayed in the textbox
@@ -23,12 +63,28 @@ namespace NuSysApp
         /// <summary>
         /// The horizontal alignment of the text within the textbox
         /// </summary>
-        public CanvasHorizontalAlignment TextHorizontalAlignment { get; set; }
+        public CanvasHorizontalAlignment TextHorizontalAlignment
+        {
+            get { return _textHorizontalAlignment; }
+            set
+            {
+                _textHorizontalAlignment = value;
+                UpdateCanvasTextFormat();
+            }
+        }
 
         /// <summary>
         /// The vertical alignment of the text within the textbox
         /// </summary>
-        public CanvasVerticalAlignment TextVerticalAlignment { get; set; }
+        public CanvasVerticalAlignment TextVerticalAlignment
+        {
+            get { return _textVerticalAlignment;}
+            set
+            {
+                _textVerticalAlignment = value;
+                UpdateCanvasTextFormat();
+            }
+        }
 
         /// <summary>
         /// The color of the text within the text box
@@ -38,32 +94,84 @@ namespace NuSysApp
         /// <summary>
         /// The style of the text within the text box, normal or italic. oblique is not bold. 
         /// </summary>
-        public FontStyle FontStyle { get; set; }
+        public FontStyle FontStyle
+        {
+            get { return _fontStyle; }
+            set
+            {
+                _fontStyle = value;
+                UpdateCanvasTextFormat();
+            }
+        }
 
         /// <summary>
         /// The size of the text in the textbox. 
         /// </summary>
-        public float FontSize { get; set; }
+        public float FontSize
+        {
+            get { return _fontSize; }
+            set
+            {
+                _fontSize = value;
+                UpdateCanvasTextFormat();
+            }
+        }
 
         /// <summary>
         /// The font of the text in the textbox
         /// </summary>
-        public string FontFamily { get; set; }
+        public string FontFamily
+        {
+            get { return _fontFamily; }
+            set
+            {
+                _fontFamily = value;
+                UpdateCanvasTextFormat();
+            }
+        }
 
         /// <summary>
         /// The default break point at which text moves to a new line to avoid overflow
         /// </summary>
-        public CanvasWordWrapping Wrapping { get; set; }
+        public CanvasWordWrapping Wrapping
+        {
+            get { return _wordWrapping; }
+            set
+            {
+                _wordWrapping = value;
+                UpdateCanvasTextFormat();
+            }
+        }
 
         /// <summary>
         /// The sign used to show that text has overflown the end of the text box
         /// </summary>
-        public CanvasTrimmingSign TrimmingSign { get; set; }
+        public CanvasTrimmingSign TrimmingSign
+        {
+            get { return _trimmingSign; }
+            set
+            {
+                _trimmingSign = value;
+                UpdateCanvasTextFormat();
+            }
+        }
 
         /// <summary>
         /// The granularity chosen to break off the end of text if text has overflown the end of the text box
         /// </summary>
-        public CanvasTextTrimmingGranularity TrimmingGranularity { get; set; }
+        public CanvasTextTrimmingGranularity TrimmingGranularity
+        {
+            get { return _trimmingGranularity; }
+            set
+            {
+                _trimmingGranularity = value;
+                UpdateCanvasTextFormat();
+            }
+        }
+
+        public virtual CanvasTextFormat CanvasTextFormat { get; protected set; }
+
+        private bool _constructed;
 
         public TextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -79,7 +187,11 @@ namespace NuSysApp
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
             BorderWidth = 0;
             Text = "";
+            _constructed = true;
+
+            UpdateCanvasTextFormat();
         }
+
 
         /// <summary>
         /// Draws the background and the border and the text
@@ -100,6 +212,26 @@ namespace NuSysApp
 
         }
 
+        public virtual void UpdateCanvasTextFormat()
+        {
+            if (!_constructed)
+            {
+                return;
+            }
+
+            CanvasTextFormat = new CanvasTextFormat
+            {
+                HorizontalAlignment = TextHorizontalAlignment,
+                VerticalAlignment = TextVerticalAlignment,
+                WordWrapping = Wrapping,
+                TrimmingGranularity = TrimmingGranularity,
+                TrimmingSign = TrimmingSign,
+                FontFamily = FontFamily,
+                FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale,
+                FontStyle = FontStyle,
+            };
+        }
+
         /// <summary>
         /// Draws the text within the textbox
         /// </summary>
@@ -112,21 +244,12 @@ namespace NuSysApp
 
             if (Text != null)
             {
-                // create a text format object
-                var textFormat = new CanvasTextFormat
-                {
-                    HorizontalAlignment = TextHorizontalAlignment,
-                    VerticalAlignment = TextVerticalAlignment,
-                    WordWrapping = Wrapping,
-                    TrimmingGranularity = TrimmingGranularity,
-                    TrimmingSign = TrimmingSign,
-                    FontFamily = FontFamily,
-                    FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale,
-                    FontStyle = FontStyle,
-                };
-
-
                 Debug.Assert(Width - 2*BorderWidth > 0 && Height - 2*BorderWidth > 0, "these must be greater than zero or drawText crashes below");
+
+
+                // update the font size based on the accessibility settings
+                CanvasTextFormat.FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale;
+
 
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
                 // just created TextFormat
@@ -138,13 +261,11 @@ namespace NuSysApp
                 var y = BorderWidth + UIDefaults.YTextPadding;
                 var width = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
                 var height = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
-                ds.DrawText(Text, new Rect(x, y,width, height),TextColor, textFormat);
+                ds.DrawText(Text, new Rect(x, y,width, height),TextColor, CanvasTextFormat);
             }
 
             ds.Transform = orgTransform;
         }
-
-
 
     }
 }

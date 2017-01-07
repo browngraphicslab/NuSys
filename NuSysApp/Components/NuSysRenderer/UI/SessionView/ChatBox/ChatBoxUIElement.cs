@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
@@ -49,6 +50,34 @@ namespace NuSysApp
             _baseLayoutManager.AddElement(_readingRect);
             _baseLayoutManager.SetSize(Width, Height);
             _baseLayoutManager.ArrangeItems();
+
+            _typingRect.KeyPressed += _typingRect_KeyPressed;
+        }
+
+        public override void Dispose()
+        {
+            _typingRect.KeyPressed -= _typingRect_KeyPressed;
+
+            base.Dispose();
+        }
+
+        private void _typingRect_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Enter)
+            {
+                SendMessage(_typingRect.Text);
+                _typingRect.Text = string.Empty;
+            }
+        }
+
+        private void SendMessage(string text)
+        {
+            var chatRequest = new ChatRequest(SessionController.Instance.NuSysNetworkSession.NetworkMembers[WaitingRoomView.UserID], text);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(chatRequest);
+            if (chatRequest.WasSuccessful() == true)
+            {
+                chatRequest.AddSuccesfullChatLocally();
+            }
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -63,11 +92,19 @@ namespace NuSysApp
             _readingRect.Transform.LocalPosition = new Vector2(_readingRect.Transform.LocalPosition.X, TopBarHeight);
             _typingRect.Transform.LocalPosition = new Vector2(_typingRect.Transform.LocalPosition.X, TopBarHeight + _readingRect.Height);
 
-
-
-
-
             base.Update(parentLocalToScreenTransform);
+        }
+
+
+        /// <summary>
+        /// Adds a chat message to the ChatBox, called be the requests, and takes care of adding the current user's chats
+        /// as well as other user's chats, as well as updating the number of unseen chats
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="chatMessage"></param>
+        public void AddChat(NetworkUser user, string chatMessage)
+        {
+            throw new NotImplementedException();
         }
     }
 }
