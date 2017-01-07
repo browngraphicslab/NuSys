@@ -212,7 +212,7 @@ namespace NuSysApp
 
         }
 
-        public virtual void UpdateCanvasTextFormat()
+        protected virtual void UpdateCanvasTextFormat()
         {
             if (!_constructed)
             {
@@ -250,13 +250,7 @@ namespace NuSysApp
                 // update the font size based on the accessibility settings
                 CanvasTextFormat.FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale;
 
-
-                // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
-                // just created TextFormat
-                //ds.DrawText(Text,
-                //    new Rect(BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
-                //    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
-                //    TextColor, TextFormat);
+                // draw the text within the proper bounds
                 var x = BorderWidth + UIDefaults.XTextPadding;
                 var y = BorderWidth + UIDefaults.YTextPadding;
                 var width = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
