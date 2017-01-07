@@ -1384,7 +1384,7 @@ namespace NuSysApp
         public void PlayFullScreenVideo(object sender, VideoLibraryElementController videoLibraryElementController)
         {
             xFullScreenVideoElement.Visibility = Visibility.Visible;
-            xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight - 80);
+            xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight - 50);
             xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
         }
 
