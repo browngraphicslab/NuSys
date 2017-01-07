@@ -449,9 +449,18 @@ namespace NuSysApp
 
             ClearControllersForCollectionExit();
 
+            //creates a new request to get the new workspace
+            var request = new GetEntireWorkspaceRequest(collectionLibraryId);
+
+            //awaits the requests return after execution
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+
+
             // Create a content model/controller for the collection that we're about to enter
             var mainContentDataId = SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryId).ContentDataModelId;
-            var mainContentDataModel = new ContentDataModel(mainContentDataId, string.Empty);
+            var mainContentDataModel = request.GetReturnedContentDataModels().FirstOrDefault(i => i.ContentId == mainContentDataId);
+            
             ContentController.AddContentDataModel(mainContentDataModel);
 
             var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
@@ -465,12 +474,6 @@ namespace NuSysApp
                 LibraryId = collectionLibraryId
             };
 
-
-            //creates a new request to get the new workspace
-            var request = new GetEntireWorkspaceRequest(collectionLibraryId);
-
-            //awaits the requests return after execution
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             //gets the element mdoels from the returned requst
             var elementModels = request.GetReturnedElementModels();

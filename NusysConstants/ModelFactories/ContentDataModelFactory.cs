@@ -40,6 +40,9 @@ namespace NusysIntermediate
                 case NusysConstants.ContentType.Word:
                     model = new PdfContentDataModel(contentId,data);
                     break;
+                case NusysConstants.ContentType.Collection:
+                    model = new CollectionContentDataModel(contentId,data);
+                    break;
                 default:
                     model = new ContentDataModel(contentId,data);
                     break;
@@ -69,7 +72,11 @@ namespace NusysIntermediate
                     case NusysConstants.ContentType.Word:
                         model = JsonConvert.DeserializeObject<PdfContentDataModel>(contentDataModelJSON);
                         break;
+                    case NusysConstants.ContentType.Collection:
+                        model = JsonConvert.DeserializeObject<CollectionContentDataModel>(contentDataModelJSON);
+                        break;
                 }
+                model.SetData(model.Data); //Kinda hacky but needed to correctly set the data for pdfs and collections
                 Debug.Assert(model?.ContentId != null);
                 return model;
             }

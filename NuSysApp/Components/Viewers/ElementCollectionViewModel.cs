@@ -59,13 +59,19 @@ namespace NuSysApp
             libElemController.OnTrailAdded += LibElemControllerOnOnTrailAdded;
             libElemController.OnTrailRemoved += LibElemControllerOnOnTrailRemoved;
 
+            var contentController = libElemController.CollectionContentDataController;
+            Debug.Assert(contentController?.CollectionModel != null, "Will crash if you continue");
+            var collectionShape = contentController.CollectionModel.Shape;
+
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
-            IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;
-            AspectRatio = model.AspectRatio;
+            IsShaped = collectionShape?.ShapePoints != null && collectionShape?.ShapePoints?.Count > 5;
+            AspectRatio = collectionShape?.AspectRatio ?? 0;
 
-            if (model.ShapeColor != null)
-                ShapeColor = model.ShapeColor.ToColor();
+            if (collectionShape?.ShapeColor != null)
+            {
+                ShapeColor = collectionShape.ShapeColor.ToColor();
+            }
 
             foreach (var childId in model.Children)
             {

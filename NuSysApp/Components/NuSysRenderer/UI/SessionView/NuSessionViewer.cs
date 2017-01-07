@@ -135,7 +135,7 @@ namespace NuSysApp
                 KeepAspectRatio = true
             };
             AddChild(_detailViewer);
-
+            /*
             _scrollingCanvas = new ScrollingCanvas(this, Canvas, ScrollingCanvas.ScrollOrientation.Both)
             {
                 Width = 300,
@@ -158,7 +158,7 @@ namespace NuSysApp
                     _scrollingCanvas.AddElement(element, new Vector2(i * 10, j * 10));
                 }
             }
-
+            */
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;

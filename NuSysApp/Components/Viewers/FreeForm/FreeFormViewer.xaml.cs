@@ -164,14 +164,32 @@ namespace NuSysApp
             RenderEngine.Root.AddChild(InitialCollection);
 
 
-            var sb = new ScrollBarUIElement(_renderRoot, RenderCanvas, ScrollBarUIElement.Orientation.Vertical)
+            var sb1 = new ScrollBarUIElement(_renderRoot, RenderCanvas, ScrollBarUIElement.Orientation.Vertical)
             {
                 Height = 300,
-                Width = 50
+                Width = 20,
+                Background = Constants.LIGHT_BLUE,
+                Position = 0.5f,
+                Range = 0.3f
             };
-            sb.Transform.LocalPosition = new Vector2(500, 200);
 
-            RenderEngine.Root.AddChild(sb);
+            sb1.Transform.LocalPosition = new Vector2(500, 200);
+
+            RenderEngine.Root.AddChild(sb1);
+
+            var sb2 = new ScrollBarUIElement(_renderRoot, RenderCanvas, ScrollBarUIElement.Orientation.Horizontal)
+            {
+                Width = 300, 
+                Height = 20,
+                Background = Constants.LIGHT_BLUE,
+                Position = 0.5f,
+                Range = 0.3f
+            };
+
+            sb2.Transform.LocalPosition = new Vector2(800, 200);
+
+            RenderEngine.Root.AddChild(sb2);
+
 
             RenderEngine.Start();
 
@@ -666,7 +684,7 @@ namespace NuSysApp
             }
 
 
-            var createNewContentRequestArgs = new CreateNewContentRequestArgs
+            var createNewContentRequestArgs = new CreateNewCollectionContentRequestArgs()
             {
                 LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
                 {
@@ -676,12 +694,13 @@ namespace NuSysApp
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
                     IsFiniteCollection = finite,
-                    ShapePoints = shapePoints,
-                    AspectRatio = targetRectInCollection.Width/ targetRectInCollection.Height,
-                    Color = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
-
                 },
-                ContentId = SessionController.Instance.GenerateId()
+                ContentId = SessionController.Instance.GenerateId(),
+                Shape = new CollectionShapeModel() {
+                    ShapePoints = shapePoints,
+                    AspectRatio = targetRectInCollection.Width / targetRectInCollection.Height,
+                    ShapeColor = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
+                }
             };
 
             // execute the content request
@@ -765,11 +784,6 @@ namespace NuSysApp
             {
                 var id = Selections[0].ViewModel.LibraryElementId;
                 await SessionController.Instance.EnterCollection(id);
-            }
-
-            if (item == RenderEngine.ElementSelectionRect.BtnExport)
-            {
-                
             }
 
             if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)

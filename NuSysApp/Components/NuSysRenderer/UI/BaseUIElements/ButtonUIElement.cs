@@ -179,7 +179,6 @@ namespace NuSysApp
             Shape.Dragged += Shape_Dragged;
             Shape.Tapped += Shape_Tapped;
             Shape.DoubleTapped += Shape_DoubleTapped;
-
             Enabled = true;
 
             Padding = 7;
@@ -189,12 +188,12 @@ namespace NuSysApp
         /// sets original values to height width and size.
         /// should be called at end of constructor for individual button types.
         /// </summary>
-        protected void SetOriginalValues()
+        protected virtual void SetOriginalValues()
         {
             _originalHeight = Height;
             _originalWidth = Width;
             _originalTextSize = ButtonTextSize;
-            _originalImageBounds = ImageBounds ?? GetLocalBounds();
+            _originalImageBounds = ImageBounds ?? new Rect(0,0,GetLocalBounds().Width - 20, GetLocalBounds().Height);
         }
 
         /// <summary>
@@ -313,6 +312,7 @@ namespace NuSysApp
             if (ButtonText != null)
             {
                 // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
+                // just created textFormat
                 ds.DrawText(ButtonText, GetTextBoundingBox(),ButtonTextColor, GetCanvasTextFormat());
             }
 

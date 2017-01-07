@@ -40,6 +40,18 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Allowing direct access to the content Data controller as a collection
+        /// </summary>
+        public CollectionContentDataController CollectionContentDataController
+        {
+            get
+            {
+                Debug.Assert(ContentDataController is CollectionContentDataController);
+                return ContentDataController as CollectionContentDataController;
+            }
+        }
+
         public CollectionLibraryElementController(CollectionLibraryElementModel collectionLibraryElementModel) : base(collectionLibraryElementModel)
         {
             InkLines = new HashSet<string>();
@@ -122,12 +134,7 @@ namespace NuSysApp
             //tODO add in the event firing
             Debug.Assert(newPoints != null);
             Debug.Assert(CollectionModel != null);//check the state of values being used
-
-            CollectionModel.ShapePoints = newPoints;
-            if (!_blockServerInteraction)
-            {
-                _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY, newPoints);
-            }
+            CollectionContentDataController.SetShapePoints(newPoints);
         }
 
         /// <summary>
