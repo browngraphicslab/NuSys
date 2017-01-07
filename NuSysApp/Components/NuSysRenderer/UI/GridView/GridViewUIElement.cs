@@ -73,31 +73,31 @@ namespace NuSysApp
         /// <summary>
         /// The elements that are currently displayed on the grid
         /// </summary>
-        public List<BaseRenderItem> Elements { get; }
+        public List<BaseInteractiveUIElement> Elements { get; }
 
         /// <summary>
         /// Dictionary mapping elements to their locations on the grid
         /// </summary>
-        private Dictionary<BaseRenderItem, GridLocation> _elementsToLocations;
+        private Dictionary<BaseInteractiveUIElement, GridLocation> _elementsToLocations;
 
         /// <summary>
         /// Dictionary mapping a row to the elements it contains
         /// </summary>
-        private Dictionary<GridViewRow, List<BaseRenderItem>> _rowToElements;
+        private Dictionary<GridViewRow, List<BaseInteractiveUIElement>> _rowToElements;
 
         /// <summary>
         /// Dictionary mapping a column to the elements it contains
         /// </summary>
-        private Dictionary<GridViewColumn, List<BaseRenderItem>> _colToElements;
+        private Dictionary<GridViewColumn, List<BaseInteractiveUIElement>> _colToElements;
 
         public GridViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             Columns = new List<GridViewColumn>();
             Rows = new List<GridViewRow>();
-            Elements = new List<BaseRenderItem>();
-            _elementsToLocations = new Dictionary<BaseRenderItem, GridLocation>();
-            _rowToElements = new Dictionary<GridViewRow, List<BaseRenderItem>>();
-            _colToElements = new Dictionary<GridViewColumn, List<BaseRenderItem>>();
+            Elements = new List<BaseInteractiveUIElement>();
+            _elementsToLocations = new Dictionary<BaseInteractiveUIElement, GridLocation>();
+            _rowToElements = new Dictionary<GridViewRow, List<BaseInteractiveUIElement>>();
+            _colToElements = new Dictionary<GridViewColumn, List<BaseInteractiveUIElement>>();
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace NuSysApp
         {
             row.MinHeightChanged += RecalculateSize;
             row.RelativeHeightChanged += RecalculateSize;
-            _rowToElements[row] = new List<BaseRenderItem>();
+            _rowToElements[row] = new List<BaseInteractiveUIElement>();
             Rows.Add(row);
             RecalculateSize();
         }
@@ -146,7 +146,7 @@ namespace NuSysApp
         {
             column.MinWidthChanged += RecalculateSize;
             column.RelativeWidthChanged += RecalculateSize;
-            _colToElements[column] = new List<BaseRenderItem>(); 
+            _colToElements[column] = new List<BaseInteractiveUIElement>(); 
             Columns.Add(column);
             RecalculateSize();
         }
@@ -245,7 +245,7 @@ namespace NuSysApp
         /// <param name="element"></param>
         /// <param name="column"></param>
         /// <param name="row"></param>
-        public void AddElement(BaseRenderItem element, int row, int column)
+        public void AddElement(BaseInteractiveUIElement element, int row, int column, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Center, VerticalAlignment verticalAlignment = VerticalAlignment.Center)
         {
             if (row < 0 || row > Rows.Count - 1)
             {
@@ -257,7 +257,7 @@ namespace NuSysApp
             }
 
             Elements.Add(element);
-            _elementsToLocations[element] = new GridLocation(Rows[row], Columns[column]);
+            _elementsToLocations[element] = new GridLocation(Rows[row], Columns[column], horizontalAlignment, verticalAlignment);
             AddChild(element);
             SetElementPosition(element);
         }
@@ -266,7 +266,7 @@ namespace NuSysApp
         /// Removes an element from the grid
         /// </summary>
         /// <param name="element"></param>
-        public void RemoveElement(BaseRenderItem element)
+        public void RemoveElement(BaseInteractiveUIElement element)
         {
             // if the elemetn is not in the grid then don't do anything
             if (!Elements.Contains(element))
@@ -290,7 +290,7 @@ namespace NuSysApp
         /// Sets the position of the element properly
         /// </summary>
         /// <param name="element"></param>
-        private void SetElementPosition(BaseRenderItem element)
+        private void SetElementPosition(BaseInteractiveUIElement element)
         {
             // make sure we have the location of the element
             if (!_elementsToLocations.ContainsKey(element))
@@ -309,10 +309,45 @@ namespace NuSysApp
             Debug.Assert(Rows.Contains(elementLoc.Row));
             var elementRow = elementLoc.Row;
 
-            // set the position of the element properly
-            //todo add more refined positioning
-            element.Transform.LocalPosition = new Vector2(elementCol.Left, elementRow.Top);
+            // set the x position of the element properly
+            switch (elementLoc.HorizontalAlignment)
+            {
+                case HorizontalAlignment.Left:
+                    element.Transform.LocalPosition = new Vector2(elementCol.Left, element.Transform.LocalY);
+                    break;
+                case HorizontalAlignment.Center:
+                    element.Transform.LocalPosition = new Vector2(elementCol.Left + elementCol.Width/2 - element.Width/2, element.Transform.LocalY);
+                    break;
+                case HorizontalAlignment.Right:
+                    element.Transform.LocalPosition = new Vector2(elementCol.Right - element.Width, element.Transform.LocalY);
+                    break;
+                case HorizontalAlignment.Stretch:
+                    element.Transform.LocalPosition = new Vector2(elementCol.Left, element.Transform.LocalY);
+                    element.Width = elementCol.Width;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
+            // set the y position of the element properly
+            switch (elementLoc.VerticalAlignment)
+            {
+                case VerticalAlignment.Top:
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementRow.Top);
+                    break;
+                case VerticalAlignment.Bottom:
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementRow.Bottom - element.Height);
+                    break;
+                case VerticalAlignment.Center:
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementRow.Top + elementRow.Height/2 - element.Height/2);
+                    break;
+                case VerticalAlignment.Stretch:
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementRow.Top);
+                    element.Height = elementRow.Height;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public override void Dispose()
@@ -335,17 +370,21 @@ namespace NuSysApp
         /// </summary>
         private class GridLocation
         {
+            public HorizontalAlignment HorizontalAlignment;
+
+            public VerticalAlignment VerticalAlignment;
+
             public GridViewColumn Column { get; }
 
             public GridViewRow Row { get; }
 
-            public GridLocation(GridViewRow row, GridViewColumn column)
+            public GridLocation(GridViewRow row, GridViewColumn column, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
             {
                 Row = row;
                 Column = column;
+                HorizontalAlignment = horizontalAlignment;
+                VerticalAlignment = verticalAlignment;
             }
         }
     }
-
-
 }
