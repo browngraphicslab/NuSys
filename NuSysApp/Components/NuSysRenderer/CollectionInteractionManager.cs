@@ -519,6 +519,11 @@ namespace NuSysApp
             var currentCollection = _freeFormViewer.CurrentCollection;
             if (elementRenderItem == initialCollection || elementRenderItem == currentCollection || elementRenderItem == null)
             {
+                if (element is BaseInteractiveUIElement && !(element is CollectionRenderItem))
+                {
+                    return;
+                }
+
                 SelectionsCleared?.Invoke();
                 if (element == null)
                     CollectionSwitched?.Invoke(initialCollection);
