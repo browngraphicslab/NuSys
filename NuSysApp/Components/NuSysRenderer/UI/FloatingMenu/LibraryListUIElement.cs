@@ -166,6 +166,7 @@ namespace NuSysApp
             LibraryListView.RowDragged += LibraryListView_RowDragged;
             LibraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped += OnLibraryItemSelected;
+            LibraryListView.RowDoubleTapped += LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped += OnFilterButtonTapped;
 
@@ -173,6 +174,8 @@ namespace NuSysApp
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
         }
+
+
 
         /// <summary>
         /// Event handler for when the text of the library search bar changes
@@ -217,6 +220,19 @@ namespace NuSysApp
                     }
                 });
             }
+        }
+
+
+        private void LibraryListView_RowDoubleTapped(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId);
+            Debug.Assert(controller != null);
+            if (controller == null)
+            {
+                return;
+            }
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
+
         }
 
         /// <summary>
@@ -324,6 +340,7 @@ namespace NuSysApp
             LibraryListView.RowDragged -= LibraryListView_RowDragged;
             LibraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped -= OnLibraryItemSelected;
+            LibraryListView.RowDoubleTapped -= LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped -= OnFilterButtonTapped;
 
