@@ -498,6 +498,11 @@ namespace NuSysApp
         /// </summary>
         private void UpdateCursorLoc()
         {
+            if (!_loaded)
+            {
+                return;
+            }
+
             Vector2 newCursorLoc;
             CanvasTextLayoutRegion textLayoutRegion;
             // Sets the cursor's location based on the offsets
@@ -569,6 +574,11 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (!_loaded)
+            {
+                return;
+            }
+
             base.Draw(ds);
 
             // Shift the textbox based on where the user is dragging

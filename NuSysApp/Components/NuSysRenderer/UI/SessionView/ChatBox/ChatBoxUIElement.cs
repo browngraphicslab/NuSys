@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
@@ -13,9 +14,9 @@ namespace NuSysApp
     public class ChatBoxUIElement : ResizeableWindowUIElement
     {
         private ScrollableTextboxUIElement _typingRect;
-        private RectangleUIElement _readingRect;
+        private ScrollingCanvas _readingRect;
 
-        private StackLayoutManager _baseLayoutManager;
+        private float _newMessageYOffset;
 
         public ChatBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -36,20 +37,14 @@ namespace NuSysApp
                 Height = Height
             };
             AddChild(_typingRect);
-            _readingRect = new RectangleUIElement(this, resourceCreator)
+            _readingRect = new ScrollingCanvas(this, resourceCreator, ScrollingCanvas.ScrollOrientation.Both)
             {
-                Background = Colors.Beige //maybe change this color just for differentiation right now
+                Background = Colors.Beige,
+                Width = Width,
+                Height = Height,
+                ScrollAreaSize = new Size(Width, Height)
             };
             AddChild(_readingRect);
-
-            // instantiate a base layout manager to take care of the general sizing of the typing and reading rectangles
-            _baseLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
-            _baseLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _baseLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _baseLayoutManager.AddElement(_typingRect);
-            _baseLayoutManager.AddElement(_readingRect);
-            _baseLayoutManager.SetSize(Width, Height);
-            _baseLayoutManager.ArrangeItems();
 
             _typingRect.KeyPressed += _typingRect_KeyPressed;
         }
@@ -66,14 +61,13 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Enter)
             {
                 SendMessage(_typingRect.Text);
-                _typingRect.Text = string.Empty;
             }
         }
 
-        private void SendMessage(string text)
+        private async void SendMessage(string text)
         {
             var chatRequest = new ChatRequest(SessionController.Instance.NuSysNetworkSession.NetworkMembers[WaitingRoomView.UserID], text);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(chatRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(chatRequest);
             if (chatRequest.WasSuccessful() == true)
             {
                 chatRequest.AddSuccesfullChatLocally();
@@ -82,13 +76,11 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            // arrange the items in the base layout manager
-            _baseLayoutManager.SetSize(Width, Height);
-            _baseLayoutManager.ArrangeItems();
-
             // resize so the typing rect is smaller than the reading rect
             _typingRect.Height = 50;
+            _typingRect.Width = Width;
             _readingRect.Height = Height - _typingRect.Height - TopBarHeight;
+            _readingRect.Width = Width;
             _readingRect.Transform.LocalPosition = new Vector2(_readingRect.Transform.LocalPosition.X, TopBarHeight);
             _typingRect.Transform.LocalPosition = new Vector2(_typingRect.Transform.LocalPosition.X, TopBarHeight + _readingRect.Height);
 
@@ -104,7 +96,16 @@ namespace NuSysApp
         /// <param name="chatMessage"></param>
         public void AddChat(NetworkUser user, string chatMessage)
         {
-            throw new NotImplementedException();
+            var messageBox = new DynamicTextboxUIElement(this, Canvas)
+            {
+                Background = user.Color,
+                Text = chatMessage
+            };
+            messageBox.Width = Width; // set the message box Width so the height is dynamically resized
+            messageBox.Load();
+            _readingRect.AddElement(messageBox, new Vector2(0, _newMessageYOffset));
+            _newMessageYOffset += _readingRect.Height;
+
         }
     }
 }

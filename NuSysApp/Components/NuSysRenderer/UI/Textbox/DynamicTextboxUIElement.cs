@@ -31,9 +31,9 @@ namespace NuSysApp
             get { return _calculateWidth ? CalculateWidthBasedOnText() : _width; }
             set
             {
-                _width = value;
                 // calculateWidth is false, so that we are calculating the height instead
                 _calculateWidth = false;
+                _width = value;
             }
         }
 
@@ -58,9 +58,9 @@ namespace NuSysApp
             get { return _calculateWidth ? _height : CalculateHeightBasedOnText(); }
             set
             {
-                _height = value;
                 // calculateWidth is true, so that we are calculating the width instead
                 _calculateWidth = true;
+                _height = value;
             }
         }
 
@@ -89,6 +89,11 @@ namespace NuSysApp
         /// </summary>
         private bool _loaded;
 
+        /// <summary>
+        /// YOU MUST CALL THE LOAD METHOD TO GET THIS TEXTBOX TO WORK
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="resourceCreator"></param>
         public DynamicTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the width so that we default to resizing vertically
