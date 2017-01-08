@@ -37,19 +37,40 @@ namespace NuSysApp
         /// </summary>
         private SessionSettingsMenu _settingsMenu;
 
-        private ChatBoxUIElement _chatBox;
+        /// <summary>
+        /// the chatbox that we use to send messages to eachother
+        /// </summary>
+        public ChatBoxUIElement Chatbox { get; }
 
+        /// <summary>
+        ///  the button that brings the user back to the waiting room
+        /// </summary>
         private ButtonUIElement _backToWaitingRoomButton;
 
+        /// <summary>
+        /// container that contains bubbles that show the currently logged in users
+        /// </summary>
         private UserBubbleContainerUIElement _userBubbleContainer;
 
+        /// <summary>
+        ///  the detail viewer
+        /// </summary>
         private DetailViewMainContainer _detailViewer;
 
+        /// <summary>
+        /// the trailbox of previious visited elements
+        /// </summary>
         public BreadCrumbContainer TrailBox;
 
+        /// <summary>
+        ///  the tite bxo used to display the title of the workspace
+        /// </summary>
         public TextboxUIElement _titleBox;
 
-        public FilterMenu FilterMenu => _floatingMenu.FilterMenu;
+        /// <summary>
+        /// the library list 
+        /// </summary>
+        public LibraryListUIElement Library => _floatingMenu.Library;
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
@@ -118,11 +139,11 @@ namespace NuSysApp
             AddChild(_userBubbleContainer);
 
             // add the chatbox after the user bubble container so user bubble names do not overlap the bottom of the chatbox
-            _chatBox = new ChatBoxUIElement(this, canvas)
+            Chatbox = new ChatBoxUIElement(this, canvas)
             {
                 IsVisible = false
             };
-            AddChild(_chatBox);
+            AddChild(Chatbox);
 
             _detailViewer = new DetailViewMainContainer(this, Canvas)
             {
@@ -132,7 +153,7 @@ namespace NuSysApp
                 MinHeight = 600,
                 KeepAspectRatio = true
             };
-            AddChild(_detailViewer);
+            AddChild(_detailViewer);          
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
@@ -140,6 +161,7 @@ namespace NuSysApp
             _chatButton.Tapped += ChatButtonOnTapped;
             _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
+
         }
 
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -200,12 +222,12 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ChatButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            _chatBox.IsVisible = !_chatBox.IsVisible;
-            if (_chatBox.IsVisible)
+            Chatbox.IsVisible = !Chatbox.IsVisible;
+            if (Chatbox.IsVisible)
             {
-                _chatBox.Height = Math.Min(Height - 100, _chatBox.Height);
-                _chatBox.Width = Math.Min(Width - 100, _chatBox.Width);
-                _chatBox.Transform.LocalPosition = new Vector2(10, Height - _chatBox.Height- 70);
+                Chatbox.Height = Math.Min(Height - 100, Chatbox.Height);
+                Chatbox.Width = Math.Min(Width - 100, Chatbox.Width);
+                Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height- 70);
             }
 
             
@@ -232,7 +254,7 @@ namespace NuSysApp
             _chatButton.Transform.LocalPosition = new Vector2(10, Height - _chatButton.Height - 10);
             _snapshotButton.Transform.LocalPosition = new Vector2(10, 10);
             _settingsButton.Transform.LocalPosition = new Vector2(80, 10);
-            _chatBox.Transform.LocalPosition = new Vector2(10, Height - _chatBox.Height - 70);
+            Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height - 70);
             _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoomButton.Height/2);
             _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);

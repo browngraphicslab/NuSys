@@ -331,7 +331,6 @@ namespace NuSysApp
         {
             _scrollOffset = position * (_heightOfAllRows);
             ScrollBar.Position = position;
-
         }
         /// <summary>
         /// Changes the position by the float passed in.
@@ -747,12 +746,17 @@ namespace NuSysApp
         public void ScrollTo(T item)
         {
             var i = _itemsSource.IndexOf(item);
-            if(i < 0)
+            if (i < 0)
             {
                 return;
             }
+            float position = (float)i / _itemsSource.Count;
+            if (position + ScrollBar.Range > 1)
+            {
+                position = 1 - ScrollBar.Range;
+            }
             //Sets the position of the ScrollBar to the position of the item in the list
-            SetPosition((float)i / _itemsSource.Count);
+            SetPosition(position);
         }
 
         /// <summary>

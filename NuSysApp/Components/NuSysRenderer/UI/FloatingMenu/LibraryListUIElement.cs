@@ -102,7 +102,7 @@ namespace NuSysApp
         /// <summary>
         /// the menu used for filtering library elements
         /// </summary>
-        public FilterMenu FilterMenu { get; }
+        private FilterMenu _filterMenu { get; }
 
 
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
@@ -149,11 +149,11 @@ namespace NuSysApp
             };
             AddChild(_filterButton);
 
-            FilterMenu = new FilterMenu(this, Canvas)
+            _filterMenu = new FilterMenu(this, Canvas)
             {
                 IsVisible = false
             };
-            AddChild(FilterMenu);
+            AddChild(_filterMenu);
             
 
             // initialize the list of library drag elements
@@ -186,9 +186,9 @@ namespace NuSysApp
 
         private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            FilterMenu.IsVisible = !FilterMenu.IsVisible;
-            FilterMenu.Height = 400;
-            FilterMenu.Width = 200;
+            _filterMenu.IsVisible = !_filterMenu.IsVisible;
+            _filterMenu.Height = 400;
+            _filterMenu.Width = 200;
         }
 
         /// <summary>
@@ -406,7 +406,7 @@ namespace NuSysApp
             _searchBar.Width = Width - 2*BorderWidth - _filterButtonWidth;
             _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - _searchBarHeight);
             _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - _searchBarHeight);
-            FilterMenu.Transform.LocalPosition = new Vector2(Width, 0);
+            _filterMenu.Transform.LocalPosition = new Vector2(Width, 0);
 
             base.Update(parentLocalToScreenTransform);
         }

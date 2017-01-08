@@ -169,7 +169,12 @@ namespace NuSysApp
             if (ElementController != null)
             {
                 ElementController.Deleted -= OnBreadCrumbDeleted;
-                ElementController.LibraryElementController.TitleChanged -= OnTitleChanged;
+
+                // we have to null check in case the LibraryElementController was deleted
+                if (ElementController.LibraryElementController != null)
+                {
+                    ElementController.LibraryElementController.TitleChanged -= OnTitleChanged;
+                }
             }
             else
             {

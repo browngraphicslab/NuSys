@@ -74,9 +74,7 @@ namespace NuSysApp
             Debug.Assert(chatMessage != null);
 
 
-            UITask.Run(() => {
-                AddChat(user, chatMessage);
-            });
+            AddChat(user, chatMessage);
         }
 
         /// <summary>
@@ -88,33 +86,13 @@ namespace NuSysApp
         /// <param name="chat"></param>
         private void AddChat(NetworkUser user, string chatMessage)
         {
-            // Obtains the chatbox
-            //var cBox = SessionController.Instance.SessionView?.GetChatBox();
 
-            // if the chat box is null, the sessionview hasn't been instantiated yet so return
-            //if (cBox == null)
-            //{
-            //    return;
-            //}
-
-            // update the text in the chat box
-            //cBox.AppendText(user, chatMessage);
-
-            // If the chatbox is closed, make sure to notify the client about receiving a message 
-            //if (SessionController.Instance.SessionView.GetChatBox().Visibility.Equals(Visibility.Collapsed))
-            //{
-            //    //TODO factor this out into the chatbox
-            //    //SessionController.Instance.SessionView.IncrementUnseenMessage();
-            //}
-
-            // Chatbot stuff
-            var chatArr = chatMessage.Split(' ');
-            if (Array.IndexOf(chatArr, "hey") > -1 || Array.IndexOf(chatArr, "Hey") > -1
-                || Array.IndexOf(chatArr, "hi") > -1 || Array.IndexOf(chatArr, "Hi") > -1)
+            if (SessionController.Instance.NuSessionView.Chatbox == null)
             {
-                string another = "I only say hi to good coders";
-                //cBox.AppendText(new NetworkUser("slackbot") {DisplayName = "SlackBot"}, another);
+                return;
             }
+
+            SessionController.Instance.NuSessionView.Chatbox.AddChat(user, chatMessage);
         }
 
     }

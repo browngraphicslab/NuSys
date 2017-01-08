@@ -29,6 +29,11 @@ namespace NuSysApp
         private float _flyoutItemHeight;
 
         /// <summary>
+        /// Dictionary of flyout items to their on top events
+        /// </summary>
+        private Dictionary<ButtonUIElement, PointerHandler> _flyOutItemToTappedEvent;
+
+        /// <summary>
         /// constructor for flyout list
         /// 
         /// all appearances are set here, but YOU WILL HAVE TO SET THE TRANSFORM.LOCALPOSITION TO WHEREEVER YOU WANT IT TO BE.
@@ -37,6 +42,7 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         public FlyoutPopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            _flyOutItemToTappedEvent = new Dictionary<ButtonUIElement, PointerHandler>();
             _flyoutItems = new List<ButtonUIElement>();
             _flyoutItemHeight = 35;
             Width = 150;
@@ -50,7 +56,7 @@ namespace NuSysApp
         /// Make a new flyout item and attaches appropriate handler to button
         /// </summary>
         /// <param name="text"></param>
-        public void AddFlyoutItem(string text, PointerHandler handler, ICanvasResourceCreatorWithDpi resourceCreator)
+        public void AddFlyoutItem(string text, PointerHandler onTappedEvent, ICanvasResourceCreatorWithDpi resourceCreator)
         {
             var flyoutItem = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
             flyoutItem.Height = _flyoutItemHeight;
@@ -64,8 +70,32 @@ namespace NuSysApp
             flyoutItem.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             flyoutItem.SelectedBackground = Constants.LIGHT_BLUE;
             flyoutItem.Transform.LocalPosition = new Vector2(0, _flyoutItems.Count * _flyoutItemHeight);
+            _flyOutItemToTappedEvent[flyoutItem] = onTappedEvent;
+
             _flyoutItems.Add(flyoutItem);
             AddChild(flyoutItem);
+            flyoutItem.Tapped += FlyoutItemOnTapped;
+        }
+
+        public override void Dispose()
+        {
+            // remove al the tap events
+            foreach (var flyoutItem in _flyoutItems)
+            {
+                flyoutItem.Tapped -= FlyoutItemOnTapped;
+            }
+            base.Dispose();
+        }
+
+        /// <summary>
+        /// fired whenever a flyout is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void FlyoutItemOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // get the correct handler to invoke from the flyout to handler dictionary
+            _flyOutItemToTappedEvent[item as ButtonUIElement]?.Invoke(this, pointer);
         }
 
         /// <summary>

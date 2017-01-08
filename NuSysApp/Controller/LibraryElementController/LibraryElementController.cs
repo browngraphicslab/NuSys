@@ -24,6 +24,7 @@ namespace NuSysApp
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
+
         /// <summary>
         /// count to represent how many unpacks are currently running.
         /// This is being used to replace the boolean. If this number is greater than 0, then an unpack is currently happening
@@ -32,20 +33,13 @@ namespace NuSysApp
 
         protected bool _blockServerInteraction
         {
-            get
-            {
-                return _blockServerInteractionCount != 0;
-            }
+            get { return _blockServerInteractionCount != 0; }
         }
-        public string Title {
-            get
-            {
-                return LibraryElementModel?.Title;
-            }
-            set
-            {
-                LibraryElementModel.Title = value;
-            } 
+
+        public string Title
+        {
+            get { return LibraryElementModel?.Title; }
+            set { LibraryElementModel.Title = value; }
         }
 
         /// <summary>
@@ -60,7 +54,9 @@ namespace NuSysApp
                 {
                     return null;
                 }
-                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
+                var contentDataModel =
+                    SessionController.Instance.ContentController.GetContentDataModel(
+                        LibraryElementModel.ContentDataModelId);
                 Debug.Assert(contentDataModel != null);
 
                 return contentDataModel?.Data;
@@ -68,11 +64,18 @@ namespace NuSysApp
         }
 
         #region Events
+
         public delegate void MetadataChangedEventHandler(object source);
+
         public delegate void FavoritedEventHandler(object sender, bool favorited);
+
         public delegate void DeletedEventHandler(object sender);
+
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
+
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
+
+        public delegate void HighlightChangedHandler(LibraryElementController sender, bool isHighlighted);
 
         /// <summary>
         /// Invoked whenever the metadata is changed, the library element controller whose metadata was changed
@@ -91,6 +94,12 @@ namespace NuSysApp
         /// Fired with the linkLibraryElementId of the link that was removed
         /// </summary>
         public event EventHandler<string> LinkRemoved;
+
+        /// <summary>
+        /// Fired whenever the highlight is changed on this library element controller
+        /// </summary>
+        public event HighlightChangedHandler HighlightChanged;
+
         public event EventHandler<ElementModel> AliasAdded;
         public event EventHandler<ElementModel> AliasRemoved;
 
@@ -112,7 +121,9 @@ namespace NuSysApp
             get
             {
                 Debug.Assert(LibraryElementModel.ContentDataModelId != null);
-                return SessionController.Instance.ContentController.GetContentDataController(LibraryElementModel.ContentDataModelId);
+                return
+                    SessionController.Instance.ContentController.GetContentDataController(
+                        LibraryElementModel.ContentDataModelId);
             }
         }
 
@@ -123,7 +134,9 @@ namespace NuSysApp
         {
             get
             {
-                return SessionController.Instance.ContentController.ContainsContentDataModel( LibraryElementModel.ContentDataModelId);
+                return
+                    SessionController.Instance.ContentController.ContainsContentDataModel(
+                        LibraryElementModel.ContentDataModelId);
             }
         }
 
@@ -135,27 +148,41 @@ namespace NuSysApp
         {
             get
             {
-                var metadata = new Dictionary<string, MetadataEntry>(LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>());
+                var metadata =
+                    new Dictionary<string, MetadataEntry>(LibraryElementModel.Metadata ??
+                                                          new ConcurrentDictionary<string, MetadataEntry>());
                 if (!metadata.ContainsKey("Timestamp"))
                 {
-                    metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { LibraryElementModel.Timestamp }, MetadataMutability.IMMUTABLE));
+                    metadata.Add("Timestamp",
+                        new MetadataEntry("Timestamp", new List<string> {LibraryElementModel.Timestamp},
+                            MetadataMutability.IMMUTABLE));
                 }
                 if (!metadata.ContainsKey("Creator"))
                 {
-                    metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(LibraryElementModel.Creator) }, MetadataMutability.IMMUTABLE));
+                    metadata.Add("Creator",
+                        new MetadataEntry("Creator",
+                            new List<string>
+                            {
+                                SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(
+                                    LibraryElementModel.Creator)
+                            }, MetadataMutability.IMMUTABLE));
                 }
                 if (!metadata.ContainsKey("Title"))
                 {
-                    metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
+                    metadata.Add("Title",
+                        new MetadataEntry("Title", new List<string> {Title}, MetadataMutability.IMMUTABLE));
                 }
                 if (!metadata.ContainsKey("Type"))
                 {
-                    metadata.Add("Type", new MetadataEntry("Type", new List<string> { LibraryElementModel.Type.ToString() }, MetadataMutability.IMMUTABLE));
+                    metadata.Add("Type",
+                        new MetadataEntry("Type", new List<string> {LibraryElementModel.Type.ToString()},
+                            MetadataMutability.IMMUTABLE));
                 }
                 if (!metadata.ContainsKey("Keywords"))
                 {
                     var keywords = (LibraryElementModel.Keywords ?? new HashSet<Keyword>()).Select(key => key.Text);
-                    metadata.Add("Keywords", new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
+                    metadata.Add("Keywords",
+                        new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
                 }
                 return metadata;
             }
@@ -179,7 +206,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="newCollectionLibraryId"></param>
-        protected virtual void OnSessionControllerEnterNewCollectionStarting(object sender, string newCollectionLibraryId){ }
+        protected virtual void OnSessionControllerEnterNewCollectionStarting(object sender,
+            string newCollectionLibraryId)
+        {
+        }
 
         /// <summary>
         /// This will change the library element model's title and update the server.  
@@ -213,9 +243,9 @@ namespace NuSysApp
         /// This will change the library element model's metadata dictionary and update the server.  
         /// Then it will fire an event notifying all listeners of the new dictionary they can fetch 
         /// </summary>
-        private void ChangeMetadata(Dictionary<string,MetadataEntry> metadata)
+        private void ChangeMetadata(Dictionary<string, MetadataEntry> metadata)
         {
-            
+
             LibraryElementModel.SetMetadata(metadata);
             MetadataChanged?.Invoke(this);
             if (!_blockServerInteraction)
@@ -223,6 +253,7 @@ namespace NuSysApp
                 _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
             }
         }
+
         /// <summary>
         /// will prevent the controller from updating the server at all if true
         /// </summary>
@@ -273,12 +304,12 @@ namespace NuSysApp
         public bool AddMetadata(MetadataEntry entry)
         {
             //Keys should be unique; values obviously don't have to be.
-            if (entry.Values==null || string.IsNullOrEmpty(entry.Key) ||
+            if (entry.Values == null || string.IsNullOrEmpty(entry.Key) ||
                 string.IsNullOrWhiteSpace(entry.Key))
             {
                 return false;
             }
-            
+
             var requestArgs = new CreateNewMetadataRequestArgs();
             requestArgs.Entry = entry;
             requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
@@ -288,8 +319,8 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 request.CreateLocally();
             });
-            
-                
+
+
             return true;
         }
 
@@ -333,7 +364,7 @@ namespace NuSysApp
             {
                 return false;
             }
-            
+
             var requestArgs = new DeleteMetadataRequestArgs();
             requestArgs.Key = key;
             requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
@@ -358,7 +389,7 @@ namespace NuSysApp
             MetadataEntry outobj;
             MetadataChanged?.Invoke(this);
             return _libraryElementModel.Metadata.TryRemove(key, out outobj);
-            
+
         }
 
         /// <summary>
@@ -376,7 +407,8 @@ namespace NuSysApp
                 _libraryElementModel.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
             }
             // Error checking for the passed in parameters
-            if (original == null || string.IsNullOrEmpty(key) || string.IsNullOrWhiteSpace(key) || values == null || !_libraryElementModel.Metadata.ContainsKey(original.Key))
+            if (original == null || string.IsNullOrEmpty(key) || string.IsNullOrWhiteSpace(key) || values == null ||
+                !_libraryElementModel.Metadata.ContainsKey(original.Key))
             {
                 return false;
             }
@@ -406,7 +438,8 @@ namespace NuSysApp
         public bool UpdateMetadataLocally(string originalKey, List<string> values)
         {
             // Error checking for the passed in parameters
-            if (originalKey == null || string.IsNullOrEmpty(originalKey) || string.IsNullOrWhiteSpace(originalKey) || values == null || !_libraryElementModel.Metadata.ContainsKey(originalKey))
+            if (originalKey == null || string.IsNullOrEmpty(originalKey) || string.IsNullOrWhiteSpace(originalKey) ||
+                values == null || !_libraryElementModel.Metadata.ContainsKey(originalKey))
             {
                 return false;
             }
@@ -563,7 +596,9 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task LoadContentDataModelAsync()
         {
-            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(LibraryElementModel.ContentDataModelId);
+            await
+                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
+                    LibraryElementModel.ContentDataModelId);
         }
 
         public Uri LargeIconUri
@@ -578,7 +613,9 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");//TODO just had default icons 
+                        return
+                            new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId +
+                                    "_thumbnail_large.jpg"); //TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -603,6 +640,7 @@ namespace NuSysApp
                 }
             }
         }
+
         public Uri MediumIconUri
         {
             get
@@ -615,7 +653,9 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");//TODO just had default icons 
+                        return
+                            new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId +
+                                    "_thumbnail_medium.jpg"); //TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -653,7 +693,9 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
+                        return
+                            new Uri("http://" + NusysConstants.ServerName + "/" + LibraryElementModel.LibraryElementId +
+                                    "_thumbnail_small.jpg"); //TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -727,7 +769,7 @@ namespace NuSysApp
             {
                 LibraryElementModel.ContentDataModelId = message.GetString("content__id");
             }
-            
+
             SetBlockServerBoolean(false);
         }
 
@@ -735,13 +777,14 @@ namespace NuSysApp
         {
             return FullMetadata;
         }
+
         public LibraryElementModel LibraryElementModel
         {
-            get
-            {
-                return _libraryElementModel;
-            }
+            get { return _libraryElementModel; }
         }
+
+
+
         public virtual void Dispose()
         {
             SessionController.Instance.EnterNewCollectionStarting -= OnSessionControllerEnterNewCollectionStarting;
@@ -1014,6 +1057,22 @@ namespace NuSysApp
 
             ///update file with replaced text
             await FileIO.WriteTextAsync(nodeFile, text);
+        }
+
+        /// <summary>
+        /// Adds highlighting to the things related to this library element controller
+        /// </summary>
+        public void AddHighlight()
+        {
+            HighlightChanged?.Invoke(this, true);
+        }
+
+        /// <summary>
+        /// Removes highlighting from the things controlled by this libary element controller
+        /// </summary>
+        public void RemoveHighlight()
+        {
+            HighlightChanged?.Invoke(this, false);
         }
     }
 }

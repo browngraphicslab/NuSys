@@ -272,13 +272,6 @@ namespace NuSysApp
                 Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
             }
 
-            // leftover from full screen brushing, can probably be removed at beta release
-            //if (SessionController.Instance.NuSessionView.FilterMenu.HasBrushAvailable)
-            //{
-            //    Mask = BrushToMask.FilterMask(SessionController.Instance.NuSessionView.FilterMenu.BrushedElementControllers,
-            //        ResourceCreator, Mask);
-            //}
-
             using (ds.CreateLayer(1, Mask))
             {
                 ds.Transform = Transform.LocalToScreenMatrix;
