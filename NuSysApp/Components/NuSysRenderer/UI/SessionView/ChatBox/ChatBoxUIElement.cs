@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
+using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -110,15 +111,28 @@ namespace NuSysApp
         /// <param name="chatMessage"></param>
         public void AddChat(NetworkUser user, string chatMessage)
         {
+            var headerBox = new DynamicTextboxUIElement(this, Canvas)
+            {
+                FontWeight = FontWeights.Bold,
+                Text = $"{user.DisplayName}  :  {DateTime.Now.ToString("h:mm:ss tt")}",
+                Background = user.Color,
+                Width = (float) _readingRect.ScrollAreaSize.Width
+            };
+            headerBox.Load();
+
+            // add the element to the scrolling canvas
+            _readingRect.AddElement(headerBox, new Vector2(0, _newMessageYOffset));
+
+            // increment the message y offset by the height of the header box
+            _newMessageYOffset += headerBox.Height;
+
             // add a new message box to the caht window with the background the same as the user's color
             var messageBox = new DynamicTextboxUIElement(this, Canvas)
             {
                 Background = user.Color,
-                Text = chatMessage
+                Text = chatMessage,
+                Width = (float) _readingRect.ScrollAreaSize.Width
             };
-            // set the width of the message box to the width of the scroll area
-            messageBox.Width = (float) _readingRect.ScrollAreaSize.Width; // set the message box Width so the height is dynamically resized
-
             // load the messageBox this is required for all dynamic text boxes
             messageBox.Load();
 

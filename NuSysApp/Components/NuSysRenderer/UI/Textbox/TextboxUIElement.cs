@@ -54,6 +54,11 @@ namespace NuSysApp
         /// </summary>
         private FontStyle _fontStyle { get; set; }
 
+        /// <summary>
+        /// private helper for public property FontWeight
+        /// </summary>
+        private FontWeight _fontWeight { get; set; }
+
 
         /// <summary>
         /// The text to be displayed in the textbox
@@ -100,6 +105,19 @@ namespace NuSysApp
             set
             {
                 _fontStyle = value;
+                UpdateCanvasTextFormat();
+            }
+        }
+
+        /// <summary>
+        /// The font weight class set this using FontWeights.Bold or something along those lines
+        /// </summary>
+        public FontWeight FontWeight
+        {
+            get { return _fontWeight; }
+            set
+            {
+                _fontWeight = value;
                 UpdateCanvasTextFormat();
             }
         }
@@ -185,6 +203,7 @@ namespace NuSysApp
             Wrapping = UIDefaults.Wrapping;
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
+            FontWeight = UIDefaults.FontWeight;
             BorderWidth = 0;
             Text = "";
             _constructed = true;
@@ -229,6 +248,7 @@ namespace NuSysApp
                 FontFamily = FontFamily,
                 FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale,
                 FontStyle = FontStyle,
+                FontWeight = FontWeight
             };
         }
 

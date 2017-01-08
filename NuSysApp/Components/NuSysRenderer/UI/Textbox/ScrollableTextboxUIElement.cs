@@ -894,10 +894,9 @@ namespace NuSysApp
                     Text = Text.Insert(CursorCharacterIndex+1, text);
                 } else
                 {
-                    CursorCharacterIndex++;
-                    Text = Text.Insert(CursorCharacterIndex, text);
+                    Text = Text.Insert(CursorCharacterIndex + 1, text);
                 }  
-                CursorCharacterIndex += text.Length - 1;
+                CursorCharacterIndex += text.Length;
                 OnTextChanged(Text);
             }
         }
