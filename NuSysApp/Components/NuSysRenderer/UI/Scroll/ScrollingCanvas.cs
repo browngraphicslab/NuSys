@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
-using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -260,6 +256,9 @@ namespace NuSysApp
                 // update the position of the scroll bar so the crop rect is maintained
                 var normalizedOffset = _cropRect.Left / ScrollAreaSize.Width;
                 _horizontalScrollBar.Position = (float) normalizedOffset;
+
+                // bound the scroll bar's position
+                BoundHorizontalScrollBarPosition();
             }
 
             // determine based on the scroll direction whether horizontal scrolling is enabled
@@ -290,9 +289,35 @@ namespace NuSysApp
 
                 // update the position of the scroll bar so the crop rect is maintained
                 var normalizedOffset = _cropRect.Top / ScrollAreaSize.Height;
-                _verticalScrollBar.Position = (float)(normalizedOffset * _cropRect.Height);
-            }
+                _verticalScrollBar.Position =  (float) (normalizedOffset*_cropRect.Height);
 
+                // bound the scroll bar's position
+                BoundVerticalScrollBarPosition();
+            }
+        }
+
+        /// <summary>
+        /// Makes sure that the horizontal scroll bar is staying within the proper bounds
+        /// </summary>
+        private void BoundHorizontalScrollBarPosition()
+        {
+            // bound the position plus the range to 1
+            if (_horizontalScrollBar.Position + _horizontalScrollBar.Range > 1)
+            {
+                _horizontalScrollBar.Position = 1 - _horizontalScrollBar.Range;
+            }
+        }
+
+        /// <summary>
+        /// makes sure that the vertical scroll bar is staying within the proper bounds
+        /// </summary>
+        private void BoundVerticalScrollBarPosition()
+        {
+            // bound the position plus the range to 1
+            if (_verticalScrollBar.Position + _verticalScrollBar.Range > 1)
+            {
+                _verticalScrollBar.Position = 1 - _verticalScrollBar.Range;
+            }
         }
 
         /// <summary>
@@ -390,10 +415,7 @@ namespace NuSysApp
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -404,6 +426,10 @@ namespace NuSysApp
         {
             var _cropWidth = (_verticalScrollBar.IsVisible ? Width - _verticalScrollBar.Width : Width) - 2*BorderWidth;
             var _cropHeight = (_horizontalScrollBar.IsVisible ? Height - _horizontalScrollBar.Height : Height) - 2*BorderWidth;
+
+            // bound the scroll bar positions
+            BoundVerticalScrollBarPosition();
+            BoundHorizontalScrollBarPosition();
 
             _cropRect = new Rect(ScrollAreaSize.Width*_horizontalScrollBar.Position,
                 ScrollAreaSize.Height* _verticalScrollBar.Position, _cropWidth, _cropHeight);
