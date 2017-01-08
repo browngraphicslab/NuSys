@@ -20,7 +20,7 @@ namespace NuSysApp
             set
             {
                 base.Width = value;
-                RecalculateSize();
+                RecalculateSize(); //todo only recalculate size when the value changes by epsilon, look at ScrollingCanvas for example
             }
         }
 
@@ -33,7 +33,7 @@ namespace NuSysApp
             set
             {
                 base.Height = value;
-                RecalculateSize();
+                RecalculateSize(); //todo only recalculate size when the value changes by epsilon, look at ScrollingCanvas for example
             }
         }
 
@@ -46,7 +46,7 @@ namespace NuSysApp
             set
             {
                 base.BorderWidth = value;
-                RecalculateSize();
+                RecalculateSize(); //todo only recalculate size when the value changes by epsilon, look at ScrollingCanvas for example
             }
         }
 
@@ -114,6 +114,30 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Adds columns with the listed relative widths and optional minWidths to the GridLayoutManager
+        /// the minWidths defaul to zero or "no min width" essentially
+        /// </summary>
+        /// <param name="relativeWidths"></param>
+        /// <param name="minWidths"></param>
+        public void AddRows(List<float> relativeHeights, List<float> minHeights = null)
+        {
+            Debug.Assert(relativeHeights != null);
+
+            // make sure the number of minHeights is the same as the number of relativeHeights
+            if (minHeights != null && minHeights.Count != relativeHeights.Count)
+            {
+                Debug.Fail("The number of min heights passed in must equal the number of relative heights passed in" +
+                           "if min heights are going to be used");
+            }
+
+            // add all the rows
+            for (int i = 0; i < relativeHeights.Count; i++)
+            {
+                AddRow(new GridLayoutManagerRow(relativeHeights[i], minHeights?[i] ?? 0));
+            }
+        }
+
+        /// <summary>
         /// Removes a row from the GridView, and all the elements that are in that row
         /// </summary>
         /// <param name="row"></param>
@@ -149,6 +173,30 @@ namespace NuSysApp
             _colToElements[column] = new List<BaseInteractiveUIElement>(); 
             Columns.Add(column);
             RecalculateSize();
+        }
+
+        /// <summary>
+        /// Adds columns with the listed relative widths and optional minWidths to the GridLayoutManager
+        /// the minWidths defaul to zero or "no min width" essentially
+        /// </summary>
+        /// <param name="relativeWidths"></param>
+        /// <param name="minWidths"></param>
+        public void AddColumns(List<float> relativeWidths, List<float> minWidths = null)
+        {
+            Debug.Assert(relativeWidths != null);
+
+            // make sure the number of minWidths is the same as the number of relativeWidths
+            if (minWidths != null && minWidths.Count != relativeWidths.Count)
+            {
+                Debug.Fail("The number of min widths passed in must equal the number of relative widths passed in" +
+                           "if min widths are going to be used");
+            }
+
+            // add all the columns
+            for (int i = 0; i < relativeWidths.Count; i++)
+            {
+                AddColumn(new GridLayoutManagerColumn(relativeWidths[i], minWidths?[i] ?? 0));
+            }
         }
 
         /// <summary>
@@ -235,17 +283,21 @@ namespace NuSysApp
         {
             foreach (var element in Elements)
             {
-                SetElementPosition(element);
+                SetElementSizeAndPosition(element);
             }
         }
 
         /// <summary>
         /// Adds an element to the given row and column. Rows and columns are zero indexed
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="column"></param>
-        /// <param name="row"></param>
-        public void AddElement(BaseInteractiveUIElement element, int row, int column, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Center, VerticalAlignment verticalAlignment = VerticalAlignment.Center)
+        /// <param name="element">The element to be added</param>
+        /// <param name="row">The row in which the element is going to be added</param>
+        /// <param name="column">The column in which the element is going to be added</param>
+        /// <param name="horizontalAlignment">The horizontal alignment of the element default is center</param>
+        /// <param name="verticalAlignment">The vertical alignment of the element default is center</param>
+        /// <param name="relativeWidth">The relative width of the item, default is 1, set to a negative number to ignore. This is normalized</param>
+        /// <param name="relativeHeight">The relative height of the item, default is 1, set ot a negative number to ignore. This is normalized</param>
+        public void AddElement(BaseInteractiveUIElement element, int row, int column, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Center, VerticalAlignment verticalAlignment = VerticalAlignment.Center, float relativeWidth = 1, float relativeHeight = 1)
         {
             if (row < 0 || row > Rows.Count - 1)
             {
@@ -257,8 +309,19 @@ namespace NuSysApp
             }
 
             Elements.Add(element);
-            _elementsToLocations[element] = new GridLocation(Rows[row], Columns[column], horizontalAlignment, verticalAlignment);
+            _elementsToLocations[element] = new GridLocation(Rows[row], Columns[column], horizontalAlignment, verticalAlignment, relativeWidth, relativeHeight);
             AddChild(element);
+
+            SetElementSizeAndPosition(element);
+        }
+
+        /// <summary>
+        /// Sets the element's size and position
+        /// </summary>
+        /// <param name="element"></param>
+        private void SetElementSizeAndPosition(BaseInteractiveUIElement element)
+        {
+            SetElementSize(element);
             SetElementPosition(element);
         }
 
@@ -287,7 +350,38 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Sets the position of the element properly
+        /// Sets the size of the element properly
+        /// </summary>
+        /// <param name="element"></param>
+        private void SetElementSize(BaseInteractiveUIElement element)
+        {
+            // make sure we have the location of the element
+            if (!_elementsToLocations.ContainsKey(element))
+            {
+                Debug.Fail("Invalid element, make sure the Element Removal and Add is being performed properly");
+            }
+
+            // get the location of the element
+            var elementLoc = _elementsToLocations[element];
+
+            // get the width of the element
+            var elementWidth = elementLoc.RelativeWidth >= 0
+                ? elementLoc.RelativeWidth*elementLoc.Column.Width
+                : element.Width;
+
+            // get the height of the element
+            var elementHeight = elementLoc.RelativeHeight >= 0
+                ? elementLoc.RelativeHeight * elementLoc.Row.Height
+                : element.Height;
+
+            // update the element's width and height
+            element.Width = elementWidth;
+            element.Height = elementHeight;
+        }
+
+
+        /// <summary>
+        /// Sets the position of the element properly, make sure to call SetElementSize before this
         /// </summary>
         /// <param name="element"></param>
         private void SetElementPosition(BaseInteractiveUIElement element)
@@ -378,12 +472,18 @@ namespace NuSysApp
 
             public GridLayoutManagerRow Row { get; }
 
-            public GridLocation(GridLayoutManagerRow row, GridLayoutManagerColumn column, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+            public float RelativeHeight { get; set; }
+
+            public float RelativeWidth { get; set; }
+
+            public GridLocation(GridLayoutManagerRow row, GridLayoutManagerColumn column, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, float relativeWidth, float relativeHeight)
             {
                 Row = row;
                 Column = column;
                 HorizontalAlignment = horizontalAlignment;
                 VerticalAlignment = verticalAlignment;
+                RelativeWidth = relativeWidth;
+                RelativeHeight = relativeHeight;
             }
         }
     }
