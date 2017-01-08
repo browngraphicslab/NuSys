@@ -129,8 +129,7 @@ namespace NuSysApp
 
             IEnumerable<string> valids;
             if (string.IsNullOrEmpty(s))
-            {                valids = await SessionController.Instance.NuSysNetworkSession.SearchOverLibraryElements(s);
-
+            {
                 valids = SessionController.Instance.ContentController.IdList;
             }
             else
