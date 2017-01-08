@@ -331,7 +331,6 @@ namespace NuSysApp
         {
             _scrollOffset = position * (_heightOfAllRows);
             ScrollBar.Position = position;
-
         }
         /// <summary>
         /// Changes the position by the float passed in.
