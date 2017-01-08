@@ -55,7 +55,9 @@ namespace NuSysApp
         public enum ScrollOrientation { Vertical, Horizontal, Both, Auto}
 
         /// <summary>
-        /// The direction of the scrollbar
+        /// The direction of the scrollbar. Vertical means that the vertical scroll bar is always visible, Horizontal means that the
+        /// horizontal scroll bar is always visible, Both means that both scroll bars are always visible, Auto means that scroll bar visibility
+        /// changes based on the needs of the user
         /// </summary>
         public ScrollOrientation ScrollDirection { get; }
 
@@ -149,6 +151,26 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// The width of the vertical scroll bar
+        /// </summary>
+        public float VerticalScrollBarWidth => _verticalScrollBar.Width;
+
+        /// <summary>
+        /// the height of the vertical scroll bar
+        /// </summary>
+        public float VerticalScrollBarHeight => _verticalScrollBar.Height;
+
+        /// <summary>
+        ///  the width of the horizontal scroll bar
+        /// </summary>
+        public float HorizontalScrollBarWidth => _horizontalScrollBar.Width;
+
+        /// <summary>
+        /// The height of the horizontal scrol bar
+        /// </summary>
+        public float HorizontalScrollBarHeight => _horizontalScrollBar.Height;
+
         public ScrollingCanvas(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ScrollOrientation scrollDirection) : base(parent, resourceCreator)
         {
             // set the scroll direction based on the passed in scroll direction
@@ -234,6 +256,30 @@ namespace NuSysApp
                 ScrollOrientation.Horizontal
             }.Contains(ScrollDirection);
 
+            // determine based on the scroll direction whether horizontal scrolling is required
+            var horizontalScrollingRequired = new List<ScrollOrientation>
+            {
+                ScrollOrientation.Both,
+                ScrollOrientation.Horizontal
+            }.Contains(ScrollDirection);
+
+            // determine based on the scroll direction whether vertical scrolling is enabled
+            var verticalScrollingEnabled = new List<ScrollOrientation>
+            {
+                ScrollOrientation.Auto,
+                ScrollOrientation.Both,
+                ScrollOrientation.Vertical
+            }.Contains(ScrollDirection);
+
+            // determine based on the scroll direction whether vertical scrolling is required
+            var verticalScrollingRequired = new List<ScrollOrientation>
+            {
+                ScrollOrientation.Both,
+                ScrollOrientation.Vertical
+            }.Contains(ScrollDirection);
+
+
+
             if (horizontalScrollingEnabled && _horizontalScrollBar != null)
             {
                 // calculate the ratio of the width needed for the horizontal scroll handle
@@ -242,12 +288,25 @@ namespace NuSysApp
                 // if the width is large enough then  hide the horizontal scroll bar
                 if (Math.Abs(horizontalRatio - 1) < .001)
                 {
-                    _horizontalScrollBar.IsVisible = false;
+                    _horizontalScrollBar.IsVisible = horizontalScrollingRequired; // only hide it if horizontal scrolling is not required
                 }
                 else
                 {
                     _horizontalScrollBar.IsVisible = true;
+                }
 
+                // check to see if hiding the vertical scrollbar would make the width large enough
+                // as long as vertical scrolling is not required
+                if (!verticalScrollingRequired)
+                {
+                    var hiddenVertHorizontalRatio = Math.Min(1,
+                            (_cropRect.Width + _verticalScrollBar.Width) / ScrollAreaSize.Width);
+                    if (Math.Abs(hiddenVertHorizontalRatio - 1) < .001)
+                    {
+                        horizontalRatio = hiddenVertHorizontalRatio;
+                        _horizontalScrollBar.IsVisible = horizontalScrollingRequired;
+                        _verticalScrollBar.IsVisible = false;
+                    }
                 }
 
                 // set the new range of the _scrollHandle
@@ -261,14 +320,8 @@ namespace NuSysApp
                 BoundHorizontalScrollBarPosition();
             }
 
-            // determine based on the scroll direction whether horizontal scrolling is enabled
-            var verticalScrollingEnabled = new List<ScrollOrientation>
-            {
-                ScrollOrientation.Auto,
-                ScrollOrientation.Both,
-                ScrollOrientation.Vertical
-            }.Contains(ScrollDirection);
-
+            //todo if we make the vertical scroll bar visible below here, but we made it invisible above
+            //todo then we have to recalculate the horizontal ratio above to reflect that change
             if (verticalScrollingEnabled && _verticalScrollBar != null)
             {
                 // calculate the ratio of the width needed for the vertical scroll handle
@@ -277,12 +330,28 @@ namespace NuSysApp
                 // if the width is large enough then  hide the vertical scroll bar
                 if (Math.Abs(verticalRatio - 1) < .001)
                 {
-                    _verticalScrollBar.IsVisible = false;
+                    _verticalScrollBar.IsVisible = verticalScrollingRequired; // only hide it if verticalScrolling is not required
                 }
                 else
                 {
                     _verticalScrollBar.IsVisible = true;
                 }
+
+                // check to see if hiding the horizontal scrollbar would make the width large enough
+                // as long as horizontal scrolling is not required
+                if (!horizontalScrollingRequired)
+                {
+                    // check to see if hiding the horizontal scrollbar would make the height large enough
+                    var hiddenHorzVerticalRatio = Math.Min(1,
+                        (_cropRect.Height + _horizontalScrollBar.Height) / ScrollAreaSize.Height);
+                    if (Math.Abs(hiddenHorzVerticalRatio - 1) < .001)
+                    {
+                        verticalRatio = hiddenHorzVerticalRatio;
+                        _verticalScrollBar.IsVisible = verticalScrollingRequired;
+                        _horizontalScrollBar.IsVisible = false;
+                    }
+                }
+
 
                 // set the new width of the _scrollHandle
                 _verticalScrollBar.Range = (float)verticalRatio;
@@ -294,6 +363,15 @@ namespace NuSysApp
                 // bound the scroll bar's position
                 BoundVerticalScrollBarPosition();
             }
+
+            if (_verticalScrollBar != null && _horizontalScrollBar != null)
+            {
+                // recompute crop rect
+                _cropRect = new Rect(_cropRect.X, _cropRect.Y,
+                    _cropRect.Width + (_verticalScrollBar.IsVisible ? 0 : _verticalScrollBar.Width),
+                    _cropRect.Height + (_horizontalScrollBar.IsVisible ? 0 : _horizontalScrollBar.Height));
+            }
+
         }
 
         /// <summary>
@@ -425,15 +503,15 @@ namespace NuSysApp
         /// </summary>
         private void ComputeCrop()
         {
-            var _cropWidth = (_verticalScrollBar.IsVisible ? Width - _verticalScrollBar.Width : Width) - 2*BorderWidth;
-            var _cropHeight = (_horizontalScrollBar.IsVisible ? Height - _horizontalScrollBar.Height : Height) - 2*BorderWidth;
+            var cropWidth = Width - _verticalScrollBar.Width - 2*BorderWidth;
+            var cropHeight = Height - _horizontalScrollBar.Height - 2*BorderWidth;
 
             // bound the scroll bar positions
             BoundVerticalScrollBarPosition();
             BoundHorizontalScrollBarPosition();
 
             _cropRect = new Rect(ScrollAreaSize.Width*_horizontalScrollBar.Position,
-                ScrollAreaSize.Height* _verticalScrollBar.Position, _cropWidth, _cropHeight);
+                ScrollAreaSize.Height* _verticalScrollBar.Position, cropWidth, cropHeight);
 
         }
 

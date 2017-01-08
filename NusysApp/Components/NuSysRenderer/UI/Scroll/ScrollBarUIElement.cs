@@ -94,7 +94,10 @@ namespace NuSysApp
             set
             {
                 _range = Math.Min(1, value);
-                IsVisible = _range != 1;
+                if (_slider != null)
+                {
+                    _slider.IsVisible = _range != 1;
+                }
             }
             get
             {

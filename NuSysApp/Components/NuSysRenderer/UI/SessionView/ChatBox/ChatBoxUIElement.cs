@@ -13,8 +13,16 @@ namespace NuSysApp
 {
     public class ChatBoxUIElement : ResizeableWindowUIElement
     {
+        /// <summary>
+        /// The scrollable rectangle the user types their messages into
+        /// </summary>
         private ScrollableTextboxUIElement _typingRect;
+
+        /// <summary>
+        /// ScrollingCanvas that contains a vertically scrolling list of all the messages
+        /// </summary>
         private ScrollingCanvas _readingRect;
+
 
         private float _newMessageYOffset;
 
@@ -34,16 +42,17 @@ namespace NuSysApp
                 BorderWidth = 3,
                 Bordercolor = Colors.DarkGray,
                 Width = Width,
-                Height = Height
+                Height = 50
             };
             AddChild(_typingRect);
-            _readingRect = new ScrollingCanvas(this, resourceCreator, ScrollingCanvas.ScrollOrientation.Both)
+
+            _readingRect = new ScrollingCanvas(this, resourceCreator, ScrollingCanvas.ScrollOrientation.Vertical)
             {
                 Background = Colors.Beige,
                 Width = Width,
-                Height = Height,
-                ScrollAreaSize = new Size(Width, Height)
+                Height = Height - _typingRect.Height - TopBarHeight,
             };
+            _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, _readingRect.Height);
             AddChild(_readingRect);
 
             _typingRect.KeyPressed += _typingRect_KeyPressed;
@@ -64,12 +73,17 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// locally send a chat request when the user hits the enter button
+        /// </summary>
+        /// <param name="text"></param>
         private async void SendMessage(string text)
         {
             var chatRequest = new ChatRequest(SessionController.Instance.NuSysNetworkSession.NetworkMembers[WaitingRoomView.UserID], text);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(chatRequest);
             if (chatRequest.WasSuccessful() == true)
             {
+                _typingRect.ClearText();
                 chatRequest.AddSuccesfullChatLocally();
             }
         }
@@ -96,15 +110,26 @@ namespace NuSysApp
         /// <param name="chatMessage"></param>
         public void AddChat(NetworkUser user, string chatMessage)
         {
+            // add a new message box to the caht window with the background the same as the user's color
             var messageBox = new DynamicTextboxUIElement(this, Canvas)
             {
                 Background = user.Color,
                 Text = chatMessage
             };
-            messageBox.Width = Width; // set the message box Width so the height is dynamically resized
+            // set the width of the message box to the width of the scroll area
+            messageBox.Width = (float) _readingRect.ScrollAreaSize.Width; // set the message box Width so the height is dynamically resized
+
+            // load the messageBox this is required for all dynamic text boxes
             messageBox.Load();
+
+            // add the element to the scroling canvas
             _readingRect.AddElement(messageBox, new Vector2(0, _newMessageYOffset));
-            _newMessageYOffset += _readingRect.Height;
+
+            // increase the y offset by the new messages height
+            _newMessageYOffset += messageBox.Height;
+
+            // set the scroll area size so that it can contain the new message
+            _readingRect.ScrollAreaSize = new Size(_readingRect.ScrollAreaSize.Width,Math.Max(_readingRect.Height, _newMessageYOffset));
 
         }
     }

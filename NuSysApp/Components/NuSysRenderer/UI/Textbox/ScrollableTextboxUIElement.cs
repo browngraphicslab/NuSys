@@ -871,7 +871,14 @@ namespace NuSysApp
                 {
                     int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
                     int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
-                    String selection = Text.Substring(firstIndex, length);
+                    try
+                    {
+                        String selection = Text.Substring(firstIndex, length);
+                    }
+                    catch (ArgumentOutOfRangeException e)
+                    {
+                        return;
+                    }
 
                     Text = Text.Remove(firstIndex, length);
                     CursorCharacterIndex -= (length - 1);
@@ -882,14 +889,15 @@ namespace NuSysApp
                 // Paste text from clipboard into the text
                 if (CursorCharacterIndex != -1)
                 {
+
                     Debug.Assert(CursorCharacterIndex <= (Text.Length - 1));
                     Text = Text.Insert(CursorCharacterIndex+1, text);
                 } else
                 {
                     CursorCharacterIndex++;
-                    Text = Text.Insert(CursorCharacterIndex+1, text);
+                    Text = Text.Insert(CursorCharacterIndex, text);
                 }  
-                CursorCharacterIndex += text.Length;
+                CursorCharacterIndex += text.Length - 1;
                 OnTextChanged(Text);
             }
         }
@@ -987,6 +995,16 @@ namespace NuSysApp
         public virtual void OnTextPasted(String text)
         {
             TextPasted?.Invoke(this, text);
+        }
+
+        /// <summary>
+        /// Clear all the text from the textbox
+        /// </summary>
+        public void ClearText()
+        {
+            CursorCharacterIndex = -1;
+            Text = string.Empty;
+            OnTextChanged(Text);
         }
 
         /// <summary>
