@@ -225,7 +225,9 @@ namespace NuSysApp
             AddChild(_header);
             ShowHeader = true;
         }
-
+        /// <summary>
+        /// Calls ListViewUIElement's clearfilter method
+        /// </summary>
         public void ClearFilter()
         {
             _listview.ClearFilter();
@@ -564,7 +566,10 @@ namespace NuSysApp
                 _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
         }
-
+        /// <summary>
+        /// Calls ListViewUIElement's FilterBy method
+        /// </summary>
+        /// <param name="filter"></param>
         public void FilterBy(Func<T, bool> filter)
         {
             _listview.FilterBy(filter);
