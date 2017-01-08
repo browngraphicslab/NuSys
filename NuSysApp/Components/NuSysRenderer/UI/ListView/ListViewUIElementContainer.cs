@@ -226,6 +226,11 @@ namespace NuSysApp
             ShowHeader = true;
         }
 
+        public void ClearFilter()
+        {
+            _listview.ClearFilter();
+        }
+
 
 
         /// <summary>
@@ -558,6 +563,11 @@ namespace NuSysApp
                 _header.Height = 40;
                 _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
+        }
+
+        public void FilterBy(Func<T, bool> filter)
+        {
+            _listview.FilterBy(filter);
         }
 
         /// <summary>

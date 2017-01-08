@@ -71,6 +71,9 @@ namespace NuSysApp
         /// </summary>
         private List<T> _itemsSource;
 
+
+        private List<T> _filteredItems;
+         
         /// <summary>
         /// The list of columns. This graphical order of the columns in ListView is the same order as this order
         /// </summary>
@@ -117,8 +120,11 @@ namespace NuSysApp
         /// <summary>
         /// The combined height of every listviewuielementrow
         /// </summary>
-        private float _heightOfAllRows { get { return _itemsSource.Count * RowHeight; } }
+        private float _heightOfAllRows { get { return _filteredItems.Count * RowHeight; } }
 
+
+
+        private Func<T, bool> _currentFilter;
         /// <summary>
         /// sum of column relative widths
         /// </summary>
@@ -199,6 +205,7 @@ namespace NuSysApp
         public ListViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _itemsSource = new List<T>();
+            _filteredItems = new List<T>();
             _listColumns = new List<ListColumn<T>>();
             _scrollOffset = 0;
             MultipleSelections = false;
@@ -234,10 +241,52 @@ namespace NuSysApp
             }
             //Add items to the item source
             _itemsSource.AddRange(itemsToAdd);
+            if (HasFilter())
+            {
+                _filteredItems.AddRange(itemsToAdd.Where(_currentFilter));
+
+            }
+            else
+            {
+                //If it has no filter, simply add all elements to filteredItems
+                _filteredItems.AddRange(itemsToAdd);
+            }
+
             //Make RowUIElements
             CreateListViewRowUIElements();
         }
 
+        public bool HasFilter()
+        {
+            if ( _currentFilter != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void ClearFilter()
+        {
+            _currentFilter = null;
+
+            _filteredItems.Clear();
+            _filteredItems.AddRange(_itemsSource);
+            CreateListViewRowUIElements();
+        }
+
+        public void FilterBy(Func<T, bool> filter)
+        {
+            _filteredItems.Clear();
+            _currentFilter = filter;
+
+            _filteredItems.AddRange(_itemsSource.Where(filter));
+
+            var numberOfRowsNeeded = Math.Min(_filteredItems.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
+            if (numberOfRowsNeeded != Rows.Count)
+            {
+                CreateListViewRowUIElements();
+            }
+        }
         /// <summary>
         /// Method that creates the ListViewRowUIElements necessary to cover the screen. 
         /// 
@@ -248,7 +297,7 @@ namespace NuSysApp
         {
             GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                Debug.Assert(_itemsSource != null);
+                Debug.Assert(_filteredItems != null);
 
                 //Remove handlers of rows
                 foreach(var row in Rows)
@@ -259,7 +308,7 @@ namespace NuSysApp
                 Rows.Clear();
 
                 //If itemssource is empty, no need to create rows.
-                if (_itemsSource.Count == 0)
+                if (_filteredItems.Count == 0)
                 {
                     return;
                 }
@@ -269,7 +318,7 @@ namespace NuSysApp
                 var position = GetPosition();
 
                 //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
-                if ((int)Math.Floor(position * _itemsSource.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _itemsSource.Count)
+                if ((int)Math.Floor(position * _filteredItems.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _filteredItems.Count)
                 {
                     if (ScrollBar != null)
                     {
@@ -280,15 +329,15 @@ namespace NuSysApp
                 }
 
                 //Start index is the itemsource-index of the first item shown on the listview 
-                var startIndex = (int)Math.Floor(position * _itemsSource.Count);
+                var startIndex = (int)Math.Floor(position * _filteredItems.Count);
 
                 //Number of rows needed to cover the screen at all times
                 //Make sures that the number of rows created does not exceed the number of rows in the source
-                var numberOfRows = Math.Min(_itemsSource.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
+                var numberOfRows = Math.Min(_filteredItems.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
 
-                if (numberOfRows > _itemsSource.Count)
+                if (numberOfRows > _filteredItems.Count)
                 {
-                    numberOfRows = _itemsSource.Count;
+                    numberOfRows = _filteredItems.Count;
                 }
 
                 //Creates the row UI elements and adds them to the list.
@@ -385,12 +434,12 @@ namespace NuSysApp
             
             if(delta < 0)
             {
-                ChangePosition(1f/_itemsSource.Count); //This moves the listview down by the height of one row.
+                ChangePosition(1f/ _filteredItems.Count); //This moves the listview down by the height of one row.
 
             }
             else if(delta> 0)
             {
-                ChangePosition(-1f/_itemsSource.Count); //This moves the listview up by the height of one row.
+                ChangePosition(-1f/ _filteredItems.Count); //This moves the listview up by the height of one row.
             }
 
         }
@@ -418,8 +467,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var startIndex = (int)Math.Floor(ScrollBar.Position * _itemsSource.Count);
-            var items = _itemsSource;
+            var startIndex = (int)Math.Floor(ScrollBar.Position * _filteredItems.Count);
+            var items = _filteredItems;
 
             foreach (var row in Rows)
             {
@@ -430,7 +479,7 @@ namespace NuSysApp
 
                 var index = startIndex + Rows.IndexOf(row);
                 //Accounts for the last, empty row.
-                if (index >= _itemsSource.Count)
+                if (index >= _filteredItems.Count)
                 {
                     continue;
                 }
@@ -577,7 +626,7 @@ namespace NuSysApp
             else
             {
                 //scroll if in bounds
-                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _itemsSource.Count);
+                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _filteredItems.Count);
 
                 ScrollBar.ChangePosition(deltaY);
                 
@@ -627,7 +676,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Removes things from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
+        /// Removes things from the _filteredItems list and the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
         /// </summary>
         /// <param name="itemsToAdd"></param>
         public void RemoveItems(List<T> itemsToRemove)
@@ -638,11 +687,11 @@ namespace NuSysApp
                 return;
             }
             _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
-
+            _filteredItems.RemoveAll(item => itemsToRemove.Contains(item));
             //Do I also need to remove handlers here?
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
 
-            if(_itemsSource.Count <= Rows.Count)
+            if(_filteredItems.Count <= Rows.Count)
             {
                 CreateListViewRowUIElements();
             }
@@ -655,6 +704,7 @@ namespace NuSysApp
         public void ClearItems()
         {
             _itemsSource.Clear();
+            _filteredItems.Clear();
             _selectedElements.Clear();
             CreateListViewRowUIElements();
         }
@@ -746,13 +796,13 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void ScrollTo(T item)
         {
-            var i = _itemsSource.IndexOf(item);
+            var i = _filteredItems.IndexOf(item);
             if(i < 0)
             {
                 return;
             }
             //Sets the position of the ScrollBar to the position of the item in the list
-            SetPosition((float)i / _itemsSource.Count);
+            SetPosition((float)i / _filteredItems.Count);
         }
 
         /// <summary>
@@ -1013,6 +1063,7 @@ namespace NuSysApp
             Rows?.Clear();
             _selectedElements?.Clear();
             _itemsSource?.Clear();
+            _filteredItems.Clear();
             _listColumns?.Clear();
             base.Dispose();
         }
