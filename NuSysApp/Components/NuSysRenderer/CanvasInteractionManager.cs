@@ -175,8 +175,6 @@ namespace NuSysApp
                     TwoPointerPressed?.Invoke(_pointers[0], _pointers[1]);
                 } 
             }
-            _canvas.PointerMoved -= OnPointerMoved;
-            _canvas.PointerMoved += OnPointerMoved;
         }
 
         private async void OnPointerTouchReleased(object sender, PointerRoutedEventArgs e)

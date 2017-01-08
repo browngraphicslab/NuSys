@@ -478,7 +478,8 @@ namespace NuSysApp
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.Image;
-                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+                    var bytes = await MediaUtil.StorageFileToByteArray(storageFile);
+                    data = Convert.ToBase64String(bytes);
 
                     var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
                     aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;

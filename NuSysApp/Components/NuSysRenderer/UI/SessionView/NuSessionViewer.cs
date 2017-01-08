@@ -329,5 +329,22 @@ namespace NuSysApp
             _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
 
         }
+
+        /// <summary>
+        /// Method to call to make the current workspace have the read-only ui.
+        /// This should mainly hide things like the floating menu.
+        /// </summary>
+        public void MakeReadOnly()
+        {
+            
+        }
+
+        /// <summary>
+        /// Method to call to undo the MakeReadOnly method and reapply the editable UI.
+        /// </summary>
+        public void MakeEditable()
+        {
+            
+        }
     }
 }
