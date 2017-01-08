@@ -99,6 +99,18 @@ namespace NuSysApp
             _readingRect.Transform.LocalPosition = new Vector2(_readingRect.Transform.LocalPosition.X, TopBarHeight);
             _typingRect.Transform.LocalPosition = new Vector2(_typingRect.Transform.LocalPosition.X, TopBarHeight + _readingRect.Height);
 
+            var yOffset = 0f;
+            foreach (var element in _readingRect.Elements)
+            {
+                element.Width = Width;
+                element.Transform.LocalPosition = new Vector2(0, yOffset);
+                yOffset += element.Height;
+            }
+
+            _newMessageYOffset = yOffset;
+
+            UpdateScrollAreaSize();
+
             base.Update(parentLocalToScreenTransform);
         }
 
@@ -143,7 +155,12 @@ namespace NuSysApp
             _newMessageYOffset += messageBox.Height;
 
             // set the scroll area size so that it can contain the new message
-            _readingRect.ScrollAreaSize = new Size(_readingRect.ScrollAreaSize.Width,Math.Max(_readingRect.Height, _newMessageYOffset));
+            UpdateScrollAreaSize();
+        }
+
+        private void UpdateScrollAreaSize()
+        {
+            _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, Math.Max(_readingRect.Height, _newMessageYOffset - _readingRect.HorizontalScrollBarHeight));
 
         }
     }

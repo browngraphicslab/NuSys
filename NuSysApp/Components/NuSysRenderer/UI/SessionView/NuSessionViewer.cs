@@ -155,9 +155,10 @@ namespace NuSysApp
             };
             AddChild(_detailViewer);
             
-            var sc = new ScrollingCanvasTester(this, Canvas);
-            sc.Transform.LocalPosition = new Vector2(200, 200);
-            AddChild(sc);
+            var gt = new GridLayoutTester(this, Canvas);
+            gt.Transform.LocalPosition = new Vector2(200, 200);
+            AddChild(gt);
+
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
