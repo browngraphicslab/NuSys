@@ -9,6 +9,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
 using SharpDX.Direct2D1;
 
 namespace NuSysApp
@@ -17,6 +18,7 @@ namespace NuSysApp
     {
         private LinkViewModel _vm;
         private CanvasGeometry _path;
+        private CanvasGeometry _arrow;
         public LinkViewModel ViewModel => _vm;
 
         public LinkRenderItem(LinkViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
@@ -41,6 +43,8 @@ namespace NuSysApp
 
             _path.Dispose();
             _path = null;
+            _arrow.Dispose();
+            _arrow = null;
             _vm = null;
             base.Dispose();
         }
@@ -76,6 +80,15 @@ namespace NuSysApp
             cb.EndFigure(CanvasFigureLoop.Open);
             _path = CanvasGeometry.CreatePath(cb);
 
+            var lowerAnchor = anchor1.Y < anchor2.Y ? anchor1.Y : anchor2.Y;
+            var leftAnchor = anchor1.X < anchor2.X ? anchor1.X : anchor2.X;
+            var midPointX = leftAnchor + distanceX/2;
+            var midPointY = lowerAnchor + distanceY/2;
+            var apex = new Vector2(midPointX, midPointY);
+            var leftLeg = new Vector2(midPointX - 15, midPointY + 20);
+            var rightLeg = new Vector2(midPointX + 15, midPointY + 20);
+            _arrow = CanvasGeometry.CreatePolygon(ResourceCreator, new[] {apex, leftLeg, rightLeg});
+
             IsDirty = false;
         }
 
@@ -87,6 +100,13 @@ namespace NuSysApp
 
             if (_path != null)
                 ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
+            //if (
+            //    (_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel).ArrowDirection ==
+            //    NusysConstants.LinkDirection.Forward)
+            //{
+               
+            //}
+            ds.DrawGeometry(_arrow, Colors.Black, 10);
         }
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)

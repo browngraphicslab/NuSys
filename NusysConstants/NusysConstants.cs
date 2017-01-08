@@ -1772,6 +1772,14 @@ namespace NusysIntermediate
             Small, Medium, Large
         }
 
+        /// <summary>
+        /// The different options to visualize the directions of links. 
+        /// </summary>
+        public enum LinkDirection
+        {
+            Forward, Backward, Invisible
+        }
+
         #endregion Enums
 
         #region Misc

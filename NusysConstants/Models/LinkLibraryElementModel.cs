@@ -22,6 +22,11 @@ namespace NusysIntermediate
         /// </summary>
         public string OutAtomId { get; set; }
 
+        /// <summary>
+        /// This controls the visualization of the link's directional arrow.
+        /// </summary>
+        public NusysConstants.LinkDirection ArrowDirection { get; set; }
+
         //public Color Color { get; set; }
         public LinkLibraryElementModel(string id): base(id, NusysConstants.ElementType.Link)
         {
