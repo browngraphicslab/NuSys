@@ -24,7 +24,8 @@ namespace NuSysApp
             {
                 Width = 300,
                 Height = 300,
-                ScrollAreaSize = new Size(1000, 1000)
+                ScrollAreaSize = new Size(1000, 1000),
+                Background = Colors.Blue
             };
             for (int i = 1; i < 10; i++)
             {
@@ -38,7 +39,7 @@ namespace NuSysApp
                         Bordercolor = Colors.Red,
                         ButtonText = $"({i}, {j})",
                         ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                        ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center
+                        ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                     }, new Vector2(i * 100, j * 100));
                 }
             }

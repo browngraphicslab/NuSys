@@ -313,6 +313,14 @@ namespace NuSysApp
                 _verticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - _verticalScrollBar.Width, BorderWidth);
             }
 
+            if (_scrollAreaRect != null && _cropRect != null)
+            {
+                _scrollAreaRect.Width = (float)_cropRect.Width;
+                _scrollAreaRect.Height = (float)_cropRect.Height;
+            }
+
+
+
             ComputeScrollHandleSize();
 
             _refreshUI = true;

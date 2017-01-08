@@ -155,9 +155,9 @@ namespace NuSysApp
             };
             AddChild(_detailViewer);
 
-            //var sct = new ScrollingCanvasTester(this, ResourceCreator);
-            //sct.Transform.LocalPosition = new Vector2(300, 300);
-            //AddChild(sct);
+            var sct = new ScrollingCanvasTester(this, ResourceCreator);
+            sct.Transform.LocalPosition = new Vector2(300, 300);
+            AddChild(sct);
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
