@@ -39,22 +39,6 @@ namespace NusysIntermediate
         }
 
         /// <summary>
-        /// virtual method that requires all base classes to have a GetArgs method.
-        /// This should, in every foreseeable implementation (as of 8/29/16), be:
-        /// 
-        ///         public override {requestArgsType} GetArgs()
-        ///         {
-        ///             return base.GetArgsClassFromMessage();
-        ///         }
-        ///  
-        /// </summary>
-        /// <returns></returns>
-        public virtual T GetArgs()
-        {
-            return GetArgsClassFromMessage();
-        }
-
-        /// <summary>
         /// this method method will return a fully populated server args class.
         /// It should probably only be called server side and should really only be called by the abstracy GetArgs() method.
         /// It will parse and deserializ the args class from the request message.

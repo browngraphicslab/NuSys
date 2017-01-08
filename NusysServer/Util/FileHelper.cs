@@ -241,6 +241,24 @@ namespace NusysServer
             }
         }
 
+        /// <summary>
+        /// Method that can be used to save any file to the WWWRoot.
+        /// Pass in the file byte array, the name of the file, and an extension if you want.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="fileExtension"></param>
+        /// <param name="fileBytes"></param>
+        public static void SaveFileToRoot(byte[] fileBytes, string fileName, string fileExtension = null)
+        {
+            Debug.Assert(fileBytes != null && fileName != null);
+            var fp = Constants.WWW_ROOT + fileName + (fileExtension ?? "");
+
+            using (var fstream = File.OpenWrite(fp))
+            {
+                fstream.Write(fileBytes, 0, fileBytes.Length);
+            }
+        }
+
         private static void MakeWordThumbnails(byte[] pdfBytes, string contentDataModelId)
         {
             if (contentDataModelId == null)

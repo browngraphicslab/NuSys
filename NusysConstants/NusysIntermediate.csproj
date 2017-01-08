@@ -38,6 +38,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FullArgsRequest.cs" />
     <Compile Include="ModelFactories\InkModelFactory.cs" />
     <Compile Include="Models\CollectionContentDataModel.cs" />
     <Compile Include="Models\CollectionShapeModel.cs" />
@@ -48,6 +49,9 @@
     <Compile Include="Models\WordLibraryElementModel.cs" />
     <Compile Include="RequestArgs\AddNewLastUsedCollectionServerRequestArgs.cs" />
     <Compile Include="RequestArgs\GetLastUsedCollectionsServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\ServerReturnArgsBase.cs" />
+    <Compile Include="RequestArgs\UploadCollectionBackgroundImageReturnArgs.cs" />
+    <Compile Include="RequestArgs\UploadCollectionBackgroundImageServerRequestArgs.cs" />
     <Compile Include="ServerArgsRequest.cs" />
     <Compile Include="BaseClient.cs" />
     <Compile Include="INotificationArgumentable.cs" />

@@ -77,6 +77,7 @@ namespace NuSysApp
 
         /// <summary>
         /// Accessibility setting for increasing the size of fonts and some buttons.
+        /// setting this will not automatically save to file.
         /// </summary>
         public double TextScale
         {
@@ -91,7 +92,6 @@ namespace NuSysApp
                 if (fireEvent)
                 {
                     TextScaleChanged?.Invoke(this, value);
-                    SaveToFile();
                 }
             }
         }
@@ -100,6 +100,7 @@ namespace NuSysApp
         /// Enum representing the visibility of links and trails in the session.
         /// This might be changed later to have more link visibility options  (when focused, when filtered etc).
         /// The custom setter will fire the event notifying of the setting changed.
+        /// Setting this value will automatially save to file.
         /// </summary>
         public LinkVisibilityOption LinksVisible
         {
@@ -119,6 +120,7 @@ namespace NuSysApp
         /// <summary>
         /// Boolean representing whether the titles of elements will resize while zooming. 
         /// This also might be changed to an enum later to represent more options.
+        /// Setting this value will automatially save to file.
         /// </summary>
         public bool ResizeElementTitles
         {
@@ -134,6 +136,7 @@ namespace NuSysApp
         /// <summary>
         /// Boolean representing whether the bread crumb trail is visible.   
         /// Setting this will fire this class's event for when the boolean changes.
+        /// Setting this value will automatially save to file.
         /// </summary>
         public bool BreadCrumbsVisible
         {
@@ -149,6 +152,7 @@ namespace NuSysApp
         /// <summary>
         /// Boolean representing whether the minimap is visible.   
         /// Setting this will fire this class's event for when the boolean changes.
+        /// Setting this value will automatially save to file.
         /// </summary>
         public bool MinimapVisible
         {
@@ -164,7 +168,7 @@ namespace NuSysApp
         /// <summary>
         /// saves file to folder so we can get the same settings on the same machine every time.  
         /// </summary>
-        private void SaveToFile()
+        public void SaveToFile()
         {
             if(SessionController.Instance.SessionSettings == null)
             {

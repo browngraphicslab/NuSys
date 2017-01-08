@@ -1675,6 +1675,11 @@ namespace NusysIntermediate
             GetLastUsedCollectionsRequest,
 
             /// <summary>
+            /// request used to upload an image to the server to be saved on the WWWRoot
+            /// </summary>
+            UploadCollectionImageRequest,
+
+            /// <summary>
             /// this request type is used to create a new collection content and default library element with a pre-populated collection.
             /// you are able to add elements to the request be default. 
             /// </summary>
