@@ -153,12 +153,7 @@ namespace NuSysApp
                 MinHeight = 600,
                 KeepAspectRatio = true
             };
-            AddChild(_detailViewer);
-            
-            var gt = new GridLayoutTester(this, Canvas);
-            gt.Transform.LocalPosition = new Vector2(200, 200);
-            AddChild(gt);
-
+            AddChild(_detailViewer);          
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;

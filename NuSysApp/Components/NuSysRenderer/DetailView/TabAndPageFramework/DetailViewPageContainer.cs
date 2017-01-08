@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -96,7 +97,49 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnChangeAccessFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            throw new NotImplementedException();
+            // create the change Access menu
+            var changeAccessPopup = new FlyoutPopup(this, Canvas);
+            var flyout = item as BaseInteractiveUIElement;
+            Debug.Assert(flyout != null);
+            changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
+
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+            {
+                changeAccessPopup.AddFlyoutItem("Make Read Only", OnReadOnlyTapped, Canvas);
+            }
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly ||
+                _currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+            {
+                changeAccessPopup.AddFlyoutItem("Make Public", OnPublicTapped, Canvas);
+            }
+
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
+            {
+                changeAccessPopup.AddFlyoutItem("Cannot Change Access", null, Canvas);
+            }
+
+            AddChild(changeAccessPopup);
+
+        }
+
+        /// <summary>
+        /// Method called when the change access public option is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _currentController.SetAccessType(NusysConstants.AccessType.Public);
+        }
+
+        /// <summary>
+        /// Method called when the change access read only option is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);
         }
 
         /// <summary>
@@ -106,7 +149,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnCopyFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            throw new NotImplementedException();
+            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId);
         }
 
         /// <summary>
@@ -137,22 +180,17 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-
             //todo figure out why ScrollableTextbox breaks if you put these in the constructor. 
             _titleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Height = 50,
-                TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
-                TextVerticalAlignment = CanvasVerticalAlignment.Center,
-                FontSize = 30
+                Height = 50, TextHorizontalAlignment = CanvasHorizontalAlignment.Left, TextVerticalAlignment = CanvasVerticalAlignment.Center, FontSize = 30
             };
             AddChild(_titleBox);
             _titleBox.TextChanged += OnTitleTextChanged;
 
-            _settingsButton.Image =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
+            _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
 
-             _loaded = true;
+            _loaded = true;
             base.Load();
         }
 
@@ -221,7 +259,7 @@ namespace NuSysApp
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _titleBox.Text = _currentController.Title;
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
-            
+
 
             // clear all the old tabs
             _pageTabContainer.ClearTabs();
