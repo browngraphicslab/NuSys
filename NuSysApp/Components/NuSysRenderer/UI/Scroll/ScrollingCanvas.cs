@@ -289,7 +289,7 @@ namespace NuSysApp
 
                 // update the position of the scroll bar so the crop rect is maintained
                 var normalizedOffset = _cropRect.Top / ScrollAreaSize.Height;
-                _verticalScrollBar.Position =  (float) (normalizedOffset*_cropRect.Height);
+                _verticalScrollBar.Position =  (float) normalizedOffset;
 
                 // bound the scroll bar's position
                 BoundVerticalScrollBarPosition();
@@ -364,6 +364,7 @@ namespace NuSysApp
 
             // compute the part of the ScrollArea that we are going to show
             ComputeCrop();
+            ComputeScrollHandleSize();
 
             // make all the currently visible elements invisible
             foreach (var element in _visibleElements.ToArray())
