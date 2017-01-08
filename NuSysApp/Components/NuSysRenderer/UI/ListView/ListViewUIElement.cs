@@ -123,7 +123,10 @@ namespace NuSysApp
         private float _heightOfAllRows { get { return _filteredItems.Count * RowHeight; } }
 
 
-
+        /// <summary>
+        /// Current filter function that takes in a T (eg, a LibraryElementModel) and returns
+        /// a bool (ie, true if that item should be filtered in and false otherwise)
+        /// </summary>
         private Func<T, bool> _currentFilter;
         /// <summary>
         /// sum of column relative widths
@@ -211,7 +214,6 @@ namespace NuSysApp
             MultipleSelections = false;
             BorderWidth = 0;
             _columnIndexSortedBy = -1;
-            //RowBorderThickness = 5;
             Rows = new List<ListViewRowUIElement<T>>();
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
@@ -241,10 +243,10 @@ namespace NuSysApp
             }
             //Add items to the item source
             _itemsSource.AddRange(itemsToAdd);
+            //If it has a filter, then add the items to the filteredItems if the filter function returns true
             if (HasFilter())
             {
                 _filteredItems.AddRange(itemsToAdd.Where(_currentFilter));
-
             }
             else
             {
@@ -255,7 +257,10 @@ namespace NuSysApp
             //Make RowUIElements
             CreateListViewRowUIElements();
         }
-
+        /// <summary>
+        /// HasFilter returns true if there is curretnly a filter
+        /// </summary>
+        /// <returns></returns>
         public bool HasFilter()
         {
             if ( _currentFilter != null)
@@ -264,23 +269,39 @@ namespace NuSysApp
             }
             return false;
         }
-
+        /// <summary>
+        /// ClearFilter is called when the filter is empty (ie, all the items in the itemsSource
+        /// should be displayed).
+        /// </summary>
         public void ClearFilter()
         {
             _currentFilter = null;
 
             _filteredItems.Clear();
             _filteredItems.AddRange(_itemsSource);
-            CreateListViewRowUIElements();
+            //Only recreate the rows if the number of rows needed does not equal current number of rows
+            var numberOfRowsNeeded = Math.Min(_filteredItems.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
+            if (numberOfRowsNeeded != Rows.Count)
+            {
+                CreateListViewRowUIElements();
+            }
         }
-
+        /// <summary>
+        /// This method filters the items in the list using the function passed in.
+        /// The filter function takes in a T (eg, a LibraryElementModel) and outputs a
+        /// bool (eg, true if its title contains some string)
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
         public void FilterBy(Func<T, bool> filter)
         {
             _filteredItems.Clear();
             _currentFilter = filter;
 
+            //Set filteredItems to the items in the itemsSource list for which the filter function returns true
             _filteredItems.AddRange(_itemsSource.Where(filter));
 
+            //Only recreate the rows if the number of rows needed does not equal current number of rows
             var numberOfRowsNeeded = Math.Min(_filteredItems.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
             if (numberOfRowsNeeded != Rows.Count)
             {
@@ -312,8 +333,6 @@ namespace NuSysApp
                 {
                     return;
                 }
-
-
 
                 var position = GetPosition();
 

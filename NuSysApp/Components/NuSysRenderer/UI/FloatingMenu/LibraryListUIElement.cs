@@ -182,12 +182,14 @@ namespace NuSysApp
         /// <param name="text"></param>
         private async void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-    
+            //If text inputted is negligible, simply clear the filter
             if (string.IsNullOrEmpty(text))
             {
                 LibraryListView.ClearFilter();
                 return;
             }
+            //Otherwise, compare the search string to the title, creator, type, and keywords of a libraryelementmodel
+            //If any of these contains the search string, return true
             var search = text.ToLower();
             Func<LibraryElementModel, bool> func = libraryElementModel =>
             {
@@ -219,7 +221,7 @@ namespace NuSysApp
 
                 return false;
             };
-
+            //Finally, filter by the search function
             LibraryListView.FilterBy(func);
         }
 
