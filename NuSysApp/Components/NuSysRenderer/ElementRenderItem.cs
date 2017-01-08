@@ -105,7 +105,6 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-            _vm.Controller.LibraryElementController.HighlightChanged -= LibraryElementController_HighlightChanged;
 
             _tagRenderItem?.Dispose();
             _tagRenderItem = null;
@@ -121,6 +120,8 @@ namespace NuSysApp
                 if (_vm.Controller.LibraryElementController != null)
                 {
                     _vm.Controller.LibraryElementController.TitleChanged -= LibraryElementControllerOnTitleChanged;
+                    _vm.Controller.LibraryElementController.HighlightChanged -= LibraryElementController_HighlightChanged;
+
                 }
             }
             _vm = null;

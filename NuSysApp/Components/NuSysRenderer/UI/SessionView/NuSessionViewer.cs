@@ -37,17 +37,40 @@ namespace NuSysApp
         /// </summary>
         private SessionSettingsMenu _settingsMenu;
 
+        /// <summary>
+        /// the chatbox that we use to send messages to eachother
+        /// </summary>
         public ChatBoxUIElement Chatbox { get; }
 
+        /// <summary>
+        ///  the button that brings the user back to the waiting room
+        /// </summary>
         private ButtonUIElement _backToWaitingRoomButton;
 
+        /// <summary>
+        /// container that contains bubbles that show the currently logged in users
+        /// </summary>
         private UserBubbleContainerUIElement _userBubbleContainer;
 
+        /// <summary>
+        ///  the detail viewer
+        /// </summary>
         private DetailViewMainContainer _detailViewer;
 
+        /// <summary>
+        /// the trailbox of previious visited elements
+        /// </summary>
         public BreadCrumbContainer TrailBox;
 
+        /// <summary>
+        ///  the tite bxo used to display the title of the workspace
+        /// </summary>
         public TextboxUIElement _titleBox;
+
+        /// <summary>
+        /// the library list 
+        /// </summary>
+        public LibraryListUIElement Library => _floatingMenu.Library;
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
@@ -132,9 +155,9 @@ namespace NuSysApp
             };
             AddChild(_detailViewer);
 
-            var sct = new ScrollingCanvasTester(this, ResourceCreator);
-            sct.Transform.LocalPosition = new Vector2(300, 300);
-            AddChild(sct);
+            //var sct = new ScrollingCanvasTester(this, ResourceCreator);
+            //sct.Transform.LocalPosition = new Vector2(300, 300);
+            //AddChild(sct);
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;

@@ -90,6 +90,12 @@ namespace NuSysApp
         {
             // remove the tab from the dictionary
             _libElemToCurrTabOpen.Remove(libElemId);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libElemId);
+            if (controller != null)
+            {
+                controller.Deleted -= Controller_Deleted;
+            }
+
         }
 
         /// <summary>
@@ -149,7 +155,15 @@ namespace NuSysApp
 
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _mainTabContainer.AddTab(libraryElementModelId, controller.LibraryElementModel.Title);
+            controller.Deleted += Controller_Deleted;
 
+        }
+
+        private void Controller_Deleted(object sender)
+        {
+            var controller = sender as LibraryElementController;
+            Debug.Assert(controller != null);
+            _mainTabContainer.RemoveTab(controller.LibraryElementModel.LibraryElementId);
         }
 
         /// <summary>

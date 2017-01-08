@@ -75,15 +75,64 @@ namespace NuSysApp
 
         private void SettingsButton_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+
+            //todo make this able to close when the settings button is pressed again, also if i click the settings button
+            // twice this should close
             var settingsPopup = new FlyoutPopup(this, Canvas);
             settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - settingsPopup.Width/2,
                 _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
-            settingsPopup.AddFlyoutItem("Scroll To", null, Canvas);
-            settingsPopup.AddFlyoutItem("Delete", null, Canvas);
-            settingsPopup.AddFlyoutItem("Copy", null, Canvas);
-            settingsPopup.AddFlyoutItem("Change Access", null, Canvas);
+            settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
+            settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
+            settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
+            settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
 
             AddChild(settingsPopup);
+        }
+
+        /// <summary>
+        /// Called whenever the change access option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnChangeAccessFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Called whenever the copy option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnCopyFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Called whenever the delete option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private async void OnDeleteFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            DeleteLibraryElementRequest request = new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            if (request.WasSuccessful() == true)
+            {
+                request.DeleteLocally();
+            }
+        }
+
+        /// <summary>
+        /// Called whenever the scroll to option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnScrollToFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.NuSessionView.Library.IsVisible = true;
+            SessionController.Instance.NuSessionView.Library.LibraryListView.ScrollTo(_currentController.LibraryElementModel);
         }
 
         public override async Task Load()

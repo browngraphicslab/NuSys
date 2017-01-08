@@ -102,13 +102,13 @@ namespace NuSysApp
 
         private void CheckSizeChanged()
         {
-            if (Height - _previousHeight > .01)
+            if (Math.Abs(Height - _previousHeight) > .01)
             {
                 _previousHeight = Height;
                 OnSizeChanged();
             }
 
-            if (Width - _previousWidth > .01)
+            if (Math.Abs(Width - _previousWidth) > .01)
             {
                 _previousWidth = Width;
                 OnSizeChanged();
