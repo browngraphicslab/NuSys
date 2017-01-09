@@ -63,8 +63,7 @@ namespace NuSysApp
             _dismissable = true;
             _parent = null;
             _dismissText = "";
-
-            //11/13/16 - if this is uncommented right now, the right click to trigger popup will immediately also dismiss it...
+            
             SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed +=
                 CanvasInteractionManager_ClosePopup;
         }
@@ -113,24 +112,18 @@ namespace NuSysApp
         public void SetNotDismissable(ICanvasResourceCreatorWithDpi resourceCreator, string dismissText = "")
         {
             _dismissable = false;
+            DismissText = dismissText;
             MakeMandatoryDismissButton(resourceCreator);
         }
 
         /// <summary>
         /// makes a button for non-dismissable popups.
         /// </summary>
-        private void MakeMandatoryDismissButton(ICanvasResourceCreatorWithDpi resourceCreator)
+        protected void MakeMandatoryDismissButton(ICanvasResourceCreatorWithDpi resourceCreator)
         {
             if (!_dismissable)
             {
-                _dismissButton = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
-                _dismissButton.Width = 100;
-                _dismissButton.Height = 30;
-                _dismissButton.Background = Constants.MED_BLUE;
-                _dismissButton.BorderWidth = 0;
-                _dismissButton.ButtonTextColor = Colors.White;
-                _dismissButton.ButtonText = _dismissText;
-                _dismissButton.ButtonTextSize = 12;
+                _dismissButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.PrimaryStyle, DismissText);
                 _dismissButton.Transform.LocalPosition = new System.Numerics.Vector2(this.Width / 2 - _dismissButton.Width / 2,
                     this.Height - _dismissButton.Height - 25);
                 AddButtonHandlers(_dismissButton);
