@@ -23,7 +23,7 @@ namespace NuSysApp
         public static Color SelectedBorderColor = Constants.DARK_BLUE;
         public static float TopBarHeight = 25;
         public static Color TopBarColor = Colors.Transparent;
-        public static float ErrorMargin = 15;
+        public static float ErrorMargin = 25;
 
         public static string FontFamily = "Arial";//"/Assets/fonts/freightsans.ttf#FreightSans BookSC";
 
@@ -79,6 +79,7 @@ namespace NuSysApp
         public static float? WindowMinWidth = 25;
         public static float? WindowMinHeight = 25;
         public static float WindowBorderWidth = 3;
+        public static Color ResizeHighlightColor = Constants.DARK_BLUE;
 
         #endregion
 

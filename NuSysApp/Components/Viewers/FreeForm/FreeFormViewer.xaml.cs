@@ -753,6 +753,7 @@ namespace NuSysApp
             if (item == RenderEngine.ElementSelectionRect.BtnPresent)
             {
                 //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                SessionController.Instance.NuSessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
 
