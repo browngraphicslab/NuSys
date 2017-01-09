@@ -167,6 +167,7 @@ namespace NuSysApp
             LibraryListView.RowDragged += LibraryListView_RowDragged;
             LibraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped += OnLibraryItemSelected;
+            LibraryListView.RowDoubleTapped += LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped += OnFilterButtonTapped;
 
@@ -174,6 +175,8 @@ namespace NuSysApp
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
         }
+
+
 
         /// <summary>
         /// Event handler for when the text of the library search bar changes
@@ -258,6 +261,19 @@ namespace NuSysApp
                     }
                 });
             }
+        }
+
+
+        private void LibraryListView_RowDoubleTapped(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId);
+            Debug.Assert(controller != null);
+            if (controller == null)
+            {
+                return;
+            }
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
+
         }
 
         /// <summary>
@@ -365,6 +381,7 @@ namespace NuSysApp
             LibraryListView.RowDragged -= LibraryListView_RowDragged;
             LibraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped -= OnLibraryItemSelected;
+            LibraryListView.RowDoubleTapped -= LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped -= OnFilterButtonTapped;
 
@@ -387,23 +404,28 @@ namespace NuSysApp
                 MultipleSelections = false
             };
 
-            var listColumn = new ListTextColumn<LibraryElementModel>();
-            listColumn.Title = "Title";
-            listColumn.RelativeWidth = 1;
-            listColumn.ColumnFunction = model => model.Title;
+            var listColumn1 = new ListTextColumn<LibraryElementModel>();
+            listColumn1.Title = "Title";
+            listColumn1.RelativeWidth = 2;
+            listColumn1.ColumnFunction = model => model.Title;
 
             var listColumn2 = new ListTextColumn<LibraryElementModel>();
-            listColumn2.Title = "Creator";
-            listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction =
-                model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
+            listColumn2.Title = "Type";
+            listColumn2.RelativeWidth = 1.25f;
+            listColumn2.ColumnFunction = model => model.Type.ToString();
 
             var listColumn3 = new ListTextColumn<LibraryElementModel>();
-            listColumn3.Title = "Last Edited Timestamp";
-            listColumn3.RelativeWidth = 3;
-            listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
+            listColumn3.Title = "Creator";
+            listColumn3.RelativeWidth = 1;
+            listColumn3.ColumnFunction =
+                model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
 
-            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn, listColumn2, listColumn3 });
+            var listColumn4 = new ListTextColumn<LibraryElementModel>();
+            listColumn4.Title = "Last Edited Timestamp";
+            listColumn4.RelativeWidth = 1.8f;
+            listColumn4.ColumnFunction = model => model.GetController().GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
+
+            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
 
             LibraryListView.AddItems(
@@ -412,9 +434,9 @@ namespace NuSysApp
             BorderWidth = 5;
             Bordercolor = Colors.Black;
             TopBarColor = Colors.Azure;
+            Width = 500;
             Height = 400;
-            Width = 400;
-            MinWidth = 400;
+            MinWidth = 500;
             MinHeight = 400;
 
 

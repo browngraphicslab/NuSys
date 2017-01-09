@@ -216,6 +216,7 @@ namespace NuSysApp
             ListView.RowDragCompleted += ListView_RowDragCompleted;
             ListView.RowDoubleTapped += ListView_RowDoubleTapped;
 
+
             _header = new ListViewHeader<T>(this, resourceCreator);
             _header.HeaderDragged += Header_HeaderDragged;
             _header.HeaderDragCompleted += Header_HeaderDragCompleted;

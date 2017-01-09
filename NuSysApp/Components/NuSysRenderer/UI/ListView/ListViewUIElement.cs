@@ -26,13 +26,12 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
-        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
-
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
         /// be null.
         /// </summary>
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
         public event RowTappedEventHandler RowTapped;
 
         public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
@@ -373,14 +372,54 @@ namespace NuSysApp
                     listViewRowUIElement.Height = RowHeight;
                     PopulateListRow(listViewRowUIElement);
                     listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
+                    listViewRowUIElement.RowTapped += ListViewRowUIElementOnRowTapped;
+                    listViewRowUIElement.RowDoubleTapped += ListViewRowUIElementOnRowDoubleTapped;
                     listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
                     listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
-                    listViewRowUIElement.RowDoubleTapped += ListViewRowUIElement_RowDoubleTapped;
                     Rows.Add(listViewRowUIElement);
                 }
             });
 
         }
+
+        private void ListViewRowUIElementOnRowTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
+        {
+                bool isSelected = false;
+                var t = Transform.ScreenToLocalMatrix;
+                var np = Vector2.Transform(pointer.CurrentPoint, t);
+                if (rowUiElement.HitTest(pointer.CurrentPoint) == null)
+                {
+                    return;
+                }
+
+                Debug.Assert(colIndex < _listColumns.Count);
+                var colTitle = _listColumns[colIndex].Title;
+                if (_selectedElements.Contains(item))
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        DeselectItem(item);
+
+                    }
+                }
+                else
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        SelectItem(item);
+                        isSelected = true;
+                    }
+                }
+                RowTapped?.Invoke(item, colTitle, pointer, isSelected);
+            }
+
+        private void ListViewRowUIElementOnRowDoubleTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
+        {
+            var colTitle = _listColumns[colIndex].Title;
+            RowDoubleTapped?.Invoke(item, colTitle, pointer);
+
+        }
+
         /// <summary>
         /// Returns the position of the ScrollBar if it has been initialized.
         /// Otherwise, returns 0.
@@ -581,37 +620,9 @@ namespace NuSysApp
             {
                 RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
                 _isDragging = false;
-            }else
-            {
-                bool _isSelected = false;
-                var t = Transform.ScreenToLocalMatrix;
-                var np = Vector2.Transform(pointer.CurrentPoint, t);
-                if (rowUIElement.HitTest(pointer.CurrentPoint) == null)
-                {
-                    return;
-                }
-
-                Debug.Assert(colIndex < _listColumns.Count);
-                var colTitle = _listColumns[colIndex].Title;
-                if (_selectedElements.Contains(item))
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        DeselectItem(item);
-
-                    }
-                }
-                else
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        SelectItem(item);
-                        _isSelected = true;
-                    }
-                }
-                RowTapped?.Invoke(item, colTitle, pointer, _isSelected);
-
             }
+
+            
         }
         
         /// <summary>

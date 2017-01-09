@@ -296,17 +296,14 @@ namespace NuSysApp
         {
             if (delta < 0)
             {
-                //If you're going up (position going down), set position + delta, with 0 as min.
-                Position = (float) Math.Max(0, Position - 0.035f);
+                ChangePosition(0.035f);
             }
 
             if (delta > 0)
             {
-                //If you're going down (position going up), set position + delta, with 1-range being maximum.
-                Position = (Position + 0.035 + Range > 1f) ? 1f - Range : Position + 0.035f;
+                ChangePosition(-0.035f);
 
             }
-            ScrollBarPositionChanged?.Invoke(this, Position);
 
         }
         /// <summary>
