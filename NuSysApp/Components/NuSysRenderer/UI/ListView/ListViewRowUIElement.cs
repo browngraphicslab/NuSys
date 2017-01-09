@@ -42,6 +42,11 @@ namespace NuSysApp
 
         public event DraggedEventHandler RowDragged;
 
+
+
+        public delegate void DragStartedEventHandler(T item, int colIndex, CanvasPointer pointer);
+        public event DragStartedEventHandler RowDragStarted;
+
         public delegate void PointerWheelChangedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta);
         public event PointerWheelChangedEventHandler PointerWheelChanged;
 
@@ -85,9 +90,18 @@ namespace NuSysApp
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
             cell.Dragged += Cell_Dragged;
+            cell.DragStarted += Cell_DragStarted;
             cell.Tapped += Cell_Tapped;
             cell.DoubleTapped += Cell_DoubleTapped;
             cell.PointerWheelChanged += Cell_PointerWheelChanged;
+        }
+
+        private void Cell_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var cell = item as RectangleUIElement;
+            Debug.Assert(cell != null);
+            RowDragStarted?.Invoke(Item, _children.IndexOf(item), pointer);
+
         }
 
         private void Cell_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -210,6 +224,7 @@ namespace NuSysApp
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
             cell.Dragged -= Cell_Dragged;
+            cell.DragStarted -= Cell_DragStarted;
             cell.DoubleTapped -= Cell_DoubleTapped;
             cell.Tapped -= Cell_Tapped;
             cell.PointerWheelChanged -= Cell_PointerWheelChanged;

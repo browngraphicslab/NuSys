@@ -37,24 +37,42 @@ namespace NuSysApp
         /// </summary>
         private ButtonUIElement _barToolViewButton;
 
+        private BasicToolViewModel _vm;
 
+
+        private BasicToolListInnerView _listInnerView;
+        private PieToolInnerView _pieInnerView;
+        private BarToolInnerView _barInnerView;
 
         public BasicToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
         {
-            //Vm = vm;
+            _vm = vm;
             SetUpBottomButtons();
-            _toolView = new BasicToolListInnerView(this, ResourceCreator, vm);
-            AddChild(_toolView);
+            SetUpInnerViews();
 
-            //vm.Controller.SetLocation(x, y);
-
-
+            _toolView = _listInnerView;
             vm.ReloadPropertiesToDisplay();
             _toolView.SetProperties((Vm as BasicToolViewModel).PropertiesToDisplay);
             _currentViewMode = ViewMode.List;
-            //SetSize(250, 450);
             (vm.Controller as BasicToolController).SelectionChanged += OnSelectionChanged;
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+        }
+
+        private void SetUpInnerViews()
+        {
+            _listInnerView = new BasicToolListInnerView(this, ResourceCreator, _vm);
+            _pieInnerView = new PieToolInnerView(this, ResourceCreator, _vm);
+            _barInnerView = new BarToolInnerView(this, ResourceCreator, _vm);
+
+            _listInnerView.IsVisible = true;
+            _pieInnerView.IsVisible = false;
+            _barInnerView.IsVisible = false;
+
+            AddChild(_listInnerView);
+            AddChild(_pieInnerView);
+            AddChild(_barInnerView);
+
+            _currentViewMode = ViewMode.List;
         }
 
         public override void Dispose()
@@ -99,6 +117,7 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
+
         /// <summary>
         /// Sets up the buttons at the bottom of the tool ()
         /// </summary>
@@ -112,7 +131,7 @@ namespace NuSysApp
                 Width = VIEW_BUTTON_HEIGHT,
             };
             _listToolViewButton = new ButtonUIElement(this, ResourceCreator, listButtonRectangle);
-            
+            _listToolViewButton.Tapped += ListToolViewButton_Tapped;
             _listToolViewButton.Transform.LocalPosition = new Vector2(VIEW_BUTTON_MARGIN,
                 ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
             AddChild(_listToolViewButton);
@@ -125,7 +144,8 @@ namespace NuSysApp
                 Width = VIEW_BUTTON_HEIGHT,
             };
             _pieToolViewButton = new ButtonUIElement(this, ResourceCreator, pieButtonRectangle);
-            _pieToolViewButton.ButtonTextColor = Constants.ALMOST_BLACK;
+            _pieToolViewButton.Tapped += PieToolViewButton_Tapped;
+            _pieToolViewButton.ButtonTextColor = Constants.color3;
             _pieToolViewButton.Transform.LocalPosition =
                 new Vector2(_listToolViewButton.Transform.LocalX + _listToolViewButton.Width + VIEW_BUTTON_MARGIN,
                     ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
@@ -138,14 +158,16 @@ namespace NuSysApp
                 Height = VIEW_BUTTON_HEIGHT,
                 Width = VIEW_BUTTON_HEIGHT,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE
+                Bordercolor = Constants.color2
             };
             _barToolViewButton = new ButtonUIElement(this, ResourceCreator, barButtonRectangle);
-            _barToolViewButton.ButtonTextColor = Constants.ALMOST_BLACK;
+            _barToolViewButton.Tapped += BarToolViewButton_Tapped;
+            _barToolViewButton.ButtonTextColor = Colors.Black;
             _barToolViewButton.Transform.LocalPosition =
                 new Vector2(_pieToolViewButton.Transform.LocalX + _pieToolViewButton.Width + VIEW_BUTTON_MARGIN,
                     ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
             AddChild(_barToolViewButton);
+
 
             UITask.Run(async delegate
             {
@@ -164,6 +186,64 @@ namespace NuSysApp
                 _barToolViewButton.ImageBounds = new Rect(_barToolViewButton.Width / 4, _barToolViewButton.Height / 4, _barToolViewButton.Width / 2, _barToolViewButton.Height / 2);
 
             });
+        }
+
+
+        private void ListToolViewButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_currentViewMode == ViewMode.List)
+            {
+                return;
+            }
+            //RemoveChild(_toolView);
+            _listInnerView.IsVisible = true;
+            _pieInnerView.IsVisible = false;
+            _barInnerView.IsVisible = false;
+
+            _toolView = _listInnerView;
+            //AddChild(_toolView);
+
+            _vm.ReloadPropertiesToDisplay();
+            _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
+            _currentViewMode = ViewMode.List;
+
+        }
+
+        private void PieToolViewButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_currentViewMode == ViewMode.PieChart)
+            {
+                return;
+            }
+            _listInnerView.IsVisible = false;
+            _pieInnerView.IsVisible = true;
+            _barInnerView.IsVisible = false;
+
+            _toolView = _pieInnerView;
+
+            _vm.ReloadPropertiesToDisplay();
+            _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
+            _currentViewMode = ViewMode.PieChart;
+
+        }
+
+        private void BarToolViewButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_currentViewMode == ViewMode.BarChart)
+            {
+                return;
+            }
+
+            _listInnerView.IsVisible = false;
+            _pieInnerView.IsVisible = false;
+            _barInnerView.IsVisible = true;
+
+            _toolView = _barInnerView;
+
+            _vm.ReloadPropertiesToDisplay();
+            _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
+            _currentViewMode = ViewMode.BarChart;
+
         }
 
         public override void Draw(CanvasDrawingSession ds)

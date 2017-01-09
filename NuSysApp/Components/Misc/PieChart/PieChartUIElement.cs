@@ -31,6 +31,9 @@ namespace NuSysApp
         /// </summary>
         public float FontSize { set; get; }
 
+
+        public int MaxLabels { set; get; }
+
         /// <summary>
         /// Palette is the list of colors that make up the pieces of the pie. 
         /// </summary>
@@ -62,6 +65,8 @@ namespace NuSysApp
         /// <param name="element"></param>
         public delegate void PieChartElementDeselectedEventHandler(object source, PieChartElement<string> element);
         public event PieChartElementDeselectedEventHandler ElementDeselected;
+
+
         /// <summary>
         /// Element is the PieChartElement that represents the piece of the pie being dragged.
         /// Pointer is the location of the pointer
@@ -80,6 +85,13 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         public delegate void PieChartElementDragCompletedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
         public event PieChartElementDragCompletedEventHandler ElementDragCompleted;
+
+
+        public delegate void PieChartElementTappedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public event PieChartElementTappedEventHandler ElementTapped;
+
+        public delegate void PieChartElementDoubleTappedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public event PieChartElementDoubleTappedEventHandler ElementDoubleTapped;
         #endregion events
 
         #region private variables
@@ -106,7 +118,7 @@ namespace NuSysApp
             Background = Colors.Transparent;
             Padding = 50;
             FontSize = 18;
-
+            MaxLabels = 6;
             MultiSelect = true;
             DisableSelectionByClick = false;
             Palette = new List<Color>(new[] { Colors.DarkSalmon, Colors.Azure, Colors.LemonChiffon, Colors.Honeydew, Colors.Pink });
@@ -114,15 +126,27 @@ namespace NuSysApp
             _elements = new List<PieChartElement<string>>();
             _selectedElements = new HashSet<PieChartElement<string>>();
 
-            //These elements are added in as an example. Remove the following lines as needed.
-            AddElement("A", 5);
-            AddElement("B", 3);
-            AddElement("C", 12);
-            AddElement("D", 7);
 
+
+            DoubleTapped += PieChartUIElement_DoubleTapped;
             Released += PieChartUIElement_Released;
             Dragged += PieChartUIElement_Dragged;
         }
+
+        private void PieChartUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var element = GetElementFromAngle(GetAngleFromPoint(point));
+
+            if (element == null)
+            {
+                return;
+            }
+
+            ElementDoubleTapped?.Invoke(this, element, pointer);
+
+        }
+
         /// <summary>
         /// Creates an element and adds it to the list of elements.
         /// Takes in the item and value 
@@ -141,6 +165,35 @@ namespace NuSysApp
             element.Item = item;
             element.Value = value;
             _elements?.Add(element);
+
+        }
+
+        public void AddItems(List<string> items)
+        {
+            var dict = new Dictionary<string, int>();
+            foreach (var item in items)
+            {
+                if (!dict.ContainsKey(item))
+                {
+                    dict[item] = 1;
+                }
+                else
+                {
+                    dict[item] += 1;
+                }
+
+            }
+
+            foreach (var kvp in dict)
+            {
+                AddElement(kvp.Key, kvp.Value);
+            }
+        }
+
+        public void ClearElements()
+        {
+            _elements.Clear();
+            _selectedElements.Clear();
 
         }
         /// <summary>
@@ -173,7 +226,7 @@ namespace NuSysApp
             // If we were dragging when we released, we should invoke the ElementDragCompleted event.
             if (_isDragging)
             {
-                if(_draggedElement != null)
+                if (_draggedElement != null)
                 {
                     ElementDragCompleted?.Invoke(this, _draggedElement, pointer);
                 }
@@ -190,6 +243,8 @@ namespace NuSysApp
                 {
                     return;
                 }
+
+                ElementTapped?.Invoke(this, element, pointer);
                 if (_selectedElements.Contains(element))
                 {
                     if (!DisableSelectionByClick)
@@ -214,7 +269,7 @@ namespace NuSysApp
         /// If MultiSelect is off, we deselect everything else first.
         /// </summary>
         /// <param name="element"></param>
-        private void SelectElement(PieChartElement<string> element)
+        public void SelectElement(PieChartElement<string> element)
         {
             if (element == null)
             {
@@ -222,7 +277,7 @@ namespace NuSysApp
                 return;
             }
 
-     
+
             if (MultiSelect == false)
             {
                 //If multiselect is off, deselect every element first
@@ -233,6 +288,17 @@ namespace NuSysApp
             }
             _selectedElements.Add(element);
             ElementSelected?.Invoke(this, element);
+
+        }
+
+        public void SelectElement(string name)
+        {
+            var pieChartElement = from element in _elements where (name == element.Item) select element;
+            if (pieChartElement.ToList().Count != 1)
+            {
+                return;
+            }
+            SelectElement(pieChartElement.Single());
 
         }
         /// <summary>
@@ -256,7 +322,12 @@ namespace NuSysApp
 
             ElementDeselected?.Invoke(this, element);
 
-            
+
+        }
+
+        public void DeselectElement()
+        {
+
         }
         /// <summary>
         /// Finds the element where the angle lies by iterating through the elements.
@@ -265,7 +336,7 @@ namespace NuSysApp
         /// <returns></returns>
         private PieChartElement<string> GetElementFromAngle(double theta)
         {
-            for(int i = 0; i < _elements.Count; i++)
+            for (int i = 0; i < _elements.Count; i++)
             {
                 if (_elements[i].IsHit(theta))
                 {
@@ -300,18 +371,121 @@ namespace NuSysApp
              * (For example, what would be 0 in polar coordiantes is PI/2 here,
              * what would be PI/2 in polar coordinates is 0 here.)
              * 
-             */ 
+             */
 
-            var theta = Math.Atan2(x,y);
-            
+            var theta = Math.Atan2(x, y);
+
             if (theta < 0)
             {
                 //Theta should be from 0 to 2PI.
                 theta = 2 * Math.PI + theta;
             }
             return theta;
-        } 
+        }
 
+        /// <summary>
+        /// Draws the labels needed. if we can draw all labels, it does. if we can't, we draw only the selected elements' labels
+        /// </summary>
+        /// <param name="ds"></param>
+        private void DrawLabels(CanvasDrawingSession ds)
+        {
+            var w = Width;
+            var h = Height;
+            var midx = w / 2;
+            var midy = h / 2;
+
+            var padding = Padding;
+            var lineOffset = 20;
+            var r = Math.Min(w, h) / 2 - padding;
+
+            var lineBrush = new CanvasSolidColorBrush(ds, Constants.ALMOST_BLACK);
+            for (int i = 0; i < _elements.Count; i++)
+            {
+                var element = _elements[i];
+
+                //if true, we can draw all labels. else, draw only selected elements' labels
+                bool canDrawAllLabels = _elements.Count <= MaxLabels;
+
+                if (!canDrawAllLabels && !_selectedElements.Contains(element))
+                {
+                    continue; //Continue to next element if the element is not selected and we can't draw all labels
+                }
+
+                float sweepAngle = element.SweepAngle;
+
+                var midAngle = element.StartAngle + sweepAngle / 2;
+                var isRightHalf = midAngle < Math.PI;
+                var isTopHalf = midAngle <= Math.PI / 2 || midAngle >= Math.PI * 3 / 2;
+
+                var p0 = new Vector2((float)(midx + (r - lineOffset) * Math.Sin(midAngle)), (float)(midy - (r - lineOffset) * Math.Cos(midAngle)));
+                var p1 = new Vector2((float)(midx + (r + lineOffset) * Math.Sin(midAngle)), (float)(midy - (r + lineOffset) * Math.Cos(midAngle)));
+                var p2 = isRightHalf ? new Vector2(p1.X + 50, p1.Y) : new Vector2(p1.X - 50, p1.Y);
+
+                using (var cpb = new CanvasPathBuilder(ds))
+                {
+                    cpb.BeginFigure(p0);
+                    cpb.AddLine(p1);
+                    cpb.AddLine(p2);
+                    cpb.EndFigure(CanvasFigureLoop.Open);
+
+                    ds.DrawGeometry(
+                        CanvasGeometry.CreatePath(cpb),
+                        lineBrush,
+                        1);
+                }
+
+                var point = new Vector2((float)(midx + (r / 4) * Math.Sin(midAngle)), (float)(midy - (r / 4) * Math.Cos(midAngle)));
+
+                var text = element.Item + " " + element.Value.ToString();
+                ds.DrawText(
+                    text,
+                    p1,
+                    Constants.ALMOST_BLACK,
+                    new CanvasTextFormat
+                    {
+                        HorizontalAlignment = isRightHalf ? CanvasHorizontalAlignment.Left : CanvasHorizontalAlignment.Right,
+                        VerticalAlignment = isTopHalf ? CanvasVerticalAlignment.Bottom : CanvasVerticalAlignment.Top,
+                        FontSize = FontSize
+                    });
+            }
+           
+
+        }
+        /// <summary>
+        /// Draws the black outline of selected elements
+        /// </summary>
+        /// <param name="ds"></param>
+        private void DrawSelectedOutlines(CanvasDrawingSession ds)
+        {
+            var w = Width;
+            var h = Height;
+            var midx = w / 2;
+            var midy = h / 2;
+            var center = new Vector2(midx, midy);
+
+            var padding = Padding;
+            var lineOffset = 20;
+            var r = Math.Min(w, h) / 2 - padding;
+
+            var selectionBrush = new CanvasSolidColorBrush(ds, Constants.ALMOST_BLACK);
+            foreach (var element in _selectedElements)
+            {
+                var arcStartPoint = new Vector2((float)(midx + r * Math.Sin(element.StartAngle)), (float)(midy - r * Math.Cos(element.StartAngle)));
+
+                using (var cpb = new CanvasPathBuilder(ds))
+                {
+                    cpb.BeginFigure(center);
+                    cpb.AddLine(arcStartPoint);
+                    cpb.AddArc(new Vector2(midx, midy), r, r, element.StartAngle - (float)(Math.PI / 2), element.SweepAngle);
+                    cpb.AddLine(center);
+                    cpb.EndFigure(CanvasFigureLoop.Open);
+                    ds.DrawGeometry(CanvasGeometry.CreatePath(cpb), selectionBrush, 3);
+
+                }
+            
+
+            }
+        }
         /// <summary>
         /// DrawPie draws the pieces of the pie and the selection outline if necessary for each element.
         /// </summary>
@@ -333,12 +507,11 @@ namespace NuSysApp
 
 
             var center = new Vector2(midx, midy);
-            //This for loop draws the pieces of the pie
             for (int i = 0; i < _elements.Count; i++)
             {
                 float sweepAngle = _elements[i].SweepAngle;
                 var arcStartPoint = new Vector2((float)(midx + r * Math.Sin(_elements[i].StartAngle)), (float)(midy - r * Math.Cos(_elements[i].StartAngle)));
-
+                //Draw the piece itself
                 using (var cpb = new CanvasPathBuilder(ds))
                 {
                     cpb.BeginFigure(center);
@@ -347,76 +520,18 @@ namespace NuSysApp
                     cpb.EndFigure(CanvasFigureLoop.Closed);
                     ds.FillGeometry(CanvasGeometry.CreatePath(cpb), Palette[i % Palette.Count]);
 
-                    
                 }
-
-
-
 
             }
-
-
-            var lineBrush = new CanvasSolidColorBrush(ds, Colors.Black);
-            var selectionBrush = new CanvasSolidColorBrush(ds, Colors.Black);
-            //This for loop draws the line and the text for each piece of the pie
-            for (int i = 0; i < _elements.Count; i++)
-            {
-                float sweepAngle = _elements[i].SweepAngle;
-                var midAngle = _elements[i].StartAngle + sweepAngle / 2;
-                var isRightHalf = midAngle < Math.PI;
-                var isTopHalf = midAngle <= Math.PI / 2 || midAngle >= Math.PI * 3 / 2;
-
-                var p0 = new Vector2((float)(midx + (r - lineOffset) * Math.Sin(midAngle)), (float)(midy - (r - lineOffset) * Math.Cos(midAngle)));
-                var p1 = new Vector2((float)(midx + (r + lineOffset) * Math.Sin(midAngle)), (float)(midy - (r + lineOffset) * Math.Cos(midAngle)));
-                var p2 = isRightHalf ? new Vector2(p1.X + 50, p1.Y) : new Vector2(p1.X - 50, p1.Y);
-
-                using (var cpb = new CanvasPathBuilder(ds))
-                {
-                    cpb.BeginFigure(p0);
-                    cpb.AddLine(p1);
-                    cpb.AddLine(p2);
-                    cpb.EndFigure(CanvasFigureLoop.Open);
-
-                    ds.DrawGeometry(
-                        CanvasGeometry.CreatePath(cpb),
-                        lineBrush,
-                        1);
-                }
-                
-                var point = new Vector2((float)(midx + (r/4) * Math.Sin(midAngle)), (float)(midy - (r/4) * Math.Cos(midAngle)));
-
-                var text = _elements[i].Item + " " + _elements[i].Value.ToString();
-                ds.DrawText(
-                    text,
-                    p1,
-                    Colors.Black,
-                    new CanvasTextFormat
-                    {
-                        HorizontalAlignment = isRightHalf ? CanvasHorizontalAlignment.Left : CanvasHorizontalAlignment.Right,
-                        VerticalAlignment = isTopHalf ? CanvasVerticalAlignment.Bottom : CanvasVerticalAlignment.Top,
-                        FontSize = FontSize
-                    });
-
-                if (_selectedElements.Contains(_elements[i]))
-                {
-                    var arcStartPoint = new Vector2((float)(midx + r * Math.Sin(_elements[i].StartAngle)), (float)(midy - r * Math.Cos(_elements[i].StartAngle)));
-
-                    using (var cpb = new CanvasPathBuilder(ds))
-                    {
-                        cpb.BeginFigure(center);
-                        cpb.AddLine(arcStartPoint);
-                        cpb.AddArc(new Vector2(midx, midy), r, r, _elements[i].StartAngle - (float)(Math.PI / 2), _elements[i].SweepAngle);
-                        cpb.EndFigure(CanvasFigureLoop.Closed);
-                        ds.DrawGeometry(CanvasGeometry.CreatePath(cpb), selectionBrush, 3);
-
-                    }
-
-                }
-            }
-
             ds.Transform = orgTransform;
 
         }
+
+        public void DeselectAllElements()
+        {
+            _selectedElements.Clear();
+        }
+
         /// <summary>
         /// HitTest is overriden so that we hit PieChartUIElement iff the point is within the pie chart.
         /// </summary>
@@ -439,7 +554,7 @@ namespace NuSysApp
             //Distance formula
             var distanceFromOrigin = Math.Sqrt(differenceInX * differenceInX + differenceInY * differenceInY);
             //If distance from origin <= radius, you have hit the inside of the circle
-            if(distanceFromOrigin > r)
+            if (distanceFromOrigin > r)
             {
                 return null;
             }
@@ -448,7 +563,12 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            //Draw each piece of the pie
             DrawPie(ds);
+            //Draw the selected elements' outlines. We can't do this inside the DrawPie's loop because we don't want to draw over the outline
+            DrawSelectedOutlines(ds);
+            //Finally, draw the labels.
+            DrawLabels(ds);
             base.Draw(ds);
         }
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -459,7 +579,7 @@ namespace NuSysApp
             {
                 //Sweep angle is the angle of the piece of the pie. It is the element's 'value' property relative to all of the values of the elements.
                 float sweepAngle = (float)(2 * Math.PI * _elements[i].Value / total);
-                
+
                 _elements[i].SweepAngle = sweepAngle;
                 _elements[i].StartAngle = angle;
                 angle += sweepAngle;
