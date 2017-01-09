@@ -6,7 +6,9 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace NuSysApp
 {
@@ -197,7 +199,59 @@ namespace NuSysApp
         /// </summary>
         private ResizerBorderPosition? _resizePosition;
 
-        public ResizeableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        /// <summary>
+        /// private helper for public property ResizeHighlightColor
+        /// </summary>
+        private Color _resizeHighlightColor { get; set; }
+
+        /// <summary>
+        /// Color used to display resize highlighting
+        /// </summary>
+        public Color ResizeHighlightColor
+        {
+            get { return _resizeHighlightColor; }
+            set
+            {
+                _resizeHighlightColor = value;
+                if (_leftResizeHighlight != null && _rightResizeHighlight != null &&
+                    _bottomResizeHighlight != null)
+                {
+                    _leftResizeHighlight.Background = ResizeHighlightColor;
+                    _rightResizeHighlight.Background = ResizeHighlightColor;
+                    _bottomResizeHighlight.Background = ResizeHighlightColor;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Rectangle used to display the left resize highlight
+        /// </summary>
+        private GradientBackgroundRectangleUIElement _leftResizeHighlight;
+
+        /// <summary>
+        /// Rectangle used to display the right resize highlight
+        /// </summary>
+        private GradientBackgroundRectangleUIElement _rightResizeHighlight;
+
+        /// <summary>
+        /// Rectangle used to display the bottom resize highlight
+        /// </summary>
+        private GradientBackgroundRectangleUIElement _bottomResizeHighlight;
+
+        /// <summary>
+        /// Rectagngle used to display the bottom left resize highlight
+        /// </summary>
+        private GradientBackgroundRectangleUIElement _bottomLeftResizeHighlight;
+
+        /// <summary>
+        /// Rectangle used to display the bottom right resize highlight
+        /// </summary>
+        private GradientBackgroundRectangleUIElement _bottomRightResizeHighlight;
+
+
+        public ResizeableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
+            : base(parent, resourceCreator)
         {
             IsResizeable = UIDefaults.WindowIsResizeable;
             KeepAspectRatio = UIDefaults.WindowKeepsAspectRatio;
@@ -205,11 +259,97 @@ namespace NuSysApp
             MaxHeight = UIDefaults.WindowMaxHeight;
             MinWidth = UIDefaults.WindowMinWidth;
             MinHeight = UIDefaults.WindowMinHeight;
+            ResizeHighlightColor = UIDefaults.ResizeHighlightColor;
+
+            _leftResizeHighlight = new GradientBackgroundRectangleUIElement(this, resourceCreator)
+            {
+                Background = ResizeHighlightColor,
+                IsVisible = false,
+                IsHitTestVisible = false,
+                BackgroundGradients = CreateGradientList(false),
+                Direction = GradientBackgroundRectangleUIElement.GradientDirection.RightLeft
+            };
+            AddChild(_leftResizeHighlight);
+            _rightResizeHighlight = new GradientBackgroundRectangleUIElement(this, resourceCreator)
+            {
+                Background = ResizeHighlightColor,
+                IsVisible = false,
+                IsHitTestVisible = false,
+                BackgroundGradients = CreateGradientList(false),
+                Direction = GradientBackgroundRectangleUIElement.GradientDirection.LeftRight
+
+            };
+            AddChild(_rightResizeHighlight);
+            _bottomResizeHighlight = new GradientBackgroundRectangleUIElement(this, resourceCreator)
+            {
+                Background = ResizeHighlightColor,
+                IsVisible = false,
+                IsHitTestVisible = false,
+                BackgroundGradients = CreateGradientList(false),
+                Direction = GradientBackgroundRectangleUIElement.GradientDirection.TopBottom
+            };
+            AddChild(_bottomResizeHighlight);
+            _bottomLeftResizeHighlight = new GradientBackgroundRectangleUIElement(this, resourceCreator)
+            {
+                Background = ResizeHighlightColor,
+                IsVisible = false,
+                IsHitTestVisible = false,
+                BackgroundGradients = CreateGradientList(true),
+                Direction = GradientBackgroundRectangleUIElement.GradientDirection.UpperRightLowerLeft,
+                //Type = GradientBackgroundRectangleUIElement.GradientType.Radial
+            };
+            AddChild(_bottomLeftResizeHighlight);
+            _bottomRightResizeHighlight = new GradientBackgroundRectangleUIElement(this, resourceCreator)
+            {
+                Background = ResizeHighlightColor,
+                IsVisible = false,
+                IsHitTestVisible = false,
+                BackgroundGradients = CreateGradientList(true),
+                Direction = GradientBackgroundRectangleUIElement.GradientDirection.UpperLeftLowerRight,
+                //Type = GradientBackgroundRectangleUIElement.GradientType.Radial
+            };
+            AddChild(_bottomRightResizeHighlight);
+
+
             // add manipulation events
             Dragged += ResizeableWindowUIElement_Dragged;
             Pressed += ResizeableWindowUIElement_Pressed;
+            OnFocusGained += FocusGainedShowHighlight;
+            OnChildFocusGained += FocusGainedShowHighlight;
+            OnFocusLost += FocusLostHideHighlight;
+            OnFocusLost += FocusLostHideHighlight;
+
 
         }
+
+        /// <summary>
+        /// Returns a list of gradients
+        /// </summary>
+        /// <returns></returns>
+        private List<CanvasGradientStop> CreateGradientList(bool isCorner)
+        {
+            var gradientColor = ResizeHighlightColor;
+            gradientColor.A = 100;
+
+            return new List<CanvasGradientStop>
+            {
+                new CanvasGradientStop {Color = gradientColor, Position = 0},
+                new CanvasGradientStop {Color = Colors.Transparent, Position = isCorner ? .7f/2: .7f}
+            };
+        }
+
+        private void FocusGainedShowHighlight(BaseRenderItem item)
+        {
+            ToggleResizeHighlight(true);
+        }
+
+        private void FocusLostHideHighlight(BaseRenderItem item)
+        {
+            ToggleResizeHighlight(false);
+        }
+
+
+
 
         /// <summary>
         /// Fired when a pointer is pressed on the ResizeableWindowUIElement.
@@ -229,6 +369,10 @@ namespace NuSysApp
         {
             Dragged -= ResizeableWindowUIElement_Dragged;
             Pressed -= ResizeableWindowUIElement_Pressed;
+            OnFocusGained -= FocusGainedShowHighlight;
+            OnChildFocusGained -= FocusGainedShowHighlight;
+            OnFocusLost -= FocusLostHideHighlight;
+            OnFocusLost -= FocusLostHideHighlight;
 
             base.Dispose();
         }
@@ -319,9 +463,6 @@ namespace NuSysApp
                     Transform.LocalPosition += offsetDelta;
                 }
             }
-
-
-
         }
 
 
@@ -345,7 +486,7 @@ namespace NuSysApp
             var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
             // the pointer is on the right bound of the window
-            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin) && currentPoint.Y > TopBarHeight)
+            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin))
             {
                 right = true;
             }
@@ -355,7 +496,7 @@ namespace NuSysApp
                 bottom = true;
             }
             // the pointer is on the left bound of the window
-            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin) && currentPoint.Y > TopBarHeight)
+            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin))
             {
                 left = true;
             }
@@ -385,6 +526,46 @@ namespace NuSysApp
                 return ResizerBorderPosition.Bottom;
             }
             return null;
+        }
+
+        private void ToggleResizeHighlight(bool visible)
+        {
+            _leftResizeHighlight.IsVisible = visible;
+            _rightResizeHighlight.IsVisible = visible;
+            _bottomResizeHighlight.IsVisible = visible;
+            _bottomLeftResizeHighlight.IsVisible = visible;
+            _bottomRightResizeHighlight.IsVisible = visible;
+
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _leftResizeHighlight.Transform.LocalPosition = new Vector2(-ErrorMargin, 0);
+            _leftResizeHighlight.Width = ErrorMargin;
+            _leftResizeHighlight.Height = Height;
+            _rightResizeHighlight.Transform.LocalPosition = new Vector2(Width, 0);
+            _rightResizeHighlight.Width = ErrorMargin;
+            _rightResizeHighlight.Height = Height;
+            _bottomResizeHighlight.Transform.LocalPosition = new Vector2(0, Height);
+            _bottomResizeHighlight.Width = Width;
+            _bottomResizeHighlight.Height = ErrorMargin;
+            _bottomLeftResizeHighlight.Transform.LocalPosition = new Vector2(-ErrorMargin, Height);
+            _bottomLeftResizeHighlight.Width = ErrorMargin;
+            _bottomLeftResizeHighlight.Height = ErrorMargin;
+            _bottomRightResizeHighlight.Transform.LocalPosition = new Vector2(Width, Height);
+            _bottomRightResizeHighlight.Width = ErrorMargin;
+            _bottomRightResizeHighlight.Height = ErrorMargin;
+            base.Update(parentLocalToScreenTransform);
+        }
+
+        /// <summary>
+        /// Calculates the LocalBounds of the window by returning a Rect with coordinates relative
+        /// to the LocalTransform. The override here is to provide support for the ErrorMargin.
+        /// </summary>
+        /// <returns></returns>
+        public override Rect GetLocalBounds()
+        {
+            return new Rect(-ErrorMargin, -ErrorMargin, Width + ErrorMargin * 2, Height + ErrorMargin * 2);
         }
     }
 }

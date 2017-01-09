@@ -13,12 +13,28 @@ namespace NuSysApp
 {
     public class BaseRenderItem : IDisposable
     {
-        // Delegate and events to manage the focus of this element
+        /// <summary>
+        /// Delegate and events to manage the focus of this element
+        /// </summary>
+        /// <param name="item"></param>
         public delegate void BaseRenderItemFocusEvent(BaseRenderItem item);
-        // Event fired when this render item gains focus
+        /// <summary>
+        /// Event fired when this render item gains focus
+        /// </summary>
         public event BaseRenderItemFocusEvent OnFocusGained;
-        // Event fired when this render item loses focus
+        /// <summary>
+        /// Event fired when this render item loses focus
+        /// </summary>
         public event BaseRenderItemFocusEvent OnFocusLost;
+        /// <summary>
+        /// Event fired when the child's focus is gained, the base render item is NOT THE (father) CHILD
+        /// </summary>
+        public event BaseRenderItemFocusEvent OnChildFocusGained;
+        /// <summary>
+        /// Event fired when the child's focus is lost, the base render item is NOT THE (father) CHILD
+        /// </summary>
+        public event BaseRenderItemFocusEvent OnChildFocusLost;
+
 
         private bool _isHitTestVisible = true;
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
@@ -37,6 +53,12 @@ namespace NuSysApp
 
         public bool IsVisible { get; set; } = true;
 
+        /// <summary>
+        /// True if one of the children has focus
+        /// </summary>
+        public bool ChildHasFocus { get; set; }
+
+
         public bool IsHitTestVisible
         {
             get
@@ -51,6 +73,12 @@ namespace NuSysApp
         }
 
         public bool IsChildrenHitTestVisible { get; set; } = true;
+
+        /// <summary>
+        /// True if the object currently has focus set by the focus manager
+        /// try to avoid setting this yourself
+        /// </summary>
+        public bool HasFocus { get; set; }
 
         public BaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
         {
@@ -190,12 +218,30 @@ namespace NuSysApp
         public virtual void GotFocus()
         {
             OnFocusGained?.Invoke(this);
+            Parent?.ChildrenGotFocus();
+            HasFocus = true;
         }
 
         // Called when this item loses focus - fires event
         public virtual void LostFocus()
         {
             OnFocusLost?.Invoke(this);
+            Parent?.ChildrenLostFocus();
+            HasFocus = false;
+        }
+
+        public virtual void ChildrenGotFocus()
+        {
+            Parent?.ChildrenGotFocus();
+            ChildHasFocus = true;
+            OnChildFocusGained?.Invoke(this);
+        }
+
+        public virtual void ChildrenLostFocus()
+        {
+            Parent?.ChildrenLostFocus();
+            ChildHasFocus = true;
+            OnChildFocusLost?.Invoke(this);
         }
     }
 }
