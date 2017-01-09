@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -79,20 +80,110 @@ namespace NuSysApp
 
         private void SettingsButton_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+
+            //todo make this able to close when the settings button is pressed again, also if i click the settings button
+            // twice this should close
             var settingsPopup = new FlyoutPopup(this, Canvas);
             settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - settingsPopup.Width/2,
                 _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
-            settingsPopup.AddFlyoutItem("Scroll To", null, Canvas);
-            settingsPopup.AddFlyoutItem("Delete", null, Canvas);
-            settingsPopup.AddFlyoutItem("Copy", null, Canvas);
-            settingsPopup.AddFlyoutItem("Change Access", null, Canvas);
+            settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
+            settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
+            settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
+            settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
 
             AddChild(settingsPopup);
         }
 
+        /// <summary>
+        /// Called whenever the change access option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnChangeAccessFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // create the change Access menu
+            var changeAccessPopup = new FlyoutPopup(this, Canvas);
+            var flyout = item as BaseInteractiveUIElement;
+            Debug.Assert(flyout != null);
+            changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
+
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+            {
+                changeAccessPopup.AddFlyoutItem("Make Read Only", OnReadOnlyTapped, Canvas);
+            }
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly ||
+                _currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+            {
+                changeAccessPopup.AddFlyoutItem("Make Public", OnPublicTapped, Canvas);
+            }
+
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
+            {
+                changeAccessPopup.AddFlyoutItem("Cannot Change Access", null, Canvas);
+            }
+
+            AddChild(changeAccessPopup);
+
+        }
+
+        /// <summary>
+        /// Method called when the change access public option is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _currentController.SetAccessType(NusysConstants.AccessType.Public);
+        }
+
+        /// <summary>
+        /// Method called when the change access read only option is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);
+        }
+
+        /// <summary>
+        /// Called whenever the copy option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnCopyFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId);
+        }
+
+        /// <summary>
+        /// Called whenever the delete option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private async void OnDeleteFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            DeleteLibraryElementRequest request = new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            if (request.WasSuccessful() == true)
+            {
+                request.DeleteLocally();
+            }
+        }
+
+        /// <summary>
+        /// Called whenever the scroll to option is tapped in the flyout setting menu
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnScrollToFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.NuSessionView.Library.IsVisible = true;
+            SessionController.Instance.NuSessionView.Library.LibraryListView.ScrollTo(_currentController.LibraryElementModel);
+        }
+
         public override async Task Load()
         {
-
             //todo figure out why ScrollableTextbox breaks if you put these in the constructor. 
             _titleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
@@ -105,10 +196,9 @@ namespace NuSysApp
             AddChild(_titleBox);
             _titleBox.TextChanged += OnTitleTextChanged;
 
-            _settingsButton.Image =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
+            _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
 
-             _loaded = true;
+            _loaded = true;
             base.Load();
         }
 
@@ -177,7 +267,7 @@ namespace NuSysApp
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _titleBox.Text = _currentController.Title;
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
-            
+
 
             // clear all the old tabs
             _pageTabContainer.ClearTabs();

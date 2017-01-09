@@ -466,7 +466,8 @@ namespace NuSysApp
             if (element is CollectionRenderItem)
                 CollectionSwitched?.Invoke(element as CollectionRenderItem);
             if (element is VideoElementRenderItem)
-                MultimediaElementActivated?.Invoke(element as VideoElementRenderItem);
+                //MultimediaElementActivated?.Invoke(element as VideoElementRenderItem);
+                SessionController.Instance.ActiveFreeFormViewer.PlayFullScreenVideo((element as VideoElementRenderItem).ViewModel.Controller.LibraryElementController as VideoLibraryElementController);
             if (element is AudioElementRenderItem)
                 MultimediaElementActivated?.Invoke(element as AudioElementRenderItem);
         }
@@ -519,6 +520,10 @@ namespace NuSysApp
             var currentCollection = _freeFormViewer.CurrentCollection;
             if (elementRenderItem == initialCollection || elementRenderItem == currentCollection || elementRenderItem == null)
             {
+                if (element is BaseInteractiveUIElement && !(element is CollectionRenderItem))
+                    {
+                        return;
+                    }
                 SelectionsCleared?.Invoke();
                 if (element == null)
                     CollectionSwitched?.Invoke(initialCollection);

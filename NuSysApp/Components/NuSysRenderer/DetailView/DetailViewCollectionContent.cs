@@ -67,10 +67,7 @@ namespace NuSysApp
         {
             if (SessionController.Instance.CurrentCollectionLibraryElementModel != _controller.LibraryElementModel)
             {
-                UITask.Run(() =>
-                {
-                    SessionController.Instance.EnterCollection(_controller.LibraryElementModel.LibraryElementId);
-                });
+                SessionController.Instance.EnterCollection(_controller.LibraryElementModel.LibraryElementId);
             }
         }
 

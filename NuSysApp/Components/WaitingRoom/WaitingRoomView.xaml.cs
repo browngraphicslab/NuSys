@@ -42,9 +42,16 @@ namespace NuSysApp
 
         public static string InitialWorkspaceId { get; private set; }
         
-        public static string UserID { get; private set; }
+        /// <summary>
+        /// The UserID of the current user 
+        /// </summary>
+        public static string UserID { get; private set; } //todo refactor this and move it to the NusysNetworkSession
 
-        public static string UserName { get; private set; }
+        /// <summary>
+        /// The UserName of the current user
+        /// </summary>
+        public static string UserName { get; private set; } //todo refactor this and move it to the nusys network session
+
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 

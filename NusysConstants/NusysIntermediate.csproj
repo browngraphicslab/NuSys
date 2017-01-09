@@ -34,10 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="project.json" />
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FullArgsRequest.cs" />
     <Compile Include="ModelFactories\InkModelFactory.cs" />
     <Compile Include="Models\CollectionContentDataModel.cs" />
     <Compile Include="Models\CollectionShapeModel.cs" />
@@ -48,6 +50,11 @@
     <Compile Include="Models\WordLibraryElementModel.cs" />
     <Compile Include="RequestArgs\AddNewLastUsedCollectionServerRequestArgs.cs" />
     <Compile Include="RequestArgs\GetLastUsedCollectionsServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\GetWordDocumentRequestArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\GetWordDocumentReturnArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\ServerReturnArgsBase.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\UploadCollectionBackgroundImageReturnArgs.cs" />
+    <Compile Include="RequestArgs\UploadCollectionBackgroundImageServerRequestArgs.cs" />
     <Compile Include="ServerArgsRequest.cs" />
     <Compile Include="BaseClient.cs" />
     <Compile Include="INotificationArgumentable.cs" />
@@ -107,6 +114,10 @@
     <Compile Include="ServerSearch\SearchResult.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Windows.Foundation.UniversalApiContract">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\Windows.Foundation.UniversalApiContract\1.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
     </Reference>

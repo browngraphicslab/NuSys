@@ -68,7 +68,12 @@ namespace NuSysApp
 
         private TextboxUIElement _lastEditedDateHeader;
 
-        private BrushFilter _currFilter;
+        public BrushFilter CurrBrush { get; }
+
+        /// <summary>
+        /// Event fired whenever the brush is updated in the filter sub menu
+        /// </summary>
+        public event EventHandler<BrushFilter> BrushUpdated;
 
         public FilterSubMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -183,7 +188,7 @@ namespace NuSysApp
             };
             AddChild(_lastEditedStartDateSelector);
 
-            _currFilter = new BrushFilter();
+            CurrBrush = new BrushFilter();
 
             _userIdListView.RowTapped += OnUserIdSelected;
             _elementTypeListView.RowTapped += OnTypeSelected;
@@ -205,21 +210,23 @@ namespace NuSysApp
         {
             if (sender == _creationStartDateSelector)
             {
-                _currFilter.CreationDateStart = date;
+                CurrBrush.CreationDateStart = date;
             } else if (sender == _creationEndDateSelector)
             {
-                _currFilter.CreationDateEnd = date;
+                CurrBrush.CreationDateEnd = date;
             } else if (sender == _lastEditedStartDateSelector)
             {
-                _currFilter.LastEditedStart = date;
+                CurrBrush.LastEditedStart = date;
             } else if (sender == _lastEditedEndDateSelector)
             {
-                _currFilter.LastEditedEnd = date;
+                CurrBrush.LastEditedEnd = date;
             }
             else
             {
                 Debug.Fail("we should never hit this");
             }
+
+            OnBrushUpdated();
         }
 
         /// <summary>
@@ -233,12 +240,14 @@ namespace NuSysApp
         {
             if (isSelected)
             {
-                _currFilter.Types.Add(item);
+                CurrBrush.Types.Add(item);
             }
             else
             {
-                _currFilter.Types.Remove(item);
+                CurrBrush.Types.Remove(item);
             }
+
+            OnBrushUpdated();
         }
 
         public override void Dispose()
@@ -264,12 +273,19 @@ namespace NuSysApp
         {
             if (isSelected)
             {
-                _currFilter.Creators.Add(item);
+                CurrBrush.Creators.Add(item);
             }
             else
             {
-                _currFilter.Creators.Remove(item);
+                CurrBrush.Creators.Remove(item);
             }
+
+            OnBrushUpdated();
+        }
+
+        private void OnBrushUpdated()
+        {
+            BrushUpdated?.Invoke(this, CurrBrush);
         }
 
         /// <summary>
@@ -330,7 +346,7 @@ namespace NuSysApp
                 NusysConstants.ElementType.Text,
                 NusysConstants.ElementType.Video,            
             });
-            foreach (var type in _currFilter.Types)
+            foreach (var type in CurrBrush.Types)
             {
                 _elementTypeListView.SelectItem(type);
             }
@@ -363,7 +379,7 @@ namespace NuSysApp
         {
             _userIdListView.ClearItems();
             _userIdListView.AddItems(SessionController.Instance.ContentController.AllLibraryElementModels.Select(elem => elem.Creator).Distinct().ToList());
-            foreach (var creator in _currFilter.Creators)
+            foreach (var creator in CurrBrush.Creators)
             {
                 _userIdListView.SelectItem(creator);
             }
@@ -408,14 +424,14 @@ namespace NuSysApp
 
         public HashSet<ElementController> GetElementControllersForCurrentCollection()
         {
-            return _currFilter.GetElementControllersForCollection(
+            return CurrBrush.GetElementControllersForCollection(
     SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Controller
         .LibraryElementController as CollectionLibraryElementController);
         }
 
         public HashSet<LibraryElementController> GetLibraryElementControllers()
         {
-            return _currFilter.GetLibraryElementControllers();
+            return CurrBrush.GetLibraryElementControllers();
         }
     }
 }

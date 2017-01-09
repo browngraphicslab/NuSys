@@ -36,12 +36,13 @@ namespace NuSysApp
 
         #region font and text
 
-        public static string TitleFont = "/Assets/fonts/freightsans.ttf#FreightSans BookSC";
+        public static string TitleFont = "Arial"; /*"/Assets/fonts/freightsans.ttf#FreightSans BookSC"*/
         public static string TextFont;
         public static CanvasHorizontalAlignment TextHorizontalAlignment = CanvasHorizontalAlignment.Left;
         public static CanvasVerticalAlignment TextVerticalAlignment = CanvasVerticalAlignment.Center;
         public static Color TextColor = Constants.ALMOST_BLACK;
         public static FontStyle FontStyle = FontStyle.Normal;
+        public static FontWeight FontWeight = FontWeights.Normal;
         public static float FontSize = 14;
         public static CanvasWordWrapping Wrapping = CanvasWordWrapping.Wrap;
         public static CanvasTrimmingSign TrimmingSign = CanvasTrimmingSign.Ellipsis;
@@ -149,5 +150,10 @@ namespace NuSysApp
 
         public static Color PlaceHolderTextColor = Constants.MED_BLUE;
         public static float MaxDropDownHeight = 250;
+        public static Color HighlightColor = Colors.Yellow;
+        public static float ScrollBarWidth = 15;
+        public static Color ScrollButtonColor = Colors.LightGray;
+        public static Color ScrollHandleBackground = Colors.LightGray;
+        public static Color ScrollBarBackground = Colors.DarkGray;
     }
 }

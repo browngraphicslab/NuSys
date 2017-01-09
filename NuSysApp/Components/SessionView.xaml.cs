@@ -83,7 +83,9 @@ namespace NuSysApp
 
         public void ShowBlockingScreen(bool visible)
         {
-            xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            UITask.Run(delegate {
+                xLoadingGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            });
         }
 
         public Canvas MainCanvas

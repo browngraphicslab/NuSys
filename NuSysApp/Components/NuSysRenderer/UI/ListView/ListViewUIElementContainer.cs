@@ -216,6 +216,7 @@ namespace NuSysApp
             ListView.RowDragCompleted += ListView_RowDragCompleted;
             ListView.RowDoubleTapped += ListView_RowDoubleTapped;
 
+
             _header = new ListViewHeader<T>(this, resourceCreator);
             _header.HeaderDragged += Header_HeaderDragged;
             _header.HeaderDragCompleted += Header_HeaderDragCompleted;
@@ -224,6 +225,13 @@ namespace NuSysApp
             _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
             AddChild(_header);
             ShowHeader = true;
+        }
+        /// <summary>
+        /// Calls ListViewUIElement's clearfilter method
+        /// </summary>
+        public void ClearFilter()
+        {
+            _listview.ClearFilter();
         }
 
 
@@ -558,6 +566,14 @@ namespace NuSysApp
                 _header.Height = 40;
                 _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
+        }
+        /// <summary>
+        /// Calls ListViewUIElement's FilterBy method
+        /// </summary>
+        /// <param name="filter"></param>
+        public void FilterBy(Func<T, bool> filter)
+        {
+            _listview.FilterBy(filter);
         }
 
         /// <summary>

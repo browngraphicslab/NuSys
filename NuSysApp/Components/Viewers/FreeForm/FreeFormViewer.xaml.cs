@@ -7,11 +7,13 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI;
+using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
@@ -163,8 +165,6 @@ namespace NuSysApp
 
             RenderEngine.Root.AddChild(InitialCollection);
 
-
-
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
@@ -174,6 +174,8 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+
+            _vm.FullScreenVideo += PlayFullScreenVideo;
         }
 
         /// <summary>
@@ -1140,6 +1142,12 @@ namespace NuSysApp
                 ClearSelections();
 
             _minimap.Invalidate();
+
+            if (_layoutWindow != null)
+            {
+                RenderEngine.Root.RemoveChild(_layoutWindow);
+                _layoutWindow = null;
+            }
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -1157,21 +1165,6 @@ namespace NuSysApp
 
             if (item is ElementRenderItem)
             {
-                try
-                {
-                    var loginName =
-                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[
-                            WaitingRoomView.UserID];
-                    var creator =
-                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
-                            ].Values[0];
-                    if (loginName != "rms" && creator.ToLower() == "rms")
-                        return;
-                }
-                catch (Exception e)
-                {
-                    // do nothing.
-                }
                 var libraryElementModelId = (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
                 if (libraryElementModelId != null)
                 {
@@ -1189,7 +1182,15 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
         {
-            AddToSelections(element);
+            if (SessionController.IsReadonly)
+            {
+                Debug.Assert(element?.ViewModel?.Id != null);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(element.ViewModel.Id);
+            }
+            else
+            {
+                AddToSelections(element);
+            }
             // add the bread crumb
 
             if (element?.ViewModel?.Controller?.LibraryElementModel != null)
@@ -1376,6 +1377,26 @@ namespace NuSysApp
             var items = _vm.AtomViewList.Where(element => element is AdornmentView);
             var adornment = items.FirstOrDefault();
             return adornment;
+        }
+
+        public void PlayFullScreenVideo(object sender, VideoLibraryElementController videoLibraryElementController)
+        {
+            xFullScreenVideoElement.Visibility = Visibility.Visible;
+            xFullScreenVideoCloseButton.Visibility = Visibility.Visible;
+            xFullScreenVideoBackground.Visibility = Visibility.Visible;
+
+            xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight - 50);
+            xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
+        }
+
+        private void XFullScreenVideoCloseButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            xFullScreenVideoElement.Visibility = Visibility.Collapsed;
+            xFullScreenVideoCloseButton.Visibility = Visibility.Collapsed;
+            xFullScreenVideoBackground.Visibility = Visibility.Collapsed;
+
+            xFullScreenVideoElement.Pause();
+
         }
     }
 }

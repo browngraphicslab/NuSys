@@ -53,20 +53,14 @@ namespace NuSysApp
             // if the item is in the current collection
             if (itemParentCollectionController.LibraryElementModel == SessionController.Instance.CurrentCollectionLibraryElementModel)
             {
-                UITask.Run(() =>
-                    {
-                        // move the camera to the element the crumb represents
-                        SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
-                            elementController.Id);
-                    });
+                // move the camera to the element the crumb represents
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
+                    elementController.Id);
             }
             else
             {
                 // otherwise enter the collection and try to zoom in on the element model that the crumb represents
-                UITask.Run(() =>
-                {
-                    SessionController.Instance.EnterCollection(itemParentCollectionController.LibraryElementModel.LibraryElementId, elementController?.Id);
-                });
+                SessionController.Instance.EnterCollection(itemParentCollectionController.LibraryElementModel.LibraryElementId, elementController?.Id);
             }
         }
 

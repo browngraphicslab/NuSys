@@ -49,7 +49,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-
+                
                 // otherwise add the viewmodel to the list of rects we are going to apply a mask too
                 try
                 {

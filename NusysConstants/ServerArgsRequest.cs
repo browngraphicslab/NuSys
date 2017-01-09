@@ -25,7 +25,7 @@ namespace NusysIntermediate
         public ServerArgsRequest (T requestArgs) : base(requestArgs.RequestType)
         {
             requestArgs.CheckValidity();
-            _message[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = requestArgs.GetSerialized();
+            _message[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = requestArgs;
         }
 
         /// <summary>
@@ -36,22 +36,6 @@ namespace NusysIntermediate
         public ServerArgsRequest(Request request) : base(request.GetRequestType())
         {
             _message = request.GetMessage();
-        }
-
-        /// <summary>
-        /// virtual method that requires all base classes to have a GetArgs method.
-        /// This should, in every foreseeable implementation (as of 8/29/16), be:
-        /// 
-        ///         public override {requestArgsType} GetArgs()
-        ///         {
-        ///             return base.GetArgsClassFromMessage();
-        ///         }
-        ///  
-        /// </summary>
-        /// <returns></returns>
-        public virtual T GetArgs()
-        {
-            return GetArgsClassFromMessage();
         }
 
         /// <summary>

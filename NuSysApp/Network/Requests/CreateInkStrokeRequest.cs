@@ -43,7 +43,7 @@ namespace NuSysApp
             inkModel.InkPoints = _message.GetList<PointModel>(NusysConstants.CREATE_INK_STROKE_REQUEST_POINTS_KEY);
             var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
 
-            contentController?.AddInk(inkModel);
+            contentController?.AddInkFromServer(inkModel);
         }
 
         /// <summary>

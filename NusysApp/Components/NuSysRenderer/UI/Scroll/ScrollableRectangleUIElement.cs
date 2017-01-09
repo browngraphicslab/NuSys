@@ -31,8 +31,6 @@ namespace NuSysApp
             _resourceCreator = resourceCreator;
             MakeScrollBar();
             IsHitTestVisible = false;
-
-
         }
         
 
@@ -45,10 +43,9 @@ namespace NuSysApp
 
             _scrollBar = new ScrollBarUIElement(_parent, _resourceCreator, ScrollBarUIElement.Orientation.Vertical)
             {
-                Background = Colors.LightGray,
+                Background = Constants.LIGHT_BLUE,
                 Height = this.Height,
                 Width = scrollbarwidth,
-                ScrollBarColor = Colors.Gray,
             };
 
             _scrollBar.ScrollBarPositionChanged += ScrollBarPositionChanged;
@@ -65,6 +62,7 @@ namespace NuSysApp
         {
 
         }
+
         public override void Draw(CanvasDrawingSession ds)
         {
             _scrollBar.Transform.LocalPosition = new Vector2((float)Width - _scrollBar.Width, 0);

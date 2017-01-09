@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -15,7 +17,24 @@ namespace NuSysApp
     {
         public delegate void OnSliderMovedHandler(SliderUIElement sender, double currSliderPosition);
 
+        /// <summary>
+        /// Event fired every time the slider value changes.
+        /// The passed double is the current value;
+        /// </summary>
         public event OnSliderMovedHandler OnSliderMoved;
+
+        /// <summary>
+        /// event fired whenever a movement finishes.
+        /// The passed double is the final value when the event finished
+        /// </summary>
+        public event EventHandler<double> OnSliderMoveCompleted;
+
+
+        /// <summary>
+        /// event fired whenever a movement starts.
+        /// The passed double is the previous value when the drag starts
+        /// </summary>
+        public event EventHandler<double> OnSliderMoveStarted;
 
         /// <summary>
         /// Minimum value that the slider can represent
@@ -191,7 +210,28 @@ namespace NuSysApp
             _thumb.Dragged += OnThumbDragged;
             _thumb.Pressed += OnThumbPressed;
             _thumb.Released += OnThumbReleased;
+            _thumb.DragCompleted += OnThumbDragCompleted;
+            _thumb.DragStarted += OnThumbDragStarted;
+        }
 
+        /// <summary>
+        /// Event handler fired whenever the _thumb element has started its drag event
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnThumbDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            OnSliderMoveStarted?.Invoke(this, SliderPosition);
+        }
+
+        /// <summary>
+        /// Event handler fired whenever the _thumb element has completed a drag event;
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnThumbDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            OnSliderMoveCompleted?.Invoke(this,SliderPosition);
         }
 
         /// <summary>
@@ -199,9 +239,12 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
+            Debug.Assert(_thumb != null);
             _thumb.Dragged -= OnThumbDragged;
             _thumb.Pressed -= OnThumbPressed;
             _thumb.Released -= OnThumbReleased;
+            _thumb.DragCompleted -= OnThumbDragCompleted;
+            _thumb.DragStarted -= OnThumbDragStarted;
             base.Dispose();
         }
 
@@ -306,7 +349,7 @@ namespace NuSysApp
             // if the tooltip is enabled set its current position and text
             if (IsTooltipEnabled && _toolTipUIElement.IsVisible)
             {
-                _toolTipUIElement.Text = ((int) (SliderPosition*MaxValue - MinValue)).ToString(CultureInfo.InvariantCulture);
+                _toolTipUIElement.Text = ((int)(SliderPosition*(MaxValue - MinValue + 1))).ToString(CultureInfo.InvariantCulture);
                 _toolTipUIElement.Transform.LocalPosition = new Vector2(SliderPosition*Width - _toolTipUIElement.Width / 2, thumbVerticalOffset - _toolTipUIElement.Height);
 
             }

@@ -80,6 +80,7 @@ namespace NuSysApp
             _showMinimapButton.Tapped += ShowMinimapTapped;
             _dockBreadCrumbsButton.Tapped += DockBreadCrumbsButtonTapped;
             _textSizeSlider.OnSliderMoved += SliderChanged;
+            _textSizeSlider.OnSliderMoveCompleted += TextSizeSliderOnOnSliderMoveCompleted;
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged += SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged += SessionSettingsOnLinkVisibilityChanged;
             SessionController.Instance.SessionSettings.BreadCrumbPositionChanged += SessionSettingsBreadCrumbPositionChanged;
@@ -98,11 +99,22 @@ namespace NuSysApp
             _showMinimapButton.Tapped -= ShowMinimapTapped;
             _dockBreadCrumbsButton.Tapped -= DockBreadCrumbsButtonTapped;
             _textSizeSlider.OnSliderMoved -= SliderChanged;
+            _textSizeSlider.OnSliderMoveCompleted -= TextSizeSliderOnOnSliderMoveCompleted;
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged -= SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged -= SessionSettingsOnLinkVisibilityChanged;
             SessionController.Instance.SessionSettings.BreadCrumbPositionChanged -= SessionSettingsBreadCrumbPositionChanged;
             SessionController.Instance.SessionSettings.MinimapVisiblityChanged -= SessionSettingsMinimapVisiblityChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
+        }
+
+        /// <summary>
+        /// Event handler fired whenever the text slider has completed a drag
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="d"></param>
+        private void TextSizeSliderOnOnSliderMoveCompleted(object sender, double d)
+        {
+            SessionController.Instance.SessionSettings.SaveToFile();
         }
 
         /// <summary>

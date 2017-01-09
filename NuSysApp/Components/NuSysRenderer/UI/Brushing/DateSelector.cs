@@ -94,7 +94,7 @@ namespace NuSysApp
             _dayDropDownUIElement.CurrentSelection = String.Empty;
 
             Height = 40;
-            Width = 150;
+            Width = 200;
             BorderWidth = 3;
             Bordercolor = Colors.Black;
             
@@ -106,13 +106,14 @@ namespace NuSysApp
                 LeftMargin = 5,
                 RightMargin = 5,
                 ItemHeight = 30,
-                ItemWidth = 40,
+                ItemWidth = 53.3f,
                 Spacing = 15,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Center,
                 Width = Width,
                 Height = Height
             };
+
             _dropDownManager.AddElement(_yearDropDownUIElement);
             _dropDownManager.AddElement(_monthDropDownUIElement);
             _dropDownManager.AddElement(_dayDropDownUIElement);

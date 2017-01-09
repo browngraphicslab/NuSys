@@ -192,10 +192,7 @@ namespace NuSysApp
         /// <param name="isSelected"></param>
         private void OnRowSelected(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
-            if (isSelected)
-            {
-                CurrentSelection = item;
-            }
+            CurrentSelection = item;
         }
 
         /// <summary>
@@ -276,7 +273,8 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _dropDownList.Transform.LocalPosition = new Vector2(0, Height);
+            _dropDownList.Transform.LocalPosition = new Vector2(0, 0);
+            _dropDownList.ShowHeader = false;
             _dropDownList.Width = Width;
 
             base.Update(parentLocalToScreenTransform);

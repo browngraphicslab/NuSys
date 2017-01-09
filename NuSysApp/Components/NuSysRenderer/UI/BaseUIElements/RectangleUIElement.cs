@@ -69,7 +69,7 @@ namespace NuSysApp
         /// <summary>
         /// The background of the rectangle
         /// </summary>
-        public override Windows.UI.Color Background { get; set; }
+        public override Color Background { get; set; }
 
         /// <summary>
         /// The width of the border of the rectangle
@@ -104,8 +104,10 @@ namespace NuSysApp
         {
             // return if the item is disposed or is not visible
             if (IsDisposed || !IsVisible)
+            {
                 return;
-                            
+            }
+
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
@@ -144,16 +146,16 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected override void DrawImage(CanvasDrawingSession ds)
         {
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-
             if (Image != null)
             {
-                using(ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
-                ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
-            }
+                var orgTransform = ds.Transform;
+                ds.Transform = Transform.LocalToScreenMatrix;
 
-            ds.Transform = orgTransform;
+                using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
+                ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+
+                ds.Transform = orgTransform;
+            }
         }
 
         /// <summary>
