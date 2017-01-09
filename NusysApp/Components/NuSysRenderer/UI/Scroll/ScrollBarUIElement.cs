@@ -49,16 +49,20 @@ namespace NuSysApp
         /// </summary>
         private float _barLength;
 
+
         /// <summary>
         /// BarWidth represents the width of the scrollbar, which is the same as the width of the
         /// UIElement
         /// </summary>
-        public float _barWidth;
+        private float _barWidth;
+
+
+
         #endregion private members
         #region public members
-        /// <summary>
-        /// TODO: Support horizontal scroll bars.
-        /// </summary>
+
+
+
         public enum Orientation { Horizontal, Vertical}
 
         /// <summary>
@@ -94,10 +98,8 @@ namespace NuSysApp
             set
             {
                 _range = Math.Min(1, value);
-                if (_slider != null)
-                {
-                    _slider.IsVisible = _range != 1;
-                }
+                IsVisible = _range != 1f; //Scrolling should only be active if range is not equal to 1
+
             }
             get
             {
@@ -132,7 +134,6 @@ namespace NuSysApp
         public ScrollBarUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, Orientation orientation) : base(parent, resourceCreator)
         {
             _orientation = orientation;
-
             Background = Constants.LIGHT_BLUE;
             Position = 0;
             Range = 0;
@@ -294,6 +295,8 @@ namespace NuSysApp
         }
         private void ScrollBarUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
         {
+
+
             if (delta < 0)
             {
                 ChangePosition(0.035f);
@@ -326,6 +329,7 @@ namespace NuSysApp
 
         private void ScrollBarUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+
             // transform the pointers current point into the local coordinate system
             var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 

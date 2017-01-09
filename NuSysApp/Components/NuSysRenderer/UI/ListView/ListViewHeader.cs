@@ -64,8 +64,6 @@ namespace NuSysApp
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _headerBeingDragged = false;
-            BorderWidth = 3;
-            Bordercolor = Constants.DARK_BLUE;
             Background = Constants.LIGHT_BLUE;
         }
 
@@ -93,7 +91,7 @@ namespace NuSysApp
                     headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
                     headerItem.Height = 40;
                     headerItem.Background = Colors.White;
-                    headerItem.BorderWidth = 0;
+                    headerItem.BorderWidth = 5;
                     headerItem.Bordercolor = Colors.White;
                     headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
                     AddHeaderHandlers(headerItem);
@@ -327,15 +325,17 @@ namespace NuSysApp
                 right = _children[index] as ListViewHeaderItem<T>;
                 Debug.Assert(left != null && right != null);
             }
-            if (left.Width + deltaX < 10)
+
+            if (left.Width + deltaX < 2 * (BorderWidth + UIDefaults.XTextPadding))
             {
                 return;
             }
-            if (right.Width - deltaX < 10)
+            if (right.Width - deltaX < 2 * (BorderWidth + UIDefaults.XTextPadding))
             {
                 return;
             }
-            left.Width += deltaX;
+
+            left.Width += deltaX;  
             right.Width -= deltaX;
             right.Transform.LocalX += deltaX;
             HeaderResizing?.Invoke(index, pointer, edgeBeingDragged);
