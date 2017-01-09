@@ -98,6 +98,21 @@ namespace NuSysApp
             _borderBeingDragged = false;
             ButtonTextColor = Constants.ALMOST_BLACK;
             ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+
+            Tapped += ListViewHeaderItem_Tapped;
+        }
+
+        private void ListViewHeaderItem_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (pointer.IsRightButtonPressed)
+            {
+                FlyoutPopup addDeleteColumns = new FlyoutPopup(this, Canvas);
+                /// REPLACE nulls with the handlers for the flyout item buttons (calls to delete and add column)
+                addDeleteColumns.AddFlyoutItem("add column", null, Canvas);
+                addDeleteColumns.AddFlyoutItem("delete", null, Canvas);
+                AddChild(addDeleteColumns);
+                addDeleteColumns.Transform.LocalPosition = new Vector2(0, Height);
+            }
         }
 
 
@@ -176,5 +191,11 @@ namespace NuSysApp
             }
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            Tapped -= ListViewHeaderItem_Tapped;
+        }
     }
 }

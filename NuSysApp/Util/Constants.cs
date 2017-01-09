@@ -73,6 +73,7 @@ namespace NuSysApp
         public static Color RED = Color.FromArgb(255, 151, 60, 23);
 
         public static Color RED_TRANSLUCENT = Color.FromArgb(127, 151, 60, 23);
+        public static Color LIGHT_BLUE_TRANSLUCENT = Color.FromArgb(127, 195, 209, 231);
         #endregion
 
         #region Color

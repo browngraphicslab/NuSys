@@ -38,7 +38,7 @@ namespace NuSysApp
         /// <summary>
         /// event fired whenever the visibility of the bread crumb trail changes
         /// </summary>
-        public event EventHandler<bool> BreadCrumbVisibilityChanged;
+        public event EventHandler<bool> BreadCrumbPositionChanged;
 
         /// <summary>
         /// event fired whenever the visibility of the minimap changes
@@ -53,7 +53,7 @@ namespace NuSysApp
         /// <summary>
         /// private version of the bradcrumb visibility bool
         /// </summary>
-        private bool _breadCrumbsVisible = true;
+        private bool _breadCrumbsDocked = true;
 
         /// <summary>
         /// private version of the minimap visiblity bool
@@ -134,17 +134,17 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Boolean representing whether the bread crumb trail is visible.   
+        /// Boolean representing whether the bread crumb trail is docked.   
         /// Setting this will fire this class's event for when the boolean changes.
         /// Setting this value will automatially save to file.
         /// </summary>
-        public bool BreadCrumbsVisible
+        public bool BreadCrumbsDocked
         {
-            get { return _breadCrumbsVisible; }
+            get { return _breadCrumbsDocked; }
             set
             {
-                _breadCrumbsVisible = value;
-                BreadCrumbVisibilityChanged?.Invoke(this, _breadCrumbsVisible);
+                _breadCrumbsDocked = value;
+                BreadCrumbPositionChanged?.Invoke(this, _breadCrumbsDocked);
                 SaveToFile();
             }
         }

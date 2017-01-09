@@ -26,6 +26,16 @@ namespace NuSysApp
         private uint _bufferLength;
         private int _bufferIndex;
 
+        /// <summary>
+        /// since the PointerPoint is a XAML element, we cannot access the pointer's properties from the regular thread.
+        /// So we have this IsRightButtonPressed getter.
+        /// </summary>
+        private bool _isRightButtonPressed;
+        public bool IsRightButtonPressed
+        {
+            get { return _isRightButtonPressed; }
+        }
+
         public CanvasPointer() { }
         public CanvasPointer(PointerPoint pointerpoint)
         {
@@ -36,6 +46,7 @@ namespace NuSysApp
             DeviceType = pointerpoint.PointerDevice.PointerDeviceType;
             PointerId = pointerpoint.PointerId;
             Properties = pointerpoint.Properties;
+            _isRightButtonPressed = pointerpoint.Properties.IsRightButtonPressed;
             DistanceTraveled = 0;
             _prevPoint = new Vector2((float)pointerpoint.Position.X, (float)pointerpoint.Position.Y); ;
             Pressure = pointerpoint.Properties.Pressure;

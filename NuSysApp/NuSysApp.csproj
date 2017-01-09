@@ -135,6 +135,7 @@
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
+    <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
@@ -406,6 +407,7 @@
     <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAliasesPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\CenteredPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\ScrollableTextboxUIElement.cs" />

@@ -67,7 +67,7 @@ namespace NuSysApp
             _visibleBreadCrumbs = new List<BreadCrumbUIElement>();
             Height = 200;
             Width = 300;
-            Background = Colors.DarkGray;
+            Background = Constants.LIGHT_BLUE_TRANSLUCENT;
 
             _maskRect = new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth);
 
@@ -75,7 +75,7 @@ namespace NuSysApp
             {
                 Width = Width,
                 Height = 15,
-                Background = Colors.DimGray
+                Background = Constants.LIGHT_BLUE
             };
             AddChild(_scrollBar);
             _scrollBar.Transform.LocalPosition = new Vector2(0, Height - _scrollBar.Height);
@@ -84,7 +84,7 @@ namespace NuSysApp
             {
                 Width = Width,
                 Height = 15,
-                Background = Colors.LightGray
+                Background = Constants.MED_BLUE
             };
             AddChild(_scrollHandle);
             _scrollHandle.Transform.LocalPosition = new Vector2(0, Height - _scrollHandle.Height);
@@ -324,7 +324,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if(IsDisposed || !SessionController.Instance.SessionSettings.BreadCrumbsVisible)
+            if(IsDisposed || !SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 return;
             }
