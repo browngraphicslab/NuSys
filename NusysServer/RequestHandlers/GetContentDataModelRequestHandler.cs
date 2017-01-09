@@ -20,6 +20,8 @@ namespace NusysServer
             }
             var contentId = message.GetString(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY);
             var model = ContentController.Instance.SqlConnector.GetContentDataModel(contentId);
+            var query = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Ink),new SqlQueryEquals(Constants.SQLTableType.Ink, NusysConstants.INK_TABLE_CONTENT_ID, contentId));
+            model.Strokes = new List<InkModel>(query.ExecuteCommand().Select(i => InkModelFactory.ParseFromDatabaseMessage(i)));
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY] = JsonConvert.SerializeObject(model);
             return returnMessage;

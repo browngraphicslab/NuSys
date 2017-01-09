@@ -19,6 +19,7 @@ using SharpDX.MediaFoundation;
 using System.Collections;
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -545,9 +546,24 @@ namespace NuSysApp
                 return;
 
             if (_selectedRenderItem == _collection)
+            {
                 Panned?.Invoke(pointer, point, delta);
+            }
             else if (_selectedRenderItem is ElementRenderItem)
-                ItemMoved?.Invoke(pointer, (ElementRenderItem)_selectedRenderItem, delta);
+            {
+                ///This checks if the collection you are editting is editable by the current user
+                /// Todo, bring this logic elsewhere
+                var parent = SessionController.Instance.ContentController.GetLibraryElementController(((ElementRenderItem)_selectedRenderItem).ViewModel.Model.ParentCollectionId);
+                if (parent.LibraryElementModel.AccessType == NusysConstants.AccessType.Public ||
+                    parent.LibraryElementModel.Creator == WaitingRoomView.UserID)
+                {
+                    ItemMoved?.Invoke(pointer, (ElementRenderItem) _selectedRenderItem, delta);
+                }
+                else
+                {
+                    Panned?.Invoke(pointer, point, delta);
+                }
+            }
             else if (_resizerHit)
             {
                 ResizerDragged?.Invoke(pointer, point, delta);
