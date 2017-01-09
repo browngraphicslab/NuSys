@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
@@ -179,9 +180,49 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="text"></param>
-        private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
+        private async void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-            //throw new NotImplementedException();
+            //If text inputted is negligible, simply clear the filter
+            if (string.IsNullOrEmpty(text))
+            {
+                LibraryListView.ClearFilter();
+                return;
+            }
+            //Otherwise, compare the search string to the title, creator, type, and keywords of a libraryelementmodel
+            //If any of these contains the search string, return true
+            var search = text.ToLower();
+            Func<LibraryElementModel, bool> func = libraryElementModel =>
+            {
+                if (libraryElementModel.Title.ToLower().Contains(search))
+                {
+                    return true;
+                }
+                var creator =
+                    SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(libraryElementModel.Creator);
+                if (creator.ToLower().Contains(search))
+                {
+                    return true;
+                }
+
+                if (libraryElementModel.Type.ToString().ToLower().Contains(search))
+                {
+                    return true;
+                }
+                if (libraryElementModel.Keywords != null)
+                {
+                    foreach (var tag in libraryElementModel.Keywords)
+                    {
+                        if (tag.Text.ToLower().Contains(search))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            };
+            //Finally, filter by the search function
+            LibraryListView.FilterBy(func);
         }
 
         private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
