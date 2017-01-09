@@ -122,8 +122,13 @@ namespace NuSysApp
         /// </summary>
         public void ExitMode()
         {
-            _originalTransform = MakeShallowCopy(SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera);
-            AnimatePresentation(_originalTransform.ScaleX - _originalTransform.ScaleX * 0.3, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
+
+            UITask.Run(() =>
+            {
+                _originalTransform = MakeShallowCopy(SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera);
+                AnimatePresentation(_originalTransform.ScaleX - _originalTransform.ScaleX * 0.3, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
+            });
+
         }
 
         /// <summary>
@@ -247,7 +252,10 @@ namespace NuSysApp
 
 
             // Call a helper method to set up the animation
-            AnimatePresentation(scale, x, y, translateX, translateY);
+            UITask.Run(() =>
+            {
+                AnimatePresentation(scale, x, y, translateX, translateY);
+            });
 
         }
 
@@ -371,6 +379,7 @@ namespace NuSysApp
             newTransform.TranslateX = transform.T.M31;
             newTransform.TranslateY = transform.T.M32;
             return newTransform;
+
         }
 
         /// <summary>

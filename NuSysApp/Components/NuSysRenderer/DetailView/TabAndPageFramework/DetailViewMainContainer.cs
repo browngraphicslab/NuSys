@@ -146,6 +146,11 @@ namespace NuSysApp
         /// <param name="libraryElementModelId"></param>
         public void ShowLibraryElement(string libraryElementModelId)
         {
+            if (SessionController.Instance.CurrentMode != Options.PanZoomOnly)
+            {
+                return;
+            }
+
             // if the detail viewer isn't currently visible then make it visible
             if (!IsVisible)
             {

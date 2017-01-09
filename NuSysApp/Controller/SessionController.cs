@@ -181,6 +181,12 @@ namespace NuSysApp
             FileIO.WriteBytesAsync(file, byteArray);
         }
 
+        /// <summary>
+        /// The current mode of the workspace, set this using SwitchMode
+        /// </summary>
+        public Options CurrentMode { get; private set; }
+
+
         //private int _id = 0;
         public string GenerateId()
         {
@@ -207,6 +213,7 @@ namespace NuSysApp
         /// <param name="mode"></param>
         public void SwitchMode(Options mode)
         {
+            CurrentMode = mode;
             OnModeChanged?.Invoke(this, mode);
         }
 
