@@ -604,12 +604,13 @@ namespace NuSysApp
             {
                 RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
                 _isDragging = false;
-                _draggedItem = default(T);
             }
+            //Remove reference to item you were dragging
+            _draggedItem = default(T);
 
-            
+
         }
-        
+
 
         /// <summary>
         /// event that fires when you drag on the list. 

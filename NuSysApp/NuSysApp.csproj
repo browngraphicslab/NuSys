@@ -325,6 +325,8 @@
     <Compile Include="Components\MediaPlayer\BaseMediaPlayer.cs" />
     <Compile Include="Components\MediaPlayer\MediaPlayerProgressBar.cs" />
     <Compile Include="Components\MediaPlayer\VideoPlayer.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartUIElement.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartElement.cs" />
     <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
       <DependentUpon>ChatBoxView.xaml</DependentUpon>
     </Compile>
@@ -529,11 +531,11 @@
       <DependentUpon>MetadataToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
-    <Compile Include="Components\Tools\PieChartElement.cs" />
+    <Compile Include="Components\Misc\PieChart\PieChartElement.cs" />
     <Compile Include="Components\Tools\PieChartToolView.xaml.cs">
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Tools\PieChartUIElement.cs" />
+    <Compile Include="Components\Misc\PieChart\PieChartUIElement.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
@@ -564,11 +566,13 @@
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Win2dTools\BarToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
     <Compile Include="Components\Win2dTools\iLink.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\PieToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkController.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
