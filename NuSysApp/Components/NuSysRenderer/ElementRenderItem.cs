@@ -33,6 +33,8 @@ namespace NuSysApp
         public ElementViewModel ViewModel => _vm;
         private bool _needsTitleUpdate = true;
         private CanvasTextFormat _format;
+        // Controls the bubbles showing what users are currently editing this node
+        private UserBubbles _userBubbles;
 
         /// <summary>
         ///  true if the element is currently highlighted
@@ -58,8 +60,10 @@ namespace NuSysApp
                 _tagRenderItem = new WrapRenderItem((float)_vm.Width, parent, resourceCreator);
                 _vm.Tags.CollectionChanged += TagsOnCollectionChanged;
 
-
                 UpdateTextFormat();
+
+                _vm.Controller.UserAdded += Controller_UserAdded;
+                _vm.Controller.UserDropped += Controller_UserDropped;
 
                 foreach (var tag in _vm.Tags)
                 {
@@ -67,6 +71,9 @@ namespace NuSysApp
                 }
 
                 AddChild(_tagRenderItem);
+
+                _userBubbles = new UserBubbles(this, ResourceCreator);
+                AddChild(_userBubbles);
             }
             if (vm?.Controller?.LibraryElementController != null)
             {
@@ -103,6 +110,26 @@ namespace NuSysApp
             _needsTitleUpdate = true;
         }
 
+        /// <summary>
+        /// Fired when a user stops editing this node
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">UserId of the user who stopped editing this node</param>
+        private void Controller_UserDropped(object sender, string e)
+        {
+            _userBubbles.RemoveBubble(e);
+        }
+
+        /// <summary>
+        /// Fire when a user starts editing this node
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">UserId of user who is editing this node</param>
+        private void Controller_UserAdded(object sender, string e)
+        {
+            _userBubbles.InstantiateBubble(e);
+        }
+
         public override void Dispose()
         {
             if (IsDisposed)
@@ -125,6 +152,9 @@ namespace NuSysApp
                     _vm.Controller.LibraryElementController.HighlightChanged -= LibraryElementController_HighlightChanged;
 
                 }
+
+                _vm.Controller.UserAdded -= Controller_UserAdded;
+                _vm.Controller.UserDropped -= Controller_UserDropped;
             }
             _vm = null;
 
@@ -181,6 +211,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            // have this get the list of users currently editing the node from the usercontroller
             if (IsDisposed)
                 return;
 
@@ -192,6 +223,9 @@ namespace NuSysApp
 
             Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
+
+            _userBubbles.Transform.LocalPosition = new Vector2((float)_vm.Width + 10f, 0);
+            _userBubbles.Height = (float)_vm.Height;
 
             base.Update(parentLocalToScreenTransform);
 

@@ -430,6 +430,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\SessionSettingsMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\UserBubbles.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElements\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseUIElement.cs" />
@@ -827,6 +828,7 @@
     <Compile Include="Undo\DeleteElementAction.cs" />
     <Compile Include="Undo\DeleteLibraryElementAction.cs" />
     <Compile Include="Undo\MoveToCollectionAction.cs" />
+    <Compile Include="UserController.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Util\CapturedStateModel.cs" />

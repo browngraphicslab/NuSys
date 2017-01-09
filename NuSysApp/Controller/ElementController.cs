@@ -56,6 +56,9 @@ namespace NuSysApp
         public event SelectionChangedHandler SelectionChanged;
         public event EventHandler<Point2d> AnchorChanged;
         public event LinksUpdatedEventHandler LinksUpdated;
+        // Events for when a user starts/stops editing this node
+        public event EventHandler<string> UserAdded;
+        public event EventHandler<string> UserDropped;
 
         /// <summary>
         /// the event that will be fired when the access type of this element changes. 
@@ -356,6 +359,18 @@ namespace NuSysApp
         public string GetParentCollectionId()
         {
             return Model.ParentCollectionId;
+        }
+
+        // User starts editing this node
+        public void AddUser(string userId)
+        {
+            UserAdded?.Invoke(this, userId);
+        }
+
+        // User stops editing this node
+        public void DropUser(string userId)
+        {
+            UserDropped?.Invoke(this, userId);
         }
     }
 }
