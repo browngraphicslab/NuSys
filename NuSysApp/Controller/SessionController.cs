@@ -64,6 +64,8 @@ namespace NuSysApp
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
+        public UserController UserController = new UserController();
+
         public double ScreenWidth => ActiveFreeFormViewer.Width;
 
         public double ScreenHeight => ActiveFreeFormViewer.Height;
@@ -181,6 +183,12 @@ namespace NuSysApp
             FileIO.WriteBytesAsync(file, byteArray);
         }
 
+        /// <summary>
+        /// The current mode of the workspace, set this using SwitchMode
+        /// </summary>
+        public Options CurrentMode { get; private set; }
+
+
         //private int _id = 0;
         public string GenerateId()
         {
@@ -207,6 +215,7 @@ namespace NuSysApp
         /// <param name="mode"></param>
         public void SwitchMode(Options mode)
         {
+            CurrentMode = mode;
             OnModeChanged?.Invoke(this, mode);
         }
 
@@ -431,120 +440,135 @@ namespace NuSysApp
         /// The id is the libraryElementId of the collection you want to enter. 
         /// The elementModelId is the id of the element model you wish to zoom in on in that collection
         /// THis method will take care of all the clearing and crap for you, just call it with the id you want to use.
-        /// MUST BE CALLED WITHIN UITask.Run()!!!!
         /// </summary>
         /// <param name="id"></param>
         /// <param name="elementModelId"></param>
         /// <returns></returns>
         public async Task EnterCollection(string collectionLibraryId, string elementModelId = null)
         {
-            //SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
-            SessionView.ShowBlockingScreen(true);
-
-            EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
-            SessionView.FreeFormViewer.RenderEngine.Stop();
-            
-            // Clear free form viewer
-            SessionView.FreeFormViewer.Clear();
-
-            ClearControllersForCollectionExit();
-
-            //creates a new request to get the new workspace
-            var request = new GetEntireWorkspaceRequest(collectionLibraryId);
-
-            //awaits the requests return after execution
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-
-
-            // Create a content model/controller for the collection that we're about to enter
-            var mainContentDataId = SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryId).ContentDataModelId;
-            var mainContentDataModel = request.GetReturnedContentDataModels().FirstOrDefault(i => i.ContentId == mainContentDataId);
-            
-            ContentController.AddContentDataModel(mainContentDataModel);
-
-            var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
-            {
-                Title = "Instance title",
-                LocationX = -Constants.MaxCanvasSize / 2.0,
-                LocationY = -Constants.MaxCanvasSize / 2.0,
-                CenterX = -Constants.MaxCanvasSize / 2.0,
-                CenterY = -Constants.MaxCanvasSize / 2.0,
-                Zoom = 1,
-                LibraryId = collectionLibraryId
-            };
-
-
-            //gets the element mdoels from the returned requst
-            var elementModels = request.GetReturnedElementModels();
-
-            var presentationLinks = request.GetReturnedPresentationLinkModels();
-            
-            //for each returned contentDataMofdel, add it to the session
-            request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
-
-            Task.Run(async delegate ///tell the server about the latest collection we're entering
-            {
-                await NuSysNetworkSession.ExecuteRequestAsync(
-                    new AddNewLastUsedCollectionRequest(new AddNewLastUsedCollectionServerRequestArgs()
-                    {
-                        CollectionLibraryId = collectionLibraryId,
-                        UserId = WaitingRoomView.UserID
-                    }));
-            });
-
-            var dict = elementModels.ToDictionary(e => e.Id, e => e); //convert the elements to the form needed for the make collection method
-
             await Task.Run(async delegate
             {
-                await MakeCollection(new Dictionary<string, ElementModel>(dict));
+                //SessionView.SetPreviousCollection(ActiveFreeFormViewer?.LibraryElementId);
+                SessionView.ShowBlockingScreen(true);
+
+                EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
+                SessionView.FreeFormViewer.RenderEngine.Stop();
+
+                // Clear free form viewer
+                SessionView.FreeFormViewer.Clear();
+
+                await UITask.Run(async delegate {
+                    ClearControllersForCollectionExit();
+                });
+
+                //creates a new request to get the new workspace
+                var request = new GetEntireWorkspaceRequest(collectionLibraryId);
+
+                //awaits the requests return after execution
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+
+
+                // Create a content model/controller for the collection that we're about to enter
+                var mainContentDataId =
+                    SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryId)
+                        .ContentDataModelId;
+                var mainContentDataModel =
+                    request.GetReturnedContentDataModels().FirstOrDefault(i => i.ContentId == mainContentDataId);
+
+                ContentController.AddContentDataModel(mainContentDataModel);
+
+                var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
+                {
+                    Title = "Instance title",
+                    LocationX = -Constants.MaxCanvasSize/2.0,
+                    LocationY = -Constants.MaxCanvasSize/2.0,
+                    CenterX = -Constants.MaxCanvasSize/2.0,
+                    CenterY = -Constants.MaxCanvasSize/2.0,
+                    Zoom = 1,
+                    LibraryId = collectionLibraryId
+                };
+
+
+                //gets the element mdoels from the returned requst
+                var elementModels = request.GetReturnedElementModels();
+
+                var presentationLinks = request.GetReturnedPresentationLinkModels();
+
+                //for each returned contentDataMofdel, add it to the session
+                request.GetReturnedContentDataModels()
+                    .ForEach(
+                        contentDataModel =>
+                                SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
+
+                Task.Run(async delegate ///tell the server about the latest collection we're entering
+                {
+                    await NuSysNetworkSession.ExecuteRequestAsync(
+                        new AddNewLastUsedCollectionRequest(new AddNewLastUsedCollectionServerRequestArgs()
+                        {
+                            CollectionLibraryId = collectionLibraryId,
+                            UserId = WaitingRoomView.UserID
+                        }));
+                });
+
+                var dict = elementModels.ToDictionary(e => e.Id, e => e);
+                //convert the elements to the form needed for the make collection method
+
+                await Task.Run(async delegate
+                {
+                    await MakeCollection(new Dictionary<string, ElementModel>(dict));
+                });
+
+
+                foreach (var presentationLink in presentationLinks) //add the presentation links
+                {
+                    await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
+                }
+
+                foreach (var inkModel in request.GetReturnedInkModels())
+                {
+                    var contentController = ContentController.GetContentDataController(inkModel.ContentId);
+                    contentController.AddInitialInkStrokes(new List<InkModel>() {inkModel}, false);
+                }
+                var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
+                ElementModelIdToElementController[elementCollectionInstance.Id] = elementCollectionInstanceController;
+                CollectionIdsInUse.Add(collectionLibraryId);
+
+                await UITask.Run(async delegate {
+                    ActiveFreeFormViewer = new FreeFormViewerViewModel(elementCollectionInstanceController);
+                });
+
+                var userID = WaitingRoomView.UserID;
+                var creator = elementCollectionInstanceController.LibraryElementModel.Creator;
+
+                //TODO redo read only or editable implementation
+                if (elementCollectionInstanceController.LibraryElementModel.AccessType ==
+                    NusysConstants.AccessType.ReadOnly &&
+                    userID != creator)
+                {
+                    Instance.MakeWorkspaceReadonly();
+                }
+                else
+                {
+                    Instance.MakeWorkspaceEditable();
+                }
+
+                await UITask.Run(async delegate
+                {
+                    await SessionView.FreeFormViewer.LoadInitialCollection(ActiveFreeFormViewer);
+                });
+                if (elementModelId != null)
+                {
+                    SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
+                }
+
+                var controller = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
+                // add the bread crumb for the collection
+                Instance.NuSessionView.TrailBox.AddBreadCrumb(controller);
+
+                SessionView.ShowBlockingScreen(false);
+                EnterNewCollectionCompleted?.Invoke(this, collectionLibraryId);
             });
-
-
-            foreach (var presentationLink in presentationLinks)//add the presentation links
-            {
-                await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
-            }
-
-            foreach (var inkModel in request.GetReturnedInkModels())
-            {
-                var contentController = SessionController.Instance.ContentController.GetContentDataController(inkModel.ContentId);
-                contentController.AddInitialInkStrokes(new List<InkModel>() { inkModel},false);
-            }
-            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
-            ElementModelIdToElementController[elementCollectionInstance.Id] = elementCollectionInstanceController;
-            CollectionIdsInUse.Add(collectionLibraryId);
-
-            var freeFormViewerViewModel = new FreeFormViewerViewModel(elementCollectionInstanceController);
-            ActiveFreeFormViewer = freeFormViewerViewModel;
-
-
-            var userID = WaitingRoomView.UserID;
-            var creator = elementCollectionInstanceController.LibraryElementModel.Creator;
-
-            //TODO redo read only or editable implementation
-            if (elementCollectionInstanceController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly &&
-                userID != creator)
-            {
-                Instance.MakeWorkspaceReadonly();
-            }
-            else
-            {
-                Instance.MakeWorkspaceEditable();
-            }
-
-            await SessionView.FreeFormViewer.LoadInitialCollection(freeFormViewerViewModel);
-            if (elementModelId != null)
-            {
-                SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
-            }
-
-            var controller = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
-            // add the bread crumb for the collection
-            Instance.NuSessionView.TrailBox.AddBreadCrumb(controller);
-
-            SessionView.ShowBlockingScreen(false);
-            EnterNewCollectionCompleted?.Invoke(this,collectionLibraryId);
         }
 
 
@@ -554,6 +578,7 @@ namespace NuSysApp
         public void MakeWorkspaceReadonly()
         {
             IsReadonly = true;
+            NuSessionView.MakeReadOnly();
         }
 
         /// <summary>
@@ -562,6 +587,7 @@ namespace NuSysApp
         public void MakeWorkspaceEditable()
         {
             IsReadonly = false;
+            NuSessionView.MakeEditable();
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)

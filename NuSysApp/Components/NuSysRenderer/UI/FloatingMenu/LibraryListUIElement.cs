@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
@@ -104,6 +105,10 @@ namespace NuSysApp
         /// </summary>
         private FilterMenu _filterMenu { get; }
 
+        ///// <summary>
+        ///// TEST BUTTON
+        ///// </summary>
+        //private RectangleButtonUIElement _testbutton;
 
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
@@ -166,22 +171,75 @@ namespace NuSysApp
             LibraryListView.RowDragged += LibraryListView_RowDragged;
             LibraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped += OnLibraryItemSelected;
+            LibraryListView.RowDoubleTapped += LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped += OnFilterButtonTapped;
+
+            ///TEST BUTTON
+            //_testbutton = new RectangleButtonUIElement(this, Canvas, 0, "test");
+            //AddChild(_testbutton);
+
+            //_testbutton.Tapped += _testbutton_Tapped;
 
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
         }
+        
+        //private void _testbutton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        //{
+        //    CenteredPopup test = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "this is a test");
+        //    SessionController.Instance.NuSessionView.AddChild(test);
+        //}
 
         /// <summary>
         /// Event handler for when the text of the library search bar changes
         /// </summary>
         /// <param name="item"></param>
         /// <param name="text"></param>
-        private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
+        private async void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-            //throw new NotImplementedException();
+            //If text inputted is negligible, simply clear the filter
+            if (string.IsNullOrEmpty(text))
+            {
+                LibraryListView.ClearFilter();
+                return;
+            }
+            //Otherwise, compare the search string to the title, creator, type, and keywords of a libraryelementmodel
+            //If any of these contains the search string, return true
+            var search = text.ToLower();
+            Func<LibraryElementModel, bool> func = libraryElementModel =>
+            {
+                if (libraryElementModel.Title.ToLower().Contains(search))
+                {
+                    return true;
+                }
+                var creator =
+                    SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(libraryElementModel.Creator);
+                if (creator.ToLower().Contains(search))
+                {
+                    return true;
+                }
+
+                if (libraryElementModel.Type.ToString().ToLower().Contains(search))
+                {
+                    return true;
+                }
+                if (libraryElementModel.Keywords != null)
+                {
+                    foreach (var tag in libraryElementModel.Keywords)
+                    {
+                        if (tag.Text.ToLower().Contains(search))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            };
+            //Finally, filter by the search function
+            LibraryListView.FilterBy(func);
         }
 
         private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -217,6 +275,19 @@ namespace NuSysApp
                     }
                 });
             }
+        }
+
+
+        private void LibraryListView_RowDoubleTapped(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId);
+            Debug.Assert(controller != null);
+            if (controller == null)
+            {
+                return;
+            }
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
+
         }
 
         /// <summary>
@@ -324,6 +395,7 @@ namespace NuSysApp
             LibraryListView.RowDragged -= LibraryListView_RowDragged;
             LibraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped -= OnLibraryItemSelected;
+            LibraryListView.RowDoubleTapped -= LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped -= OnFilterButtonTapped;
 
@@ -346,23 +418,28 @@ namespace NuSysApp
                 MultipleSelections = false
             };
 
-            var listColumn = new ListTextColumn<LibraryElementModel>();
-            listColumn.Title = "Title";
-            listColumn.RelativeWidth = 1;
-            listColumn.ColumnFunction = model => model.Title;
+            var listColumn1 = new ListTextColumn<LibraryElementModel>();
+            listColumn1.Title = "Title";
+            listColumn1.RelativeWidth = 2;
+            listColumn1.ColumnFunction = model => model.Title;
 
             var listColumn2 = new ListTextColumn<LibraryElementModel>();
-            listColumn2.Title = "Creator";
-            listColumn2.RelativeWidth = 2;
-            listColumn2.ColumnFunction =
-                model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
+            listColumn2.Title = "Type";
+            listColumn2.RelativeWidth = 1.25f;
+            listColumn2.ColumnFunction = model => model.Type.ToString();
 
             var listColumn3 = new ListTextColumn<LibraryElementModel>();
-            listColumn3.Title = "Last Edited Timestamp";
-            listColumn3.RelativeWidth = 3;
-            listColumn3.ColumnFunction = model => model.LastEditedTimestamp;
+            listColumn3.Title = "Creator";
+            listColumn3.RelativeWidth = 1;
+            listColumn3.ColumnFunction =
+                model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
 
-            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn, listColumn2, listColumn3 });
+            var listColumn4 = new ListTextColumn<LibraryElementModel>();
+            listColumn4.Title = "Last Edited Timestamp";
+            listColumn4.RelativeWidth = 1.8f;
+            listColumn4.ColumnFunction = model => model.GetController().GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
+
+            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
 
             LibraryListView.AddItems(
@@ -371,9 +448,9 @@ namespace NuSysApp
             BorderWidth = 5;
             Bordercolor = Colors.Black;
             TopBarColor = Colors.Azure;
+            Width = 500;
             Height = 400;
-            Width = 400;
-            MinWidth = 400;
+            MinWidth = 500;
             MinHeight = 400;
 
 
@@ -478,7 +555,8 @@ namespace NuSysApp
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.Image;
-                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+                    var bytes = await MediaUtil.StorageFileToByteArray(storageFile);
+                    data = Convert.ToBase64String(bytes);
 
                     var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
                     aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;

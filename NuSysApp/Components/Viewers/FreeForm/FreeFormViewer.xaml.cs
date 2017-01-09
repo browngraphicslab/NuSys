@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Windows.ApplicationModel.Core;
@@ -752,6 +753,7 @@ namespace NuSysApp
             if (item == RenderEngine.ElementSelectionRect.BtnPresent)
             {
                 //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                SessionController.Instance.NuSessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
 
@@ -1141,6 +1143,12 @@ namespace NuSysApp
                 ClearSelections();
 
             _minimap.Invalidate();
+
+            if (_layoutWindow != null)
+            {
+                RenderEngine.Root.RemoveChild(_layoutWindow);
+                _layoutWindow = null;
+            }
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -1158,21 +1166,6 @@ namespace NuSysApp
 
             if (item is ElementRenderItem)
             {
-                try
-                {
-                    var loginName =
-                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[
-                            WaitingRoomView.UserID];
-                    var creator =
-                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
-                            ].Values[0];
-                    if (loginName != "rms" && creator.ToLower() == "rms")
-                        return;
-                }
-                catch (Exception e)
-                {
-                    // do nothing.
-                }
                 var libraryElementModelId = (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
                 if (libraryElementModelId != null)
                 {
@@ -1190,7 +1183,15 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
         {
-            AddToSelections(element);
+            if (SessionController.IsReadonly)
+            {
+                Debug.Assert(element?.ViewModel?.Id != null);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(element.ViewModel.Id);
+            }
+            else
+            {
+                AddToSelections(element);
+            }
             // add the bread crumb
 
             if (element?.ViewModel?.Controller?.LibraryElementModel != null)

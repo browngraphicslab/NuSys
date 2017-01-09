@@ -122,6 +122,9 @@ namespace NusysServer
                         case NusysConstants.RequestType.GetLastUsedCollectionsRequest:
                             requestHandler = new GetLastUsedCollectionsRequestHandler();
                             break;
+                        case NusysConstants.RequestType.UploadCollectionImageRequest:
+                            requestHandler = new UploadCollectionBackgroundImageRequestHandler();
+                            break;
                         default:
                             throw new Exception("request type not supported on the server yet!");
                     }

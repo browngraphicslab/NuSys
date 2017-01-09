@@ -29,6 +29,11 @@ namespace NuSysApp
         public delegate void PointerReleasedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
         public event PointerReleasedEventHandler RowPointerReleased;
 
+
+        public delegate void TappedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
+        public event TappedEventHandler RowTapped;
+
+
         public delegate void DoubleTappedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
         public event DoubleTappedEventHandler RowDoubleTapped;
 
@@ -36,6 +41,11 @@ namespace NuSysApp
             ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
 
         public event DraggedEventHandler RowDragged;
+
+
+
+        public delegate void DragStartedEventHandler(T item, int colIndex, CanvasPointer pointer);
+        public event DragStartedEventHandler RowDragStarted;
 
         public delegate void PointerWheelChangedEventHandler(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta);
         public event PointerWheelChangedEventHandler PointerWheelChanged;
@@ -80,8 +90,25 @@ namespace NuSysApp
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
             cell.Dragged += Cell_Dragged;
+            cell.DragStarted += Cell_DragStarted;
+            cell.Tapped += Cell_Tapped;
             cell.DoubleTapped += Cell_DoubleTapped;
             cell.PointerWheelChanged += Cell_PointerWheelChanged;
+        }
+
+        private void Cell_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var cell = item as RectangleUIElement;
+            Debug.Assert(cell != null);
+            RowDragStarted?.Invoke(Item, _children.IndexOf(item), pointer);
+
+        }
+
+        private void Cell_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var cell = item as RectangleUIElement;
+            Debug.Assert(cell != null);
+            RowTapped?.Invoke(this, _children.IndexOf(item), pointer, Item);
         }
 
         private void Cell_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -165,7 +192,7 @@ namespace NuSysApp
         /// </summary>
         private void Cell_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            
+
         }
 
         /// <summary>
@@ -197,7 +224,9 @@ namespace NuSysApp
             cell.Pressed -= Cell_Pressed;
             cell.Released -= Cell_Released;
             cell.Dragged -= Cell_Dragged;
+            cell.DragStarted -= Cell_DragStarted;
             cell.DoubleTapped -= Cell_DoubleTapped;
+            cell.Tapped -= Cell_Tapped;
             cell.PointerWheelChanged -= Cell_PointerWheelChanged;
         }
 

@@ -62,12 +62,22 @@ namespace NuSysApp
         private RectangleUIElement _topBar;
 
         /// <summary>
+        /// private helper variable for public property error margin
+        /// </summary>
+        private float _errorMargin { get; set; }
+
+        /// <summary>
         /// A margin of error extending beyond the width and height of the window
         /// to provide a bufferzone for touch events. Any touch in the ErrorMargin
         /// pixels extending beyond the height and width of the UI Element will
-        /// trigger a touch event.
+        /// trigger a touch event. The error margin is 0 when the window doesn't
+        /// have focus
         /// </summary>
-        public float ErrorMargin;
+        public float ErrorMargin
+        {
+            get { return HasFocus || ChildHasFocus ? _errorMargin : 0; }
+            set { _errorMargin = value; }
+        }
 
         /// <summary>
         /// The Buttons on the right side of the top bar
@@ -224,16 +234,6 @@ namespace NuSysApp
                 return;
 
             base.Draw(ds);
-        }
-
-        /// <summary>
-        /// Calculates the LocalBounds of the window by returning a Rect with coordinates relative
-        /// to the LocalTransform. The override here is to provide support for the ErrorMargin.
-        /// </summary>
-        /// <returns></returns>
-        public override Rect GetLocalBounds()
-        {
-            return new Rect(-ErrorMargin, 0, Width + ErrorMargin*2, Height + ErrorMargin);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

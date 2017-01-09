@@ -135,6 +135,7 @@
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
+    <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
@@ -325,6 +326,8 @@
     <Compile Include="Components\MediaPlayer\BaseMediaPlayer.cs" />
     <Compile Include="Components\MediaPlayer\MediaPlayerProgressBar.cs" />
     <Compile Include="Components\MediaPlayer\VideoPlayer.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartUIElement.cs" />
+    <Compile Include="Components\Misc\BarChart\BarChartElement.cs" />
     <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
       <DependentUpon>ChatBoxView.xaml</DependentUpon>
     </Compile>
@@ -386,6 +389,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingGrid.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\GradientBackgroundRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\AutoSuggestTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseButtonUIElement.cs" />
@@ -407,6 +411,7 @@
     <Compile Include="Components\NuSysRenderer\UI\LayoutWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListCheckBoxColumn.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewAliasesPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\CenteredPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\ScrollableTextboxUIElement.cs" />
@@ -431,6 +436,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\SessionSettingsMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\UserBubbles.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElements\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseUIElement.cs" />
@@ -530,11 +536,11 @@
       <DependentUpon>MetadataToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
-    <Compile Include="Components\Tools\PieChartElement.cs" />
+    <Compile Include="Components\Misc\PieChart\PieChartElement.cs" />
     <Compile Include="Components\Tools\PieChartToolView.xaml.cs">
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Tools\PieChartUIElement.cs" />
+    <Compile Include="Components\Misc\PieChart\PieChartUIElement.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
@@ -565,11 +571,13 @@
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Win2dTools\BarToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolListInnerView.cs" />
     <Compile Include="Components\Win2dTools\BasicToolWindow.cs" />
     <Compile Include="Components\Win2dTools\iLink.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
+    <Compile Include="Components\Win2dTools\PieToolInnerView.cs" />
     <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkController.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
@@ -763,6 +771,7 @@
     <Compile Include="Network\Requests\GetLastUsedCollectionsRequest.cs" />
     <Compile Include="Network\Requests\GetRelatedDocumentsRequest.cs" />
     <Compile Include="Network\Requests\GetUserIdToDisplayNameDictionaryRequest.cs" />
+    <Compile Include="Network\Requests\GetWordDocumentRequest.cs" />
     <Compile Include="Network\Requests\MoveElementToCollectionRequest.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AnalysisModelMadeNotificationHandler.cs" />
@@ -814,6 +823,7 @@
     </Compile>
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\Requests\UpdatePresentationLinkRequest.cs" />
+    <Compile Include="Network\Requests\UploadCollectionBackgroundImageRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
     <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
@@ -826,6 +836,7 @@
     <Compile Include="Undo\DeleteElementAction.cs" />
     <Compile Include="Undo\DeleteLibraryElementAction.cs" />
     <Compile Include="Undo\MoveToCollectionAction.cs" />
+    <Compile Include="UserController.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Util\CapturedStateModel.cs" />
@@ -839,6 +850,7 @@
     <Compile Include="Util\IInkController.cs" />
     <Compile Include="Util\InkUtil.cs" />
     <Compile Include="Util\INusysDisposable.cs" />
+    <Compile Include="Util\LibraryElementExtensions.cs" />
     <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\IModable.cs" />
     <Compile Include="Util\LineEquation.cs" />

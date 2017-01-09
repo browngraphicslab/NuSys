@@ -23,18 +23,6 @@ namespace NuSysApp
         /// <param name="requestType"></param>
         public CreateNewCollectionRequest(CreateNewCollectionServerRequestArgs requestArgs) : base(requestArgs){}
 
-
-        /// <summary>
-        /// returns the CreateNewCollectionServerRequestArgs for this request.
-        /// Should only be called server side.
-        /// Will return null if it doesn't exist in the protected _message;
-        /// </summary>
-        /// <returns></returns>
-        public override CreateNewCollectionServerRequestArgs GetArgs()
-        {
-            return base.GetArgsClassFromMessage();
-        }
-
         /// <summary>
         /// call this method after the request has successfully returned to add the returned library element locally.
         /// You must make sure that the request has returned succesfullu before calling this method, however.

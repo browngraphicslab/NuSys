@@ -41,6 +41,9 @@ namespace NuSysApp
             _mainTabContainer = new TabContainerUIElement<string>(this, Canvas)
             {
                 TabSpacing = 5,
+                Width = Width,
+                Height = 40,
+                TabHeight = 40,
             };
             AddChild(_mainTabContainer);
 
@@ -60,6 +63,8 @@ namespace NuSysApp
             _mainTabLayoutManager.SetMargins(BorderWidth);
             _mainTabLayoutManager.TopMargin = TopBarHeight;
             _mainTabLayoutManager.AddElement(_mainTabContainer);
+
+            TopBarColor = Constants.MED_BLUE;
 
             // detail view defaults to invisible. visible on click
             IsVisible = false;
@@ -146,6 +151,11 @@ namespace NuSysApp
         /// <param name="libraryElementModelId"></param>
         public void ShowLibraryElement(string libraryElementModelId)
         {
+            if (SessionController.Instance.CurrentMode != Options.PanZoomOnly)
+            {
+                return;
+            }
+
             // if the detail viewer isn't currently visible then make it visible
             if (!IsVisible)
             {

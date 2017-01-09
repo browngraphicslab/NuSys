@@ -54,7 +54,7 @@ namespace NusysServer
             returnArgs.ContentMessages = contentDataModels.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.AliasStrings = aliases.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.PresentationLinks = GetAllPresentationLinks(workspaceId);
-            returnArgs.InkStrokes = GetAllInkStrokes(workspaceId);
+            returnArgs.InkStrokes = GetAllInkStrokes(workspaceId, contentDataModels.Select(cdm => cdm.ContentId));
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY] = returnArgs;
@@ -84,7 +84,7 @@ namespace NusysServer
         /// returns the json serialized version of all the ink strokes for any of the content ids given
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<string> GetAllInkStrokes(string collectionId)
+        private IEnumerable<string> GetAllInkStrokes(string collectionId, IEnumerable<string> contentIds)
         {
             var query = new SQLSelectQuery(new JoinedTable(new SqlJoinOperationArgs() {
                 JoinOperator = Constants.JoinedType.InnerJoin,
@@ -93,6 +93,7 @@ namespace NusysServer
                 Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).First(),
                 Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Ink, NusysConstants.INK_TABLE_CONTENT_ID).First(),
             }), new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY, collectionId));
+            query = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Ink),new SqlQueryContains(Constants.SQLTableType.Ink, NusysConstants.INK_TABLE_CONTENT_ID,contentIds));
             var inkStrokes = query.ExecuteCommand();
             return inkStrokes.Select(stroke => JsonConvert.SerializeObject(InkModelFactory.ParseFromDatabaseMessage(stroke)));
         }

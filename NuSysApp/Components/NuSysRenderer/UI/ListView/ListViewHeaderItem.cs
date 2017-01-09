@@ -98,14 +98,25 @@ namespace NuSysApp
             _borderBeingDragged = false;
             ButtonTextColor = Constants.ALMOST_BLACK;
             ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+
+            Tapped += ListViewHeaderItem_Tapped;
         }
 
-        /// <summary>
-        /// This overrides the dragged event of the button so that if you are dragging the edge, the headerResizing event is invoked instead of the regular dragging event.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        public override void OnDragged(CanvasPointer pointer)
+        private void ListViewHeaderItem_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (pointer.IsRightButtonPressed)
+            {
+                FlyoutPopup addDeleteColumns = new FlyoutPopup(this, Canvas);
+                /// REPLACE nulls with the handlers for the flyout item buttons (calls to delete and add column)
+                addDeleteColumns.AddFlyoutItem("add column", null, Canvas);
+                addDeleteColumns.AddFlyoutItem("delete", null, Canvas);
+                AddChild(addDeleteColumns);
+                addDeleteColumns.Transform.LocalPosition = new Vector2(0, Height);
+            }
+        }
+
+
+        public override void OnDragStarted(CanvasPointer pointer)
         {
             var startX = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix).X;
 
@@ -123,14 +134,27 @@ namespace NuSysApp
                     _borderBeingDragged = true;
                 }
             }
+            base.OnDragStarted(pointer);
+        }
 
+        /// <summary>
+        /// This overrides the dragged event of the button so that if you are dragging the edge, the headerResizing event is invoked instead of the regular dragging event.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        public override void OnDragged(CanvasPointer pointer)
+        {
             if (_borderBeingDragged)
             {
                 Debug.Assert(_edgeBeingDragged != null);
                 HeaderResizing?.Invoke(this, pointer, _edgeBeingDragged);
             }
+            else
+            {
+                base.OnDragged(pointer);
 
-            base.OnDragged(pointer);
+            }
+
         }
 
         /// <summary>
@@ -167,5 +191,11 @@ namespace NuSysApp
             }
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            Tapped -= ListViewHeaderItem_Tapped;
+        }
     }
 }

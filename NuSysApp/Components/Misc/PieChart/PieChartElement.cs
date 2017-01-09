@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NuSysApp
+﻿namespace NuSysApp
 {
     /// <summary>
     /// PieChartElement holds the item that represents the piece (e.g., a string "Republican") and its value (e.g., an int 49)

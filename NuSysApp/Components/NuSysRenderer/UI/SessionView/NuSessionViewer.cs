@@ -41,11 +41,8 @@ namespace NuSysApp
         /// the chatbox that we use to send messages to eachother
         /// </summary>
         public ChatBoxUIElement Chatbox { get; }
-
-        /// <summary>
-        ///  the button that brings the user back to the waiting room
-        /// </summary>
-        private ButtonUIElement _backToWaitingRoomButton;
+        
+        private ButtonUIElement _backButton;
 
         /// <summary>
         /// container that contains bubbles that show the currently logged in users
@@ -68,9 +65,36 @@ namespace NuSysApp
         public TextboxUIElement _titleBox;
 
         /// <summary>
+        /// Button tapped to exit presentation mode
+        /// </summary>
+        private ButtonUIElement _exitPresentation;
+
+        /// <summary>
+        /// button tapped to recenter on the current node in presentation mode
+        /// </summary>
+        private ButtonUIElement _currentNode;
+
+        /// <summary>
+        /// button tapped to go to the next node in presentation mode
+        /// </summary>
+        private ButtonUIElement _nextNode;
+
+        /// <summary>
+        /// button tapped to go to the previous node in presentation mode
+        /// </summary>
+        private ButtonUIElement _previousNode;
+
+        /// <summary>
+        /// the current mode we are in
+        /// </summary>
+        private IModable _modeInstance;
+
+        /// <summary>
         /// the library list 
         /// </summary>
         public LibraryListUIElement Library => _floatingMenu.Library;
+
+        private RectangleButtonUIElement _backToWaitingRoom;
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
@@ -80,26 +104,14 @@ namespace NuSysApp
             _floatingMenu = new FloatingMenu(this, canvas);
             AddChild(_floatingMenu);
 
-            //_currCollDetailViewButton = new ButtonUIElement(this, canvas, new EllipseUIElement(this, canvas))
-            //{
-            //    Width = 50,
-            //    Height = 50,
-            //    Background = Colors.Transparent,
-            //    BorderWidth = 3,
-            //    SelectedBorder = Colors.LightGray,
-            //    Bordercolor = Colors.Transparent
-            //};
-            //AddChild(_currCollDetailViewButton);
-
             SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
-            TrailBox = new BreadCrumbContainer(this, Canvas);
-            AddChild(TrailBox);
+            
 
             _settingsButton = new EllipseButtonUIElement(this, canvas)
             {
                 Background = Colors.Transparent
             };
-            //AddChild(_settingsButton);
+            AddChild(_settingsButton);
 
             _settingsMenu = new SessionSettingsMenu(this, canvas)
             {
@@ -109,7 +121,18 @@ namespace NuSysApp
                 IsVisible =  false,
                 KeepAspectRatio = false
             };
-            //AddChild(_settingsMenu);
+            AddChild(_settingsMenu);
+
+            _titleBox = new TextboxUIElement(this, Canvas)
+            {
+                TextColor = Constants.ALMOST_BLACK,
+                Background = Colors.Transparent,
+                FontSize = 55,
+                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
+                Width = 300,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
+            };
+            AddChild(_titleBox);
 
             _chatButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle);
             AddChild(_chatButton);
@@ -118,21 +141,33 @@ namespace NuSysApp
             AddChild(_snapshotButton);
 
             //custom button
-            _backToWaitingRoomButton = new ButtonUIElement(this, canvas, new RectangleUIElement(this, canvas))
+            _backButton = new ButtonUIElement(this, canvas, new RectangleUIElement(this, canvas))
             {
                 Width = 15,
                 Height = 30,
-                SelectedBackground = Colors.Gray,
+                SelectedBackground = Constants.LIGHT_BLUE_TRANSLUCENT,
                 BorderWidth =  0,
                 Bordercolor = Colors.Transparent,
                 Background = Colors.Transparent
             };
-            _backToWaitingRoomButton.ImageBounds = new Rect(_backToWaitingRoomButton.BorderWidth,
-                _backToWaitingRoomButton.BorderWidth,
-                _backToWaitingRoomButton.Width,
-                _backToWaitingRoomButton.Height);
+            _backButton.ImageBounds = new Rect(_backButton.BorderWidth,
+                _backButton.BorderWidth,
+                _backButton.Width,
+                _backButton.Height);
+            AddChild(_backButton);
 
-            //AddChild(_backToWaitingRoomButton);
+            TrailBox = new BreadCrumbContainer(this, Canvas)
+            {
+                IsVisible = SessionController.Instance.SessionSettings.BreadCrumbsDocked
+            };
+            AddChild(TrailBox);
+
+            _backToWaitingRoom = new RectangleButtonUIElement(this, canvas, UIDefaults.PrimaryStyle, "back to waiting room")
+            {
+                Width = TrailBox.Width,
+                IsVisible = false
+            };
+            AddChild(_backToWaitingRoom);
 
             // add the user bubble container before the chatbox so user bubble names do not overlap the bottom of the chatbox
             _userBubbleContainer = new UserBubbleContainerUIElement(this, canvas);
@@ -155,54 +190,134 @@ namespace NuSysApp
             };
             AddChild(_detailViewer);
 
+            // add presentation node buttons
+            _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            {
+                IsVisible = false
+            };
+            AddChild(_previousNode);
+            _nextNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            {
+                IsVisible = false
+            };
+            AddChild(_nextNode);
+            _currentNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            {
+                IsVisible = false,
+            };
+            AddChild(_currentNode);
+            _exitPresentation = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            {
+                IsVisible = false
+            };
+            AddChild(_exitPresentation);
+
+            UpdateUI();
+
+            _titleBox.DoubleTapped += _titleBox_DoubleTapped;
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped; 
             _chatButton.Tapped += ChatButtonOnTapped;
-            _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
+            _backButton.Tapped += BackTapped;
+            _backToWaitingRoom.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
+            SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
 
+        }
+
+        /// <summary>
+
+        /// show both the breadcrumb trail window and the back to waiting room button
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BackTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_backToWaitingRoom.IsVisible)
+            {
+                _backToWaitingRoom.IsVisible = false;
+                TrailBox.IsVisible = false;
+            }
+            else
+            {
+                _backToWaitingRoom.IsVisible = true;
+                TrailBox.IsVisible = true;
+            }
+
+            if (SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            {
+                TrailBox.IsVisible = true;
+            }
+        }
+
+        /// Called whenever the mode is changed
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="mode"></param>
+        private  void Instance_OnModeChanged(object source, Options mode)
+        {
+            switch (mode)
+            {
+                case Options.PanZoomOnly:
+                    _floatingMenu.IsVisible = true;
+                    TrailBox.IsVisible = true;
+                    break;
+                case Options.Presentation:
+                    _detailViewer.IsVisible = false;
+                    _floatingMenu.IsVisible = false;
+                    TrailBox.IsVisible = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
         }
 
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            var currCollectionController =
-                SessionController.Instance.ContentController.GetLibraryElementController(
-                    SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
+            var currCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSessionView.ShowDetailView(currCollectionController);
         }
 
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
-            if (GetChildren().Contains(_titleBox))
-            {
-                RemoveChild(_titleBox);
-            }
-            _titleBox = new TextboxUIElement(this, Canvas)
-            {
-                Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title,
-                TextColor = Constants.ALMOST_BLACK,
-                Background = Colors.Transparent,
-                FontSize = 55,
-                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
-                Width = 300,
-                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
-            };
-            AddChild(_titleBox);
+            _titleBox.Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title;
+        }
+
+        public void UpdateUI()
+        {
+
             _titleBox.Transform.LocalPosition =
-                new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
-            _titleBox.DoubleTapped += _titleBox_DoubleTapped;
+            new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
+            
+            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 + _titleBox.Width / 2 - _settingsButton.Width / 2 + 50,
+            _titleBox.Height / 2 - _settingsButton.Height / 2);
+            _backButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
+                _titleBox.Height / 2 - _backButton.Height / 2);
+            
+
+            if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            {
+                TrailBox.Transform.LocalPosition =
+                    new Vector2(_backButton.Transform.LocalPosition.X + _backButton.Width/2 - TrailBox.Width/2,
+                        _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
+                _backToWaitingRoom.Transform.LocalPosition =
+                    new Vector2(
+                        _backButton.Transform.LocalPosition.X + _backButton.Width/2 - _backToWaitingRoom.Width/2,
+                        _backButton.Transform.LocalPosition.Y + _backButton.Height + TrailBox.Height + 30);
+            }
+            else
+            {
+                TrailBox.Transform.LocalPosition =
+                    new Vector2(SessionController.Instance.NuSessionView.Width - TrailBox.Width, 0);
+                _backToWaitingRoom.Transform.LocalPosition =
+                    new Vector2(
+                        _backButton.Transform.LocalPosition.X + _backButton.Width / 2 - _backToWaitingRoom.Width / 2,
+                        _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
+            }
 
 
-            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2 + 50, 
-                _titleBox.Height/2 - _settingsButton.Height/2);
-            AddChild(_settingsButton);
-            _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
-                _titleBox.Height / 2 - _backToWaitingRoomButton.Height / 2);
-            AddChild(_backToWaitingRoomButton);
-            _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width/2 - _settingsMenu.Width/2,
-                _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
-            AddChild(_settingsMenu);
+            _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2, _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
         }
 
         /// <summary>
@@ -227,41 +342,41 @@ namespace NuSysApp
             {
                 Chatbox.Height = Math.Min(Height - 100, Chatbox.Height);
                 Chatbox.Width = Math.Min(Width - 100, Chatbox.Width);
-                Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height- 70);
+                Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height - 70);
             }
-
-            
-        }
-
-        /// <summary>
-        /// Fired when the button for opening the current collection in the detail view is tapped
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnCurrCollDetailViewButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
-        {
-            var currWorkspaceController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.ActiveFreeFormViewer.LibraryElementId);
-            ShowDetailView(currWorkspaceController);
         }
 
         private void OnMainCanvasSizeChanged(object sender, SizeChangedEventArgs e)
         {
             Width = (float) e.NewSize.Width;
-            Height = (float) e.NewSize.Height;            
+            Height = (float) e.NewSize.Height;
 
-            _floatingMenu.Transform.LocalPosition = new Vector2(Width / 4 - _floatingMenu.Width/2, Height / 4 - _floatingMenu.Height/2);
+            _floatingMenu.Transform.LocalPosition = new Vector2(Width/4 - _floatingMenu.Width/2, Height/4 - _floatingMenu.Height/2);
             //_currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
             _chatButton.Transform.LocalPosition = new Vector2(10, Height - _chatButton.Height - 10);
             _snapshotButton.Transform.LocalPosition = new Vector2(10, 10);
             _settingsButton.Transform.LocalPosition = new Vector2(80, 10);
+            _backButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backButton.Height/2);
             Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height - 70);
-            _backToWaitingRoomButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoomButton.Height/2);
+            _backToWaitingRoom.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoom.Height/2);
             _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
             _detailViewer.Width = Width/2;
-            TrailBox.Transform.LocalPosition = new Vector2(Width - TrailBox.Width, 0);
 
+            // center the presentation mode buttons
+            var buttonMargin = 10;
+            var top = Height - _previousNode.Height - buttonMargin;
+            var buttonWidth = _previousNode.Width;
+            float left = (float) ((Width - buttonMargin)/2.0 - 2*buttonWidth - buttonMargin);
+            var buttonDiff = buttonWidth + buttonMargin;
+            foreach (var button in new List<ButtonUIElement> {_previousNode, _nextNode, _currentNode, _exitPresentation})
+            {
+                button.Transform.LocalPosition = new Vector2(left, top);
+                left += buttonDiff;
+            }
+
+            UpdateUI();
         }
 
         /// <summary>
@@ -278,19 +393,25 @@ namespace NuSysApp
 
             // set the image for the _chatButton
             _chatButton.Image = _chatButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
-            _chatButton.ImageBounds = new Rect(_chatButton.Width / 4, _chatButton.Height / 4, _chatButton.Width / 2, _chatButton.Height / 2);
+            _chatButton.ImageBounds = new Rect(_chatButton.Width/4, _chatButton.Height/4, _chatButton.Width/2, _chatButton.Height/2);
 
             // set the image for the _snapshotButton
             _snapshotButton.Image = _snapshotButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/snapshot_icon.png"));
-            _snapshotButton.ImageBounds = new Rect(_snapshotButton.Width / 4, _snapshotButton.Height / 4, _snapshotButton.Width / 2, _snapshotButton.Height / 2);
+            _snapshotButton.ImageBounds = new Rect(_snapshotButton.Width/4, _snapshotButton.Height/4, _snapshotButton.Width/2, _snapshotButton.Height/2);
 
             //load and set the settings icon
             _settingsButton.Image = _settingsButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/gear.png"));
-            _settingsButton.ImageBounds = new Rect(_settingsButton.Width / 4, _settingsButton.Height / 4, _settingsButton.Width / 2, _settingsButton.Height / 2);
+            _settingsButton.ImageBounds = new Rect(_settingsButton.Width/4, _settingsButton.Height/4, _settingsButton.Width/2, _settingsButton.Height/2);
 
-            // set the image for the _backToWaitingRoomButton
-            _backToWaitingRoomButton.Image = _backToWaitingRoomButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/back.png"));
-            
+            // set the image for the _backButton
+            _backButton.Image = _backButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/back.png"));
+
+            // set the images for presentation mode
+            _nextNode.Image = _nextNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_forward.png"));
+            _previousNode.Image = _previousNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
+            _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/node.png"));
+            _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/trash can white.png"));
+
             base.Load();
         }
 
@@ -306,8 +427,11 @@ namespace NuSysApp
                 _titleBox.DoubleTapped -= _titleBox_DoubleTapped;
             }
             Canvas.SizeChanged -= OnMainCanvasSizeChanged;
-            //_currCollDetailViewButton.Tapped -= OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped -= SnapShotButtonTapped;
+            _chatButton.Tapped -= ChatButtonOnTapped;
+            _backButton.Tapped -= BackTapped;
+            _backToWaitingRoom.Tapped -= BackToWaitingRoomOnTapped;
+            SessionController.Instance.OnModeChanged -= Instance_OnModeChanged;
             SessionController.Instance.EnterNewCollectionCompleted -= InstanceOnEnterNewCollectionCompleted;
             base.Dispose();
         }
@@ -336,8 +460,6 @@ namespace NuSysApp
 
                 await WaitingRoomView.Instance.ShowWaitingRoom();
             });
-            
-
         }
 
         /// <summary>
@@ -347,9 +469,157 @@ namespace NuSysApp
         /// <param name="tabToOpenTo"></param>
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
-
             _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
+        }
 
+        /// <summary>
+        /// Method to call to make the current workspace have the read-only ui.
+        /// This should mainly hide things like the floating menu.
+        /// </summary>
+        public void MakeReadOnly()
+        {
+        }
+
+        /// <summary>
+        /// Method to call to undo the MakeReadOnly method and reapply the editable UI.
+        /// </summary>
+        public void MakeEditable()
+        {
+        }
+
+        /// <summary>
+        /// Call this method to enter presentation mode
+        /// </summary>
+        /// <param name="elementViewModel"></param>
+        public void EnterPresentationMode(ElementViewModel elementViewModel)
+        {
+            Debug.Assert(elementViewModel != null);
+
+            // Don't do anything if we're already in presentation mode
+            if (_modeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+            _modeInstance = new PresentationMode(elementViewModel);
+            SessionController.Instance.SwitchMode(Options.Presentation);
+            _nextNode.IsVisible = true;
+            _previousNode.IsVisible = true;
+            _currentNode.IsVisible = true;
+            _exitPresentation.IsVisible = true;
+
+            _exitPresentation.Tapped += Presentation_OnClick;
+            _currentNode.Tapped += Presentation_OnClick;
+
+            // set the buttons
+            SetModeButtons();
+        }
+
+        /// <summary>
+        /// Method called when a presentation button is clicked
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void Presentation_OnClick(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (item == _exitPresentation)
+            {
+                ExitMode();
+                //if (IsReadonly)
+                //{
+                //    xReadonlyFloatingMenu.Visibility = Visibility.Visible;
+                //}
+                return;
+            }
+
+            if (item == _nextNode)
+            {
+                _modeInstance.MoveToNext();
+            }
+
+            /*
+                if (!IsPenMode)
+                    return;
+                _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
+                _prevOptions = Options.SelectNode;
+                IsPenMode = false;
+                xBtnPen.BorderBrush = new SolidColorBrush(Constants.color4);
+                PenCircle.Background = new SolidColorBrush(Constants.color4);
+                */
+
+            if (item == _previousNode)
+            {
+                _modeInstance.MoveToPrevious();
+            }
+
+            if (item == _currentNode)
+            {
+                _modeInstance.GoToCurrent();
+            }
+
+            // only show next and prev buttons if next and prev nodes exist
+            SetModeButtons();
+        }
+
+        /// <summary>
+        /// Set the active or inactive state of presentation buttons
+        /// </summary>
+        private void SetModeButtons()
+        {
+            if (_modeInstance.Next())
+            {
+                //_nextNode.Opacity = 1;
+                _nextNode.Tapped -= Presentation_OnClick;
+                _nextNode.Tapped += Presentation_OnClick;
+            }
+            else
+            {
+                //_nextNode.Opacity = 0.6;
+                _nextNode.Tapped -= Presentation_OnClick;
+            }
+            if (_modeInstance.Previous())
+            {
+                //_previousNode.Opacity = 1;
+                _previousNode.Tapped -= Presentation_OnClick;
+                _previousNode.Tapped += Presentation_OnClick;
+            }
+            else
+            {
+                //_previousNode.Opacity = 0.6;
+                _previousNode.Tapped -= Presentation_OnClick;
+            }
+        }
+
+        /// <summary>
+        /// Exits either presentation or exploration mode by modifying the proper UI elements
+        /// </summary>
+        public void ExitMode()
+        {
+            _modeInstance.ExitMode();
+            _modeInstance = null;
+            _nextNode.IsVisible = false;
+            _previousNode.IsVisible = false;
+            _currentNode.IsVisible = false;
+            _exitPresentation.IsVisible = false;
+
+            //// Make sure to make appropriate changes based on whether or not we are in read only mode
+            //if (this.IsReadonly)
+            //{
+            //    xReadonlyFloatingMenu.Visibility = Visibility.Visible;
+            //    xReadonlyFloatingMenu.DeactivateAllButtons();
+            //    SessionController.Instance.SwitchMode(Options.PanZoomOnly);
+            //}
+            //else
+            //{
+            //    xFloatingMenu.Visibility = Visibility.Visible;
+            //}
+
+            if (SessionController.Instance.CurrentMode == Options.Presentation)
+            {
+                _exitPresentation.Tapped -= Presentation_OnClick;
+                _currentNode.Tapped -= Presentation_OnClick;
+            }
+
+            SessionController.Instance.SwitchMode(Options.PanZoomOnly);
         }
     }
 }

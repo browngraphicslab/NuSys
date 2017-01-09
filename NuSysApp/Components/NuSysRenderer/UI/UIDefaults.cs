@@ -23,7 +23,7 @@ namespace NuSysApp
         public static Color SelectedBorderColor = Constants.DARK_BLUE;
         public static float TopBarHeight = 25;
         public static Color TopBarColor = Colors.Transparent;
-        public static float ErrorMargin = 15;
+        public static float ErrorMargin = 25;
 
         public static string FontFamily = "Arial";//"/Assets/fonts/freightsans.ttf#FreightSans BookSC";
 
@@ -54,10 +54,18 @@ namespace NuSysApp
 
         #region tabs
 
-        public static float TabHeight = 25;
-        public static Color TabColor = Colors.LightGray;
+        public static float TabHeight = 15;
+        public static Color TabColor = Constants.LIGHT_BLUE;
         public static float TabMaxWidth = 100;
         public static bool TabIsCloseable = true;
+        public static float TabSpacing = 0;
+        public static float TabBarHeight = 50;
+        public static Color TitleColor = Constants.DARK_BLUE;
+        public static Color TabBarBackground = Constants.LIGHT_BLUE;
+        public static float TabBarBorderWidth = 0;
+        public static HorizontalAlignment TabHorizontalAlignment = HorizontalAlignment.Left;
+        public static VerticalAlignment TabVerticalAlignment = VerticalAlignment.Center;
+        public static CanvasHorizontalAlignment TabTextAlignment = CanvasHorizontalAlignment.Left;
 
         #endregion
 
@@ -71,6 +79,7 @@ namespace NuSysApp
         public static float? WindowMinWidth = 25;
         public static float? WindowMinHeight = 25;
         public static float WindowBorderWidth = 3;
+        public static Color ResizeHighlightColor = Constants.DARK_BLUE;
 
         #endregion
 
@@ -140,14 +149,7 @@ namespace NuSysApp
 
         public static int CornerRadius = 5;
 
-        public static float TabSpacing = 0;
-        public static float TabBarHeight = 50;
-        public static Color TabBarBackground = Colors.White;
-        public static float TabBarBorderWidth = 0;
-        public static HorizontalAlignment TabHorizontalAlignment = HorizontalAlignment.Left;
-        public static VerticalAlignment TabVerticalAlignment = VerticalAlignment.Center;
-        public static CanvasHorizontalAlignment TabTextAlignment = CanvasHorizontalAlignment.Left;
-        public static Color PlaceHolderTextColor = Colors.DarkGray;
+        public static Color PlaceHolderTextColor = Constants.MED_BLUE;
         public static float MaxDropDownHeight = 250;
         public static Color HighlightColor = Colors.Yellow;
         public static float ScrollBarWidth = 15;

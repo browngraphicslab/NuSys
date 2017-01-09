@@ -14,7 +14,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class BreadCrumbContainer : RectangleUIElement
+    public class BreadCrumbContainer : MaskedRectangleUIElement
     {
         /// <summary>
         /// List of bread crumbs which are currently on the trail
@@ -56,26 +56,21 @@ namespace NuSysApp
         /// </summary>
         private Vector2 _scrollHandleInitialDragPosition;
 
-        /// <summary>
-        /// Mask rect used to mask breadcrumbs in the draw call
-        /// </summary>
-        private Rect _maskRect;
-
         public BreadCrumbContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _breadCrumbData = new List<BreadCrumb>();
             _visibleBreadCrumbs = new List<BreadCrumbUIElement>();
             Height = 200;
             Width = 300;
-            Background = Colors.DarkGray;
+            Background = Constants.LIGHT_BLUE_TRANSLUCENT;
 
-            _maskRect = new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth);
+            Mask = new Rect(BorderWidth, BorderWidth, Width - BorderWidth*2, Height - BorderWidth*2);
 
             _scrollBar = new RectangleUIElement(this, resourceCreator)
             {
                 Width = Width,
                 Height = 15,
-                Background = Colors.DimGray
+                Background = Constants.LIGHT_BLUE
             };
             AddChild(_scrollBar);
             _scrollBar.Transform.LocalPosition = new Vector2(0, Height - _scrollBar.Height);
@@ -84,7 +79,7 @@ namespace NuSysApp
             {
                 Width = Width,
                 Height = 15,
-                Background = Colors.LightGray
+                Background = Constants.MED_BLUE
             };
             AddChild(_scrollHandle);
             _scrollHandle.Transform.LocalPosition = new Vector2(0, Height - _scrollHandle.Height);
@@ -310,36 +305,27 @@ namespace NuSysApp
                 // and if the crumb is not the current collection
                 if (!crumb.IsCollection)
                 {
-                    UITask.Run(() =>
-                    {
-                        // move the camera to the element the crumb represents
-                        SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
-                            crumb.ElementController.Id);
-                    });
+                    // move the camera to the element the crumb represents
+                    SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
+                        crumb.ElementController.Id);
                 }
             }
             else
             {
                 // otherwise enter the collection and try to zoom in on the element model that the crumb represents
-                UITask.Run(() =>
-                {
-                    SessionController.Instance.EnterCollection(crumb.CollectionController.LibraryElementModel.LibraryElementId, crumb.ElementController?.Id);
-                });
+                SessionController.Instance.EnterCollection(crumb.CollectionController.LibraryElementModel.LibraryElementId, crumb.ElementController?.Id);
             }
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if(IsDisposed || !SessionController.Instance.SessionSettings.BreadCrumbsVisible)
+            if(IsDisposed || !SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 return;
             }
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-            using (ds.CreateLayer(1, _maskRect))
-            {
-                base.Draw(ds);
-            }
+            base.Draw(ds);
             ds.Transform = orgTransform;
         }
 

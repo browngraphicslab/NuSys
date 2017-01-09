@@ -65,7 +65,6 @@ namespace NuSysApp
             set
             {
                 _header.IsVisible = value;
-                _headerHeight = value ? _header.Height : 0;
                 _showHeader = value;
             }
         }
@@ -110,20 +109,6 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        /// This sets the background of the list view
-        /// </summary>
-        public override Color Background
-        {
-            get { return _listview.Background; }
-            set
-            {
-                if (ListView != null)
-                {
-                    ListView.Background = value;
-                }
-            }
-        }
 
         /// <summary>
         /// Sets the width of the list
@@ -208,13 +193,13 @@ namespace NuSysApp
         public ListViewUIElementContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _resourceCreator = resourceCreator;
-            _headerHeight = 0;
             ListView = new ListViewUIElement<T>(this, resourceCreator);
 
             ListView.RowTapped += ListViewRowTapped;
             ListView.RowDragged += ListView_RowDragged;
             ListView.RowDragCompleted += ListView_RowDragCompleted;
             ListView.RowDoubleTapped += ListView_RowDoubleTapped;
+
 
             _header = new ListViewHeader<T>(this, resourceCreator);
             _header.HeaderDragged += Header_HeaderDragged;
@@ -224,6 +209,13 @@ namespace NuSysApp
             _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
             AddChild(_header);
             ShowHeader = true;
+        }
+        /// <summary>
+        /// Calls ListViewUIElement's clearfilter method
+        /// </summary>
+        public void ClearFilter()
+        {
+            _listview.ClearFilter();
         }
 
 
@@ -559,6 +551,14 @@ namespace NuSysApp
                 _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
         }
+        /// <summary>
+        /// Calls ListViewUIElement's FilterBy method
+        /// </summary>
+        /// <param name="filter"></param>
+        public void FilterBy(Func<T, bool> filter)
+        {
+            _listview.FilterBy(filter);
+        }
 
         /// <summary>
         /// draw the list container and its inner children (the listview and the header)
@@ -568,7 +568,14 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             //draw the listview below the header
-            _listview.Transform.LocalPosition = new Vector2(0, 42);
+            float offset = 0;
+            if (ShowHeader)
+            {
+                offset = _header.Height; //Offset should be header's height if there is a header
+            }
+            //Otherwise, vertical offset should stay 0
+            _listview.Transform.LocalPosition = new Vector2(0, offset);
+
             base.Draw(ds);
         }
     }
