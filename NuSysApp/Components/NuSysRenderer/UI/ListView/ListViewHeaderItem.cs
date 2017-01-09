@@ -100,12 +100,8 @@ namespace NuSysApp
             ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
         }
 
-        /// <summary>
-        /// This overrides the dragged event of the button so that if you are dragging the edge, the headerResizing event is invoked instead of the regular dragging event.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        public override void OnDragged(CanvasPointer pointer)
+
+        public override void OnDragStarted(CanvasPointer pointer)
         {
             var startX = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix).X;
 
@@ -123,14 +119,27 @@ namespace NuSysApp
                     _borderBeingDragged = true;
                 }
             }
+            base.OnDragStarted(pointer);
+        }
 
+        /// <summary>
+        /// This overrides the dragged event of the button so that if you are dragging the edge, the headerResizing event is invoked instead of the regular dragging event.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        public override void OnDragged(CanvasPointer pointer)
+        {
             if (_borderBeingDragged)
             {
                 Debug.Assert(_edgeBeingDragged != null);
                 HeaderResizing?.Invoke(this, pointer, _edgeBeingDragged);
             }
+            else
+            {
+                base.OnDragged(pointer);
 
-            base.OnDragged(pointer);
+            }
+
         }
 
         /// <summary>
