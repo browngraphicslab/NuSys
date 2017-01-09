@@ -78,26 +78,6 @@ namespace NuSysApp
         /// </summary>
         private List<ListColumn<T>> _listColumns;
 
-        /// <summary>
-        /// This is the rectangle that goes behind all the row elements. We have to use this and not the default background inherited from rectangleuielement because we manually draw our rows, 
-        /// and if we set a background color on the list, then it will cover the all the elements
-        /// </summary>
-        private RectangleUIElement _backgroundRectangle;
-
-        /// <summary>
-        /// Changes the color of the background of the list.
-        /// </summary>
-        public Color Background
-        {
-            get { return _backgroundRectangle?.Background ?? Colors.Transparent; }
-            set
-            {
-                if (_backgroundRectangle != null)
-                {
-                    _backgroundRectangle.Background = value;
-                }
-            }
-        }
 
         /// <summary>
         /// A hashset of the selected rows
@@ -216,17 +196,9 @@ namespace NuSysApp
             Rows = new List<ListViewRowUIElement<T>>();
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
-            SetUpBackgroundRectangle();
+ 
         }
 
-        private void SetUpBackgroundRectangle()
-        {
-            _backgroundRectangle = new RectangleUIElement(this, ResourceCreator)
-            {
-                Width = this.Width,
-                Height = this.Height,
-            };
-        }
 
         /// <summary>
         /// Appends things to the _itemsSource list. Creates new ListViewRowUIElement for each of the items
@@ -436,6 +408,15 @@ namespace NuSysApp
         /// <param name="position"></param>
         private void SetPosition(float position)
         {
+            if (position + ScrollBar.Range > 1)
+            {
+                position = 1 - ScrollBar.Range;
+            }
+
+            if (position < 0)
+            {
+                position = 0;
+            }
             _scrollOffset = position * (_heightOfAllRows);
             ScrollBar.Position = position;
         }
@@ -448,18 +429,9 @@ namespace NuSysApp
         private void ChangePosition(float delta)
         {
             var currentPosition = GetPosition();
-            if (delta < 0)
-            {
-                //If you're going up (position going down), set position + delta, with 0 as min.
-                SetPosition(Math.Max(0, currentPosition + delta));
-            }
+        
+            SetPosition(currentPosition + delta);
 
-            if (delta > 0)
-            {
-                //If you're going down (position going up), set position + delta, with 1-range being maximum.
-                var pos = (currentPosition + delta + ScrollBar.Range > 1f) ? 1f - ScrollBar.Range : currentPosition + delta;
-                SetPosition(pos);
-            }
 
         }
         /// <summary>
@@ -831,10 +803,6 @@ namespace NuSysApp
                 return;
             }
             float position = (float)i / _filteredItems.Count;
-            if (position + ScrollBar.Range > 1)
-            {
-                position = 1 - ScrollBar.Range;
-            }
             //Sets the position of the ScrollBar to the position of the item in the list
             SetPosition(position);
 
@@ -1001,10 +969,12 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _backgroundRectangle.Width = this.Width;
-            _backgroundRectangle.Height = this.Height;
-            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
+
+            //Update position and range of scroll
+            SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
+            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
+        
             UpdateListRows();
 
             var cellVerticalOffset = BorderWidth;
@@ -1033,7 +1003,6 @@ namespace NuSysApp
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-            //_backgroundRectangle.Draw(ds);
 
             // Creates a clipping of the drawing session based on _clippingrect
             using (ds.CreateLayer(1f, _clippingRect))

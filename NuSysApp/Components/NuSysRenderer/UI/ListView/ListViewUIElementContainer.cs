@@ -65,7 +65,6 @@ namespace NuSysApp
             set
             {
                 _header.IsVisible = value;
-                _headerHeight = value ? _header.Height : 0;
                 _showHeader = value;
             }
         }
@@ -110,20 +109,6 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        /// This sets the background of the list view
-        /// </summary>
-        public override Color Background
-        {
-            get { return _listview.Background; }
-            set
-            {
-                if (ListView != null)
-                {
-                    ListView.Background = value;
-                }
-            }
-        }
 
         /// <summary>
         /// Sets the width of the list
@@ -208,7 +193,6 @@ namespace NuSysApp
         public ListViewUIElementContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _resourceCreator = resourceCreator;
-            _headerHeight = 0;
             ListView = new ListViewUIElement<T>(this, resourceCreator);
 
             ListView.RowTapped += ListViewRowTapped;
@@ -584,7 +568,14 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             //draw the listview below the header
-            _listview.Transform.LocalPosition = new Vector2(0, 42);
+            float offset = 0;
+            if (ShowHeader)
+            {
+                offset = _header.Height; //Offset should be header's height if there is a header
+            }
+            //Otherwise, vertical offset should stay 0
+            _listview.Transform.LocalPosition = new Vector2(0, offset);
+
             base.Draw(ds);
         }
     }
