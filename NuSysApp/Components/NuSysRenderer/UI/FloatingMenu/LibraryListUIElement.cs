@@ -382,10 +382,7 @@ namespace NuSysApp
             var listColumn4 = new ListTextColumn<LibraryElementModel>();
             listColumn4.Title = "Last Edited Timestamp";
             listColumn4.RelativeWidth = 1.8f;
-            listColumn4.ColumnFunction =
-                model =>
-                    SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryElementId)
-                        .GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
+            listColumn4.ColumnFunction = model => model.GetController().GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
 
             LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
