@@ -79,7 +79,6 @@ namespace NuSysApp
             HashSet<string> set = new HashSet<string>(propertiesList);
             if (propertiesList.Count > 0)
             {
-                
                 _listView.AddItems(set.ToList());
             }
         }

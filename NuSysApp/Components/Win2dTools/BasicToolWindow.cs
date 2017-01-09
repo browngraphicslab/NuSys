@@ -48,11 +48,9 @@ namespace NuSysApp
 
             //vm.Controller.SetLocation(x, y);
 
-
             vm.ReloadPropertiesToDisplay();
             _toolView.SetProperties((Vm as BasicToolViewModel).PropertiesToDisplay);
             _currentViewMode = ViewMode.List;
-            //SetSize(250, 450);
             (vm.Controller as BasicToolController).SelectionChanged += OnSelectionChanged;
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
         }

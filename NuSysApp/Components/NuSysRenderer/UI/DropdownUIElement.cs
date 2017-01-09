@@ -273,7 +273,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _dropDownList.Transform.LocalPosition = new Vector2(0, 0);
+            _dropDownList.Transform.LocalPosition = new Vector2(0, Height);
             _dropDownList.ShowHeader = false;
             _dropDownList.Width = Width;
 

@@ -64,7 +64,7 @@ namespace NuSysApp
         /// </summary>
         private bool _isDragging;
 
-
+        private T _draggedItem;
         /// <summary>
         /// The list of items (e.g library element models)
         /// </summary>
@@ -278,6 +278,12 @@ namespace NuSysApp
             {
                 CreateListViewRowUIElements();
             }
+
+
+            //Update position and range of scroll
+            SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
+            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
+
         }
         /// <summary>
         /// Method that creates the ListViewRowUIElements necessary to cover the screen. 
@@ -347,11 +353,17 @@ namespace NuSysApp
                     listViewRowUIElement.RowTapped += ListViewRowUIElementOnRowTapped;
                     listViewRowUIElement.RowDoubleTapped += ListViewRowUIElementOnRowDoubleTapped;
                     listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
+                    listViewRowUIElement.RowDragStarted += ListViewRowUIElement_RowDragStarted;
                     listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
                     Rows.Add(listViewRowUIElement);
                 }
             });
 
+        }
+
+        private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
+        {
+            _draggedItem = item;
         }
 
         private void ListViewRowUIElementOnRowTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
@@ -592,11 +604,13 @@ namespace NuSysApp
             {
                 RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
                 _isDragging = false;
+                _draggedItem = default(T);
             }
 
             
         }
         
+
         /// <summary>
         /// event that fires when you drag on the list. 
         /// if the pointer stays within the bounds of the list, this will scroll. 
@@ -608,24 +622,37 @@ namespace NuSysApp
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
         {
             //calculate bounds of listview
-            var minX = this.Transform.Parent.LocalX;
-            var maxX = minX + Width;
-            var minY = this.Transform.Parent.LocalY;
-            var maxY = minY + Height;
+            var minX = 0;
+            var maxX = Width;
+            var minY = 0;
+            var maxY = Height;
 
             //We need the local point, not the screen point
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            RowDragged?.Invoke(rowUIElement.Item,
-                     rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-            _isDragging = true;
+
             //check within bounds of listview
             if (point.X < minX || point.X > maxX || point.Y < minY ||
                 point.Y > maxY)
             {
-                
+                Debug.Assert(_draggedItem != null);
+                if (_draggedItem == null)
+                {
+                    return;
+                }
+                //If it's the first time we are leaving the listview, select the item
+                if (!_isDragging && !DisableSelectionByClick)
+                {
+                    SelectItem(_draggedItem);
+                }
+                RowDragged?.Invoke(_draggedItem,
+         rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+
+                _isDragging = true;
+
             }
             else
             {
+
                 //scroll if in bounds
                 var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _filteredItems.Count);
 
