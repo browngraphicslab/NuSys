@@ -68,8 +68,10 @@ namespace NuSysApp
 
                 AddChild(_tagRenderItem);
             }
-
-            vm.Controller.LibraryElementController.HighlightChanged += LibraryElementController_HighlightChanged;
+            if (vm?.Controller?.LibraryElementController != null)
+            {
+                vm.Controller.LibraryElementController.HighlightChanged += LibraryElementController_HighlightChanged;
+            }
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
             base.Background = Colors.Transparent;
         }

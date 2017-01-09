@@ -70,15 +70,18 @@ namespace NuSysApp
 
         public override void Stop()
         {
-            if (CanvasAnimatedControl == null)
-                return;
-            
-            CanvasAnimatedControl.RunOnGameLoopThreadAsync(() =>
+            UITask.Run(delegate
             {
-                _isStopped = true;
-            });
+                if (CanvasAnimatedControl == null)
+                    return;
 
-            base.Stop();
+                CanvasAnimatedControl.RunOnGameLoopThreadAsync(() =>
+                {
+                    _isStopped = true;
+                });
+
+                base.Stop();
+            });
         }
         
 

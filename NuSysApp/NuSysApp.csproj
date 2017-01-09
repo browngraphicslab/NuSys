@@ -840,6 +840,7 @@
     <Compile Include="Util\IInkController.cs" />
     <Compile Include="Util\InkUtil.cs" />
     <Compile Include="Util\INusysDisposable.cs" />
+    <Compile Include="Util\LibraryElementExtensions.cs" />
     <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\IModable.cs" />
     <Compile Include="Util\LineEquation.cs" />
