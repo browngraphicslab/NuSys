@@ -151,7 +151,7 @@ namespace NuSysApp
         /// <param name="libraryElementModelId"></param>
         public void ShowLibraryElement(string libraryElementModelId)
         {
-            if (SessionController.Instance.CurrentMode != Options.PanZoomOnly)
+            if (SessionController.Instance.CurrentMode != Options.PanZoomOnly && SessionController.Instance.CurrentMode != Options.Idle)
             {
                 return;
             }
