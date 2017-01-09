@@ -72,11 +72,6 @@ namespace NuSysApp
         private MaskedRectangleUIElement _scrollAreaRect;
 
         /// <summary>
-        /// This is true whenever the ui needs to be rerendered
-        /// </summary>
-        private bool _refreshUI;
-
-        /// <summary>
         /// The list of elements on the scrollarea that are currently visible
         /// </summary>
         private List<BaseInteractiveUIElement> _visibleElements;
@@ -215,12 +210,12 @@ namespace NuSysApp
 
         private void _verticalScrollBar_ScrollBarPositionChanged(object source, float position)
         {
-            _refreshUI = true;
+            IsDirty = true;
         }
 
         private void _horizontalScrollBar_ScrollBarPositionChanged(object source, float position)
         {
-            _refreshUI = true;
+            IsDirty = true;
         }
 
         /// <summary>
@@ -419,7 +414,7 @@ namespace NuSysApp
         /// <summary>
         /// Called whenever the size of the scrolling canvas is changed
         /// </summary>
-        private void OnSizeChanged()
+        protected virtual void OnSizeChanged()
         {
             if (_lowerRightCornerRect != null && _horizontalScrollBar != null && _verticalScrollBar != null)
             {
@@ -443,7 +438,7 @@ namespace NuSysApp
 
             ComputeScrollHandleSize();
 
-            _refreshUI = true;
+            IsDirty = true;
         }
 
         /// <summary>
@@ -452,7 +447,7 @@ namespace NuSysApp
         private void ReRender()
         {
             // if we do not have to rerender then just return
-            if (!_refreshUI)
+            if (!IsDirty)
             {
                 return;
             }
@@ -493,7 +488,7 @@ namespace NuSysApp
             _scrollAreaRect.Transform.LocalPosition = new Vector2((float) -_cropRect.X, (float) -_cropRect.Y);
 
             // stop refreshing the ui it was just refreshed
-            _refreshUI = false;
+            IsDirty = false;
         }
 
         /// <summary>

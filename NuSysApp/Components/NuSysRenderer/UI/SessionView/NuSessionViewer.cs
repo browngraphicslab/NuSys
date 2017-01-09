@@ -153,7 +153,7 @@ namespace NuSysApp
                 MinHeight = 600,
                 KeepAspectRatio = true
             };
-            AddChild(_detailViewer);          
+            AddChild(_detailViewer);
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
