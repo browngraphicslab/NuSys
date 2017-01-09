@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,16 @@ namespace NuSysApp
         public string GetReturnedImageUrl()
         {
             return ReturnArgs.Url;
+        }
+
+        /// <summary>
+        /// This should never be called because the server shouldn't forward this request to other clients.
+        /// </summary>
+        /// <param name="senderArgs"></param>
+        /// <param name="returnArgs"></param>
+        public override void ExecuteRequestFunction(UploadCollectionBackgroundImageServerRequestArgs senderArgs, UploadCollectionBackgroundImageReturnArgs returnArgs)
+        {
+            Debug.Fail("this shouldn't happen");
         }
     }
 }

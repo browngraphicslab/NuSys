@@ -762,6 +762,7 @@
     <Compile Include="Network\Requests\GetLastUsedCollectionsRequest.cs" />
     <Compile Include="Network\Requests\GetRelatedDocumentsRequest.cs" />
     <Compile Include="Network\Requests\GetUserIdToDisplayNameDictionaryRequest.cs" />
+    <Compile Include="Network\Requests\GetWordDocumentRequest.cs" />
     <Compile Include="Network\Requests\MoveElementToCollectionRequest.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AnalysisModelMadeNotificationHandler.cs" />

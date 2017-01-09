@@ -289,6 +289,7 @@
     <Compile Include="RequestHandlers\GetLastUsedCollectionsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetWordDocumentRequestHandler.cs" />
     <Compile Include="RequestHandlers\MoveElementToCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />

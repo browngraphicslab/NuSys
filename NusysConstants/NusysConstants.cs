@@ -45,11 +45,16 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string SERVER_ARGS_REQUEST_ARGS_CLASS_KEY = "args_class_key";
 
+        /// <summary>
+        /// the request key used to hold the serializable return args class.
+        /// </summary>
+        public static readonly string FULL_ARGS_REQUEST_RETURN_ARGS_KEY = "return_args";
+
         #endregion RequestManagementKeys
 
         #region RequestKeys
 
-            #region AllRequests
+        #region AllRequests
             /// <summary>
             /// should be returned by all requests if it is successful
             /// </summary>
@@ -1673,6 +1678,11 @@ namespace NusysIntermediate
 
             AddNewLastUsedCollectionRequest,
             GetLastUsedCollectionsRequest,
+
+            /// <summary>
+            /// Request used to fetch the bytes of a specified word document from the server
+            /// </summary>
+            GetWordDocumentRequest,
 
             /// <summary>
             /// request used to upload an image to the server to be saved on the WWWRoot

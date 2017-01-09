@@ -25,7 +25,7 @@ namespace NusysIntermediate
         public ServerArgsRequest (T requestArgs) : base(requestArgs.RequestType)
         {
             requestArgs.CheckValidity();
-            _message[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = requestArgs.GetSerialized();
+            _message[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = requestArgs;
         }
 
         /// <summary>

@@ -29,6 +29,15 @@ namespace NusysServer
         /// <returns></returns>
         protected abstract S HandleArgsRequest(T args, NuWebSocketHandler senderHandler);
 
+        protected void ForwardRequest(T args, S returnArgs, NuWebSocketHandler handlerToIgnore = null)
+        {
+            var m = new Message();
+            m[NusysConstants.REQUEST_TYPE_STRING_KEY] = args.RequestType.ToString();
+            m[NusysConstants.FULL_ARGS_REQUEST_RETURN_ARGS_KEY] = returnArgs;
+            m[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = args;
+            ForwardMessage(m,handlerToIgnore);
+        }
+
         /// <summary>
         /// This is the overriden original handleRequest method.
         /// It still returns a message class but that should be changed once all request handlers have been ported to the new 'FullArgsRequest' method.
@@ -58,7 +67,7 @@ namespace NusysServer
                 m[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = false;
                 m[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message;
             }
-            m["return_args"] = s;
+            m[NusysConstants.FULL_ARGS_REQUEST_RETURN_ARGS_KEY] = s;
             return m;
         }
     }

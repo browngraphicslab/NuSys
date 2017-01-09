@@ -421,6 +421,17 @@ namespace NusysServer
             }
         }
 
+        /// <summary>
+        /// Method to get the word document bytes from a word file using only the contentId;
+        /// </summary>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public static byte[] GetWordBytesFromContentId(string contentId)
+        {
+            var filePath = Constants.GetWordDocumentFilePath(contentId);
+            var bytes = File.ReadAllBytes(filePath);
+            return bytes;
+        }
 
         /// <summary>
         /// This method will save the word document in the correct location, and then return the pdf bytes for the document.

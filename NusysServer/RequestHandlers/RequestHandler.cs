@@ -43,7 +43,8 @@ namespace NusysServer
         {
             var forwardMessage = new Message(messageToForward);
             forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
-            NuWebSocketHandler.BroadcastToSubset(forwardMessage, new HashSet<NuWebSocketHandler>() { senderHandlerToIgnore });
+            var hashSetToIgnore = senderHandlerToIgnore == null ? new HashSet<NuWebSocketHandler>() : new HashSet<NuWebSocketHandler>() { senderHandlerToIgnore };
+            NuWebSocketHandler.BroadcastToSubset(forwardMessage, hashSetToIgnore);
         }
 
         /// <summary>

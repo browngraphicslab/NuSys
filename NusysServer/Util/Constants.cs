@@ -308,9 +308,15 @@ namespace NusysServer
             return new Message(properties.ToDictionary(kvp => kvp.Key.Contains(".") ? kvp.Key.Substring(kvp.Key.IndexOf(".") + 1) : kvp.Key, kvp => kvp.Value));
         }
 
-        public static string GetWordDocumentFilePath(string libraryElementId)
+
+        /// <summary>
+        /// Method used to get the string file path for a word document using only the word document's content Id;
+        /// </summary>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public static string GetWordDocumentFilePath(string contentId)
         {
-            return Constants.WWW_ROOT + libraryElementId + NusysConstants.DEFAULT_WORD_DOCUMENT_EXTENSION;
+            return Constants.WWW_ROOT + contentId + NusysConstants.DEFAULT_WORD_DOCUMENT_EXTENSION;
         }
 
         /// <summary>

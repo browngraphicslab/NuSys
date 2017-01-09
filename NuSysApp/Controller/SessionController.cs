@@ -554,6 +554,7 @@ namespace NuSysApp
         public void MakeWorkspaceReadonly()
         {
             IsReadonly = true;
+            NuSessionView.MakeReadOnly();
         }
 
         /// <summary>
@@ -562,6 +563,7 @@ namespace NuSysApp
         public void MakeWorkspaceEditable()
         {
             IsReadonly = false;
+            NuSessionView.MakeEditable();
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
