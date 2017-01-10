@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -80,17 +82,33 @@ namespace NuSysApp
             cb.EndFigure(CanvasFigureLoop.Open);
             _path = CanvasGeometry.CreatePath(cb);
 
-            var lowerAnchor = anchor1.Y < anchor2.Y ? anchor1.Y : anchor2.Y;
-            var leftAnchor = anchor1.X < anchor2.X ? anchor1.X : anchor2.X;
-            var midPointX = leftAnchor + distanceX/2;
-            var midPointY = lowerAnchor + distanceY/2;
-            var apex = new Vector2(midPointX, midPointY);
-            var leftLeg = new Vector2(midPointX - 15, midPointY + 20);
-            var rightLeg = new Vector2(midPointX + 15, midPointY + 20);
-            _arrow = CanvasGeometry.CreatePolygon(ResourceCreator, new[] {apex, leftLeg, rightLeg});
+            var lowerAnchor = anchor1.Y <= anchor2.Y ? anchor1.Y : anchor2.Y;
+            var higherAnchor = anchor1.Y > anchor2.Y ? anchor1.Y : anchor2.Y;
+            var leftAnchor = anchor1.X <= anchor2.X ? anchor1.X : anchor2.X;
+            var rightAnchor = anchor1.X > anchor2.X ? anchor1.X : anchor2.X;
+            var midPointX = leftAnchor + (rightAnchor - leftAnchor)/2;
+            var midPointY = lowerAnchor + (higherAnchor - lowerAnchor)/2;
+            var apex = new Point(midPointX, midPointY);
+            var leftLeg = new Point(midPointX - 10, midPointY + 20);
+            var rightLeg = new Point(midPointX + 10, midPointY + 20);
+            var angle = Math.Atan2(leftAnchor - rightAnchor, higherAnchor - lowerAnchor) * (180 / Math.PI);
+            Debug.WriteLine("Angle = " + angle);
+            RotateTransform transform;
+            UITask.Run(async () =>
+            { 
+                transform = new RotateTransform() {Angle = angle, CenterX = 10, CenterY = 10};
+                transform.TransformPoint(apex);
+                transform.TransformPoint(leftLeg);
+                transform.TransformPoint(rightLeg);
+                
+                _arrow = CanvasGeometry.CreatePolygon(ResourceCreator,
+                    new[] {apex.ToSystemVector2(), leftLeg.ToSystemVector2(), rightLeg.ToSystemVector2()});
 
-            IsDirty = false;
-        }
+            });
+
+
+                IsDirty = false;
+            }
 
         public override void Draw(CanvasDrawingSession ds) {
             if (IsDisposed || SessionController.Instance.SessionSettings.LinksVisible == LinkVisibilityOption.NoLinks || 
@@ -100,13 +118,14 @@ namespace NuSysApp
 
             if (_path != null)
                 ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
-            //if (
-            //    (_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel).ArrowDirection ==
-            //    NusysConstants.LinkDirection.Forward)
-            //{
-               
-            //}
-            ds.DrawGeometry(_arrow, Colors.Black, 10);
+            if ((_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel).ArrowDirection == NusysConstants.LinkDirection.Forward)
+            {
+                ds.DrawGeometry(_arrow, Colors.Black, 10);
+            } else if (
+                (_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel).ArrowDirection == NusysConstants.LinkDirection.Backward)
+            {
+                ds.DrawGeometry(_arrow, Colors.Black, 10);
+            }
         }
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)
