@@ -61,6 +61,9 @@ namespace NuSysApp
             _rightButtonLayoutManager = new StackLayoutManager();
             _rightButtonLayoutManager.AddElement(_rightPageButton);
             AddChild(_rightPageButton);
+
+            _pdfContentDataModel = controller.ContentDataController.ContentDataModel as PdfContentDataModel;
+
         }
 
         /// <summary>
@@ -115,6 +118,13 @@ namespace NuSysApp
             _rightButtonLayoutManager.ItemHeight = buttonWidth;
             _rightButtonLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _rightButtonLayoutManager.ArrangeItems(new Vector2(_leftButtonLayoutManager.Width + _contentLayoutManager.Width, 0));
+
+            // set the visibility of the left and right page buttons
+            _leftPageButton.IsVisible = CurrentPage != 0;
+            if (_pdfContentDataModel != null)
+            {
+                _rightPageButton.IsVisible = CurrentPage + 1 != _pdfContentDataModel.PageCount;
+            }
 
 
             base.Update(parentLocalToScreenTransform);

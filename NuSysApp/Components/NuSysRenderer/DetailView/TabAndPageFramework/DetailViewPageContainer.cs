@@ -49,6 +49,11 @@ namespace NuSysApp
         /// </summary>
         private bool _loaded;
 
+        /// <summary>
+        /// Popup used to change the access of regions
+        /// </summary>
+        private FlyoutPopup _changeAccessPopup;
+
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
@@ -105,28 +110,38 @@ namespace NuSysApp
         private void OnChangeAccessFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // create the change Access menu
-            var changeAccessPopup = new FlyoutPopup(this, Canvas);
+            _changeAccessPopup = new FlyoutPopup(this, Canvas);
             var flyout = item as BaseInteractiveUIElement;
             Debug.Assert(flyout != null);
-            changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
+            _changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - _changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
 
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
             {
-                changeAccessPopup.AddFlyoutItem("Make Read Only", OnReadOnlyTapped, Canvas);
+                _changeAccessPopup.AddFlyoutItem("Make Read Only", OnReadOnlyTapped, Canvas);
             }
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly ||
                 _currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
             {
-                changeAccessPopup.AddFlyoutItem("Make Public", OnPublicTapped, Canvas);
+                _changeAccessPopup.AddFlyoutItem("Make Public", OnPublicTapped, Canvas);
             }
 
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
             {
-                changeAccessPopup.AddFlyoutItem("Cannot Change Access", null, Canvas);
+                _changeAccessPopup.AddFlyoutItem("Cannot Change Access", OnCannotChangeAccessTapped, Canvas);
             }
 
-            AddChild(changeAccessPopup);
+            AddChild(_changeAccessPopup);
 
+        }
+
+        /// <summary>
+        /// Method callewd when the change access cannot change access option is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnCannotChangeAccessTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _changeAccessPopup.DismissPopup();
         }
 
         /// <summary>
@@ -137,6 +152,8 @@ namespace NuSysApp
         private void OnPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _currentController.SetAccessType(NusysConstants.AccessType.Public);
+            _changeAccessPopup.DismissPopup();
+
         }
 
         /// <summary>
@@ -147,6 +164,7 @@ namespace NuSysApp
         private void OnReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);
+            _changeAccessPopup.DismissPopup();
         }
 
         /// <summary>

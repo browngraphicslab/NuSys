@@ -12,7 +12,7 @@ using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 namespace NuSysApp
 {
-    public class FilterSubMenu : ResizeableWindowUIElement
+    public class FilterSubMenu : WindowUIElement
     {
         /// <summary>
         /// List used to display library element models
@@ -81,10 +81,6 @@ namespace NuSysApp
             TopBarColor = Colors.Azure;
             Height = 400;
             Width = 300;
-            MinWidth = 200;
-            MinHeight = 400;
-            KeepAspectRatio = false;
-            IsDraggable = false;
 
             // instantiate a new _libraryElementListview
             _userIdListView = new ListViewUIElementContainer<string>(this, ResourceCreator)
@@ -393,7 +389,7 @@ namespace NuSysApp
             _userIdListView.Height = Height - 2 * BorderWidth - TopBarHeight;
             _userIdListView.Transform.LocalPosition = new Vector2(BorderWidth, BorderWidth + TopBarHeight);
             _elementTypeListView.Width = Width - 2 * BorderWidth;
-            _elementTypeListView.Height = Height - 2 * BorderWidth;
+            _elementTypeListView.Height = Height - 2 * BorderWidth - TopBarHeight;
             _elementTypeListView.Transform.LocalPosition = new Vector2(BorderWidth, BorderWidth + TopBarHeight);
 
             // set the date views so they are stacked vertically and centered
