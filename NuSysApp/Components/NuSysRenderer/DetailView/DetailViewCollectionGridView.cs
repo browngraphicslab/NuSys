@@ -87,14 +87,29 @@ namespace NuSysApp
             });
 
             _gridSortDropDown.Selected += _gridSortDropDown_Selected;
-
+            _controller.OnChildAdded += Controller_OnChildAdded;
+            _controller.OnChildRemoved += Controller_OnChildRemoved;
         }
 
+        private void Controller_OnChildRemoved(string id)
+        {
+            Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(id));
+            _scrollingGrid.RemoveItem(SessionController.Instance.ElementModelIdToElementController[id].Model);
+        }
+
+        private void Controller_OnChildAdded(string id)
+        {
+            Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(id));
+
+            _scrollingGrid.AddItem(SessionController.Instance.ElementModelIdToElementController[id].Model);
+        }
 
         public override void Dispose()
         {
 
             _gridSortDropDown.Selected -= _gridSortDropDown_Selected;
+            _controller.OnChildAdded -= Controller_OnChildAdded;
+            _controller.OnChildRemoved -= Controller_OnChildRemoved;
 
             base.Dispose();
         }

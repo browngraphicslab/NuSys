@@ -80,7 +80,7 @@ namespace NuSysApp
 
         private float _imageHeight;
 
-        private float _imageAnalysisMinHeight = 150;
+        private float _imageAnalysisMinHeight = 170;
 
         private ButtonUIElement _dragToCollectionButton;
 
@@ -270,7 +270,7 @@ namespace NuSysApp
 
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
-            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight, Height*heightMultiplier) - dragToCollectionHeight;
+            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin, Height*heightMultiplier) - dragToCollectionHeight;
 
             // set the image
             var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
