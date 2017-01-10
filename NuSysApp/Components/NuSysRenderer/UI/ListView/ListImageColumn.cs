@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
@@ -47,6 +48,24 @@ namespace NuSysApp
                 _dict[itemSource] = cell.Image;
             }
 
+            var width = cell.Width;
+            var height = cell.Height;
+            var imgWidth = cell.Image.GetBounds(cell.ResourceCreator).Width;
+            var imgHeight = cell.Image.GetBounds(cell.ResourceCreator).Height;
+
+            if (imgWidth < 0 || imgHeight < 0)
+            {
+                return;
+            }
+            if (imgWidth > imgHeight)
+            {
+                cell.ImageBounds = new Rect(0, 0, height*imgWidth/imgHeight, height);
+
+            }
+            else
+            {
+                cell.ImageBounds = new Rect(0, 0, width, width * imgHeight/imgWidth);
+            }
         }
 
         public override async void UpdateColumnCellFromItem(T item, RectangleUIElement rectangleUIElement, bool isSelected)
