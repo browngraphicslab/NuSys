@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using ParserHelper;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -26,7 +27,7 @@ namespace Parser
         public MainPage()
         {
             this.InitializeComponent();
-            this.DataContext = new HTMLParserDataContext(null);
+            this.DataContext = new ParserHelper.HTMLParserDataContext(null);
         }
 
         private async void Grid_Loaded(object sender, RoutedEventArgs e)

@@ -1,0 +1,28 @@
+﻿<Page
+    x:Class="LinkScorerGUI.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:LinkScorerGUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid ScrollViewer.HorizontalScrollMode="Enabled" Loaded="FrameworkElement_OnLoaded">
+        <Grid.RowDefinitions >
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Height="200" Grid.Row="0">
+            <TextBox PlaceholderText="URL" x:Name="url"/>
+            <Button Tapped="Button_OnTapped">Submit</Button>
+            <TextBox IsReadOnly="True" x:Name="ScoreDisplay" AcceptsReturn="True"/>
+            <StackPanel>
+                <Button Tapped="GoodButtonOnTapped">Good Parse</Button>
+                <Button Tapped="BadButtonOnTapped">Bad Parse</Button>
+            </StackPanel>
+        </StackPanel>
+
+        <ListView x:Name="xItems" HorizontalContentAlignment="Left" Grid.Row="1">
+        </ListView>
+    </Grid>
+</Page>
