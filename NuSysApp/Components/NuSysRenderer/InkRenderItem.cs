@@ -6,8 +6,10 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Input;
@@ -185,7 +187,9 @@ namespace NuSysApp
                 }
 
                 _currentInkPoints = new List<InkPoint>();
+
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
+
 
                 _needsDryStrokesUpdate = true;
                 _needsWetStrokeUpdate = true;
@@ -271,7 +275,8 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             if (_needsDryStrokesUpdate)
             {
-                if (_dryStrokesTarget != null) { 
+                if (_dryStrokesTarget != null)
+                { 
                     using (var dss = _dryStrokesTarget.CreateDrawingSession())
                     {
                         dss.Clear(Colors.Transparent);
