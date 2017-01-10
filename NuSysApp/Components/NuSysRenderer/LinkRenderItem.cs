@@ -21,6 +21,8 @@ namespace NuSysApp
         private LinkViewModel _vm;
         private CanvasGeometry _path;
         private CanvasGeometry _arrow;
+        private Point _midPoint;
+        private float _angle;
         public LinkViewModel ViewModel => _vm;
 
         public LinkRenderItem(LinkViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
@@ -88,25 +90,15 @@ namespace NuSysApp
             var rightAnchor = anchor1.X > anchor2.X ? anchor1.X : anchor2.X;
             var midPointX = leftAnchor + (rightAnchor - leftAnchor)/2;
             var midPointY = lowerAnchor + (higherAnchor - lowerAnchor)/2;
+            _midPoint = new Point(midPointX, midPointY);
             var apex = new Point(midPointX, midPointY);
             var leftLeg = new Point(midPointX - 10, midPointY + 20);
             var rightLeg = new Point(midPointX + 10, midPointY + 20);
-            var angle = Math.Atan2(leftAnchor - rightAnchor, higherAnchor - lowerAnchor) * (180 / Math.PI);
-            Debug.WriteLine("Angle = " + angle);
-            RotateTransform transform;
-            UITask.Run(async () =>
-            { 
-                transform = new RotateTransform() {Angle = angle, CenterX = 10, CenterY = 10};
-                transform.TransformPoint(apex);
-                transform.TransformPoint(leftLeg);
-                transform.TransformPoint(rightLeg);
-                
-                _arrow = CanvasGeometry.CreatePolygon(ResourceCreator,
-                    new[] {apex.ToSystemVector2(), leftLeg.ToSystemVector2(), rightLeg.ToSystemVector2()});
-
-            });
-
-
+            _angle = (float) Math.Atan2(anchor1.Y - anchor2.Y, anchor1.X - anchor2.X);
+            Debug.WriteLine(_angle * (180 / Math.PI));
+            _arrow = CanvasGeometry.CreatePolygon(ResourceCreator,
+                    new[] { apex.ToSystemVector2(), leftLeg.ToSystemVector2(), rightLeg.ToSystemVector2() });
+            
                 IsDirty = false;
             }
 
@@ -120,11 +112,15 @@ namespace NuSysApp
                 ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
             if ((_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel).ArrowDirection == NusysConstants.LinkDirection.Forward)
             {
-                ds.DrawGeometry(_arrow, Colors.Black, 10);
+                Matrix3x2 originalTranform = ds.Transform;
+                ds.Transform = Matrix3x2.CreateRotation(_angle + (float) Math.PI/2, new Vector2((float) _midPoint.X, (float) _midPoint.Y)) * ds.Transform;
+                ds.DrawGeometry(_arrow, Colors.Black, 12);
+                ds.Transform = originalTranform;
             } else if (
                 (_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel).ArrowDirection == NusysConstants.LinkDirection.Backward)
             {
-                ds.DrawGeometry(_arrow, Colors.Black, 10);
+                ds.Transform = Matrix3x2.CreateRotation(_angle - (float) Math.PI/2) * ds.Transform;
+                ds.DrawGeometry(_arrow, Colors.Black, 12);
             }
         }
 
