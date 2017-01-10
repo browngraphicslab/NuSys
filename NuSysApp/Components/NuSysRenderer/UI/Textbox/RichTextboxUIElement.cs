@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using Windows.UI;
 
 namespace NuSysApp
 {
@@ -40,7 +41,6 @@ namespace NuSysApp
             set
             {
                 _underlined = value;
-                UpdateCanvasTextLayout();
             }
         }
 
@@ -55,14 +55,59 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// updates the canvastextlayout object
+        /// updates the canvastextlayout object.
+        /// 
+        /// if you don't want to add the styling to the entire canvastextlayout, then override this method maybe?
         /// </summary>
-        private void UpdateCanvasTextLayout()
+        protected virtual void UpdateCanvasTextLayout()
         {
             CanvasTextLayout = new CanvasTextLayout(Canvas, Text, CanvasTextFormat, Width, Height);
             CanvasTextLayout.SetUnderline(0, Text.Length, Underlined);
         }
 
+        /// <summary>
+        /// underlines a substring of the string
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="charCount"></param>
+        public void UnderlineFragment(int start, int charCount)
+        {
+            CanvasTextLayout.SetUnderline(start, charCount, true);
+        }
+
+        /// <summary>
+        /// set font family for substring
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="charCount"></param>
+        /// <param name="fontFamily"></param>
+        public void SetFontFragment(int start, int charCount, string fontFamily)
+        {
+            CanvasTextLayout.SetFontFamily(start, charCount, fontFamily);
+        }
+
+        /// <summary>
+        /// set font style for substring
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="charCount"></param>
+        /// <param name="fontStyle"></param>
+        public void SetFontStyle(int start, int charCount, Windows.UI.Text.FontStyle fontStyle)
+        {
+            CanvasTextLayout.SetFontStyle(start, charCount, fontStyle);
+        }
+
+        /// <summary>
+        /// set font size for substring
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="charCount"></param>
+        /// <param name="size"></param>
+        public void SetFontSize(int start, int charCount, float size)
+        {
+            CanvasTextLayout.SetFontSize(start, charCount, size);
+        }
+             
         /// <summary>
         /// overrides draw call of textboxuielement to call ds.drawlayout instead of ds.drawtext
         /// </summary>
