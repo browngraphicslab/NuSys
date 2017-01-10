@@ -263,8 +263,8 @@ namespace NuSysApp
                 _plusArrow.Transform.LocalPosition = new Vector2(Width - _barWidth, 0);
                 _minusArrow.Transform.LocalPosition = new Vector2(0, 0);
 
-                _plusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 2);
-                _minusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 2);
+                _plusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
+                _minusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
             }
             else if (_orientation == Orientation.Vertical)
             {
@@ -283,8 +283,8 @@ namespace NuSysApp
                 _plusArrow.Transform.LocalPosition = new Vector2(0, Height - _barWidth);
                 _minusArrow.Transform.LocalPosition = new Vector2(0, 0);
 
-                _plusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 2);
-                _minusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 2);
+                _plusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
+                _minusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
 
             }
 
