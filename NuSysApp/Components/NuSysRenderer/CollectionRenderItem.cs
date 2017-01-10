@@ -303,7 +303,11 @@ namespace NuSysApp
                     ds.DrawImage(_shapeImage);
                     _shape = CanvasGeometry.CreateRectangle(ResourceCreator,_shapeImage.GetBounds(ResourceCreator));
                 }
-                else if(_shapeStatus == ShapedStatus.Points)
+                else if (_shapeStatus == ShapedStatus.Points)
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
+                else
                 {
                     _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
                 }

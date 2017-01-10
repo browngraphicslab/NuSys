@@ -143,6 +143,11 @@ namespace NuSysApp
 
         public CanvasHorizontalAlignment TabTextAlignment { get; set; }
 
+        /// <summary>
+        /// getter and setter for underline of tab
+        /// </summary>
+        public bool Underlined { get; set; }
+
         public TabContainerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // initialize the _tabList and the layout managers
@@ -246,10 +251,14 @@ namespace NuSysApp
                 TitleColor = TitleColor,
                 Background = TabColor,
                 Height = TabHeight,
-                Width = Math.Min((Width - 2*BorderWidth)/_tabList.Count, TabMaxWidth),
+                Width = Math.Min(Width/_tabList.Count, TabMaxWidth),
                 IsCloseable = TabsIsCloseable,
                 TextAlignment = TabTextAlignment
             };
+            if (Underlined)
+            {
+                button.Underlined = true;
+            }
             return button;
         }
 

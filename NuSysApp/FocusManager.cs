@@ -90,8 +90,8 @@ namespace NuSysApp
         {
             if (!InReadOnly && newBaseRenderItem.IsFocusable)
             {
-                ActiveFocusElement?.LostFocus();
                 newBaseRenderItem.GotFocus();
+                ActiveFocusElement?.LostFocus();
                 ActiveFocusElement = newBaseRenderItem;
             }     
         }

@@ -201,6 +201,17 @@ namespace NuSysApp
 
             _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
 
+            /// a decorative line :)
+            var line = new RectangleUIElement(this, Canvas)
+            {
+                Background = Constants.MED_BLUE,
+                Height = 2
+            };
+            line.Width = Width - 20;
+            AddChild(line);
+            line.Transform.LocalPosition = new Vector2(10, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
+
+
             _loaded = true;
             base.Load();
         }
@@ -334,7 +345,7 @@ namespace NuSysApp
 
                 _tabContainerLayoutManager.SetSize(Width, Height);
                 _tabContainerLayoutManager.SetMargins(BorderWidth);
-                _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth;
+                _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth + 10;
                 _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _tabContainerLayoutManager.ArrangeItems();
