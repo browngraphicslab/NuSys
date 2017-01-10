@@ -134,7 +134,6 @@ namespace NuSysApp
 
 
             _filterSubMenu.BrushUpdated += _filterSubMenu_BrushUpdated;
-
         }
 
         private void _filterSubMenu_BrushUpdated(object sender, BrushFilter e)

@@ -53,41 +53,45 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-
-            // get the imageRect which contains the image
-            var imageRect = Image.GetBounds(Canvas, Transform.LocalToScreenMatrix);
-
-            // get the width and height of the bitmap this has nothign to do with on screen widthand height
-            var bitmapWidth = imageRect.Width;
-            var bitmapHeight = imageRect.Height;
-
-            // variables for storing the new width and new height
-            double newImageWidth;
-            double newImageHeight;
-
-
-            // if the image is wider than it is longer
-            if (bitmapHeight/bitmapWidth < bitmapWidth/bitmapHeight)
+            // update the image rect only if the image is not null
+            if (Image != null)
             {
-                var ratio = bitmapHeight/bitmapWidth;
-                newImageWidth = Width;
-                newImageHeight = Width * ratio;
-            }
-            //otherwise if the image is longer than it is wider
-            else
-            {
-                var ratio = bitmapWidth/bitmapHeight;
-                newImageWidth = Width * ratio;
-                newImageHeight = Width * ratio;
-            }
+                // get the imageRect which contains the image
+                var imageRect = Image.GetBounds(Canvas, Transform.LocalToScreenMatrix);
 
-            // check to make sure that the new ratio fits into the height and width
-            var checkScale = Math.Min(Width/newImageWidth, Height/newImageHeight);
-            newImageWidth *= checkScale;
-            newImageHeight *= checkScale;
+                // get the width and height of the bitmap this has nothign to do with on screen widthand height
+                var bitmapWidth = imageRect.Width;
+                var bitmapHeight = imageRect.Height;
 
-            // set the image bounds based on the new image
-            ImageBounds = new Rect(Width/2 - newImageWidth / 2, Height/2 - newImageHeight / 2, newImageWidth, newImageHeight);
+                // variables for storing the new width and new height
+                double newImageWidth;
+                double newImageHeight;
+
+
+                // if the image is wider than it is longer
+                if (bitmapHeight / bitmapWidth < bitmapWidth / bitmapHeight)
+                {
+                    var ratio = bitmapHeight / bitmapWidth;
+                    newImageWidth = Width;
+                    newImageHeight = Width * ratio;
+                }
+                //otherwise if the image is longer than it is wider
+                else
+                {
+                    var ratio = bitmapWidth / bitmapHeight;
+                    newImageWidth = Width * ratio;
+                    newImageHeight = Width * ratio;
+                }
+
+                // check to make sure that the new ratio fits into the height and width
+                var checkScale = Math.Min(Width / newImageWidth, Height / newImageHeight);
+                newImageWidth *= checkScale;
+                newImageHeight *= checkScale;
+
+                // set the image bounds based on the new image
+                ImageBounds = new Rect(Width / 2 - newImageWidth / 2, Height / 2 - newImageHeight / 2, newImageWidth, newImageHeight);
+            }
+            
 
             base.Update(parentLocalToScreenTransform);
         }
