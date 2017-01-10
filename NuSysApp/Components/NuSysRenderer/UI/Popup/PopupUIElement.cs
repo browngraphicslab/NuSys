@@ -63,9 +63,22 @@ namespace NuSysApp
             _dismissable = true;
             _parent = null;
             _dismissText = "";
+
+            SessionController.Instance.SessionView.FreeFormViewer.FocusManager.ChangeFocus(this);
             
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed +=
-                CanvasInteractionManager_ClosePopup;
+            OnChildFocusLost += PopupUIElement_OnFocusLost;
+            OnFocusLost += PopupUIElement_OnFocusLost;
+
+            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed +=
+            //    CanvasInteractionManager_ClosePopup;
+        }
+
+        private void PopupUIElement_OnFocusLost(BaseRenderItem item)
+        {
+            if (_dismissable && !ChildHasFocus)
+            {
+                DismissPopup();
+            }
         }
 
 
@@ -78,7 +91,7 @@ namespace NuSysApp
         private void CanvasInteractionManager_ClosePopup(CanvasPointer pointer)
         {
             var hittest = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
-            if (!(hittest.Parent is PopupUIElement) && _dismissable)
+            if (!(hittest.Parent == this) && _dismissable)
             {
                 DismissPopup();
             }
@@ -155,9 +168,11 @@ namespace NuSysApp
             {
                 _dismissButton.Tapped -= DismissButton_Tapped;
             }
-           
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed -=
-                CanvasInteractionManager_ClosePopup;
+            OnFocusLost -= PopupUIElement_OnFocusLost;
+            OnChildFocusLost -= PopupUIElement_OnFocusLost;
+
+            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed -=
+            //    CanvasInteractionManager_ClosePopup;
             base.Dispose();
         }
     }

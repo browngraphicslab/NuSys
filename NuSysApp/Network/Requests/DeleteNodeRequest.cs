@@ -88,6 +88,9 @@ namespace NuSysApp
             controller.Delete(this);
             ElementController removed;
             SessionController.Instance.ElementModelIdToElementController.TryRemove(elementId, out removed);
+
+            var parentController = SessionController.Instance.ContentController.GetLibraryElementController(controller.Model.ParentCollectionId) as CollectionLibraryElementController;
+            parentController?.RemoveChild(elementId);
             return true;
         }
     }

@@ -144,14 +144,30 @@ namespace NuSysApp
             Pressed += ScrollBarUIElement_Pressed;
             PointerWheelChanged += ScrollBarUIElement_PointerWheelChanged;
         }
+
+        /// <summary>
+        /// load in icons for buttons
+        /// </summary>
+        /// <returns></returns>
+        public override async Task Load()
+        {
+            _plusArrow.Image = _plusArrow.Image ??
+                               await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/down arrow.png"));
+            _minusArrow.Image = _minusArrow.Image ??
+                                await
+                                    CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/up arrow.png"));
+
+            base.Load();
+        }
+
         /// <summary>
         /// Initializes arrow buttons and listens to pressed events
         /// </summary>
         private void CreateArrows()
         {
             //TODO: add arrow images to these
-            _plusArrow = new EllipseButtonUIElement(this, ResourceCreator);
-            _minusArrow = new EllipseButtonUIElement(this, ResourceCreator);
+            _plusArrow = new TransparentButtonUIElement(this, ResourceCreator);
+            _minusArrow = new TransparentButtonUIElement(this, ResourceCreator);
 
             AddChild(_plusArrow);
             AddChild(_minusArrow);
@@ -247,6 +263,8 @@ namespace NuSysApp
                 _plusArrow.Transform.LocalPosition = new Vector2(Width - _barWidth, 0);
                 _minusArrow.Transform.LocalPosition = new Vector2(0, 0);
 
+                _plusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
+                _minusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
             }
             else if (_orientation == Orientation.Vertical)
             {
@@ -264,6 +282,9 @@ namespace NuSysApp
 
                 _plusArrow.Transform.LocalPosition = new Vector2(0, Height - _barWidth);
                 _minusArrow.Transform.LocalPosition = new Vector2(0, 0);
+
+                _plusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
+                _minusArrow.ImageBounds = new Rect(1, 1, _barWidth - 2, _barWidth - 5);
 
             }
 

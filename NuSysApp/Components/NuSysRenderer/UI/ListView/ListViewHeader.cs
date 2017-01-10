@@ -68,7 +68,7 @@ namespace NuSysApp
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _headerBeingDragged = false;
-            //Background = Constants.LIGHT_BLUE;
+            Background = Constants.LIGHT_BLUE;
         }
 
         /// <summary>

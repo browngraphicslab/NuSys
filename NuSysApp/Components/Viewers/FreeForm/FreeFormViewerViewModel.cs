@@ -24,8 +24,6 @@ namespace NuSysApp
 
         public event ModeChangedEventHandler OnModeChanged;
 
-        public event EventHandler<VideoLibraryElementController> FullScreenVideo;
-
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
@@ -70,11 +68,6 @@ namespace NuSysApp
                 
                 
             }
-        }
-
-        public void PlayFullScreenVideo(VideoLibraryElementController controller)
-        {
-            FullScreenVideo?.Invoke(this, controller);
         }
 
         #region Node Interaction

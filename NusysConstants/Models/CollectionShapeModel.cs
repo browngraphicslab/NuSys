@@ -25,13 +25,19 @@ namespace NusysIntermediate
         /// <summary>
         /// The color of the shape of the collection if it exists.  
         /// </summary>
-        public ColorModel ShapeColor { get; set; }
+        public ColorModel ShapeColor { get; set; } = null;
 
         /// <summary>
         /// The double aspect ratio of a shaped collection. 
         /// This should only be used shapepoints is not null and three or more shapepoints exist.
         /// Should be calculated as width/height.
         /// </summary>
-        public double AspectRatio { get; set; }
+        public double AspectRatio { get; set; } = 0;
+
+        /// <summary>
+        /// The image url for the background image.
+        /// This will also act as the boolean to see if there is an image: null means no background image
+        /// </summary>
+        public string ImageUrl { get; set; } = null;
     }
 }

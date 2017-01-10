@@ -100,7 +100,7 @@ namespace NuSysApp
             _typingRect.Transform.LocalPosition = new Vector2(_typingRect.Transform.LocalPosition.X, TopBarHeight + _readingRect.Height);
 
             var yOffset = 0f;
-            foreach (var element in _readingRect.Elements)
+            foreach (var element in _readingRect.Elements.ToArray())
             {
                 element.Width = Width;
                 element.Transform.LocalPosition = new Vector2(0, yOffset);

@@ -138,13 +138,22 @@ namespace NuSysApp
             _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
+            // NOTE IF YOU ARE CREATING OBJECTS IN THIS METHOD. BE AWARE THAT THE METHOD IS CALLED 
+            // MULTIPLE TIMES!!! WE DO NOT WANT TO END UP WITH MULTIPLE INSTANCES OF OBJECTS
+            // THAT SHOULD ONLY EXIST ONCE.
+            // THIS CAN EASILY BE ACCOMPLISHED WITH A NULL CHECK AS SHOWN DIRECTLY BELOW THIS LINE!!!
+
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
                 _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
             }
 
-            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+            // Make sure the FocusManager is only implemented once
+            if (FocusManager == null)
+            {
+                FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+            }
 
             if (_vm != null)
             {
@@ -174,8 +183,6 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
-
-            _vm.FullScreenVideo += PlayFullScreenVideo;
         }
 
         /// <summary>
@@ -1380,14 +1387,28 @@ namespace NuSysApp
             return adornment;
         }
 
-        public void PlayFullScreenVideo(object sender, VideoLibraryElementController videoLibraryElementController)
+        public void PlayFullScreenVideo(VideoLibraryElementController videoLibraryElementController, bool addRegionsIsVisible = false)
         {
+            // set the visibility of items
             xFullScreenVideoElement.Visibility = Visibility.Visible;
             xFullScreenVideoCloseButton.Visibility = Visibility.Visible;
             xFullScreenVideoBackground.Visibility = Visibility.Visible;
+            xFullScreenVideoAddRegionButton.Visibility = addRegionsIsVisible ? Visibility.Visible : Visibility.Collapsed;
+            xAddRegionMenu.Visibility = Visibility.Collapsed;
+            xAddPublicRadioButton.IsChecked = true;
+            xAddPrivateRadioButton.IsChecked = false;
 
+            // set the size of the full screen element
             xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight - 50);
             xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
+
+            // set the position of the add region button
+            Canvas.SetTop(xFullScreenVideoAddRegionButton, xFullScreenVideoElement.Height/2 - xFullScreenVideoAddRegionButton.Height/2);
+            Canvas.SetLeft(xFullScreenVideoAddRegionButton, 0);
+
+            // set the positon of the add region menu
+            Canvas.SetTop(xAddRegionMenu, xFullScreenVideoElement.Height / 2 - xFullScreenVideoAddRegionButton.Height / 2 + xFullScreenVideoAddRegionButton.Height);
+            Canvas.SetLeft(xAddRegionMenu, 0);
         }
 
         private void XFullScreenVideoCloseButton_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -1395,9 +1416,52 @@ namespace NuSysApp
             xFullScreenVideoElement.Visibility = Visibility.Collapsed;
             xFullScreenVideoCloseButton.Visibility = Visibility.Collapsed;
             xFullScreenVideoBackground.Visibility = Visibility.Collapsed;
-
+            xAddRegionMenu.Visibility = Visibility.Collapsed;;
             xFullScreenVideoElement.Pause();
 
+        }
+
+        private void XFullScreenVideoAddRegionButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            //toggle the visibility of the add region menu
+            xAddRegionMenu.Visibility = xAddRegionMenu.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private async void XFullScreenVideoSubmit_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Debug.Assert(xAddPublicRadioButton.IsChecked == true || xAddPrivateRadioButton.IsChecked == true);
+
+
+            // get appropriate new region message based on the current controller
+            var controller = xFullScreenVideoElement.CurrentLibraryElementController as VideoLibraryElementController;
+            Debug.Assert(controller != null);
+            var videoModel = controller.VideoLibraryElementModel;
+            Debug.Assert(videoModel != null);
+            var regionRequestArgs = new CreateNewVideoLibraryElementRequestArgs
+            {
+                StartTime = videoModel.NormalizedStartTime + videoModel.NormalizedDuration * .25,
+                Duration = videoModel.NormalizedDuration * .5,
+                AspectRatio = videoModel.Ratio
+            };
+
+            //create the args and set the parameters that all regions will need
+            regionRequestArgs.ContentId = controller.LibraryElementModel.ContentDataModelId;
+            regionRequestArgs.LibraryElementType = controller.LibraryElementModel.Type;
+            regionRequestArgs.Title = "Region " + controller.Title; // TODO factor out this hard-coded string to a constant
+            regionRequestArgs.ParentLibraryElementId = controller.LibraryElementModel.LibraryElementId;
+            regionRequestArgs.Large_Thumbnail_Url = controller.LibraryElementModel.LargeIconUrl;
+            regionRequestArgs.Medium_Thumbnail_Url = controller.LibraryElementModel.MediumIconUrl;
+            regionRequestArgs.Small_Thumbnail_Url = controller.LibraryElementModel.SmallIconUrl;
+            regionRequestArgs.AccessType = xAddPublicRadioButton.IsChecked == true
+                ? NusysConstants.AccessType.Public
+                : NusysConstants.AccessType.Private;
+
+            var request = new CreateNewLibraryElementRequest(regionRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
         }
     }
 }

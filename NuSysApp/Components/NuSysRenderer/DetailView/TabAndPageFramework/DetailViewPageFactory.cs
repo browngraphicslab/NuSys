@@ -41,6 +41,7 @@ namespace NuSysApp
                             rectangle = new DetailViewAudioPage(parent, resourceCreator, controller as AudioLibraryElementController, false);
                             break;
                         case NusysConstants.ElementType.Video:
+                            rectangle = new DetailViewVideoPage(parent, resourceCreator, controller as VideoLibraryElementController, false);
                             break;
                         case NusysConstants.ElementType.Link:
                             rectangle = new DetailViewLinkPage(parent, resourceCreator, controller as LinkLibraryElementController);
@@ -81,6 +82,7 @@ namespace NuSysApp
                             rectangle = new DetailViewAudioPage(parent, resourceCreator, controller as AudioLibraryElementController, true);
                             break;
                         case NusysConstants.ElementType.Video:
+                            rectangle = new DetailViewVideoPage(parent, resourceCreator, controller as VideoLibraryElementController, true);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementType),

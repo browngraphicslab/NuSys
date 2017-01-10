@@ -62,6 +62,11 @@ namespace NuSysApp
         /// </summary>
         public T Tab { get; private set; }
 
+        /// <summary>
+        /// getter and setter for whether the tab button is underlined
+        /// </summary>
+        public bool Underlined { get; set; }
+
         public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, T tab) : base(parent, resourceCreator)
         {
             // create a close button
@@ -88,7 +93,6 @@ namespace NuSysApp
 
             _closeButton.Tapped += _closeButton_Tapped;
             _backgroundButton.Tapped += TabButtonUIElement_Tapped;
-
         }
 
         public override async Task Load()
@@ -161,6 +165,7 @@ namespace NuSysApp
                 _closeButton.Width = 0;
             }
 
+            
 
             _backgroundButton.ButtonText = Title;
             _backgroundButton.ButtonTextColor = TitleColor;
@@ -169,6 +174,11 @@ namespace NuSysApp
             _backgroundButton.BorderWidth = 0;
             _backgroundButton.Width = Math.Max(Width - _closeButton.Width * 3,0);
             _backgroundButton.Height = Height;
+
+            if (Underlined)
+            {
+                _backgroundButton.RichTextButton = true;
+            }
         }
     }
 }
