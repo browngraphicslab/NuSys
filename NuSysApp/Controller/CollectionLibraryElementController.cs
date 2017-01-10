@@ -23,10 +23,11 @@ namespace NuSysApp
         public event TrailEventHandler OnTrailAdded;
         public event TrailEventHandler OnTrailRemoved;
 
-        public delegate void ChildAddedEventHandler(string id);
+
+        public delegate void ChildAddedEventHandler(string elementModelId);
         public event ChildAddedEventHandler OnChildAdded;
 
-        public delegate void ChildRemovedEventHandler(string id);
+        public delegate void ChildRemovedEventHandler(string elementModelId);
         public event ChildRemovedEventHandler OnChildRemoved;
 
         public event EventHandler<LinkViewModel> LinkAddedToCollection;
