@@ -126,6 +126,12 @@ namespace NuSysApp
         public float ButtonTextSize { get; set; } = UIDefaults.ButtonTextSize;
 
         /// <summary>
+        /// whether or not this button uses a canvas text layout instead of a canvas text format for the button text.
+        /// this really should only happen if we want the button's text to be UNDERLINED.
+        /// </summary>
+        public bool RichTextButton { get; set; } = false;
+
+        /// <summary>
         /// The horizontal alignment of the text on the button
         /// </summary>
         public CanvasHorizontalAlignment ButtonTextHorizontalAlignment;
@@ -300,7 +306,30 @@ namespace NuSysApp
             // Delegate drawing to the shape.
             base.Draw(ds);
 
-            DrawButtonText(ds);
+            if (RichTextButton)
+            {
+                DrawButtonRichText(ds);
+            }
+            else
+            {
+                DrawButtonText(ds);
+            }
+        }
+
+        public virtual void DrawButtonRichText(CanvasDrawingSession ds)
+        {
+            // save the current transform of the drawing session
+            var orgTransform = ds.Transform;
+            ds.Transform = Shape.Transform.LocalToScreenMatrix;
+
+            if (ButtonText != null)
+            {
+                // draw the text within the bounds (text auto fills the rect) with text color ButtonTextcolor, and the
+                // just created textFormat
+                ds.DrawTextLayout(GetCanvasTextLayout(), Transform.LocalPosition.X, Transform.LocalPosition.Y, ButtonTextColor);
+            }
+
+            ds.Transform = orgTransform;
         }
     
         public virtual void DrawButtonText(CanvasDrawingSession ds)
@@ -348,6 +377,13 @@ namespace NuSysApp
             };
 
             return textFormat;
+        }
+
+        protected virtual CanvasTextLayout GetCanvasTextLayout()
+        {
+            var textLayout = new CanvasTextLayout(Canvas, ButtonText, GetCanvasTextFormat(), Width, Height);
+            textLayout.SetUnderline(0, ButtonText.Length, true);
+            return textLayout;
         }
 
 

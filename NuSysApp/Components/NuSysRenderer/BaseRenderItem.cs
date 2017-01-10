@@ -88,7 +88,7 @@ namespace NuSysApp
 
         public virtual async Task Load() {
 
-            foreach (var child in _children)
+            foreach (var child in _children.ToArray())
             {
                 await child.Load();
             }
