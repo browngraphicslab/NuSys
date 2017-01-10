@@ -189,7 +189,18 @@ namespace NuSysApp
             if (request.WasSuccessful() == true)
             {
                 request.DeleteLocally();
+               
             }
+            //Dismisses the flyout popup
+
+            var popup = item.Parent as FlyoutPopup;
+            Debug.Assert(popup != null);
+            if (popup == null)
+            {
+                return;
+            }
+
+            popup.DismissPopup();
         }
 
         /// <summary>
