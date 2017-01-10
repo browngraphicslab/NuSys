@@ -59,13 +59,13 @@
             <Button x:Name="xFullScreenVideoCloseButton" VerticalAlignment="Top" Width="50" Height="50" Background="Red" Tapped="XFullScreenVideoCloseButton_OnTapped" Visibility="Collapsed">
                 <TextBlock>"X"</TextBlock>
             </Button>
-            <Button x:Name="xFullScreenVideoAddRegionButton" Visibility="Collapsed" Width="100" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Tapped="XFullScreenVideoAddRegionButton_OnTapped">
-                <TextBlock Height="50" Width="100" TextAlignment="Center">Add Region</TextBlock>
+            <Button x:Name="xFullScreenVideoAddRegionButton" Visibility="Collapsed" Width="100" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Tapped="XFullScreenVideoAddRegionButton_OnTapped" Background="Azure">
+                <TextBlock Height="50" Width="100">Add Region</TextBlock>
             </Button>
-            <StackPanel x:Name="xAddRegionMenu" Visibility="Collapsed">
+            <StackPanel x:Name="xAddRegionMenu" Visibility="Collapsed" Background="Azure" Width="100">
                 <RadioButton x:Name="xAddPublicRadioButton" GroupName="Regions">Public</RadioButton>
                 <RadioButton x:Name="xAddPrivateRadioButton" GroupName="Regions">Private</RadioButton>
-                <Button x:Name="xFullScreenVideoSubmit" Tapped="XFullScreenVideoSubmit_OnTapped">
+                <Button x:Name="xFullScreenVideoSubmit" Tapped="XFullScreenVideoSubmit_OnTapped" Width="100">
                     <TextBlock TextAlignment="Center">Submit</TextBlock>
                 </Button>
             </StackPanel>
