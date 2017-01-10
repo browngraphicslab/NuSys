@@ -468,7 +468,7 @@ namespace NuSysApp
                 CollectionSwitched?.Invoke(element as CollectionRenderItem);
             if (element is VideoElementRenderItem)
                 //MultimediaElementActivated?.Invoke(element as VideoElementRenderItem);
-                SessionController.Instance.ActiveFreeFormViewer.PlayFullScreenVideo((element as VideoElementRenderItem).ViewModel.Controller.LibraryElementController as VideoLibraryElementController);
+                SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo((element as VideoElementRenderItem).ViewModel.Controller.LibraryElementController as VideoLibraryElementController);
             if (element is AudioElementRenderItem)
                 MultimediaElementActivated?.Invoke(element as AudioElementRenderItem);
         }

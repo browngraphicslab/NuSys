@@ -12,7 +12,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class FilterMenu : ResizeableWindowUIElement
+    public class FilterMenu : WindowUIElement
     {
         /// <summary>
         /// Dictionary that transforms filter categories into label strings for the buttons
@@ -87,9 +87,7 @@ namespace NuSysApp
 
         public FilterMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            IsDraggable = false;
             topMargin = TopBarHeight;
-            KeepAspectRatio = false;
             TopBarColor = Colors.Azure;
 
             // initialize the button layout manager so buttons are stretched horizontally and stay at the top 
@@ -136,11 +134,6 @@ namespace NuSysApp
 
 
             _filterSubMenu.BrushUpdated += _filterSubMenu_BrushUpdated;
-
-            // set the MinHeight based on the number of buttons we passed in
-            MinHeight = _filterMenuButtons.Count*buttonHeight + (_filterMenuButtons.Count - 1)*spacing + topMargin + BorderWidth;
-            MinWidth = 100;
-
         }
 
         private void _filterSubMenu_BrushUpdated(object sender, BrushFilter e)

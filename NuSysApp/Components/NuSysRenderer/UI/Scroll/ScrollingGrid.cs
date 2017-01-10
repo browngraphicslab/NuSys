@@ -155,13 +155,14 @@ namespace NuSysApp
         /// Adds an item to the end of the grid
         /// </summary>
         /// <param name="item"></param>
-        public void AddItem(T item)
+        public async void AddItem(T item)
         {
             Debug.Assert(ItemFunction != null);
             if (!_itemsToDisplayElements.ContainsKey(item))
             {
                 var newElement = ItemFunction(item);
                 _itemsToDisplayElements.Add(item, newElement);
+                await newElement.Load();
                 _displayElements.Add(newElement);
                 CreateOrUpdateElementGridLocation(newElement);
                 AddElement(newElement, new Vector2());

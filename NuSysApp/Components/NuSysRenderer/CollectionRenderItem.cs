@@ -31,6 +31,7 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
         private Size _elementSize;
         private CanvasGeometry _shape;
+        private ICanvasImage _shapeImage = null;
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
         {
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
@@ -50,7 +51,16 @@ namespace NuSysApp
         public RenderItemTransform Camera { get; set; } = new RenderItemTransform();
         
         public int NumLinks => ViewModel.Links.Count;
-        
+
+        private enum ShapedStatus
+        {
+            None,
+            Image,
+            Points
+        }
+
+        private ShapedStatus _shapeStatus;
+
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
             _canvas = (CanvasAnimatedControl)ResourceCreator;
@@ -72,6 +82,46 @@ namespace NuSysApp
             vm.ToolLinks.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
+            vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
+            UpdateShapeStatus();
+        }
+
+        private void ContentDataControllerOnContentDataUpdated(object sender, string s)
+        {
+            UpdateShapeStatus();
+        }
+
+        private void UpdateShapeStatus()
+        {
+            if (!ViewModel.IsShaped)
+            {
+                _shapeStatus = ShapedStatus.None;
+                return;
+            }
+            var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
+            Debug.Assert(controller != null);
+
+
+
+
+            //TEST
+            controller.SetAspectRation(10);
+
+            //TEST END
+
+            var shape = controller.CollectionModel.Shape;
+            Debug.Assert(shape != null);
+            if (shape.ImageUrl != null)
+            {
+                _shapeStatus = ShapedStatus.Points;
+            }
+            else
+            {
+                _shapeStatus = ShapedStatus.Image;
+                Task.Run(async delegate {
+                    _shapeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri(shape.ImageUrl));
+                });
+            }
         }
 
         public override void Dispose()
@@ -90,6 +140,7 @@ namespace NuSysApp
                 ViewModel.ToolLinks.CollectionChanged -= OnElementsChanged;
                 ViewModel.Trails.CollectionChanged -= OnElementsChanged;
                 ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
+                ViewModel.Controller.LibraryElementController.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
 
                 foreach (var item in _renderItems0.ToArray())
                     Remove(item);
@@ -246,7 +297,20 @@ namespace NuSysApp
                 var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
                 Debug.Assert(controller != null);
                 var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
-                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+
+                if (_shapeStatus == ShapedStatus.Image)
+                {
+                    ds.DrawImage(_shapeImage);
+                    _shape = CanvasGeometry.CreateRectangle(ResourceCreator,_shapeImage.GetBounds(ResourceCreator));
+                }
+                else if (_shapeStatus == ShapedStatus.Points)
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
+                else
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
 
             }
 
@@ -260,7 +324,6 @@ namespace NuSysApp
             }
             else if (this != initialCollection && ViewModel.IsFinite && !ViewModel.IsShaped)
             {
-                var bounds = _shape.ComputeBounds();
                 var scaleFactor = (float)_elementSize.Height / (float)_shape.ComputeBounds().Height;
                 Camera.LocalScale = new Vector2(scaleFactor);
                 ds.Transform = Transform.LocalToScreenMatrix;
@@ -278,7 +341,7 @@ namespace NuSysApp
                 ds.FillRectangle(GetLocalBounds(), Colors.White);
 
                 ds.Transform = Camera.LocalToScreenMatrix;
-                if (ViewModel.IsShaped)
+                if (ViewModel.IsShaped && _shapeStatus != ShapedStatus.Image)
                 {
                     ds.FillGeometry(_shape, ViewModel.ShapeColor);
      
