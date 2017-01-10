@@ -43,7 +43,16 @@ namespace NuSysApp
         public float CameraScale { get; set; } = 1f;
 
         public bool IsFinite { get; set; }
-        public bool IsShaped { get; set; }
+
+        public bool IsShaped
+        {
+            get
+            {
+                var collectionShape = ((CollectionContentDataController)(Controller.LibraryElementController.ContentDataController)).CollectionModel.Shape;
+                return collectionShape?.ShapePoints != null && (collectionShape?.ShapePoints?.Count > 5 || collectionShape.ImageUrl != null);
+            }
+        }
+
         public double AspectRatio { get; set; }
         public Color ShapeColor { get; set; } = Colors.Black;
 
@@ -65,7 +74,6 @@ namespace NuSysApp
 
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             IsFinite = model.IsFinite;
-            IsShaped = collectionShape?.ShapePoints != null && collectionShape?.ShapePoints?.Count > 5;
             AspectRatio = collectionShape?.AspectRatio ?? 0;
 
             if (collectionShape?.ShapeColor != null)

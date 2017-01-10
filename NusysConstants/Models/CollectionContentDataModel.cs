@@ -49,7 +49,7 @@ namespace NusysIntermediate
                 Shape = null;
                 return;
             }
-            Shape = JsonConvert.DeserializeObject<CollectionShapeModel>(contentData);
+            //Shape = JsonConvert.DeserializeObject<CollectionShapeModel>(contentData);
         }
 
         /// <summary>

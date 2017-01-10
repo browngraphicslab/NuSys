@@ -210,6 +210,7 @@ namespace NusysServer
                             }
                             catch (Exception e)
                             {
+                                ErrorLog.AddError(e);
                                 throw new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
                             }
                         }
@@ -219,6 +220,7 @@ namespace NusysServer
                         }
                         catch (Exception e)
                         {
+                            ErrorLog.AddError(e);
                             return JsonConvert.SerializeObject(listOfUrls);
                         }
                         return JsonConvert.SerializeObject(listOfUrls);
