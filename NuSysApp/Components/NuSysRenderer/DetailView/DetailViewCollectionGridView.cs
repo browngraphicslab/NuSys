@@ -29,7 +29,7 @@ namespace NuSysApp
         /// <summary>
         /// Search box used to filter the elements currently in the grid
         /// </summary>
-        private ScrollableTextboxUIElement _gridSearchBox;
+        private AutoSuggestTextBox<ElementModel> _gridSearchBox;
 
         /// <summary>
         /// A dropdown menu offering different sorting options for the grid view
@@ -38,23 +38,33 @@ namespace NuSysApp
 
         public enum GridSortOption { Title, Date, Creator}
 
-        private ScrollingGrid<LibraryElementController> _scrollingGrid;
+        private ScrollingGrid<ElementModel> _scrollingGrid;
 
         public DetailViewCollectionGridView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, CollectionLibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
 
-            _scrollingGrid = new ScrollingGrid<LibraryElementController>(this, resourceCreator)
+            _scrollingGrid = new ScrollingGrid<ElementModel>(this, resourceCreator)
             {
-                ItemFunction = lec => new CollectionGridViewUIElement(this, resourceCreator, lec),
+                ItemFunction = em => new CollectionGridViewUIElement(this, resourceCreator, SessionController.Instance.ContentController.GetLibraryElementController(em.LibraryId)),
+                ColumnWidth = 100,
+                Resize = ScrollingGrid<ElementModel>.Resizing.Relative,
+                RowHeight = 1,
                 Width = Width,
-                Height = Height
+                Height = Height,
+                ItemRelativeWidth = .9f,
+                ItemRelativeHeight = .9f,
+                ItemHorizontalAlignment = HorizontalAlignment.Center,
+                ItemVerticalAlignment = VerticalAlignment.Center,
+                Background = Colors.White
             };
+            AddChild(_scrollingGrid);
 
-            _gridSearchBox = new ScrollableTextboxUIElement(this, resourceCreator, false, false)
+            _gridSearchBox = new AutoSuggestTextBox<ElementModel>(this, Canvas)
             {
-                //ColumnFunction = elementModel => elementModel.Title,
-                //FilterFunction = s => new List<ElementModel>(_collectionElementModels.Where(em => em.Title.Contains(s))),
+                Height = 30,
+                ColumnFunction = elementModel => elementModel.Title,
+                FilterFunction = str => new List<ElementModel>(_collectionElementModels.Where(elementModel => elementModel.Title.Contains(str)))
             };
             //AddChild(_gridSearchBox);
 
@@ -156,7 +166,7 @@ namespace NuSysApp
             Debug.Assert(_collectionElementModels != null);
             foreach (var elementModel in _collectionElementModels)
             {
-                _scrollingGrid.AddItem(SessionController.Instance.ContentController.GetLibraryElementController(elementModel.LibraryId));
+                _scrollingGrid.AddItem(elementModel);
             }
 
             base.Load();

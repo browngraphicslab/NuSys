@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -22,14 +23,37 @@ namespace NuSysApp
         public int MaxRows { get; set; }
 
         /// <summary>
-        /// the minimum pixel width of any column
+        /// The column width, if scroll direction is vertical then this is the minimum column
+        /// width, columns can expand beyond this width. If scroll direction is horizontal
+        /// then this can be a constant or a norm value, you can decide by setting the 
+        /// resizing to Auto or Constant
         /// </summary>
-        public float MinColumnWidth { get; set; }
+        public float ColumnWidth { get; set; }
 
         /// <summary>
-        /// the minimum pixel height of any row
+        /// The maximum column width only used if resizing is relative
         /// </summary>
-        public float MinRowHeight { get; set; }
+        public float MaxColumnWidth { get; set; }
+
+        /// <summary>
+        /// The row height, if scroll direction is horizontal then this is the minimum row height,
+        /// rows can expand beyond this height. If scroll direction is horizontal then
+        /// this can be a constnat or a norm value
+        /// </summary>
+        public float RowHeight { get; set; }
+
+        /// <summary>
+        /// The maximum row height only used if resizing is relative
+        /// </summary>
+        public float MaxRowHeight { get; set; }
+
+        public enum Resizing { Relative, Constant}
+
+        /// <summary>
+        /// If Resize is Auto, then ColumnWidth and RowWidth is relative. If constant
+        /// then it is the actual
+        /// </summary>
+        public Resizing Resize { get; set; }
 
         /// <summary>
         /// The horizontal alignment of all the items within their cells
@@ -84,16 +108,6 @@ namespace NuSysApp
         private int _numRows;
 
         /// <summary>
-        /// The width of the columns
-        /// </summary>
-        private float _columnWidth;
-
-        /// <summary>
-        /// The height of the rows
-        /// </summary>
-        private float _rowHeight;
-
-        /// <summary>
         /// The width of elements
         /// </summary>
         private float _elementWidth;
@@ -102,6 +116,17 @@ namespace NuSysApp
         /// the height of elements
         /// </summary>
         private float _elementHeight;
+
+        /// <summary>
+        /// The actual column width
+        /// </summary>
+
+        private float _actualColumnWidth;
+
+        /// <summary>
+        /// The actual row height
+        /// </summary>
+        private float _actualRowHeight;
 
         /// <summary>
         /// The scroll direction can be horizontal or vertical
@@ -119,6 +144,11 @@ namespace NuSysApp
             _itemsToDisplayElements = new Dictionary<T, BaseInteractiveUIElement>();
             _displayElements = new List<BaseInteractiveUIElement>();
             _elementsToLocations = new Dictionary<BaseInteractiveUIElement, GridLocation>();
+
+            MaxColumns = int.MaxValue;
+            MaxRows = int.MaxValue;
+            MaxColumnWidth = int.MaxValue;
+            MaxRowHeight = int.MaxValue;
         }
 
         /// <summary>
@@ -128,12 +158,16 @@ namespace NuSysApp
         public void AddItem(T item)
         {
             Debug.Assert(ItemFunction != null);
-            var newElement = ItemFunction(item);
-            _itemsToDisplayElements.Add(item, newElement);
-            _displayElements.Add(newElement);
-            CreateElementGridLocation(newElement);
-            AddElement(newElement, new Vector2());
-            SetElementLocation(newElement);
+            if (!_itemsToDisplayElements.ContainsKey(item))
+            {
+                var newElement = ItemFunction(item);
+                _itemsToDisplayElements.Add(item, newElement);
+                _displayElements.Add(newElement);
+                CreateOrUpdateElementGridLocation(newElement);
+                AddElement(newElement, new Vector2());
+                SetElementLocation(newElement);
+            }
+
         }
 
         /// <summary>
@@ -155,6 +189,7 @@ namespace NuSysApp
                     }
                 }
             }
+            UpdateElementGridLocations();
         }
 
         /// <summary>
@@ -162,7 +197,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        private GridLocation CreateElementGridLocation(int index)
+        private GridLocation CreateOrUpdateElementGridLocation(int index)
         {
             int columnIndex;
             int rowIndex;
@@ -170,7 +205,7 @@ namespace NuSysApp
             {
                 case ScrollOrientation.Vertical:
                     columnIndex = index%_numColumns;
-                    rowIndex = index/_numRows;
+                    rowIndex = index/ _numColumns;
                     break;
                 case ScrollOrientation.Horizontal:
                     rowIndex = index % _numRows;
@@ -181,7 +216,14 @@ namespace NuSysApp
             }
 
             var newLocation = new GridLocation(rowIndex, columnIndex);
-            _elementsToLocations.Add(_displayElements[index], newLocation);
+            if (_elementsToLocations.ContainsKey(_displayElements[index]))
+            {
+                _elementsToLocations[_displayElements[index]] = newLocation;
+            }
+            else
+            {
+                _elementsToLocations.Add(_displayElements[index], newLocation);
+            }
             return newLocation;
         }
 
@@ -190,10 +232,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        private GridLocation CreateElementGridLocation(BaseInteractiveUIElement element)
+        private GridLocation CreateOrUpdateElementGridLocation(BaseInteractiveUIElement element)
         {
             var index = _displayElements.IndexOf(element);
-            return CreateElementGridLocation(index);
+            return CreateOrUpdateElementGridLocation(index);
         }
 
         /// <summary>
@@ -206,9 +248,23 @@ namespace NuSysApp
             CalculateRowsAndColumns();
             CalculateItemSize();
             SetElementSizes();
+            UpdateElementGridLocations();
             SetElementLocations();
 
             base.OnSizeChanged();
+        }
+
+        private void UpdateElementGridLocations()
+        {
+            if (_displayElements == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _displayElements.Count; i++)
+            {
+                CreateOrUpdateElementGridLocation(i);
+            }
         }
 
         /// <summary>
@@ -249,8 +305,8 @@ namespace NuSysApp
         /// </summary>
         private void CalculateItemSize()
         {
-            _elementWidth = ItemRelativeWidth*_columnWidth;
-            _elementHeight = ItemRelativeHeight*_rowHeight;
+            _elementWidth = ItemRelativeWidth*_actualColumnWidth;
+            _elementHeight = ItemRelativeHeight*_actualRowHeight;
         }
 
         /// <summary>
@@ -265,17 +321,17 @@ namespace NuSysApp
             switch (ItemHorizontalAlignment)
             {
                 case HorizontalAlignment.Left:
-                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _columnWidth, element.Transform.LocalY);
+                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _actualColumnWidth, element.Transform.LocalY);
                     break;
                 case HorizontalAlignment.Center:
-                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _columnWidth + _columnWidth / 2 - element.Width / 2, element.Transform.LocalY);
+                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _actualColumnWidth + _actualColumnWidth / 2 - element.Width / 2, element.Transform.LocalY);
                     break;
                 case HorizontalAlignment.Right:
-                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _columnWidth + _columnWidth - element.Width, element.Transform.LocalY);
+                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _actualColumnWidth + _actualColumnWidth - element.Width, element.Transform.LocalY);
                     break;
                 case HorizontalAlignment.Stretch:
-                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _columnWidth, element.Transform.LocalY);
-                    element.Width = _columnWidth;
+                    element.Transform.LocalPosition = new Vector2(elementLoc.Column * _actualColumnWidth, element.Transform.LocalY);
+                    element.Width = ColumnWidth;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -285,17 +341,17 @@ namespace NuSysApp
             switch (ItemVerticalAlignment)
             {
                 case VerticalAlignment.Top:
-                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _rowHeight);
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _actualRowHeight);
                     break;
                 case VerticalAlignment.Bottom:
-                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _rowHeight + _rowHeight - element.Height);
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _actualRowHeight + _actualRowHeight - element.Height);
                     break;
                 case VerticalAlignment.Center:
-                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _rowHeight + _rowHeight / 2 - element.Height / 2);
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _actualRowHeight + _actualRowHeight / 2 - element.Height / 2);
                     break;
                 case VerticalAlignment.Stretch:
-                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _rowHeight);
-                    element.Height = _rowHeight;
+                    element.Transform.LocalPosition = new Vector2(element.Transform.LocalX, elementLoc.Row * _actualRowHeight);
+                    element.Height = RowHeight;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -307,24 +363,30 @@ namespace NuSysApp
         /// </summary>
         private void CalculateRowsAndColumns()
         {
-
             switch (ScrollDirection)
             {
                 case ScrollOrientation.Vertical:
-                    _numColumns = (int) (Width/Math.Max(MinColumnWidth, Width/MaxColumns));
-                    _columnWidth = Width/_numColumns;
-                    _rowHeight = MinRowHeight;
-                    _numRows = ((_displayElements?.Count ?? 0) + _numColumns - 1)/_numColumns;
+                    _numColumns = Math.Max(1, (int) (Width/Math.Max(ColumnWidth, Width/MaxColumns)));
+                    _actualColumnWidth = (Width - (VerticalScrollBar?.IsVisible ?? false ? VerticalScrollBarWidth : 0 ))/_numColumns;
+                    _actualRowHeight = Resize == Resizing.Relative ? Math.Min(_actualColumnWidth * RowHeight, MaxRowHeight) : RowHeight;
+                    _numRows = Math.Max(1, ((_displayElements?.Count ?? 0) + _numColumns - 1)/_numColumns);
                     break;
                 case ScrollOrientation.Horizontal:
-                    _numRows = (int)(Height / Math.Max(MinRowHeight, Height / MaxRows));
-                    _rowHeight = Height / _numRows;
-                    _columnWidth = MinColumnWidth;
-                    _numColumns = ((_displayElements?.Count ?? 0) + _numRows - 1) / _numRows;
+                    _numRows = Math.Max(1,  (int)((Height - (HorizontalScrollBar?.IsVisible ?? false ? HorizontalScrollBarHeight : 0)) / Math.Max(RowHeight, Height / MaxRows)));
+                    _actualRowHeight = Height / _numRows;
+                    _actualColumnWidth = Resize == Resizing.Relative ? Math.Min(ColumnWidth * _actualRowHeight, MaxColumnWidth) : ColumnWidth;
+                    _numColumns = Math.Max(1, ((_displayElements?.Count ?? 0) + _numRows - 1) / _numRows);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            ScrollAreaSize = new Size(_numColumns * _actualColumnWidth, _numRows * _actualRowHeight);
+
+            base.Update(parentLocalToScreenTransform);
         }
 
         /// <summary>
