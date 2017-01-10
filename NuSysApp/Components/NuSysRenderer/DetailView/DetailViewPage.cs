@@ -13,6 +13,9 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// "Common class that bundles common features" -lmurray
+    /// </summary>
     public abstract class DetailViewPage : RectangleUIElement
     {
         /// <summary>

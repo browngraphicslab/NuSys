@@ -18,10 +18,18 @@ namespace NuSysApp
         /// <summary>
         /// Maps a userId to the circular button representing that user
         /// </summary>
-        private Dictionary<string, ButtonUIElement> Bubbles;
+        private Dictionary<string, ButtonUIElement> _bubbles;
 
         // Manages the vertical layout of the bubbles
         private StackLayoutManager _bubbleLayoutManager;
+
+        /// <summary>
+        /// public accessor for _bubbles;
+        /// </summary>
+        public Dictionary<string, ButtonUIElement> Bubbles
+        {
+            get { return _bubbles; }
+        }
 
         public UserBubbles(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -29,7 +37,7 @@ namespace NuSysApp
 
             base.BorderWidth = 0;
 
-            Bubbles = new Dictionary<string, ButtonUIElement>();
+            _bubbles = new Dictionary<string, ButtonUIElement>();
             _bubbleLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
 
         }
@@ -43,7 +51,7 @@ namespace NuSysApp
             var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[userId];
             var displayName = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[userId];
 
-            var bubble = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas));
+            var bubble = new Bubble(Parent,Canvas,this);
 
             // Sets button text to be the first letter in the display name
             bubble.ButtonText = displayName[0].ToString();
@@ -53,7 +61,7 @@ namespace NuSysApp
             // ellipses location may be set from center
 
             AddChild(bubble);
-            Bubbles[userId] = bubble;
+            _bubbles[userId] = bubble;
             _bubbleLayoutManager.AddElement(bubble);
         }
 
@@ -66,7 +74,7 @@ namespace NuSysApp
             var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[userId];
             var displayName = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[userId];
 
-            var bubble = Bubbles[userId];
+            var bubble = _bubbles[userId];
             RemoveChild(bubble);
             _bubbleLayoutManager.Remove(bubble);
         }
@@ -88,5 +96,38 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
+        private class Bubble : ButtonUIElement
+        {
+
+            private UserBubbles _bubbles;
+            public Bubble(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, UserBubbles bubbles) : base(parent, resourceCreator)
+            {
+                _bubbles = bubbles;
+            }
+
+            Matrix3x2 LocalToScreenMatrix
+            {
+                get
+                {
+                    return Matrix3x2.Identity;
+                }
+            }
+            public override void Draw(CanvasDrawingSession ds)
+            {
+                var origRadius = 12;
+                var old = ds.Transform;
+                ds.Transform = Matrix3x2.Identity;
+                var p = Transform.LocalToScreenMatrix.Translation;
+                var radius = (float)(origRadius * Math.Min(Math.Max(origRadius * Transform.LocalToScreenMatrix.M11, .0000001), 1));
+                p.X += Transform.LocalX + origRadius/2 - (origRadius - radius);
+                var index = _bubbles.Bubbles.Values.ToList().IndexOf(this);
+
+                var tr = Matrix3x2.CreateTranslation(0, -radius * index * Transform.ScreenToLocalMatrix.M11);
+                ds.Transform *= tr;
+                
+                ds.DrawCircle(p, radius,Colors.Aqua);
+                ds.Transform = old;
+            }
+        }
     }
 }

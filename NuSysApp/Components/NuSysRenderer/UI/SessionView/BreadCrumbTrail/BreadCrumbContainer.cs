@@ -14,7 +14,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class BreadCrumbContainer : RectangleUIElement
+    public class BreadCrumbContainer : MaskedRectangleUIElement
     {
         /// <summary>
         /// List of bread crumbs which are currently on the trail
@@ -56,11 +56,6 @@ namespace NuSysApp
         /// </summary>
         private Vector2 _scrollHandleInitialDragPosition;
 
-        /// <summary>
-        /// Mask rect used to mask breadcrumbs in the draw call
-        /// </summary>
-        private Rect _maskRect;
-
         public BreadCrumbContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _breadCrumbData = new List<BreadCrumb>();
@@ -69,7 +64,7 @@ namespace NuSysApp
             Width = 300;
             Background = Constants.LIGHT_BLUE_TRANSLUCENT;
 
-            _maskRect = new Rect(BorderWidth, BorderWidth, Width - 2 * BorderWidth, Height - 2 * BorderWidth);
+            Mask = new Rect(BorderWidth, BorderWidth, Width - BorderWidth*2, Height - BorderWidth*2);
 
             _scrollBar = new RectangleUIElement(this, resourceCreator)
             {
@@ -330,10 +325,7 @@ namespace NuSysApp
             }
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-            using (ds.CreateLayer(1, _maskRect))
-            {
-                base.Draw(ds);
-            }
+            base.Draw(ds);
             ds.Transform = orgTransform;
         }
 
