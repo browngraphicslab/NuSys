@@ -16,7 +16,7 @@ namespace NuSysApp
     /// to create the rich text CanvasTextLayout.
     /// this might not be the right thing to do. ^^ double check this choice later.
     /// 
-    /// NOTE: AS OF 1/9/17 THIS CLASS IS NOT TESTED
+    /// TODO: add font weight, style, family, etc. properties to this so people can set font__ on a specific group of characters in text
     /// </summary>
     public class RichTextboxUIElement : TextboxUIElement
     {

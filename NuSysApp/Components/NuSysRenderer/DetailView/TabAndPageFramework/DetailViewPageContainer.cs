@@ -342,7 +342,7 @@ namespace NuSysApp
 
                 _tabContainerLayoutManager.SetSize(Width, Height);
                 _tabContainerLayoutManager.SetMargins(BorderWidth);
-                _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth;
+                _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth + 10;
                 _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _tabContainerLayoutManager.ArrangeItems();
