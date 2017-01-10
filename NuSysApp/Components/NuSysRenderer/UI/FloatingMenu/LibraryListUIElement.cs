@@ -418,6 +418,12 @@ namespace NuSysApp
                 MultipleSelections = false
             };
 
+
+            var imgColumn = new ListImageColumn<LibraryElementModel>();
+            imgColumn.Title = "";
+            imgColumn.RelativeWidth = 1;
+            imgColumn.ColumnFunction = model => model.GetController().SmallIconUri;
+
             var listColumn1 = new ListTextColumn<LibraryElementModel>();
             listColumn1.Title = "Title";
             listColumn1.RelativeWidth = 2;
@@ -439,7 +445,7 @@ namespace NuSysApp
             listColumn4.RelativeWidth = 1.8f;
             listColumn4.ColumnFunction = model => model.GetController().GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
 
-            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
+            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { imgColumn, listColumn1, listColumn2, listColumn3, listColumn4 });
 
 
             LibraryListView.AddItems(
