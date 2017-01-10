@@ -54,11 +54,6 @@ namespace NuSysApp
         private float _addRegionButtonLeftRightMargin = 10;
 
         /// <summary>
-        /// The rectangle containing the buttons which are used to add public or private regions. Made visisble when the add region button is pressed
-        /// </summary>
-        private AddRegionPublicPrivateUIElement _addRegionUIElement;
-
-        /// <summary>
         /// The _analysis ui element associated with the regions page
         /// </summary>
         private ImageAnalysisUIElement _analysisUIElement;
@@ -89,6 +84,11 @@ namespace NuSysApp
         /// </summary>
         private RectangleUIElement _dragRect;
 
+        /// <summary>
+        /// popup menu used to display add region messages to the user
+        /// </summary>
+        private FlyoutPopup _addRegionPopup;
+
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
             // set the controller properly
@@ -104,7 +104,7 @@ namespace NuSysApp
             _showRegions = showRegions;
 
             // initialize the add region button and the _addRegionButtonLayoutManager
-            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "+");
+            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle);
 
             _addRegionButtonLayoutManager = new StackLayoutManager();
             AddChild(_addRegionButton);
@@ -122,9 +122,6 @@ namespace NuSysApp
                 ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center
             };
             AddChild(_dragToCollectionButton);
-
-            // initialize the add region ui element
-            _addRegionUIElement = new AddRegionPublicPrivateUIElement(this, resourceCreator);
 
             /// add the analysis stuff only if it is supported
             if (_showsImageAnalysis)
@@ -193,19 +190,36 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void AddRegionButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            AddChild(_addRegionUIElement);
-            _addRegionUIElement.OnRegionAdded += OnRegionAdded;
+            var addRegionButton = interactiveBaseRenderItem as ButtonUIElement;
+            Debug.Assert(addRegionButton!= null);
+            _addRegionPopup = new FlyoutPopup(this, Canvas);
+            _addRegionPopup.Transform.LocalPosition = new Vector2(addRegionButton.Transform.LocalPosition.X - _addRegionPopup.Width / 2,
+                addRegionButton.Transform.LocalPosition.Y + addRegionButton.Height);
+            _addRegionPopup.AddFlyoutItem("Public", OnAddPublicRegionFlyoutTapped, Canvas);
+            _addRegionPopup.AddFlyoutItem("Private", OnAddPrivateRegionFlyoutTapped, Canvas);
+            AddChild(_addRegionPopup);
         }
 
         /// <summary>
-        /// Fired when a region is added from the _addRegionUIElement
+        /// Method called when adding a private region flyout is tapped
         /// </summary>
-        /// <param name="access"></param>
-        private void OnRegionAdded(NusysConstants.AccessType access)
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnAddPrivateRegionFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _addRegionUIElement.OnRegionAdded -= OnRegionAdded;
-            RemoveChild(_addRegionUIElement);
-            AddRegion(access);
+            AddRegion(NusysConstants.AccessType.Private);
+            _addRegionPopup.DismissPopup();
+        }
+
+        /// <summary>
+        /// Method called when adding a public region flyout is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnAddPublicRegionFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            AddRegion(NusysConstants.AccessType.Public);
+            _addRegionPopup.DismissPopup();
         }
 
 
@@ -249,12 +263,6 @@ namespace NuSysApp
                 _addRegionButtonLayoutManager.ItemHeight = _addRegionButtonWidth;
                 _addRegionButtonLayoutManager.ArrangeItems();
 
-                // set the addRegionUIElement so that it shows up on the addregionbutton
-                _addRegionUIElement.Height = 100;
-                _addRegionUIElement.Width = 100;
-                _addRegionUIElement.Transform.LocalPosition = new Vector2(_addRegionButton.Transform.LocalX,
-                    _addRegionButton.Transform.LocalY - 100);
-
                 // set visibility of add region button
                 _addRegionButton.IsVisible = true;
             }
@@ -294,6 +302,12 @@ namespace NuSysApp
 
 
             base.Update(parentLocalToScreenTransform);
+        }
+
+        public override async Task Load()
+        {
+            _addRegionButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements white.png"));
+            base.Load();
         }
 
         /// <summary>

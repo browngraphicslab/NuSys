@@ -12,7 +12,7 @@ using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 namespace NuSysApp
 {
-    public class FilterSubMenu : ResizeableWindowUIElement
+    public class FilterSubMenu : WindowUIElement
     {
         /// <summary>
         /// List used to display library element models
@@ -81,10 +81,6 @@ namespace NuSysApp
             TopBarColor = Colors.Azure;
             Height = 400;
             Width = 300;
-            MinWidth = 200;
-            MinHeight = 400;
-            KeepAspectRatio = false;
-            IsDraggable = false;
 
             // instantiate a new _libraryElementListview
             _userIdListView = new ListViewUIElementContainer<string>(this, ResourceCreator)
