@@ -138,13 +138,22 @@ namespace NuSysApp
             _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
+            // NOTE IF YOU ARE CREATING OBJECTS IN THIS METHOD. BE AWARE THAT THE METHOD IS CALLED 
+            // MULTIPLE TIMES!!! WE DO NOT WANT TO END UP WITH MULTIPLE INSTANCES OF OBJECTS
+            // THAT SHOULD ONLY EXIST ONCE.
+            // THIS CAN EASILY BE ACCOMPLISHED WITH A NULL CHECK AS SHOWN DIRECTLY BELOW THIS LINE!!!
+
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
                 _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
             }
 
-            FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+            // Make sure the FocusManager is only implemented once
+            if (FocusManager == null)
+            {
+                FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+            }
 
             if (_vm != null)
             {

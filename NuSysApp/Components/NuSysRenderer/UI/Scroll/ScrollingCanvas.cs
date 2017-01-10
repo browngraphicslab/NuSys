@@ -13,12 +13,12 @@ namespace NuSysApp
         /// <summary>
         /// the horizontal scrollbar
         /// </summary>
-        private ScrollBarUIElement _horizontalScrollBar;
+        protected ScrollBarUIElement HorizontalScrollBar;
 
         /// <summary>
         /// the vertical scrollbar
         /// </summary>
-        private ScrollBarUIElement _verticalScrollBar;
+        protected ScrollBarUIElement VerticalScrollBar;
 
         /// <summary>
         /// A list of all the elements that are contained in the scroll area
@@ -70,11 +70,6 @@ namespace NuSysApp
         /// The actual scroll area used to add and remove elements from
         /// </summary>
         private MaskedRectangleUIElement _scrollAreaRect;
-
-        /// <summary>
-        /// This is true whenever the ui needs to be rerendered
-        /// </summary>
-        private bool _refreshUI;
 
         /// <summary>
         /// The list of elements on the scrollarea that are currently visible
@@ -159,22 +154,22 @@ namespace NuSysApp
         /// <summary>
         /// The width of the vertical scroll bar
         /// </summary>
-        public float VerticalScrollBarWidth => _verticalScrollBar.Width;
+        public float VerticalScrollBarWidth => VerticalScrollBar.Width;
 
         /// <summary>
         /// the height of the vertical scroll bar
         /// </summary>
-        public float VerticalScrollBarHeight => _verticalScrollBar.Height;
+        public float VerticalScrollBarHeight => VerticalScrollBar.Height;
 
         /// <summary>
         ///  the width of the horizontal scroll bar
         /// </summary>
-        public float HorizontalScrollBarWidth => _horizontalScrollBar.Width;
+        public float HorizontalScrollBarWidth => HorizontalScrollBar.Width;
 
         /// <summary>
         /// The height of the horizontal scrol bar
         /// </summary>
-        public float HorizontalScrollBarHeight => _horizontalScrollBar.Height;
+        public float HorizontalScrollBarHeight => HorizontalScrollBar.Height;
 
         public ScrollingCanvas(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ScrollOrientation scrollDirection) : base(parent, resourceCreator)
         {
@@ -182,16 +177,16 @@ namespace NuSysApp
             ScrollDirection = scrollDirection;
 
             // add the vertical and horizontal scrollbars
-            _verticalScrollBar = new ScrollBarUIElement(this, Canvas, ScrollBarUIElement.Orientation.Vertical)
+            VerticalScrollBar = new ScrollBarUIElement(this, Canvas, ScrollBarUIElement.Orientation.Vertical)
             {
                 Width = UIDefaults.ScrollBarWidth
             };
-            AddChild(_verticalScrollBar);
-            _horizontalScrollBar = new ScrollBarUIElement(this, Canvas, ScrollBarUIElement.Orientation.Horizontal)
+            AddChild(VerticalScrollBar);
+            HorizontalScrollBar = new ScrollBarUIElement(this, Canvas, ScrollBarUIElement.Orientation.Horizontal)
             {
                 Height = UIDefaults.ScrollBarWidth
             };
-            AddChild(_horizontalScrollBar);
+            AddChild(HorizontalScrollBar);
 
             _scrollAreaRect = new MaskedRectangleUIElement(this, resourceCreator);
             AddChild(_scrollAreaRect);
@@ -209,18 +204,18 @@ namespace NuSysApp
 
             OnSizeChanged();
 
-            _horizontalScrollBar.ScrollBarPositionChanged += _horizontalScrollBar_ScrollBarPositionChanged;
-            _verticalScrollBar.ScrollBarPositionChanged += _verticalScrollBar_ScrollBarPositionChanged;
+            HorizontalScrollBar.ScrollBarPositionChanged += _horizontalScrollBar_ScrollBarPositionChanged;
+            VerticalScrollBar.ScrollBarPositionChanged += _verticalScrollBar_ScrollBarPositionChanged;
         }
 
         private void _verticalScrollBar_ScrollBarPositionChanged(object source, float position)
         {
-            _refreshUI = true;
+            IsDirty = true;
         }
 
         private void _horizontalScrollBar_ScrollBarPositionChanged(object source, float position)
         {
-            _refreshUI = true;
+            IsDirty = true;
         }
 
         /// <summary>
@@ -256,16 +251,16 @@ namespace NuSysApp
             switch (locationToScrollTo)
             {
                 case ScrollTo.Left:
-                    _horizontalScrollBar.Position = 0;
+                    HorizontalScrollBar.Position = 0;
                     break;
                 case ScrollTo.Top:
-                    _verticalScrollBar.Position = 0;
+                    VerticalScrollBar.Position = 0;
                     break;
                 case ScrollTo.Right:
-                    _horizontalScrollBar.Position = 1 - _horizontalScrollBar.Range;
+                    HorizontalScrollBar.Position = 1 - HorizontalScrollBar.Range;
                     break;
                 case ScrollTo.Bottom:
-                    _verticalScrollBar.Position = 1 - _horizontalScrollBar.Range;
+                    VerticalScrollBar.Position = 1 - HorizontalScrollBar.Range;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(locationToScrollTo), locationToScrollTo, null);
@@ -303,7 +298,7 @@ namespace NuSysApp
             }.Contains(ScrollDirection);
 
 
-            if (horizontalScrollingEnabled && _horizontalScrollBar != null)
+            if (horizontalScrollingEnabled && HorizontalScrollBar != null)
             {
                 // calculate the ratio of the width needed for the horizontal scroll handle
                 var horizontalRatio = Math.Min(1, _cropRect.Width/ScrollAreaSize.Width);
@@ -311,32 +306,32 @@ namespace NuSysApp
                 // if the width is large enough then  hide the horizontal scroll bar
                 if (Math.Abs(horizontalRatio - 1) < .001)
                 {
-                    _horizontalScrollBar.IsVisible = horizontalScrollingRequired; // only hide it if horizontal scrolling is not required
+                    HorizontalScrollBar.IsVisible = horizontalScrollingRequired; // only hide it if horizontal scrolling is not required
                 }
                 else
                 {
-                    _horizontalScrollBar.IsVisible = true;
+                    HorizontalScrollBar.IsVisible = true;
                 }
 
                 // check to see if hiding the vertical scrollbar would make the width large enough
                 // as long as vertical scrolling is not required
                 if (!verticalScrollingRequired)
                 {
-                    var hiddenVertHorizontalRatio = Math.Min(1, (_cropRect.Width + _verticalScrollBar.Width)/ScrollAreaSize.Width);
+                    var hiddenVertHorizontalRatio = Math.Min(1, (_cropRect.Width + VerticalScrollBar.Width)/ScrollAreaSize.Width);
                     if (Math.Abs(hiddenVertHorizontalRatio - 1) < .001)
                     {
                         horizontalRatio = hiddenVertHorizontalRatio;
-                        _horizontalScrollBar.IsVisible = horizontalScrollingRequired;
-                        _verticalScrollBar.IsVisible = false;
+                        HorizontalScrollBar.IsVisible = horizontalScrollingRequired;
+                        VerticalScrollBar.IsVisible = false;
                     }
                 }
 
                 // set the new range of the _scrollHandle
-                _horizontalScrollBar.Range = (float) horizontalRatio;
+                HorizontalScrollBar.Range = (float) horizontalRatio;
 
                 // update the position of the scroll bar so the crop rect is maintained
                 var normalizedOffset = _cropRect.Left/ScrollAreaSize.Width;
-                _horizontalScrollBar.Position = (float) normalizedOffset;
+                HorizontalScrollBar.Position = (float) normalizedOffset;
 
                 // bound the scroll bar's position
                 BoundHorizontalScrollBarPosition();
@@ -344,7 +339,7 @@ namespace NuSysApp
 
             //todo if we make the vertical scroll bar visible below here, but we made it invisible above
             //todo then we have to recalculate the horizontal ratio above to reflect that change
-            if (verticalScrollingEnabled && _verticalScrollBar != null)
+            if (verticalScrollingEnabled && VerticalScrollBar != null)
             {
                 // calculate the ratio of the width needed for the vertical scroll handle
                 var verticalRatio = Math.Min(1, _cropRect.Height/ScrollAreaSize.Height);
@@ -352,11 +347,11 @@ namespace NuSysApp
                 // if the width is large enough then  hide the vertical scroll bar
                 if (Math.Abs(verticalRatio - 1) < .001)
                 {
-                    _verticalScrollBar.IsVisible = verticalScrollingRequired; // only hide it if verticalScrolling is not required
+                    VerticalScrollBar.IsVisible = verticalScrollingRequired; // only hide it if verticalScrolling is not required
                 }
                 else
                 {
-                    _verticalScrollBar.IsVisible = true;
+                    VerticalScrollBar.IsVisible = true;
                 }
 
                 // check to see if hiding the horizontal scrollbar would make the width large enough
@@ -364,31 +359,36 @@ namespace NuSysApp
                 if (!horizontalScrollingRequired)
                 {
                     // check to see if hiding the horizontal scrollbar would make the height large enough
-                    var hiddenHorzVerticalRatio = Math.Min(1, (_cropRect.Height + _horizontalScrollBar.Height)/ScrollAreaSize.Height);
+                    var hiddenHorzVerticalRatio = Math.Min(1, (_cropRect.Height + HorizontalScrollBar.Height)/ScrollAreaSize.Height);
                     if (Math.Abs(hiddenHorzVerticalRatio - 1) < .001)
                     {
                         verticalRatio = hiddenHorzVerticalRatio;
-                        _verticalScrollBar.IsVisible = verticalScrollingRequired;
-                        _horizontalScrollBar.IsVisible = false;
+                        VerticalScrollBar.IsVisible = verticalScrollingRequired;
+                        HorizontalScrollBar.IsVisible = false;
                     }
                 }
 
 
                 // set the new width of the _scrollHandle
-                _verticalScrollBar.Range = (float) verticalRatio;
+                VerticalScrollBar.Range = (float) verticalRatio;
 
                 // update the position of the scroll bar so the crop rect is maintained
                 var normalizedOffset = _cropRect.Top/ScrollAreaSize.Height;
-                _verticalScrollBar.Position = (float) normalizedOffset;
+                VerticalScrollBar.Position = (float) normalizedOffset;
 
                 // bound the scroll bar's position
                 BoundVerticalScrollBarPosition();
             }
 
-            if (_verticalScrollBar != null && _horizontalScrollBar != null)
+            if (VerticalScrollBar != null && HorizontalScrollBar != null)
             {
                 // recompute crop rect
-                _cropRect = new Rect(_cropRect.X, _cropRect.Y, _cropRect.Width + (_verticalScrollBar.IsVisible ? 0 : _verticalScrollBar.Width), _cropRect.Height + (_horizontalScrollBar.IsVisible ? 0 : _horizontalScrollBar.Height));
+                _cropRect = new Rect(_cropRect.X, _cropRect.Y, _cropRect.Width + (VerticalScrollBar.IsVisible ? 0 : VerticalScrollBar.Width), _cropRect.Height + (HorizontalScrollBar.IsVisible ? 0 : HorizontalScrollBar.Height));
+                if (_lowerRightCornerRect != null)
+                {
+                    _lowerRightCornerRect.IsVisible = HorizontalScrollBar.IsVisible || VerticalScrollBar.IsVisible;
+
+                }
             }
         }
 
@@ -398,9 +398,9 @@ namespace NuSysApp
         private void BoundHorizontalScrollBarPosition()
         {
             // bound the position plus the range to 1
-            if (_horizontalScrollBar.Position + _horizontalScrollBar.Range > 1)
+            if (HorizontalScrollBar.Position + HorizontalScrollBar.Range > 1)
             {
-                _horizontalScrollBar.Position = 1 - _horizontalScrollBar.Range;
+                HorizontalScrollBar.Position = 1 - HorizontalScrollBar.Range;
             }
         }
 
@@ -410,28 +410,28 @@ namespace NuSysApp
         private void BoundVerticalScrollBarPosition()
         {
             // bound the position plus the range to 1
-            if (_verticalScrollBar.Position + _verticalScrollBar.Range > 1)
+            if (VerticalScrollBar.Position + VerticalScrollBar.Range > 1)
             {
-                _verticalScrollBar.Position = 1 - _verticalScrollBar.Range;
+                VerticalScrollBar.Position = 1 - VerticalScrollBar.Range;
             }
         }
 
         /// <summary>
         /// Called whenever the size of the scrolling canvas is changed
         /// </summary>
-        private void OnSizeChanged()
+        protected virtual void OnSizeChanged()
         {
-            if (_lowerRightCornerRect != null && _horizontalScrollBar != null && _verticalScrollBar != null)
+            if (_lowerRightCornerRect != null && HorizontalScrollBar != null && VerticalScrollBar != null)
             {
                 _lowerRightCornerRect.Transform.LocalPosition = new Vector2(Width - _lowerRightCornerRect.Width - BorderWidth, Height - _lowerRightCornerRect.Height - BorderWidth);
 
                 // place the horizontal scroll bar in the correct position
-                _horizontalScrollBar.Width = Width - _lowerRightCornerRect.Width - 2*BorderWidth;
-                _horizontalScrollBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - _horizontalScrollBar.Height);
+                HorizontalScrollBar.Width = Width - _lowerRightCornerRect.Width - 2*BorderWidth;
+                HorizontalScrollBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - HorizontalScrollBar.Height);
 
                 // place the vertical scrollbar in the correct position
-                _verticalScrollBar.Height = Height - _lowerRightCornerRect.Height - 2*BorderWidth;
-                _verticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - _verticalScrollBar.Width, BorderWidth);
+                VerticalScrollBar.Height = Height - _lowerRightCornerRect.Height - 2*BorderWidth;
+                VerticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - VerticalScrollBar.Width, BorderWidth);
             }
 
             if (_scrollAreaRect != null && _cropRect != null)
@@ -443,7 +443,7 @@ namespace NuSysApp
 
             ComputeScrollHandleSize();
 
-            _refreshUI = true;
+            IsDirty = true;
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace NuSysApp
         private void ReRender()
         {
             // if we do not have to rerender then just return
-            if (!_refreshUI)
+            if (!IsDirty)
             {
                 return;
             }
@@ -493,7 +493,7 @@ namespace NuSysApp
             _scrollAreaRect.Transform.LocalPosition = new Vector2((float) -_cropRect.X, (float) -_cropRect.Y);
 
             // stop refreshing the ui it was just refreshed
-            _refreshUI = false;
+            IsDirty = false;
         }
 
         /// <summary>
@@ -519,14 +519,14 @@ namespace NuSysApp
         /// </summary>
         private void ComputeCrop()
         {
-            var cropWidth = Width - _verticalScrollBar.Width - 2*BorderWidth;
-            var cropHeight = Height - _horizontalScrollBar.Height - 2*BorderWidth;
+            var cropWidth = Width - VerticalScrollBar.Width - 2*BorderWidth;
+            var cropHeight = Height - HorizontalScrollBar.Height - 2*BorderWidth;
 
             // bound the scroll bar positions
             BoundVerticalScrollBarPosition();
             BoundHorizontalScrollBarPosition();
 
-            _cropRect = new Rect(ScrollAreaSize.Width*_horizontalScrollBar.Position, ScrollAreaSize.Height*_verticalScrollBar.Position, cropWidth, cropHeight);
+            _cropRect = new Rect(ScrollAreaSize.Width*HorizontalScrollBar.Position, ScrollAreaSize.Height*VerticalScrollBar.Position, cropWidth, cropHeight);
         }
 
         public override void Draw(CanvasDrawingSession ds)
