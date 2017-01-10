@@ -243,6 +243,7 @@ namespace NuSysApp
             var left = _children[leftColIndex] as RectangleUIElement;
             var right = _children[leftColIndex + 1] as RectangleUIElement;
             Debug.Assert(left != null && right != null);
+
             left.Width += sizeChange;
             right.Width -= sizeChange;
             right.Transform.LocalX += sizeChange;

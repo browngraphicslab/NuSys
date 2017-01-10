@@ -442,7 +442,7 @@ namespace NuSysApp
             var listColumn5 = new ListTextColumn<LibraryElementModel>();
             listColumn5.Title = "Tags";
             listColumn5.RelativeWidth = 1f;
-            listColumn5.ColumnFunction = model => model.Keywords != null ? string.Join(", ", model.Keywords) : "";
+            listColumn5.ColumnFunction = model => model.Keywords != null ? string.Join(", ", model.Keywords.Select(i => i.Text)) : "";
 
             var listColumn6= new ListTextColumn<LibraryElementModel>();
             listColumn6.Title = "Parent";
