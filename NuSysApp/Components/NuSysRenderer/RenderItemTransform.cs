@@ -23,7 +23,7 @@ namespace NuSysApp
         public Matrix3x2 S { get; private set; } = Matrix3x2.Identity;
         public Matrix3x2 C { get; private set; } = Matrix3x2.Identity;
 
-        public Matrix3x2 LocalToScreenMatrix
+        public virtual Matrix3x2 LocalToScreenMatrix
         {
             get
             {

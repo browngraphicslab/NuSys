@@ -103,7 +103,7 @@ namespace NuSysApp
         private void ElementControllerOnDeleted(object source)
         {
             var elementController = (ElementController)source;
-            CollectionModel.Children.Remove(elementController.Model.Id);
+            RemoveChild(elementController.Id);
         }
 
         public bool RemoveChild(string id)
