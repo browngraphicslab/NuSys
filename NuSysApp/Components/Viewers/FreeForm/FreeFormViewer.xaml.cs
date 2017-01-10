@@ -183,8 +183,6 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
-
-            _vm.FullScreenVideo += PlayFullScreenVideo;
         }
 
         /// <summary>
@@ -1389,14 +1387,23 @@ namespace NuSysApp
             return adornment;
         }
 
-        public void PlayFullScreenVideo(object sender, VideoLibraryElementController videoLibraryElementController)
+        public void PlayFullScreenVideo(VideoLibraryElementController videoLibraryElementController, bool addRegionsIsVisible = false)
         {
+            // set the visibility of items
             xFullScreenVideoElement.Visibility = Visibility.Visible;
             xFullScreenVideoCloseButton.Visibility = Visibility.Visible;
             xFullScreenVideoBackground.Visibility = Visibility.Visible;
+            xFullScreenVideoAddRegionButton.Visibility = addRegionsIsVisible ? Visibility.Visible : Visibility.Collapsed;
+            xAddRegionMenu.Visibility = Visibility.Collapsed;
+            xAddPublicRadioButton.IsChecked = true;
+            xAddPrivateRadioButton.IsChecked = false;
 
+            // set the size of the full screen element
             xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight - 50);
             xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
+
+            Canvas.SetTop(xFullScreenVideoAddRegionButton, xFullScreenVideoElement.Height/2 - xFullScreenVideoElement.Height/2);
+            Canvas.SetLeft(xFullScreenVideoAddRegionButton, 0);
         }
 
         private void XFullScreenVideoCloseButton_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -1404,9 +1411,24 @@ namespace NuSysApp
             xFullScreenVideoElement.Visibility = Visibility.Collapsed;
             xFullScreenVideoCloseButton.Visibility = Visibility.Collapsed;
             xFullScreenVideoBackground.Visibility = Visibility.Collapsed;
-
+            xAddRegionMenu.Visibility = Visibility.Collapsed;;
             xFullScreenVideoElement.Pause();
 
+        }
+
+        private void XFullScreenVideoAddRegionButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            //toggle the visibility of the add region menu
+            xAddRegionMenu.Visibility = xAddRegionMenu.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void XFullScreenVideoSubmit_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            // add the functionality for adding the video region here
+            throw new NotImplementedException();
         }
     }
 }

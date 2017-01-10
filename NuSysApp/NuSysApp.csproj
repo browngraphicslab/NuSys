@@ -388,6 +388,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingGrid.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\GradientBackgroundRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\AutoSuggestTextBox.cs" />
