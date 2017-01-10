@@ -19,12 +19,19 @@ namespace NuSysApp
 {
     public class NuSessionViewer : RectangleUIElement
     {
+        /// <summary>
+        /// The floating menu has the library and the add elements to workspace buttons
+        /// </summary>
         private FloatingMenu _floatingMenu;
 
-        //private ButtonUIElement _currCollDetailViewButton;
-
+        /// <summary>
+        /// The chat button shows the chatbox when clicked
+        /// </summary>
         private ButtonUIElement _chatButton;
 
+        /// <summary>
+        /// The snapshot button takes a snapshot of the workspace
+        /// </summary>
         private ButtonUIElement _snapshotButton;
 
         /// <summary>
@@ -94,7 +101,15 @@ namespace NuSysApp
         /// </summary>
         public LibraryListUIElement Library => _floatingMenu.Library;
 
+        /// <summary>
+        /// Rectangle used to display confirmation message to go back to the waiting room
+        /// </summary>
         private RectangleButtonUIElement _backToWaitingRoom;
+
+        /// <summary>
+        /// true if the nusessionviewer has been loaded already
+        /// </summary>
+        private bool _loaded;
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
@@ -387,9 +402,10 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            // set the image for the _currCollDetailViewbutton
-            //_currCollDetailViewButton.Image = _currCollDetailViewButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/info.png"));
-            //_currCollDetailViewButton.ImageBounds = new Rect(_currCollDetailViewButton.Width/4, _currCollDetailViewButton.Height/4, _currCollDetailViewButton.Width/2, _currCollDetailViewButton.Height/2);
+            if (_loaded)
+            {
+                return;
+            }
 
             // set the image for the _chatButton
             _chatButton.Image = _chatButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
@@ -411,6 +427,8 @@ namespace NuSysApp
             _previousNode.Image = _previousNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
             _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/node.png"));
             _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/trash can white.png"));
+
+            _loaded = true;
 
             base.Load();
         }
