@@ -112,6 +112,15 @@ namespace NuSysApp
         /// </summary>
         public bool IsRegionsVisible { get; set; }
 
+        /// <summary>
+        /// The self introduced offset so the image is always centered on the detail viewer
+        /// </summary>
+        private float _offsetX;
+
+        /// <summary>
+        /// The self introducted offset so the image is always centered on the detail viewer
+        /// </summary>
+        private float _offsetY;
 
         public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller, bool showRegions) : base(parent, resourceCreator)
         {
@@ -237,6 +246,7 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
 
             ds.Transform = Transform.LocalToScreenMatrix;
+
             using (ds.CreateLayer(1, _mask))
             {
                 ds.DrawImage(_imageBitmap, _croppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
@@ -249,6 +259,7 @@ namespace NuSysApp
 
                 if (IsRegionsVisible)
                     base.Draw(ds);
+
 
                 ds.Transform = orgTransform;
             }
@@ -425,13 +436,20 @@ namespace NuSysApp
                 {
                     var region = child as ImageDetailRegionRenderItem;
                     region.UpdateImageBound(_scaleDisplayToCrop * _scaleOrgToDisplay);
+
                 }
             }
 
-            var offsetX = Transform.LocalPosition.X + (float)(ImageMaxWidth - _croppedImageTarget.Width) / 2f;
-            var offsetY = Transform.LocalPosition.Y + (float)(ImageMaxHeight - _croppedImageTarget.Height) / 2f;
-            Transform.LocalPosition = new Vector2(offsetX, offsetY);
+            _offsetX = Transform.LocalPosition.X + (float)(ImageMaxWidth - _croppedImageTarget.Width) / 2f;
+            _offsetY = Transform.LocalPosition.Y + (float)(ImageMaxHeight - _croppedImageTarget.Height) / 2f;
+            Transform.LocalPosition = new Vector2(_offsetX, _offsetY);
             base.Update(parentLocalToScreenTransform);
+        }
+
+        public override Rect GetLocalBounds()
+        {
+
+            return new Rect(0, 0, Width - _offsetX, Height - _offsetY);
         }
     }
 }
