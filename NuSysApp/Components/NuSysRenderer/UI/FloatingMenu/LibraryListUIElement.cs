@@ -439,8 +439,19 @@ namespace NuSysApp
             listColumn4.RelativeWidth = 1.8f;
             listColumn4.ColumnFunction = model => model.GetController().GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
 
+            var listColumn5 = new ListTextColumn<LibraryElementModel>();
+            listColumn5.Title = "Tags";
+            listColumn5.RelativeWidth = 1f;
+            listColumn5.ColumnFunction = model => model.Keywords != null ? string.Join(", ", model.Keywords) : "";
+
+            var listColumn6= new ListTextColumn<LibraryElementModel>();
+            listColumn6.Title = "Parent";
+            listColumn6.RelativeWidth = 1f;
+            listColumn6.ColumnFunction = model => SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId) != null? SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId).Title : "" ;
+
             LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
+            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4, listColumn5, listColumn6 });
 
             LibraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());

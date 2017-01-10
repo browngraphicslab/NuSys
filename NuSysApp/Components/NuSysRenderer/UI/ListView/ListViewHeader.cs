@@ -18,7 +18,8 @@ namespace NuSysApp
     /// </summary>
     public class ListViewHeader<T> : RectangleUIElement
     {
-        public delegate void HeaderTappedEventHandler(int colIndex);
+        #region events
+        public delegate void HeaderTappedEventHandler(int colIndex, CanvasPointer pointer);
 
         /// <summary>
         /// Fires when header has been tapped
@@ -56,10 +57,13 @@ namespace NuSysApp
         /// </summary>
         public event ResizeHeaderCompletedEventHandler HeaderResizeCompleted;
 
-        /// <summary>
-        /// store resource creator in instance variable so we can pass it to new textboxUIElement later
-        /// </summary>
-        private ICanvasResourceCreatorWithDpi _resourceCreator;
+
+        public event HeaderAddColumnTappedEventHandler HeaderAddColumnTapped;
+        public delegate void HeaderAddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+
+        public event HeaderDeleteColumnTappedEventHandler HeaderDeleteColumnTapped;
+        public delegate void HeaderDeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        #endregion events
 
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -86,6 +90,7 @@ namespace NuSysApp
                 foreach (ListColumn<T> c in listColumns)
                 {
                     var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+                    headerItem.Column = c;
                     headerItem.ButtonText = c.Title;
                     headerItem.ButtonTextColor = Constants.ALMOST_BLACK;
                     headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
@@ -231,9 +236,21 @@ namespace NuSysApp
         {
             header.Tapped += Header_Tapped;
             header.Dragged += Header_Dragged;
+            header.AddColumnTapped += HeaderOnAddColumnTapped;
+            header.DeleteColumnTapped += HeaderOnDeleteColumnTapped;
             header.DragCompleted += Header_DragCompleted;
             header.HeaderResizing += HeaderItemResizing;
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;
+        }
+
+        private void HeaderOnDeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        {
+            HeaderDeleteColumnTapped?.Invoke(header, popup, flyoutItem, pointer);
+        }
+
+        private void HeaderOnAddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        {
+            HeaderAddColumnTapped?.Invoke(header, popup, flyoutItem, pointer);
         }
 
         /// <summary>
@@ -351,7 +368,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void Header_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            HeaderTapped?.Invoke(_children.IndexOf(interactiveBaseRenderItem));   
+            HeaderTapped?.Invoke(_children.IndexOf(interactiveBaseRenderItem), pointer);   
         }
     }
 }

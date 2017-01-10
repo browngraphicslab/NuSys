@@ -44,6 +44,13 @@ namespace NuSysApp
         /// </summary>
         public event ResizeHeaderCompletedEventHandler HeaderResizeCompleted;
 
+
+        public delegate void DeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public event DeleteColumnTappedEventHandler DeleteColumnTapped;
+
+        public delegate void AddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public event AddColumnTappedEventHandler AddColumnTapped;
+
         /// <summary>
         /// The boolean for the border being dragged so we can fire drag completed events when you release the pointer.
         /// </summary>
@@ -107,14 +114,23 @@ namespace NuSysApp
             if (pointer.IsRightButtonPressed)
             {
                 FlyoutPopup addDeleteColumns = new FlyoutPopup(this, Canvas);
-                /// REPLACE nulls with the handlers for the flyout item buttons (calls to delete and add column)
-                addDeleteColumns.AddFlyoutItem("add column", null, Canvas);
-                addDeleteColumns.AddFlyoutItem("delete", null, Canvas);
+                addDeleteColumns.AddFlyoutItem("add column", AddColumn, Canvas);
+                addDeleteColumns.AddFlyoutItem("delete", DeleteColumn, Canvas);
+
                 AddChild(addDeleteColumns);
                 addDeleteColumns.Transform.LocalPosition = new Vector2(0, Height);
             }
         }
 
+        private void AddColumn(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            AddColumnTapped?.Invoke(this, item.Parent as FlyoutPopup, item as ButtonUIElement, pointer);
+        }
+
+        private void DeleteColumn(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+           DeleteColumnTapped?.Invoke(this, item.Parent as FlyoutPopup, item as ButtonUIElement, pointer);
+        }
 
         public override void OnDragStarted(CanvasPointer pointer)
         {

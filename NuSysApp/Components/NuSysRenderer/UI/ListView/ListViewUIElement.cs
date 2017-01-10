@@ -78,6 +78,7 @@ namespace NuSysApp
         /// </summary>
         private List<ListColumn<T>> _listColumns;
 
+        private List<ListColumn<T>> _listColumnOptions;
 
         /// <summary>
         /// A hashset of the selected rows
@@ -177,6 +178,11 @@ namespace NuSysApp
             get { return _listColumns; }   
         }
 
+        public List<ListColumn<T>> ListColumnOptions
+        {
+            get { return _listColumnOptions; }
+        }
+
         /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
         /// </summary>
@@ -189,6 +195,8 @@ namespace NuSysApp
             _itemsSource = new List<T>();
             _filteredItems = new List<T>();
             _listColumns = new List<ListColumn<T>>();
+            _listColumnOptions = new List<ListColumn<T>>();
+
             _scrollOffset = 0;
             MultipleSelections = false;
             BorderWidth = 0;
@@ -361,11 +369,111 @@ namespace NuSysApp
 
         }
 
-        private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
+        #region event handlers
+
+        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
         {
-            _draggedItem = item;
+            if (_isDragging)
+            {
+                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
+                _isDragging = false;
+            }
+            //Remove reference to item you were dragging
+            _draggedItem = default(T);
+
+
         }
 
+        private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
+        {
+            Debug.Assert(_isDragging == false);
+
+            var dX = pointer.Delta.X;
+            var dY = pointer.Delta.Y;
+
+            var angle = Math.Atan(dY/dX);
+            Debug.WriteLine(angle);
+            if (Math.Abs(angle) <0.85 && dX != 0f)
+            {
+                _draggedItem = item;
+                if (!DisableSelectionByClick)
+                {
+                    SelectItem(_draggedItem);
+                }
+                _isDragging = true;
+            }
+            else
+            {
+                _isDragging = false;
+            }
+            
+
+
+        }
+
+
+
+        /// <summary>
+        /// event that fires when you drag on the list. 
+        /// if the pointer stays within the bounds of the list, this will scroll. 
+        /// if not, then the row will fire a dragged event so the user can drag the row out of the listview.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        /// <param name="pointer"></param>
+        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
+        {
+            //calculate bounds of listview
+            var minX = 0;
+            var maxX = Width;
+            var minY = 0;
+            var maxY = Height;
+
+            //We need the local point, not the screen point
+            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+
+            if (_isDragging)
+            {
+                RowDragged?.Invoke(_draggedItem, rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+            }
+            else
+            {
+                var deltaY = -pointer.DeltaSinceLastUpdate.Y / (RowHeight * _filteredItems.Count);
+
+                ScrollBar.ChangePosition(deltaY);
+            }
+            /*
+            //check within bounds of listview
+            if (point.X < minX || point.X > maxX || point.Y < minY ||
+                point.Y > maxY)
+            {
+                Debug.Assert(_draggedItem != null);
+                if (_draggedItem == null)
+                {
+                    return;
+                }
+                //If it's the first time we are leaving the listview, select the item
+                if (!_isDragging && !DisableSelectionByClick)
+                {
+                    SelectItem(_draggedItem);
+                }
+                RowDragged?.Invoke(_draggedItem,
+         rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+
+                _isDragging = true;
+
+            }
+            else
+            {
+
+                //scroll if in bounds
+                var deltaY = -pointer.DeltaSinceLastUpdate.Y / (RowHeight * _filteredItems.Count);
+
+                ScrollBar.ChangePosition(deltaY);
+
+            }
+            */
+        }
         private void ListViewRowUIElementOnRowTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
         {
                 bool isSelected = false;
@@ -403,6 +511,47 @@ namespace NuSysApp
             RowDoubleTapped?.Invoke(item, colTitle, pointer);
 
         }
+
+
+        /// <summary>
+        /// Fires RowDoubleTapped event listened by container
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="colIndex"></param>
+        /// <param name="pointer"></param>
+        /// <param name="item"></param>
+        private void ListViewRowUIElement_RowDoubleTapped(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
+        {
+            Debug.Assert(rowUIElement != null);
+            RowDoubleTapped?.Invoke(rowUIElement.Item,
+                 rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+        }
+
+        /// <summary>
+        /// This handles the PointerWheelChanged event of the rows. The delta passed in is either 1 or -1, so we move the scroll bar
+        /// depending on the sign of the delta. 
+        /// 
+        /// 0.035 is the normalized change in position.
+        /// </summary>
+        /// <param name="rowUIElement"></param>
+        /// <param name="cell"></param>
+        /// <param name="pointer"></param>
+        /// <param name="delta"></param>
+        private void ListViewRowUIElement_PointerWheelChanged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta)
+        {
+
+            if (delta < 0)
+            {
+                ChangePosition(1f / _filteredItems.Count); //This moves the listview down by the height of one row.
+
+            }
+            else if (delta > 0)
+            {
+                ChangePosition(-1f / _filteredItems.Count); //This moves the listview up by the height of one row.
+            }
+
+        }
+#endregion event handlers
 
         /// <summary>
         /// Returns the position of the ScrollBar if it has been initialized.
@@ -446,45 +595,6 @@ namespace NuSysApp
 
 
         }
-        /// <summary>
-        /// Fires RowDoubleTapped event listened by container
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="colIndex"></param>
-        /// <param name="pointer"></param>
-        /// <param name="item"></param>
-        private void ListViewRowUIElement_RowDoubleTapped(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
-        {
-            Debug.Assert(rowUIElement != null);
-            RowDoubleTapped?.Invoke(rowUIElement.Item,
-                 rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-        }
-
-        /// <summary>
-        /// This handles the PointerWheelChanged event of the rows. The delta passed in is either 1 or -1, so we move the scroll bar
-        /// depending on the sign of the delta. 
-        /// 
-        /// 0.035 is the normalized change in position.
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        /// <param name="pointer"></param>
-        /// <param name="delta"></param>
-        private void ListViewRowUIElement_PointerWheelChanged(ListViewRowUIElement<T> rowUIElement, RectangleUIElement cell, CanvasPointer pointer, float delta)
-        {
-            
-            if(delta < 0)
-            {
-                ChangePosition(1f/ _filteredItems.Count); //This moves the listview down by the height of one row.
-
-            }
-            else if(delta> 0)
-            {
-                ChangePosition(-1f/ _filteredItems.Count); //This moves the listview up by the height of one row.
-            }
-
-        }
-
 
         /// <summary>
         /// This just changes all the border widths of the rows to be the rowborderthickness variable
@@ -596,71 +706,7 @@ namespace NuSysApp
 
         }
 
-        
-
-        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
-        {
-            if (_isDragging)
-            {
-                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
-                _isDragging = false;
-            }
-            //Remove reference to item you were dragging
-            _draggedItem = default(T);
-
-
-        }
-
-
-        /// <summary>
-        /// event that fires when you drag on the list. 
-        /// if the pointer stays within the bounds of the list, this will scroll. 
-        /// if not, then the row will fire a dragged event so the user can drag the row out of the listview.
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="cell"></param>
-        /// <param name="pointer"></param>
-        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
-        {
-            //calculate bounds of listview
-            var minX = 0;
-            var maxX = Width;
-            var minY = 0;
-            var maxY = Height;
-
-            //We need the local point, not the screen point
-            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-
-            //check within bounds of listview
-            if (point.X < minX || point.X > maxX || point.Y < minY ||
-                point.Y > maxY)
-            {
-                Debug.Assert(_draggedItem != null);
-                if (_draggedItem == null)
-                {
-                    return;
-                }
-                //If it's the first time we are leaving the listview, select the item
-                if (!_isDragging && !DisableSelectionByClick)
-                {
-                    SelectItem(_draggedItem);
-                }
-                RowDragged?.Invoke(_draggedItem,
-         rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-
-                _isDragging = true;
-
-            }
-            else
-            {
-
-                //scroll if in bounds
-                var deltaY =  - pointer.DeltaSinceLastUpdate.Y / (RowHeight * _filteredItems.Count);
-
-                ScrollBar.ChangePosition(deltaY);
-                
-            }
-        }
+       
 
         /// <summary>
         /// This will sort the list by the column index
@@ -773,6 +819,11 @@ namespace NuSysApp
             RepopulateExistingListRows();
         }
 
+        public void AddColumnOptions(IEnumerable<ListColumn<T>> listColumns)
+        {
+            _listColumnOptions.AddRange(listColumns);
+        }
+
         /// <summary>
         /// This should add the listColumn to the _listColumns.
         /// This should also update all the listviewRowUIElements appropriately by repopulating the row with cells with the proper widths.
@@ -795,20 +846,10 @@ namespace NuSysApp
         /// This should also update all the listviewRowUIElements appropriately by repopulating the row with cells with the proper widths.
         /// </summary>
         /// <param name="listColumn"></param>
-        public void RemoveColumn(string columnTitle)
+        public void RemoveColumn(ListColumn<T> column)
         {
-            if (columnTitle == null)
-            {
-                return;
-            }
-            int columnIndex = -1;
-            for (int i = 0; i < _listColumns.Count; i++)
-            {
-                if (_listColumns[i].Title.Equals(columnTitle))
-                {
-                    columnIndex = i;
-                }
-            }
+            int columnIndex = _listColumns.IndexOf(column);
+
             if (columnIndex == -1)
             {
                 Debug.Write("You tried to remove a column from a list view that doesnt exist");
@@ -828,7 +869,7 @@ namespace NuSysApp
             var i = _filteredItems.IndexOf(item);
             if(i < 0)
             {
-                return;
+                return; 
             }
             float position = (float)i / _filteredItems.Count;
             //Sets the position of the ScrollBar to the position of the item in the list
@@ -850,6 +891,7 @@ namespace NuSysApp
             float sumRelativeWidths = leftCol.RelativeWidth + rightCol.RelativeWidth;
             leftCol.RelativeWidth = (float)(leftHeaderWidth/(rightHeaderWidth + leftHeaderWidth)*sumRelativeWidths);
             rightCol.RelativeWidth = (float)(rightHeaderWidth / (rightHeaderWidth + leftHeaderWidth) * sumRelativeWidths);
+            _sumOfColumnRelativeWidths = _listColumns.Sum(col => col.RelativeWidth);
         }
 
         /// <summary>

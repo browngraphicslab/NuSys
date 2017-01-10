@@ -77,6 +77,16 @@ namespace NuSysApp
             flyoutItem.Tapped += FlyoutItemOnTapped;
         }
 
+        public FlyoutPopup AddFlyoutPopup(ButtonUIElement flyoutItem)
+        {
+            var newPopup = new FlyoutPopup(this, ResourceCreator);
+            newPopup.Transform.LocalPosition = new Vector2(Width, _flyoutItems.IndexOf(flyoutItem) * _flyoutItemHeight);
+
+            AddChild(newPopup);
+            return newPopup;
+            
+        }
+
         public override void Dispose()
         {
             // remove al the tap events
@@ -95,7 +105,7 @@ namespace NuSysApp
         private void FlyoutItemOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // get the correct handler to invoke from the flyout to handler dictionary
-            _flyOutItemToTappedEvent[item as ButtonUIElement]?.Invoke(this, pointer);
+            _flyOutItemToTappedEvent[item as ButtonUIElement]?.Invoke(item, pointer);
         }
 
         /// <summary>
