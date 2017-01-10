@@ -126,6 +126,7 @@
     <Content Include="Assets\new icons\back.png" />
     <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
+    <Content Include="Assets\new icons\down arrow.png" />
     <Content Include="Assets\new icons\enter collection white.png" />
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\node.png" />
@@ -135,6 +136,7 @@
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
+    <Content Include="Assets\new icons\up arrow.png" />
     <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
