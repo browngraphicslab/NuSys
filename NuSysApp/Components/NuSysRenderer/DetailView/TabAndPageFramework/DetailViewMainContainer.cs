@@ -55,17 +55,18 @@ namespace NuSysApp
             // dictionary of library element ids
             _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
 
+            TopBarColor = Constants.MED_BLUE;
+            TopBarHeight = 10;
+
             // setup the mainTabLayoutManager so that the mainTabContainer fills the entire detail viewer window
             _mainTabLayoutManager = new StackLayoutManager
             {
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
-            _mainTabLayoutManager.SetMargins(BorderWidth);
+            _mainTabLayoutManager.SetMargins(15,BorderWidth,15,BorderWidth);
             _mainTabLayoutManager.TopMargin = TopBarHeight;
             _mainTabLayoutManager.AddElement(_mainTabContainer);
-
-            TopBarColor = Constants.MED_BLUE;
 
             // detail view defaults to invisible. visible on click
             IsVisible = false;

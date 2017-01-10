@@ -471,6 +471,7 @@ namespace NuSysApp
         /// </summary>
         private async void BackToWaitingRoomOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            _backToWaitingRoom.IsVisible = false;
             // for now this has to be done on the ui thread because it deals with xaml elements
             UITask.Run(async () =>
             {
@@ -478,6 +479,7 @@ namespace NuSysApp
 
                 await WaitingRoomView.Instance.ShowWaitingRoom();
             });
+
         }
 
         /// <summary>
