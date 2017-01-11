@@ -418,7 +418,8 @@
     <Compile Include="Components\NuSysRenderer\UI\Popup\CenteredPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\Textbox\RichTextboxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\MarkdownConvertingTextbox.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\CustomHtmlFormatter.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\MaskedRect.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingCanvas.cs" />
@@ -486,8 +487,8 @@
     <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementSelectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\GameLoopSynchronizationContext.cs" />
-    <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
-    <Compile Include="Components\NuSysRenderer\HTMLParser.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\HTMLHelper.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\HTMLParser.cs" />
     <Compile Include="Components\NuSysRenderer\I2dTransformable.cs" />
     <Compile Include="Components\NuSysRenderer\ImageElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\InkOptionsWidthRenderItem.cs" />

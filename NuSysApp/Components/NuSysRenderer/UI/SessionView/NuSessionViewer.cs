@@ -227,6 +227,38 @@ namespace NuSysApp
             };
             AddChild(_exitPresentation);
 
+            var st = new ScrollableTextboxUIElement(this, ResourceCreator, true, true)
+            {
+                Width = 300,
+                Height = 300
+            };
+            AddChild(st);
+
+            var dt = new DynamicTextboxUIElement(this, ResourceCreator)
+            {
+                Width = 300
+            };
+            AddChild(dt);
+
+            var mct = new MarkdownConvertingTextbox(this, ResourceCreator)
+            {
+                Width = 300,
+                Height = 300
+            };
+            AddChild(mct);
+
+            st.Transform.LocalPosition = new Vector2(300, 300);
+            dt.Transform.LocalPosition = new Vector2(300 + st.Width, 300);
+            mct.Transform.LocalPosition = new Vector2(300 + st.Width + dt.Width, 300);
+
+
+            st.TextChanged += delegate(InteractiveBaseRenderItem item, string text)
+            {
+                dt.Text = CommonMark.CommonMarkConverter.Convert(text);
+                mct.UpdateMarkdown(text);
+            };
+
+
             UpdateUI();
 
             _titleBox.DoubleTapped += _titleBox_DoubleTapped;

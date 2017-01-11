@@ -3,6 +3,14 @@
   "version": 1,
   "targets": {
     "UAP,Version=v10.0": {
+      "CommonMark.NET/0.14.0": {
+        "compile": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        }
+      },
       "Core.Spire.Presentation/1.0.0": {},
       "GeoAPI/1.7.4": {
         "compile": {
@@ -2411,6 +2419,14 @@
       }
     },
     "UAP,Version=v10.0/win10-arm": {
+      "CommonMark.NET/0.14.0": {
+        "compile": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        }
+      },
       "Core.Spire.Presentation/1.0.0": {},
       "GeoAPI/1.7.4": {
         "compile": {
@@ -4819,6 +4835,14 @@
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
+      "CommonMark.NET/0.14.0": {
+        "compile": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        }
+      },
       "Core.Spire.Presentation/1.0.0": {},
       "GeoAPI/1.7.4": {
         "compile": {
@@ -7266,6 +7290,14 @@
       }
     },
     "UAP,Version=v10.0/win10-x64": {
+      "CommonMark.NET/0.14.0": {
+        "compile": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        }
+      },
       "Core.Spire.Presentation/1.0.0": {},
       "GeoAPI/1.7.4": {
         "compile": {
@@ -9683,6 +9715,14 @@
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
+      "CommonMark.NET/0.14.0": {
+        "compile": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        }
+      },
       "Core.Spire.Presentation/1.0.0": {},
       "GeoAPI/1.7.4": {
         "compile": {
@@ -12139,6 +12179,14 @@
       }
     },
     "UAP,Version=v10.0/win10-x86": {
+      "CommonMark.NET/0.14.0": {
+        "compile": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        }
+      },
       "Core.Spire.Presentation/1.0.0": {},
       "GeoAPI/1.7.4": {
         "compile": {
@@ -14556,6 +14604,14 @@
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
+      "CommonMark.NET/0.14.0": {
+        "compile": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
+        }
+      },
       "Core.Spire.Presentation/1.0.0": {},
       "GeoAPI/1.7.4": {
         "compile": {
@@ -17013,6 +17069,41 @@
     }
   },
   "libraries": {
+    "CommonMark.NET/0.14.0": {
+      "sha512": "scI4cMHvHIG41gFK8/n1Wwhdxxa3GjHiULkA5eTUzpz0RtLqSxdis8DiXl/Qm2/ewI0MrVbIPfJqG3kiUjX6lA==",
+      "type": "package",
+      "files": [
+        "CommonMark.NET.0.14.0.nupkg.sha512",
+        "CommonMark.NET.nuspec",
+        "LICENSE.md",
+        "lib/dnxcore50/CommonMark.dll",
+        "lib/dnxcore50/CommonMark.pdb",
+        "lib/dnxcore50/CommonMark.xml",
+        "lib/net20/CommonMark.dll",
+        "lib/net20/CommonMark.pdb",
+        "lib/net20/CommonMark.xml",
+        "lib/net35-client/CommonMark.dll",
+        "lib/net35-client/CommonMark.pdb",
+        "lib/net35-client/CommonMark.xml",
+        "lib/net40-client/CommonMark.dll",
+        "lib/net40-client/CommonMark.pdb",
+        "lib/net40-client/CommonMark.xml",
+        "lib/net45/CommonMark.dll",
+        "lib/net45/CommonMark.pdb",
+        "lib/net45/CommonMark.xml",
+        "lib/netstandard1.0/CommonMark.dll",
+        "lib/netstandard1.0/CommonMark.pdb",
+        "lib/netstandard1.0/CommonMark.xml",
+        "lib/portable-net40+sl50+wp80+win+wpa81+MonoAndroid10+MonoTouch10/CommonMark.dll",
+        "lib/portable-net40+sl50+wp80+win+wpa81+MonoAndroid10+MonoTouch10/CommonMark.pdb",
+        "lib/portable-net40+sl50+wp80+win+wpa81+MonoAndroid10+MonoTouch10/CommonMark.xml",
+        "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll",
+        "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.pdb",
+        "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.xml",
+        "tools/cmark.exe",
+        "tools/cmark.exe.config"
+      ]
+    },
     "Core.Spire.Presentation/1.0.0": {
       "sha512": "SEQtNKm7RZG05PJlPb9UJIqM5pjz+SDnEWA4AwugI9bvsEMr618Gg1g9V20DQBzhMfZBAji8iWhoUrCzbFpZMQ==",
       "type": "package",
@@ -18877,7 +18968,7 @@
       ]
     },
     "HtmlAgilityPack/1.4.9.5": {
-      "sha512": "i5di/J7GO4y2kx/hhVzctPrBI8G2cefWZDMDU/FdOUD3iVkiidN1q1NDZ0FvqrhB28LSaYaM4Z0hs86Tnp0IzA==",
+      "sha512": "iKBDxJHESRCIRbmgLKVkNM86LIX52jf6wsVQdbSsLpPUG9oSnAD1Pz8IHjJT+dQ3TWJEu4WYZvbdlixdmWKMVw==",
       "type": "package",
       "files": [
         "HAPIcon.png",
@@ -26661,6 +26752,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "CommonMark.NET >= 0.14.0",
       "GeoAPI >= 1.7.4",
       "HtmlAgilityPack >= 1.4.9.5",
       "Microsoft.ApplicationInsights >= 2.1.0",
