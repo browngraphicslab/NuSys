@@ -45,10 +45,10 @@ namespace NuSysApp
         public event ResizeHeaderCompletedEventHandler HeaderResizeCompleted;
 
 
-        public delegate void DeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public delegate void DeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
         public event DeleteColumnTappedEventHandler DeleteColumnTapped;
 
-        public delegate void AddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public delegate void AddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
         public event AddColumnTappedEventHandler AddColumnTapped;
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace NuSysApp
         /// </summary>
         private ListColumn<T> _column;
 
-        private FlyoutPopupTree _popupTree;
+        private FlyoutPopupGroup _popupTree;
 
         /// <summary>
         /// accessor for column that headeritem corresponds to
@@ -116,7 +116,7 @@ namespace NuSysApp
         {
             if (pointer.IsRightButtonPressed)
             {
-                _popupTree = new FlyoutPopupTree(this, Canvas);
+                _popupTree = new FlyoutPopupGroup(this, Canvas);
                 var addDeleteColumns =  _popupTree.AddHeadFlyoutPopup();
                 addDeleteColumns.AddFlyoutItem("add column", AddColumn, Canvas);
                 addDeleteColumns.AddFlyoutItem("delete", DeleteColumn, Canvas);

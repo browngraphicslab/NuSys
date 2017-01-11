@@ -5,11 +5,9 @@ using Windows.UI;
 
 namespace NuSysApp
 {
-    public class FlyoutPopupTree : RectangleUIElement
+    public class FlyoutPopupGroup : RectangleUIElement
     {
-   
-
-        public FlyoutPopupTree(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, FlyoutPopup head = null) : base(parent, resourceCreator)
+        public FlyoutPopupGroup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, FlyoutPopup head = null) : base(parent, resourceCreator)
         {
             Background = Colors.Transparent;
         }
@@ -19,8 +17,10 @@ namespace NuSysApp
         {
             var newPopup = new FlyoutPopup(this, ResourceCreator);
             AddChild(newPopup);
+            newPopup.PopupDismissed += Popup_PopupDismissed;
             return newPopup;
         }
+
         public FlyoutPopup AddFlyoutPopup(FlyoutPopup popup, ButtonUIElement flyoutItem)
         {
             var newPopup = new FlyoutPopup(this, ResourceCreator);
@@ -30,7 +30,21 @@ namespace NuSysApp
             newPopup.ParentPopup = popup;
             return newPopup;
         }
-        
+        private void Popup_PopupDismissed(PopupUIElement sender)
+        {
+            sender.PopupDismissed -= Popup_PopupDismissed;
+            RemoveChild(sender);
+        }
+
+
+        private void DismissAllPopups()
+        {
+            foreach (var child in _children)
+            {
+                var popup = child as PopupUIElement;
+                popup.DismissPopup();
+            }
+        }
 
     }
 }

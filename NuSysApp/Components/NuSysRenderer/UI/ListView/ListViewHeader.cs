@@ -59,10 +59,10 @@ namespace NuSysApp
 
 
         public event HeaderAddColumnTappedEventHandler HeaderAddColumnTapped;
-        public delegate void HeaderAddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public delegate void HeaderAddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
 
         public event HeaderDeleteColumnTappedEventHandler HeaderDeleteColumnTapped;
-        public delegate void HeaderDeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public delegate void HeaderDeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
         #endregion events
 
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -243,14 +243,14 @@ namespace NuSysApp
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;
         }
 
-        private void HeaderOnDeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void HeaderOnDeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
-            HeaderDeleteColumnTapped?.Invoke(header, tree, popup, flyoutItem, pointer);
+            HeaderDeleteColumnTapped?.Invoke(header, group, popup, flyoutItem, pointer);
         }
 
-        private void HeaderOnAddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void HeaderOnAddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
-            HeaderAddColumnTapped?.Invoke(header, tree, popup, flyoutItem, pointer);
+            HeaderAddColumnTapped?.Invoke(header, group, popup, flyoutItem, pointer);
         }
 
         /// <summary>

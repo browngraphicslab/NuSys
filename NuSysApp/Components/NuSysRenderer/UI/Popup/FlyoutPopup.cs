@@ -23,6 +23,7 @@ namespace NuSysApp
         /// </summary>
         private List<ButtonUIElement> _flyoutItems;
 
+
         /// <summary>
         /// flyout item height
         /// </summary>
@@ -44,6 +45,7 @@ namespace NuSysApp
         }
 
         public FlyoutPopup ParentPopup { get; set; }
+
 
         /// <summary>
         /// constructor for flyout list
@@ -91,15 +93,6 @@ namespace NuSysApp
             flyoutItem.Tapped += FlyoutItemOnTapped;
         }
 
-        public FlyoutPopup AddFlyoutPopup(ButtonUIElement flyoutItem)
-        {
-            var newPopup = new FlyoutPopup(this, ResourceCreator);
-            newPopup.Transform.LocalPosition = new Vector2(Width, _flyoutItems.IndexOf(flyoutItem)*_flyoutItemHeight);
-
-            AddChild(newPopup);
-            return newPopup;
-
-        }
 
         public override void Dispose()
         {

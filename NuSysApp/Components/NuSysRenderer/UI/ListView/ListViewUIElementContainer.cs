@@ -214,7 +214,7 @@ namespace NuSysApp
             ShowHeader = true;
         }
 
-        private void Header_DeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void Header_DeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
             if (ListView.ListColumns.Count() <= 1)
             {
@@ -226,7 +226,7 @@ namespace NuSysApp
 
         }
 
-        private void Header_AddColumnTapped(ListViewHeaderItem<T> header,FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void Header_AddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
             var options = ListView.ListColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
             if (options.Count() < 1)
@@ -237,7 +237,7 @@ namespace NuSysApp
             }
             //var newpopup = popup.AddFlyoutPopup(flyoutItem);
 
-            var newpopup = tree.AddFlyoutPopup(popup, flyoutItem);
+            var newpopup = group.AddFlyoutPopup(popup, flyoutItem);
             AddColumnOptionsToPopup(newpopup, options);
             /*
              

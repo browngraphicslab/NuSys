@@ -56,6 +56,10 @@ namespace NuSysApp
             set { _parent = value; }
         }
 
+
+        public event PopupDismissedEventHandler PopupDismissed;
+        public delegate void PopupDismissedEventHandler(PopupUIElement sender);
+
         /// <summary>
         /// constructor for popup ui element. more information in class header.
         /// initially dismissable is set to true and parent is set to null, this can be changed with the properties Dismissable and Parent.
@@ -118,6 +122,7 @@ namespace NuSysApp
         public void DismissPopup()
         {
             this.IsVisible = false;
+            PopupDismissed?.Invoke(this);
             Dispose();
         }
 
