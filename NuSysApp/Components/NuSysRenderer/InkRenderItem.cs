@@ -22,7 +22,7 @@ namespace NuSysApp
 {
     public class InkRenderItem : BaseRenderItem
     {
-
+        public static bool StopCanvasInk;
         private ElementController _parentCollectionController;
         private bool _isEraser;
         private List<InkPoint> _currentInkPoints = new List<InkPoint>();
@@ -104,6 +104,10 @@ namespace NuSysApp
 
         public void StartInkByEvent(CanvasPointer e)
         {
+            if (StopCanvasInk)
+            {
+                return;
+            }
             _isEraser = e.Properties.IsEraser || e.Properties.IsRightButtonPressed;
 
             _canvas.RunOnGameLoopThreadAsync(() =>
@@ -120,6 +124,10 @@ namespace NuSysApp
 
         public void UpdateInkByEvent(CanvasPointer e)
         {
+            if (StopCanvasInk)
+            {
+                return;
+            }
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
@@ -139,6 +147,10 @@ namespace NuSysApp
 
         public void StopInkByEvent(CanvasPointer e)
         {
+            if (StopCanvasInk)
+            {
+                return;
+            }
             LatestStroke = CurrentInkStrokeWithEndpoint(e);
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
