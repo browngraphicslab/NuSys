@@ -33,6 +33,18 @@ namespace NuSysApp
         /// </summary>
         private Dictionary<ButtonUIElement, PointerHandler> _flyOutItemToTappedEvent;
 
+        public List<ButtonUIElement> FlyoutItems
+        {
+            get { return _flyoutItems; }
+        }
+
+        public float FlyoutItemHeight
+        {
+            get { return _flyoutItemHeight; }
+        }
+
+        public FlyoutPopup ParentPopup { get; set; }
+
         /// <summary>
         /// constructor for flyout list
         /// 
@@ -40,7 +52,8 @@ namespace NuSysApp
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
-        public FlyoutPopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public FlyoutPopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
+            : base(parent, resourceCreator)
         {
             _flyOutItemToTappedEvent = new Dictionary<ButtonUIElement, PointerHandler>();
             _flyoutItems = new List<ButtonUIElement>();
@@ -56,7 +69,8 @@ namespace NuSysApp
         /// Make a new flyout item and attaches appropriate handler to button
         /// </summary>
         /// <param name="text"></param>
-        public void AddFlyoutItem(string text, PointerHandler onTappedEvent, ICanvasResourceCreatorWithDpi resourceCreator)
+        public void AddFlyoutItem(string text, PointerHandler onTappedEvent,
+            ICanvasResourceCreatorWithDpi resourceCreator)
         {
             var flyoutItem = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
             flyoutItem.Height = _flyoutItemHeight;
@@ -69,7 +83,7 @@ namespace NuSysApp
             flyoutItem.ButtonTextSize = 12;
             flyoutItem.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             flyoutItem.SelectedBackground = Constants.LIGHT_BLUE;
-            flyoutItem.Transform.LocalPosition = new Vector2(0, _flyoutItems.Count * _flyoutItemHeight);
+            flyoutItem.Transform.LocalPosition = new Vector2(0, _flyoutItems.Count*_flyoutItemHeight);
             _flyOutItemToTappedEvent[flyoutItem] = onTappedEvent;
 
             _flyoutItems.Add(flyoutItem);
@@ -80,11 +94,11 @@ namespace NuSysApp
         public FlyoutPopup AddFlyoutPopup(ButtonUIElement flyoutItem)
         {
             var newPopup = new FlyoutPopup(this, ResourceCreator);
-            newPopup.Transform.LocalPosition = new Vector2(Width, _flyoutItems.IndexOf(flyoutItem) * _flyoutItemHeight);
+            newPopup.Transform.LocalPosition = new Vector2(Width, _flyoutItems.IndexOf(flyoutItem)*_flyoutItemHeight);
 
             AddChild(newPopup);
             return newPopup;
-            
+
         }
 
         public override void Dispose()
@@ -108,7 +122,23 @@ namespace NuSysApp
             _flyOutItemToTappedEvent[item as ButtonUIElement]?.Invoke(item, pointer);
         }
 
-        /// <summary>
+
+        public override void PopupUIElement_OnFocusLost(BaseRenderItem item)
+        {
+            if (Dismissable && !ChildHasFocus)
+            {
+                DismissParent();
+            }
+            base.PopupUIElement_OnFocusLost(item);
+
+        }
+
+        public void DismissParent()
+        {
+            ParentPopup?.DismissPopup();
+        }
+
+    /// <summary>
         /// overrides draw in order to calculate the correct height of the flyout based on
         /// the list of its flyout items
         /// </summary>

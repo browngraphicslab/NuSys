@@ -45,10 +45,10 @@ namespace NuSysApp
         public event ResizeHeaderCompletedEventHandler HeaderResizeCompleted;
 
 
-        public delegate void DeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public delegate void DeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
         public event DeleteColumnTappedEventHandler DeleteColumnTapped;
 
-        public delegate void AddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
+        public delegate void AddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
         public event AddColumnTappedEventHandler AddColumnTapped;
 
         /// <summary>
@@ -78,6 +78,8 @@ namespace NuSysApp
         /// column that this headeritem corresponds to
         /// </summary>
         private ListColumn<T> _column;
+
+        private FlyoutPopupTree _popupTree;
 
         /// <summary>
         /// accessor for column that headeritem corresponds to
@@ -109,27 +111,29 @@ namespace NuSysApp
             Tapped += ListViewHeaderItem_Tapped;
         }
 
+
         private void ListViewHeaderItem_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (pointer.IsRightButtonPressed)
             {
-                FlyoutPopup addDeleteColumns = new FlyoutPopup(this, Canvas);
+                _popupTree = new FlyoutPopupTree(this, Canvas);
+                var addDeleteColumns =  _popupTree.AddHeadFlyoutPopup();
                 addDeleteColumns.AddFlyoutItem("add column", AddColumn, Canvas);
                 addDeleteColumns.AddFlyoutItem("delete", DeleteColumn, Canvas);
+                _popupTree.Transform.LocalPosition = new Vector2(0, Height);
+                AddChild(_popupTree);
 
-                AddChild(addDeleteColumns);
-                addDeleteColumns.Transform.LocalPosition = new Vector2(0, Height);
             }
         }
 
         private void AddColumn(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            AddColumnTapped?.Invoke(this, item.Parent as FlyoutPopup, item as ButtonUIElement, pointer);
+            AddColumnTapped?.Invoke(this, _popupTree, item.Parent as FlyoutPopup, item as ButtonUIElement, pointer);
         }
 
         private void DeleteColumn(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-           DeleteColumnTapped?.Invoke(this, item.Parent as FlyoutPopup, item as ButtonUIElement, pointer);
+           DeleteColumnTapped?.Invoke(this, _popupTree, item.Parent as FlyoutPopup, item as ButtonUIElement, pointer);
         }
 
         public override void OnDragStarted(CanvasPointer pointer)

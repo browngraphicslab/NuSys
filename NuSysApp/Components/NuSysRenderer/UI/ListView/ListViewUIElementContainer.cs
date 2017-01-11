@@ -214,13 +214,19 @@ namespace NuSysApp
             ShowHeader = true;
         }
 
-        private void Header_DeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void Header_DeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
+            if (ListView.ListColumns.Count() <= 1)
+            {
+                //If no options available, do not create a new popup
+                popup.DismissPopup();
+                return;
+            }
             RemoveColumn(header.Column);
 
         }
 
-        private void Header_AddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void Header_AddColumnTapped(ListViewHeaderItem<T> header,FlyoutPopupTree tree, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
             var options = ListView.ListColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
             if (options.Count() < 1)
@@ -229,8 +235,15 @@ namespace NuSysApp
                 popup.DismissPopup();
                 return;
             }
+            //var newpopup = popup.AddFlyoutPopup(flyoutItem);
+
+            var newpopup = tree.AddFlyoutPopup(popup, flyoutItem);
+            AddColumnOptionsToPopup(newpopup, options);
+            /*
+             
             var newpopup = popup.AddFlyoutPopup(flyoutItem);
             AddColumnOptionsToPopup(newpopup, options);
+            */
         }
 
         private void AddColumnOptionsToPopup(FlyoutPopup popup, IEnumerable<ListColumn<T>> columns)

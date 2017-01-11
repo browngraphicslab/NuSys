@@ -212,6 +212,7 @@ namespace NuSysApp
         {
             SessionController.Instance.NuSessionView.Library.IsVisible = true;
             SessionController.Instance.NuSessionView.Library.LibraryListView.ScrollTo(_currentController.LibraryElementModel);
+            SessionController.Instance.NuSessionView.Library.LibraryListView.SelectItem(_currentController.LibraryElementModel);
         }
 
         public override async Task Load()

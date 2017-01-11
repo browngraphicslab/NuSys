@@ -36,6 +36,10 @@ namespace NuSysApp
             set { _dismissText = value; }
         }
 
+        public bool Dismissable
+        {
+            get { return _dismissable;}
+        }
         /// <summary>
         /// dismiss button for popup
         /// </summary>
@@ -73,7 +77,7 @@ namespace NuSysApp
             //    CanvasInteractionManager_ClosePopup;
         }
 
-        private void PopupUIElement_OnFocusLost(BaseRenderItem item)
+        public virtual void PopupUIElement_OnFocusLost(BaseRenderItem item)
         {
             if (_dismissable && !ChildHasFocus)
             {
