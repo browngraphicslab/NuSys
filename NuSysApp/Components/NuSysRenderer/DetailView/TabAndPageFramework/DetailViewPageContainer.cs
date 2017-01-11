@@ -54,6 +54,12 @@ namespace NuSysApp
         /// </summary>
         private FlyoutPopup _changeAccessPopup;
 
+        /// <summary>
+        /// The flyout instance used for the settings popup.  
+        /// Will re-instantiate every time the settings button is pressed;
+        /// </summary>
+        private FlyoutPopup _settingsPopup;
+
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
@@ -86,21 +92,56 @@ namespace NuSysApp
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
         }
 
+        /// <summary>
+        /// Event handler for when the settings button is pressed
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void SettingsButton_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (_settingsPopup != null)
+            {
+                _settingsPopup.DismissPopup();
+                return;
+            }
 
-            //todo make this able to close when the settings button is pressed again, also if i click the settings button
-            // twice this should close
-            var settingsPopup = new FlyoutPopup(this, Canvas);
-            settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - settingsPopup.Width/2,
+            _settingsPopup = new FlyoutPopup(this, Canvas);
+            _settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - _settingsPopup.Width/2,
                 _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
-            settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
-            settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
-            settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
-            settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
-
-            AddChild(settingsPopup);
+            _settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
+            _settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
+            _settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
+            if (this._currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+            {
+                _settingsPopup.AddFlyoutItem("Change Collection Settings", CollectionSettingsOnTapped, Canvas);
+            }
+            _settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
+            _settingsPopup.Dismissed += SettingsPopupOnDismissed;
+            AddChild(_settingsPopup);
         }
+
+        /// <summary>
+        /// Event handler called whenever the settings popup is dismissed;
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="popupUiElement"></param>
+        private void SettingsPopupOnDismissed(object sender, PopupUIElement popupUiElement)
+        {
+            popupUiElement.Dismissed -= SettingsPopupOnDismissed;
+            _settingsPopup = null;
+        }
+
+        /// <summary>
+        /// Event handler called when the collections settings flyout button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void CollectionSettingsOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var popup = new CollectionSettingsPopup(this, Canvas,_currentController as CollectionLibraryElementController);
+            AddChild(popup);
+        }
+
 
         /// <summary>
         /// Called whenever the change access option is tapped in the flyout setting menu

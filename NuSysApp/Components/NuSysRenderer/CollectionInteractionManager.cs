@@ -573,12 +573,21 @@ namespace NuSysApp
         private void OnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {
             if (_isTwoElementsPressed)
+            {
                 return;
+            }
+            if (ResizeableWindowUIElement.CurrentlyDraggingWindow != null)
+            {
+                ResizeableWindowUIElement.CurrentlyDraggingWindow.ResizeFromPinch(deltaTranslation,deltaZoom);
+                return;
+            }
 
             if (_freeFormViewer.Selections.Count == 0)
                 PanZoomed?.Invoke(center, deltaTranslation, deltaZoom);
             else
+            {
                 SelectionPanZoomed?.Invoke(center, deltaTranslation, deltaZoom);
+            }
         }
 
         public void Dispose()

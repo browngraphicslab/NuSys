@@ -44,9 +44,13 @@ namespace NusysIntermediate
         /// It will parse and deserializ the args class from the request message.
         /// </summary>
         /// <returns></returns>
-        public T GetArgsClassFromMessage()
+        public T GetArgsClassFromMessage(Type t = null)
         {
-            return _message.ContainsKey(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY) ? _message.Get<T>(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY) : null;
+            if (t == null)
+            {
+                t = typeof(T);
+            }
+            return (T)(_message.ContainsKey(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY) ? _message.Get(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY,t) : null);
         }
     }
 }

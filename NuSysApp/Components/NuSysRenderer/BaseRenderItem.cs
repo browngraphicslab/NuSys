@@ -135,7 +135,7 @@ namespace NuSysApp
 
             foreach (var child in _children.ToArray())
             {
-                child.Update(Transform.LocalToScreenMatrix);
+                child?.Update(Transform.LocalToScreenMatrix);
             }
         }
 
