@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using Newtonsoft.Json;
 using NusysIntermediate;
@@ -50,8 +51,11 @@ namespace NusysServer
         {
             var m = new Message();
 
+            var requestMessage = GetRequestMessage(request);
+
+            var t = Type.GetType(requestMessage.GetString(NusysConstants.FULL_ARGS_REQUEST_ARGS_INSTANCE_TYPE_KEY)+",NusysIntermediate", false, true) ?? typeof(T);
             //this will assert the type of request
-            var args = this.GetRequestArgs<T>(request);
+            var args = this.GetRequestArgsInstance(request,t);
             S s;
             try
             {
@@ -69,6 +73,29 @@ namespace NusysServer
             }
             m[NusysConstants.FULL_ARGS_REQUEST_RETURN_ARGS_KEY] = s;
             return m;
+        }
+
+        protected T GetRequestArgsInstance(Request request, Type t)
+        {
+            var castRequest = new ServerArgsRequest<T>(request); //cast the request essentially
+            if (castRequest == null)
+            {
+                throw new Exception(
+                    "Request was of unexpected type.  Expected a ServerArgsRequest of argsClass type : " +
+                    typeof(T).ToString());
+            }
+            return castRequest.GetArgsClassFromMessage(t);
+        }
+
+        /// <summary>
+        /// Returns the type of T that this needs to parse.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private Type GetArgsInstanceType(Request request)
+        {
+            var args = GetRequestArgs<T>(request);
+            return args.GetInstanceType();
         }
     }
 }

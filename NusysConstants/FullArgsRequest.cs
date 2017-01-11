@@ -51,7 +51,10 @@ namespace NusysIntermediate
         /// After populating this arguments class, you can tell the nusys network session to asynchronously execute this request.
         /// </summary>
         /// <param name="args"></param>
-        public FullArgsRequest(T args) :base(args){}
+        public FullArgsRequest(T args) : base(args)
+        {
+            _message[NusysConstants.FULL_ARGS_REQUEST_ARGS_INSTANCE_TYPE_KEY] = args.GetType().ToString();
+        }
 
 
         /// <summary>

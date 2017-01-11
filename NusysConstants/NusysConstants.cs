@@ -50,15 +50,20 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string FULL_ARGS_REQUEST_RETURN_ARGS_KEY = "return_args";
 
+        /// <summary>
+        /// the request key used to hold the exact type of the request args class used.
+        /// This is used for custom deserializtion to the correct type.
+        /// </summary>
+        public static readonly string FULL_ARGS_REQUEST_ARGS_INSTANCE_TYPE_KEY = "instance_type";
         #endregion RequestManagementKeys
 
         #region RequestKeys
 
         #region AllRequests
-            /// <summary>
-            /// should be returned by all requests if it is successful
-            /// </summary>
-            public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
+        /// <summary>
+        /// should be returned by all requests if it is successful
+        /// </summary>
+        public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
 
             /// <summary>
             /// MIGHT be returned as the key that hold the error message 
