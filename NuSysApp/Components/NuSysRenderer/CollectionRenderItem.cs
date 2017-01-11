@@ -93,38 +93,6 @@ namespace NuSysApp
 
         private void UpdateShapeStatus()
         {
-            
-            //TEST
-            ViewModel.Controller.LibraryElementController.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
-
-            /*
-            (ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController).SetData(new CollectionShapeModel());
-            (ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController).SetShapeColor(new ColorModel()
-            {
-                R = 10,
-                A = 150,
-                G = 250,
-                B = 150,
-            });
-            */
-            (ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController).SetShapeUrl("http://www.rd.com/wp-content/uploads/sites/2/2016/02/06-train-cat-shake-hands.jpg", ((double)3)/((double)2));
-
-            /*
-            (ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController).SetShapePoints(new List<PointModel>()
-            {
-                new PointModel(50000,50000),
-                new PointModel(50000,51000),
-                new PointModel(50000,52000),
-                new PointModel(52000,52000),
-                new PointModel(52000,51000),
-                new PointModel(52000,50000),
-  
-
-            });
-            */
-
-            ViewModel.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
-            
             //TEST END
 
             if (!ViewModel.IsShaped)
