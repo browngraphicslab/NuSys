@@ -107,6 +107,11 @@ namespace NuSysApp
         {
             CanvasTextLayout.SetFontSize(start, charCount, size);
         }
+
+        public void SetInlineObject(int start, int charCount, ICanvasTextInlineObject obj) 
+        {
+            CanvasTextLayout.SetInlineObject(start, charCount, obj);
+        }
              
         /// <summary>
         /// overrides draw call of textboxuielement to call ds.drawlayout instead of ds.drawtext

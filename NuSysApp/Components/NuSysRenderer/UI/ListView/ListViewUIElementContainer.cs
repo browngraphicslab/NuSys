@@ -571,7 +571,7 @@ namespace NuSysApp
             float offset = 0;
             if (ShowHeader)
             {
-                offset = _header.Height; //Offset should be header's height if there is a header
+                offset = _header.Height + 2; //Offset should be header's height if there is a header
             }
             //Otherwise, vertical offset should stay 0
             _listview.Transform.LocalPosition = new Vector2(0, offset);
