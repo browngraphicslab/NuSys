@@ -13,7 +13,8 @@ namespace NusysIntermediate
     public class CollectionContentDataModel : ContentDataModel
     {
         /// <summary>
-        /// This is the shape class of the collection.  All the information about the collection should be in this class .
+        /// This is the shape class of the collection.  
+        /// All the information about the collection should be in this class .
         /// If this is null, then the collection is not shaped.
         /// </summary>
         public CollectionShapeModel Shape { get; private set; }
@@ -49,7 +50,7 @@ namespace NusysIntermediate
                 Shape = null;
                 return;
             }
-            //Shape = JsonConvert.DeserializeObject<CollectionShapeModel>(contentData);
+            Shape = JsonConvert.DeserializeObject<CollectionShapeModel>(contentData);
         }
 
         /// <summary>

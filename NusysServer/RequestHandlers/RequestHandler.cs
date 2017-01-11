@@ -58,7 +58,7 @@ namespace NusysServer
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        protected T GetRequestArgs<T>(Request request) where T : ServerRequestArgsBase
+        protected virtual T GetRequestArgs<T>(Request request) where T : ServerRequestArgsBase
         {
             var castRequest = new ServerArgsRequest<T>(request); //cast the request essentially
             if (castRequest == null)

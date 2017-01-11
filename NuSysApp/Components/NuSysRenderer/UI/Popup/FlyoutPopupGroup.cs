@@ -17,7 +17,6 @@ namespace NuSysApp
         {
             var newPopup = new FlyoutPopup(this, ResourceCreator);
             AddChild(newPopup);
-            newPopup.PopupDismissed += Popup_PopupDismissed;
             return newPopup;
         }
 
@@ -29,11 +28,6 @@ namespace NuSysApp
             newPopup.Transform.LocalPosition = new Vector2(popup.Width, popup.FlyoutItems.IndexOf(flyoutItem) * popup.FlyoutItemHeight);
             newPopup.ParentPopup = popup;
             return newPopup;
-        }
-        private void Popup_PopupDismissed(PopupUIElement sender)
-        {
-            sender.PopupDismissed -= Popup_PopupDismissed;
-            RemoveChild(sender);
         }
 
 

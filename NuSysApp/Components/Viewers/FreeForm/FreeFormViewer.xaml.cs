@@ -705,8 +705,7 @@ namespace NuSysApp
 
             // execute the add element to collection request
             var elementRequest = new NewElementRequest(newElementRequestArgs);
-            await
-                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
                     createNewContentRequestArgs.ContentId);
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);

@@ -684,28 +684,34 @@ namespace NuSysApp
 
             var request = new DeleteLibraryElementRequest(linkLibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            // if the request was performed successfully
-            if (request.DeleteLocally())
+
+            if (request.WasSuccessful() == true)
             {
-                // get the library element controllers for each side of the link and fire the link removed events on them
-                var inLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.InAtomId;
-                var inLibElemController =
-                    SessionController.Instance.ContentController.GetLibraryElementController(inLibraryElementId);
-                if (inLibElemController != null) {
-                    inLibElemController.FireLinkRemoved(linkLibraryElementId);
-                }
-                var outLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.OutAtomId;
-                var outLibElemController =
-                    SessionController.Instance.ContentController.GetLibraryElementController(outLibraryElementId);
-                if (outLibElemController != null)
+                // if the request was performed successfully
+                if (request.DeleteLocally())
                 {
-                    outLibElemController.FireLinkRemoved(linkLibraryElementId);
+                    // get the library element controllers for each side of the link and fire the link removed events on them
+                    var inLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.InAtomId;
+                    var inLibElemController =
+                        SessionController.Instance.ContentController.GetLibraryElementController(inLibraryElementId);
+                    if (inLibElemController != null)
+                    {
+                        inLibElemController.FireLinkRemoved(linkLibraryElementId);
+                    }
+                    var outLibraryElementId = linkLibraryElementController.LinkLibraryElementModel.OutAtomId;
+                    var outLibElemController =
+                        SessionController.Instance.ContentController.GetLibraryElementController(outLibraryElementId);
+                    if (outLibElemController != null)
+                    {
+                        outLibElemController.FireLinkRemoved(linkLibraryElementId);
+                    }
+
+                    SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.RemoveLink(
+                        linkLibraryElementId);
+
+                    // return true because request was performed succesfully
+                    return true;
                 }
-
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.RemoveLink(linkLibraryElementId);
-
-                // return true because request was performed succesfully
-                return true;
             }
 
             // return false if the request was performed unsuccesfully

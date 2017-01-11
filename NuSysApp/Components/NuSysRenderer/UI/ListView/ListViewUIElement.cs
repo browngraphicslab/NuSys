@@ -26,6 +26,7 @@ namespace NuSysApp
     /// <typeparam name="T"></typeparam>
     public class ListViewUIElement<T> : ScrollableRectangleUIElement
     {
+        #region public
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
@@ -41,15 +42,74 @@ namespace NuSysApp
         public event RowDoubleTappedEventHandler RowDoubleTapped;
 
         /// <summary>
+        /// This is the thickness of row ui element border
+        /// </summary>
+        public float RowBorderThickness
+        {
+            get { return _rowBorderThickness; }
+            set
+            {
+                _rowBorderThickness = value;
+                UpdateRowBorder();
+            }
+        }
+
+
+        public float Height
+        {
+            get { return base.Height; }
+
+            set
+            {
+                if (base.Height != value)
+                {
+                    base.Height = value;
+                    CreateListViewRowUIElements();
+                }
+            }
+        }
+        public float Width
+        {
+            get
+            {
+                return base.Width;
+
+            }
+            set
+            {
+                if (base.Width != value)
+                {
+                    base.Width = value;
+                    CreateListViewRowUIElements();
+                }
+            }
+        }
+
+        public List<T> ItemsSource
+        {
+            get
+            {
+                return _itemsSource;
+            }
+            
+        }
+        public List<ListViewRowUIElement<T>> Rows { set; get; }
+        public List<ListColumn<T>> ListColumns
+        {
+            get { return _listColumns; }
+        }
+
+        public List<ListColumn<T>> ListColumnOptions
+        {
+            get { return _listColumnOptions; }
+        }
+
+        /// <summary>
         /// If this is true, the color will not change when you click on an item, and it will not be added to the selected list.
         /// </summary>
         public bool DisableSelectionByClick { get; set; }
 
-        /// <summary>
-        /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
-        /// this is -1.
-        /// </summary>
-        private int _columnIndexSortedBy;
+
         
         public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
 
@@ -57,6 +117,48 @@ namespace NuSysApp
         /// This event will fire when you release after dragging a row
         /// </summary>
         public event RowDragCompletedEventHandler RowDragCompleted;
+
+
+        public float SumOfColRelWidths
+        {
+            get { return _sumOfColumnRelativeWidths; }
+        }
+
+        /// <summary>
+        /// Whether the list can have multiple or only single selections
+        /// </summary>
+        public bool MultipleSelections { get; set; }
+
+        /// <summary>
+        /// THis is the heigh of each of the rows
+        /// </summary>
+        public float RowHeight { get; set; } = 40; //TODO drop this hard-code
+
+        #endregion public
+
+        #region private
+        /// <summary>
+        /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
+        /// this is -1.
+        /// </summary>
+        private int _columnIndexSortedBy;
+
+        /// <summary>
+        /// Count of how many times Dragged has been called since DragStarted
+        /// </summary>
+        private int _dragIterations;
+        /// <summary>
+        /// Number of times the vector that represents the difference in points given by Dragged had an angle that indicated dragging  
+        /// </summary>
+        private int _dragGestures;
+        /// <summary>
+        /// X of point last given by Dragged
+        /// </summary>
+        private float _x;
+        /// <summary>
+        /// Y of point last given by Dragged
+        /// </summary>
+        private float _y;
 
         /// <summary>
         /// This is set to true when dragging to that when a pointer released event is fired, we 
@@ -102,11 +204,6 @@ namespace NuSysApp
         /// </summary>
         private float _heightOfAllRows { get { return _filteredItems.Count * RowHeight; } }
 
-
-        private int _iterations;
-        private int _dragGestures;
-        private float _x;
-        private float _y;
         /// <summary>
         /// Current filter function that takes in a T (eg, a LibraryElementModel) and returns
         /// a bool (ie, true if that item should be filtered in and false otherwise)
@@ -117,75 +214,9 @@ namespace NuSysApp
         /// </summary>
         private float _sumOfColumnRelativeWidths;
 
-        public float SumOfColRelWidths
-        {
-            get { return _sumOfColumnRelativeWidths; }
-        }
-
-        /// <summary>
-        /// Whether the list can have multiple or only single selections
-        /// </summary>
-        public bool MultipleSelections { get; set; }
-
-        /// <summary>
-        /// THis is the heigh of each of the rows
-        /// </summary>
-        public float RowHeight { get; set; } = 40; //TODO drop this hard-code
-
         private float _rowBorderThickness;
 
-        /// <summary>
-        /// This is the thickness of row ui element border
-        /// </summary>
-        public float RowBorderThickness {
-            get { return _rowBorderThickness; }
-            set{
-                _rowBorderThickness = value;
-                UpdateRowBorder();
-            }
-        }
-        
-
-        public float Height
-        {
-            get { return base.Height; }
-
-            set
-            {
-                if (base.Height != value)
-                {
-                    base.Height = value;
-                    CreateListViewRowUIElements();
-                }
-            }
-        }
-        public float Width
-        {
-            get
-            {
-                return base.Width;
-                
-            }
-            set
-            {
-                if (base.Width != value)
-                {
-                    base.Width = value;
-                    CreateListViewRowUIElements();
-                }
-            }
-        }
-        
-        public List<ListViewRowUIElement<T>> Rows { set; get; }
-        public List<ListColumn<T>> ListColumns
-        {
-            get { return _listColumns; }   
-        }
-
-        public List<ListColumn<T>> ListColumnOptions
-        {
-            get { return _listColumnOptions; }
-        }
+#endregion private
 
         /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
@@ -211,7 +242,7 @@ namespace NuSysApp
  
         }
 
-
+        #region Adding and Removing
         /// <summary>
         /// Appends things to the _itemsSource list. Creates new ListViewRowUIElement for each of the items
         /// and also adds those to the list of RowUIElements.
@@ -240,13 +271,127 @@ namespace NuSysApp
             //Make RowUIElements
             CreateListViewRowUIElements();
         }
+
+        /// <summary>
+        /// Removes things from the _filteredItems list and the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
+        /// </summary>
+        /// <param name="itemsToAdd"></param>
+        public void RemoveItems(List<T> itemsToRemove)
+        {
+            if (itemsToRemove == null)
+            {
+                Debug.Write("You are trying to remove a null list from items to the ListView");
+                return;
+            }
+            _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
+            _filteredItems.RemoveAll(item => itemsToRemove.Contains(item));
+            //Do I also need to remove handlers here?
+            _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
+
+            if (_filteredItems.Count <= Rows.Count)
+            {
+                CreateListViewRowUIElements();
+            }
+        }
+
+
+        /// <summary>
+        /// Removes all items from the list. Clears item source, selectedElements, and calls createlistviewrowuielements.
+        /// </summary>
+        public void ClearItems()
+        {
+            _itemsSource.Clear();
+            _filteredItems.Clear();
+            _selectedElements.Clear();
+            CreateListViewRowUIElements();
+        }
+
+
+        /// <summary>
+        /// Stops listening to events from the row
+        /// </summary>
+        /// <param name="rowToRemoveHandlersFrom"></param>
+        private void RemoveRowHandlers(ListViewRowUIElement<T> rowToRemoveHandlersFrom)
+        {
+            //rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
+            //rowToRemoveHandlersFrom.Deselected -= ListViewRowUIElement_Deselected;
+            rowToRemoveHandlersFrom.RowPointerReleased -= ListViewRowUIElement_PointerReleased;
+            rowToRemoveHandlersFrom.PointerWheelChanged -= ListViewRowUIElement_PointerWheelChanged;
+            rowToRemoveHandlersFrom.RowDragged -= ListViewRowUIElement_Dragged;
+            rowToRemoveHandlersFrom.RowDoubleTapped -= ListViewRowUIElement_RowDoubleTapped;
+        }
+
+        /// <summary>
+        /// This adds all the columns to _listColumns. If you are adding multiple columns use this instead of the AddColumn method
+        /// so that the list only reloads once.
+        /// </summary>
+        /// <param name="listColumns"></param>
+        public void AddColumns(IEnumerable<ListColumn<T>> listColumns)
+        {
+            if (listColumns == null)
+            {
+                Debug.Write("You are trying to add a null list of column to the list view");
+                return;
+            }
+            _listColumns.AddRange(listColumns);
+            foreach (var col in listColumns)
+            {
+                _sumOfColumnRelativeWidths += col.RelativeWidth;
+            }
+            RepopulateExistingListRows();
+        }
+
+        public void AddColumnOptions(IEnumerable<ListColumn<T>> listColumns)
+        {
+            _listColumnOptions.AddRange(listColumns);
+        }
+
+        /// <summary>
+        /// This should add the listColumn to the _listColumns.
+        /// This should also update all the listviewRowUIElements appropriately by repopulating the row with cells with the proper widths.
+        /// </summary>
+        /// <param name="column"></param>
+        public void AddColumn(ListColumn<T> listColumn)
+        {
+            if (listColumn == null)
+            {
+                Debug.Write("You are trying to add a null column to the list view");
+                return;
+            }
+            _sumOfColumnRelativeWidths += listColumn.RelativeWidth;
+            _listColumns.Add(listColumn);
+            RepopulateExistingListRows();
+        }
+
+        /// <summary>
+        /// This should remove the column with the name from _listColumns.
+        /// This should also update all the listviewRowUIElements appropriately by repopulating the row with cells with the proper widths.
+        /// </summary>
+        /// <param name="listColumn"></param>
+        public void RemoveColumn(ListColumn<T> column)
+        {
+            int columnIndex = _listColumns.IndexOf(column);
+
+            if (columnIndex == -1)
+            {
+                Debug.Write("You tried to remove a column from a list view that doesnt exist");
+                return;
+            }
+            _sumOfColumnRelativeWidths -= _listColumns[columnIndex].RelativeWidth;
+            _listColumns.RemoveAt(columnIndex);
+            RepopulateExistingListRows();
+        }
+        #endregion Adding and Removing
+
+        #region Filtering
+
         /// <summary>
         /// HasFilter returns true if there is curretnly a filter
         /// </summary>
         /// <returns></returns>
         public bool HasFilter()
         {
-            if ( _currentFilter != null)
+            if (_currentFilter != null)
             {
                 return true;
             }
@@ -297,6 +442,84 @@ namespace NuSysApp
             ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
 
         }
+        #endregion Filtering
+
+        #region Scrolling
+        /// <summary>
+        /// Listens to ScrollBar's position, and udates the scrolloffset by denormalized
+        /// position.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
+        public override void ScrollBarPositionChanged(object source, float position)
+        {
+            SetPosition(position);
+
+        }
+
+        /// <summary>
+        /// Scrolls down to the item
+        /// </summary>
+        /// <param name="item"></param>
+        public void ScrollTo(T item)
+        {
+            var i = _filteredItems.IndexOf(item);
+            if (i < 0)
+            {
+                return;
+            }
+            float position = (float)i / _filteredItems.Count;
+            //Sets the position of the ScrollBar to the position of the item in the list
+            SetPosition(position);
+
+        }
+
+        /// <summary>
+        /// Returns the position of the ScrollBar if it has been initialized.
+        /// Otherwise, returns 0.
+        /// </summary>
+        /// <returns></returns>
+        private float GetPosition()
+        {
+            return (ScrollBar == null) ? 0 : ScrollBar.Position;
+        }
+        /// <summary>
+        /// Sets the position of the listview to the position passed in.
+        /// Also updates the scrollbar.
+        /// </summary>
+        /// <param name="position"></param>
+        private void SetPosition(float position)
+        {
+            if (position + ScrollBar.Range > 1)
+            {
+                position = 1 - ScrollBar.Range;
+            }
+
+            if (position < 0)
+            {
+                position = 0;
+            }
+            _scrollOffset = position * (_heightOfAllRows);
+            ScrollBar.Position = position;
+        }
+        /// <summary>
+        /// Changes the position by the float passed in.
+        /// If delta is negative, then Position is going down and the bar is being lowered
+        /// If delta is positive, then Position is going up and the bar is being raised
+        /// </summary>
+        /// <param name="delta"></param>
+        private void ChangePosition(float delta)
+        {
+            var currentPosition = GetPosition();
+
+            SetPosition(currentPosition + delta);
+
+
+        }
+        #endregion Scrolling
+
+        #region Creating, Drawing, and Updating
+
         /// <summary>
         /// Method that creates the ListViewRowUIElements necessary to cover the screen. 
         /// 
@@ -310,7 +533,7 @@ namespace NuSysApp
                 Debug.Assert(_filteredItems != null);
 
                 //Remove handlers of rows
-                foreach(var row in Rows)
+                foreach (var row in Rows)
                 {
                     RemoveRowHandlers(row);
                 }
@@ -373,7 +596,213 @@ namespace NuSysApp
 
         }
 
-        #region event handlers
+
+        /// <summary>
+        /// This just changes all the border widths of the rows to be the rowborderthickness variable
+        /// </summary>
+        private void UpdateRowBorder()
+        {
+            foreach (var row in Rows)
+            {
+                Debug.Assert(row != null);
+                row.BorderWidth = RowBorderThickness;
+            }
+        }
+        /// <summary>
+        /// This method makes sure the appearence of the rows reflect the item they represent.
+        /// It sets the row's Item property, then selects/deselects based on if it's selected,
+        /// and then updates the content of each row.
+        /// </summary>
+        private void UpdateListRows()
+        {
+            if (ScrollBar == null)
+            {
+                return;
+            }
+            var startIndex = (int)Math.Floor(ScrollBar.Position * _filteredItems.Count);
+            var items = _filteredItems;
+
+            foreach (var row in Rows)
+            {
+                if (row == null)
+                {
+                    continue;
+                }
+
+                var index = startIndex + Rows.IndexOf(row);
+                //Accounts for the last, empty row.
+                if (index >= _filteredItems.Count)
+                {
+                    continue;
+                }
+
+                row.Item = items[index];
+
+
+                //there MUST be a better way to do selection than this, this is crazy
+                if (_selectedElements.Contains(row.Item))
+                {
+                    SelectRow(row);
+                }
+                else
+                {
+                    DeselectRow(row);
+                }
+
+                foreach (var column in _listColumns)
+                {
+                    row.UpdateContent(column, _listColumns.IndexOf(column));
+                }
+
+
+
+
+            }
+        }
+        /// <summary>
+        /// This method simply clears all the cells in each of the rows and repopulates each row using the list of columns
+        /// and the column function
+        /// </summary>
+        private void RepopulateExistingListRows()
+        {
+            foreach (var row in Rows)
+            {
+                row.Width = Width - BorderWidth * 2;
+                row.RemoveAllCells();
+                PopulateListRow(row);
+            }
+
+        }
+
+
+        /// <summary>
+        /// This populates the passed in row with the cells using the list of columns.
+        /// </summary>
+        /// <param name="row"></param>
+        private void PopulateListRow(ListViewRowUIElement<T> row)
+        {
+            foreach (var column in _listColumns)
+            {
+                Debug.Assert(column != null);
+                RectangleUIElement cell;
+                cell = CreateCell(column, row.Item, row);
+                Debug.Assert(cell != null);
+                row.AddCell(cell);
+            }
+        }
+
+        /// <summary>
+        /// This creates a cell that will fit into the listview row ui element. It uses the function of the column passed in along with the item source passed in 
+        /// to create the cell.
+        /// </summary>
+        /// <param name="column"></param>
+        /// <param name="itemSource"></param>
+        /// <param name="listViewRowUIElement"></param>
+        /// <returns></returns>
+        private RectangleUIElement CreateCell(ListColumn<T> column, T itemSource, ListViewRowUIElement<T> listViewRowUIElement)
+        {
+            var height = RowHeight;
+            return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
+                    height - RowBorderThickness * 2, _sumOfColumnRelativeWidths);
+
+        }
+
+
+        /// <summary>
+        /// Calls update on every row, since rows are not children.
+        /// Also updates clipping rect to be based on the width and height.
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
+
+            //Update position and range of scroll
+            SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
+            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
+
+            UpdateListRows();
+
+            var cellVerticalOffset = BorderWidth;
+            var headerOffset = Transform.LocalPosition.Y;
+            var scrollOffset = _scrollOffset % (RowHeight);
+            foreach (var row in Rows)
+            {
+                //Position is the position of the bottom of the row
+                var position = cellVerticalOffset - scrollOffset + headerOffset;
+                row.Transform.LocalPosition = new Vector2(BorderWidth, position);
+
+                row?.Update(parentLocalToScreenTransform);
+                cellVerticalOffset += row.Height;
+
+            }
+
+            base.Update(parentLocalToScreenTransform);
+        }
+        /// <summary>
+        /// Draw creates a clipping and then draws every single row in Rows
+        /// Because the rows are not children of the list view, we need to 
+        /// call their draw methods here.
+        /// </summary>
+        /// <param name="ds"></param>
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            // Creates a clipping of the drawing session based on _clippingrect
+            using (ds.CreateLayer(1f, _clippingRect))
+            {
+                //Draws every row
+                foreach (var row in Rows.ToArray())
+                {
+                    row.Draw(ds);
+                }
+
+            }
+            ds.Transform = orgTransform;
+            base.Draw(ds);
+
+        }
+
+
+
+        /// <summary>
+        /// Hit tests every row in Rows.
+        /// This is necessary because the RowUIElements are not children of the list view.
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <returns></returns>
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
+        {
+
+            var clippingRect = new Rect(0, 0, Width, Height);
+            var localPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
+            //If the point being hittested is not inside the visible part of the ListView (ie, the clipping rect), we return null.
+            if (!clippingRect.Contains(localPoint.ToPoint()))
+            {
+                return null;
+            }
+
+            //If scroll bar is hit, return that instead of the row underneath.
+            var scrollBarht = ScrollBar.HitTest(screenPoint);
+            if (scrollBarht != null)
+            {
+                return scrollBarht;
+            }
+            foreach (var row in Rows)
+            {
+                var ht = row.HitTest(screenPoint);
+                if (ht != null)
+                {
+                    return ht;
+                }
+            }
+            return base.HitTest(screenPoint);
+        }
+        #endregion Creating, Drawing, and Updating
+
+        #region Event handlers
 
         private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
         {
@@ -393,7 +822,7 @@ namespace NuSysApp
             Debug.Assert(_isDragging == false);
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             _draggedItem = item;
-            _iterations = 0;
+            _dragIterations = 0;
             _dragGestures = 0;
             _x = point.X;
             _y = point.Y;
@@ -428,7 +857,7 @@ namespace NuSysApp
             _y = point.Y;
 
             var angle = Math.Atan(dY/dX);
-            _iterations += 1;
+            _dragIterations += 1;
             if (Math.Abs(angle) < 0.85f)
             {
                 _dragGestures += 1;
@@ -450,8 +879,8 @@ namespace NuSysApp
 
                 if (firstTimeDraggingOut)
                 {
-                    Debug.Write((float)_dragGestures /_iterations);
-                    _isDragging = ((float) _dragGestures/_iterations > 0.2f);
+                    Debug.Write((float)_dragGestures /_dragIterations);
+                    _isDragging = ((float) _dragGestures/_dragIterations > 0.2f);
                 }
 
             }
@@ -554,163 +983,9 @@ namespace NuSysApp
             }
 
         }
-#endregion event handlers
+        #endregion Event handlers
 
-        /// <summary>
-        /// Returns the position of the ScrollBar if it has been initialized.
-        /// Otherwise, returns 0.
-        /// </summary>
-        /// <returns></returns>
-        private float GetPosition()
-        {
-            return (ScrollBar == null) ? 0 : ScrollBar.Position;
-        }
-        /// <summary>
-        /// Sets the position of the listview to the position passed in.
-        /// Also updates the scrollbar.
-        /// </summary>
-        /// <param name="position"></param>
-        private void SetPosition(float position)
-        {
-            if (position + ScrollBar.Range > 1)
-            {
-                position = 1 - ScrollBar.Range;
-            }
-
-            if (position < 0)
-            {
-                position = 0;
-            }
-            _scrollOffset = position * (_heightOfAllRows);
-            ScrollBar.Position = position;
-        }
-        /// <summary>
-        /// Changes the position by the float passed in.
-        /// If delta is negative, then Position is going down and the bar is being lowered
-        /// If delta is positive, then Position is going up and the bar is being raised
-        /// </summary>
-        /// <param name="delta"></param>
-        private void ChangePosition(float delta)
-        {
-            var currentPosition = GetPosition();
-        
-            SetPosition(currentPosition + delta);
-
-
-        }
-
-        /// <summary>
-        /// This just changes all the border widths of the rows to be the rowborderthickness variable
-        /// </summary>
-        private void UpdateRowBorder()
-        {
-            foreach (var row in Rows)
-            {
-                Debug.Assert(row != null);
-                row.BorderWidth = RowBorderThickness;
-            }
-        }
-        /// <summary>
-        /// This method makes sure the appearence of the rows reflect the item they represent.
-        /// It sets the row's Item property, then selects/deselects based on if it's selected,
-        /// and then updates the content of each row.
-        /// </summary>
-        private void UpdateListRows()
-        {
-            if (ScrollBar == null)
-            {
-                return;
-            }
-            var startIndex = (int)Math.Floor(ScrollBar.Position * _filteredItems.Count);
-            var items = _filteredItems;
-
-            foreach (var row in Rows)
-            {
-                if (row == null)
-                {
-                    continue;
-                }
-
-                var index = startIndex + Rows.IndexOf(row);
-                //Accounts for the last, empty row.
-                if (index >= _filteredItems.Count)
-                {
-                    continue;
-                }
-
-                row.Item = items[index];
-
-
-                //there MUST be a better way to do selection than this, this is crazy
-                if (_selectedElements.Contains(row.Item))
-                {
-                    SelectRow(row);
-                }
-                else
-                {
-                    DeselectRow(row);
-                }
-
-                foreach (var column in _listColumns)
-                {
-                    row.UpdateContent(column, _listColumns.IndexOf(column));
-                }
-
-
-
-
-            }
-        }
-        /// <summary>
-        /// This method simply clears all the cells in each of the rows and repopulates each row using the list of columns
-        /// and the column function
-        /// </summary>
-        private void RepopulateExistingListRows()
-        {
-            foreach(var row in Rows)
-            {
-                row.Width = Width - BorderWidth*2;
-                row.RemoveAllCells();
-                PopulateListRow(row);
-            }
-            
-        }
-
-
-        /// <summary>
-        /// This populates the passed in row with the cells using the list of columns.
-        /// </summary>
-        /// <param name="row"></param>
-        private void PopulateListRow(ListViewRowUIElement<T> row)
-        {
-            foreach (var column in _listColumns)
-            {
-                Debug.Assert(column != null);
-                RectangleUIElement cell;
-                cell = CreateCell(column, row.Item, row);
-                Debug.Assert(cell != null);
-                row.AddCell(cell);
-            }
-        }
-             
-        /// <summary>
-        /// This creates a cell that will fit into the listview row ui element. It uses the function of the column passed in along with the item source passed in 
-        /// to create the cell.
-        /// </summary>
-        /// <param name="column"></param>
-        /// <param name="itemSource"></param>
-        /// <param name="listViewRowUIElement"></param>
-        /// <returns></returns>
-        private RectangleUIElement CreateCell(ListColumn<T> column, T itemSource, ListViewRowUIElement<T> listViewRowUIElement)
-        {
-            var height = RowHeight;
-            return column.GetColumnCellFromItem(itemSource, listViewRowUIElement, ResourceCreator,
-                    height - RowBorderThickness * 2, _sumOfColumnRelativeWidths);
-
-        }
-
-       
-
+        #region Sorting
         /// <summary>
         /// This will sort the list by the column index
         /// </summary>
@@ -722,7 +997,7 @@ namespace NuSysApp
             //If it isn't sorted by this index then just sort it normally
             if (columnIndex != _columnIndexSortedBy)
             {
-                _children.Sort(delegate(BaseRenderItem row1, BaseRenderItem row2)
+                _children.Sort(delegate (BaseRenderItem row1, BaseRenderItem row2)
                 {
                     var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
                     var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
@@ -732,7 +1007,7 @@ namespace NuSysApp
                     }
                     return str1.CompareTo(str2);
                 });
-                _columnIndexSortedBy = columnIndex;    
+                _columnIndexSortedBy = columnIndex;
             }
             //If it is sorted by this index then sort it with reverse order
             else
@@ -749,153 +1024,11 @@ namespace NuSysApp
                 });
                 _columnIndexSortedBy = -1;
             }
-            
-        }
-
-        /// <summary>
-        /// Removes things from the _filteredItems list and the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
-        /// </summary>
-        /// <param name="itemsToAdd"></param>
-        public void RemoveItems(List<T> itemsToRemove)
-        {
-            if (itemsToRemove == null)
-            {
-                Debug.Write("You are trying to remove a null list from items to the ListView");
-                return;
-            }
-            _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
-            _filteredItems.RemoveAll(item => itemsToRemove.Contains(item));
-            //Do I also need to remove handlers here?
-            _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
-
-            if(_filteredItems.Count <= Rows.Count)
-            {
-                CreateListViewRowUIElements();
-            }
-        }
-
-
-        /// <summary>
-        /// Removes all items from the list. Clears item source, selectedElements, and calls createlistviewrowuielements.
-        /// </summary>
-        public void ClearItems()
-        {
-            _itemsSource.Clear();
-            _filteredItems.Clear();
-            _selectedElements.Clear();
-            CreateListViewRowUIElements();
-        }
-
-
-        /// <summary>
-        /// Stops listening to events from the row
-        /// </summary>
-        /// <param name="rowToRemoveHandlersFrom"></param>
-        private void RemoveRowHandlers(ListViewRowUIElement<T> rowToRemoveHandlersFrom)
-        {
-            //rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
-            //rowToRemoveHandlersFrom.Deselected -= ListViewRowUIElement_Deselected;
-            rowToRemoveHandlersFrom.RowPointerReleased -= ListViewRowUIElement_PointerReleased;
-            rowToRemoveHandlersFrom.PointerWheelChanged -= ListViewRowUIElement_PointerWheelChanged;
-            rowToRemoveHandlersFrom.RowDragged -= ListViewRowUIElement_Dragged;
-            rowToRemoveHandlersFrom.RowDoubleTapped -= ListViewRowUIElement_RowDoubleTapped;
-        }
-
-        /// <summary>
-        /// This adds all the columns to _listColumns. If you are adding multiple columns use this instead of the AddColumn method
-        /// so that the list only reloads once.
-        /// </summary>
-        /// <param name="listColumns"></param>
-        public void AddColumns(IEnumerable<ListColumn<T>> listColumns)
-        {
-            if (listColumns == null)
-            {
-                Debug.Write("You are trying to add a null list of column to the list view");
-                return;
-            }
-            _listColumns.AddRange(listColumns);
-            foreach (var col in listColumns)
-            {
-                _sumOfColumnRelativeWidths += col.RelativeWidth;
-            }
-            RepopulateExistingListRows();
-        }
-
-        public void AddColumnOptions(IEnumerable<ListColumn<T>> listColumns)
-        {
-            _listColumnOptions.AddRange(listColumns);
-        }
-
-        /// <summary>
-        /// This should add the listColumn to the _listColumns.
-        /// This should also update all the listviewRowUIElements appropriately by repopulating the row with cells with the proper widths.
-        /// </summary>
-        /// <param name="column"></param>
-        public void AddColumn(ListColumn<T> listColumn)
-        {
-            if (listColumn == null)
-            {
-                Debug.Write("You are trying to add a null column to the list view");
-                return;
-            }
-            _sumOfColumnRelativeWidths += listColumn.RelativeWidth;
-            _listColumns.Add(listColumn);
-            RepopulateExistingListRows();
-        }
-
-        /// <summary>
-        /// This should remove the column with the name from _listColumns.
-        /// This should also update all the listviewRowUIElements appropriately by repopulating the row with cells with the proper widths.
-        /// </summary>
-        /// <param name="listColumn"></param>
-        public void RemoveColumn(ListColumn<T> column)
-        {
-            int columnIndex = _listColumns.IndexOf(column);
-
-            if (columnIndex == -1)
-            {
-                Debug.Write("You tried to remove a column from a list view that doesnt exist");
-                return;
-            }
-            _sumOfColumnRelativeWidths -= _listColumns[columnIndex].RelativeWidth;
-            _listColumns.RemoveAt(columnIndex);
-            RepopulateExistingListRows();
-        }
-
-        /// <summary>
-        /// Scrolls down to the item
-        /// </summary>
-        /// <param name="item"></param>
-        public void ScrollTo(T item)
-        {
-            var i = _filteredItems.IndexOf(item);
-            if(i < 0)
-            {
-                return; 
-            }
-            float position = (float)i / _filteredItems.Count;
-            //Sets the position of the ScrollBar to the position of the item in the list
-            SetPosition(position);
 
         }
+        #endregion Sorting
 
-        /// <summary>
-        /// This changes the column relative widths for the column at leftHeaderIndex and the column at leftHeaderIndex + 1. This is used for resizing, since
-        /// you can only resize 2 cols at the same time.
-        /// </summary>
-        /// <param name="leftHeaderWidth"></param>
-        /// <param name="rightHeaderWidth"></param>
-        /// <param name="leftColWidth"></param>
-        public void ChangeRelativeColumnWidths(double leftHeaderWidth, double rightHeaderWidth, int leftHeaderIndex)
-        {
-            var leftCol = _listColumns[leftHeaderIndex];
-            var rightCol = _listColumns[leftHeaderIndex + 1];
-            float sumRelativeWidths = leftCol.RelativeWidth + rightCol.RelativeWidth;
-            leftCol.RelativeWidth = (float)(leftHeaderWidth/(rightHeaderWidth + leftHeaderWidth)*sumRelativeWidths);
-            rightCol.RelativeWidth = (float)(rightHeaderWidth / (rightHeaderWidth + leftHeaderWidth) * sumRelativeWidths);
-            _sumOfColumnRelativeWidths = _listColumns.Sum(col => col.RelativeWidth);
-        }
-
+        #region Selection
         /// <summary>
         /// This method will select the row corresponding to the item passed in. This is what users will call when you 
         /// want to select an item in the list.
@@ -911,8 +1044,9 @@ namespace NuSysApp
             {
                 _selectedElements.Clear();
             }
-            _selectedElements.Add(item);            
+            _selectedElements.Add(item);
         }
+
 
         /// <summary>
         /// This actually moves the row to the selected list and selects the row.
@@ -927,25 +1061,9 @@ namespace NuSysApp
             }
 
             rowToSelect.Select();
-            
+
         }
 
-        /// <summary>
-        /// This function adds the sizeChange to the width of cell at leftColIndex, and subtracts sizeChange from cell at (leftColIndex + 1) width and adds sizeChanged to the position of the (leftColIndex + 1) cell
-        /// </summary>
-        /// <param name="leftColIndex"></param>
-        /// <param name="rightColIndex"></param>
-        /// <param name="distanceToMove"></param>
-        public void MoveBorderAfterCell(int leftColIndex, float sizeChange)
-        {
-            foreach (var row in Rows)
-            {
-                if (row != null)
-                {
-                    row.MoveBorderAfterCell(leftColIndex, sizeChange);
-                }
-            }
-        }
 
         /// <summary>
         /// This method will deselect the row corresponding to the item. This is what users will call when they 
@@ -990,6 +1108,54 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Returns the items (not the row element) selected.
+        /// </summary>
+        public IEnumerable<T> GetSelectedItems()
+        {
+            return _selectedElements;
+        }
+
+        #endregion Selection
+
+        #region Column manipulation
+
+        /// <summary>
+        /// This changes the column relative widths for the column at leftHeaderIndex and the column at leftHeaderIndex + 1. This is used for resizing, since
+        /// you can only resize 2 cols at the same time.
+        /// </summary>
+        /// <param name="leftHeaderWidth"></param>
+        /// <param name="rightHeaderWidth"></param>
+        /// <param name="leftColWidth"></param>
+        public void ChangeRelativeColumnWidths(double leftHeaderWidth, double rightHeaderWidth, int leftHeaderIndex)
+        {
+            var leftCol = _listColumns[leftHeaderIndex];
+            var rightCol = _listColumns[leftHeaderIndex + 1];
+            float sumRelativeWidths = leftCol.RelativeWidth + rightCol.RelativeWidth;
+            leftCol.RelativeWidth = (float)(leftHeaderWidth / (rightHeaderWidth + leftHeaderWidth) * sumRelativeWidths);
+            rightCol.RelativeWidth = (float)(rightHeaderWidth / (rightHeaderWidth + leftHeaderWidth) * sumRelativeWidths);
+            _sumOfColumnRelativeWidths = _listColumns.Sum(col => col.RelativeWidth);
+        }
+
+
+
+        /// <summary>
+        /// This function adds the sizeChange to the width of cell at leftColIndex, and subtracts sizeChange from cell at (leftColIndex + 1) width and adds sizeChanged to the position of the (leftColIndex + 1) cell
+        /// </summary>
+        /// <param name="leftColIndex"></param>
+        /// <param name="rightColIndex"></param>
+        /// <param name="distanceToMove"></param>
+        public void MoveBorderAfterCell(int leftColIndex, float sizeChange)
+        {
+            foreach (var row in Rows)
+            {
+                if (row != null)
+                {
+                    row.MoveBorderAfterCell(leftColIndex, sizeChange);
+                }
+            }
+        }
+
+        /// <summary>
         /// This swaps the places of the two different columns
         /// </summary>
         /// <param name="columnAIndex"></param>
@@ -1015,117 +1181,8 @@ namespace NuSysApp
             _listColumns[columnBIndex] = tmpCol;
         }
 
-        /// <summary>
-        /// Returns the items (not the row element) selected.
-        /// </summary>
-        public IEnumerable<T> GetSelectedItems()
-        {
-            return _selectedElements;
-        }
-        /// <summary>
-        /// Listens to ScrollBar's position, and udates the scrolloffset by denormalized
-        /// position.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="position"></param>
-        public override void ScrollBarPositionChanged(object source, float position)
-        {
-            SetPosition(position);
-        
-        }
+        #endregion Column manipulation
 
-        /// <summary>
-        /// Calls update on every row, since rows are not children.
-        /// Also updates clipping rect to be based on the width and height.
-        /// </summary>
-        /// <param name="parentLocalToScreenTransform"></param>
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
-
-            //Update position and range of scroll
-            SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
-            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
-        
-            UpdateListRows();
-
-            var cellVerticalOffset = BorderWidth;
-            var headerOffset = Transform.LocalPosition.Y;
-            var scrollOffset = _scrollOffset % (RowHeight);
-            foreach (var row in Rows)
-            {
-                //Position is the position of the bottom of the row
-                var position = cellVerticalOffset - scrollOffset + headerOffset;
-                row.Transform.LocalPosition = new Vector2(BorderWidth, position);
-
-                row?.Update(parentLocalToScreenTransform);
-                cellVerticalOffset += row.Height;
-
-            }
-
-            base.Update(parentLocalToScreenTransform);
-        }
-        /// <summary>
-        /// Draw creates a clipping and then draws every single row in Rows
-        /// Because the rows are not children of the list view, we need to 
-        /// call their draw methods here.
-        /// </summary>
-        /// <param name="ds"></param>
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-
-            // Creates a clipping of the drawing session based on _clippingrect
-            using (ds.CreateLayer(1f, _clippingRect))
-            {
-                //Draws every row
-                foreach (var row in Rows.ToArray())
-                {
-                    row.Draw(ds);
-                }
-
-            }
-            ds.Transform = orgTransform;
-            base.Draw(ds);
-
-        }
-
-
-
-        /// <summary>
-        /// Hit tests every row in Rows.
-        /// This is necessary because the RowUIElements are not children of the list view.
-        /// </summary>
-        /// <param name="screenPoint"></param>
-        /// <returns></returns>
-        public override BaseRenderItem HitTest(Vector2 screenPoint)
-        {
-
-            var clippingRect = new Rect(0, 0, Width, Height);
-            var localPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
-            //If the point being hittested is not inside the visible part of the ListView (ie, the clipping rect), we return null.
-            if (!clippingRect.Contains(localPoint.ToPoint()))
-            {
-                return null;
-            }
-
-            //If scroll bar is hit, return that instead of the row underneath.
-            var scrollBarht = ScrollBar.HitTest(screenPoint);
-            if (scrollBarht != null)
-            {
-                return scrollBarht;
-            }
-            foreach (var row in Rows)
-            {
-                var ht = row.HitTest(screenPoint);
-                if (ht != null)
-                {
-                    return ht;
-                }
-            }
-            return base.HitTest(screenPoint);
-        }
         /// <summary>
         /// Disposes rows and clears the lists we have. The rows are not children so we have to manually call dispose on them.
         /// </summary>
@@ -1144,13 +1201,6 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        /// <summary>
-        /// Returns the items source
-        /// </summary>
-        /// <returns></returns>
-        public List<T> GetItems()
-        {
-            return _itemsSource;
-        }
+
     }
 }

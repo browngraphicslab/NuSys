@@ -239,11 +239,7 @@ namespace NuSysApp
 
             var newpopup = group.AddFlyoutPopup(popup, flyoutItem);
             AddColumnOptionsToPopup(newpopup, options);
-            /*
-             
-            var newpopup = popup.AddFlyoutPopup(flyoutItem);
-            AddColumnOptionsToPopup(newpopup, options);
-            */
+
         }
 
         private void AddColumnOptionsToPopup(FlyoutPopup popup, IEnumerable<ListColumn<T>> columns)
