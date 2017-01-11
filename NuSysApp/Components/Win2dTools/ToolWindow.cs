@@ -171,14 +171,12 @@ namespace NuSysApp
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
 
-
             _draggableCollectionElement.Dragged -= CollectionOrStack_Dragging; 
             _draggableCollectionElement.DragCompleted -= CollectionOrStack_DragCompleted;
 
             _draggableStackElement.Dragged -= CollectionOrStack_Dragging; 
             _draggableStackElement.DragCompleted -= CollectionOrStack_DragCompleted;
 
-           
             Vm.Dispose();
             base.Dispose();
         }

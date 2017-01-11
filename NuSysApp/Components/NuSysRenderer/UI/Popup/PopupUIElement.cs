@@ -106,7 +106,7 @@ namespace NuSysApp
         private void CanvasInteractionManager_ClosePopup(CanvasPointer pointer)
         {
             var hittest = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
-            if (!(hittest.Parent == this) && _dismissable)
+            if (hittest.Parent != this && _dismissable)
             {
                 DismissPopup();
             }
@@ -114,7 +114,7 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// shows popup. usually triggered by somdee sort of action.
+        /// shows popup. usually triggered by some sort of action.
         /// </summary>
         public void ShowPopup()
         {

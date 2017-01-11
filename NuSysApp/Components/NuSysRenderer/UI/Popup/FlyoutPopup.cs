@@ -44,6 +44,9 @@ namespace NuSysApp
             get { return _flyoutItemHeight; }
         }
 
+        /// <summary>
+        /// The FlyoutPopup that this FlyoutPopup branched off of. We need to store reference to this so that when a popup loses focus and is dismissed, so is its parent
+        /// </summary>
         public FlyoutPopup ParentPopup { get; set; }
 
 
@@ -118,6 +121,7 @@ namespace NuSysApp
 
         public override void PopupUIElement_OnFocusLost(BaseRenderItem item)
         {
+            //If this is dismissable and has lost focus, make sure to also dismiss parent
             if (Dismissable && !ChildHasFocus)
             {
                 DismissParent();
@@ -125,7 +129,9 @@ namespace NuSysApp
             base.PopupUIElement_OnFocusLost(item);
 
         }
-
+        /// <summary>
+        /// Dismisses the entire hierarchy of Popups
+        /// </summary>
         public void DismissParent()
         {
             ParentPopup?.DismissPopup();

@@ -432,7 +432,7 @@ namespace NuSysApp
         /// <returns></returns>
         public List<T> GetItems()
         {
-            return _listview.GetItems();
+            return _listview.ItemsSource;
         }
 
         /// <summary>
