@@ -214,6 +214,14 @@ namespace NuSysApp
             ShowHeader = true;
         }
 
+        /// <summary>
+        /// Deletes the column if there exists at least two columns.
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="group"></param>
+        /// <param name="popup"></param>
+        /// <param name="flyoutItem"></param>
+        /// <param name="pointer"></param>
         private void Header_DeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
             if (ListView.ListColumns.Count() <= 1)
@@ -226,6 +234,14 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Gets the column options that the ListView does not already contain and displays the options as a new FlyoutPopup
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="group"></param>
+        /// <param name="popup"></param>
+        /// <param name="flyoutItem"></param>
+        /// <param name="pointer"></param>
         private void Header_AddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
         {
             var options = ListView.ListColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
@@ -235,13 +251,16 @@ namespace NuSysApp
                 popup.DismissPopup();
                 return;
             }
-            //var newpopup = popup.AddFlyoutPopup(flyoutItem);
 
             var newpopup = group.AddFlyoutPopup(popup, flyoutItem);
             AddColumnOptionsToPopup(newpopup, options);
 
         }
-
+        /// <summary>
+        /// Adds the column options as ButtonUIElements to the popup passed in
+        /// </summary>
+        /// <param name="popup"></param>
+        /// <param name="columns"></param>
         private void AddColumnOptionsToPopup(FlyoutPopup popup, IEnumerable<ListColumn<T>> columns)
         {
             foreach (var column in columns)
@@ -264,10 +283,6 @@ namespace NuSysApp
             }
             AddColumn(column);
         }
-
- 
-
-
 
         /// <summary>
         /// Calls ListViewUIElement's clearfilter method

@@ -125,16 +125,15 @@ namespace NuSysApp
 
             _elements = new List<PieChartElement<string>>();
             _selectedElements = new HashSet<PieChartElement<string>>();
-
-
-
-            DoubleTapped += PieChartUIElement_DoubleTapped;
-            Released += PieChartUIElement_Released;
-            Dragged += PieChartUIElement_Dragged;
-            Tapped += PieChartUIElement_Tapped;
+            
+            AddHandlers();
 
         }
-
+        /// <summary>
+        /// When tapped, we get the element that was tapped and invoke ElementTapped + handle selection
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void PieChartUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
 
@@ -164,7 +163,11 @@ namespace NuSysApp
 
             
         }
-
+        /// <summary>
+        /// If double tapped, we invoke ElementDoubleTapped, passing in the element that was double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void PieChartUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
@@ -199,7 +202,10 @@ namespace NuSysApp
             _elements?.Add(element);
 
         }
-
+        /// <summary>
+        /// Add items to the PieChartUIElement. Creates dictionary that maps string to number of instances of that string
+        /// </summary>
+        /// <param name="items"></param>
         public void AddItems(List<string> items)
         {
             var dict = new Dictionary<string, int>();
@@ -222,6 +228,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Clears elements and selected elements
+        /// </summary>
         public void ClearElements()
         {
             _elements.Clear();
@@ -329,10 +338,7 @@ namespace NuSysApp
 
         }
 
-        public void DeselectElement()
-        {
 
-        }
         /// <summary>
         /// Finds the element where the angle lies by iterating through the elements.
         /// </summary>
@@ -593,10 +599,25 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        public override void Dispose()
+        private void AddHandlers()
         {
+            DoubleTapped += PieChartUIElement_DoubleTapped;
+            Released += PieChartUIElement_Released;
+            Dragged += PieChartUIElement_Dragged;
+            Tapped += PieChartUIElement_Tapped;
+        }
+
+        private void RemoveHandlers()
+        {
+            DoubleTapped -= PieChartUIElement_DoubleTapped;
             Released -= PieChartUIElement_Released;
             Dragged -= PieChartUIElement_Dragged;
+            Tapped -= PieChartUIElement_Tapped;
+
+        }
+        public override void Dispose()
+        {
+            
             base.Dispose();
         }
 
