@@ -159,7 +159,7 @@ namespace NuSysApp
                     var allStrokes = _inkManager.GetStrokes().ToArray();
                     var thisStroke = _currentInkPoints.Select(p => p.Position);
                     var thisLineString = thisStroke.GetLineString();
-
+                    _inkManager.SelectWithPolyLine(thisStroke);
                     foreach (var otherStroke in allStrokes)
                     {
                         var pts = otherStroke.GetInkPoints().Select(p => p.Position);
@@ -180,9 +180,6 @@ namespace NuSysApp
                         StrokesMap.Remove(strokeId);
                         _parentCollectionController.LibraryElementController.ContentDataController.RemoveInk(strokeId);
                     }
-                    _inkManager.DeleteSelected();
-                    _inkManager.SelectWithPolyLine(thisStroke);
-                    selected = GetSelectedStrokes();
                     _inkManager.DeleteSelected();
 
                 }

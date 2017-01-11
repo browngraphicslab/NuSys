@@ -27,16 +27,20 @@ namespace NuSysApp
 
             _inkable = new InkableUIElement(controller.ContentDataController, this, resourceCreator);
             _inkable.Background = Colors.Transparent;
-            _inkable.BorderWidth = 2.0f;
-            _inkable.Bordercolor = Colors.Green;
             AddChild(_inkable);
             _inkable.Transform.SetParent(_content.Transform);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _inkable.Width = (float)_content.CroppedImageTarget.Width;
-            _inkable.Height = (float)_content.CroppedImageTarget.Height;
+            if (_content.CroppedImageTarget.Width > 0.0)
+            {
+                _inkable.Width = (float) _content.CroppedImageTarget.Width;
+            }
+            if (_content.CroppedImageTarget.Height > 0.0)
+            {
+                _inkable.Height = (float)_content.CroppedImageTarget.Height;
+            }
             _inkable.Transform.LocalPosition = _content.Transform.LocalPosition;
             base.Update(parentLocalToScreenTransform);
         }

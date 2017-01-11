@@ -35,20 +35,47 @@ namespace NuSysApp
         public Color InkColor { get; set; } = Colors.Black;
         public float InkSize = 4;
         public BiDictionary<string, InkStroke> StrokesMap = new BiDictionary<string, InkStroke>();
+        public bool ClampInkToBounds = true;
 
         public InkableUIElement(IInkController inkController, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _canvas = (CanvasAnimatedControl)resourceCreator;
+            _inkController = inkController;
+            PenPointerPressed += OnPenPointerPressed_Callback;
+            PenPointerDragged += OnPenPointerDragged_Callback;
+            PenPointerReleased += OnPenPointerReleased_Callback;
+            _inkController.InkAdded += ContentDataControllerOnInkAdded;
+            _inkController.InkRemoved += ContentDataControllerOnInkRemoved;
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
-                _inkController = inkController;
-                PenPointerPressed += OnPenPointerPressed_Callback;
-                PenPointerDragged += OnPenPointerDragged_Callback;
-                PenPointerReleased += OnPenPointerReleased_Callback;
-                _inkController.InkAdded += ContentDataControllerOnInkAdded;
-                _inkController.InkRemoved += ContentDataControllerOnInkRemoved;
                 _inkManager = new InkManager();
+                foreach (InkModel model in _inkController.Strokes)
+                {
+                    AddInkModel(model);
+                }
             });
+        }
+
+        public override void Dispose()
+        {
+            if (IsDisposed)
+                return;
+
+            _inkController.InkAdded -= ContentDataControllerOnInkAdded;
+            _inkController.InkRemoved -= ContentDataControllerOnInkRemoved;
+
+            _builder = null;
+            _currentInkStroke = null;
+            _currentInkPoints?.Clear();
+            _currentInkPoints = null;
+            _dryStrokesTarget?.Dispose(); ;
+            _dryStrokesTarget = null;
+            _inkManager = null;
+            LatestStroke = null;
+            _strokesToDraw?.Clear();
+            _strokesToDraw = null;
+            _lock = null;
+            base.Dispose();
         }
 
         private void ContentDataControllerOnInkRemoved(object sender, string strokeId)
@@ -84,6 +111,10 @@ namespace NuSysApp
         public void UpdateInkByEvent(CanvasPointer e)
         {
             var np = Vector2.Transform(e.CurrentPoint, _transform);
+            if (ClampInkToBounds)
+            {
+                np = Vector2.Clamp(np, new Vector2(0, 0), new Vector2(Width, Height));
+            }
             _currentInkPoints.Add(new InkPoint(new Point(np.X / Width, np.Y / Height), e.Pressure));
             _needsWetStrokeUpdate = true;
         }
@@ -92,6 +123,10 @@ namespace NuSysApp
         {
             InkRenderItem.StopCanvasInk = false;
             var np = Vector2.Transform(e.CurrentPoint, _transform);
+            if (ClampInkToBounds)
+            {
+                np = Vector2.Clamp(np, new Vector2(0, 0), new Vector2(Width, Height));
+            }
             _currentInkPoints.Add(new InkPoint(new Point(np.X / Width, np.Y / Height), e.Pressure));
             var builder = new InkStrokeBuilder();
             builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
@@ -108,7 +143,7 @@ namespace NuSysApp
                     var allStrokes = _inkManager.GetStrokes().ToArray();
                     var thisStroke = _currentInkPoints.Select(p => p.Position);
                     var thisLineString = thisStroke.GetLineString();
-
+                    _inkManager.SelectWithPolyLine(thisStroke);
                     foreach (var otherStroke in allStrokes)
                     {
                         var pts = otherStroke.GetInkPoints().Select(p => p.Position);
@@ -130,10 +165,6 @@ namespace NuSysApp
                         _inkController.RemoveInk(strokeId);
                     }
                     _inkManager.DeleteSelected();
-                    _inkManager.SelectWithPolyLine(thisStroke);
-                    selected = GetSelectedStrokes();
-                    _inkManager.DeleteSelected();
-
                 }
                 else
                 {
@@ -173,8 +204,8 @@ namespace NuSysApp
                         Matrix3x2.Identity);
                 inkStroke.DrawingAttributes =
                     GetDrawingAttributes(
-                        Color.FromArgb((byte) inkModel.Color.A, (byte) inkModel.Color.R, (byte) inkModel.Color.G,
-                            (byte) inkModel.Color.B), (float) inkModel.Thickness);
+                        Color.FromArgb((byte)inkModel.Color.A, (byte)inkModel.Color.R, (byte)inkModel.Color.G,
+                            (byte)inkModel.Color.B), (float)inkModel.Thickness);
                 _inkManager.AddStroke(inkStroke);
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
                 _needsDryStrokesUpdate = true;
