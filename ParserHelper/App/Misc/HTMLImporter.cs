@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
+using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using static System.String;
 
@@ -27,6 +28,11 @@ namespace ParserHelper
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
+        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement)");
+        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement)");
+
+        private static List<string> blacklist= new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies","worldatlas","vectorstock.com","freepik.com"};
+        
         public async Task<List<DataHolder>> Run(Uri url)
         {
             //Load HTML from the website
@@ -35,14 +41,18 @@ namespace ParserHelper
             {
                 return null;
             }
-
+            var articleTopNode = SiteScoreTaker.GetArticle(doc);
+            if (articleTopNode==null)
+            {
+                return null;
+            }
             _paragraphCollections = new HashSet<HashSet<HtmlNode>>();
             _citationCollections = new HashSet<List<string>>();
             _citationUrlCollections = new List<List<string>>();
             //This stores a list of all of the information 
             var models = new List<DataHolder>();
             // This recursively goes through each node in the html document, depth first, and parses data
-            await RecursiveAdd(doc.DocumentNode, models);
+            await RecursiveAdd(articleTopNode, models);
             //We store the data for the text nodes based on the headers and the content between those headers so we need 
             //to go through and make the text data holders
             foreach (var paragraphs in _paragraphCollections)
@@ -69,8 +79,7 @@ namespace ParserHelper
                         _citationUrlCollections.RemoveAt(0);
                     continue;
                 }
-                if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(text) ||
-                    string.IsNullOrWhiteSpace(title) | string.IsNullOrWhiteSpace(text))
+                if (IsNullOrWhiteSpace(title) || IsNullOrWhiteSpace(text) || (_titlesToRemove.IsMatch(title.ToLower().Trim())&&title.Length<45) || (_contentToRemove.IsMatch(text.ToLower().Trim())&&text.Length<45))
                 {
                     continue;
                 }
@@ -86,7 +95,6 @@ namespace ParserHelper
         {
             try
             {
-                url = url ?? new Uri("https://en.wikipedia.org/wiki/Computer_science");
                 var doc = new HtmlDocument();
                 var webRequest = WebRequest.Create(url.AbsoluteUri);
                 HttpWebResponse response = (HttpWebResponse)(await webRequest.GetResponseAsync());
@@ -149,7 +157,12 @@ namespace ParserHelper
                     foreach (var citid in citations)
                     {
                         if (citid != node.Id) continue;
-                        _citationUrlCollections[i].Add(FormatSource(getUrl(node)));
+                        var url = FormatSource(getUrl(node));
+                        if (url == null)
+                        {
+                            continue;
+                       }
+                        _citationUrlCollections[i].Add(url);
                         break;
                     }
                     i++;
@@ -200,8 +213,9 @@ namespace ParserHelper
                 //We then get the image source uri
                 var src = FormatSource(node.GetAttributeValue("src", null));
                 //We dont want any svgs because they mess up the server
-                var re = new Regex(@"svg$");
-                if (src == null || re.IsMatch(src))
+                var re = new Regex(@"(?:svg|gif)$");
+                var re1 = new Regex(@"https?:\/\/[^\/]*?\..*?\/.*\.");
+                if (src == null || re.IsMatch(src) || !re1.IsMatch(src))
                 {
                     return;
                 }
@@ -222,9 +236,9 @@ namespace ParserHelper
                     {
                         title = SearchForTitle(node);
                     }
-
+                    var reg = new Regex("^<!");
                     //We then create the Data Holder and introduce it to the rest
-                    if (!string.IsNullOrEmpty(title) && !string.IsNullOrWhiteSpace(title))
+                    if (!string.IsNullOrEmpty(title) && !string.IsNullOrWhiteSpace(title) && !reg.IsMatch(title) && !(_titlesToRemove.IsMatch(title.ToLower()) && title.Length<45))
                     {
                         var content = new ImageDataHolder(new Uri(src), title);
                         models.Add(content);
@@ -245,6 +259,10 @@ namespace ParserHelper
                 {
                     var src = FormatSource(href);
                     //Just a title for the pdf, just a nice side to the pdf itself
+                    if (IsNullOrEmpty(src))
+                    {
+                        return;
+                    }
                     var title = RecursiveSpan(node);
                     if (IsNullOrEmpty(title))
                     {
@@ -489,21 +507,50 @@ namespace ParserHelper
             var client = new HttpClient();
             //search += " wikipedia";
             // Add the subscription key to the request header
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "1299a79fa68b4799b77aef55de849237");
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "f3e590290fa54bf1865343c3bae6955c");
             string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search + "&count=25&offset=0&mkt=en-us&safesearch=Moderate";
             // Build the content of the post request
 
             var ret = await client.GetAsync(url);
             var jsonString = await ret.Content.ReadAsStringAsync();
             var json = JsonConvert.DeserializeObject<BingJson>(jsonString);
-            var urls = json.webPages.value.Select(o => FormatSource(o.displayUrl) ?? "").ToList();
+            var urls = json.webPages.value.Select(o => FormatSource(o.Url) ?? "").ToList();
             var models = new List<List<DataHolder>> { new List<DataHolder>() };
             int i = 0;
             var htmlImporter = new HtmlImporter();
-            while (i < urls.Count() && i < 20)
+            var balance = 0;
+            while (i < urls.Count() && i < 5+balance)
             {
-                models.First().Add(new DataHolder(DataType.Text, urls[i]));
-                models.Add(await htmlImporter.Run(new Uri(urls[i])) ?? new List<DataHolder>());
+                bool isBad = false;
+                foreach (var item in blacklist)
+                {
+                    if (json.webPages.value[i].displayUrl.Contains(item))
+                    {
+                        isBad = true;
+                        break;
+                    }
+                }
+                if (isBad)
+                {
+                    balance++;
+                    i++;
+                    continue;
+                }
+                if (json.webPages.value[i].displayUrl.Contains(".pdf"))
+                {
+                    balance++;
+                    i++;
+                    continue;
+                }
+                var dataholders = await htmlImporter.Run(new Uri(urls[i]));
+                if(dataholders == null || dataholders.Count==0)
+                {
+                    balance++;
+                    i++;
+                    continue;
+                }
+                models.First().Add(new TextDataHolder(json.webPages.value[i].displayUrl, urls[i]));
+                models.Add( dataholders);
                 i++;
             }
             return models;
@@ -519,6 +566,7 @@ namespace ParserHelper
         private class BingUrl
         {
             public string displayUrl;
+            public string Url;
         }
     }
 

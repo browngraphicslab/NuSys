@@ -35,6 +35,14 @@ namespace ParserHelper
             };
         }
 
+        public static Boolean IsArticle(HtmlDocument doc)
+        {
+            return RecursiveIsArticle(doc.DocumentNode);
+        }
+        public static HtmlNode GetArticle(HtmlDocument doc)
+        {
+            return RecursiveGetArticle(doc.DocumentNode);
+        }
         private static void RecursiveSearch(HtmlNode node)
         {
             if (node.Name == "script")
@@ -52,7 +60,7 @@ namespace ParserHelper
             {
                 _numberOfHeaderTags++;
             }
-            
+
             if (node.Name == "img")
             {
                 _numberOfImageTags++;
@@ -65,6 +73,43 @@ namespace ParserHelper
             {
                 RecursiveSearch(child);
             }
+        }
+        public static Boolean RecursiveIsArticle(HtmlNode node)
+        {
+            var re = new Regex("^(?:article|bodyContent)$");
+            var re1 = new Regex("(?:review|comment)");
+            if ((re.IsMatch(node.Name) || re.IsMatch(node.Id??"") ||
+                                      re.IsMatch(node.GetAttributeValue("class", "")) )&& !re1.IsMatch(node.GetAttributeValue("class","")))
+            {
+                return true;
+            }
+            foreach (var child in node.ChildNodes)
+            {
+                if (RecursiveIsArticle(child))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static HtmlNode RecursiveGetArticle(HtmlNode node)
+        {
+            var re = new Regex("^(?:article|bodyContent)$");
+            var re1 = new Regex("(?:review|comment)");
+            if ((re.IsMatch(node.Name) || re.IsMatch(node.Id??"") ||
+                                      re.IsMatch(node.GetAttributeValue("class", "")) )&& !re1.IsMatch(node.GetAttributeValue("class","")))
+            {
+                return node;
+            }
+            foreach (var child in node.ChildNodes)
+            {
+                var possible = RecursiveGetArticle(child);
+                if (possible != null)
+                {
+                    return possible;
+                }
+            }
+            return null;
         }
     }
 }

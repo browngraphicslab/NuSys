@@ -17,8 +17,8 @@
             <Button Tapped="Button_OnTapped">Submit</Button>
             <TextBox IsReadOnly="True" x:Name="ScoreDisplay" AcceptsReturn="True"/>
             <StackPanel>
-                <Button Tapped="GoodButtonOnTapped">Good Parse</Button>
-                <Button Tapped="BadButtonOnTapped">Bad Parse</Button>
+                <Button Tapped="GoodButtonOnTapped" Click="ButtonBase_OnClick">Good Parse</Button>
+                <Button Tapped="BadButtonOnTapped" Click="ButtonBase1_OnClick">Bad Parse</Button>
             </StackPanel>
         </StackPanel>
 

@@ -45,7 +45,7 @@ namespace LinkScorerGUI
             xItems.Items.Clear();
 
             var doc = await HtmlImporter.GetDocumentFromUri(new Uri(_models.First().First().Title));
-            if (doc == null)
+            if (doc == null || !SiteScoreTaker.IsArticle(doc))
             {
                 currenturl = _models.First().First().Title;
                 _models.First().Remove(_models.First().First());
@@ -62,7 +62,7 @@ namespace LinkScorerGUI
                                 _score.AverageImageSize +
                                 "\nHeaderTextRatio: " + _score.HeaderTextRatio + "\navgTextBlockSize: " +
                                 _score.AverageTextBlockSize + "\nprediction: " +
-                                 prediction + " with: " + classifier.LastProbability+"\nAccuracy: "+(countright/(count==0?1:count)*100)+"%";
+                                 prediction + " with: " + classifier.LastProbability+"\nAccuracy: "+(countright/(count==0?1:count)*100)+"%\n"+(_models.First().First()as TextDataHolder).Text;
 
 
             foreach (var dh in _models[1])
@@ -210,6 +210,16 @@ namespace LinkScorerGUI
             lines.Remove(lines.Last());
             var data = lines.Select(s => s.Split(',').ToList().Select(r => Convert.ToDouble(r)).ToList()).ToList();
             classifier.Train(data);
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            GoodButtonOnTapped(null,null);
+        }
+
+        private void ButtonBase1_OnClick(object sender, RoutedEventArgs e)
+        {
+            BadButtonOnTapped(null,null);
         }
     }
 }
