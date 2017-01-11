@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NuSysApp.Components.NuSysRenderer.UI.Textbox;
 using NuSysApp.Network.Requests;
 using ReverseMarkdown.Converters;
 using WinRTXamlToolkit.Controls.DataVisualization;
@@ -226,6 +227,10 @@ namespace NuSysApp
                 IsVisible = false
             };
             AddChild(_exitPresentation);
+
+            var dt = new DynamicTextboxTester(this, Canvas);
+            dt.Transform.LocalPosition = new Vector2(300, 300);
+            AddChild(dt);
 
             UpdateUI();
 

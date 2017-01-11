@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -27,6 +29,34 @@ namespace NuSysApp
         private CheckBoxUIElement _showImmutableCheckbox;
 
         private LibraryElementController _controller;
+
+        /// <summary>
+        /// The suggested tags for the controller
+        /// </summary>
+        private Dictionary<string, int> _suggestedTags;
+
+        /// <summary>
+        /// List of currently displayed suggested tags
+        /// </summary>
+        private List<DynamicTextboxUIElement> _suggestedTagElements;
+
+        /// <summary>
+        /// true if we want to rebuild the suggested tags
+        /// </summary>
+        private bool _rebuildSuggestedTags;
+
+        /// <summary>
+        /// The vertical spacing of the tag from its original position
+        /// </summary>
+        private float _tagVerticalSpacing;
+
+        /// <summary>
+        /// The width of the suggested tags box, don't set this except in build suggested tags
+        /// used to figure out when we should rebuild suggested tags
+        /// </summary>
+        private double _suggestedTagsWidth;
+
+        private float _tagHorizontalSpacing;
 
         public DetailViewMetadataPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
@@ -70,6 +100,8 @@ namespace NuSysApp
                 LabelText = "Show Immutable"
             };
             AddChild(_showImmutableCheckbox);
+
+            _suggestedTagElements = new List<DynamicTextboxUIElement>();
 
             _controller.MetadataChanged += _controller_MetadataChanged;
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
@@ -121,6 +153,12 @@ namespace NuSysApp
             _addKeyValueButton.Tapped -= AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged -= OnSearchTextChanged;
             _showImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
+
+            foreach (var element in _suggestedTagElements)
+            {
+                element.Tapped -= NewTag_Tapped;
+                RemoveChild(element);
+            }
 
             base.Dispose();
         }
@@ -199,6 +237,10 @@ namespace NuSysApp
                     await
                         CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/icon_metadata_plus.png"),
                             ResourceCreator.Dpi);
+
+
+            _suggestedTags = await _controller.GetSuggestedTagsAsync(false);
+            _rebuildSuggestedTags = true;
             base.Load();
         }
 
@@ -232,10 +274,11 @@ namespace NuSysApp
             //layout all the elements for the list view
             vertical_spacing += 20 + (int) _searchTextBox.Height;
             var immutable_checkbox_height = 40;
+            var suggested_tags_box_height = 40;
 
             _metadata_listview.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
             _metadata_listview.Width = Width - 2*horizontal_spacing;
-            _metadata_listview.Height = Height - 20 - vertical_spacing - immutable_checkbox_height - 20;
+            _metadata_listview.Height = Height - 20 - vertical_spacing - immutable_checkbox_height -20 - suggested_tags_box_height - 20;
 
             // layout the show immutable checkbox
             vertical_spacing += 20 + (int)_metadata_listview.Height;
@@ -244,13 +287,87 @@ namespace NuSysApp
             _showImmutableCheckbox.Width = 150;
             _showImmutableCheckbox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
 
+            // layout the suggested tags box
+            vertical_spacing += 20 + (int)_showImmutableCheckbox.Height;
 
+            BuildSuggestedTags(suggested_tags_box_height, Width - 2*horizontal_spacing,
+                new Vector2(horizontal_spacing, vertical_spacing));
 
-
-
-
+            foreach (var tagElement in _suggestedTagElements)
+            {
+                tagElement.Transform.LocalPosition = new Vector2(tagElement.Transform.LocalX, vertical_spacing + _tagVerticalSpacing);
+            }
 
             base.Update(parentLocalToScreenTransform);
+        }
+
+        /// <summary>
+        /// builds the suggested tags box
+        /// </summary>
+        /// <param name="height"></param>
+        /// <param name="width"></param>
+        /// <param name="position"></param>
+        private void BuildSuggestedTags(int height, float width, Vector2 position)
+        {
+
+            if (_suggestedTags != null &&
+                (_rebuildSuggestedTags || (Math.Abs(width - _suggestedTagsWidth) > _tagHorizontalSpacing/2)))
+            {
+            }
+            else
+            {
+                return;
+            }
+
+            _suggestedTagsWidth = Width;
+
+            foreach (var element in _suggestedTagElements)
+            {
+                element.Tapped -= NewTag_Tapped;
+                RemoveChild(element);
+            }
+
+            var currXOffset = 5f;
+            _tagHorizontalSpacing = 5f;
+            _tagVerticalSpacing = height*.25f/2;
+
+            foreach (var suggestedTag in _suggestedTags.OrderByDescending(pair => pair.Value))
+            {
+                var newTag = new DynamicTextboxUIElement(this, Canvas)
+                {
+                    Background = Constants.color4,
+                    TextColor = Constants.color6,
+                    FontSize = 15f,
+                    FontFamily = "/Assets/fonts/Frutiger LT 56 Italic.ttf#Frutiger LT 55 Roman"
+                };
+                newTag.SetLoaded();
+                newTag.Height = height-2*_tagVerticalSpacing;
+                newTag.Text = suggestedTag.Key;
+                if (currXOffset + _tagHorizontalSpacing + newTag.Width > width)
+                {
+                    break;
+                }
+
+                newTag.Transform.LocalPosition = new Vector2(position.X + currXOffset, position.Y + _tagVerticalSpacing);
+                AddChild(newTag);
+                _suggestedTagElements.Add(newTag);
+                currXOffset+= _tagHorizontalSpacing + newTag.Width;
+                newTag.Tapped += NewTag_Tapped;
+            }
+
+            _rebuildSuggestedTags = false;
+        }
+
+        private void NewTag_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var dynamicTextbox = item as DynamicTextboxUIElement;
+            Debug.Assert(dynamicTextbox != null);
+
+            _suggestedTags.Remove(dynamicTextbox.Text);
+
+            _controller.AddKeyword(new Keyword(dynamicTextbox.Text, Keyword.KeywordSource.TagExtraction));
+            _rebuildSuggestedTags = true;
+
         }
     }
 }
