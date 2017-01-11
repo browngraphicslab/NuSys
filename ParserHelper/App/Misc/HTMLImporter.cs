@@ -24,15 +24,33 @@ namespace ParserHelper
 
         public HtmlImporter() { }
         /// <summary>
+        /// These are the expressions that once detected in a title will be removed because they are some type of spam
+        /// </summary>
+        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|more.$)");
+        /// <summary>
+        /// These are the expressions that will remove a text in a textdataholder if they are in that text
+        /// </summary>
+        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement|writing\? check your grammar now!|all headlines|\(.*?(?:repl(y)?(ies)?|ratings?|comments?).*?\)|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off)");
+        /// <summary>
+        /// These are things that are going to be removed from the text but aren't markers for spam
+        /// </summary>
+        private static Regex _contentToReplace = new Regex(@"(?:\[.*?edit.*?\]|\[.*?\d+.*?\]|\[.*?citation needed.*?\]|&.*?;|)");
+        /// <summary>
+        /// This is so that I can clean the whitespace that makes the sites look messy
+        /// </summary>
+        private static Regex _cleanWhiteSpace = new Regex(@"\s+");
+
+        /// <summary>
+        /// This is a list of websites that we don't want to parse
+        /// </summary>
+        private static List<string> blacklist= new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies","worldatlas","vectorstock.com","freepik.com","containerstore.com","yourshot.nationalgeographic","myspace.com","store.","treesdallas.com","epicurious.com","krispykreme.com",
+                                                            "imdb.com"};
+        
+        /// <summary>
         /// Running this will fetch and parse the html document that is specified by the uri of any useful information
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement)");
-        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement)");
-
-        private static List<string> blacklist= new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies","worldatlas","vectorstock.com","freepik.com"};
-        
         public async Task<List<DataHolder>> Run(Uri url)
         {
             //Load HTML from the website
@@ -41,6 +59,7 @@ namespace ParserHelper
             {
                 return null;
             }
+            //We only want websites that qualify as an article so we check to see if certain tags are in the site
             var articleTopNode = SiteScoreTaker.GetArticle(doc);
             if (articleTopNode==null)
             {
@@ -55,32 +74,39 @@ namespace ParserHelper
             await RecursiveAdd(articleTopNode, models);
             //We store the data for the text nodes based on the headers and the content between those headers so we need 
             //to go through and make the text data holders
+             var text = "";
             foreach (var paragraphs in _paragraphCollections)
             {
-                var text = "";
                 var title = "";
                 var hasTitle = false;
                 foreach (var node in paragraphs)
                 {
                     if (!hasTitle)
                     {
-                        title = RecursiveSpan(node);
+                        title = _contentToReplace.Replace(RecursiveSpan(node),"");
                         hasTitle = true;
                         continue;
                     }
-                    text += RecursiveSpan(node) + "\n";
+                    text += _cleanWhiteSpace.Replace(_contentToReplace.Replace(RecursiveSpan(node), "") ," ")+ "\n";
                 }
                 //This gets rid of any sections that dont contain anything and are therefore not usefull, this is helpful for 
                 //footers and headers
-                if (text == "")
+                if (IsNullOrWhiteSpace(text))
                 {
                     //Syncs up the citations to their paragraphs
                     if (_citationUrlCollections.Any())
                         _citationUrlCollections.RemoveAt(0);
                     continue;
                 }
-                if (IsNullOrWhiteSpace(title) || IsNullOrWhiteSpace(text) || (_titlesToRemove.IsMatch(title.ToLower().Trim())&&title.Length<45) || (_contentToRemove.IsMatch(text.ToLower().Trim())&&text.Length<45))
+                //If theres a tiny title then we can just aggregate all of the tiny titles into a larger block
+                if (title.Length <= 3)
                 {
+                    continue;
+                }
+                //If there is a match with any of the spam filters then we remove it
+                if (IsNullOrWhiteSpace(title) || IsNullOrWhiteSpace(text) || (_titlesToRemove.IsMatch(title.ToLower().Trim())&&title.Length<50) || (_contentToRemove.IsMatch(text.ToLower().Trim())&&text.Length<50))
+                {
+                    text = "";
                     continue;
                 }
                 //We then create the data holder and then populate the links with what we have captured
@@ -88,9 +114,16 @@ namespace ParserHelper
                 if (_citationUrlCollections.Any())
                     _citationUrlCollections.RemoveAt(0);
                 models.Add(content);
+                //reset the text so we don't aggregate it all into blocks larger than we want
+                text = "";
             }
             return models;
         }
+        /// <summary>
+        /// From a uri we send a webrequest to get the website as an htmldocument or else we return null
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         public static async Task<HtmlDocument> GetDocumentFromUri(Uri url)
         {
             try
@@ -213,7 +246,7 @@ namespace ParserHelper
                 //We then get the image source uri
                 var src = FormatSource(node.GetAttributeValue("src", null));
                 //We dont want any svgs because they mess up the server
-                var re = new Regex(@"(?:svg|gif)$");
+                var re = new Regex(@"(?:svg|gif|ico\.png)$");
                 var re1 = new Regex(@"https?:\/\/[^\/]*?\..*?\/.*\.");
                 if (src == null || re.IsMatch(src) || !re1.IsMatch(src))
                 {
@@ -236,7 +269,8 @@ namespace ParserHelper
                     {
                         title = SearchForTitle(node);
                     }
-                    var reg = new Regex("^<!");
+                    //removes any html or json titles, which are undesireable
+                    var reg = new Regex(@"^(?:<!|\{.*\}$)");
                     //We then create the Data Holder and introduce it to the rest
                     if (!string.IsNullOrEmpty(title) && !string.IsNullOrWhiteSpace(title) && !reg.IsMatch(title) && !(_titlesToRemove.IsMatch(title.ToLower()) && title.Length<45))
                     {
@@ -511,17 +545,25 @@ namespace ParserHelper
             string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search + "&count=25&offset=0&mkt=en-us&safesearch=Moderate";
             // Build the content of the post request
 
+            //This is the request to the bing server
             var ret = await client.GetAsync(url);
+            //We then have to read the string that is sent back
             var jsonString = await ret.Content.ReadAsStringAsync();
+            //We then turn the json into our class structure 
             var json = JsonConvert.DeserializeObject<BingJson>(jsonString);
+            //This takes only the usable urls for us to parse into
             var urls = json.webPages.value.Select(o => FormatSource(o.Url) ?? "").ToList();
+            //This creates the models that we will then send back as a response 
             var models = new List<List<DataHolder>> { new List<DataHolder>() };
-            int i = 0;
+            int i = -1;
+            //This is so that we can parse the data
             var htmlImporter = new HtmlImporter();
             var balance = 0;
-            while (i < urls.Count() && i < 5+balance)
+            while (i < urls.Count-1 && i < 4+balance)
             {
+                i++;
                 bool isBad = false;
+                //We check if the url is in the blacklist, if so we skip it
                 foreach (var item in blacklist)
                 {
                     if (json.webPages.value[i].displayUrl.Contains(item))
@@ -530,31 +572,28 @@ namespace ParserHelper
                         break;
                     }
                 }
-                if (isBad)
+                //We cannot parse pdfs or things on the blacklist
+                if (isBad || json.webPages.value[i].displayUrl.Contains(".pdf"))
                 {
                     balance++;
-                    i++;
                     continue;
                 }
-                if (json.webPages.value[i].displayUrl.Contains(".pdf"))
-                {
-                    balance++;
-                    i++;
-                    continue;
-                }
+                //If there is a parse response(It is and article and we are able to parse) then we continue
                 var dataholders = await htmlImporter.Run(new Uri(urls[i]));
                 if(dataholders == null || dataholders.Count==0)
                 {
                     balance++;
-                    i++;
                     continue;
                 }
+                //Yay we have our models!
                 models.First().Add(new TextDataHolder(json.webPages.value[i].displayUrl, urls[i]));
                 models.Add( dataholders);
-                i++;
             }
             return models;
         }
+        /// <summary>
+        /// These classes are to deserialize the json that bing sends us back, just data containers
+        /// </summary>
         private class BingJson
         {
             public BingPages webPages;

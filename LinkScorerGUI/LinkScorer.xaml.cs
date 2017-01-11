@@ -44,31 +44,16 @@ namespace LinkScorerGUI
             _alreadySaved = false;
             xItems.Items.Clear();
 
-            var doc = await HtmlImporter.GetDocumentFromUri(new Uri(_models.First().First().Title));
-            if (doc == null || !SiteScoreTaker.IsArticle(doc))
-            {
-                currenturl = _models.First().First().Title;
-                _models.First().Remove(_models.First().First());
-                _models.Remove(_models[1]);
-                xItems.Items.Clear();
-                ScoreDisplay.Text = "";
-                if (_models.First().Any())
-                    RenderNewTest();
-                return;
-            }
-            _score = ParserHelper.SiteScoreTaker.ScoreSite(doc);
-            prediction = classifier.Predict(_score.GetScores());
-            ScoreDisplay.Text = "TextImageRatio: " + _score.TextImageRatio + "\nAverageImageSize: " +
-                                _score.AverageImageSize +
-                                "\nHeaderTextRatio: " + _score.HeaderTextRatio + "\navgTextBlockSize: " +
-                                _score.AverageTextBlockSize + "\nprediction: " +
-                                 prediction + " with: " + classifier.LastProbability+"\nAccuracy: "+(countright/(count==0?1:count)*100)+"%\n"+(_models.First().First()as TextDataHolder).Text;
+            ScoreDisplay.Text = //"TextImageRatio: " + _score.TextImageRatio + "\nAverageImageSize: " +
+                //_score.AverageImageSize +
+                //"\nHeaderTextRatio: " + _score.HeaderTextRatio + "\navgTextBlockSize: " +
+                //_score.AverageTextBlockSize + "\nprediction: " +
+                /*prediction + " with: " + classifier.LastProbability+"\nAccuracy: "+(countright/(count==0?1:count)*100)+"%\n"+*/
+                (_models.First().First() as TextDataHolder).Text;
 
 
             foreach (var dh in _models[1])
             {
-
-
                 var stack = new StackPanel();
                 //stack.Width = 500;
 
@@ -92,17 +77,20 @@ namespace LinkScorerGUI
                     case DataType.Image:
                         var im = new BitmapImage() { UriSource = (dh as ImageDataHolder).Uri };
                         stack.Children.Add(new Image() { Source = im, Stretch = Stretch.Uniform, Height = 150 });
+                        cap.Text += "\n" + (dh as ImageDataHolder).Uri.AbsoluteUri;
                         break;
                     case DataType.Video:
                         var me = new MediaElement();
                         me.Source = (dh as VideoDataHolder).Uri;
                         me.Play();
                         stack.Children.Add(me);
+                        cap.Text += "\n" + "video";
                         break;
                     case DataType.Audio:
                         var mea = new MediaElement();
                         mea.Source = (dh as AudioDataHolder).Uri;
                         mea.Play();
+                        cap.Text += "\n" + "audio";
                         stack.Children.Add(mea);
                         break;
                     case DataType.Pdf:
@@ -171,7 +159,7 @@ namespace LinkScorerGUI
         {
             string path = @"C:\Users\Sahil Mishra\Pictures\PARSERDATASITES.txt";
             string pathalreadydone = @"C:\Users\Sahil Mishra\Pictures\PARSERURLANDSCORE.txt";
-            await Task.Run(() =>
+            /*await Task.Run(() =>
             {
                 if (!File.Exists(path))
                 {
@@ -185,7 +173,7 @@ namespace LinkScorerGUI
 
                 }
                 File.AppendAllText(pathalreadydone, currenturl+","+_score.Score + Environment.NewLine);
-            });
+            });*/
             if (_models[0].Count == 0)
             {
                 xItems.Items.Clear();

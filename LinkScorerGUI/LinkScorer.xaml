@@ -15,10 +15,10 @@
         <StackPanel Orientation="Horizontal" Height="200" Grid.Row="0">
             <TextBox PlaceholderText="URL" x:Name="url"/>
             <Button Tapped="Button_OnTapped">Submit</Button>
-            <TextBox IsReadOnly="True" x:Name="ScoreDisplay" AcceptsReturn="True"/>
+            <TextBox IsReadOnly="True" x:Name="ScoreDisplay" AcceptsReturn="True" TextWrapping="Wrap" Width="300"/>
             <StackPanel>
-                <Button Tapped="GoodButtonOnTapped" Click="ButtonBase_OnClick">Good Parse</Button>
-                <Button Tapped="BadButtonOnTapped" Click="ButtonBase1_OnClick">Bad Parse</Button>
+                <Button  Click="ButtonBase_OnClick">Good Parse</Button>
+                <Button  Click="ButtonBase1_OnClick">Bad Parse</Button>
             </StackPanel>
         </StackPanel>
 

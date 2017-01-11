@@ -35,14 +35,15 @@ namespace ParserHelper
             };
         }
 
-        public static Boolean IsArticle(HtmlDocument doc)
-        {
-            return RecursiveIsArticle(doc.DocumentNode);
-        }
         public static HtmlNode GetArticle(HtmlDocument doc)
         {
             return RecursiveGetArticle(doc.DocumentNode);
         }
+        /// <summary>
+        /// DEPRECATED
+        /// used for classifier but that is no longer in use, kept for possible future use
+        /// </summary>
+        /// <param name="node"></param>
         private static void RecursiveSearch(HtmlNode node)
         {
             if (node.Name == "script")
@@ -74,41 +75,33 @@ namespace ParserHelper
                 RecursiveSearch(child);
             }
         }
-        public static Boolean RecursiveIsArticle(HtmlNode node)
-        {
-            var re = new Regex("^(?:article|bodyContent)$");
-            var re1 = new Regex("(?:review|comment)");
-            if ((re.IsMatch(node.Name) || re.IsMatch(node.Id??"") ||
-                                      re.IsMatch(node.GetAttributeValue("class", "")) )&& !re1.IsMatch(node.GetAttributeValue("class","")))
-            {
-                return true;
-            }
-            foreach (var child in node.ChildNodes)
-            {
-                if (RecursiveIsArticle(child))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        /// <summary>
+        /// This finds out whether the website has certain tags that would make it a good candidate for search
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public static HtmlNode RecursiveGetArticle(HtmlNode node)
         {
+            //These are the tags that we want to search for in a website, article is generic and bodyCotent is a wikipedia thing
             var re = new Regex("^(?:article|bodyContent)$");
+            //These are tags we don't want to see
             var re1 = new Regex("(?:review|comment)");
             if ((re.IsMatch(node.Name) || re.IsMatch(node.Id??"") ||
                                       re.IsMatch(node.GetAttributeValue("class", "")) )&& !re1.IsMatch(node.GetAttributeValue("class","")))
             {
                 return node;
             }
+            //Recurse through all of the children to keep searching
             foreach (var child in node.ChildNodes)
             {
+                // fun debugging times! Maybe I should throw in an await to really get you :9
                 var possible = RecursiveGetArticle(child);
                 if (possible != null)
                 {
                     return possible;
                 }
             }
+            // Not the node you are looking for
             return null;
         }
     }
