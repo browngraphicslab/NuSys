@@ -131,6 +131,38 @@ namespace NuSysApp
             DoubleTapped += PieChartUIElement_DoubleTapped;
             Released += PieChartUIElement_Released;
             Dragged += PieChartUIElement_Dragged;
+            Tapped += PieChartUIElement_Tapped;
+
+        }
+
+        private void PieChartUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+
+                var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+                var element = GetElementFromAngle(GetAngleFromPoint(point));
+                if (element == null)
+                {
+                    return;
+                }
+
+                ElementTapped?.Invoke(this, element, pointer);
+                if (_selectedElements.Contains(element))
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        DeselectElement(element);
+                    }
+                }
+                else
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        SelectElement(element);
+                    }
+                }
+
+
+            
         }
 
         private void PieChartUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -234,34 +266,6 @@ namespace NuSysApp
                 _draggedElement = null;
             }
 
-            //If we were not dragging when we released, but simply pressing, we should Select or Deselect based on settings. 
-            else
-            {
-                var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-                var element = GetElementFromAngle(GetAngleFromPoint(point));
-                if (element == null)
-                {
-                    return;
-                }
-
-                ElementTapped?.Invoke(this, element, pointer);
-                if (_selectedElements.Contains(element))
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        DeselectElement(element);
-                    }
-                }
-                else
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        SelectElement(element);
-                    }
-                }
-
-
-            }
 
         }
         /// <summary>

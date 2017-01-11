@@ -55,6 +55,8 @@ namespace NuSysApp
         /// </summary>
         private TransparentButtonUIElement _addFileButton;
 
+        private bool _dragCanceled;
+
         /// <summary>
         /// A dictionary of fileids to access types, static because the adding files methods have to be static
         /// </summary>
@@ -175,11 +177,7 @@ namespace NuSysApp
 
             _filterButton.Tapped += OnFilterButtonTapped;
 
-            ///TEST BUTTON
-            //_testbutton = new RectangleButtonUIElement(this, Canvas, 0, "test");
-            //AddChild(_testbutton);
-
-            //_testbutton.Tapped += _testbutton_Tapped;
+            _dragCanceled = false;
 
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
@@ -322,6 +320,11 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
+            if (_dragCanceled)
+            {
+                _dragCanceled = false;
+                return;
+            }
             // remove each of the drag elements
             foreach (var rect in _libraryDragElements.ToArray())
             {
@@ -349,14 +352,36 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
+            if (_dragCanceled)
+            {
+                return;
+            }
             // if we are currently dragging
             if (_isDragVisible)
             {
                 // simply move each of the element sto the new drag location
                 var position = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
-                foreach (var element in _libraryDragElements)
+
+                //If we are on the listview, "put the elements back"
+                if (LibraryListView.HitTest(pointer.CurrentPoint) != null)
                 {
-                    element.Transform.LocalPosition = position + new Vector2(_itemDropOffset * _libraryDragElements.IndexOf(element));
+                    // remove each of the drag elements
+                    foreach (var rect in _libraryDragElements.ToArray())
+                    {
+                        rect.Dispose();
+                        RemoveChild(rect);
+                        _libraryDragElements.Remove(rect);
+                    }
+                    _isDragVisible = false;
+                    _dragCanceled = true;
+                }
+                else
+                {
+                    //Otherwise move each of the library drag elements
+                    foreach (var element in _libraryDragElements)
+                    {
+                        element.Transform.LocalPosition = position + new Vector2(_itemDropOffset * _libraryDragElements.IndexOf(element));
+                    }
                 }
 
             }

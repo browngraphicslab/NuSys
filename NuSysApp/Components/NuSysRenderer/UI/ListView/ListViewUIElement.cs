@@ -103,6 +103,10 @@ namespace NuSysApp
         private float _heightOfAllRows { get { return _filteredItems.Count * RowHeight; } }
 
 
+        private int _iterations;
+        private int _dragGestures;
+        private float _x;
+        private float _y;
         /// <summary>
         /// Current filter function that takes in a T (eg, a LibraryElementModel) and returns
         /// a bool (ie, true if that item should be filtered in and false otherwise)
@@ -387,27 +391,12 @@ namespace NuSysApp
         private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
         {
             Debug.Assert(_isDragging == false);
-
-            var dX = pointer.Delta.X;
-            var dY = pointer.Delta.Y;
-
-            var angle = Math.Atan(dY/dX);
-            Debug.WriteLine(angle);
-            if (Math.Abs(angle) <0.85 && dX != 0f)
-            {
-                _draggedItem = item;
-                if (!DisableSelectionByClick)
-                {
-                    SelectItem(_draggedItem);
-                }
-                _isDragging = true;
-            }
-            else
-            {
-                _isDragging = false;
-            }
-            
-
+            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            _draggedItem = item;
+            _iterations = 0;
+            _dragGestures = 0;
+            _x = point.X;
+            _y = point.Y;
 
         }
 
@@ -432,17 +421,21 @@ namespace NuSysApp
             //We need the local point, not the screen point
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
-            if (_isDragging)
-            {
-                RowDragged?.Invoke(_draggedItem, rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-            }
-            else
-            {
-                var deltaY = -pointer.DeltaSinceLastUpdate.Y / (RowHeight * _filteredItems.Count);
+            var dX = point.X - _x;
+            var dY = point.Y - _y;
 
-                ScrollBar.ChangePosition(deltaY);
+            _x = point.X;
+            _y = point.Y;
+
+            var angle = Math.Atan(dY/dX);
+            _iterations += 1;
+            if (Math.Abs(angle) < 0.85f)
+            {
+                _dragGestures += 1;
             }
-            /*
+           // Debug.WriteLine(angle);
+
+            bool firstTimeDraggingOut = false;
             //check within bounds of listview
             if (point.X < minX || point.X > maxX || point.Y < minY ||
                 point.Y > maxY)
@@ -452,17 +445,27 @@ namespace NuSysApp
                 {
                     return;
                 }
+
+                firstTimeDraggingOut = !_isDragging;
+
+                if (firstTimeDraggingOut)
+                {
+                    Debug.Write((float)_dragGestures /_iterations);
+                    _isDragging = ((float) _dragGestures/_iterations > 0.2f);
+                }
+
+            }
+
+            if(_isDragging)
+            {
                 //If it's the first time we are leaving the listview, select the item
-                if (!_isDragging && !DisableSelectionByClick)
+                if (firstTimeDraggingOut && !DisableSelectionByClick)
                 {
                     SelectItem(_draggedItem);
                 }
                 RowDragged?.Invoke(_draggedItem,
          rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-
-                _isDragging = true;
-
-            }
+            }        
             else
             {
 
@@ -472,7 +475,7 @@ namespace NuSysApp
                 ScrollBar.ChangePosition(deltaY);
 
             }
-            */
+
         }
         private void ListViewRowUIElementOnRowTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
         {
@@ -715,7 +718,6 @@ namespace NuSysApp
         public void SortByCol(int columnIndex)
         {
 
-            //TODO:NIC WE NEED TO COME UP WITH A SOLUTION TO FIX THIS
             Debug.Assert(columnIndex < _listColumns.Count);
             //If it isn't sorted by this index then just sort it normally
             if (columnIndex != _columnIndexSortedBy)
