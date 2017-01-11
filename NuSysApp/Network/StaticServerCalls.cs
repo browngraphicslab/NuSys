@@ -15,41 +15,6 @@ namespace NuSysApp
 {
     public class StaticServerCalls
     {
-        public static async Task<bool> CreateSnapshot()//returns true if successful
-        {
-            string libraryId = SessionController.Instance.ActiveFreeFormViewer.Controller.Model.LibraryId;
-            return false;
-            //return await SessionController.Instance.NuSysNetworkSession.DuplicateLibraryElement(libraryId) != null;
-            var collectionLibraryController = SessionController.Instance.ContentController.GetLibraryElementController(libraryId) as CollectionLibraryElementController;
-            if (collectionLibraryController == null)
-            {
-                return false;
-            }
-
-            var snapshotId = SessionController.Instance.GenerateId();
-
-            var m = new Message();
-            m["id"] = snapshotId;
-            m["type"] = NusysConstants.ElementType.Collection.ToString();
-            m["inklines"] = collectionLibraryController.InkLines;
-            m["favorited"] = true;
-            m["title"] = collectionLibraryController.LibraryElementModel.Title + " SNAPSHOT "+DateTime.Now;
-
-            var libraryElementRequest = new CreateNewLibraryElementRequest(m);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(libraryElementRequest);
-
-            var children = SessionController.Instance.ElementModelIdToElementController.Where(item => item.Value.Model.ParentCollectionId == libraryId).ToArray();
-
-            foreach (var child in children)
-            {
-                var dict = await child.Value.Model.Pack();
-                dict["creator"] = snapshotId;
-                dict["id"] = SessionController.Instance.GenerateId();
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(new Message(dict)));
-            }
-
-            return true; 
-        }
 
         /// <summary>
         /// this static method will add a collection element to your current collection.  
@@ -179,6 +144,7 @@ namespace NuSysApp
                 args.Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri;
                 args.Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri;
                 args.Metadata = new List<NusysIntermediate.MetadataEntry>(originalController.FullMetadata.Values);
+                args.Metadata.Add(new MetadataEntry("Origin",new List<string>() {"This library element was copied from "+originalController.LibraryElementModel.Title},MetadataMutability.IMMUTABLE ));
 
                 var newLibraryElementRequest = new CreateNewLibraryElementRequest(args);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);

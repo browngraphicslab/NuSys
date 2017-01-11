@@ -54,13 +54,22 @@ namespace NuSysApp
         /// <summary>
         /// method to be called to set the points of the shape.  
         /// Will create a new shape if it doesn't exist.
+        /// This will automatically set the aspect ratio of the shape.
         /// This will send a server call to update
         /// </summary>
         /// <param name="points"></param>
         public void SetShapePoints(IEnumerable<PointModel> points)
         {
+            Debug.Assert(points != null && points.Count() >= 4);
+            var minX = points.Min(p => p.X);
+            var minY = points.Min(p => p.Y);
+            var maxX = points.Max(p => p.X);
+            var maxY = points.Max(p => p.Y);
+            var x = maxX - minX;
+            var y = maxY - minY;
             var shape = GetShape();
             shape.ShapePoints = new List<PointModel>(points);
+            shape.AspectRatio = x / y;
             SetData(shape);
         }
 
@@ -78,14 +87,24 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// method to be called to set the aspectRatio of the shape.  
+        /// Method to update the server with a completely null shape object.
+        /// This will fire the 'contentUpdated' event with a null string for content.
+        /// </summary>
+        public void ClearShape()
+        {
+            base.SetData(null);
+        }
+
+        /// <summary>
+        /// method to be called to set the string URL of the shape.  
         /// Will create a new shape if it doesn't exist.
         /// This will send a server call to update
         /// </summary>
         /// <param name="points"></param>
-        public void SetAspectRation(double aspectRatio)
+        public void SetShapeUrl(string url, double aspectRatio)
         {
             var shape = GetShape();
+            shape.ImageUrl = url;
             shape.AspectRatio = aspectRatio;
             SetData(shape);
         }
