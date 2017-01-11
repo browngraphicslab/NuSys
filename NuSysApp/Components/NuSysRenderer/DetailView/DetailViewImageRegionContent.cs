@@ -136,6 +136,17 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            DoubleTapped += OnDoubleTapped;
+        }
+
+        /// <summary>
+        /// Event handler called when this region content is double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(_controller.ContentDataController.ContentDataModel.Data));
         }
 
 
@@ -145,6 +156,8 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+
+            DoubleTapped -= OnDoubleTapped;
 
             base.Dispose();
         }

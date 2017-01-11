@@ -32,10 +32,7 @@ namespace NuSysApp
 
         private void DetailViewVideoContent_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            UITask.Run(() =>
-            {
-                SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo(_controller, true);
-            });
+            SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo(_controller, true);
         }
 
         public override void Dispose()
