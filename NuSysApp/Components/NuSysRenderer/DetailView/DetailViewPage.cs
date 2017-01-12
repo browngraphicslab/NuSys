@@ -89,6 +89,11 @@ namespace NuSysApp
         /// </summary>
         private FlyoutPopup _addRegionPopup;
 
+        /// <summary>
+        /// button to expand the detail view page, should only happen if the element is an image or a PDF
+        /// </summary>
+        private RectangleButtonUIElement _expandButton;
+
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
             // set the controller properly
@@ -132,7 +137,17 @@ namespace NuSysApp
 
             _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle,
                 "Drag to Collection");
+            _dragToCollectionButton.Width = 150;
+            _dragToCollectionButton.Height = 40;
             AddChild(_dragToCollectionButton);
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Image ||
+                controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+            {
+                _expandButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Expand");
+                _expandButton.Width = 150;
+                _expandButton.Height = 40;
+                AddChild(_expandButton);
+            }
 
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
@@ -264,13 +279,22 @@ namespace NuSysApp
             }
 
 
-            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width/2 + _dragToCollectionButton.Width/2,300);
+            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width/2 + _dragToCollectionButton.Width/2, Height - 50);
 
             //var dragToCollectionHeight = _dragToCollectionButton.Height + 20;
 
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
-            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin, Height*heightMultiplier);
+
+            //set image height based on other ui elements
+            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin - _dragToCollectionButton.Height, Height * heightMultiplier);
+
+            // set image height if the expand button is present
+            if (_expandButton != null)
+            {
+                _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin - _expandButton.Height
+                    - _dragToCollectionButton.Height, Height * heightMultiplier);
+            }
 
             // set the image
             var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
@@ -282,18 +306,31 @@ namespace NuSysApp
             _contentLayoutManager.SetMargins(20);
             _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
 
+            
+
             if (_showsImageAnalysis)
             {
                 // set the image analysis
-                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin);
+                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin - _dragToCollectionButton.Height);
                 _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _imageAnalysisLayoutManager.Spacing = 5;
                 _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin));
             }
 
+            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width / 2 - _dragToCollectionButton.Width / 2, Height - _dragToCollectionButton.Height - 10);
 
-            base.Update(parentLocalToScreenTransform);
+            // if the expand button is present, arrange UI elements accordingly
+            if (_expandButton != null)
+            {
+                _expandButton.Transform.LocalPosition = new Vector2(Width / 2 - _expandButton.Width / 2,
+                    _imageHeight + _contentLayoutManager.TopMargin + 10);
+                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) - _dragToCollectionButton.Height);
+                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
+            }
+
+
+                base.Update(parentLocalToScreenTransform);
         }
 
         public override async Task Load()
