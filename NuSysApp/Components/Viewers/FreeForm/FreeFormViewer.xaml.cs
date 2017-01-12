@@ -252,9 +252,9 @@ namespace NuSysApp
             var currTrail = trail;
             while (currTrail != null) 
             {
-                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId].LibraryElementController;
+                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId].LibraryElementController;
                 var outNode =
-                    SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId].LibraryElementController;
+                    SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId].LibraryElementController;
                 if (!elements.Contains(inNode))
                 {
                     elements.Add(inNode);
@@ -269,6 +269,7 @@ namespace NuSysApp
                 var models = PresentationLinkViewModel.Models;
 
                 currTrail = models.FirstOrDefault(vm => vm.InElementId == oldTrail.OutElementId);
+
             }
 
             return elements;
