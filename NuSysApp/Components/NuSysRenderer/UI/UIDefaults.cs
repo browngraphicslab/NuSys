@@ -31,6 +31,7 @@ namespace NuSysApp
         public static int PrimaryStyle = 0;
         public static int SecondaryStyle = 1;
         public static int AccentStyle = 2;
+        public static int DraggableStyle = 2;
 
         #endregion
 

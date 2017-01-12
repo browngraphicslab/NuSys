@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
@@ -66,6 +67,20 @@ namespace NuSysApp
 
         }
 
+        public override async Task Load()
+        {
+            _leftPageButton.Image = _leftPageButton.Image ??
+                                    await
+                                        CanvasBitmap.LoadAsync(Canvas,
+                                            new Uri("ms-appx:///Assets/new icons/left arrow.png"));
+            _rightPageButton.Image = _rightPageButton.Image ??
+                                    await
+                                        CanvasBitmap.LoadAsync(Canvas,
+                                            new Uri("ms-appx:///Assets/new icons/right arrow.png"));
+
+            base.Load();
+        }
+
         /// <summary>
         /// Called when the left page button is tapped, goes to the previous page
         /// </summary>
@@ -97,7 +112,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            var buttonWidth = 50;
+            var buttonWidth = 30;
             var buttonMargin = 5;
 
             _leftButtonLayoutManager.SetSize(buttonWidth + 2 * buttonMargin, Height);
@@ -118,6 +133,9 @@ namespace NuSysApp
             _rightButtonLayoutManager.ItemHeight = buttonWidth;
             _rightButtonLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _rightButtonLayoutManager.ArrangeItems(new Vector2(_leftButtonLayoutManager.Width + _contentLayoutManager.Width, 0));
+
+            _leftPageButton.ImageBounds = new Rect(10, 5, 10, 20);
+            _rightPageButton.ImageBounds = new Rect(10, 5, 10, 20);
 
             // set the visibility of the left and right page buttons
             _leftPageButton.IsVisible = CurrentPage != 0;

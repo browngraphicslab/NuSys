@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -15,8 +16,11 @@ namespace NuSysApp
         private DetailViewPdfRegionContent _content;
         private InkableUIElement _inkable;
 
+        private PdfLibraryElementController _controller;
+
         public DetailViewPdfPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PdfLibraryElementController controller, bool showImageAnalysis, bool showRegions) : base(parent, resourceCreator, controller, showImageAnalysis, showRegions)
         {
+            _controller = controller;
             _content = new DetailViewPdfRegionContent(this, resourceCreator, controller, showRegions);
             SetContent(_content);
 
@@ -37,6 +41,13 @@ namespace NuSysApp
             }
             _inkable.Transform.LocalPosition = _content.PdfContent.Transform.LocalPosition;
             base.Update(parentLocalToScreenTransform);
+        }
+
+        protected override void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var model = (PdfContentDataModel) _controller.ContentDataController.ContentDataModel;
+            var pageUrl = model.PageUrls[_content.CurrentPage];
+            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(pageUrl));
         }
     }
 }

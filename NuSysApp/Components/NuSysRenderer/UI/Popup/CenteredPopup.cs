@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 
 namespace NuSysApp
@@ -31,9 +32,11 @@ namespace NuSysApp
             SetNotDismissable(Canvas, "OK");
             MakeMandatoryDismissButton(Canvas);
             _message = new TextboxUIElement(this, Canvas);
+            _message.Width = Width - 20;
             _message.Text = message;
             _message.FontFamily = UIDefaults.FontFamily;
             _message.Background = Colors.White;
+            _message.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
             _message.Transform.LocalPosition = new Vector2(this.Width/2 - _message.Width/2, 10);
             AddChild(_message);
 

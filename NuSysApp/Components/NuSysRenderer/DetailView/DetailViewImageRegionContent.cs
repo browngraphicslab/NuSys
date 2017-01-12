@@ -209,10 +209,18 @@ namespace NuSysApp
             await Task.Run(async () =>
             {
                 Debug.WriteLine("loading");
-                _imageBitmap =
+                try
+                {
+                    _imageBitmap =
                     await
                         CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
                             ResourceCreator.Dpi);
+                }
+                catch (Exception)
+                {
+                    Debug.WriteLine("This image can not be loaded.");
+                }
+                
             });
             DrawingBitmap = false;
 

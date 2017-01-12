@@ -232,6 +232,12 @@ namespace NuSysApp
                 
                 StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
                 var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
+
+                var exportPopup = new CenteredPopup(RenderEngine.Root, xRenderCanvas,
+                    "You have exported your trail! \n \n" +
+                    "Find it in your Documents/NuSys/HTML.");
+                RenderEngine.Root.AddChild(exportPopup);
+
                 //open the exported html in browser
                 await Windows.System.Launcher.LaunchFileAsync(firstPage);
             }
@@ -248,9 +254,9 @@ namespace NuSysApp
             var currTrail = trail;
             while (currTrail != null) 
             {
-                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId].LibraryElementController;
+                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId].LibraryElementController;
                 var outNode =
-                    SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId].LibraryElementController;
+                    SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId].LibraryElementController;
                 if (!elements.Contains(inNode))
                 {
                     elements.Add(inNode);
@@ -261,8 +267,10 @@ namespace NuSysApp
                 }
                 elements.Add(outNode);
 
-                currTrail =
-                    PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currTrail.InElementId);
+                var oldTrail = currTrail;
+                var models = PresentationLinkViewModel.Models;
+
+                currTrail = models.FirstOrDefault(vm => vm.InElementId == oldTrail.OutElementId);
             }
 
             return elements;
