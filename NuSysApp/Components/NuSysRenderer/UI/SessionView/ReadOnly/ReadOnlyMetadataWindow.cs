@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -16,11 +17,21 @@ namespace NuSysApp
 
         private ListViewUIElementContainer<MetadataEntry> _metadata_listview;
 
-        private CheckBoxUIElement _showImmutableCheckbox;
+        private TextboxUIElement _label;
 
         private LibraryElementController _controller;
         public ReadOnlyMetadataWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            _label = new TextboxUIElement(this, ResourceCreator);
+            _label.Text = "metadata";
+            _label.Width = Width;
+            _label.Height = 38;
+            _label.FontSize = 32;
+            _label.TextColor = Constants.DARK_BLUE;
+            _label.Background = Constants.LIGHT_BLUE;
+            _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+
+            AddChild(_label);
 
             _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
@@ -31,14 +42,8 @@ namespace NuSysApp
             };
             AddChild(_searchTextBox);
 
-            _showImmutableCheckbox = new CheckBoxUIElement(this, ResourceCreator, false)
-            {
-                LabelText = "Show Immutable"
-            };
-            AddChild(_showImmutableCheckbox);
-
             _searchTextBox.TextChanged += OnSearchTextChanged;
-            _showImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
+
         }
 
         public void UpdateList(LibraryElementController controller)
@@ -60,9 +65,8 @@ namespace NuSysApp
         private void filterlist()
         {
             _metadata_listview.ClearItems();
-            var filtered_metadata = filter_by_mutability(new List<MetadataEntry>(_controller.GetMetadata().Values),
-                _showImmutableCheckbox.IsSelected);
-            filtered_metadata = filter_by_search_text(filtered_metadata, _searchTextBox.Text);
+            var filtered_metadata = filter_by_search_text(new List<MetadataEntry>(_controller.GetMetadata().Values),
+                _searchTextBox.Text);
             _metadata_listview.AddItems(filtered_metadata);
         }
 
@@ -94,7 +98,6 @@ namespace NuSysApp
 
             _controller.MetadataChanged -= _controller_MetadataChanged;
             _searchTextBox.TextChanged -= OnSearchTextChanged;
-            _showImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
 
             base.Dispose();
         }
@@ -113,7 +116,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_metadata_listview);
 
@@ -140,28 +143,22 @@ namespace NuSysApp
                 return;
             }
             // helper variable, the current vertical spacing from the top of the window
-            var vertical_spacing = 20;
-            var horizontal_spacing = 20;
+            var vertical_margin = 5;
+            var horizontal_margin = 10;
+            var searchTextBoxHeight = 30;
+
+            _label.Width = Width;
+            _label.Transform.LocalPosition = new Vector2(0, vertical_margin);
+
+            //layout all the elements for the list view
+            _metadata_listview.Transform.LocalPosition = new Vector2(horizontal_margin, vertical_margin + _label.Height);
+            _metadata_listview.Width = Width - 2*horizontal_margin;
+            _metadata_listview.Height = Height - (2*vertical_margin + searchTextBoxHeight + _label.Height);
 
             // layout all the elements for search
             _searchTextBox.Height = 30;
-            _searchTextBox.Width = Width - 2 * horizontal_spacing;
-            _searchTextBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
-
-            //layout all the elements for the list view
-            vertical_spacing += 20 + (int)_searchTextBox.Height;
-            var immutable_checkbox_height = 40;
-
-            _metadata_listview.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
-            _metadata_listview.Width = Width - 2 * horizontal_spacing;
-            _metadata_listview.Height = Height - 20 - vertical_spacing - immutable_checkbox_height - 20;
-
-            // layout the show immutable checkbox
-            vertical_spacing += 20 + (int)_metadata_listview.Height;
-
-            _showImmutableCheckbox.Height = immutable_checkbox_height;
-            _showImmutableCheckbox.Width = 150;
-            _showImmutableCheckbox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            _searchTextBox.Width = Width - 2 * horizontal_margin;
+            _searchTextBox.Transform.LocalPosition = new Vector2(horizontal_margin, vertical_margin + _metadata_listview.Height + _label.Height);
 
             base.Update(parentLocalToScreenTransform);
         }

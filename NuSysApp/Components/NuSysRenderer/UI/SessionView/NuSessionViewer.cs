@@ -135,6 +135,11 @@ namespace NuSysApp
         /// </summary>
         private int _numChatNotifications;
 
+        /// <summary>
+        /// Keeps track of the last opened library element so that the same one does not cause the windows to reopen.
+        /// </summary>
+        private LibraryElementController _readOnlyController;
+
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -271,31 +276,31 @@ namespace NuSysApp
 
             _readOnlyLinksWindow = new ReadOnlyLinksWindow(this, Canvas)
             {
-                Background = Constants.DARK_BLUE,
+                Background = Constants.LIGHT_BLUE,
                 Height = 300,
                 Width = 250
             };
             AddChild(_readOnlyLinksWindow);
-            _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(10, 100);
+            _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(300, 100);
 
             _readOnlyMetadataWindow = new ReadOnlyMetadataWindow(this, Canvas)
             {
-                Background = Constants.DARK_BLUE,
+                Background = Constants.LIGHT_BLUE,
                 Height = 300,
                 Width = 250
             };
 
             AddChild(_readOnlyMetadataWindow);
-            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(10, 450);
+            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(30, 450);
 
             _readOnlyAliasesWindow = new ReadOnlyAliasesWindow(this, Canvas)
             {
-                Background = Constants.DARK_BLUE,
+                Background = Constants.LIGHT_BLUE,
                 Height = 300,
                 Width = 250
             };
             AddChild(_readOnlyAliasesWindow);
-            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(275, 100);
+            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(30, 100);
 
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
@@ -368,12 +373,17 @@ namespace NuSysApp
 
         private void CameraCenteredOnElement(object sender, LibraryElementController e)
         {
+            if (e == _readOnlyController)
+            {
+                return;
+            }
             _readOnlyLinksWindow.UpdateList(e);
             _readOnlyAliasesWindow.UpdateList(e);
             _readOnlyMetadataWindow.UpdateList(e);
             _readOnlyLinksWindow.IsVisible = true;
             _readOnlyMetadataWindow.IsVisible = true;
             _readOnlyAliasesWindow.IsVisible = true;
+            _readOnlyController = e;
         }
 
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -392,6 +402,7 @@ namespace NuSysApp
                     SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
                 _readOnlyMetadataWindow.UpdateList(currCollectionController);
                 _readOnlyAliasesWindow.UpdateList(currCollectionController);
+                _readOnlyLinksWindow.UpdateList(currCollectionController);
             }
 
         }
@@ -466,7 +477,6 @@ namespace NuSysApp
             _detailViewer.DisableDetailView();
             _floatingMenu.HideFloatingMenu();
             _floatingMenu.IsVisible = false;
-            //_floatingMenu.Library.IsVisible = false;
 
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
@@ -817,11 +827,11 @@ namespace NuSysApp
             else
             {
                 _readOnlyLinksWindow.IsVisible = true;
-                _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(10, 100);
+                //_readOnlyLinksWindow.Transform.LocalPosition = new Vector2(275, 100);
                 _readOnlyAliasesWindow.IsVisible = true;
-                _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(275, 100);
+                //_readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(10, 100);
                 _readOnlyMetadataWindow.IsVisible = true;
-                _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(10, 450);
+                //_readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(10, 450);
             }
         }
     }

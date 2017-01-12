@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 using System.Numerics;
+using Windows.UI;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -28,9 +30,20 @@ namespace NuSysApp
         /// </summary>
         private List<ElementModel> _aliasList;
 
+        private TextboxUIElement _label;
+
         public ReadOnlyAliasesWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            _label = new TextboxUIElement(this, ResourceCreator);
+            _label.Text = "aliases";
+            _label.Width = Width;
+            _label.Height = 38;
+            _label.FontSize = 32;
+            _label.TextColor = Constants.DARK_BLUE;
+            _label.Background = Constants.LIGHT_BLUE;
+            _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
 
+            AddChild(_label);
         }
 
         public void UpdateList(LibraryElementController controller)
@@ -121,7 +134,12 @@ namespace NuSysApp
 
         private void CreateAliasList()
         {
-            _listView = new ListViewUIElementContainer<ElementModel>(this, ResourceCreator);
+            _listView = new ListViewUIElementContainer<ElementModel>(this, ResourceCreator)
+            {
+                Background = Colors.White,
+                BorderWidth = 3,
+                Bordercolor = Constants.DARK_BLUE
+            };
             _listView.AddItems(_aliasList);
 
             ListTextColumn<ElementModel> title = new ListTextColumn<ElementModel>();
@@ -168,13 +186,20 @@ namespace NuSysApp
             {
                 return;
             }
-            var vertical_spacing = 20;
-            var horizontal_spacing = 20;
 
-            _listView.Height = Height - 2 * vertical_spacing;
-            _listView.Width = Width - 2 * horizontal_spacing;
-            _listView.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            var horizontalMargin = 10;
+            var verticalMargin = 5;
+
+            _label.Width = Width;
+            _label.Transform.LocalPosition = new Vector2(0, verticalMargin);
+
+            //layout all the elements for the list view
+            _listView.Transform.LocalPosition = new Vector2(horizontalMargin, _label.Height + verticalMargin);
+            _listView.Width = Width - (2 * horizontalMargin);
+            _listView.Height = Height - (_label.Height + verticalMargin * 2);
+
             base.Update(parentLocalToScreenTransform);
+
         }
     }
 }

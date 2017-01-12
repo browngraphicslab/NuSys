@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -16,6 +18,8 @@ namespace NuSysApp
         /// </summary>
         private ListViewUIElementContainer<LinkLibraryElementController> _link_listview;
 
+        private TextboxUIElement _label;
+
         /// <summary>
         /// the library element controller for the item currently being displayed on this window.
         /// </summary>
@@ -23,7 +27,16 @@ namespace NuSysApp
 
         public ReadOnlyLinksWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            _label = new TextboxUIElement(this, ResourceCreator);
+            _label.Text = "links";
+            _label.Width = Width;
+            _label.Height = 38;
+            _label.FontSize = 32;
+            _label.TextColor = Constants.DARK_BLUE;
+            _label.Background = Constants.LIGHT_BLUE;
+            _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
 
+            AddChild(_label);
         }
 
         /// <summary>
@@ -35,7 +48,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_link_listview);
 
@@ -83,14 +96,22 @@ namespace NuSysApp
             {
                 return;
             }
-            // helper variable, the current vertical spacing from the top of the window
-            var vertical_spacing = 20;
-            var horizontal_spacing = 20;
-       
+
+            var horizontalMargin = 10;
+            var verticalMargin = 5;
+
+            _label.Width = Width;
+            _label.Transform.LocalPosition = new Vector2( 0, verticalMargin);
+
             //layout all the elements for the list view
-            _link_listview.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
-            _link_listview.Width = Width - 2 * horizontal_spacing;
-            _link_listview.Height = Height - 20 - vertical_spacing;
+            _link_listview.Transform.LocalPosition = new Vector2( horizontalMargin, _label.Height + verticalMargin);
+            _link_listview.Width = Width -  ( 2 * horizontalMargin);
+            _link_listview.Height = Height - (_label.Height + verticalMargin*2);
+
+            if (_controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+            {
+                IsVisible = false;
+            }
 
             base.Update(parentLocalToScreenTransform);
         }
@@ -118,7 +139,7 @@ namespace NuSysApp
             // get the link library element controller of the link that is going to be removed
             var llecToBeRemoved = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(e);
             // remove it from the list
-            _link_listview.RemoveItems(new List<LinkLibraryElementController> { llecToBeRemoved });
+            _link_listview?.RemoveItems(new List<LinkLibraryElementController> { llecToBeRemoved });
         }
 
         /// <summary>
@@ -128,7 +149,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void OnLinkAdded(object sender, LinkLibraryElementController e)
         {
-            _link_listview.AddItems(new List<LinkLibraryElementController> { e });
+            _link_listview?.AddItems(new List<LinkLibraryElementController> { e });
         }
 
         public override void Dispose()
