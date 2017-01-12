@@ -48,25 +48,28 @@
             <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed"></local:UndoButton>
 
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
-            <Rectangle x:Name="xFullScreenVideoBackground" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Fill="White" ></Rectangle>
+            <Rectangle x:Name="xFullScreenVideoBackground" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Fill="Black" ></Rectangle>
             <local:VideoPlayer x:Name="xFullScreenVideoElement" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}">
                 <local:BaseMediaPlayer.RenderTransform>
                     <CompositeTransform></CompositeTransform>
                 </local:BaseMediaPlayer.RenderTransform>
             </local:VideoPlayer>
-            <Button x:Name="xFullScreenVideoCloseButton" Width ="100" Height="50" Background="White" Foreground="DarkRed" HorizontalAlignment="Center" VerticalAlignment="Bottom" Tapped="XFullScreenVideoCloseButton_OnTapped" Visibility="Collapsed">
-                <TextBlock>"X"</TextBlock>
+            <Button x:Name="xFullScreenVideoCloseButton" Width ="150" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Tapped="XFullScreenVideoCloseButton_OnTapped" Visibility="Collapsed">
+                <TextBlock>Close</TextBlock>
             </Button>
-            <Button x:Name="xFullScreenVideoAddRegionButton" Visibility="Collapsed" Width="100" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Tapped="XFullScreenVideoAddRegionButton_OnTapped" Background="Azure">
-                <TextBlock Height="50" Width="100">Add Region</TextBlock>
+            <Button x:Name="xFullScreenVideoAddRegionButton" Visibility="Collapsed" Width="150" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Tapped="XFullScreenVideoAddRegionButton_OnTapped">
+                <TextBlock TextAlignment="Center">Add Region</TextBlock>
             </Button>
-            <StackPanel x:Name="xAddRegionMenu" Visibility="Collapsed" Background="Azure" Width="100">
-                <RadioButton x:Name="xAddPublicRadioButton" GroupName="Regions">Public</RadioButton>
-                <RadioButton x:Name="xAddPrivateRadioButton" GroupName="Regions">Private</RadioButton>
-                <Button x:Name="xFullScreenVideoSubmit" Tapped="XFullScreenVideoSubmit_OnTapped" Width="100">
-                    <TextBlock TextAlignment="Center">Submit</TextBlock>
-                </Button>
-            </StackPanel>
+            <Grid x:Name="xAddRegionMenu" Visibility="Collapsed" Width="250" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Width="250" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <RadioButton x:Name="xAddPublicRadioButton" GroupName="Regions" HorizontalAlignment="Center">Public</RadioButton>
+                    <RadioButton x:Name="xAddPrivateRadioButton" GroupName="Regions" HorizontalAlignment="Center">Private</RadioButton>
+                    <Button x:Name="xFullScreenVideoSubmit" Tapped="XFullScreenVideoSubmit_OnTapped" Width="100" HorizontalAlignment="Center">
+                        <TextBlock TextAlignment="Center">Submit</TextBlock>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            
         </Canvas>
         <local:DetailViewFullScreenImageViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="xFullScreenImageViewer"></local:DetailViewFullScreenImageViewer>
 
