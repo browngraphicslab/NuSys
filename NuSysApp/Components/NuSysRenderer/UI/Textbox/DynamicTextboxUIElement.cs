@@ -12,41 +12,17 @@ namespace NuSysApp
     {
 
         /// <summary>
-        /// private helper variable for public property width
-        /// </summary>
-        private float _width {
-            get { return base.Width; }
-            set
-            {
-                base.Width = value;
-                base.Height = Height;
-            }
-        }
-
-        /// <summary>
         /// The width of the DynamicTextboxUIElement, if you set this then the textbox will resize vertically
         /// </summary>
         public override float Width
         {
-            get { return _calculateWidth ? CalculateWidthBasedOnText() : _width; }
+            get { return _calculateWidth ? CalculateWidthBasedOnText() : base.Width; }
             set
             {
                 // calculateWidth is false, so that we are calculating the height instead
                 _calculateWidth = false;
-                _width = value;
-            }
-        }
-
-        /// <summary>
-        /// private helper variable for public property Height
-        /// </summary>
-        public float _height
-        {
-            get { return base.Height; }
-            set
-            {
-                base.Height = value;
-                base.Width = Width;
+                base.Width = value;
+                base.Height = CalculateHeightBasedOnText();
             }
         }
 
@@ -55,12 +31,13 @@ namespace NuSysApp
         /// </summary>
         public override float Height
         {
-            get { return _calculateWidth ? _height : CalculateHeightBasedOnText(); }
+            get { return _calculateWidth ? base.Height : CalculateHeightBasedOnText(); }
             set
             {
                 // calculateWidth is true, so that we are calculating the width instead
                 _calculateWidth = true;
-                _height = value;
+                base.Height = value;
+                base.Width = CalculateWidthBasedOnText();
             }
         }
 
@@ -82,7 +59,7 @@ namespace NuSysApp
         /// dynamically, false if the user set the width and we want to set
         /// the height dynamically
         /// </summary>
-        private bool _calculateWidth;
+        private bool _calculateWidth { get; set; }
 
         /// <summary>
         /// true if the DynamicTextbox has been loaded
@@ -120,12 +97,12 @@ namespace NuSysApp
 
             if (_calculateWidth)
             {
-                _height = Height;
+                base.Width = CalculateWidthBasedOnText();
 
             }
             else
             {
-                _width = Width;
+                base.Height = CalculateHeightBasedOnText();
             }
         }
 
@@ -146,6 +123,11 @@ namespace NuSysApp
         /// <returns></returns>
         private CanvasTextLayout CreateTextLayout(ICanvasResourceCreator resourceCreator)
         {
+            if (!_loaded)
+            {
+                return null;
+            }
+
             // if we are calculating the width, then make the width the maximum float value and use the height
             if (_calculateWidth)
             {
@@ -169,7 +151,7 @@ namespace NuSysApp
                 return UIDefaults.Width;
             }
 
-            return (float) CreateTextLayout(Canvas).LayoutBounds.Width + 2 * (BorderWidth + UIDefaults.YTextPadding);
+            return (float) CreateTextLayout(Canvas).LayoutBounds.Width + 2 * (BorderWidth + UIDefaults.XTextPadding);
         }
 
         /// <summary>
@@ -183,6 +165,15 @@ namespace NuSysApp
                 return UIDefaults.Height;
             }
             return (float) CreateTextLayout(Canvas).LayoutBounds.Height + 2*(BorderWidth + UIDefaults.YTextPadding);
+        }
+
+        /// <summary>
+        /// Allows the user to bypass loading the dynamic textbox, make sure you know what you're doing here
+        /// </summary>
+        public void SetLoaded()
+        {
+            _loaded = true;
+            RefreshDimensions();
         }
     }
 }
