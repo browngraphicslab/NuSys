@@ -26,7 +26,7 @@ namespace NuSysApp
 
         public RoundedRectButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
             int style = 0, string text = "")
-            : base(parent, resourceCreator, new RoundedRectButtonUIElement(parent, resourceCreator))
+            : base(parent, resourceCreator, new RoundedRectangleUIElement(parent, resourceCreator))
         {
             RoundedRect.Radius = 5;
             switch (style) 

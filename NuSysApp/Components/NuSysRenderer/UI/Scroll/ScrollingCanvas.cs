@@ -396,11 +396,8 @@ namespace NuSysApp
             if (_elements.Contains(element))
             {
                 _elements.Remove(element);
-<<<<<<< HEAD
                 _scrollAreaRect.RemoveChild(element);
-=======
                 RemoveElementEvents(element);
->>>>>>> origin/Snappabilityforwindows
             }
         }
 
