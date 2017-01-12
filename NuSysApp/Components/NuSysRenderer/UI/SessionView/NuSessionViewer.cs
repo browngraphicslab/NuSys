@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NuSysApp.Components.NuSysRenderer.UI.Textbox;
 using NuSysApp.Network.Requests;
 using ReverseMarkdown.Converters;
 using WinRTXamlToolkit.Controls.DataVisualization;
@@ -394,7 +395,7 @@ namespace NuSysApp
             _floatingMenu.Transform.LocalPosition = new Vector2(Width/4 - _floatingMenu.Width/2, Height/4 - _floatingMenu.Height/2);
             //_currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
             _chatButton.Transform.LocalPosition = new Vector2(10, Height - _chatButton.Height - 10);
-            _chatButtonNotifications.Transform.LocalPosition = new Vector2(_chatButton.Transform.LocalX + _chatButton.Width, _chatButton.Transform.LocalY - _chatButtonNotifications.Height);
+            _chatButtonNotifications.Transform.LocalPosition = new Vector2((float) (_chatButton.Transform.LocalX + _chatButton.Width/2 + _chatButton.Width/2 * Math.Cos(.25 * Math.PI)), (float) (_chatButton.Transform.LocalY + _chatButton.Height/2 - _chatButton.Height/2 * Math.Sin(.25 * Math.PI) - _chatButtonNotifications.Height));
             _snapshotButton.Transform.LocalPosition = new Vector2(10, 10);
             _settingsButton.Transform.LocalPosition = new Vector2(80, 10);
             _backButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backButton.Height/2);
