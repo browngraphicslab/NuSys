@@ -218,7 +218,7 @@ namespace NuSysApp
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", Root, CanvasAnimatedControl);
             BtnDelete.IsVisible = false;
 
-            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", Root, CanvasAnimatedControl);
+            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/html export.png", Root, CanvasAnimatedControl);
             BtnExportTrail.IsVisible = false;
 
             Root.AddChild(ElementSelectionRect);
