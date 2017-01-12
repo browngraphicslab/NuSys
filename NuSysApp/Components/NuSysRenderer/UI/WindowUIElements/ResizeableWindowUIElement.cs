@@ -615,5 +615,49 @@ namespace NuSysApp
             var diff = 100*(deltaZoom - 1);
             ApplyResizeChanges(new Vector2(0,0), new Vector2(diff, diff));
         }
+
+        /// <summary>
+        /// Sets the dimensions and offset of the snap preview window
+        /// </summary>
+        protected override void SetSnapPreviewDimensions()
+        {
+            if (SnapPreviewRect == null)
+            {
+                return;
+            }
+
+            // set the snap preview rect dimensions
+            switch (CurrentSnapPosition)
+            {
+                case SnapPosition.Left:
+                    SnapPreviewRect.Width = Math.Min(MaxWidth ?? float.MaxValue,Math.Max(MinWidth ?? 0, (float)SessionController.Instance.ScreenWidth / 2));
+                    SnapPreviewRect.Height = Math.Min(MaxHeight ?? float.MaxValue, Math.Max(MinHeight ?? 0, (float)SessionController.Instance.ScreenHeight));
+                    break;
+                case SnapPosition.Top:
+                    SnapPreviewRect.Width = Math.Min(MaxWidth ?? float.MaxValue, Math.Max(MinWidth ?? 0, (float)SessionController.Instance.ScreenWidth));
+                    SnapPreviewRect.Height = Math.Min(MaxHeight ?? float.MaxValue, Math.Max(MinHeight ?? 0, (float)SessionController.Instance.ScreenHeight));
+                    break;
+                case SnapPosition.Right:
+                    SnapPreviewRect.Width = Math.Min(MaxWidth ?? float.MaxValue, Math.Max(MinWidth ?? 0, (float)SessionController.Instance.ScreenWidth / 2));
+                    SnapPreviewRect.Height = Math.Min(MaxHeight ?? float.MaxValue, Math.Max(MinHeight ?? 0, (float)SessionController.Instance.ScreenHeight));
+                    break;
+                case SnapPosition.Bottom:
+                    SnapPreviewRect.Width = Math.Min(MaxWidth ?? float.MaxValue, Math.Max(MinWidth ?? 0, (float)SessionController.Instance.ScreenWidth));
+                    SnapPreviewRect.Height = Math.Min(MaxHeight ?? float.MaxValue, Math.Max(MinHeight ?? 0, (float)SessionController.Instance.ScreenHeight /2));
+                    break;
+                case SnapPosition.TopLeft:
+                case SnapPosition.TopRight:
+                case SnapPosition.BottomLeft:
+                case SnapPosition.BottomRight:
+                    SnapPreviewRect.Width = Math.Min(MaxWidth ?? float.MaxValue, Math.Max(MinWidth ?? 0, (float)SessionController.Instance.ScreenWidth / 2));
+                    SnapPreviewRect.Height = Math.Min(MaxHeight ?? float.MaxValue, Math.Max(MinHeight ?? 0, (float)SessionController.Instance.ScreenHeight / 2));
+                    break;
+
+                case null:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

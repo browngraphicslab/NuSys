@@ -105,11 +105,6 @@ namespace NuSysApp
         /// </summary>
         private FilterMenu _filterMenu { get; }
 
-        ///// <summary>
-        ///// TEST BUTTON
-        ///// </summary>
-        //private RectangleButtonUIElement _testbutton;
-
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -145,6 +140,8 @@ namespace NuSysApp
             Background = Colors.White;
             Bordercolor = Constants.MED_BLUE;
             BorderWidth = 1;
+            IsSnappable = true;
+
 
             // initialize the filter button
             _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
@@ -175,22 +172,11 @@ namespace NuSysApp
 
             _filterButton.Tapped += OnFilterButtonTapped;
 
-            ///TEST BUTTON
-            //_testbutton = new RectangleButtonUIElement(this, Canvas, 0, "test");
-            //AddChild(_testbutton);
-
-            //_testbutton.Tapped += _testbutton_Tapped;
-
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
         }
         
-        //private void _testbutton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        //{
-        //    CenteredPopup test = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "this is a test");
-        //    SessionController.Instance.NuSessionView.AddChild(test);
-        //}
 
         /// <summary>
         /// Event handler for when the text of the library search bar changes

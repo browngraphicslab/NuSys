@@ -60,6 +60,11 @@ namespace NuSysApp
         /// </summary>
         private FlyoutPopup _settingsPopup;
 
+        /// <summary>
+        /// Rectangle used to display an underline below the title
+        /// </summary>
+        private RectangleUIElement _titleUnderline;
+
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
@@ -261,15 +266,12 @@ namespace NuSysApp
             _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
 
             /// a decorative line :)
-            var line = new RectangleUIElement(this, Canvas)
+            _titleUnderline = new RectangleUIElement(this, Canvas)
             {
                 Background = Constants.MED_BLUE,
                 Height = 2
             };
-            line.Width = Width - 20;
-            AddChild(line);
-            line.Transform.LocalPosition = new Vector2(10, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
-
+            AddChild(_titleUnderline);
 
             _loaded = true;
             base.Load();
@@ -408,6 +410,10 @@ namespace NuSysApp
                 _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _tabContainerLayoutManager.ArrangeItems();
+
+                var titleUnderlineHorizontalOffset = 20;
+                _titleUnderline.Width = Width - titleUnderlineHorizontalOffset;
+                _titleUnderline.Transform.LocalPosition = new Vector2(titleUnderlineHorizontalOffset/2, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
             }
 
 

@@ -69,6 +69,7 @@ namespace NuSysApp
 
             // detail view defaults to invisible. visible on click
             IsVisible = false;
+            IsSnappable = true;
 
             // add events
             _mainTabContainer.TabContainerClosed += _mainTabContainer_TabContainerClosed;
