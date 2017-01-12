@@ -163,13 +163,20 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-
-
-
             _buttonLayoutManager.ArrangeItems();
 
             base.Update(parentLocalToScreenTransform);
 
+        }
+
+        public void HideFloatingMenu()
+        {
+            IsVisible = false;
+        }
+
+        public void ShowFloatingMenu()
+        {
+            IsVisible = true;
         }
     }
 }
