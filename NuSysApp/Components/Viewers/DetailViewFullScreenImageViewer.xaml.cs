@@ -94,7 +94,7 @@ namespace NuSysApp
             Visibility = Visibility.Visible;
             xImage.Source = new BitmapImage(imageUri);
             xImage.RenderTransform = new CompositeTransform();
-            //ResetImage();
+            ResetImage();
         }
 
 
@@ -139,12 +139,15 @@ namespace NuSysApp
 
 
 
-            //var center = new Point(Math.Cos(transform.Rotation) * e.Position.X,Math.Sin(transform.Rotation)*e.Position.Y);
             var center = e.Position;
-            var tmpTranslate = new TranslateTransform
+
+            var tmpTranslate = new CompositeTransform()
             {
-                X = compositeTransform.CenterX,
-                Y = compositeTransform.CenterY
+                TranslateX  = compositeTransform.CenterX,
+                TranslateY = compositeTransform.CenterY,
+                Rotation =  compositeTransform.Rotation,
+                ScaleX = compositeTransform.ScaleX,
+                ScaleY = compositeTransform.ScaleY
             };
 
             var localPoint = tmpTranslate.Inverse.TransformPoint(center);
@@ -179,8 +182,6 @@ namespace NuSysApp
 
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            //transform.Rotation += e.Delta.Rotation;
         }
 
         private void XImage_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
