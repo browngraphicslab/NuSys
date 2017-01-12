@@ -60,7 +60,7 @@ namespace NuSysApp
         /// </summary>
         private FlyoutPopup _settingsPopup;
 
-        /// <summary>
+
         /// a decorative line
         /// </summary>
         private RectangleUIElement _line;
@@ -291,6 +291,7 @@ namespace NuSysApp
             _line.Width = Width - 20;
             AddChild(_line);
             _line.Transform.LocalPosition = new Vector2(10, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
+
             _loaded = true;
             base.Load();
         }

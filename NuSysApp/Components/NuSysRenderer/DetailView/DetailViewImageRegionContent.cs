@@ -136,7 +136,6 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
-            DoubleTapped += OnDoubleTapped;
         }
 
         /// <summary>
@@ -144,10 +143,6 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(_controller.ContentDataController.ContentDataModel.Data));
-        }
 
 
         public override void Dispose()
@@ -156,8 +151,6 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
-
-            DoubleTapped -= OnDoubleTapped;
 
             base.Dispose();
         }

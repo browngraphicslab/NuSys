@@ -51,7 +51,14 @@ namespace NusysIntermediate
         /// </summary>
         private void SetUrls(string contentData)
         {
-            PageUrls = JsonConvert.DeserializeObject<List<string>>(contentData ?? "");
+            try
+            {
+                PageUrls = JsonConvert.DeserializeObject<List<string>>(contentData ?? "");
+            }
+            catch (Exception e)
+            {
+                PageUrls = new List<string>() {contentData};
+            }
         }
 
         /// <summary>

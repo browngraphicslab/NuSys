@@ -89,19 +89,38 @@ namespace NuSysApp
             _gridSortDropDown.Selected += _gridSortDropDown_Selected;
             _controller.OnChildAdded += Controller_OnChildAdded;
             _controller.OnChildRemoved += Controller_OnChildRemoved;
+            SessionController.Instance.EnterNewCollectionStarting += Instance_EnterNewCollectionStarting;
+        }
+
+        /// <summary>
+        /// Called whenever we switch collections clears all the current children
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Instance_EnterNewCollectionStarting(object sender, string e)
+        {
+            foreach (var element in _collectionElementModels.ToArray())
+            {
+                _scrollingGrid.RemoveItem(element);
+                _collectionElementModels.Remove(element);
+            }
         }
 
         private void Controller_OnChildRemoved(string id)
         {
             Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(id));
-            _scrollingGrid.RemoveItem(SessionController.Instance.ElementModelIdToElementController[id].Model);
+            var elementModel = SessionController.Instance.ElementModelIdToElementController[id].Model;
+            _scrollingGrid.RemoveItem(elementModel);
+            _collectionElementModels.Remove(elementModel);
+
         }
 
         private void Controller_OnChildAdded(string id)
         {
             Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(id));
-
-            _scrollingGrid.AddItem(SessionController.Instance.ElementModelIdToElementController[id].Model);
+            var elementModel = SessionController.Instance.ElementModelIdToElementController[id].Model;
+            _collectionElementModels.Add(elementModel);
+            _scrollingGrid.AddItem(elementModel);
         }
 
         public override void Dispose()
@@ -110,6 +129,7 @@ namespace NuSysApp
             _gridSortDropDown.Selected -= _gridSortDropDown_Selected;
             _controller.OnChildAdded -= Controller_OnChildAdded;
             _controller.OnChildRemoved -= Controller_OnChildRemoved;
+            SessionController.Instance.EnterNewCollectionStarting -= Instance_EnterNewCollectionStarting;
 
             base.Dispose();
         }

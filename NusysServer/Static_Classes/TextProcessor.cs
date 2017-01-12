@@ -41,7 +41,7 @@ namespace NusysServer
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <exception cref="HttpResponseException"></exception>
-        private static async Task<CognitiveApiTopicModel> GetTextTopicsAsync(List<CognitiveApiDocument> documents, List<string> stopWords = null, List<string> topicsToExclude = null)
+        public static async Task<CognitiveApiTopicModel> GetTextTopicsAsync(List<CognitiveApiDocument> documents, List<string> stopWords = null, List<string> topicsToExclude = null)
         {
             if (documents == null)
             {

@@ -542,16 +542,6 @@ namespace NuSysApp
                 var creator = elementCollectionInstanceController.LibraryElementModel.Creator;
 
                 //TODO redo read only or editable implementation
-                if (elementCollectionInstanceController.LibraryElementModel.AccessType ==
-                    NusysConstants.AccessType.ReadOnly &&
-                    userID != creator)
-                {
-                    Instance.MakeWorkspaceReadonly();
-                }
-                else
-                {
-                    Instance.MakeWorkspaceEditable();
-                }
 
                 await UITask.Run(async delegate
                 {
@@ -561,6 +551,16 @@ namespace NuSysApp
                 {
                     SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
                 }
+
+                if (elementCollectionInstanceController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly && userID != creator)
+                {
+                    Instance.MakeWorkspaceReadonly();
+                }
+                else
+                {
+                    Instance.MakeWorkspaceEditable();
+                }
+
 
                 var controller = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
                 // add the bread crumb for the collection
