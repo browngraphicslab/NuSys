@@ -14,10 +14,15 @@ namespace NuSysApp
         public ReadOnlyModeWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _closeButton = new RectangleButtonUIElement(this, resourceCreator);
-            _closeButton.ButtonText = "Close";
+            _closeButton.ButtonText = "X";
+            _closeButton.Height = 15;
+            _closeButton.Width = 15;
             AddChild(_closeButton);
 
-            _closeButton.Transform.LocalPosition = new Vector2(10, 25);
+            MinHeight = 400;
+            MinWidth = 250;
+
+            _closeButton.Transform.LocalPosition = new Vector2(5, 5);
             _closeButton.Tapped += _closeButton_Tapped;
         }
 
@@ -26,7 +31,7 @@ namespace NuSysApp
             this.IsVisible = false;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _closeButton.Tapped -= _closeButton_Tapped;
             base.Dispose();

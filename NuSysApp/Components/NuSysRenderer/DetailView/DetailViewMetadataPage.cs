@@ -244,12 +244,6 @@ namespace NuSysApp
             _showImmutableCheckbox.Width = 150;
             _showImmutableCheckbox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
 
-
-
-
-
-
-
             base.Update(parentLocalToScreenTransform);
         }
     }

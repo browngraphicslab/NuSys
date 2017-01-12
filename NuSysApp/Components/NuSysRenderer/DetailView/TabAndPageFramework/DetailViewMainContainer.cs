@@ -28,6 +28,11 @@ namespace NuSysApp
         private StackLayoutManager _mainTabLayoutManager;
 
         /// <summary>
+        /// The boolean for siabling the detail view. When true, the detail view will not open.
+        /// </summary>
+        private bool _disabled;
+
+        /// <summary>
         /// Dictionary of library element ids to the currTabOpen. So that if we were on the regions tab in one page
         /// and we click to another tab, when we return we open to the regions tab again
         /// </summary>
@@ -140,6 +145,10 @@ namespace NuSysApp
         /// <param name="libraryElementModelId"></param>
         public void ShowLibraryElement(string libraryElementModelId)
         {
+            if (_disabled)
+            {
+                return;
+            }
             // if the detail viewer isn't currently visible then make it visible
             if (!IsVisible)
             {
@@ -172,6 +181,16 @@ namespace NuSysApp
         public void HideDetailView()
         {
             IsVisible = false;
+        }
+
+        public void DisableDetailView()
+        {
+            _disabled = true;
+        }
+
+        public void EnableDetailView()
+        {
+            _disabled = false;
         }
     }
 }

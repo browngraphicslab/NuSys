@@ -92,6 +92,8 @@ namespace NuSysApp
         private LayoutWindowUIElement _layoutWindow;
         private bool _customLayoutDrawing = false;
 
+        public event EventHandler<bool> CanvasPanned;
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -1132,6 +1134,11 @@ namespace NuSysApp
 
             UpdateNonWin2dElements();
             _minimap.Invalidate();
+
+            if (delta.Length() > 200)
+            {
+                CanvasPanned?.Invoke(this, true);
+            }
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()

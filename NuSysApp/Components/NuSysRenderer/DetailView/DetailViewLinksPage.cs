@@ -102,13 +102,6 @@ namespace NuSysApp
             };
             AddChild(_createLinkButton);
 
-            // create the list view to display the events
-            CreateListView();
-
-            _controller.LinkAdded += OnLinkAdded;
-            _controller.LinkRemoved += OnLinkRemoved;
-            _createLinkButton.Tapped += OnCreateLinkButtonTapped;
-
             // always add this as the last child since it has a drop down
             AddChild(_addLinkToElementBox);
 
