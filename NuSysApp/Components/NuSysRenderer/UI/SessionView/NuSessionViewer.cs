@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NuSysApp.Components.NuSysRenderer.UI.Textbox;
 using NuSysApp.Network.Requests;
 using ReverseMarkdown.Converters;
 using WinRTXamlToolkit.Controls.DataVisualization;
@@ -111,6 +112,16 @@ namespace NuSysApp
         /// </summary>
         private bool _loaded;
 
+        /// <summary>
+        /// Dynamic textbox used to display chat notifications
+        /// </summary>
+        private DynamicTextboxUIElement _chatButtonNotifications;
+
+        /// <summary>
+        /// The current number of chat notifications
+        /// </summary>
+        private int _numChatNotifications;
+
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -151,6 +162,19 @@ namespace NuSysApp
 
             _chatButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle);
             AddChild(_chatButton);
+
+            // add the chatbutton notifications
+            _chatButtonNotifications = new DynamicTextboxUIElement(this, Canvas)
+            {
+                IsVisible = false,
+                Height = 25,
+                Background = Colors.Red,
+                TextColor = Colors.White,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
+
+            };
+            AddChild(_chatButtonNotifications);
+
 
             _snapshotButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle);
             AddChild(_snapshotButton);
@@ -238,7 +262,6 @@ namespace NuSysApp
             _backToWaitingRoom.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
-
         }
 
         /// <summary>
@@ -249,20 +272,14 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void BackTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_backToWaitingRoom.IsVisible)
-            {
-                _backToWaitingRoom.IsVisible = false;
-                TrailBox.IsVisible = false;
-            }
-            else
-            {
-                _backToWaitingRoom.IsVisible = true;
-                TrailBox.IsVisible = true;
-            }
+            // toggle the back to waiting room rectangle visibility
+            _backToWaitingRoom.IsVisible = !_backToWaitingRoom.IsVisible;
 
-            if (SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            // if the bread crumb trail is going to be viewed in the back to waiting room rect
+            // assign it the same visibility as the back to waiting room rect
+            if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
-                TrailBox.IsVisible = true;
+                TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
             }
         }
 
@@ -276,12 +293,26 @@ namespace NuSysApp
             {
                 case Options.PanZoomOnly:
                     _floatingMenu.IsVisible = true;
-                    TrailBox.IsVisible = true;
+                    if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+                    {
+                        TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
+                    }
+                    else
+                    {
+                        TrailBox.IsVisible = true;
+                    }
                     break;
                 case Options.Presentation:
                     _detailViewer.IsVisible = false;
                     _floatingMenu.IsVisible = false;
-                    TrailBox.IsVisible = false;
+                    if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+                    {
+                        TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
+                    }
+                    else
+                    {
+                        TrailBox.IsVisible = false;
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
@@ -331,6 +362,15 @@ namespace NuSysApp
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
             }
 
+            if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            {
+                TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
+            }
+            else
+            {
+                TrailBox.IsVisible = true;
+            }
+
 
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2, _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
         }
@@ -358,6 +398,8 @@ namespace NuSysApp
                 Chatbox.Height = Math.Min(Height - 100, Chatbox.Height);
                 Chatbox.Width = Math.Min(Width - 100, Chatbox.Width);
                 Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height - 70);
+                _chatButtonNotifications.IsVisible = false;
+                _numChatNotifications = 0;
             }
         }
 
@@ -369,6 +411,7 @@ namespace NuSysApp
             _floatingMenu.Transform.LocalPosition = new Vector2(Width/4 - _floatingMenu.Width/2, Height/4 - _floatingMenu.Height/2);
             //_currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
             _chatButton.Transform.LocalPosition = new Vector2(10, Height - _chatButton.Height - 10);
+            _chatButtonNotifications.Transform.LocalPosition = new Vector2((float) (_chatButton.Transform.LocalX + _chatButton.Width/2 + _chatButton.Width/2 * Math.Cos(.25 * Math.PI)), (float) (_chatButton.Transform.LocalY + _chatButton.Height/2 - _chatButton.Height/2 * Math.Sin(.25 * Math.PI) - _chatButtonNotifications.Height));
             _snapshotButton.Transform.LocalPosition = new Vector2(10, 10);
             _settingsButton.Transform.LocalPosition = new Vector2(80, 10);
             _backButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backButton.Height/2);
@@ -471,6 +514,7 @@ namespace NuSysApp
         /// </summary>
         private async void BackToWaitingRoomOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
+            _backToWaitingRoom.IsVisible = false;
             // for now this has to be done on the ui thread because it deals with xaml elements
             UITask.Run(async () =>
             {
@@ -478,6 +522,7 @@ namespace NuSysApp
 
                 await WaitingRoomView.Instance.ShowWaitingRoom();
             });
+
         }
 
         /// <summary>
@@ -638,6 +683,20 @@ namespace NuSysApp
             }
 
             SessionController.Instance.SwitchMode(Options.PanZoomOnly);
+        }
+
+        /// <summary>
+        /// Displays the passed in notification in the chat icon
+        /// </summary>
+        /// <param name="notification"></param>
+        public void IncrementChatNotifications()
+        {
+            if (!Chatbox.IsVisible)
+            {
+                _numChatNotifications += 1;
+                _chatButtonNotifications.Text = _numChatNotifications.ToString();
+                _chatButtonNotifications.IsVisible = true;
+            }
         }
     }
 }

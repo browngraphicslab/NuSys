@@ -150,7 +150,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// event handler for whenever the session's setting for bread crumb trail visiblity changes
+        /// event handler for whenever the session's setting for bread crumb trail position changes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

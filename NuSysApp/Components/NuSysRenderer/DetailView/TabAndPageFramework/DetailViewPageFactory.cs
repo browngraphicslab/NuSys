@@ -100,6 +100,7 @@ namespace NuSysApp
             }
             var load = rectangle?.Load();
             if (load != null) await load;
+
             return rectangle;
         }
     }

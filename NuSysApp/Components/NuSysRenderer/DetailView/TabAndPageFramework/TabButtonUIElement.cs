@@ -172,7 +172,7 @@ namespace NuSysApp
             _backgroundButton.ButtonTextHorizontalAlignment = TextAlignment;
             _backgroundButton.Background = Background;
             _backgroundButton.BorderWidth = 0;
-            _backgroundButton.Width = Math.Max(Width - _closeButton.Width * 3,0);
+            _backgroundButton.Width = Math.Max(Width - _closeButton.Width,0);
             _backgroundButton.Height = Height;
 
             if (Underlined)

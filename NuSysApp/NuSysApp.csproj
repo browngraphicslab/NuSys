@@ -137,6 +137,7 @@
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
     <Content Include="Assets\new icons\up arrow.png" />
+    <Content Include="Assets\new icons\x white.png" />
     <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
@@ -393,9 +394,14 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\EditShapePopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingGrid.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\GradientBackgroundRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\InkableImageDetailRenderItemUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\InkableUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\AutoSuggestTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseButtonUIElement.cs" />
@@ -834,6 +840,7 @@
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\Requests\UpdatePresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\UploadCollectionBackgroundImageRequest.cs" />
+    <Compile Include="Network\Requests\WebSearchRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
     <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />

@@ -22,6 +22,8 @@ namespace NuSysApp
             Background = UIDefaults.Background;
             BorderWidth = UIDefaults.Borderwidth;
             Bordercolor = UIDefaults.Bordercolor;
+            ImageHorizontalAlignment = HorizontalAlignment.Left;
+            ImageVerticalAlignment = VerticalAlignment.Top;
         }
 
         /// <summary>
@@ -90,11 +92,16 @@ namespace NuSysApp
             }
         }
 
+        private VerticalAlignment _imageVerticalAlignment;
+        private HorizontalAlignment _imageHorizontalAlignment;
+
+        public VerticalAlignment ImageVerticalAlignment { set; get; }
+        public HorizontalAlignment ImageHorizontalAlignment { set; get; }
+
         /// <summary>
         /// The BorderColor of the Rectangle
         /// </summary>
         public override Windows.UI.Color Bordercolor { get; set; }
-
 
         /// <summary>
         /// Draws the background and the border
@@ -151,11 +158,54 @@ namespace NuSysApp
                 var orgTransform = ds.Transform;
                 ds.Transform = Transform.LocalToScreenMatrix;
 
+                Rect bounds = AlignImageBounds(ImageBounds) ?? GetLocalBounds();
+
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
-                ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                {
+                    ds.DrawImage(Image, bounds, Image.GetBounds(Canvas));
+                }
 
                 ds.Transform = orgTransform;
             }
+        }
+
+
+        private Rect? AlignImageBounds(Rect? bounds)
+        {
+            if (bounds == null)
+            {
+                return null;
+            }
+            Rect newBounds = bounds ?? default(Rect);
+            switch (ImageHorizontalAlignment)
+            {
+                case HorizontalAlignment.Left:
+                    break;
+                case HorizontalAlignment.Center:
+                    newBounds.X = (Width- newBounds.Width)/2;
+                    break;
+                case HorizontalAlignment.Right:
+                    newBounds.X = Width - newBounds.Width;
+                    break;
+                case HorizontalAlignment.Stretch:
+                    newBounds.Width = Width;
+                    break;
+            }
+            switch (ImageVerticalAlignment)
+            {
+                case VerticalAlignment.Bottom:
+                    newBounds.Y = Height - newBounds.Height;
+                    break;
+                case VerticalAlignment.Center:
+                    newBounds.Y = (Height - newBounds.Height)/2;
+                    break;
+                case VerticalAlignment.Stretch:
+                    newBounds.Height = Height;
+                    break;
+                case VerticalAlignment.Top:
+                    break;
+            }
+            return newBounds;
         }
 
         /// <summary>

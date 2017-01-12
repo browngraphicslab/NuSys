@@ -36,7 +36,6 @@ namespace NuSysApp
             {
                 base.Draw(ds);
             }
-
             ds.Transform = orgTransform;
         }
 

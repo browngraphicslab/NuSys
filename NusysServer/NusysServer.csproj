@@ -43,6 +43,10 @@
       <HintPath>..\packages\GemBox.Document.25.3.30.1243\lib\net30\GemBox.Document.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -247,6 +251,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="HtmlParser\AudioDataHolder.cs" />
+    <Compile Include="HtmlParser\DataHolder.cs" />
+    <Compile Include="HtmlParser\HTMLImporter.cs" />
+    <Compile Include="HtmlParser\ImageDataHolder.cs" />
+    <Compile Include="HtmlParser\PdfDataHolder.cs" />
+    <Compile Include="HtmlParser\SiteScoreTaker.cs" />
+    <Compile Include="HtmlParser\TextDataHolder.cs" />
+    <Compile Include="HtmlParser\VideoDataHolder.cs" />
     <Compile Include="Lda\Constants.cs" />
     <Compile Include="Lda\Conversion.cs" />
     <Compile Include="Lda\Dictionary.cs" />
@@ -306,6 +318,7 @@
     <Compile Include="RequestHandlers\UpdateLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdatePresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\UploadCollectionBackgroundImageRequestHandler.cs" />
+    <Compile Include="RequestHandlers\WebSearchRequestHandler.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiConstants.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiDocument.cs" />

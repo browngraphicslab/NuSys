@@ -1,42 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 using Windows.UI;
-using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class ImageElementRenderItem : ElementRenderItem
+    class InkableImageDetailRenderItemUIElement : RectangleUIElement
     {
-        private ImageElementViewModel _vm;
-        private ImageDetailRenderItem _image;
         private InkableUIElement _inkable;
-
-        public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
+        private ImageDetailRenderItem _image;
+        private ImageElementViewModel _vm;
+        public InkableImageDetailRenderItemUIElement(IInkController inkController, ImageElementViewModel vm, BaseRenderItem parent,
+            ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _vm = vm;
-            _vm.Controller.SizeChanged += ControllerOnSizeChanged;
+            _inkable = new InkableUIElement(inkController, this, resourceCreator);
             var imageController = _vm.Controller.LibraryElementController as ImageLibraryElementController;
+
             _image = new ImageDetailRenderItem(imageController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
             _image.IsRegionsVisible = true;
             _image.IsRegionsModifiable = false;
             _image.IsHitTestVisible = false;
-
             AddChild(_image);
 
-            _inkable = new InkableUIElement(imageController.ContentDataController, this, resourceCreator);
-            _inkable.Background = Colors.Transparent;
+            _inkable = new InkableUIElement(inkController, this, resourceCreator);
+            _inkable.Width = 100.0f;
+            _inkable.Height = 100.0f;
+            _inkable.Background = Colors.Green;
             AddChild(_inkable);
-            _inkable.Transform.SetParent(_image.Transform);
         }
 
         public async override Task Load()
@@ -48,7 +43,7 @@ namespace NuSysApp
 
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
-           _image.CanvasSize = new Size(width,height);
+            _image.CanvasSize = new Size(width, height);
         }
 
         public override void Dispose()
@@ -63,14 +58,6 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            _inkable.Width = (float) _image.CroppedImageTarget.Width;
-            _inkable.Height = (float)_image.CroppedImageTarget.Height;
-            _inkable.Transform.LocalPosition = _image.Transform.LocalPosition;
-            base.Update(parentLocalToScreenTransform);
-        }
-
         public override void Draw(CanvasDrawingSession ds)
         {
             if (IsDisposed)
@@ -78,10 +65,10 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
 
-            if (_vm == null )
+            if (_vm == null)
+            {
                 return;
-
-           
+            }
 
             ds.Transform = Transform.LocalToScreenMatrix;
             base.Draw(ds);

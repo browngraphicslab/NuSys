@@ -15,7 +15,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.Textbox
         {
             var dynamicTextbox = new DynamicTextboxUIElement(this, resourceCreator);
             dynamicTextbox.Transform.LocalPosition = new Vector2(0);
-            dynamicTextbox.Width = 300;
+            dynamicTextbox.Height = 30;
 
             var textboxInput = new ScrollableTextboxUIElement(this, Canvas, true, true)
             {
@@ -23,7 +23,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.Textbox
                 Height = 300,
                 Background = Colors.Azure
             };
-            textboxInput.Transform.LocalPosition = new Vector2(0, 300);
+            dynamicTextbox.Transform.LocalPosition = new Vector2(300, 0);
             textboxInput.TextChanged += delegate (InteractiveBaseRenderItem item, string text)
             {
                 dynamicTextbox.Text = text;

@@ -7,19 +7,16 @@ using NusysIntermediate;
 
 namespace NusysServer
 {
-    public enum DataType
-    {
-        Text,Image,Pdf,Video,Audio
-    };
-
     public class DataHolder
     {
 
-        public DataType DataType { get; set; }
         public String Title { get; set; }
-        public DataHolder(DataType dt,string title)
+        public DataHolder(string title)
         {
-            DataType = dt;
+            Content = new ContentDataModel(NusysConstants.GenerateId(),"");
+            LibraryElement = new LibraryElementModel(NusysConstants.GenerateId(),NusysConstants.ElementType.Collection);
+            LibraryElement.Title = title;
+            LibraryElement.ContentDataModelId = Content.ContentId;
             Title = title;
         }
 

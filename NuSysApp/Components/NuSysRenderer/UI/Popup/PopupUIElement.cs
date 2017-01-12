@@ -43,6 +43,10 @@ namespace NuSysApp
             set { _dismissText = value; }
         }
 
+        public bool Dismissable
+        {
+            get { return _dismissable;}
+        }
         /// <summary>
         /// dismiss button for popup
         /// </summary>
@@ -59,6 +63,8 @@ namespace NuSysApp
             set { _parent = value; }
         }
 
+
+
         /// <summary>
         /// constructor for popup ui element. more information in class header.
         /// initially dismissable is set to true and parent is set to null, this can be changed with the properties Dismissable and Parent.
@@ -73,7 +79,7 @@ namespace NuSysApp
             _parent = parent;
             _dismissText = "";
 
-            SessionController.Instance.SessionView.FreeFormViewer.FocusManager.ChangeFocus(this);
+            //SessionController.Instance.SessionView.FreeFormViewer.FocusManager.ChangeFocus(this);
             
             OnChildFocusLost += PopupUIElement_OnFocusLost;
             OnFocusLost += PopupUIElement_OnFocusLost;
@@ -82,7 +88,7 @@ namespace NuSysApp
             //    CanvasInteractionManager_ClosePopup;
         }
 
-        private void PopupUIElement_OnFocusLost(BaseRenderItem item)
+        public virtual void PopupUIElement_OnFocusLost(BaseRenderItem item)
         {
             if (_dismissable && !ChildHasFocus)
             {
@@ -125,7 +131,6 @@ namespace NuSysApp
             //TODO add 'dismissable' logic here so its encapsulated in one place
             this.IsVisible = false;
             Dismissed?.Invoke(this, this);
-
             Parent?.RemoveChild(this);
             Dispose();
         }

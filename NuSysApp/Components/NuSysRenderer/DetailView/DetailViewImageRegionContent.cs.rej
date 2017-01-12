@@ -1,0 +1,10 @@
+diff a/NuSysApp/Components/NuSysRenderer/DetailView/DetailViewImageRegionContent.cs b/NuSysApp/Components/NuSysRenderer/DetailView/DetailViewImageRegionContent.cs	(rejected hunks)
+@@ -71,7 +71,7 @@
+         protected float ImageMaxHeight;
+ 
+         //todo say what this is
+-        protected Rect _croppedImageTarget;
++        public Rect CroppedImageTarget;
+ 
+         //todo say what this is
+         protected float _scaleOrgToDisplay;

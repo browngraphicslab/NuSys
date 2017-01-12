@@ -56,6 +56,11 @@ namespace NuSysApp
         /// </summary>
         private StackLayoutManager _textLayoutManager;
 
+        /// <summary>
+        /// a decorative dividing line :)
+        /// </summary>
+        private RectangleUIElement _line;
+
         public ImageAnalysisUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
 
@@ -63,9 +68,20 @@ namespace NuSysApp
             {
                 Text = "Image Analysis",
                 Height = 30,
-                FontSize = 30,
+                FontSize = 20
             };
             AddChild(_imageAnalysisLabelText);
+            _imageAnalysisLabelText.Transform.LocalPosition =
+                new Vector2(_imageAnalysisLabelText.Transform.LocalPosition.X,
+                    _imageAnalysisLabelText.Transform.LocalPosition.Y + 10);
+
+            _line = new RectangleUIElement(this, Canvas)
+            {
+                Height=1,
+                Background = Constants.MED_BLUE
+            };
+            AddChild(_line);
+
 
             //initialize the layout manager
             _textLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
@@ -202,8 +218,9 @@ namespace NuSysApp
             _textLayoutManager.SetSize(Width, Height - _imageAnalysisLabelText.Height);
             _textLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _textLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
-            _textLayoutManager.SetMargins(20);
+            _textLayoutManager.SetMargins(10);
             _textLayoutManager.ArrangeItems(new Vector2(0, _imageAnalysisLabelText.Height));
+            _line.Width = Width - 10;
             base.Update(parentLocalToScreenTransform);
         }
     }

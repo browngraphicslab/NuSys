@@ -1685,6 +1685,11 @@ namespace NusysIntermediate
             GetLastUsedCollectionsRequest,
 
             /// <summary>
+            /// Web search used to fetch and parse html
+            /// </summary>
+            WebSearchRequest,
+
+            /// <summary>
             /// Request used to fetch the bytes of a specified word document from the server
             /// </summary>
             GetWordDocumentRequest,

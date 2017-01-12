@@ -148,7 +148,7 @@ namespace NuSysApp
         /// This will set the model's property, update the server, and eventually will fire an event for this change
         /// </summary>
         /// <param name="isFiniteValue"></param>
-        public void SetFiniteBoolean(bool isFiniteValue)
+        public void  SetFiniteBoolean(bool isFiniteValue)
         {
             //tODO add in the event firing
             Debug.Assert(CollectionModel != null);

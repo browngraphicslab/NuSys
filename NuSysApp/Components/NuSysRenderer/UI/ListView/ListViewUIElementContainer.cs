@@ -87,6 +87,7 @@ namespace NuSysApp
         /// This is the header ui element
         /// </summary>
         private ListViewHeader<T> _header;
+        private int _indexToInsertColumn;
 
 
         /// <summary>
@@ -205,11 +206,87 @@ namespace NuSysApp
             _header.HeaderDragged += Header_HeaderDragged;
             _header.HeaderDragCompleted += Header_HeaderDragCompleted;
             _header.HeaderTapped += Header_HeaderTapped;
+            _header.HeaderAddColumnTapped += Header_AddColumnTapped;
+            _header.HeaderDeleteColumnTapped += Header_DeleteColumnTapped;
+
             _header.HeaderResizing += Header_HeaderResizing;
             _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
             AddChild(_header);
             ShowHeader = true;
         }
+
+        /// <summary>
+        /// Deletes the column if there exists at least two columns.
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="group"></param>
+        /// <param name="popup"></param>
+        /// <param name="flyoutItem"></param>
+        /// <param name="pointer"></param>
+        private void Header_DeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        {
+            if (ListView.ListColumns.Count() <= 1)
+            {
+                //If no options available, do not create a new popup
+                popup.DismissPopup();
+                return;
+            }
+            RemoveColumn(header.Column);
+
+        }
+
+        /// <summary>
+        /// Gets the column options that the ListView does not already contain and displays the options as a new FlyoutPopup
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="group"></param>
+        /// <param name="popup"></param>
+        /// <param name="flyoutItem"></param>
+        /// <param name="pointer"></param>
+        private void Header_AddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        {
+            var options = ListView.ListColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
+            if (options.Count() < 1)
+            {
+                //If no options available, do not create a new popup
+                popup.DismissPopup();
+                return;
+            }
+
+            _indexToInsertColumn = _children.IndexOf(header);
+
+            var newpopup = group.AddFlyoutPopup(popup, flyoutItem);
+            AddColumnOptionsToPopup(newpopup, options);
+
+        }
+        /// <summary>
+        /// Adds the column options as ButtonUIElements to the popup passed in
+        /// </summary>
+        /// <param name="popup"></param>
+        /// <param name="columns"></param>
+        private void AddColumnOptionsToPopup(FlyoutPopup popup, IEnumerable<ListColumn<T>> columns)
+        {
+            foreach (var column in columns)
+            {
+                popup.AddFlyoutItem(column.Title, OnColumnOptionTapped, ResourceCreator);
+            }
+        }
+
+        private void OnColumnOptionTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var button = item as ButtonUIElement;
+            var columns = ListView.ListColumnOptions.Where(a => a.Title == button.ButtonText);
+            var column = columns.First();
+
+            Debug.Assert(column != null);
+
+            if (column == null)
+            {
+                return;
+            }
+            AddColumn(column, _indexToInsertColumn);
+        }
+
         /// <summary>
         /// Calls ListViewUIElement's clearfilter method
         /// </summary>
@@ -329,10 +406,13 @@ namespace NuSysApp
         /// Whenever a header is tapped just sort the list by that column
         /// </summary>
         /// <param name="columnIndex"></param>
-        private void Header_HeaderTapped(int columnIndex)
+        private void Header_HeaderTapped(int columnIndex, CanvasPointer pointer)
         {
             _listview.SortByCol(columnIndex);
+
         }
+
+
 
         public override float BorderWidth
         {
@@ -355,7 +435,7 @@ namespace NuSysApp
         /// <returns></returns>
         public List<T> GetItems()
         {
-            return _listview.GetItems();
+            return _listview.ItemsSource;
         }
 
         /// <summary>
@@ -398,14 +478,19 @@ namespace NuSysApp
             }
         }
 
+        public void AddColumnOptions(IEnumerable<ListColumn<T>> listColumns)
+        {
+            ListView.AddColumnOptions(listColumns);
+        }
+
         /// <summary>
         /// This should add the listColumn to the _listColumns.
         /// This should also update all the listviewRowUIElements appropriately by repopulating the row with cells with the proper widths.
         /// </summary>
         /// <param name="column"></param>
-        public void AddColumn(ListColumn<T> listColumn)
+        public void AddColumn(ListColumn<T> listColumn, int index = -1)
         {
-            ListView.AddColumn(listColumn);
+            ListView.AddColumn(listColumn, index);
             if (ShowHeader)
             {
                 GenerateHeader();
@@ -416,9 +501,15 @@ namespace NuSysApp
         /// This should remove the column with the name from _listColumns.
         /// </summary>
         /// <param name="listColumn"></param>
-        public void RemoveColumn(string columnTitle)
+        public void RemoveColumn(ListColumn<T> column)
         {
-            ListView.RemoveColumn(columnTitle);
+            //Don't remove any column if there's only one left.
+            if (ListView.ListColumns.Count == 1)
+            {
+                return;
+            }
+
+            ListView.RemoveColumn(column);
             if (ShowHeader)
             {
                 GenerateHeader();
@@ -478,6 +569,9 @@ namespace NuSysApp
         {
             _listview.SortByCol(colIndex);
         }
+
+
+
         /// <summary>
         /// When the listviewuielement fires its rowdoubletapped event, the container will fire its rowdoubletapped
         /// which the user should be listening to.
@@ -489,7 +583,7 @@ namespace NuSysApp
         {
             RowDoubleTapped?.Invoke(item, columnName, pointer);
         }
-        /// <summary>
+        /// <summary>a
         /// Deselects all the items currently selected
         /// </summary>
         public void DeselectAllItems()
@@ -552,7 +646,7 @@ namespace NuSysApp
             }
         }
         /// <summary>
-        /// Calls ListViewUIElement's FilterBy method
+        /// Calls ListViewUIElement's FilterBy methodc
         /// </summary>
         /// <param name="filter"></param>
         public void FilterBy(Func<T, bool> filter)
@@ -571,7 +665,7 @@ namespace NuSysApp
             float offset = 0;
             if (ShowHeader)
             {
-                offset = _header.Height; //Offset should be header's height if there is a header
+                offset = _header.Height + 2; //Offset should be header's height if there is a header
             }
             //Otherwise, vertical offset should stay 0
             _listview.Transform.LocalPosition = new Vector2(0, offset);

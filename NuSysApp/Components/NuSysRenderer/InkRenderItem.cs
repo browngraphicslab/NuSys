@@ -6,8 +6,10 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Input;
@@ -20,7 +22,7 @@ namespace NuSysApp
 {
     public class InkRenderItem : BaseRenderItem
     {
-
+        public static bool StopCanvasInk;
         private ElementController _parentCollectionController;
         private bool _isEraser;
         private List<InkPoint> _currentInkPoints = new List<InkPoint>();
@@ -102,6 +104,10 @@ namespace NuSysApp
 
         public void StartInkByEvent(CanvasPointer e)
         {
+            if (StopCanvasInk)
+            {
+                return;
+            }
             _isEraser = e.Properties.IsEraser || e.Properties.IsRightButtonPressed;
 
             _canvas.RunOnGameLoopThreadAsync(() =>
@@ -118,6 +124,10 @@ namespace NuSysApp
 
         public void UpdateInkByEvent(CanvasPointer e)
         {
+            if (StopCanvasInk)
+            {
+                return;
+            }
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
                 var np = Vector2.Transform(e.CurrentPoint, _transform);
@@ -137,6 +147,10 @@ namespace NuSysApp
 
         public void StopInkByEvent(CanvasPointer e)
         {
+            if (StopCanvasInk)
+            {
+                return;
+            }
             LatestStroke = CurrentInkStrokeWithEndpoint(e);
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
@@ -145,7 +159,7 @@ namespace NuSysApp
                     var allStrokes = _inkManager.GetStrokes().ToArray();
                     var thisStroke = _currentInkPoints.Select(p => p.Position);
                     var thisLineString = thisStroke.GetLineString();
-
+                    _inkManager.SelectWithPolyLine(thisStroke);
                     foreach (var otherStroke in allStrokes)
                     {
                         var pts = otherStroke.GetInkPoints().Select(p => p.Position);
@@ -167,9 +181,6 @@ namespace NuSysApp
                         _parentCollectionController.LibraryElementController.ContentDataController.RemoveInk(strokeId);
                     }
                     _inkManager.DeleteSelected();
-                    _inkManager.SelectWithPolyLine(thisStroke);
-                    selected = GetSelectedStrokes();
-                    _inkManager.DeleteSelected();
 
                 }
                 else
@@ -185,7 +196,9 @@ namespace NuSysApp
                 }
 
                 _currentInkPoints = new List<InkPoint>();
+
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
+
 
                 _needsDryStrokesUpdate = true;
                 _needsWetStrokeUpdate = true;
@@ -271,7 +284,8 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             if (_needsDryStrokesUpdate)
             {
-                if (_dryStrokesTarget != null) { 
+                if (_dryStrokesTarget != null)
+                { 
                     using (var dss = _dryStrokesTarget.CreateDrawingSession())
                     {
                         dss.Clear(Colors.Transparent);

@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Numerics;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+using Windows.UI;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -46,6 +48,11 @@ namespace NuSysApp
         private ButtonUIElement _editShapeButton;
 
         /// <summary>
+        /// title of popup for clarification :)
+        /// </summary>
+        private TextboxUIElement _titleBox;
+
+        /// <summary>
         /// This popup will be used to set the settings of a collection content.
         /// Pass in the usual render item parameters as well as the CollectionLibraryElementController you wish to edit.
         /// </summary>
@@ -57,21 +64,66 @@ namespace NuSysApp
             Debug.Assert(controller != null);
             _collectionController = controller;
 
-            _boundedButton = new RectangleButtonUIElement(this,resourceCreator);
+            Background = Colors.White;
+            BorderWidth = 2;
+            Bordercolor = Constants.DARK_BLUE;
+            Width = 600;
+            Height = 500;
+
+            _titleBox = new TextboxUIElement(this, resourceCreator)
+            {
+                Text = "Collection Settings",
+                FontSize = 20,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                TextVerticalAlignment = CanvasVerticalAlignment.Center
+            };
+            AddChild(_titleBox);
+
+            _boundedButton = new RectangleButtonUIElement(this, resourceCreator);
+            _boundedButton.Width = Width/2;
             AddChild(_boundedButton);
 
-            _editShapeButton = new RectangleButtonUIElement(this, resourceCreator, text:"Edit Shape");
+            _editShapeButton = new RectangleButtonUIElement(this, resourceCreator, text: "Edit Shape");
+            _editShapeButton.Width = Width/2;
             AddChild(_editShapeButton);
-
-            Background = Constants.LIGHT_BLUE;
-            Width = 500;
-            Height = 550;
-            Transform.LocalX = 150;
 
             _collectionController.FiniteBoolChanged += CollectionControllerOnFiniteBoolChanged;
             _collectionContentController.ContentDataUpdated += CollectionContentControllerOnContentDataUpdated;
 
+            _boundedButton.Tapped += BoundedButton_Tapped;
+            _editShapeButton.Tapped += EditShapeButton_Tapped;
+
             UpdateText();
+        }
+
+        private void EditShapeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {         
+            EditShapePopup popup = new EditShapePopup(Parent, Canvas, _collectionController);
+            Parent.AddChild(popup);
+            popup.Height = Height;
+            if (_collectionController.CollectionContentDataController.CollectionModel.Shape != null)
+            {
+                popup.Height = Height + 70;
+            }
+            popup.Width = Width;
+            popup.Transform.LocalPosition = Transform.LocalPosition;
+            DismissPopup();            
+        }
+
+        private void BoundedButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_collectionController.CollectionModel.IsFinite)
+            {
+                _collectionController.SetFiniteBoolean(false);
+            }
+            else
+            {
+                _collectionController.SetFiniteBoolean(true);
+            }
+
+            Debug.WriteLine(_collectionController.CollectionModel.IsFinite);
+            
+            DismissPopup();
         }
 
         /// <summary>
@@ -108,11 +160,13 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _editShapeButton.Width = Width - BorderWidth * 2;
-            _boundedButton.Width = Width - BorderWidth * 2;
-            _editShapeButton.Transform.LocalPosition = new Vector2(BorderWidth,_editShapeButton.Height + _boundedButton.Height * 2);
-            _boundedButton.Transform.LocalPosition = new Vector2(BorderWidth,_boundedButton.Height / 2);
-            Height = (float)(_boundedButton.Height*1.5 + _boundedButton.Transform.LocalY);
+            _editShapeButton.Width = Width/2;
+            _boundedButton.Width = Width/2;
+            _editShapeButton.Transform.LocalPosition = new Vector2(Width/2 - _editShapeButton.Width/2, Height*2/5);
+            _boundedButton.Transform.LocalPosition = new Vector2(Width/2 - _boundedButton.Width/2, Height - Height*2/5 + 10);
+            _titleBox.Width = Width;
+            _titleBox.Height = Height/5;
+            _titleBox.Transform.LocalPosition = new Vector2(Width/2 - _titleBox.Width/2, Height/8);
             base.Update(parentLocalToScreenTransform);
         }
 
@@ -124,32 +178,12 @@ namespace NuSysApp
         {
             _collectionController.FiniteBoolChanged -= CollectionControllerOnFiniteBoolChanged;
             _collectionContentController.ContentDataUpdated -= CollectionContentControllerOnContentDataUpdated;
+            _boundedButton.Tapped -= BoundedButton_Tapped;
+            _editShapeButton.Tapped -= EditShapeButton_Tapped;
             base.Dispose();
         }
 
-        /// <summary>
-        /// Method to call when you want to select and safve a url for the collection
-        /// </summary>
-        private async Task SelectAndSaveImage()
-        {
-            var storageFiles = await FileManager.PromptUserForFiles(Constants.ImageFileTypes, singleFileOnly: true);
-            var file = new List<StorageFile>(storageFiles).First();
-            var bytes = await MediaUtil.StorageFileToByteArray(file);
-
-            var thumb = await file.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
-            var aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;
-
-            var args = new UploadCollectionBackgroundImageServerRequestArgs()
-            {
-                FileExtension = file.FileType,
-                ImageBytes = bytes
-            };
-            var request = new UploadCollectionBackgroundImageRequest(args);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            Debug.Assert(request.WasSuccessful() == true);
-            var url = request.GetReturnedImageUrl();
-            _collectionContentController.SetShapeUrl(url,aspectRatio);
-        }
+        
 
         /// <summary>
         /// Method to call to set the color of the collection background.
@@ -171,7 +205,7 @@ namespace NuSysApp
         /// </summary>
         private void ClearCollectionImage()
         {
-            if(_collectionContentController.CollectionModel.Shape.ImageUrl != null)
+            if(_collectionContentController.CollectionModel.Shape?.ImageUrl != null)
             {
                 _collectionContentController.ClearShape();
                 _collectionContentController.SetShapePoints(new List<PointModel>()

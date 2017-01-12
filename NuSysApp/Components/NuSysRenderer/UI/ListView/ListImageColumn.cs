@@ -71,6 +71,7 @@ namespace NuSysApp
 
                 var width = cell.Width;
                 var height = cell.Height;
+
                 var imgWidth = cell.Image.GetBounds(cell.ResourceCreator).Width;
                 var imgHeight = cell.Image.GetBounds(cell.ResourceCreator).Height;
 
@@ -79,9 +80,10 @@ namespace NuSysApp
                     return;
                 }
 
+                var newWidth = height*imgWidth/imgHeight;
+                var newHeight = height;
+                cell.ImageHorizontalAlignment = HorizontalAlignment.Center;
                 cell.ImageBounds = new Rect(0, 0, height*imgWidth/imgHeight, height);
-
-
 
             }
             catch(Exception e)
