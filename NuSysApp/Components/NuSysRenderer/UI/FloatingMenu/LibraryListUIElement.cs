@@ -105,6 +105,15 @@ namespace NuSysApp
         /// </summary>
         private FilterMenu _filterMenu { get; }
 
+        /// <summary>
+        /// The button that is used to activate the bing popup
+        /// </summary>
+        private ButtonUIElement _bingButton;
+        /// <summary>
+        /// This is the popup that executes a bing search
+        /// </summary>
+        private BingSearchPopup _bingSearchPopup;
+
         ///// <summary>
         ///// TEST BUTTON
         ///// </summary>
@@ -118,7 +127,13 @@ namespace NuSysApp
             // add the libary list view as a child
             AddChild(LibraryListView);
 
-            // set up the ui of the add file button
+            //setup the bing button and it's popup
+            _bingButton = new ButtonUIElement(this, ResourceCreator)
+            {
+                ButtonText = "BING"
+            };
+            AddButton(_bingButton,TopBarPosition.Right);
+
             _addFileButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
                 ImageBounds = new Rect(10,10,30,30)
@@ -159,7 +174,7 @@ namespace NuSysApp
                 IsVisible = false
             };
             AddChild(_filterMenu);
-            
+
 
             // initialize the list of library drag elements
             _libraryDragElements = new List<RectangleUIElement>();
@@ -174,6 +189,8 @@ namespace NuSysApp
             LibraryListView.RowDoubleTapped += LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped += OnFilterButtonTapped;
+            _bingButton.Tapped += _bingButton_Tapped;
+
 
             ///TEST BUTTON
             //_testbutton = new RectangleButtonUIElement(this, Canvas, 0, "test");
@@ -185,7 +202,8 @@ namespace NuSysApp
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
         }
-        
+
+
         //private void _testbutton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         //{
         //    CenteredPopup test = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "this is a test");
@@ -249,6 +267,13 @@ namespace NuSysApp
             _filterMenu.Width = 200;
         }
 
+        private void _bingButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _bingSearchPopup = new BingSearchPopup(this, Canvas);
+            _bingSearchPopup.Width = 300;
+            _bingSearchPopup.Transform.LocalPosition = new Vector2(Width-_bingSearchPopup.Width,_bingButton.Height);
+            AddChild(_bingSearchPopup);
+        }
         /// <summary>
         /// Fired whenever a row is selected, causes the session controller to fetch the content data model for that row
         /// </summary>
