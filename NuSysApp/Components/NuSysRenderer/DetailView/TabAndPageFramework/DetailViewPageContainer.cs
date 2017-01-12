@@ -234,7 +234,18 @@ namespace NuSysApp
             if (request.WasSuccessful() == true)
             {
                 request.DeleteLocally();
+               
             }
+            //Dismisses the flyout popup
+
+            var popup = item.Parent as FlyoutPopup;
+            Debug.Assert(popup != null);
+            if (popup == null)
+            {
+                return;
+            }
+
+            popup.DismissPopup();
         }
 
         /// <summary>
@@ -246,6 +257,7 @@ namespace NuSysApp
         {
             SessionController.Instance.NuSessionView.Library.IsVisible = true;
             SessionController.Instance.NuSessionView.Library.LibraryListView.ScrollTo(_currentController.LibraryElementModel);
+            SessionController.Instance.NuSessionView.Library.LibraryListView.SelectItem(_currentController.LibraryElementModel);
         }
 
         public override async Task Load()

@@ -320,7 +320,7 @@ namespace NuSysApp
             OnFocusGained += FocusGainedShowHighlight;
             OnChildFocusGained += FocusGainedShowHighlight;
             OnFocusLost += FocusLostHideHighlight;
-            OnFocusLost += FocusLostHideHighlight;
+            OnChildFocusLost += FocusLostHideHighlight;
 
 
         }

@@ -93,6 +93,7 @@ namespace NuSysApp
             }
 
             SessionController.Instance.NuSessionView.Chatbox.AddChat(user, chatMessage);
+            SessionController.Instance.NuSessionView.IncrementChatNotifications();
         }
 
     }

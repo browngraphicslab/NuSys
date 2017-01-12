@@ -23,6 +23,7 @@ namespace NuSysApp
         /// </summary>
         private List<ButtonUIElement> _flyoutItems;
 
+
         /// <summary>
         /// flyout item height
         /// </summary>
@@ -33,6 +34,22 @@ namespace NuSysApp
         /// </summary>
         private Dictionary<ButtonUIElement, PointerHandler> _flyOutItemToTappedEvent;
 
+        public List<ButtonUIElement> FlyoutItems
+        {
+            get { return _flyoutItems; }
+        }
+
+        public float FlyoutItemHeight
+        {
+            get { return _flyoutItemHeight; }
+        }
+
+        /// <summary>
+        /// The FlyoutPopup that this FlyoutPopup branched off of. We need to store reference to this so that when a popup loses focus and is dismissed, so is its parent
+        /// </summary>
+        public FlyoutPopup ParentPopup { get; set; }
+
+
         /// <summary>
         /// constructor for flyout list
         /// 
@@ -40,7 +57,8 @@ namespace NuSysApp
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
-        public FlyoutPopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public FlyoutPopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
+            : base(parent, resourceCreator)
         {
             _flyOutItemToTappedEvent = new Dictionary<ButtonUIElement, PointerHandler>();
             _flyoutItems = new List<ButtonUIElement>();
@@ -56,7 +74,8 @@ namespace NuSysApp
         /// Make a new flyout item and attaches appropriate handler to button
         /// </summary>
         /// <param name="text"></param>
-        public void AddFlyoutItem(string text, PointerHandler onTappedEvent, ICanvasResourceCreatorWithDpi resourceCreator)
+        public void AddFlyoutItem(string text, PointerHandler onTappedEvent,
+            ICanvasResourceCreatorWithDpi resourceCreator)
         {
             var flyoutItem = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
             flyoutItem.Height = _flyoutItemHeight;
@@ -69,13 +88,14 @@ namespace NuSysApp
             flyoutItem.ButtonTextSize = 12;
             flyoutItem.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             flyoutItem.SelectedBackground = Constants.LIGHT_BLUE;
-            flyoutItem.Transform.LocalPosition = new Vector2(0, _flyoutItems.Count * _flyoutItemHeight);
+            flyoutItem.Transform.LocalPosition = new Vector2(0, _flyoutItems.Count*_flyoutItemHeight);
             _flyOutItemToTappedEvent[flyoutItem] = onTappedEvent;
 
             _flyoutItems.Add(flyoutItem);
             AddChild(flyoutItem);
             flyoutItem.Tapped += FlyoutItemOnTapped;
         }
+
 
         public override void Dispose()
         {
@@ -95,10 +115,29 @@ namespace NuSysApp
         private void FlyoutItemOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // get the correct handler to invoke from the flyout to handler dictionary
-            _flyOutItemToTappedEvent[item as ButtonUIElement]?.Invoke(this, pointer);
+            _flyOutItemToTappedEvent[item as ButtonUIElement]?.Invoke(item, pointer);
         }
 
+
+        public override void PopupUIElement_OnFocusLost(BaseRenderItem item)
+        {
+            //If this is dismissable and has lost focus, make sure to also dismiss parent
+            if (Dismissable && !ChildHasFocus)
+            {
+                DismissParent();
+            }
+            base.PopupUIElement_OnFocusLost(item);
+
+        }
         /// <summary>
+        /// Dismisses the entire hierarchy of Popups
+        /// </summary>
+        public void DismissParent()
+        {
+            ParentPopup?.DismissPopup();
+        }
+
+    /// <summary>
         /// overrides draw in order to calculate the correct height of the flyout based on
         /// the list of its flyout items
         /// </summary>

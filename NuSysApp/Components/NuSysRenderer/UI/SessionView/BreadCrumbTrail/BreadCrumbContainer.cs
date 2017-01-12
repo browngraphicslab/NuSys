@@ -319,7 +319,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if(IsDisposed || !SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            if(IsDisposed)
             {
                 return;
             }

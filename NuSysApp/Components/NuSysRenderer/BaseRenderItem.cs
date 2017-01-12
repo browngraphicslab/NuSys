@@ -240,7 +240,7 @@ namespace NuSysApp
         public virtual void ChildrenLostFocus()
         {
             Parent?.ChildrenLostFocus();
-            ChildHasFocus = true;
+            ChildHasFocus = false;
             OnChildFocusLost?.Invoke(this);
         }
     }

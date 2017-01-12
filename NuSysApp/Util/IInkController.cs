@@ -39,5 +39,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="strokeId"></param>
         void RemoveInk(string strokeId);
+
+        /// <summary>
+        /// List of strokes.
+        /// CAn be used to get initial strokes to add upon instantiations.
+        /// </summary>
+        IEnumerable<InkModel> Strokes { get; } 
     }
 }

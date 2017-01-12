@@ -82,6 +82,15 @@ namespace NuSysApp
         public event EventHandler<string> InkRemoved;
 
         /// <summary>
+        /// The list of strokes on the content data model.
+        /// Forwards directly from ContentDataModel.Strokes
+        /// </summary>
+        public IEnumerable<InkModel> Strokes
+        {
+            get { return ContentDataModel?.Strokes; }
+        } 
+
+        /// <summary>
         /// The constructor of the controller only takes in a Content Data Model.  
         /// </summary>
         /// <param name="contentDataModel"></param>
