@@ -140,7 +140,7 @@ namespace NuSysApp
 
             // custom layout button
             _customLayoutButton = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "custom");
-            AddImageToButton(resourceCreator, "ms-appx:///Assets/node icons/icon_enter.png", _customLayoutButton);
+            AddImageToButton(resourceCreator, "ms-appx:///Assets/new icons/custom arrange.png", _customLayoutButton);
             _customLayoutButton.SelectedBackground = Constants.MED_BLUE;
             _customLayoutButton.Transform.LocalPosition = CUSTOM_BUTTON_POSITION;
             _customLayoutButton.Width = BUTTON_SIZE;
