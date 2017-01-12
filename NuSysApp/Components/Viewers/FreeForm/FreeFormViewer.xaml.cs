@@ -269,7 +269,6 @@ namespace NuSysApp
                 var models = PresentationLinkViewModel.Models;
 
                 currTrail = models.FirstOrDefault(vm => vm.InElementId == oldTrail.OutElementId);
-
             }
 
             return elements;
