@@ -22,6 +22,14 @@ namespace NuSysApp
 
    public class CanvasInteractionManager : IDisposable
     {
+        public enum InteractionType
+        {
+            Pen,
+            /// <summary>
+            /// Right now, touch includes pointer/mouse
+            /// </summary>
+            Touch
+        }
         public delegate void TappedHandler(BaseRenderItem element, PointerRoutedEventArgs args);
         public delegate void TwoPointerPressedHandler(CanvasPointer pointer1, CanvasPointer pointer2);
         public delegate void PointerPressedHandler(CanvasPointer pointer);
@@ -43,6 +51,12 @@ namespace NuSysApp
         public event TwoPointerPressedHandler TwoPointerPressed;
         public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
 
+        /// <summary>
+        /// Event fired whenever the last interaction changed the stored type of interaction.
+        /// The passed InteractionType is the latest interation type 
+        /// </summary>
+        public event EventHandler<InteractionType> InteractionTypeChanged;
+
         private CanvasPointer _lastTappedPointer = new CanvasPointer();
         private Vector2 _centerPoint;
         private double _twoFingerDist;
@@ -51,8 +65,16 @@ namespace NuSysApp
         private FrameworkElement _canvas;
         private bool _cancelLongTapped;
         private bool _isEnabled = true;
+        private InteractionType _lastInteractionType = InteractionType.Touch;
 
-       public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
+        /// <summary>
+        /// The interaction type of the last pointer down event.
+        /// </summary>
+        public InteractionType LastInteractionType
+        {
+            get { return _lastInteractionType;}
+        }
+        public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
         
         public CanvasInteractionManager(FrameworkElement pointerEventSource)
         {
@@ -121,6 +143,11 @@ namespace NuSysApp
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
         {
+            if (_lastInteractionType != PointerToInteractionType(args.Pointer))
+            {
+                _lastInteractionType = PointerToInteractionType(args.Pointer);
+                InteractionTypeChanged?.Invoke(this, _lastInteractionType);
+            }
             if (!_isEnabled)
                 return;
             OnPointerTouchPressed(sender, args);
@@ -261,6 +288,15 @@ namespace NuSysApp
                 PointerMoved?.Invoke(pointer);
             }
            
+        }
+
+        private InteractionType PointerToInteractionType(Pointer pointer)
+        {
+            if (pointer.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                return InteractionType.Pen;
+            }
+            return InteractionType.Touch;
         }
     }
 }

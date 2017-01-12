@@ -12,8 +12,13 @@ namespace NusysIntermediate
     /// This base class should only hold properties of all returned requests.
     /// All the classes that extend from this MUST HAVE AN EMPTY CONSTRUCTOR.
     /// </summary>
-    public abstract class ServerReturnArgsBase
+    public class ServerReturnArgsBase
     {
+        /// <summary>
+        /// Paramaeterless constructor for the sake of serializability
+        /// </summary>
+        public ServerReturnArgsBase() { }
+
         /// <summary>
         /// This bool represents whether the requested function succesfully executed server-side.
         /// </summary>
@@ -31,7 +36,7 @@ namespace NusysIntermediate
         /// This should return true if the args class is valid, false otherwise.
         /// </summary>
         /// <returns></returns>
-        protected abstract bool CheckIsValid();
+        protected virtual bool CheckIsValid() { return true}
 
         /// <summary>
         /// Should be called to make sure that an args class has been properly created;

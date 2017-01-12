@@ -25,9 +25,9 @@ namespace NuSysApp
         /// <summary>
         /// The actual rectangle holding the image of the pdf itself
         /// </summary>
-        private DetailViewPdfRegionRenderItem _pdfContent;
+        public DetailViewPdfRegionRenderItem PdfContent;
 
-        public int CurrentPage => _pdfContent.CurrentPage;
+        public int CurrentPage => PdfContent.CurrentPage;
 
         /// <summary>
         /// The pdf content data model associated with this pdf, used for changing pages
@@ -43,10 +43,10 @@ namespace NuSysApp
         public DetailViewPdfRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PdfLibraryElementController controller, bool showRegions) : base(parent, resourceCreator)
         {
             // initialize the pdf content
-            _pdfContent = new DetailViewPdfRegionRenderItem(this, resourceCreator, controller, showRegions);
+            PdfContent = new DetailViewPdfRegionRenderItem(this, resourceCreator, controller, showRegions);
             _contentLayoutManager = new StackLayoutManager();
-            _contentLayoutManager.AddElement(_pdfContent);
-            AddChild(_pdfContent);
+            _contentLayoutManager.AddElement(PdfContent);
+            AddChild(PdfContent);
 
             // initailize the left page button
             _leftPageButton = new EllipseButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle);
@@ -73,7 +73,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _leftPageButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            GotoPage(_pdfContent.CurrentPage - 1);
+            GotoPage(PdfContent.CurrentPage - 1);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _rightPageButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            GotoPage(_pdfContent.CurrentPage + 1);
+            GotoPage(PdfContent.CurrentPage + 1);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace NuSysApp
         /// <param name="page"></param>
         public async void GotoPage(int page)
         {
-            _pdfContent.CurrentPage = page;
+            PdfContent.CurrentPage = page;
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
