@@ -139,7 +139,7 @@ namespace NuSysApp
             _showLinksButton.ButtonText = "Show Links: "+SessionController.Instance.SessionSettings.LinksVisible.ToString();
             _showMinimapButton.ButtonText = "Show Minimap: " + SessionController.Instance.SessionSettings.MinimapVisible.ToString();
             _showBreadCrumbsButton.ButtonText = "Show Bread Crumb Trail: " + SessionController.Instance.SessionSettings.BreadCrumbsVisible.ToString();
-            _readOnlyModeSettingButton.ButtonText = "Show Read Only Mode Windows: " + SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible.ToString();
+            _readOnlyModeSettingButton.ButtonText = "Read Only Windows: " + SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible.ToString();
         }
 
         /// <summary>

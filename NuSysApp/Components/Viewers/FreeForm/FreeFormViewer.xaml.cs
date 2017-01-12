@@ -1135,10 +1135,9 @@ namespace NuSysApp
             UpdateNonWin2dElements();
             _minimap.Invalidate();
 
-            if (delta.Length() > 200)
-            {
-                CanvasPanned?.Invoke(this, true);
-            }
+            // Maybe give this a minimum delta?
+            CanvasPanned?.Invoke(this, true);
+            
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()

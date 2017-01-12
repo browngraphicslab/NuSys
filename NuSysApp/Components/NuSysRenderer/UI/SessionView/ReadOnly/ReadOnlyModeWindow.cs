@@ -19,7 +19,7 @@ namespace NuSysApp
             _closeButton.Width = 15;
             AddChild(_closeButton);
 
-            MinHeight = 400;
+            MinHeight = 300;
             MinWidth = 250;
 
             _closeButton.Transform.LocalPosition = new Vector2(5, 5);

@@ -146,18 +146,24 @@ namespace NuSysApp
 
             _readOnlyLinksWindow = new ReadOnlyLinksWindow(this, Canvas);
             _readOnlyLinksWindow.Background = Colors.AntiqueWhite;
+            _readOnlyLinksWindow.Height = 300;
+            _readOnlyLinksWindow.Width = 250;
             AddChild(_readOnlyLinksWindow);
             _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(10, 100);
 
             _readOnlyMetadataWindow = new ReadOnlyMetadataWindow(this, Canvas);
             _readOnlyMetadataWindow.Background = Colors.AntiqueWhite;
+            _readOnlyMetadataWindow.Height = 300;
+            _readOnlyMetadataWindow.Width = 250;
             AddChild(_readOnlyMetadataWindow);
             _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(10, 450);
 
             _readOnlyAliasesWindow = new ReadOnlyAliasesWindow(this, Canvas);
             _readOnlyAliasesWindow.Background = Colors.AntiqueWhite;
+            _readOnlyAliasesWindow.Height = 300;
+            _readOnlyAliasesWindow.Width = 250;
             AddChild(_readOnlyAliasesWindow);
-            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(10, 900);
+            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(275, 100);
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
