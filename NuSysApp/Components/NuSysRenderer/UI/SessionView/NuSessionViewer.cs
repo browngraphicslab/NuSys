@@ -230,8 +230,6 @@ namespace NuSysApp
             }
             else
             {
-                SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
                 MakeEditable();
             }
         }

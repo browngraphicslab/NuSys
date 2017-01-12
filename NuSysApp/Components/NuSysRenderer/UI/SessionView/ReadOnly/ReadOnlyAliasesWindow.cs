@@ -19,7 +19,7 @@ namespace NuSysApp
         private ListViewUIElementContainer<ElementModel> _listView;
 
         /// <summary>
-        /// The controller for this page of the detail view
+        /// The controller for the element currently being displayed in this window.
         /// </summary>
         private LibraryElementController _controller;
 
