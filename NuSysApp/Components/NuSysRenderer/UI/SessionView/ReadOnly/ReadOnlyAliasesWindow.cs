@@ -42,6 +42,7 @@ namespace NuSysApp
             }
             
             _controller = controller;
+            CreateAliasList();
 
             // add events for the controller so that aliases are automatically added and removed from the list
             _controller.AliasAdded += OnAliasAdded;
@@ -83,12 +84,12 @@ namespace NuSysApp
 
         private void OnAliasRemoved(object sender, ElementModel e)
         {
-            _listView.RemoveItems(new List<ElementModel> { e });
+            _listView?.RemoveItems(new List<ElementModel> {e});
         }
 
         private void OnAliasAdded(object sender, ElementModel e)
         {
-            _listView.AddItems(new List<ElementModel> { e });
+            _listView?.AddItems(new List<ElementModel> {e});
         }
 
         public override void Dispose()

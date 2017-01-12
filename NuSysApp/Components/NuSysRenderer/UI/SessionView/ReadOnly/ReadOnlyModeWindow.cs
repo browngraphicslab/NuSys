@@ -31,6 +31,12 @@ namespace NuSysApp
             this.IsVisible = false;
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _closeButton.Transform.LocalPosition = new Vector2(5, 5);
+            base.Update(parentLocalToScreenTransform);
+        }
+
         public override void Dispose()
         {
             _closeButton.Tapped -= _closeButton_Tapped;

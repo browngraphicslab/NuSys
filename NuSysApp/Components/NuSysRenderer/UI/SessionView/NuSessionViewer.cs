@@ -371,6 +371,9 @@ namespace NuSysApp
             _readOnlyLinksWindow.UpdateList(e);
             _readOnlyAliasesWindow.UpdateList(e);
             _readOnlyMetadataWindow.UpdateList(e);
+            _readOnlyLinksWindow.IsVisible = true;
+            _readOnlyMetadataWindow.IsVisible = true;
+            _readOnlyAliasesWindow.IsVisible = true;
         }
 
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -382,6 +385,15 @@ namespace NuSysApp
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
             _titleBox.Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title;
+            if (SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType ==
+                NusysConstants.AccessType.ReadOnly)
+            {
+                var currCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(
+                    SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
+                _readOnlyMetadataWindow.UpdateList(currCollectionController);
+                _readOnlyAliasesWindow.UpdateList(currCollectionController);
+            }
+
         }
 
         public void UpdateUI()
@@ -439,18 +451,6 @@ namespace NuSysApp
                 _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
             AddChild(_settingsMenu);
 
-            /*
-            //TODO event disposing, VERY important
-            if (SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
-            {
-                SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
-                MakeReadOnly();
-            }
-            else
-            {
-                MakeEditable();
-            }*/
         }
 
         /// <summary>
@@ -465,10 +465,8 @@ namespace NuSysApp
             _detailViewer.HideDetailView();
             _detailViewer.DisableDetailView();
             _floatingMenu.HideFloatingMenu();
-
-
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
+            _floatingMenu.IsVisible = false;
+            //_floatingMenu.Library.IsVisible = false;
 
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
@@ -815,6 +813,15 @@ namespace NuSysApp
                 _readOnlyLinksWindow.IsVisible = false;
                 _readOnlyAliasesWindow.IsVisible = false;
                 _readOnlyMetadataWindow.IsVisible = false;
+            }
+            else
+            {
+                _readOnlyLinksWindow.IsVisible = true;
+                _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(10, 100);
+                _readOnlyAliasesWindow.IsVisible = true;
+                _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(275, 100);
+                _readOnlyMetadataWindow.IsVisible = true;
+                _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(10, 450);
             }
         }
     }

@@ -12,7 +12,7 @@ namespace NuSysApp
 {
     public class ReadOnlyMetadataWindow : ReadOnlyModeWindow
     {
-        //private ScrollableTextboxUIElement _searchTextBox;
+        private ScrollableTextboxUIElement _searchTextBox;
 
         private ListViewUIElementContainer<MetadataEntry> _metadata_listview;
 
@@ -21,15 +21,15 @@ namespace NuSysApp
         private LibraryElementController _controller;
         public ReadOnlyMetadataWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            
-            //_searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
-            //{
-            //    Background = Colors.Azure,
-            //    BorderWidth = 3,
-            //    Bordercolor = Colors.DarkSlateGray,
-            //    PlaceHolderText = "Search"
-            //};
-            //AddChild(_searchTextBox);
+
+            _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            {
+                Background = Colors.Azure,
+                BorderWidth = 3,
+                Bordercolor = Colors.DarkSlateGray,
+                PlaceHolderText = "Search"
+            };
+            AddChild(_searchTextBox);
 
             _showImmutableCheckbox = new CheckBoxUIElement(this, ResourceCreator, false)
             {
@@ -37,7 +37,7 @@ namespace NuSysApp
             };
             AddChild(_showImmutableCheckbox);
 
-            //_searchTextBox.TextChanged += OnSearchTextChanged;
+            _searchTextBox.TextChanged += OnSearchTextChanged;
             _showImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
         }
 
@@ -62,7 +62,7 @@ namespace NuSysApp
             _metadata_listview.ClearItems();
             var filtered_metadata = filter_by_mutability(new List<MetadataEntry>(_controller.GetMetadata().Values),
                 _showImmutableCheckbox.IsSelected);
-            //filtered_metadata = filter_by_search_text(filtered_metadata, _searchTextBox.Text);
+            filtered_metadata = filter_by_search_text(filtered_metadata, _searchTextBox.Text);
             _metadata_listview.AddItems(filtered_metadata);
         }
 
@@ -93,7 +93,7 @@ namespace NuSysApp
         {
 
             _controller.MetadataChanged -= _controller_MetadataChanged;
-            //_searchTextBox.TextChanged -= OnSearchTextChanged;
+            _searchTextBox.TextChanged -= OnSearchTextChanged;
             _showImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
 
             base.Dispose();
@@ -143,13 +143,13 @@ namespace NuSysApp
             var vertical_spacing = 20;
             var horizontal_spacing = 20;
 
-            //// layout all the elements for search
-            //_searchTextBox.Height = 30;
-            //_searchTextBox.Width = Width - 2 * horizontal_spacing;
-            //_searchTextBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            // layout all the elements for search
+            _searchTextBox.Height = 30;
+            _searchTextBox.Width = Width - 2 * horizontal_spacing;
+            _searchTextBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
 
-            ////layout all the elements for the list view
-            //vertical_spacing += 20 + (int)_searchTextBox.Height;
+            //layout all the elements for the list view
+            vertical_spacing += 20 + (int)_searchTextBox.Height;
             var immutable_checkbox_height = 40;
 
             _metadata_listview.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
