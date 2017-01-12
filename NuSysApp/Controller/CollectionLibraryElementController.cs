@@ -53,7 +53,7 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(ContentDataController is CollectionContentDataController);
+                 Debug.Assert(ContentDataController is CollectionContentDataController);
                 return ContentDataController as CollectionContentDataController;
             }
         }

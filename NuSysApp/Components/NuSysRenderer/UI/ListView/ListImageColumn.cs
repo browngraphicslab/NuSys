@@ -19,10 +19,19 @@ namespace NuSysApp
 
         private Dictionary<T, ICanvasImage> _dict;
 
-        public ListImageColumn()
+
+        private ICanvasImage _image;
+        public ListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator )
         {
             _dict = new Dictionary<T, ICanvasImage>();
+            LoadDefaultImageAsync(resourceCreator);
         }
+
+        private async void LoadDefaultImageAsync(ICanvasResourceCreatorWithDpi resourceCreator)
+        {
+            _image = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_link.png"));
+        }
+
         public override RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement, ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
         {
             var cell = new RectangleUIElement(listViewRowUIElement, resourceCreator);
@@ -38,7 +47,6 @@ namespace NuSysApp
 
         private async void LoadCellImageAsync(RectangleUIElement cell, T itemSource)
         {
-
             try
             {
 
@@ -48,6 +56,7 @@ namespace NuSysApp
                 }
                 else
                 {
+                    cell.Image = _image;
                     cell.Image = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
                     _dict[itemSource] = cell.Image;
                 }
