@@ -478,16 +478,6 @@ namespace NuSysApp
             //set position of settings menu
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2, _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
 
-            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2 + 50, 
-                _titleBox.Height/2 - _settingsButton.Height/2);
-            AddChild(_settingsButton);
-            _backToWaitingRoom.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
-                _titleBox.Height / 2 - _backToWaitingRoom.Height / 2);
-            AddChild(_backToWaitingRoom);
-            _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width/2 - _settingsMenu.Width/2,
-                _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
-            AddChild(_settingsMenu);
-
         }
 
         /// <summary>
