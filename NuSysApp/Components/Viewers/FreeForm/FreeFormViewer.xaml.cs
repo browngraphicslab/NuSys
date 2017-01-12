@@ -1453,6 +1453,10 @@ namespace NuSysApp
                     xFullScreenVideoElement.Height/2 - xFullScreenVideoAddRegionButton.Height/2 +
                     xFullScreenVideoAddRegionButton.Height);
                 Canvas.SetLeft(xAddRegionMenu, 0);
+
+                // set the position of the close button
+                Canvas.SetTop(xFullScreenVideoCloseButton, ActualHeight - xFullScreenVideoCloseButton.Height - 20);
+                Canvas.SetLeft(xFullScreenVideoCloseButton, ActualWidth - xFullScreenVideoCloseButton.Width / 2);
             });
         }
 

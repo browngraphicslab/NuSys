@@ -54,7 +54,7 @@
                     <CompositeTransform></CompositeTransform>
                 </local:BaseMediaPlayer.RenderTransform>
             </local:VideoPlayer>
-            <Button x:Name="xFullScreenVideoCloseButton" VerticalAlignment="Top" Width="50" Height="50" Background="Red" Tapped="XFullScreenVideoCloseButton_OnTapped" Visibility="Collapsed">
+            <Button x:Name="xFullScreenVideoCloseButton" Width ="100" Height="50" Background="White" Foreground="DarkRed" HorizontalAlignment="Center" VerticalAlignment="Bottom" Tapped="XFullScreenVideoCloseButton_OnTapped" Visibility="Collapsed">
                 <TextBlock>"X"</TextBlock>
             </Button>
             <Button x:Name="xFullScreenVideoAddRegionButton" Visibility="Collapsed" Width="100" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Tapped="XFullScreenVideoAddRegionButton_OnTapped" Background="Azure">
