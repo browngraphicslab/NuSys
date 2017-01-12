@@ -140,6 +140,7 @@ namespace NusysServer
                     case NusysConstants.ContentType.Video:
                         if (fileExtension == null)
                         {
+                            return contentData;
                             throw new Exception(
                                 "the file extension cannot be null when creating a new data file with Audio, Video, or Image contentTypes");
                         }

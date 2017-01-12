@@ -125,6 +125,9 @@ namespace NusysServer
                         case NusysConstants.RequestType.UploadCollectionImageRequest:
                             requestHandler = new UploadCollectionBackgroundImageRequestHandler();
                             break;
+                        case NusysConstants.RequestType.WebSearchRequest:
+                            requestHandler = new WebSearchRequestHandler();
+                            break;
                         default:
                             throw new Exception("request type not supported on the server yet!");
                     }
