@@ -142,7 +142,7 @@ namespace NuSysApp
             {
                 TextColor = Constants.ALMOST_BLACK,
                 Background = Colors.Transparent,
-                FontSize = 55,
+                FontSize = 35,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
                 Width = 300,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center
