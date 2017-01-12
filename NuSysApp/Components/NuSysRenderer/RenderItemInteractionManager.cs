@@ -4,7 +4,9 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
@@ -24,6 +26,15 @@ namespace NuSysApp
             PointerReleased += OnPointerReleased;
             AllPointersReleased += OnAllPointersReleased;
             PointerWheelChanged += OnPointerWheelChanged;
+            Holding += OnHolding;
+
+            
+        }
+
+        private void OnHolding(Vector2 point)
+        {
+            _hit = _renderEngine.GetRenderItemAt(point, _renderEngine.Root) as InteractiveBaseRenderItem;
+            _hit?.OnHolding(point);
         }
 
         private void OnPointerWheelChanged(CanvasPointer pointer, float delta)
@@ -63,7 +74,14 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            PointerPressed -= OnPointerPressed;
+            Translated -= OnTranslated;
             ItemTapped -= OnItemTapped;
+            ItemDoubleTapped -= OnItemDoubleTapped;
+            PointerReleased -= OnPointerReleased;
+            AllPointersReleased -= OnAllPointersReleased;
+            PointerWheelChanged -= OnPointerWheelChanged;
+            Holding -= OnHolding;
             _renderEngine = null;
             base.Dispose();
         }

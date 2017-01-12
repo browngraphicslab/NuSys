@@ -643,14 +643,17 @@ namespace NuSysApp
             }
         }
         /// <summary>
-        /// Calls ListViewUIElement's FilterBy method
+        /// Calls ListViewUIElement's FilterBy methodc
         /// </summary>
         /// <param name="filter"></param>
         public void FilterBy(Func<T, bool> filter)
         {
             _listview.FilterBy(filter);
         }
-
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            base.Update(parentLocalToScreenTransform);
+        }
         /// <summary>
         /// draw the list container and its inner children (the listview and the header)
         /// those in turn draw their children

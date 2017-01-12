@@ -441,6 +441,7 @@ namespace NuSysApp
             LibraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
             {
                 MultipleSelections = false
+               
             };
 
             var listColumn1 = new ListTextColumn<LibraryElementModel>();

@@ -134,6 +134,20 @@ namespace NuSysApp
         /// </summary>
         public float RowHeight { get; set; } = 40; //TODO drop this hard-code
 
+        /// <summary>
+        /// This is a value that is used as a threshold for whether determining an action was a scroll or a drag.
+        /// The higher it is, the more often a drag is detected.
+        /// It should be roughly near 0.25
+        /// </summary>
+        public float DragThreshold { set; get; }
+
+        /// <summary>
+        /// This is a value that, like DragThreshold, is used for determining whether an action was a scroll or a drag.
+        /// The higher it is, the more a drag is detected.
+        /// 
+        /// It should be a value from 0 to PI/2. it should be roughly near 0.8
+        /// </summary>
+        public float DragAngleThreshold { set; get; }
         #endregion public
 
         #region private
@@ -165,6 +179,8 @@ namespace NuSysApp
         /// can fire the drag completed event if necessary
         /// </summary>
         private bool _isDragging;
+
+        private bool _isScrolling;
 
         private T _draggedItem;
         /// <summary>
@@ -215,8 +231,9 @@ namespace NuSysApp
         private float _sumOfColumnRelativeWidths;
 
         private float _rowBorderThickness;
+        private float _scrollVelocity;
 
-#endregion private
+        #endregion private
 
         /// <summary>
         /// This is the constructor for a ListViewUIElement. You have the option of passing in an item source. 
@@ -232,6 +249,8 @@ namespace NuSysApp
             _listColumns = new List<ListColumn<T>>();
             _listColumnOptions = new List<ListColumn<T>>();
 
+            DragThreshold = 0.2f;
+            DragAngleThreshold = 0.8f;
             _scrollOffset = 0;
             MultipleSelections = false;
             BorderWidth = 0;
@@ -316,10 +335,14 @@ namespace NuSysApp
             //rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
             //rowToRemoveHandlersFrom.Deselected -= ListViewRowUIElement_Deselected;
             rowToRemoveHandlersFrom.RowPointerReleased -= ListViewRowUIElement_PointerReleased;
-            rowToRemoveHandlersFrom.PointerWheelChanged -= ListViewRowUIElement_PointerWheelChanged;
+            rowToRemoveHandlersFrom.RowTapped -= ListViewRowUIElementOnRowTapped;
+            rowToRemoveHandlersFrom.RowDoubleTapped -= ListViewRowUIElementOnRowDoubleTapped;
             rowToRemoveHandlersFrom.RowDragged -= ListViewRowUIElement_Dragged;
-            rowToRemoveHandlersFrom.RowDoubleTapped -= ListViewRowUIElement_RowDoubleTapped;
+            rowToRemoveHandlersFrom.RowDragStarted -= ListViewRowUIElement_RowDragStarted;
+            rowToRemoveHandlersFrom.PointerWheelChanged -= ListViewRowUIElement_PointerWheelChanged;
+            rowToRemoveHandlersFrom.RowHolding -= ListViewRowUIElement_RowHolding;
         }
+
 
         /// <summary>
         /// This adds all the columns to _listColumns. If you are adding multiple columns use this instead of the AddColumn method
@@ -590,11 +613,14 @@ namespace NuSysApp
                     listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
                     listViewRowUIElement.RowDragStarted += ListViewRowUIElement_RowDragStarted;
                     listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
+                    listViewRowUIElement.RowHolding += ListViewRowUIElement_RowHolding;
                     Rows.Add(listViewRowUIElement);
                 }
             });
 
         }
+
+
 
 
         /// <summary>
@@ -717,6 +743,8 @@ namespace NuSysApp
         {
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
 
+            FinishScrolling();
+
             //Update position and range of scroll
             SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
             ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
@@ -763,6 +791,49 @@ namespace NuSysApp
             ds.Transform = orgTransform;
             base.Draw(ds);
 
+        }
+        /// <summary>
+        /// Finishes scrolling by the _scrollVelocity.
+        /// </summary>
+        private void FinishScrolling()
+        {
+            //If we are already currently scrolling manually, simply return
+            if (_isScrolling)
+            {
+                return;
+            }
+            //Ignore small values
+            if (Math.Abs(_scrollVelocity) < 0.0001)
+            {
+                _scrollVelocity = 0;
+                return;
+            }
+            //Change position based on scroll velocity
+            var deltaY = -_scrollVelocity / _heightOfAllRows;
+            ChangePosition(deltaY);
+            //Acceleration is relative to RowHeight
+            var acceleration = RowHeight/30f; 
+            
+            //Finally, slow down speed by acceleration
+            if (_scrollVelocity < 0)
+            {
+                _scrollVelocity += acceleration;
+                if (_scrollVelocity > 0 || GetPosition() + ScrollBar.Range > 0.9999f) 
+                {
+                    _scrollVelocity = 0; //If we have reached the end, stop scrolling
+                }
+            }
+            else
+            {
+                _scrollVelocity -= acceleration;
+                if (_scrollVelocity < 0 || GetPosition() < 0.0001f)
+                {
+                    _scrollVelocity = 0; //If we have reached the start, stop scrolling
+                }
+          
+        }
+
+            
         }
 
 
@@ -811,21 +882,30 @@ namespace NuSysApp
                 RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
                 _isDragging = false;
             }
+
             //Remove reference to item you were dragging
             _draggedItem = default(T);
+            _isScrolling = false;
 
 
         }
 
+        private void ListViewRowUIElement_RowHolding(ListViewRowUIElement<T> rowUIElement, int colIndex, Vector2 point, T item)
+        {
+            SelectItem(item);
+            //_isDragging = true;
+        }
+
         private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
         {
-            Debug.Assert(_isDragging == false);
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             _draggedItem = item;
             _dragIterations = 0;
             _dragGestures = 0;
+            _isScrolling = true;
             _x = point.X;
             _y = point.Y;
+
 
         }
 
@@ -842,34 +922,28 @@ namespace NuSysApp
         private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
         {
             //calculate bounds of listview
-            var minX = 0;
-            var maxX = Width;
-            var minY = 0;
-            var maxY = Height;
+            float minX = 0f, maxX = Width, minY = 0, maxY = Height;
 
             //We need the local point, not the screen point
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
-            var dX = point.X - _x;
-            var dY = point.Y - _y;
+            float dX = point.X - _x, dY = point.Y - _y;
 
             _x = point.X;
             _y = point.Y;
 
-            var angle = Math.Atan(dY/dX);
+            var angle = Math.Atan(dY / dX);
             _dragIterations += 1;
-            if (Math.Abs(angle) < 0.85f)
+            if (Math.Abs(angle) < DragAngleThreshold)
             {
                 _dragGestures += 1;
             }
-           // Debug.WriteLine(angle);
 
             bool firstTimeDraggingOut = false;
             //check within bounds of listview
             if (point.X < minX || point.X > maxX || point.Y < minY ||
                 point.Y > maxY)
             {
-                Debug.Assert(_draggedItem != null);
                 if (_draggedItem == null)
                 {
                     return;
@@ -879,8 +953,9 @@ namespace NuSysApp
 
                 if (firstTimeDraggingOut)
                 {
-                    Debug.Write((float)_dragGestures /_dragIterations);
-                    _isDragging = ((float) _dragGestures/_dragIterations > 0.2f);
+                    //_dragGestures/_dragIterations is the proportion of Dragged events whose movement had an angle under the draganglethreshold
+                    _isDragging = ((float) _dragGestures/_dragIterations > DragThreshold);
+                    _isScrolling = !_isDragging;
                 }
 
             }
@@ -899,9 +974,13 @@ namespace NuSysApp
             {
 
                 //scroll if in bounds
-                var deltaY = -pointer.DeltaSinceLastUpdate.Y / (RowHeight * _filteredItems.Count);
+                var deltaY = -dY / (_heightOfAllRows);
 
-                ScrollBar.ChangePosition(deltaY);
+                if (Math.Abs(dY) > 0)
+                {
+                    _scrollVelocity = dY;
+                }
+                ChangePosition(deltaY);
 
             }
 

@@ -8,6 +8,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Core;
+using System.Numerics;
 
 namespace NuSysApp
 {
@@ -23,21 +24,31 @@ namespace NuSysApp
         public event PointerHandler DragStarted;
         public event PointerHandler DragCompleted;
 
+
+
         private bool _isDragging;
 
         
         public delegate void PointerWheelHandler(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta);
+        public event PointerWheelHandler PointerWheelChanged;
+
+
         // Delegate for the KeyPressed event
         public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
         // Event that fires when a key is pressed on this render item
         public event KeyPressedDelegate KeyPressed;
+
 
         // Delegate for the KeyReleased event
         public delegate void KeyReleasedDelegate(Windows.UI.Core.KeyEventArgs args);
         // Event that fires when a key is released on this render item
         public event KeyPressedDelegate KeyReleased;
 
-        public event PointerWheelHandler PointerWheelChanged;
+        //Delegate for Holding event
+        public delegate void HoldingHandler(InteractiveBaseRenderItem item, Vector2 point);
+        //Event that fires when holding a render item with your fingers
+        public HoldingHandler Holding;
+
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -87,6 +98,11 @@ namespace NuSysApp
             Dragged?.Invoke(this, pointer);
         }
 
+        public virtual void OnHolding(Vector2 point)
+        {
+            Holding?.Invoke(this, point);
+        }
+
         // Function fired when key is pressed on this render item
         // Invokes the KeyPressed event if possible
         public virtual void OnKeyPressed(KeyEventArgs e)
@@ -100,6 +116,9 @@ namespace NuSysApp
         {
             KeyReleased?.Invoke(e);
         }
+
+ 
+
 
         // Partial override of BaseRenderItem GotFocus in order to add KeyPressed event
         public override void GotFocus()
