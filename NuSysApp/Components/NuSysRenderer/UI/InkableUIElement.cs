@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Input.Inking;
@@ -46,6 +47,7 @@ namespace NuSysApp
             PenPointerReleased += OnPenPointerReleased_Callback;
             _inkController.InkAdded += ContentDataControllerOnInkAdded;
             _inkController.InkRemoved += ContentDataControllerOnInkRemoved;
+
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
                 _inkManager = new InkManager();
@@ -53,6 +55,7 @@ namespace NuSysApp
                 {
                     AddInkModel(model);
                 }
+                _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, new Size(1000.0, 1000.0));
             });
         }
 
@@ -90,7 +93,6 @@ namespace NuSysApp
 
         public async override Task Load()
         {
-            _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, _canvas.Size);
             base.CreateResources();
         }
 
@@ -104,7 +106,7 @@ namespace NuSysApp
 
             _currentInkPoints = new List<InkPoint>();
             var np = Vector2.Transform(e.CurrentPoint, _transform);
-            _currentInkPoints.Add(new InkPoint(new Point(np.X / Width, np.Y / Height), e.Pressure));
+            _currentInkPoints.Add(new InkPoint(new Point(1000 * np.X / Width, 1000 * np.Y / Height), e.Pressure));
             _needsWetStrokeUpdate = true;
         }
 
@@ -115,7 +117,7 @@ namespace NuSysApp
             {
                 np = Vector2.Clamp(np, new Vector2(0, 0), new Vector2(Width, Height));
             }
-            _currentInkPoints.Add(new InkPoint(new Point(np.X / Width, np.Y / Height), e.Pressure));
+            _currentInkPoints.Add(new InkPoint(new Point(1000 * np.X / Width, 1000 * np.Y / Height), e.Pressure));
             _needsWetStrokeUpdate = true;
         }
 
@@ -127,7 +129,7 @@ namespace NuSysApp
             {
                 np = Vector2.Clamp(np, new Vector2(0, 0), new Vector2(Width, Height));
             }
-            _currentInkPoints.Add(new InkPoint(new Point(np.X / Width, np.Y / Height), e.Pressure));
+            _currentInkPoints.Add(new InkPoint(new Point(1000 * np.X / Width, 1000 * np.Y / Height), e.Pressure));
             var builder = new InkStrokeBuilder();
             builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
             return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
@@ -186,6 +188,38 @@ namespace NuSysApp
                 _needsDryStrokesUpdate = true;
                 _needsWetStrokeUpdate = true;
             });
+
+            await UITask.Run(async delegate
+            {
+                // display ink options
+                double d = e.DistanceTraveled;
+                DateTime n  = DateTime.Now;
+                DateTime s = e.StartTime;
+                double t = (n - s).TotalMilliseconds;
+                if (e.DistanceTraveled < 20 && (DateTime.Now - e.StartTime).TotalMilliseconds > 500)
+                {
+                    var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
+                    var optionsBounds =
+                        SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.InkOptions.GetLocalBounds();
+                    var targetPoint = e.CurrentPoint;
+                    if (targetPoint.X < screenBounds.Width/2)
+                    {
+                        targetPoint.X += 20;
+                    }
+                    else
+                    {
+                        targetPoint.X -= (20 + (float) optionsBounds.Width);
+                    }
+                    targetPoint.Y -= (float) optionsBounds.Height/2;
+                    targetPoint.X =
+                        (float) Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
+                    targetPoint.Y =
+                        (float) Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
+                    SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.InkOptions.Transform
+                        .LocalPosition = targetPoint;
+                    SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.InkOptions.IsVisible = true;
+                }
+            });
         }
 
         public async Task AddInkModel(InkModel inkModel)
@@ -228,35 +262,43 @@ namespace NuSysApp
             });
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            InkColor =
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkColor;
+            InkSize =
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkSize;
+            base.Update(parentLocalToScreenTransform);
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
             if (IsDisposed)
-            {
                 return;
-            }
 
             var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
 
-            var strokes = new List<InkStroke>();
-            foreach (InkStroke stroke in _strokesToDraw)
+            if (_dryStrokesTarget != null)
             {
-                var inkPoints = new List<InkPoint>();
-                foreach (InkPoint inkPoint in stroke.GetInkPoints())
+                using (var dss = _dryStrokesTarget.CreateDrawingSession())
                 {
-                    InkPoint p = new InkPoint(new Point(inkPoint.Position.X * Width, inkPoint.Position.Y * Height), inkPoint.Pressure);
-                    inkPoints.Add(p);
-                }
+                    dss.Clear(Colors.Transparent);
+                    var dryStrokes = _strokesToDraw;
+                    dss.Transform = Matrix3x2.Identity;
+                    dss.DrawInk(dryStrokes);
 
-                _builder = new InkStrokeBuilder();
-                _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-                var s = _builder.CreateStrokeFromInkPoints(inkPoints.ToArray(), Matrix3x2.Identity);
-                strokes.Add(s);
+                    _needsDryStrokesUpdate = false;
+                }
             }
 
-            ds.DrawInk(strokes);
+            ds.Transform = Matrix3x2.CreateScale(Width / 1000, Height / 1000) * Transform.LocalToScreenMatrix;
+            if (_dryStrokesTarget != null)
+            {
+                ds.DrawImage(_dryStrokesTarget);
+            }
 
-            if (_needsWetStrokeUpdate && _currentInkPoints.Count > 2)
+            ds.Transform = Matrix3x2.CreateScale(Width / 1000, Height / 1000) * Transform.LocalToScreenMatrix;
+            if (_currentInkPoints.Count > 2)
             {
                 if (_builder == null)
                 {
@@ -267,21 +309,16 @@ namespace NuSysApp
                 lock (_lock)
                 {
                     _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-                    var inkPoints = new List<InkPoint>();
-                    foreach (InkPoint inkPoint in _currentInkPoints)
-                    {
-                        InkPoint p = new InkPoint(new Point(inkPoint.Position.X * Width, inkPoint.Position.Y * Height), inkPoint.Pressure);
-                        inkPoints.Add(p);
-                    }
-                    var s = _builder.CreateStrokeFromInkPoints(inkPoints.ToArray(), Matrix3x2.Identity);
+                    var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
                     if (_isEraser)
+                    {
                         s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
+                    }
                     ds.DrawInk(new InkStroke[] { s });
                 }
             }
 
             ds.Transform = orgTransform;
-
             base.Draw(ds);
         }
 

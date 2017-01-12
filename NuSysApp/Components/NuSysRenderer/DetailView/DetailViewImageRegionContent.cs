@@ -204,8 +204,6 @@ namespace NuSysApp
             ReRender();
         }
 
-
-
         /// <summary>
         /// Draw the image as the background
         /// </summary>
@@ -259,7 +257,6 @@ namespace NuSysApp
             // does nothing we dont want to draw a background
         }
 
-
         protected void ReRender()
         {
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
@@ -281,7 +278,6 @@ namespace NuSysApp
             ComputeRegions();
 
         }
-
 
         protected virtual void ComputeRegions()
         {
