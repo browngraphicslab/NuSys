@@ -136,7 +136,7 @@ namespace NuSysApp
             menu.IsVisible = false;
             _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
 
-            
+            SessionController.Instance.SessionSettings.LinksVisible = LinkVisibilityOption.AllLinks;
 
             if (menu.CurrentIndex == 0)
                 LinkCreated?.Invoke(_potentiaLink.Item1, _potentiaLink.Item2);
@@ -408,6 +408,7 @@ namespace NuSysApp
                     {
                         if (_selectedRenderItem is ElementRenderItem && _secondSelectedRenderItem is ElementRenderItem)
                         {
+                            SessionController.Instance.SessionSettings.LinksVisible = LinkVisibilityOption.AllLinks;
                             LinkCreated?.Invoke((ElementRenderItem)_selectedRenderItem,
                                 (ElementRenderItem)_secondSelectedRenderItem);
 
@@ -435,7 +436,8 @@ namespace NuSysApp
                     var item2 = _secondSelectedRenderItem as ElementRenderItem;
 
                     if (!(item1 == null || item2 == null || item1 == _collection || item2 == _collection))
-                    { 
+                    {
+                        SessionController.Instance.SessionSettings.LinksVisible = LinkVisibilityOption.AllLinks;
                         TrailCreated?.Invoke((ElementRenderItem)_selectedRenderItem, (ElementRenderItem)_secondSelectedRenderItem);
                     }
                 }
