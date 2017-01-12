@@ -1107,6 +1107,14 @@ namespace NusysIntermediate
 
         #endregion propertiesTable
 
+        #region Links
+
+        /// <summary>
+        /// The direction of the arrow on the link. 
+        /// </summary>
+        public static readonly string LINK_ARROW_DIRECTION = "link_direction";
+        #endregion Links
+
         #region Content
         /// <summary>
         /// 32 character ID of the content
