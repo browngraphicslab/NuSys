@@ -11,7 +11,7 @@
 
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Canvas Name="xCanvas" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="BlueViolet" >
-            <Image Name="xImage" VerticalAlignment="Center" HorizontalAlignment="Center" ManipulationMode="All" ManipulationStarted="XImage_OnManipulationStarted"  ManipulationCompleted="XCanvas_OnManipulationCompleted" ManipulationDelta="XCanvas_OnManipulationDelta"></Image>
+            <Image Name="xImage" VerticalAlignment="Center" HorizontalAlignment="Center" ManipulationMode="All" ManipulationStarted="XImage_OnManipulationStarted"  ManipulationCompleted="XCanvas_OnManipulationCompleted" ManipulationDelta="XCanvas_OnManipulationDelta" PointerWheelChanged="XImage_OnPointerWheelChanged"></Image>
             <Button Name="xCloseButton" Tapped="XCloseButton_OnTapped" Width ="150" Height="50" Canvas.Left="0"  Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top">Close</Button>
         </Canvas>
     </Grid>

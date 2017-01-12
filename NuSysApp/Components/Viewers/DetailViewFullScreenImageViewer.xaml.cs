@@ -25,7 +25,7 @@ namespace NuSysApp
         /// <summary>
         /// Event fired whenever the user closes the image;
         /// </summary>
-        public event EventHandler ImageClosed; 
+        public event EventHandler ImageClosed;
 
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace NuSysApp
             Debug.Assert(transform != null);
             transform.ScaleX = 1;
             transform.ScaleY = 1;
-            transform.TranslateX = (xCanvas.Width - xImage.ActualWidth)/2;
+            transform.TranslateX = (xCanvas.Width - xImage.ActualWidth) / 2;
             transform.TranslateY = (xCanvas.Height - xImage.ActualHeight) / 2;
             transform.Rotation = 0;
         }
@@ -107,7 +107,7 @@ namespace NuSysApp
         {
             Visibility = Visibility.Collapsed;
             xImage.Source = null;
-            ImageClosed?.Invoke(this,EventArgs.Empty);
+            ImageClosed?.Invoke(this, EventArgs.Empty);
         }
 
         private void XCanvas_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -143,9 +143,9 @@ namespace NuSysApp
 
             var tmpTranslate = new CompositeTransform()
             {
-                TranslateX  = compositeTransform.CenterX,
+                TranslateX = compositeTransform.CenterX,
                 TranslateY = compositeTransform.CenterY,
-                Rotation =  compositeTransform.Rotation,
+                Rotation = compositeTransform.Rotation,
                 ScaleX = compositeTransform.ScaleX,
                 ScaleY = compositeTransform.ScaleY
             };
@@ -195,6 +195,49 @@ namespace NuSysApp
 
             //transform.TranslateX += transform.CenterX;
             //transform.TranslateY += transform.CenterY;
+        }
+
+        private void XImage_OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+            var transform = xImage.RenderTransform as CompositeTransform;
+            var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
+            var compositeTransform = transform;
+            var center = e.GetCurrentPoint(xImage).Position;
+            var tmpTranslate = new CompositeTransform()
+            {
+                TranslateX = compositeTransform.CenterX,
+                TranslateY = compositeTransform.CenterY,
+                Rotation = compositeTransform.Rotation,
+                ScaleX = compositeTransform.ScaleX,
+                ScaleY = compositeTransform.ScaleY
+            };
+
+            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
+
+            //Now scale the point in local space
+            localPoint.X *= compositeTransform.ScaleX;
+            localPoint.Y *= compositeTransform.ScaleY;
+
+            var worldPoint = tmpTranslate.TransformPoint(localPoint);
+
+            //Take the actual scaling...
+            var distance = new Point(
+                worldPoint.X - center.X,
+                worldPoint.Y - center.Y);
+            if (delta > 0)
+            {
+                transform.ScaleX *= 1.2;
+                transform.ScaleY *= 1.2;
+            }
+            if (delta < 0)
+            {
+                transform.ScaleX /= 1.2;
+                transform.ScaleY /= 1.2;
+            }
+            transform.TranslateX += distance.X;
+            transform.TranslateY += distance.Y;
+            transform.CenterX = center.X;
+            transform.CenterY = center.Y;
         }
     }
 }
