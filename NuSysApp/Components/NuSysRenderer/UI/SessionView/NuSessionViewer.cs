@@ -122,6 +122,8 @@ namespace NuSysApp
         /// </summary>
         private int _numChatNotifications;
 
+        private LibraryElementController _currController;
+
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -338,6 +340,9 @@ namespace NuSysApp
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
             _titleBox.Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title;
+            _currController = SessionController.Instance.ContentController.GetLibraryElementController(
+                SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
+            _currController.TitleChanged += InstanceOnEnterNewCollectionCompleted;
         }
 
         /// <summary>
@@ -511,6 +516,7 @@ namespace NuSysApp
             _backToWaitingRoom.Tapped -= BackToWaitingRoomOnTapped;
             SessionController.Instance.OnModeChanged -= Instance_OnModeChanged;
             SessionController.Instance.EnterNewCollectionCompleted -= InstanceOnEnterNewCollectionCompleted;
+            _currController.TitleChanged -= InstanceOnEnterNewCollectionCompleted;
             base.Dispose();
         }
 

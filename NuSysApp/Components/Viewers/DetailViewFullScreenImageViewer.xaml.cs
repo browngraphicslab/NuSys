@@ -83,6 +83,9 @@ namespace NuSysApp
         {
             xCanvas.Height = SessionController.Instance.SessionView.FreeFormViewer.Height;
             xCanvas.Width = SessionController.Instance.SessionView.FreeFormViewer.Width;
+            Canvas.SetTop(xCloseButton, ActualHeight - xCloseButton.Height - 15);
+            Canvas.SetLeft(xCloseButton, ActualWidth/2 - xCloseButton.Width/2);
+            
         }
         /// <summary>
         /// Method to set the image curently being displayed
