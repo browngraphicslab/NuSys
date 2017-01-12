@@ -827,11 +827,8 @@ namespace NuSysApp
             else
             {
                 _readOnlyLinksWindow.IsVisible = true;
-                //_readOnlyLinksWindow.Transform.LocalPosition = new Vector2(275, 100);
                 _readOnlyAliasesWindow.IsVisible = true;
-                //_readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(10, 100);
                 _readOnlyMetadataWindow.IsVisible = true;
-                //_readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(10, 450);
             }
         }
     }
