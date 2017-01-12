@@ -120,6 +120,14 @@ namespace NuSysApp
             });
         }
 
+        public override void OnHolding(Vector2 point)
+        {
+            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+            {
+                base.OnHolding(point);
+            });
+        }
+
         public virtual bool IsInteractable()
         {
             return true;

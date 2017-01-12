@@ -36,7 +36,10 @@ namespace NusysIntermediate
         /// This should return true if the args class is valid, false otherwise.
         /// </summary>
         /// <returns></returns>
-        protected virtual bool CheckIsValid() { return true}
+        protected virtual bool CheckIsValid()
+        {
+            return true;
+        }
 
         /// <summary>
         /// Should be called to make sure that an args class has been properly created;

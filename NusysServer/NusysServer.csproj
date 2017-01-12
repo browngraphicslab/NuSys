@@ -318,6 +318,7 @@
     <Compile Include="RequestHandlers\UpdateLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdatePresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\UploadCollectionBackgroundImageRequestHandler.cs" />
+    <Compile Include="RequestHandlers\WebSearchRequestHandler.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiConstants.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiDocument.cs" />

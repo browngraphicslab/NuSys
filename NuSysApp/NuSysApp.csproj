@@ -393,6 +393,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingGrid.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\GradientBackgroundRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\InkableImageDetailRenderItemUIElement.cs" />
@@ -835,6 +836,7 @@
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\Requests\UpdatePresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\UploadCollectionBackgroundImageRequest.cs" />
+    <Compile Include="Network\Requests\WebSearchRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
     <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />

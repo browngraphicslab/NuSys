@@ -36,6 +36,7 @@ namespace NuSysApp
         public delegate void MarkingMenuPointerReleasedHandler();
         public delegate void MarkingMenuPointerMoveHandler(Vector2 p);
         public delegate void PointerWheelHandler(CanvasPointer pointer, float delta);
+        public delegate void HoldingHandler(Vector2 point);
         public delegate void TranslateHandler(CanvasPointer pointer, Vector2 point, Vector2 delta );
         public delegate void PanZoomHandler(Vector2 center, Vector2 deltaTranslation, float deltaZoom);
         public event TranslateHandler Translated;
@@ -48,6 +49,7 @@ namespace NuSysApp
         public event PointerPressedHandler ItemLongTapped;
         public event PointerPressedHandler ItemDoubleTapped;
         public event PointerWheelHandler PointerWheelChanged;
+        public event HoldingHandler Holding;
         public event TwoPointerPressedHandler TwoPointerPressed;
         public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
 
@@ -85,9 +87,11 @@ namespace NuSysApp
             _canvas.PointerCaptureLost += CanvasOnPointerExited;
             _canvas.PointerCanceled += CanvasOnPointerExited;
             _canvas.PointerExited += CanvasOnPointerExited;
+            _canvas.Holding += OnHolding;
             AllPointersReleased += OnAllPointersReleased;
             SetEnabled(true);
         }
+
 
 
         public virtual void Dispose()
@@ -96,6 +100,7 @@ namespace NuSysApp
             _canvas.PointerPressed -= OnPointerPressed;
             _canvas.PointerReleased -= OnPointerReleased;
             _canvas.PointerWheelChanged -= ResourceCreatorOnPointerWheelChanged;
+            _canvas.Holding -= OnHolding;
             _canvas.PointerCaptureLost -= CanvasOnPointerExited;
             _canvas.PointerCanceled -= CanvasOnPointerExited;
             _canvas.PointerExited -= CanvasOnPointerExited;
@@ -131,6 +136,18 @@ namespace NuSysApp
             var point = args.GetCurrentPoint(_canvas);
             var delta = Math.Sign((double)args.GetCurrentPoint(_canvas).Properties.MouseWheelDelta);
             PointerWheelChanged?.Invoke(new CanvasPointer(point), delta);
+        }
+
+
+        private void OnHolding(object sender, HoldingRoutedEventArgs args)
+        {
+            if (!_isEnabled)
+            {
+                return;
+            }
+            var point = args.GetPosition(_canvas).ToSystemVector2();
+            Holding?.Invoke(point);
+
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
