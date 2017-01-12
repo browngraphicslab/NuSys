@@ -58,7 +58,7 @@ namespace NusysServer
         public static void ProcessCreateContentDataModelRequestMedia(Message contentDataModelMessage, string contentDataModelId, string contentUrl, NusysConstants.ElementType elementType, NuWebSocketHandler senderHandler)
         {
             var title = contentDataModelMessage.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY); //get the current title of tje library element model used for this
-
+            return;
             //create a new async Task so we don't slow down the request
             Task.Run(async delegate
             {
