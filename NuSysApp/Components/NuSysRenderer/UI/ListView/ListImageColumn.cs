@@ -29,7 +29,15 @@ namespace NuSysApp
 
         private async void LoadDefaultImageAsync(ICanvasResourceCreatorWithDpi resourceCreator)
         {
-            _image = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_image.png"));
+            try
+            {
+                _image = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/icon_image.png"));
+
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
 
         public override RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement, ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
@@ -70,15 +78,11 @@ namespace NuSysApp
                 {
                     return;
                 }
-                if (imgWidth > imgHeight)
-                {
-                    cell.ImageBounds = new Rect(0, 0, height*imgWidth/imgHeight, height);
 
-                }
-                else
-                {
-                    cell.ImageBounds = new Rect(0, 0, width, width*imgHeight/imgWidth);
-                }
+                cell.ImageBounds = new Rect(0, 0, height*imgWidth/imgHeight, height);
+
+
+
             }
             catch(Exception e)
             {
