@@ -98,6 +98,7 @@ namespace NuSysApp
         private void ImageButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             SelectAndSaveImage();
+            DismissPopup();
         }
 
         /// <summary>
