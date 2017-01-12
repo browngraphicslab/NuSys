@@ -60,6 +60,11 @@ namespace NuSysApp
         /// </summary>
         private FlyoutPopup _settingsPopup;
 
+        /// <summary>
+        /// a decorative line
+        /// </summary>
+        private RectangleUIElement _line;
+
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
@@ -278,16 +283,14 @@ namespace NuSysApp
             _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
 
             /// a decorative line :)
-            var line = new RectangleUIElement(this, Canvas)
+            _line = new RectangleUIElement(this, Canvas)
             {
                 Background = Constants.MED_BLUE,
                 Height = 1
             };
-            line.Width = Width - 20;
-            AddChild(line);
-            line.Transform.LocalPosition = new Vector2(10, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
-
-
+            _line.Width = Width - 20;
+            AddChild(_line);
+            _line.Transform.LocalPosition = new Vector2(10, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
             _loaded = true;
             base.Load();
         }
@@ -430,6 +433,9 @@ namespace NuSysApp
                 _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _tabContainerLayoutManager.ArrangeItems();
+
+                _line.Width = Width - 20;
+                _line.Transform.LocalPosition = new Vector2(10, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
             }
 
 

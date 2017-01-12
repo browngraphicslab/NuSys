@@ -225,7 +225,7 @@ namespace NuSysApp
                 Height = 500,
                 MinWidth = 400,
                 MinHeight = 600,
-                KeepAspectRatio = true
+                KeepAspectRatio = false
             };
             AddChild(_detailViewer);
 
@@ -319,29 +319,43 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// open detail view for present collection if you double tap the title box
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var currCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSessionView.ShowDetailView(currCollectionController);
         }
 
+        /// <summary>
+        /// need to set the title box text here, since otherwise it will throw an exception
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="s"></param>
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
             _titleBox.Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title;
         }
 
+        /// <summary>
+        /// updates UI that is dependent on the position of the titlebox
+        /// </summary>
         public void UpdateUI()
         {
-
+            // update title box position
             _titleBox.Transform.LocalPosition =
             new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
             
+            //update settings and back button position to be on either side of the title box
             _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 + _titleBox.Width / 2 - _settingsButton.Width / 2 + 50,
             _titleBox.Height / 2 - _settingsButton.Height / 2);
             _backButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
                 _titleBox.Height / 2 - _backButton.Height / 2);
             
-
+            //if the breadcrumb trail is not docked, then update it to be aligned with the back button, and update the back to waiting room button
             if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 TrailBox.Transform.LocalPosition =
@@ -352,6 +366,7 @@ namespace NuSysApp
                         _backButton.Transform.LocalPosition.X + _backButton.Width/2 - _backToWaitingRoom.Width/2,
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + TrailBox.Height + 30);
             }
+            //if the breadcrumb trail is docked, update it to be right aligned, and update the back to waiting room button to be aligned with the back button
             else
             {
                 TrailBox.Transform.LocalPosition =
@@ -362,6 +377,7 @@ namespace NuSysApp
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
             }
 
+            //trail box is visible dependent on the back to waiting room button
             if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
@@ -371,7 +387,7 @@ namespace NuSysApp
                 TrailBox.IsVisible = true;
             }
 
-
+            //set position of settings menu
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2, _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
         }
 
@@ -421,6 +437,7 @@ namespace NuSysApp
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
             _detailViewer.Width = Width/2;
+            _detailViewer.MaxWidth = Width - 60;
 
             // center the presentation mode buttons
             var buttonMargin = 10;

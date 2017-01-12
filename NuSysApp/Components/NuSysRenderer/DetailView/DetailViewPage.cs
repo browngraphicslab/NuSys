@@ -135,8 +135,12 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-            _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle,
-                "Drag to Collection");
+            _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.DraggableStyle,
+                "Drag to Collection")
+            {
+                Bordercolor = Constants.DARK_BLUE,
+                BorderWidth = 2
+            };
             _dragToCollectionButton.Width = 150;
             _dragToCollectionButton.Height = 40;
             AddChild(_dragToCollectionButton);
@@ -147,6 +151,8 @@ namespace NuSysApp
                 _expandButton.Width = 150;
                 _expandButton.Height = 40;
                 AddChild(_expandButton);
+
+                _expandButton.Tapped += ExpandButton_Tapped;
             }
 
             // set the tapped method on the addRegionButton
@@ -155,7 +161,12 @@ namespace NuSysApp
             _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
 
-        } 
+        }
+
+        protected virtual void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            
+        }
 
         /// <summary>
         /// Fired 60 times a second while the pointer is being dragged after tapping on drag to collection button
@@ -249,6 +260,11 @@ namespace NuSysApp
             if (_showsImageAnalysis)
             {
                 _imageAnalysisLayoutManager.Dispose();
+            }
+
+            if (_expandButton != null)
+            {
+                _expandButton.Tapped -= ExpandButton_Tapped;
             }
 
             base.Dispose();
