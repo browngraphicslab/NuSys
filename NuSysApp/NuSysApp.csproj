@@ -137,6 +137,7 @@
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
     <Content Include="Assets\new icons\up arrow.png" />
+    <Content Include="Assets\new icons\x white.png" />
     <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
@@ -394,6 +395,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\EditShapePopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingGrid.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\GradientBackgroundRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\InkableImageDetailRenderItemUIElement.cs" />

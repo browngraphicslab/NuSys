@@ -361,11 +361,6 @@ namespace NuSysApp
             }
             else
             {
-                if (this != initialCollection)
-                {
-                    (ViewModel.Controller.LibraryElementController as CollectionLibraryElementController).SetFiniteBoolean(true);
-                }
-                //(ViewModel.Controller.LibraryElementController as CollectionLibraryElementController).SetFiniteBoolean(true);
                 ds.Transform = Transform.LocalToScreenMatrix;
                 Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
             }

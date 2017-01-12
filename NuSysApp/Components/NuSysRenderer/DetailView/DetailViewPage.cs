@@ -75,7 +75,7 @@ namespace NuSysApp
 
         private float _imageHeight;
 
-        private float _imageAnalysisMinHeight = 170;
+        private float _imageAnalysisMinHeight = 230;
 
         private ButtonUIElement _dragToCollectionButton;
 
@@ -110,24 +110,13 @@ namespace NuSysApp
             AddChild(_addRegionButton);
             _addRegionButtonLayoutManager.AddElement(_addRegionButton);
 
-            _dragToCollectionButton = new ButtonUIElement(this, resourceCreator)
-            {
-                Background = Colors.Azure,
-                ButtonText = "Drag To Collection",
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
-                Height = 30,
-                Width = 150,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center
-            };
-            AddChild(_dragToCollectionButton);
-
             /// add the analysis stuff only if it is supported
             if (_showsImageAnalysis)
             {
                 // initialize the layout manager for the analysis ui element
                 _imageAnalysisLayoutManager = new StackLayoutManager();
+
+                _imageAnalysisLayoutManager.SetMargins(15);
 
                 // initialize the analysis ui element
                 _analysisUIElement = new ImageAnalysisUIElement(this, resourceCreator, controller);
@@ -141,14 +130,17 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-
+            _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle,
+                "Drag to Collection");
+            AddChild(_dragToCollectionButton);
 
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
             _dragToCollectionButton.DragCompleted += _dragToCollectionButton_DragCompleted;
             _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
-        }
+
+        } 
 
         /// <summary>
         /// Fired 60 times a second while the pointer is being dragged after tapping on drag to collection button
@@ -272,13 +264,13 @@ namespace NuSysApp
             }
 
 
-            _dragToCollectionButton.Transform.LocalPosition = new Vector2(20,20);
+            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width/2 + _dragToCollectionButton.Width/2,300);
 
-            var dragToCollectionHeight = _dragToCollectionButton.Height + 20;
+            //var dragToCollectionHeight = _dragToCollectionButton.Height + 20;
 
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
-            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin, Height*heightMultiplier) - dragToCollectionHeight;
+            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin, Height*heightMultiplier);
 
             // set the image
             var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
@@ -287,17 +279,17 @@ namespace NuSysApp
             _contentLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
             _contentLayoutManager.ItemWidth = Width - imageOffsetFromRegionButton - 20;
             _contentLayoutManager.ItemHeight = _imageHeight;
-            _contentLayoutManager.TopMargin = 20;
-            _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, dragToCollectionHeight));
-
+            _contentLayoutManager.SetMargins(20);
+            _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
 
             if (_showsImageAnalysis)
             {
                 // set the image analysis
-                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin - dragToCollectionHeight);
+                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin);
                 _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
-                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin + dragToCollectionHeight));
+                _imageAnalysisLayoutManager.Spacing = 5;
+                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin));
             }
 
 
