@@ -23,13 +23,19 @@ namespace NuSysApp
         public event TrailEventHandler OnTrailAdded;
         public event TrailEventHandler OnTrailRemoved;
 
-        public delegate void ChildAddedEventHandler(string id);
+
+        public delegate void ChildAddedEventHandler(string elementModelId);
         public event ChildAddedEventHandler OnChildAdded;
 
-        public delegate void ChildRemovedEventHandler(string id);
+        public delegate void ChildRemovedEventHandler(string elementModelId);
         public event ChildRemovedEventHandler OnChildRemoved;
 
         public event EventHandler<LinkViewModel> LinkAddedToCollection;
+
+        /// <summary>
+        /// Event fired whenever the bool representing if this colection is finite is changed.
+        /// </summary>
+        public event EventHandler<bool> FiniteBoolChanged; 
 
 
         public CollectionLibraryElementModel CollectionModel
@@ -102,7 +108,7 @@ namespace NuSysApp
         private void ElementControllerOnDeleted(object source)
         {
             var elementController = (ElementController)source;
-            CollectionModel.Children.Remove(elementController.Model.Id);
+            RemoveChild(elementController.Id);
         }
 
         public bool RemoveChild(string id)
@@ -151,6 +157,7 @@ namespace NuSysApp
             {
                 _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY, isFiniteValue);
             }
+            FiniteBoolChanged?.Invoke(this,isFiniteValue);
         }
     }
 }

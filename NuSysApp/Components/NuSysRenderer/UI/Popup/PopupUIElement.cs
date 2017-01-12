@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,12 @@ namespace NuSysApp
     /// </summary>
     public class PopupUIElement : RectangleUIElement
     {
+
+        /// <summary>
+        /// Event called whenever the popup is dismissed.  
+        /// Can be used to remove the UI element from the its parent. 
+        /// </summary>
+        public event EventHandler<PopupUIElement> Dismissed; 
 
         /// <summary>
         /// if a popup is dismissable, then it can be clicked out of by clicking anywhere beyond the popup.
@@ -55,17 +62,32 @@ namespace NuSysApp
         /// <summary>
         /// constructor for popup ui element. more information in class header.
         /// initially dismissable is set to true and parent is set to null, this can be changed with the properties Dismissable and Parent.
+        /// Its important that the parent you pass in is actually the element you call 'AddChild' on.  
+        /// Otherwise There may be a memory leak with this popup if not used correctly.
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
         public PopupUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _dismissable = true;
-            _parent = null;
+            _parent = parent;
             _dismissText = "";
+
+            SessionController.Instance.SessionView.FreeFormViewer.FocusManager.ChangeFocus(this);
             
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed +=
-                CanvasInteractionManager_ClosePopup;
+            OnChildFocusLost += PopupUIElement_OnFocusLost;
+            OnFocusLost += PopupUIElement_OnFocusLost;
+
+            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed +=
+            //    CanvasInteractionManager_ClosePopup;
+        }
+
+        private void PopupUIElement_OnFocusLost(BaseRenderItem item)
+        {
+            if (_dismissable && !ChildHasFocus)
+            {
+                DismissPopup();
+            }
         }
 
 
@@ -100,7 +122,11 @@ namespace NuSysApp
         /// </summary>
         public void DismissPopup()
         {
+            //TODO add 'dismissable' logic here so its encapsulated in one place
             this.IsVisible = false;
+            Dismissed?.Invoke(this, this);
+
+            Parent?.RemoveChild(this);
             Dispose();
         }
 
@@ -155,9 +181,11 @@ namespace NuSysApp
             {
                 _dismissButton.Tapped -= DismissButton_Tapped;
             }
-           
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed -=
-                CanvasInteractionManager_ClosePopup;
+            OnFocusLost -= PopupUIElement_OnFocusLost;
+            OnChildFocusLost -= PopupUIElement_OnFocusLost;
+
+            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed -=
+            //    CanvasInteractionManager_ClosePopup;
             base.Dispose();
         }
     }

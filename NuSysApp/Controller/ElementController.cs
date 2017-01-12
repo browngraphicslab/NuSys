@@ -356,6 +356,11 @@ namespace NuSysApp
             LinksUpdated?.Invoke(this);
         }
 
+        /// <summary>
+        /// ILinkable-required method so we can see if we need to draw a link on a specific collection.
+        /// This is the same as typing Model.ParentCollectionId
+        /// </summary>
+        /// <returns></returns>
         public string GetParentCollectionId()
         {
             return Model.ParentCollectionId;

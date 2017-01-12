@@ -14,6 +14,9 @@ namespace NuSysApp
 {
     public class ResizeableWindowUIElement : DraggableWindowUIElement
     {
+
+        public static ResizeableWindowUIElement CurrentlyDraggingWindow { get; private set; }
+
         /// <summary>
         /// The maximum width of the resizable window
         /// </summary>
@@ -421,6 +424,17 @@ namespace NuSysApp
                     Debug.Assert(_resizePosition == null, $"We do not support {nameof(_resizePosition)} yet. Please add support or check call");
                     return;
             }
+            ApplyResizeChanges(offsetDelta, sizeDelta);
+        }
+
+        /// <summary>
+        /// private method to apply a pre-calculated offset and size delta to the window.
+        /// This takes into account the aspect ratio logic for the window resizing.
+        /// </summary>
+        /// <param name="offsetDelta"></param>
+        /// <param name="resizeDelta"></param>
+        private void ApplyResizeChanges(Vector2 offsetDelta, Vector2 sizeDelta)
+        {
 
             // get the old width and height for calculating the ratio
             var oldWidth = Width;
@@ -433,7 +447,7 @@ namespace NuSysApp
                 if (Math.Abs(sizeDelta.Y) < .001)
                 {
                     Width += sizeDelta.X;
-                    Height = oldHeight*Width/oldWidth;
+                    Height = oldHeight * Width / oldWidth;
                     // check the offset otherwise resizing the window below minwidth will just move the window across the screen
                     if (Width != MinWidth)
                     {
@@ -444,13 +458,13 @@ namespace NuSysApp
                 // otherwise if we change the x and y direction or just the y direction
                 {
                     Height += sizeDelta.Y;
-                    Width = oldWidth * Height/oldHeight;
+                    Width = oldWidth * Height / oldHeight;
                     // check the offset otherwise resizing the window below minwidth will just move the window across the screen
                     if (Width != MinWidth && (_resizePosition == ResizerBorderPosition.BottomLeft || _resizePosition == ResizerBorderPosition.Left))
                     {
                         Transform.LocalPosition += new Vector2(oldWidth - Width, 0);
                     }
-                } 
+                }
             }
             // otherwise just use simple code
             else
@@ -464,7 +478,6 @@ namespace NuSysApp
                 }
             }
         }
-
 
         /// <summary>
         /// Takes in a CanvasPointer and returns the ResizerBorderPosition
@@ -566,6 +579,41 @@ namespace NuSysApp
         public override Rect GetLocalBounds()
         {
             return new Rect(-ErrorMargin, -ErrorMargin, Width + ErrorMargin * 2, Height + ErrorMargin * 2);
+        }
+
+        /// <summary>
+        /// Method called whenever the top bar has started a drag
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected override void OnTopBarDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            CurrentlyDraggingWindow = this;
+            base.OnTopBarDragStarted(item, pointer);
+        }
+
+
+        /// <summary>
+        /// event handler called whenever the base class drag event from the top bar has completed.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected override void OnTopBarDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            CurrentlyDraggingWindow = null;
+            base.OnTopBarDragCompleted(item, pointer);
+        }
+
+        /// <summary>
+        /// Method that can be called when the top bar is pinch zoomed.
+        /// This should internally resize the window.
+        /// </summary>
+        /// <param name="deltaTranslation"></param>
+        /// <param name="deltaZoom"></param>
+        public void ResizeFromPinch(Vector2 deltaTranslation, float deltaZoom)
+        {
+            var diff = 100*(deltaZoom - 1);
+            ApplyResizeChanges(new Vector2(0,0), new Vector2(diff, diff));
         }
     }
 }

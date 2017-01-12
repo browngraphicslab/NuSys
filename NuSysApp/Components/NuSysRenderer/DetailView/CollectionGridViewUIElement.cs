@@ -46,10 +46,6 @@ namespace NuSysApp
             }
         }
 
-        public static float DefaultSpacing = 20;
-        public static float DefaultWidth = 100;
-        public static float DefaultHeight = 100;
-
         public CollectionGridViewUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
@@ -75,17 +71,18 @@ namespace NuSysApp
             AddChild(_metadataLabel);
 
             _controller.TitleChanged += _controller_TitleChanged;
-            Tapped += CollectionGridViewUIElement_Tapped;
+            DoubleTapped += CollectionGridViewUIElement_DoubleTapped;
         }
 
-        private void CollectionGridViewUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void CollectionGridViewUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            SessionController.Instance.NuSessionView.ShowDetailView(_controller);
         }
 
         public override void Dispose()
         {
-            Tapped -= CollectionGridViewUIElement_Tapped;
             _controller.TitleChanged -= _controller_TitleChanged;
+            DoubleTapped -= CollectionGridViewUIElement_DoubleTapped;
 
             base.Dispose();
         }
@@ -145,7 +142,7 @@ namespace NuSysApp
 
             // layout the imageRect above the metadata label
             _imageRect.Height = Height - 3*borderSpacing - 2*BorderWidth - _metadataLabel.Height;
-            _metadataLabel.Width = Width - 2 * BorderWidth - 2 * borderSpacing;
+            _imageRect.Width = Width - 2 * BorderWidth - 2 * borderSpacing;
             _imageRect.Transform.LocalPosition = new Vector2(BorderWidth + borderSpacing);
 
             base.Update(parentLocalToScreenTransform);

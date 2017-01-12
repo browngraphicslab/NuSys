@@ -31,6 +31,7 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
         private Size _elementSize;
         private CanvasGeometry _shape;
+        private ICanvasImage _shapeImage = null;
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
         {
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
@@ -50,7 +51,16 @@ namespace NuSysApp
         public RenderItemTransform Camera { get; set; } = new RenderItemTransform();
         
         public int NumLinks => ViewModel.Links.Count;
-        
+
+        private enum ShapedStatus
+        {
+            None,
+            Image,
+            Points
+        }
+
+        private ShapedStatus _shapeStatus;
+
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
             _canvas = (CanvasAnimatedControl)ResourceCreator;
@@ -72,6 +82,40 @@ namespace NuSysApp
             vm.ToolLinks.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
+            vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
+            UpdateShapeStatus();
+        }
+
+        private void ContentDataControllerOnContentDataUpdated(object sender, string s)
+        {
+            UpdateShapeStatus();
+        }
+
+        private void UpdateShapeStatus()
+        {
+            //TEST END
+
+            if (!ViewModel.IsShaped)
+            {
+                _shapeStatus = ShapedStatus.None;
+                return;
+            }
+            var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
+            Debug.Assert(controller != null);
+
+            var shape = controller.CollectionModel.Shape;
+            Debug.Assert(shape != null);
+            if (shape.ImageUrl == null)
+            {
+                _shapeStatus = ShapedStatus.Points;
+            }
+            else
+            {
+                _shapeStatus = ShapedStatus.Image;
+                Task.Run(async delegate {
+                    _shapeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri(shape.ImageUrl));
+                });
+            }
         }
 
         public override void Dispose()
@@ -90,6 +134,7 @@ namespace NuSysApp
                 ViewModel.ToolLinks.CollectionChanged -= OnElementsChanged;
                 ViewModel.Trails.CollectionChanged -= OnElementsChanged;
                 ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
+                ViewModel.Controller.LibraryElementController.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
 
                 foreach (var item in _renderItems0.ToArray())
                     Remove(item);
@@ -218,6 +263,20 @@ namespace NuSysApp
                 item?.Update(Camera.LocalToScreenMatrix);
         }
 
+        private void DrawBackgroundShapeImage(CanvasDrawingSession ds, IEnumerable<Vector2> pts)
+        {
+            if (_shapeStatus == ShapedStatus.Image)
+            {
+                if (_shapeImage != null)
+                {
+                    var bounds = _shape.ComputeBounds();
+                    bounds.X = pts.Min(l => l.X);
+                    bounds.Y = pts.Min(l => l.Y);
+                    ds.DrawImage((CanvasBitmap)_shapeImage, bounds);
+                }
+            }
+        }
+
         public override void Draw(CanvasDrawingSession ds)
         {
             if (IsDisposed)
@@ -241,26 +300,60 @@ namespace NuSysApp
                 ds.DrawRectangle(elementRect, Colors.Black, 1f, _strokeStyle);
             }
 
+            var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
+            Debug.Assert(controller != null);
+            var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
             if (ViewModel.IsShaped || ViewModel.IsFinite)
             {
-                var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
-                Debug.Assert(controller != null);
-                var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
-                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                if (_shapeStatus == ShapedStatus.Image)
+                {
+                    if (_shapeImage != null)
+                    {
+                        _shape = CanvasGeometry.CreateRectangle(ResourceCreator, _shapeImage.GetBounds(ResourceCreator));
+                    }
+                }
+                else if (_shapeStatus == ShapedStatus.Points)
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
+                else
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
 
             }
 
+            if (_shape == null)
+            {
+                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+            }
 
             if (this != initialCollection && ViewModel.IsFinite && ViewModel.IsShaped)
             {
                 var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
                 Camera.LocalScale = new Vector2(scaleFactor);
-                ds.Transform = Camera.LocalToScreenMatrix;
-                Mask = _shape;
+                if (_shapeStatus == ShapedStatus.Image)
+                {
+                    if (_shapeImage != null)
+                    {
+                        var rect = _shapeImage.GetBounds(ResourceCreator);
+                        rect.Height *= scaleFactor;
+                        rect.Width *= scaleFactor;
+                        Mask = CanvasGeometry.CreateRectangle(ResourceCreator, rect);
+                    }
+                    else
+                    {
+                        Mask = _shape;
+                    }
+                }
+                else
+                {
+                    ds.Transform = Camera.LocalToScreenMatrix;
+                    Mask = _shape;
+                }
             }
             else if (this != initialCollection && ViewModel.IsFinite && !ViewModel.IsShaped)
             {
-                var bounds = _shape.ComputeBounds();
                 var scaleFactor = (float)_elementSize.Height / (float)_shape.ComputeBounds().Height;
                 Camera.LocalScale = new Vector2(scaleFactor);
                 ds.Transform = Transform.LocalToScreenMatrix;
@@ -268,8 +361,17 @@ namespace NuSysApp
             }
             else
             {
+                if (this != initialCollection)
+                {
+                    (ViewModel.Controller.LibraryElementController as CollectionLibraryElementController).SetFiniteBoolean(true);
+                }
+                //(ViewModel.Controller.LibraryElementController as CollectionLibraryElementController).SetFiniteBoolean(true);
                 ds.Transform = Transform.LocalToScreenMatrix;
                 Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
+            }
+            if (this == initialCollection)
+            {
+                this.DrawBackgroundShapeImage(ds, pts);
             }
 
             using (ds.CreateLayer(1, Mask))
@@ -278,12 +380,11 @@ namespace NuSysApp
                 ds.FillRectangle(GetLocalBounds(), Colors.White);
 
                 ds.Transform = Camera.LocalToScreenMatrix;
-                if (ViewModel.IsShaped)
+                if (ViewModel.IsShaped && _shapeStatus != ShapedStatus.Image)
                 {
                     ds.FillGeometry(_shape, ViewModel.ShapeColor);
-     
                 }
-
+                DrawBackgroundShapeImage(ds, pts);
                 var screenRect = GetScreenRect();
 
                 foreach (var item in _renderItems0.ToArray())

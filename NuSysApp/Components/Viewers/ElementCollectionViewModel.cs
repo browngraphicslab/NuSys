@@ -42,8 +42,24 @@ namespace NuSysApp
         public Vector2 CameraCenter { get; set; } = new Vector2(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
         public float CameraScale { get; set; } = 1f;
 
-        public bool IsFinite { get; set; }
-        public bool IsShaped { get; set; }
+        public bool IsFinite
+        {
+            get
+            {
+                Debug.Assert(Controller.LibraryElementModel is CollectionLibraryElementModel);
+                return ((CollectionLibraryElementModel)Controller.LibraryElementModel).IsFinite;
+            }
+        }
+
+        public bool IsShaped
+        {
+            get
+            {
+                var collectionShape = ((CollectionContentDataController)(Controller.LibraryElementController.ContentDataController)).CollectionModel.Shape;
+                return collectionShape != null && (collectionShape?.ShapePoints?.Count > 5 || collectionShape.ImageUrl != null);
+            }
+        }
+
         public double AspectRatio { get; set; }
         public Color ShapeColor { get; set; } = Colors.Black;
 
@@ -64,8 +80,6 @@ namespace NuSysApp
             var collectionShape = contentController.CollectionModel.Shape;
 
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
-            IsFinite = model.IsFinite;
-            IsShaped = collectionShape?.ShapePoints != null && collectionShape?.ShapePoints?.Count > 5;
             AspectRatio = collectionShape?.AspectRatio ?? 0;
 
             if (collectionShape?.ShapeColor != null)
@@ -323,6 +337,16 @@ namespace NuSysApp
         public IEnumerable<string> GetUpdatedDataList()
         {
             return GetOutputLibraryIds();
+        }
+
+        public override void SetSize(double width, double height)
+        {
+            if (IsShaped)
+            {
+                Debug.Assert((Controller?.LibraryElementController?.ContentDataController as CollectionContentDataController)?.CollectionModel?.Shape?.AspectRatio != null);
+                width = (Controller.LibraryElementController.ContentDataController as CollectionContentDataController).CollectionModel.Shape.AspectRatio * height;
+            }
+            base.SetSize(width, height);
         }
     }
 }

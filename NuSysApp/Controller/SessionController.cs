@@ -568,6 +568,7 @@ namespace NuSysApp
 
                 SessionView.ShowBlockingScreen(false);
                 EnterNewCollectionCompleted?.Invoke(this, collectionLibraryId);
+                SwitchMode(Options.PanZoomOnly);
             });
         }
 

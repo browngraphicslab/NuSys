@@ -192,6 +192,14 @@ namespace NusysIntermediate
             return JsonConvert.DeserializeObject<T>(Get(key), settings);
         }
 
+        public object Get(string key, Type t)
+        {
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            Debug.Assert(_dictionary.ContainsKey(key));
+            var s = Get(key);
+            return JsonConvert.DeserializeObject(s, t, settings);
+        }
+
         public List<T> GetList<T>(string key, List<T> def = null)
         {
             var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };

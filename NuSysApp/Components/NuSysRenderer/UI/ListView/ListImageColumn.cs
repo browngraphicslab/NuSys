@@ -38,34 +38,44 @@ namespace NuSysApp
 
         private async void LoadCellImageAsync(RectangleUIElement cell, T itemSource)
         {
-            if (_dict.Keys.Contains(itemSource))
+
+            try
             {
-                cell.Image = _dict[itemSource];
+
+                if (_dict.Keys.Contains(itemSource))
+                {
+                    cell.Image = _dict[itemSource];
+                }
+                else
+                {
+                    cell.Image = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
+                    _dict[itemSource] = cell.Image;
+                }
+
+                var width = cell.Width;
+                var height = cell.Height;
+                var imgWidth = cell.Image.GetBounds(cell.ResourceCreator).Width;
+                var imgHeight = cell.Image.GetBounds(cell.ResourceCreator).Height;
+
+                if (imgWidth < 0 || imgHeight < 0)
+                {
+                    return;
+                }
+                if (imgWidth > imgHeight)
+                {
+                    cell.ImageBounds = new Rect(0, 0, height*imgWidth/imgHeight, height);
+
+                }
+                else
+                {
+                    cell.ImageBounds = new Rect(0, 0, width, width*imgHeight/imgWidth);
+                }
             }
-            else
+            catch(Exception e)
             {
-                cell.Image = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
-                _dict[itemSource] = cell.Image;
+                
             }
 
-            var width = cell.Width;
-            var height = cell.Height;
-            var imgWidth = cell.Image.GetBounds(cell.ResourceCreator).Width;
-            var imgHeight = cell.Image.GetBounds(cell.ResourceCreator).Height;
-
-            if (imgWidth < 0 || imgHeight < 0)
-            {
-                return;
-            }
-            if (imgWidth > imgHeight)
-            {
-                cell.ImageBounds = new Rect(0, 0, height*imgWidth/imgHeight, height);
-
-            }
-            else
-            {
-                cell.ImageBounds = new Rect(0, 0, width, width * imgHeight/imgWidth);
-            }
         }
 
         public override async void UpdateColumnCellFromItem(T item, RectangleUIElement rectangleUIElement, bool isSelected)

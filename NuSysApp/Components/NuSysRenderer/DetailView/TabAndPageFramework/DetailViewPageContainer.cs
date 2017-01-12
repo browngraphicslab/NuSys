@@ -13,6 +13,9 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// "Bundles common features of detail view pages" -lmurray
+    /// </summary>
     public class DetailViewPageContainer : RectangleUIElement
     {
         /// <summary>
@@ -46,6 +49,17 @@ namespace NuSysApp
         /// </summary>
         private bool _loaded;
 
+        /// <summary>
+        /// Popup used to change the access of regions
+        /// </summary>
+        private FlyoutPopup _changeAccessPopup;
+
+        /// <summary>
+        /// The flyout instance used for the settings popup.  
+        /// Will re-instantiate every time the settings button is pressed;
+        /// </summary>
+        private FlyoutPopup _settingsPopup;
+
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
@@ -78,21 +92,56 @@ namespace NuSysApp
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
         }
 
+        /// <summary>
+        /// Event handler for when the settings button is pressed
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void SettingsButton_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (_settingsPopup != null)
+            {
+                _settingsPopup.DismissPopup();
+                return;
+            }
 
-            //todo make this able to close when the settings button is pressed again, also if i click the settings button
-            // twice this should close
-            var settingsPopup = new FlyoutPopup(this, Canvas);
-            settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - settingsPopup.Width/2,
+            _settingsPopup = new FlyoutPopup(this, Canvas);
+            _settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - _settingsPopup.Width/2,
                 _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
-            settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
-            settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
-            settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
-            settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
-
-            AddChild(settingsPopup);
+            _settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
+            _settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
+            _settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
+            if (this._currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+            {
+                _settingsPopup.AddFlyoutItem("Change Collection Settings", CollectionSettingsOnTapped, Canvas);
+            }
+            _settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
+            _settingsPopup.Dismissed += SettingsPopupOnDismissed;
+            AddChild(_settingsPopup);
         }
+
+        /// <summary>
+        /// Event handler called whenever the settings popup is dismissed;
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="popupUiElement"></param>
+        private void SettingsPopupOnDismissed(object sender, PopupUIElement popupUiElement)
+        {
+            popupUiElement.Dismissed -= SettingsPopupOnDismissed;
+            _settingsPopup = null;
+        }
+
+        /// <summary>
+        /// Event handler called when the collections settings flyout button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void CollectionSettingsOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var popup = new CollectionSettingsPopup(this, Canvas,_currentController as CollectionLibraryElementController);
+            AddChild(popup);
+        }
+
 
         /// <summary>
         /// Called whenever the change access option is tapped in the flyout setting menu
@@ -102,28 +151,38 @@ namespace NuSysApp
         private void OnChangeAccessFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // create the change Access menu
-            var changeAccessPopup = new FlyoutPopup(this, Canvas);
+            _changeAccessPopup = new FlyoutPopup(this, Canvas);
             var flyout = item as BaseInteractiveUIElement;
             Debug.Assert(flyout != null);
-            changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
+            _changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - _changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
 
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
             {
-                changeAccessPopup.AddFlyoutItem("Make Read Only", OnReadOnlyTapped, Canvas);
+                _changeAccessPopup.AddFlyoutItem("Make Read Only", OnReadOnlyTapped, Canvas);
             }
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly ||
                 _currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
             {
-                changeAccessPopup.AddFlyoutItem("Make Public", OnPublicTapped, Canvas);
+                _changeAccessPopup.AddFlyoutItem("Make Public", OnPublicTapped, Canvas);
             }
 
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Public)
             {
-                changeAccessPopup.AddFlyoutItem("Cannot Change Access", null, Canvas);
+                _changeAccessPopup.AddFlyoutItem("Cannot Change Access", OnCannotChangeAccessTapped, Canvas);
             }
 
-            AddChild(changeAccessPopup);
+            AddChild(_changeAccessPopup);
 
+        }
+
+        /// <summary>
+        /// Method callewd when the change access cannot change access option is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnCannotChangeAccessTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _changeAccessPopup.DismissPopup();
         }
 
         /// <summary>
@@ -134,6 +193,8 @@ namespace NuSysApp
         private void OnPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _currentController.SetAccessType(NusysConstants.AccessType.Public);
+            _changeAccessPopup.DismissPopup();
+
         }
 
         /// <summary>
@@ -144,6 +205,7 @@ namespace NuSysApp
         private void OnReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);
+            _changeAccessPopup.DismissPopup();
         }
 
         /// <summary>
@@ -197,6 +259,17 @@ namespace NuSysApp
             _titleBox.TextChanged += OnTitleTextChanged;
 
             _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
+
+            /// a decorative line :)
+            var line = new RectangleUIElement(this, Canvas)
+            {
+                Background = Constants.MED_BLUE,
+                Height = 2
+            };
+            line.Width = Width - 20;
+            AddChild(line);
+            line.Transform.LocalPosition = new Vector2(10, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
+
 
             _loaded = true;
             base.Load();
@@ -331,7 +404,7 @@ namespace NuSysApp
 
                 _tabContainerLayoutManager.SetSize(Width, Height);
                 _tabContainerLayoutManager.SetMargins(BorderWidth);
-                _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth;
+                _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth + 10;
                 _tabContainerLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _tabContainerLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _tabContainerLayoutManager.ArrangeItems();

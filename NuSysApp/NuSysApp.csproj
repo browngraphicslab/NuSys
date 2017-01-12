@@ -126,6 +126,7 @@
     <Content Include="Assets\new icons\back.png" />
     <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
+    <Content Include="Assets\new icons\down arrow.png" />
     <Content Include="Assets\new icons\enter collection white.png" />
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\node.png" />
@@ -135,6 +136,7 @@
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
+    <Content Include="Assets\new icons\up arrow.png" />
     <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
@@ -388,6 +390,10 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingGrid.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\GradientBackgroundRectangleUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\AutoSuggestTextBox.cs" />
@@ -414,6 +420,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Popup\CenteredPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\RichTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\MaskedRect.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingCanvas.cs" />
@@ -563,6 +570,9 @@
     <Compile Include="Components\Misc\ILinkable.cs" />
     <Compile Include="Components\Misc\AliasTemplate.cs" />
     <Compile Include="Components\Misc\LinkTemplate.cs" />
+    <Compile Include="Components\Viewers\DetailViewFullScreenImageViewer.xaml.cs">
+      <DependentUpon>DetailViewFullScreenImageViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\FreeFormElementViewModelFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
@@ -1209,6 +1219,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SearchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\DetailViewFullScreenImageViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

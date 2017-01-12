@@ -25,14 +25,22 @@ namespace NuSysApp
             IsDraggable = UIDefaults.WindowIsDraggable;
             TopBarDragged += OnTopBarDragged;
             TopBarDragStarted += OnTopBarDragStarted;
+            TopBarDragCompleted += OnTopBarDragCompleted;
         }
 
-        private void OnTopBarDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Called whenever the top bar is dragged and has stopped dragging
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected virtual void OnTopBarDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer){}
+
+        protected virtual void OnTopBarDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _initialDragPosition = Transform.LocalPosition;
         }
 
-        private void OnTopBarDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void OnTopBarDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             //// if we are not currently dragging then set dragging to IsDraggable
             //if (!_dragging)
@@ -44,10 +52,20 @@ namespace NuSysApp
             //    // if we are dragging then move the window around the screen
             //    Transform.LocalPosition += pointer.DeltaSinceLastUpdate;
             //}
+            ApplyDragDelta(pointer.Delta);
+        }
+
+        /// <summary>
+        /// protected method to apply a drag delta to the draggable window.
+        /// Should take care of checking if isDraggable.
+        /// </summary>
+        /// <param name="delta"></param>
+        protected void ApplyDragDelta(Vector2 delta)
+        {
 
             if (IsDraggable)
             {
-                Transform.LocalPosition = _initialDragPosition + pointer.Delta;
+                Transform.LocalPosition = _initialDragPosition + delta;
             }
         }
 
@@ -58,6 +76,8 @@ namespace NuSysApp
         public override void Dispose()
         {
             TopBarDragged -= OnTopBarDragged;
+            TopBarDragStarted -= OnTopBarDragStarted;
+            TopBarDragCompleted -= OnTopBarDragCompleted;
             base.Dispose();
         }
     }

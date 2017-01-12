@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     class FileManager
     {
-        public static async Task<IReadOnlyList<StorageFile>> PromptUserForFiles(IEnumerable<string> allowedFileTypes = null, PickerViewMode viewMode = PickerViewMode.Thumbnail)
+        public static async Task<IReadOnlyList<StorageFile>> PromptUserForFiles(IEnumerable<string> allowedFileTypes = null, PickerViewMode viewMode = PickerViewMode.Thumbnail, bool singleFileOnly = false)
         {
             var fileOpenPicker = new FileOpenPicker {ViewMode = viewMode};
             if (allowedFileTypes != null)
@@ -22,8 +22,16 @@ namespace NuSysApp
             }
             try
             {
-                //var storageFile = await fileOpenPicker.PickSingleFileAsync();
-                var storageFiles = await fileOpenPicker.PickMultipleFilesAsync();
+                IReadOnlyList<StorageFile> storageFiles;
+                if (singleFileOnly)
+                {
+                    var storageFile = await fileOpenPicker.PickSingleFileAsync();
+                    storageFiles = new List<StorageFile>() {storageFile};
+                }
+                else
+                {
+                    storageFiles = await fileOpenPicker.PickMultipleFilesAsync();
+                }
                 return storageFiles;
             }
             catch
