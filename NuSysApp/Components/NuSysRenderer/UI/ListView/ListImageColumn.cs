@@ -29,7 +29,7 @@ namespace NuSysApp
 
         private async void LoadDefaultImageAsync(ICanvasResourceCreatorWithDpi resourceCreator)
         {
-            _image = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_link.png"));
+            _image = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_image.png"));
         }
 
         public override RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement, ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
