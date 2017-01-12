@@ -238,7 +238,6 @@ namespace NuSysApp
             _backToWaitingRoom.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
-
         }
 
         /// <summary>
@@ -249,20 +248,14 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void BackTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_backToWaitingRoom.IsVisible)
-            {
-                _backToWaitingRoom.IsVisible = false;
-                TrailBox.IsVisible = false;
-            }
-            else
-            {
-                _backToWaitingRoom.IsVisible = true;
-                TrailBox.IsVisible = true;
-            }
+            // toggle the back to waiting room rectangle visibility
+            _backToWaitingRoom.IsVisible = !_backToWaitingRoom.IsVisible;
 
-            if (SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            // if the bread crumb trail is going to be viewed in the back to waiting room rect
+            // assign it the same visibility as the back to waiting room rect
+            if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
-                TrailBox.IsVisible = true;
+                TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
             }
         }
 
@@ -276,12 +269,26 @@ namespace NuSysApp
             {
                 case Options.PanZoomOnly:
                     _floatingMenu.IsVisible = true;
-                    TrailBox.IsVisible = true;
+                    if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+                    {
+                        TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
+                    }
+                    else
+                    {
+                        TrailBox.IsVisible = true;
+                    }
                     break;
                 case Options.Presentation:
                     _detailViewer.IsVisible = false;
                     _floatingMenu.IsVisible = false;
-                    TrailBox.IsVisible = false;
+                    if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+                    {
+                        TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
+                    }
+                    else
+                    {
+                        TrailBox.IsVisible = false;
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
@@ -329,6 +336,15 @@ namespace NuSysApp
                     new Vector2(
                         _backButton.Transform.LocalPosition.X + _backButton.Width / 2 - _backToWaitingRoom.Width / 2,
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
+            }
+
+            if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
+            {
+                TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
+            }
+            else
+            {
+                TrailBox.IsVisible = true;
             }
 
 
