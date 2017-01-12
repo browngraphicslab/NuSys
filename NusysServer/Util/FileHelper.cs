@@ -14,28 +14,28 @@ namespace NusysServer
     public class FileHelper
     {
 
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr Open(byte[] data, int length);
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ActivateDocument(IntPtr document);
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int RenderPage(int width, int height);
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetTextBytes(byte[] sb);
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetBuffer();
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageWidth();
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageHeight();
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumComponents();
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumPages();
 
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GotoPage(int page);
-        [DllImport("mupdfapi", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Dispose(IntPtr pointer);
         /// <summary>
         /// the encoding when writing bytes to a file.
