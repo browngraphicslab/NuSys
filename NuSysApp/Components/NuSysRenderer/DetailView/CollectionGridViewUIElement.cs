@@ -74,6 +74,7 @@ namespace NuSysApp
             DoubleTapped += CollectionGridViewUIElement_DoubleTapped;
         }
 
+
         private void CollectionGridViewUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             SessionController.Instance.NuSessionView.ShowDetailView(_controller);

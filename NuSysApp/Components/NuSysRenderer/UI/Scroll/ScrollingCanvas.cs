@@ -11,6 +11,46 @@ namespace NuSysApp
     public class ScrollingCanvas : RectangleUIElement
     {
         /// <summary>
+        /// Invoked when an element on the scrolling canvas is pressed
+        /// </summary>
+        public event PointerHandler ElementPressed;
+
+        /// <summary>
+        /// Invoked when an element on the scrolling canvas is released
+        /// </summary>
+        public event PointerHandler ElementReleased;
+
+        /// <summary>
+        /// Invoked when an element on the scrolling canvas is double tapped
+        /// </summary>
+        public event PointerHandler ElementDoubleTapped;
+
+        /// <summary>
+        /// Invoked when an element on the scrolling canvas is tapped
+        /// </summary>
+        public event PointerHandler ElementTapped;
+
+        /// <summary>
+        /// Invoked when an element on the scrolling canvas is dragged
+        /// </summary>
+        public event PointerHandler ElementDragged;
+
+        /// <summary>
+        /// Invoked when an element on the scrolling canvas drag event first starts
+        /// </summary>
+        public event PointerHandler ElementDragStarted;
+
+        /// <summary>
+        /// Invoked when an element on the scrolling canvas drag event completes
+        /// </summary>
+        public event PointerHandler ElementDragCompleted;
+
+        /// <summary>
+        /// Invoked when an element on the scrolling canvas has a pointer wheel changed
+        /// </summary>
+        public event PointerWheelHandler ElementPointWheelChanged;
+
+        /// <summary>
         /// the horizontal scrollbar
         /// </summary>
         protected ScrollBarUIElement HorizontalScrollBar;
@@ -131,6 +171,11 @@ namespace NuSysApp
         /// </summary>
         private RectangleUIElement _lowerRightCornerRect;
 
+        /// <summary>
+        /// The initial drag position when the user starts dragging the scrolling canvas
+        /// </summary>
+        private Vector2 _initialDragPosition;
+
 
         /// <summary>
         /// The background of the scrolling canvas
@@ -206,6 +251,9 @@ namespace NuSysApp
 
             HorizontalScrollBar.ScrollBarPositionChanged += _horizontalScrollBar_ScrollBarPositionChanged;
             VerticalScrollBar.ScrollBarPositionChanged += _verticalScrollBar_ScrollBarPositionChanged;
+            _scrollAreaRect.PointerWheelChanged += ScrollingCanvas_PointerWheelChanged;
+            _scrollAreaRect.DragStarted += ScrollingCanvas_DragStarted;
+            _scrollAreaRect.Dragged += ScrollingCanvas_Dragged;
         }
 
         private void _verticalScrollBar_ScrollBarPositionChanged(object source, float position)
@@ -227,8 +275,117 @@ namespace NuSysApp
         {
             _elements.Add(element);
             _scrollAreaRect.AddChild(element);
+            AddElementEvents(element);
             element.Transform.LocalPosition = position;
         }
+
+        private void AddElementEvents(BaseInteractiveUIElement element)
+        {
+            element.Tapped += OnElementTapped;
+            element.Pressed += OnElementPressed;
+            element.Released += OnElementReleased;
+            element.DoubleTapped += OnElementDoubleTapped;
+            element.Dragged += OnElementDragged;
+            element.DragStarted += OnElementDragStarted;
+            element.DragCompleted += OnElementDragCompleted;
+            element.PointerWheelChanged += OnElementPointerWheelChanged;
+        }
+
+        private void OnElementPointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
+        {
+            ElementPointWheelChanged?.Invoke(item, pointer, delta);
+            ScrollingCanvas_PointerWheelChanged(item, pointer, delta);
+        }
+
+        private void OnElementDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ElementDragCompleted?.Invoke(this, pointer);
+        }
+
+        private void OnElementDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ElementDragStarted?.Invoke(this, pointer);
+            ScrollingCanvas_DragStarted(item, pointer);
+        }
+
+        private void OnElementDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ElementDragged?.Invoke(this, pointer);
+            ScrollingCanvas_Dragged(item, pointer);
+        }
+
+        protected virtual void OnElementDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ElementDoubleTapped?.Invoke(this, pointer);
+        }
+
+        protected virtual void OnElementReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ElementReleased?.Invoke(this, pointer);
+        }
+
+        protected virtual void OnElementPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ElementPressed?.Invoke(this, pointer);
+        }
+
+        protected virtual void OnElementTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            ElementTapped?.Invoke(item, pointer);
+        }
+
+        private void ScrollingCanvas_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // update the crop rect to reflect the drag
+            _cropRect = new Rect(_initialDragPosition.X - pointer.Delta.X, _initialDragPosition.Y - pointer.Delta.Y, _cropRect.Width, _cropRect.Height);
+
+            // determine based on the scroll direction whether horizontal scrolling is enabled
+            var horizontalScrollingEnabled = new List<ScrollOrientation>
+            {
+                ScrollOrientation.Auto, ScrollOrientation.Both, ScrollOrientation.Horizontal
+            }.Contains(ScrollDirection);
+
+            // determine based on the scroll direction whether vertical scrolling is enabled
+            var verticalScrollingEnabled = new List<ScrollOrientation>
+            {
+                ScrollOrientation.Auto, ScrollOrientation.Both, ScrollOrientation.Vertical
+            }.Contains(ScrollDirection);
+
+            // if horizontal scrolling is enabled shift the canvas horizontally
+            if (horizontalScrollingEnabled)
+            {
+                HorizontalScrollBar.Position = (float)(_cropRect.Left / ScrollAreaSize.Width);
+                BoundHorizontalScrollBarPosition();
+            }
+
+            // if vertical scrolling is enabled shift the canvas vertically
+            if (verticalScrollingEnabled)
+            {
+                VerticalScrollBar.Position = (float)(_cropRect.Top / ScrollAreaSize.Height);
+                BoundVerticalScrollBarPosition();
+            }
+
+            IsDirty = true;
+        }
+
+        private void ScrollingCanvas_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _initialDragPosition = new Vector2((float) _cropRect.X, (float) _cropRect.Y);
+        }
+
+        private void ScrollingCanvas_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
+        {
+            if (ScrollDirection == ScrollOrientation.Auto || ScrollDirection == ScrollOrientation.Both ||
+                ScrollDirection == ScrollOrientation.Vertical)
+            {
+                VerticalScrollBar.ChangePosition(delta > 0 ? -.05f : .05f);
+            }
+            else
+            {
+                HorizontalScrollBar.ChangePosition(delta > 0 ? -.05f : .05f);
+            }
+        }
+
 
         /// <summary>
         /// Removes an element from the ScrollArea
@@ -239,8 +396,24 @@ namespace NuSysApp
             if (_elements.Contains(element))
             {
                 _elements.Remove(element);
+<<<<<<< HEAD
                 _scrollAreaRect.RemoveChild(element);
+=======
+                RemoveElementEvents(element);
+>>>>>>> origin/Snappabilityforwindows
             }
+        }
+
+        private void RemoveElementEvents(BaseInteractiveUIElement element)
+        {
+            element.Tapped -= OnElementTapped;
+            element.Pressed -= OnElementPressed;
+            element.Released -= OnElementReleased;
+            element.DoubleTapped -= OnElementDoubleTapped;
+            element.Dragged -= OnElementDragged;
+            element.DragStarted -= OnElementDragStarted;
+            element.DragCompleted -= OnElementDragCompleted;
+            element.PointerWheelChanged -= OnElementPointerWheelChanged;
         }
 
         /// <summary>
@@ -403,6 +576,11 @@ namespace NuSysApp
             {
                 HorizontalScrollBar.Position = 1 - HorizontalScrollBar.Range;
             }
+
+            if (HorizontalScrollBar.Position < 0)
+            {
+                HorizontalScrollBar.Position = 0;
+            }
         }
 
         /// <summary>
@@ -414,6 +592,11 @@ namespace NuSysApp
             if (VerticalScrollBar.Position + VerticalScrollBar.Range > 1)
             {
                 VerticalScrollBar.Position = 1 - VerticalScrollBar.Range;
+            }
+
+            if (VerticalScrollBar.Position < 0)
+            {
+                VerticalScrollBar.Position = 0;
             }
         }
 
@@ -548,6 +731,21 @@ namespace NuSysApp
         {
             ReRender();
             base.Update(parentLocalToScreenTransform);
+        }
+
+        public override void Dispose()
+        {
+            _scrollAreaRect.PointerWheelChanged -= ScrollingCanvas_PointerWheelChanged;
+            _scrollAreaRect.DragStarted -= ScrollingCanvas_DragStarted;
+            _scrollAreaRect.Dragged -= ScrollingCanvas_Dragged;
+            HorizontalScrollBar.ScrollBarPositionChanged -= _horizontalScrollBar_ScrollBarPositionChanged;
+            VerticalScrollBar.ScrollBarPositionChanged -= _verticalScrollBar_ScrollBarPositionChanged;
+
+            foreach (var element in _elements)
+            {
+                RemoveElementEvents(element);
+            }
+            base.Dispose();
         }
     }
 }
