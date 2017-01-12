@@ -41,6 +41,11 @@ namespace NuSysApp
         private SliderUIElement _textSizeSlider;
 
         /// <summary>
+        /// the button for toggling the visibility of the windows in read only mode.
+        /// </summary>
+        private ButtonUIElement _readOnlyModeSettingButton;
+
+        /// <summary>
         /// Constructor will instatiate the private buttons.
         /// </summary>
         /// <param name="parent"></param>
@@ -67,25 +72,31 @@ namespace NuSysApp
             };
             AddChild(_textSizeSlider);
 
+            _readOnlyModeSettingButton = new RectangleButtonUIElement(this, ResourceCreator);
+            AddChild(_readOnlyModeSettingButton);
+
             MinWidth = 220;
-            MinHeight = 350;
+            MinHeight = 415;
 
             _resizeElementTitlesButton.Transform.LocalPosition = new Vector2(10, 35);
             _showLinksButton.Transform.LocalPosition = new Vector2(10, 100);
             _showMinimapButton.Transform.LocalPosition = new Vector2(10, 165);
             _showBreadCrumbsButton.Transform.LocalPosition = new Vector2(10, 230);
             _textSizeSlider.Transform.LocalPosition = new Vector2(10, 295);
+            _readOnlyModeSettingButton.Transform.LocalPosition = new Vector2(10, 360);
             _resizeElementTitlesButton.Tapped += ResizeElementTitlesButtonOnTapped;
             _showLinksButton.Tapped += ShowLinksButtonOnTapped;
             _showMinimapButton.Tapped += ShowMinimapTapped;
             _showBreadCrumbsButton.Tapped += ShowBreadCrumbsButton_Tapped;
             _textSizeSlider.OnSliderMoved += SliderChanged;
             _textSizeSlider.OnSliderMoveCompleted += TextSizeSliderOnOnSliderMoveCompleted;
+            _readOnlyModeSettingButton.Tapped += ReadOnlyModeSettingButtonOnTapped;
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged += SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged += SessionSettingsOnLinkVisibilityChanged;
             SessionController.Instance.SessionSettings.BreadCrumbVisibilityChanged += SessionSettingsBreadCrumbVisibilityChanged;
             SessionController.Instance.SessionSettings.MinimapVisiblityChanged += SessionSettingsMinimapVisiblityChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
+            SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged += SessionSettingsOnReadOnlyModeSettingChanged;
             SetButtonText();
         }
 
@@ -100,11 +111,13 @@ namespace NuSysApp
             _showBreadCrumbsButton.Tapped -= ShowBreadCrumbsButton_Tapped;
             _textSizeSlider.OnSliderMoved -= SliderChanged;
             _textSizeSlider.OnSliderMoveCompleted -= TextSizeSliderOnOnSliderMoveCompleted;
+            _readOnlyModeSettingButton.Tapped -= ReadOnlyModeSettingButtonOnTapped;
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged -= SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged -= SessionSettingsOnLinkVisibilityChanged;
             SessionController.Instance.SessionSettings.BreadCrumbVisibilityChanged -= SessionSettingsBreadCrumbVisibilityChanged;
             SessionController.Instance.SessionSettings.MinimapVisiblityChanged -= SessionSettingsMinimapVisiblityChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
+            SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged -= SessionSettingsOnReadOnlyModeSettingChanged;
         }
 
         /// <summary>
@@ -126,6 +139,7 @@ namespace NuSysApp
             _showLinksButton.ButtonText = "Show Links: "+SessionController.Instance.SessionSettings.LinksVisible.ToString();
             _showMinimapButton.ButtonText = "Show Minimap: " + SessionController.Instance.SessionSettings.MinimapVisible.ToString();
             _showBreadCrumbsButton.ButtonText = "Show Bread Crumb Trail: " + SessionController.Instance.SessionSettings.BreadCrumbsVisible.ToString();
+            _readOnlyModeSettingButton.ButtonText = "Show Read Only Mode Windows: " + SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible.ToString();
         }
 
         /// <summary>
@@ -177,6 +191,16 @@ namespace NuSysApp
         /// <param name="sender"></param>
         /// <param name="b"></param>
         private void SessionSettingsOnResizeElementTitlesChanged(object sender, bool b)
+        {
+            SetButtonText();
+        }
+
+        /// <summary>
+        /// Event handler called whenever the ReadOnly mode window visibility setting changes globally.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SessionSettingsOnReadOnlyModeSettingChanged(object sender, ReadOnlyViewingMode e)
         {
             SetButtonText();
         }
@@ -236,6 +260,17 @@ namespace NuSysApp
         {
             //Weird syntax but just modularly increments enum valure
             SessionController.Instance.SessionSettings.LinksVisible = (LinkVisibilityOption)(((int)SessionController.Instance.SessionSettings.LinksVisible + 1) % Enum.GetNames(typeof(LinkVisibilityOption)).Length);
+        }
+
+        /// <summary>
+        /// Event handler for when the read-only mode windows setting button is toggled. 
+        /// Will toggle the option in the SessionSetting object.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReadOnlyModeSettingButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible = (ReadOnlyViewingMode)(((int)SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible + 1) % Enum.GetNames(typeof(ReadOnlyViewingMode)).Length);
         }
 
     }

@@ -33,6 +33,11 @@ namespace NuSysApp
         private ButtonUIElement _settingsButton;
 
         /// <summary>
+        /// Various windows that appear in read only mode.
+        /// </summary>
+        private ReadOnlyModeWindow _readOnlyModeWindow;
+
+        /// <summary>
         /// The menu UI for the settings of the session
         /// </summary>
         private SessionSettingsMenu _settingsMenu;
@@ -134,12 +139,25 @@ namespace NuSysApp
             };
             AddChild(_detailViewer);
 
+            _readOnlyModeWindow = new ReadOnlyModeWindow(this, Canvas);
+            AddChild(_readOnlyModeWindow);
+
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped; 
             _chatButton.Tapped += ChatButtonOnTapped;
             _backToWaitingRoomButton.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
+
+            if (SessionController.IsReadonly)
+            {
+                MakeReadOnly();
+            }
+            else
+            {
+                MakeEditable();
+            }
+
         }
 
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -181,6 +199,25 @@ namespace NuSysApp
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width/2 - _settingsMenu.Width/2,
                 _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
             AddChild(_settingsMenu);
+        }
+
+        /// <summary>
+        /// Method to call to make the current workspace have the read-only ui.
+        /// This should mainly hide things like the floating menu.
+        /// </summary>
+        public void MakeReadOnly()
+        {
+            _readOnlyModeWindow.IsVisible = true;
+            _detailViewer.IsVisible = false;
+        }
+
+        /// <summary>
+        /// Method to call to undo the MakeReadOnly method and reapply the editable UI.
+        /// </summary>
+        public void MakeEditable()
+        {
+            _readOnlyModeWindow.IsVisible = false;
+            _detailViewer.IsVisible = true;
         }
 
         /// <summary>
