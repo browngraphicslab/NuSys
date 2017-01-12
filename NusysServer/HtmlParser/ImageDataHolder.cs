@@ -9,9 +9,21 @@ namespace NusysServer
 {
     public class ImageDataHolder : DataHolder
     {
-        public Uri Uri { get; set; }
-        public ImageDataHolder(Uri uri, String title) : base(DataType.Image,title)
+        private Uri _uri; 
+        public Uri Uri { get { return _uri; }
+            set
+            {
+                _uri = value;
+                Content.Data = _uri.AbsoluteUri;
+            }
+        }
+        public ImageDataHolder(Uri uri, String title) : base(title)
         {
+            LibraryElement = new ImageLibraryElementModel(NusysConstants.GenerateId());
+            LibraryElement.Title = title;
+            LibraryElement.ContentDataModelId = Content.ContentId;
+            Content.ContentType=NusysConstants.ContentType.Image;
+            Content.Data = uri.AbsoluteUri;
             Uri = uri;
         }
     }
