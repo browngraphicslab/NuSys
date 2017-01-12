@@ -14,6 +14,10 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// This class creates an inkable element with a given content data model to support saving and updating of ink across inkable elements.
+    /// InkableUIElement listens for changes to the input type, and ignores hit tests when the input type is not pen.
+    /// </summary>
     class InkableUIElement : RectangleUIElement
     {
         private IInkController _inkController;
@@ -47,7 +51,8 @@ namespace NuSysApp
             PenPointerReleased += OnPenPointerReleased_Callback;
             _inkController.InkAdded += ContentDataControllerOnInkAdded;
             _inkController.InkRemoved += ContentDataControllerOnInkRemoved;
-
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.InteractionTypeChanged += CanvasInteractionManagerOnInteractionTypeChanged;
+            IsHitTestVisible = false;
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
                 _inkManager = new InkManager();
@@ -59,6 +64,17 @@ namespace NuSysApp
             });
         }
 
+        private void CanvasInteractionManagerOnInteractionTypeChanged(object sender, CanvasInteractionManager.InteractionType interactionType)
+        {
+            if (interactionType == CanvasInteractionManager.InteractionType.Pen)
+            {
+                IsHitTestVisible = true;
+            } else if (interactionType == CanvasInteractionManager.InteractionType.Touch)
+            {
+                IsHitTestVisible = false;
+            }
+        }
+
         public override void Dispose()
         {
             if (IsDisposed)
@@ -66,6 +82,7 @@ namespace NuSysApp
 
             _inkController.InkAdded -= ContentDataControllerOnInkAdded;
             _inkController.InkRemoved -= ContentDataControllerOnInkRemoved;
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.InteractionTypeChanged -= CanvasInteractionManagerOnInteractionTypeChanged;
 
             _builder = null;
             _currentInkStroke = null;
@@ -322,6 +339,12 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
+        /// <summary>
+        /// Creates drawing attributes for the pen.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="thickness"></param>
+        /// <returns></returns>
         private InkDrawingAttributes GetDrawingAttributes(Color color, float thickness)
         {
             var _drawingAttributes = new InkDrawingAttributes
@@ -336,6 +359,10 @@ namespace NuSysApp
             return _drawingAttributes;
         }
 
+        /// <summary>
+        /// Gets the currently selected strokes from the InkManager.
+        /// </summary>
+        /// <returns></returns>
         private IEnumerable<InkStroke> GetSelectedStrokes()
         {
             return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);
