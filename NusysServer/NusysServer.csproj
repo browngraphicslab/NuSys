@@ -256,6 +256,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="HtmlParser\AudioDataHolder.cs" />
+    <Compile Include="HtmlParser\BingCognitiveServiceSender.cs" />
     <Compile Include="HtmlParser\DataHolder.cs" />
     <Compile Include="HtmlParser\HTMLImporter.cs" />
     <Compile Include="HtmlParser\ImageDataHolder.cs" />
