@@ -824,12 +824,7 @@ namespace NuSysApp
                 _readOnlyAliasesWindow.IsVisible = false;
                 _readOnlyMetadataWindow.IsVisible = false;
             }
-            else
-            {
-                _readOnlyLinksWindow.IsVisible = true;
-                _readOnlyAliasesWindow.IsVisible = true;
-                _readOnlyMetadataWindow.IsVisible = true;
-            }
+
         }
     }
 }

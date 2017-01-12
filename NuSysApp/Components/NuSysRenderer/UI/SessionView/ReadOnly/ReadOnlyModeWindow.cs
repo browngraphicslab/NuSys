@@ -24,6 +24,8 @@ namespace NuSysApp
             MinHeight = 300;
             MinWidth = 250;
 
+            KeepAspectRatio = false;
+
             _closeButton.Transform.LocalPosition = new Vector2(-18, 2);
             _closeButton.Tapped += _closeButton_Tapped;
         }

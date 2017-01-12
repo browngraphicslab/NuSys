@@ -21,6 +21,8 @@ namespace NuSysApp
 
         private AddElementMenuUIElement _addElementMenu;
 
+        private bool _disabled = false;
+
         /// <summary>
         ///  the initial drag position of the floating menu view
         /// </summary>
@@ -163,8 +165,13 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _buttonLayoutManager.ArrangeItems();
+            if (_disabled)
+            {
+                IsVisible = false;
+                return;
+            }
 
+            _buttonLayoutManager.ArrangeItems();
             base.Update(parentLocalToScreenTransform);
 
         }
@@ -172,11 +179,13 @@ namespace NuSysApp
         public void HideFloatingMenu()
         {
             IsVisible = false;
+            _disabled = true;
         }
 
         public void ShowFloatingMenu()
         {
             IsVisible = true;
+            _disabled = false;
         }
     }
 }

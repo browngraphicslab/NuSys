@@ -30,6 +30,7 @@ namespace NuSysApp
             _label.TextColor = Constants.DARK_BLUE;
             _label.Background = Constants.LIGHT_BLUE;
             _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+            _label.IsHitTestVisible = false;
 
             AddChild(_label);
 
