@@ -202,7 +202,11 @@ namespace NusysServer
             //In Wikipedia the class reference means that there is a link to a citation
             if (classString == "reference" && _citationCollections.Any())
             {
-                _citationCollections.Last()?.Add(getUrl(node)?.Substring(1));
+                var url = getUrl(node)?.Substring(1);
+                if (url != null && url.Contains(".pdf"))
+                {
+                    _citationCollections.Last()?.Add(url);
+                }
 
             }
             //This is most of the text that we are parsing through to get our data for our text nodes
