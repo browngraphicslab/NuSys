@@ -126,6 +126,7 @@
     <Content Include="Assets\new icons\back.png" />
     <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
+    <Content Include="Assets\new icons\custom arrange.png" />
     <Content Include="Assets\new icons\down arrow.png" />
     <Content Include="Assets\new icons\enter collection white.png" />
     <Content Include="Assets\new icons\gear.png" />
