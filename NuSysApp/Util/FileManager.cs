@@ -11,7 +11,7 @@ namespace NuSysApp
     {
         public static async Task<IReadOnlyList<StorageFile>> PromptUserForFiles(IEnumerable<string> allowedFileTypes = null, PickerViewMode viewMode = PickerViewMode.Thumbnail, bool singleFileOnly = false)
         {
-            var fileOpenPicker = new FileOpenPicker {ViewMode = viewMode};
+            var fileOpenPicker = new FileOpenPicker { ViewMode = viewMode };
             if (allowedFileTypes != null)
             {
                 foreach (var fileType in allowedFileTypes)
@@ -22,11 +22,18 @@ namespace NuSysApp
             }
             try
             {
-                IReadOnlyList<StorageFile> storageFiles;
+                IReadOnlyList<StorageFile> storageFiles = null;
                 if (singleFileOnly)
                 {
-                    var storageFile = await fileOpenPicker.PickSingleFileAsync();
-                    storageFiles = new List<StorageFile>() {storageFile};
+                    StorageFile storageFile = null;
+                    await UITask.Run(async () =>
+                    {
+                        storageFile = await fileOpenPicker.PickSingleFileAsync();
+                    });
+                    if (storageFile != null)
+                    {
+                        storageFiles = new List<StorageFile>() {storageFile};
+                    }
                 }
                 else
                 {

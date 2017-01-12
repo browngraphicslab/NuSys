@@ -74,6 +74,18 @@ namespace NuSysApp
 
         public static Color RED_TRANSLUCENT = Color.FromArgb(127, 151, 60, 23);
         public static Color LIGHT_BLUE_TRANSLUCENT = Color.FromArgb(127, 195, 209, 231);
+
+        /// <summary>
+        /// colors for color picking
+        /// </summary>
+        public static Color COLOR_RED = Color.FromArgb(255, 212, 88, 88);
+        public static Color COLOR_ORANGE = Color.FromArgb(255, 225, 136, 29);
+        public static Color COLOR_YELLOW = Color.FromArgb(255,252,247,116);
+        public static Color COLOR_GREEN = Color.FromArgb(255, 88, 212, 106);
+        public static Color COLOR_BLUE = Color.FromArgb(255, 29, 130, 225);
+        public static Color COLOR_PURPLE = Color.FromArgb(255, 194, 116, 252);
+
+
         #endregion
 
         #region Color

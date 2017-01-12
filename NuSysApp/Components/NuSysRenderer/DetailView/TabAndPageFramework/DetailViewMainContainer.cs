@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
@@ -28,10 +29,20 @@ namespace NuSysApp
         private StackLayoutManager _mainTabLayoutManager;
 
         /// <summary>
+        /// The boolean for siabling the detail view. When true, the detail view will not open.
+        /// </summary>
+        private bool _disabled;
+
+        /// <summary>
         /// Dictionary of library element ids to the currTabOpen. So that if we were on the regions tab in one page
         /// and we click to another tab, when we return we open to the regions tab again
         /// </summary>
         private Dictionary<string, DetailViewPageTabType> _libElemToCurrTabOpen;
+
+        /// <summary>
+        /// button that floats along side of detail view. you click it to close the detail view.
+        /// </summary>
+        private EllipseButtonUIElement _closeButton;
 
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -48,12 +59,27 @@ namespace NuSysApp
             };
             AddChild(_mainTabContainer);
 
+            TopBarColor = Constants.MED_BLUE;
+            TopBarHeight = 10;
+
             // add the pageContainer as the page to the main tab container
             _pageContainer = new DetailViewPageContainer(this, Canvas);
+            _pageContainer.Width = Width;
+            _pageContainer.Height = Height - TopBarHeight;
+
             _mainTabContainer.SetPage(_pageContainer); // adds the pageContainer as a child of the mainTabContainer as a side effect
 
             // dictionary of library element ids
             _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
+
+            _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
+            {
+                Height = 30,
+                Width = 30,
+                ImageBounds = new Rect(7.5,7.5,15,15)
+            };
+            AddChild(_closeButton);
+            _closeButton.Transform.LocalPosition = new Vector2(-40, 80);
 
             // setup the mainTabLayoutManager so that the mainTabContainer fills the entire detail viewer window
             _mainTabLayoutManager = new StackLayoutManager
@@ -61,11 +87,9 @@ namespace NuSysApp
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
-            _mainTabLayoutManager.SetMargins(BorderWidth);
+            _mainTabLayoutManager.SetMargins(15,BorderWidth,15,BorderWidth);
             _mainTabLayoutManager.TopMargin = TopBarHeight;
             _mainTabLayoutManager.AddElement(_mainTabContainer);
-
-            TopBarColor = Constants.MED_BLUE;
 
             // detail view defaults to invisible. visible on click
             IsVisible = false;
@@ -76,6 +100,19 @@ namespace NuSysApp
             _mainTabContainer.OnCurrentTabChanged += _mainTabContainer_OnCurrentTabChanged;
             _mainTabContainer.OnTabRemoved += _mainTabContainer_OnTabRemoved;
             _pageContainer.OnPageTabChanged += PageContainerOnPageTabChanged;
+
+            _closeButton.Tapped += CloseButtonOnTapped;
+        }
+
+        private void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            HideDetailView();
+        }
+
+        public override async Task Load()
+        {
+            _closeButton.Image = _closeButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
+            base.Load();
         }
 
         /// <summary>
@@ -124,6 +161,7 @@ namespace NuSysApp
             _mainTabContainer.OnCurrentTabChanged -= _mainTabContainer_OnCurrentTabChanged;
             _mainTabContainer.OnTabRemoved -= _mainTabContainer_OnTabRemoved;
             _pageContainer.OnPageTabChanged -= PageContainerOnPageTabChanged;
+            _closeButton.Tapped -= CloseButtonOnTapped;
             base.Dispose();
         }
 
@@ -153,7 +191,13 @@ namespace NuSysApp
         /// <param name="libraryElementModelId"></param>
         public void ShowLibraryElement(string libraryElementModelId)
         {
+
             if (SessionController.Instance.CurrentMode != Options.PanZoomOnly)
+            {
+                return;
+            }
+
+            if (_disabled)
             {
                 return;
             }
@@ -198,6 +242,16 @@ namespace NuSysApp
         public void HideDetailView()
         {
             IsVisible = false;
+        }
+
+        public void DisableDetailView()
+        {
+            _disabled = true;
+        }
+
+        public void EnableDetailView()
+        {
+            _disabled = false;
         }
     }
 }

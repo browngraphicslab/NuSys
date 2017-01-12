@@ -137,6 +137,7 @@
     <Content Include="Assets\new icons\tools.png" />
     <Content Include="Assets\new icons\trash can white.png" />
     <Content Include="Assets\new icons\up arrow.png" />
+    <Content Include="Assets\new icons\x white.png" />
     <Content Include="Assets\new icons\x.png" />
     <Content Include="Assets\prevCollection.png" />
     <Content Include="Assets\icon_chat.png" />
@@ -393,8 +394,13 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\EditShapePopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingGrid.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\GradientBackgroundRectangleUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\InkableImageDetailRenderItemUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\InkableUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\AutoSuggestTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\CheckBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\EllipseButtonUIElement.cs" />
@@ -441,6 +447,10 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyLinksWindow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyMetadataWindow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyModeWindow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyAliasesWindow.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\SessionSettingsMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UserBubbles.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElements\DraggableWindowUIElement.cs" />
@@ -569,6 +579,9 @@
     <Compile Include="Components\Misc\ILinkable.cs" />
     <Compile Include="Components\Misc\AliasTemplate.cs" />
     <Compile Include="Components\Misc\LinkTemplate.cs" />
+    <Compile Include="Components\Viewers\DetailViewFullScreenImageViewer.xaml.cs">
+      <DependentUpon>DetailViewFullScreenImageViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\FreeFormElementViewModelFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
@@ -830,6 +843,7 @@
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\Requests\UpdatePresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\UploadCollectionBackgroundImageRequest.cs" />
+    <Compile Include="Network\Requests\WebSearchRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
     <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
@@ -1215,6 +1229,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SearchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\DetailViewFullScreenImageViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

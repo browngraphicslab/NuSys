@@ -55,19 +55,14 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             _scrollBar.Height = Height;
+            _scrollBar.Transform.LocalPosition = new Vector2((float)Width - _scrollBar.Width, 0);
+
             base.Update(parentLocalToScreenTransform);
         }
 
         public virtual void ScrollBarPositionChanged(object source, float position)
         {
 
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            _scrollBar.Transform.LocalPosition = new Vector2((float)Width - _scrollBar.Width, 0);
-
-            base.Draw(ds);
         }
 
         public override void Dispose()

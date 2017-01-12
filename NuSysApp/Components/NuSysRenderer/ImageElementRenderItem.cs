@@ -19,6 +19,7 @@ namespace NuSysApp
     {
         private ImageElementViewModel _vm;
         private ImageDetailRenderItem _image;
+        private InkableUIElement _inkable;
 
         public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
@@ -31,6 +32,11 @@ namespace NuSysApp
             _image.IsHitTestVisible = false;
 
             AddChild(_image);
+
+            _inkable = new InkableUIElement(imageController.ContentDataController, this, resourceCreator);
+            _inkable.Background = Colors.Transparent;
+            AddChild(_inkable);
+            _inkable.Transform.SetParent(_image.Transform);
         }
 
         public async override Task Load()
@@ -55,6 +61,14 @@ namespace NuSysApp
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
             _vm = null;
             base.Dispose();
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _inkable.Width = (float) _image.CroppedImageTarget.Width;
+            _inkable.Height = (float)_image.CroppedImageTarget.Height;
+            _inkable.Transform.LocalPosition = _image.Transform.LocalPosition;
+            base.Update(parentLocalToScreenTransform);
         }
 
         public override void Draw(CanvasDrawingSession ds)

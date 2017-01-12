@@ -145,6 +145,10 @@ namespace NuSysApp
         {
             var popup = new CollectionSettingsPopup(this, Canvas,_currentController as CollectionLibraryElementController);
             AddChild(popup);
+            popup.Height = Height/4;
+            popup.Width = Width/2;
+            popup.Transform.LocalPosition = new Vector2(Width/2 - popup.Width/2, Height/2 - popup.Height/2);
+            _settingsPopup.DismissPopup();
         }
 
 
@@ -235,7 +239,18 @@ namespace NuSysApp
             if (request.WasSuccessful() == true)
             {
                 request.DeleteLocally();
+               
             }
+            //Dismisses the flyout popup
+
+            var popup = item.Parent as FlyoutPopup;
+            Debug.Assert(popup != null);
+            if (popup == null)
+            {
+                return;
+            }
+
+            popup.DismissPopup();
         }
 
         /// <summary>
@@ -247,6 +262,7 @@ namespace NuSysApp
         {
             SessionController.Instance.NuSessionView.Library.IsVisible = true;
             SessionController.Instance.NuSessionView.Library.LibraryListView.ScrollTo(_currentController.LibraryElementModel);
+            SessionController.Instance.NuSessionView.Library.LibraryListView.SelectItem(_currentController.LibraryElementModel);
         }
 
         public override async Task Load()
@@ -262,6 +278,7 @@ namespace NuSysApp
             };
             AddChild(_titleBox);
             _titleBox.TextChanged += OnTitleTextChanged;
+            _titleBox.Transform.LocalPosition = new Vector2(_titleBox.Transform.LocalPosition.X + 30, _titleBox.Transform.LocalPosition.Y);
 
             _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
 
@@ -269,7 +286,7 @@ namespace NuSysApp
             _titleUnderline = new RectangleUIElement(this, Canvas)
             {
                 Background = Constants.MED_BLUE,
-                Height = 2
+                Height = 1
             };
             AddChild(_titleUnderline);
 
@@ -292,6 +309,8 @@ namespace NuSysApp
             var rect = await DetailViewPageFactory.GetPage(this, Canvas, tabType.Type, _currentController);
             if (rect != null)
             {
+                rect.Height = this.Height;
+                rect.Width = this.Width;
                 _pageTabContainer.SetPage(rect);
                 OnPageTabChanged?.Invoke(_currentController.LibraryElementModel.LibraryElementId, tabType);
             }
@@ -404,6 +423,9 @@ namespace NuSysApp
                 _settingsButton.Transform.LocalPosition = new Vector2(Width - _settingsButton.Width - BorderWidth, BorderWidth);
                 _settingsButton.ImageBounds = new Rect(_settingsButton.Width/4, _settingsButton.Height/4, _settingsButton.Width/2, _settingsButton.Height/2);
 
+                _pageTabContainer.Page.Height = Height;
+                _pageTabContainer.Page.Width = Width;
+
                 _tabContainerLayoutManager.SetSize(Width, Height);
                 _tabContainerLayoutManager.SetMargins(BorderWidth);
                 _tabContainerLayoutManager.TopMargin = _titleBox.Height + BorderWidth + 10;
@@ -415,6 +437,7 @@ namespace NuSysApp
                 _titleUnderline.Width = Width - titleUnderlineHorizontalOffset;
                 _titleUnderline.Transform.LocalPosition = new Vector2(titleUnderlineHorizontalOffset/2, _titleBox.Transform.LocalPosition.Y + _titleBox.Height);
             }
+
 
 
             base.Update(parentLocalToScreenTransform);

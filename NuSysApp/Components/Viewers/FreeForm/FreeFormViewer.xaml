@@ -13,7 +13,6 @@
     x:Name="xFreeFormViewer">
 
     <Canvas x:Name="xOuterWrapper" Background="Transparent" >
-
         <Canvas x:Name="xWrapper" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Background="Transparent">
             <xaml:CanvasAnimatedControl x:Name="xRenderCanvas" Visibility="Visible" IsFixedTimeStep="False" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" />
           
@@ -49,7 +48,6 @@
             <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed"></local:UndoButton>
 
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
-
             <Rectangle x:Name="xFullScreenVideoBackground" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Fill="White" ></Rectangle>
             <local:VideoPlayer x:Name="xFullScreenVideoElement" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}">
                 <local:BaseMediaPlayer.RenderTransform>
@@ -70,6 +68,8 @@
                 </Button>
             </StackPanel>
         </Canvas>
+        <local:DetailViewFullScreenImageViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="xFullScreenImageViewer"></local:DetailViewFullScreenImageViewer>
+
     </Canvas>
 
 </UserControl>

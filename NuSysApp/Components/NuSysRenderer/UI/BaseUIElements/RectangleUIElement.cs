@@ -90,11 +90,12 @@ namespace NuSysApp
             }
         }
 
+
+
         /// <summary>
         /// The BorderColor of the Rectangle
         /// </summary>
         public override Windows.UI.Color Bordercolor { get; set; }
-
 
         /// <summary>
         /// Draws the background and the border

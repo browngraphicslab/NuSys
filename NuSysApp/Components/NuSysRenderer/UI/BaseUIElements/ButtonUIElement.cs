@@ -185,10 +185,12 @@ namespace NuSysApp
             Shape.Dragged += Shape_Dragged;
             Shape.Tapped += Shape_Tapped;
             Shape.DoubleTapped += Shape_DoubleTapped;
+            Shape.Holding += Shape_Holding;
             Enabled = true;
 
             Padding = 7;
         }
+
 
         /// <summary>
         /// sets original values to height width and size.
@@ -211,6 +213,12 @@ namespace NuSysApp
         {
             OnDoubleTapped(pointer);
         }
+
+        private void Shape_Holding(InteractiveBaseRenderItem item, Vector2 point)
+        {
+            OnHolding(point);
+        }
+
 
         /// <summary>
         /// Fired the tapped event on the button when the shape tap event is fired

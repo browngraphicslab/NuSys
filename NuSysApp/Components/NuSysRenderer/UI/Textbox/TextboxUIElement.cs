@@ -204,6 +204,7 @@ namespace NuSysApp
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
             FontWeight = UIDefaults.FontWeight;
+            Background = Colors.Transparent;
             BorderWidth = 0;
             Text = "";
             _constructed = true;
@@ -264,7 +265,7 @@ namespace NuSysApp
 
             if (Text != null)
             {
-                Debug.Assert(Width - 2 * (BorderWidth + UIDefaults.XTextPadding) > 0 && Height- 2 * (BorderWidth + UIDefaults.YTextPadding) > 0, "these must be greater than zero or drawText crashes below");
+                Debug.Assert(Width - 2 * (BorderWidth + UIDefaults.XTextPadding) >= 0 && Height- 2 * (BorderWidth + UIDefaults.YTextPadding) >= 0, "these must be greater than zero or drawText crashes below");
 
 
                 // update the font size based on the accessibility settings

@@ -103,10 +103,7 @@ namespace NuSysApp
         /// Set of selected elements. If multiselect is on, this can hold multiple elements. Otherwise, should only have one or 0.
         /// </summary>
         private HashSet<PieChartElement<string>> _selectedElements;
-        /// <summary>
-        /// Boolean used to check if you were dragging when the pointer was released
-        /// </summary>
-        private bool _isDragging;
+
         /// <summary>
         /// The element that was stored in the first call to the DraggedEventHandler, so that when we invoke PointerReleased, we have reference to the relevant element.
         /// </summary>
@@ -125,14 +122,49 @@ namespace NuSysApp
 
             _elements = new List<PieChartElement<string>>();
             _selectedElements = new HashSet<PieChartElement<string>>();
+            
+            AddHandlers();
 
-
-
-            DoubleTapped += PieChartUIElement_DoubleTapped;
-            Released += PieChartUIElement_Released;
-            Dragged += PieChartUIElement_Dragged;
         }
+        /// <summary>
+        /// When tapped, we get the element that was tapped and invoke ElementTapped + handle selection
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void PieChartUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
 
+                var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+                var element = GetElementFromAngle(GetAngleFromPoint(point));
+                if (element == null)
+                {
+                    return;
+                }
+
+                ElementTapped?.Invoke(this, element, pointer);
+                if (_selectedElements.Contains(element))
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        DeselectElement(element);
+                    }
+                }
+                else
+                {
+                    if (!DisableSelectionByClick)
+                    {
+                        SelectElement(element);
+                    }
+                }
+
+
+            
+        }
+        /// <summary>
+        /// If double tapped, we invoke ElementDoubleTapped, passing in the element that was double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void PieChartUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
@@ -167,7 +199,10 @@ namespace NuSysApp
             _elements?.Add(element);
 
         }
-
+        /// <summary>
+        /// Add items to the PieChartUIElement. Creates dictionary that maps string to number of instances of that string
+        /// </summary>
+        /// <param name="items"></param>
         public void AddItems(List<string> items)
         {
             var dict = new Dictionary<string, int>();
@@ -190,6 +225,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Clears elements and selected elements
+        /// </summary>
         public void ClearElements()
         {
             _elements.Clear();
@@ -203,7 +241,6 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void PieChartUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _isDragging = true;
 
             // If this is the first call to Dragged ever or since Released, _draggedElement is null
             if (_draggedElement == null)
@@ -224,44 +261,14 @@ namespace NuSysApp
         private void PieChartUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // If we were dragging when we released, we should invoke the ElementDragCompleted event.
-            if (_isDragging)
+
+            if (_draggedElement != null)
             {
-                if (_draggedElement != null)
-                {
-                    ElementDragCompleted?.Invoke(this, _draggedElement, pointer);
-                }
-                _isDragging = false;
-                _draggedElement = null;
+                ElementDragCompleted?.Invoke(this, _draggedElement, pointer);
             }
+            _draggedElement = null;
+            
 
-            //If we were not dragging when we released, but simply pressing, we should Select or Deselect based on settings. 
-            else
-            {
-                var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-                var element = GetElementFromAngle(GetAngleFromPoint(point));
-                if (element == null)
-                {
-                    return;
-                }
-
-                ElementTapped?.Invoke(this, element, pointer);
-                if (_selectedElements.Contains(element))
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        DeselectElement(element);
-                    }
-                }
-                else
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        SelectElement(element);
-                    }
-                }
-
-
-            }
 
         }
         /// <summary>
@@ -325,10 +332,7 @@ namespace NuSysApp
 
         }
 
-        public void DeselectElement()
-        {
 
-        }
         /// <summary>
         /// Finds the element where the angle lies by iterating through the elements.
         /// </summary>
@@ -589,10 +593,25 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        public override void Dispose()
+        private void AddHandlers()
         {
+            DoubleTapped += PieChartUIElement_DoubleTapped;
+            Released += PieChartUIElement_Released;
+            Dragged += PieChartUIElement_Dragged;
+            Tapped += PieChartUIElement_Tapped;
+        }
+
+        private void RemoveHandlers()
+        {
+            DoubleTapped -= PieChartUIElement_DoubleTapped;
             Released -= PieChartUIElement_Released;
             Dragged -= PieChartUIElement_Dragged;
+            Tapped -= PieChartUIElement_Tapped;
+
+        }
+        public override void Dispose()
+        {
+            
             base.Dispose();
         }
 

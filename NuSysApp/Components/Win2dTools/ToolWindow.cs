@@ -165,10 +165,18 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            //TODO: Remove the tool window as a child
             _filterChooser.Dragged -= FilterChooserDropdownButtonOnDragged;
+            _filterChooser.Selected -= FilterChooserItem_Clicked;
+
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
+
+            _draggableCollectionElement.Dragged -= CollectionOrStack_Dragging; 
+            _draggableCollectionElement.DragCompleted -= CollectionOrStack_DragCompleted;
+
+            _draggableStackElement.Dragged -= CollectionOrStack_Dragging; 
+            _draggableStackElement.DragCompleted -= CollectionOrStack_DragCompleted;
+
             Vm.Dispose();
             base.Dispose();
         }
@@ -228,8 +236,8 @@ namespace NuSysApp
                 _draggableCollectionElement.Height/4, _draggableCollectionElement.Width/2,
                 _draggableCollectionElement.Height/2);
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
-            _draggableCollectionElement.Dragged += CollectionOrStack_Dragging; //TODO DISPOSE OF THESE
-            _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted; //TODO DISPOSE OF THESE
+            _draggableCollectionElement.Dragged += CollectionOrStack_Dragging; 
+            _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted; 
             AddChild(_draggableCollectionElement);
 
             //sets up icon to show under pointer while dragging
@@ -260,8 +268,8 @@ namespace NuSysApp
             };
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
             _draggableStackElement.ImageBounds = new Rect(_draggableStackElement.Width/4, _draggableStackElement.Height/4, _draggableStackElement.Width/2, _draggableStackElement.Height/2);
-            _draggableStackElement.Dragged += CollectionOrStack_Dragging; //TODO DISPOSE OF THESE
-            _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted; //TODO DISPOSE OF THESE
+            _draggableStackElement.Dragged += CollectionOrStack_Dragging; 
+            _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted; 
             AddChild(_draggableStackElement);
 
             //sets up icon to show under pointer while dragging
@@ -372,7 +380,7 @@ namespace NuSysApp
             _filterChooser.CurrentSelection = Vm.Filter.ToString();
 
             // add a method for when an item is selected in the dropdown
-            _filterChooser.Selected += FilterChooserItem_Clicked; //TODO DISPOSE OF THIS
+            _filterChooser.Selected += FilterChooserItem_Clicked; 
 
             // add all the filter options to the dropdown
             _filterChooser.Dragged += FilterChooserDropdownButtonOnDragged;
@@ -414,6 +422,8 @@ namespace NuSysApp
             {
                 Vm.Filter = filter;
             }
+
+            sender.HideDropDown();
         }
 
         /// <summary>

@@ -94,6 +94,8 @@ namespace NuSysApp
         private LayoutWindowUIElement _layoutWindow;
         private bool _customLayoutDrawing = false;
 
+        public event EventHandler<bool> CanvasPanned;
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -103,8 +105,22 @@ namespace NuSysApp
             xMinimapCanvas.Width = 300;
             xMinimapCanvas.Height = 300;
 
+            xFullScreenImageViewer.ImageClosed += XFullScreenImageViewerOnImageClosed;
+
             _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
+            xFullScreenImageViewer.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Event fired when the full screen image viewer is closed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void XFullScreenImageViewerOnImageClosed(object sender, EventArgs eventArgs)
+        {
+            xFullScreenImageViewer.IsHitTestVisible = false;
+            xWrapper.IsHitTestVisible = true;
         }
 
         public void Clear()
@@ -1141,6 +1157,10 @@ namespace NuSysApp
 
             UpdateNonWin2dElements();
             _minimap.Invalidate();
+
+            // Maybe give this a minimum delta?
+            CanvasPanned?.Invoke(this, true);
+            
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()
@@ -1386,28 +1406,52 @@ namespace NuSysApp
             return adornment;
         }
 
+        /// <summary>
+        /// Method used to show the full-screen image of any uri. 
+        /// This will be a pan-zoomable interface for viewing images
+        /// </summary>
+        public void ShowFullScreenImage(Uri imageUri)
+        {
+            UITask.Run(delegate
+            {
+                xFullScreenImageViewer.IsHitTestVisible = true;
+                xWrapper.IsHitTestVisible = false;
+                Debug.Assert(imageUri != null);
+                xFullScreenImageViewer.ShowImage(imageUri);
+            });
+        }
+
         public void PlayFullScreenVideo(VideoLibraryElementController videoLibraryElementController, bool addRegionsIsVisible = false)
         {
-            // set the visibility of items
-            xFullScreenVideoElement.Visibility = Visibility.Visible;
-            xFullScreenVideoCloseButton.Visibility = Visibility.Visible;
-            xFullScreenVideoBackground.Visibility = Visibility.Visible;
-            xFullScreenVideoAddRegionButton.Visibility = addRegionsIsVisible ? Visibility.Visible : Visibility.Collapsed;
-            xAddRegionMenu.Visibility = Visibility.Collapsed;
-            xAddPublicRadioButton.IsChecked = true;
-            xAddPrivateRadioButton.IsChecked = false;
+            UITask.Run(delegate
+            {
+                // set the visibility of items
+                xFullScreenVideoElement.Visibility = Visibility.Visible;
+                xFullScreenVideoCloseButton.Visibility = Visibility.Visible;
+                xFullScreenVideoBackground.Visibility = Visibility.Visible;
+                xFullScreenVideoAddRegionButton.Visibility = addRegionsIsVisible
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+                xAddRegionMenu.Visibility = Visibility.Collapsed;
+                xAddPublicRadioButton.IsChecked = true;
+                xAddPrivateRadioButton.IsChecked = false;
 
-            // set the size of the full screen element
-            xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth, SessionController.Instance.ScreenHeight - 50);
-            xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
+                // set the size of the full screen element
+                xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth,
+                    SessionController.Instance.ScreenHeight - 50);
+                xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
 
-            // set the position of the add region button
-            Canvas.SetTop(xFullScreenVideoAddRegionButton, xFullScreenVideoElement.Height/2 - xFullScreenVideoAddRegionButton.Height/2);
-            Canvas.SetLeft(xFullScreenVideoAddRegionButton, 0);
+                // set the position of the add region button
+                Canvas.SetTop(xFullScreenVideoAddRegionButton,
+                    xFullScreenVideoElement.Height/2 - xFullScreenVideoAddRegionButton.Height/2);
+                Canvas.SetLeft(xFullScreenVideoAddRegionButton, 0);
 
-            // set the positon of the add region menu
-            Canvas.SetTop(xAddRegionMenu, xFullScreenVideoElement.Height / 2 - xFullScreenVideoAddRegionButton.Height / 2 + xFullScreenVideoAddRegionButton.Height);
-            Canvas.SetLeft(xAddRegionMenu, 0);
+                // set the positon of the add region menu
+                Canvas.SetTop(xAddRegionMenu,
+                    xFullScreenVideoElement.Height/2 - xFullScreenVideoAddRegionButton.Height/2 +
+                    xFullScreenVideoAddRegionButton.Height);
+                Canvas.SetLeft(xAddRegionMenu, 0);
+            });
         }
 
         private void XFullScreenVideoCloseButton_OnTapped(object sender, TappedRoutedEventArgs e)

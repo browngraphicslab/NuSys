@@ -16,6 +16,15 @@ namespace NuSysApp
         VisibleWhenSelected,
         NoTrails,
     }
+
+    /// <summary>
+    /// The window visbility options for read only mode
+    /// </summary>
+    public enum ReadOnlyViewingMode
+    {
+        AlwaysVisible, VisibleOnFocus
+    }
+
     /// <summary>
     /// A data holding object used to maintain all the settings for the current session. 
     /// This will also fire events when the options change.
@@ -51,6 +60,11 @@ namespace NuSysApp
         public event EventHandler<double> TextScaleChanged;
 
         /// <summary>
+        /// Event fired when the read only mode window visibility option is toggled.
+        /// </summary>
+        public event EventHandler<ReadOnlyViewingMode> ReadOnlyModeSettingChanged;
+
+        /// <summary>
         /// private version of the bradcrumb visibility bool
         /// </summary>
         private bool _breadCrumbsDocked = true;
@@ -74,6 +88,11 @@ namespace NuSysApp
         /// Accessibility setting for increasing the size of fonts and some buttons.
         /// </summary>
         private double _textScale = 1;
+
+        /// <summary>
+        /// Private version of ReadOnlyViewingMode
+        /// </summary>
+        private ReadOnlyViewingMode _readOnlyViewingModeOption = ReadOnlyViewingMode.AlwaysVisible;
 
         /// <summary>
         /// Accessibility setting for increasing the size of fonts and some buttons.
@@ -112,6 +131,27 @@ namespace NuSysApp
                 if (fireEvent)
                 {
                     LinkVisibilityChanged?.Invoke(this, value);
+                    SaveToFile();
+                }
+            }
+        }
+
+        /// <summary>
+        /// This is the enum which represents the settings for the read-only mode windows. Either the 
+        /// windows are always visible or only visible when a node is in focus. 
+        /// The setter for this property fires the event notifying the change in setting. 
+        /// Setting value automatically causes the setting to be saved to file.
+        /// </summary>
+        public ReadOnlyViewingMode ReadOnlyModeWindowsVisible
+        {
+            get { return _readOnlyViewingModeOption; }
+            set
+            {
+                var fireEvent = _readOnlyViewingModeOption != value;
+                _readOnlyViewingModeOption = value;
+                if (fireEvent)
+                {
+                    ReadOnlyModeSettingChanged?.Invoke(this, value);
                     SaveToFile();
                 }
             }

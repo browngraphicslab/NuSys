@@ -71,7 +71,7 @@ namespace NuSysApp
         protected float ImageMaxHeight;
 
         //todo say what this is
-        protected Rect _croppedImageTarget;
+        public Rect CroppedImageTarget;
 
         //todo say what this is
         protected float _scaleOrgToDisplay;
@@ -136,6 +136,17 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            DoubleTapped += OnDoubleTapped;
+        }
+
+        /// <summary>
+        /// Event handler called when this region content is double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(_controller.ContentDataController.ContentDataModel.Data));
         }
 
 
@@ -145,6 +156,8 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+
+            DoubleTapped -= OnDoubleTapped;
 
             base.Dispose();
         }
@@ -213,8 +226,6 @@ namespace NuSysApp
             ReRender();
         }
 
-
-
         /// <summary>
         /// Draw the image as the background
         /// </summary>
@@ -233,13 +244,13 @@ namespace NuSysApp
 
             if (_needsMaskRefresh)
             {
-                _mask = CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget);
+                _mask = CanvasGeometry.CreateRectangle(ResourceCreator, CroppedImageTarget);
                 _needsMaskRefresh = false;
             }
 
             if (_showCroppy)
             {
-                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.Transform.LocalPosition.X, _activeRegion.Transform.LocalPosition.Y, _activeRegion.GetLocalBounds().Width, _activeRegion.GetLocalBounds().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
+                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.Transform.LocalPosition.X, _activeRegion.Transform.LocalPosition.Y, _activeRegion.GetLocalBounds().Width, _activeRegion.GetLocalBounds().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, CroppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
             }
 
 
@@ -249,7 +260,7 @@ namespace NuSysApp
 
             using (ds.CreateLayer(1, _mask))
             {
-                ds.DrawImage(_imageBitmap, _croppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
+                ds.DrawImage(_imageBitmap, CroppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
 
                 if (_activeRegion != null && _croppy != null)
                 {
@@ -269,7 +280,6 @@ namespace NuSysApp
         {
             // does nothing we dont want to draw a background
         }
-
 
         protected void ReRender()
         {
@@ -292,7 +302,6 @@ namespace NuSysApp
             ComputeRegions();
 
         }
-
 
         protected virtual void ComputeRegions()
         {
@@ -404,15 +413,15 @@ namespace NuSysApp
             var croppedRectRatio = _rectToCropFromContent.Width / _rectToCropFromContent.Height;
             if (_rectToCropFromContent.Width > _rectToCropFromContent.Height && ImageMaxWidth * 1 / croppedRectRatio <= ImageMaxHeight)
             {
-                _croppedImageTarget.Width = ImageMaxWidth;
-                _croppedImageTarget.Height = _croppedImageTarget.Width * 1 / croppedRectRatio;
+                CroppedImageTarget.Width = ImageMaxWidth;
+                CroppedImageTarget.Height = CroppedImageTarget.Width * 1 / croppedRectRatio;
                 _scaleOrgToDisplay =  ImageMaxWidth / (float) _imageBitmap.Size.Width;
                 _scaleDisplayToCrop = 1 / (float) lib.NormalizedWidth;
             }
             else
             {
-                _croppedImageTarget.Height = ImageMaxHeight;
-                _croppedImageTarget.Width = _croppedImageTarget.Height * croppedRectRatio;
+                CroppedImageTarget.Height = ImageMaxHeight;
+                CroppedImageTarget.Width = CroppedImageTarget.Height * croppedRectRatio;
                 _scaleOrgToDisplay = ImageMaxHeight / (float) _imageBitmap.Size.Height;
                 _scaleDisplayToCrop = 1 / (float) lib.NormalizedHeight;
             }
@@ -440,9 +449,10 @@ namespace NuSysApp
                 }
             }
 
-            _offsetX = Transform.LocalPosition.X + (float)(ImageMaxWidth - _croppedImageTarget.Width) / 2f;
-            _offsetY = Transform.LocalPosition.Y + (float)(ImageMaxHeight - _croppedImageTarget.Height) / 2f;
-            Transform.LocalPosition = new Vector2(_offsetX, _offsetY);
+
+            var offsetX = Transform.LocalPosition.X + (float)(ImageMaxWidth - CroppedImageTarget.Width) / 2f;
+            var offsetY = Transform.LocalPosition.Y + (float)(ImageMaxHeight - CroppedImageTarget.Height) / 2f;
+            Transform.LocalPosition = new Vector2(offsetX, offsetY);
             base.Update(parentLocalToScreenTransform);
         }
 

@@ -396,6 +396,7 @@ namespace NuSysApp
             if (_elements.Contains(element))
             {
                 _elements.Remove(element);
+                _scrollAreaRect.RemoveChild(element);
                 RemoveElementEvents(element);
             }
         }

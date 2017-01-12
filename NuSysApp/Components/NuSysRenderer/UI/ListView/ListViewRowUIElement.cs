@@ -42,6 +42,10 @@ namespace NuSysApp
 
         public event DraggedEventHandler RowDragged;
 
+        public delegate void RowHoldingEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, Vector2 point, T item);
+
+        public event RowHoldingEventHandler RowHolding;
+
 
 
         public delegate void DragStartedEventHandler(T item, int colIndex, CanvasPointer pointer);
@@ -94,6 +98,14 @@ namespace NuSysApp
             cell.Tapped += Cell_Tapped;
             cell.DoubleTapped += Cell_DoubleTapped;
             cell.PointerWheelChanged += Cell_PointerWheelChanged;
+            cell.Holding += Cell_Holding;
+        }
+
+        private void Cell_Holding(InteractiveBaseRenderItem item, Vector2 point)
+        {
+            var cell = item as RectangleUIElement;
+            Debug.Assert(cell != null);
+            RowHolding?.Invoke(this, _children.IndexOf(item), point, Item);
         }
 
         private void Cell_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -228,6 +240,7 @@ namespace NuSysApp
             cell.DoubleTapped -= Cell_DoubleTapped;
             cell.Tapped -= Cell_Tapped;
             cell.PointerWheelChanged -= Cell_PointerWheelChanged;
+            cell.Holding -= Cell_Holding;
         }
 
 
@@ -243,6 +256,7 @@ namespace NuSysApp
             var left = _children[leftColIndex] as RectangleUIElement;
             var right = _children[leftColIndex + 1] as RectangleUIElement;
             Debug.Assert(left != null && right != null);
+
             left.Width += sizeChange;
             right.Width -= sizeChange;
             right.Transform.LocalX += sizeChange;
