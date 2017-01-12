@@ -650,10 +650,7 @@ namespace NuSysApp
         {
             _listview.FilterBy(filter);
         }
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-            base.Update(parentLocalToScreenTransform);
-        }
+
         /// <summary>
         /// draw the list container and its inner children (the listview and the header)
         /// those in turn draw their children

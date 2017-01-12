@@ -11,6 +11,7 @@ using NusysIntermediate;
 using SharpDX;
 using Vector2 = System.Numerics.Vector2;
 using System.Numerics;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.GeometriesGraph;
@@ -963,7 +964,7 @@ namespace NuSysApp
             if(_isDragging)
             {
                 //If it's the first time we are leaving the listview, select the item
-                if (firstTimeDraggingOut && !DisableSelectionByClick)
+                if (firstTimeDraggingOut && !DisableSelectionByClick && pointer.DeviceType != PointerDeviceType.Pen)
                 {
                     SelectItem(_draggedItem);
                 }
@@ -985,18 +986,34 @@ namespace NuSysApp
             }
 
         }
+
         private void ListViewRowUIElementOnRowTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
         {
-                bool isSelected = false;
-                var t = Transform.ScreenToLocalMatrix;
-                var np = Vector2.Transform(pointer.CurrentPoint, t);
-                if (rowUiElement.HitTest(pointer.CurrentPoint) == null)
-                {
-                    return;
-                }
+            bool isSelected = false;
+            var colTitle = _listColumns[colIndex].Title; //get the title from the columns
+            var np = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            if (rowUiElement.HitTest(pointer.CurrentPoint) == null)
+            {
+                return;
+            }
 
+            if (pointer.DeviceType == PointerDeviceType.Pen)
+            {
+                MultipleSelections = true;
+                if (_selectedElements.Contains(item))
+                {
+                    DeselectItem(item);
+                }
+                else
+                {
+                    SelectItem(item);
+                }
+                MultipleSelections = false;
+            }
+            else
+            {
                 Debug.Assert(colIndex < _listColumns.Count);
-                var colTitle = _listColumns[colIndex].Title;
+
                 if (_selectedElements.Contains(item))
                 {
                     if (!DisableSelectionByClick)
@@ -1013,8 +1030,11 @@ namespace NuSysApp
                         isSelected = true;
                     }
                 }
-                RowTapped?.Invoke(item, colTitle, pointer, isSelected);
+
             }
+            RowTapped?.Invoke(item, colTitle, pointer, isSelected);
+
+        }
 
         private void ListViewRowUIElementOnRowDoubleTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
         {
@@ -1155,6 +1175,11 @@ namespace NuSysApp
             {
                 Debug.Write("Trying to deselect a null item idiot");
                 return;
+            }
+
+            if (MultipleSelections == false)
+            {
+                _selectedElements.Clear();
             }
 
             if (_selectedElements.Contains(item))
