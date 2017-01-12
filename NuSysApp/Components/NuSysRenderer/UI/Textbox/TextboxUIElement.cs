@@ -204,6 +204,7 @@ namespace NuSysApp
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
             FontWeight = UIDefaults.FontWeight;
+            Background = Colors.Transparent;
             BorderWidth = 0;
             Text = "";
             _constructed = true;

@@ -140,6 +140,10 @@ namespace NuSysApp
         {
             var popup = new CollectionSettingsPopup(this, Canvas,_currentController as CollectionLibraryElementController);
             AddChild(popup);
+            popup.Height = Height/4;
+            popup.Width = Width/2;
+            popup.Transform.LocalPosition = new Vector2(Width/2 - popup.Width/2, Height/2 - popup.Height/2);
+            _settingsPopup.DismissPopup();
         }
 
 
