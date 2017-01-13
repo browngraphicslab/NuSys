@@ -103,7 +103,7 @@ namespace NuSysApp
         {
             try
             {
-                using (DataReader reader = args.GetDataReader())
+                using ( DataReader reader = args.GetDataReader())
                 {
                     reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
                     string read = reader.ReadString(reader.UnconsumedBufferLength);
