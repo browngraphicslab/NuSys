@@ -314,12 +314,9 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            //todo check this method to see if it works
             ClearSelection(false);
-
-            var loc = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding,
-                                      loc.Y - UIDefaults.YTextPadding);
-            int charIndex = GetHitIndex(pos);
+            int charIndex = GetHitIndex(pointer.CurrentPoint);
             if (Text == "")
             {
                 return;
@@ -377,8 +374,8 @@ namespace NuSysApp
         private void ScrollableTextboxUIElement_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dragging = true;
+            _selectionStartIndex = Math.Max(0, GetHitIndex(pointer.CurrentPoint));
             _draggedPointer = pointer;
-            _hasSelection = true;
         }
 
         /// <summary>
@@ -388,6 +385,7 @@ namespace NuSysApp
         /// <param name="text"></param>
         private void EditableTextboxUIElement_TextChanged(InteractiveBaseRenderItem item, string text)
         {
+            //todo check this method to see if it works
             UpdateCanvasTextLayout();
             Rect r = TextLayout.LayoutBounds;
             _maxXOffset = r.Width <= (Width - 2 * UIDefaults.XTextPadding) ? 0 : r.Width - (Width - 2 * (UIDefaults.XTextPadding + BorderWidth));
@@ -414,31 +412,26 @@ namespace NuSysApp
         private void EditableTextboxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             ClearSelection(false);
-            var loc = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding, 
-                                      loc.Y - UIDefaults.YTextPadding);
-            int charIndex = GetHitIndex(pos);
+            int charIndex = GetHitIndex(pointer.CurrentPoint);
             CaretCharacterIndex = charIndex;
 
-            // check if the previous character was a new line
-            if (CaretCharacterIndex != 0 && CaretCharacterIndex < Text.Length &&
-                Text.Substring(CaretCharacterIndex - 1, 1) == "\n")
-            {
-                CaretCharacterIndex--;
-            }
+            //check if the previous character was a new line
+            //if (CaretCharacterIndex != 0 && CaretCharacterIndex < Text.Length && CaretCharacterIndex != -1 &&
+            //    Text.Substring(CaretCharacterIndex - 1, 1) == "\n")
+            //{
+            //    CaretCharacterIndex--;
+            //}
 
-            // bound the caret character index to the length of the text
-            if (CaretCharacterIndex >= Text.Length)
-            {
-                CaretCharacterIndex = Text.Length - 1;
-            }
+            //// bound the caret character index to the length of the text
+            //if (CaretCharacterIndex >= Text.Length)
+            //{
+            //    CaretCharacterIndex = Text.Length - 1;
+            //}
 
-            if (Text == "")
-            {
-                CaretCharacterIndex = -1;
-            }
-
-            _selectionStartIndex = charIndex;
+            //if (Text == "")
+            //{
+            //    CaretCharacterIndex = -1;
+            //}
         }
 
         /// <summary>
@@ -447,7 +440,6 @@ namespace NuSysApp
         /// <param name="args"></param>
         private void EditableTextboxUIElement_KeyPressed(KeyEventArgs args)
         {
-
             // set the caret visibility to true
             _caret.IsVisible = true;
 
@@ -528,52 +520,18 @@ namespace NuSysApp
             // Move cursor up
             else if (args.VirtualKey == VirtualKey.Up)
             {
-                // Use the layout bounds of the cursor to calculate the
-                // index of the character directly above the current one
-                CanvasTextLayoutRegion textLayoutRegion;
-                TextLayout.GetCaretPosition(CaretCharacterIndex, false, out textLayoutRegion);
-                Rect bounds = textLayoutRegion.LayoutBounds;
-                bounds.X += _textUpperLeft.X;
-                bounds.Y += _textUpperLeft.Y;
-
-                // decrement the y point of the position we are checking
-                Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
-                                          (float)(bounds.Top - _caret.Height / 2));
-                if (_currCaretX != 0)
-                {
-                    pos.X = _currCaretX;
-                }
-
                 // get the hit index of the character above the current one
-                int charIndex = GetHitIndex(pos);
+                int charIndex = GetHitIndex(new Vector2(_caret.Transform.LocalX, _caret.Transform.LocalY - _caret.Height), false);
                 CaretCharacterIndex = charIndex;
-                _currCaretX = pos.X;
             }
             // Move cursor down
             else if (args.VirtualKey == VirtualKey.Down)
             {
-                // use GetCaretPosition to get the current position of the caret
-                CanvasTextLayoutRegion textLayoutRegion;
-                TextLayout.GetCaretPosition(CaretCharacterIndex, false, out textLayoutRegion);
-
-                Rect bounds = textLayoutRegion.LayoutBounds;
-                bounds.X += _xOffset;
-                bounds.Y += _yOffset;
-
-                // increment the y axis of the current position by the height of the line
-                Vector2 pos = new Vector2((float)(bounds.Left + bounds.Width / 2),
-                                          (float)(bounds.Bottom + _caret.Height / 2));
-                if (_currCaretX != 0)
-                {
-                    pos.X = _currCaretX;
-                }
-
                 // get the index of the character at the pointer directly below the current line
-                int charIndex = GetHitIndex(pos);
+                int charIndex = GetHitIndex(new Vector2(_caret.Transform.LocalX, _caret.Transform.LocalY + _caret.Height), false);
 
                 // set the Caret Character Index to the new character index
                 CaretCharacterIndex = charIndex;
-                _currCaretX = pos.X;
             }
             // Control button pressed
             else if (args.VirtualKey == VirtualKey.Control)
@@ -654,7 +612,6 @@ namespace NuSysApp
             // show blinking cursor at end of text
             BorderWidth = 2;
             _hasFocus = true;
-            _caret.IsVisible = true;
         }
 
         /// <summary>
@@ -728,7 +685,6 @@ namespace NuSysApp
             // Highlight selected characters
             if (_hasSelection && (_selectionStartIndex != _selectionEndIndex))
             {
-                _caret.IsVisible = false;
                 int firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
                 int length = Math.Abs(_selectionEndIndex - _selectionStartIndex) + 1;
 
@@ -791,11 +747,10 @@ namespace NuSysApp
         /// </summary>
         private void ShiftTextOnDrag()
         {
-
+            _selectionEndIndex = GetHitIndex(_draggedPointer.CurrentPoint);
             var loc = Vector2.Transform(_draggedPointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding,
                                       loc.Y - UIDefaults.YTextPadding);
-            _selectionEndIndex = GetHitIndex(pos);
 
             // Update y offset if vertical scrolling textbox, x offset otherwise
             if (_scrollVert)
@@ -921,15 +876,40 @@ namespace NuSysApp
         /// </summary>
         /// <param name="mouseOverPt"></param>
         /// <returns></returns>
-        public virtual int GetHitIndex(Vector2 mouseOverPt)
+        public virtual int GetHitIndex(Vector2 mouseOverPt, bool convertPointFromScreenToLocal = true)
         {
+            // convert the poitn from screen coordinates to local coordinates
+            Vector2 localPoint;
+            if (convertPointFromScreenToLocal)
+            {
+                localPoint = Vector2.Transform(mouseOverPt, Transform.ScreenToLocalMatrix);
+            }
+            else
+            {
+                localPoint = mouseOverPt;
+            }
+            Vector2 pointToCheck = new Vector2(localPoint.X - UIDefaults.XTextPadding,
+                                      localPoint.Y - UIDefaults.YTextPadding);
+
+
             CanvasTextLayoutRegion textLayoutRegion;
             TextLayout.HitTest(
                 // Correct for offset
-                mouseOverPt.X - (float)_xOffset,
-                mouseOverPt.Y - (float)_yOffset,
+                pointToCheck.X - (float)_xOffset,
+                pointToCheck.Y - (float)_yOffset,
                 out textLayoutRegion);
-            return textLayoutRegion.CharacterIndex;
+            var characterIndex = textLayoutRegion.CharacterIndex;
+            TextLayout.GetCaretPosition(characterIndex, true, out textLayoutRegion);
+            var characterBounds = textLayoutRegion.LayoutBounds;
+            if (Math.Abs(characterBounds.Left - pointToCheck.X) < Math.Abs(characterBounds.Right - pointToCheck.X))
+            {
+                return textLayoutRegion.CharacterIndex - 1;
+            }
+            else
+            {
+                return textLayoutRegion.CharacterIndex;
+            }
+
         }
 
         /// <summary>
@@ -1225,11 +1205,6 @@ namespace NuSysApp
 
             return result.ToString();
         } 
-
-        private String GetSelectedWord(int charIndex)
-        {
-            return "";
-        }
 
         // FUNCTIONS TO CONVERT KEYCODE TO STRING UNICODE CHARACTER
         [DllImport("user32.dll")]
