@@ -265,6 +265,119 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Public method to call to request a lock.  
+        /// This won't return anything, but rather asynchronously fetch the lock.
+        /// If you are registered to listen and the lock changes, you will get the update in your LockChanged handler;
+        /// </summary>
+        /// <param name="lockable"></param>
+        public void GetLock(ILockable lockable)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            Debug.Assert(!lockable.HasLock());
+            Debug.Assert(!_locksDictionary.ContainsKey(lockable.Id) || _locksDictionary[lockable.Id].LockHolderId == null,
+                "if this isn't null, we are requesting a lock that clearly is already taken.  WTF, bro?");
+            if (lockable.HasLock() ||
+                (_locksDictionary.ContainsKey(lockable.Id) && _locksDictionary[lockable.Id].LockHolderId != null))
+            {
+                return;
+            }
+            PrivateGetLock(lockable.Id);
+        }
+
+        /// <summary>
+        /// public method to return a lock for a lockable that has the lock locally.
+        /// Will return false if the lock isn't held locally.
+        /// </summary>
+        /// <param name="lockable"></param>
+        /// <returns></returns>
+        public bool ReturnLock(ILockable lockable)
+        {
+            Debug.Assert(lockable != null);
+            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            if (!lockable.HasLock())
+            {
+                return false;
+            }
+            var removedHandler = _locksDictionary[lockable.Id].Listeners.Remove(lockable.LockChanged);
+            Debug.Assert(removedHandler, "If this didn't correctly remove handler, maybe there is a memory leak?");
+            PrivateReturnLock(lockable.Id);
+            return true;
+        }
+
+        /// <summary>
+        /// This method will make a get lock request and will appropriotely assign the lock to us if we get it.
+        /// </summary>
+        /// <param name="lockId"></param>
+        /// <returns></returns>
+        private async Task PrivateGetLock(string lockId)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(lockId));
+            Debug.Assert(!(_locksDictionary.ContainsKey(lockId) && _locksDictionary[lockId].LockHolderId == WaitingRoomView.UserID));
+            Debug.Assert(!_locksDictionary.ContainsKey(lockId) || _locksDictionary[lockId].LockHolderId == null,
+                "if this isn't null, we are requesting a lock that clearly is already taken.  WTF, bro?");
+            var holder = await PrivateRequestGetLockAsync(lockId);
+            UpdateLock(lockId,holder);
+        }
+
+        /// <summary>
+        /// This private async return lock method will make the return lock request, and remoe the lock accordingly.
+        /// </summary>
+        /// <returns></returns>
+        private async Task PrivateReturnLock(string lockId)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(lockId));
+            Debug.Assert(_locksDictionary.ContainsKey(lockId) && _locksDictionary[lockId].LockHolderId == WaitingRoomView.UserID);
+            var success = await PrivateReturnLockAsync(lockId);
+            Debug.Assert(success == true);
+            UpdateLock(lockId,null);
+        }
+
+
+        /// <summary>
+        /// Method that sends a request to ask for the lock for the given id.
+        /// this will return the holder of the lock after the request ends
+        /// </summary>
+        /// <param name="lockId"></param>
+        /// <returns></returns>
+        private async Task<string> PrivateRequestGetLockAsync(string lockId)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(lockId));
+            Debug.Assert(!(_locksDictionary.ContainsKey(lockId) && _locksDictionary[lockId].LockHolderId == WaitingRoomView.UserID));
+            Debug.Assert(!_locksDictionary.ContainsKey(lockId) || _locksDictionary[lockId].LockHolderId == null, 
+                "if this isn't null, we are requesting a lock that clearly is already taken.  WTF, bro?");
+
+            var request = new GetLockRequest(new GetLockRequestArgs()
+            {
+                LockableId = lockId
+            });
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            if (request.WasSuccessful() == true)
+            {
+                return request.CurrentLockHolder();
+            }
+            Debug.Fail("why did it fail?!?!?!?");
+            return null;
+        }
+
+        /// <summary>
+        /// Private method to send a request to the server to return a lock.
+        /// this will return the WasSuccessful() value after the request returns
+        /// </summary>
+        /// <param name="lockId"></param>
+        /// <returns></returns>
+        private async Task<bool?> PrivateReturnLockAsync(string lockId)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(lockId));
+            Debug.Assert(_locksDictionary.ContainsKey(lockId) && _locksDictionary[lockId].LockHolderId == WaitingRoomView.UserID);
+            var request = new ReturnLockRequest(new ReturnLockRequestArgs()
+            {
+                LockableId = lockId
+            });
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            return request.WasSuccessful();
+        }
+
+        /// <summary>
         /// Method to call whenever there is an update to the holder of a lock.
         /// This will fire the eventHandlers listening to the updated lock
         /// </summary>
@@ -273,10 +386,14 @@ namespace NuSysApp
         public void UpdateLock(string lockId, string userId)
         {
             Debug.Assert(!string.IsNullOrEmpty(lockId));
-            Debug.Assert(_locksDictionary.ContainsKey(lockId),"An edge case makes hitting this sometimes okay, i might remove later");
 
             if (_locksDictionary.ContainsKey(lockId))
             {
+                var oldValue = _locksDictionary[lockId].LockHolderId;
+                if (oldValue == userId)
+                {
+                    return;//if there isn't an actual update, ignore
+                }
                 _locksDictionary[lockId].LockHolderId = userId;
                 var user = userId == null ? null : GetNetworkUser(userId);
                 foreach (var listener in _locksDictionary[lockId].Listeners)

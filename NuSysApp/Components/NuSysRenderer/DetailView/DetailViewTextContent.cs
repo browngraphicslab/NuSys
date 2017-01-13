@@ -38,7 +38,7 @@ namespace NuSysApp
             LibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
-            this.Register(true);
+            this.Register(false);
 
             // create the main textbox
             _mainTextBox = new ScrollableTextboxUIElement(this, resourceCreator, true, true)
@@ -62,6 +62,22 @@ namespace NuSysApp
             // event for when the controllers text changes
             _controller.ContentDataController.ContentDataUpdated += LibraryElementControllerOnContentChanged;
             _mainTextBox.TextChanged += _mainTextBox_TextChanged;
+
+            _mainTextBox.OnFocusGained += MainTextBoxOnOnFocusGained;
+            _mainTextBox.OnFocusLost += MainTextBoxOnOnFocusLost;
+        }
+
+        private void MainTextBoxOnOnFocusLost(BaseRenderItem item)
+        {
+            if (this.HasLock())
+            {
+                this.ReturnLock();
+            }
+        }
+
+        private void MainTextBoxOnOnFocusGained(BaseRenderItem item)
+        {
+            this.GetLock();
         }
 
         private void _mainTextBox_TextChanged(InteractiveBaseRenderItem item, string text)
@@ -84,6 +100,9 @@ namespace NuSysApp
         {
             _controller.ContentDataController.ContentDataUpdated -= LibraryElementControllerOnContentChanged;
             _mainTextBox.TextChanged -= _mainTextBox_TextChanged;
+            _mainTextBox.OnFocusGained -= MainTextBoxOnOnFocusGained;
+            _mainTextBox.OnFocusLost -= MainTextBoxOnOnFocusLost;
+
             this.UnRegister();
             base.Dispose();
         }

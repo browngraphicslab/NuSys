@@ -25,11 +25,14 @@ namespace NuSysApp
         private FreeFormViewerViewModel _vm;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
 
+        public delegate void ElementSelectionSizeChanged(Size size);
+        public event ElementSelectionSizeChanged ElementSelectionRenderItemSizeChanged;
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
         public NodeMenuButtonRenderItem BtnLayoutTool;
+        public NodeMenuButtonRenderItem BtnEditTags;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
@@ -52,6 +55,8 @@ namespace NuSysApp
             BtnEnterCollection.Label = "enter collection";
             BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
             BtnLayoutTool.Label = "edit layout";
+            BtnEditTags = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/multitag.png", parent, resourceCreator);
+            BtnEditTags.Label = "edit tags";
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
@@ -66,13 +71,14 @@ namespace NuSysApp
                 BtnGroup,
                 BtnPresent,
                 BtnLayoutTool,
+                BtnEditTags,
                 BtnPdfLeft,
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer,
                 BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEnterCollection, BtnTools };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -347,5 +353,14 @@ namespace NuSysApp
             return new Rect(0, 0, _screenRect.Width, _screenRect.Height);
         }
 
+        public override bool IsDirty
+        {
+            set
+            {
+                base.IsDirty = value;
+                var rect = GetLocalBounds();
+                ElementSelectionRenderItemSizeChanged?.Invoke(new Size(rect.Width, rect.Height));
+            }
+        }
     }
 }

@@ -50,11 +50,21 @@ namespace NusysServer
             var userId = NusysClient.IDtoUsers[senderHandler].UserID;
             var parsed = await HtmlImporter.RunWithSearch(searchString);
             parsed.RemoveAt(0);
-            var docs = parsed.SelectMany(i => i);
+            var docs =
+                parsed.SelectMany(i => i)
+                    .Where(
+                        dh =>
+                            dh?.Content != null &&
+                            (dh.Content.ContentType == NusysConstants.ContentType.Text ||
+                             dh.Content.ContentType == NusysConstants.ContentType.Image));
             var requests = new List<Request>();
             foreach (var doc in docs)
             {
-                requests.Add(await MakeContentMessage(doc,userId));
+                var m = await MakeContentMessage(doc, userId);
+                if (m != null)
+                {
+                    requests.Add(m);
+                }
             }
             foreach (var request in requests.Where(i => i != null))
             {
