@@ -60,18 +60,18 @@ namespace NuSysApp
             _addLinkTitleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "link title...",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_addLinkTitleBox);
 
             _addLinkToElementBox = new AutoSuggestTextBox<LibraryElementModel>(this, Canvas)
             {
                 PlaceHolderText = "link to...",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray,
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE,
                 ColumnFunction = elementController => elementController.Title,
                 FilterFunction = delegate(string s)
                 {
@@ -84,26 +84,24 @@ namespace NuSysApp
 
             _addLinkTagsBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Background = Colors.Azure,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
-                PlaceHolderText = "tags - spearate with commas"
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE,
+                PlaceHolderText = "tags - separate with commas"
             };
             AddChild(_addLinkTagsBox);
 
-            _createLinkButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                ButtonText = "Create Link",
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
-                Background = Colors.Azure,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center
-            };
+            _createLinkButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Add Link");
             AddChild(_createLinkButton);
 
             // always add this as the last child since it has a drop down
             AddChild(_addLinkToElementBox);
+
+            // create the list view to display the events
+            CreateListView();
+
+            _controller.LinkAdded += OnLinkAdded;
+            _controller.LinkRemoved += OnLinkRemoved;
 
         }
 
@@ -173,8 +171,8 @@ namespace NuSysApp
             _link_listview = new ListViewUIElementContainer<LinkLibraryElementController>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_link_listview);
 

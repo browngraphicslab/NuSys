@@ -72,5 +72,14 @@ namespace NuSysApp
                 _currEditingControllerId = controllerId;
             }
         }
+
+        /// <summary>
+        /// Method to return whether this networkuser instance represents this client
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLocalUser()
+        {
+            return UserID != null && UserID == WaitingRoomView.UserID;
+        }
     }
 }

@@ -398,8 +398,20 @@ namespace NuSysApp
                 // in this case we are changing the size and the offset. Size decreases by drag x amount, offset increases
                 // by drag x amount
                 case ResizerBorderPosition.Left:
-                    sizeDelta.X -= pointer.DeltaSinceLastUpdate.X;
-                    offsetDelta.X += pointer.DeltaSinceLastUpdate.X;
+                    sizeDelta.X = -pointer.DeltaSinceLastUpdate.X;
+                    if (Width + sizeDelta.X < MinWidth)
+                    {
+                        Debug.Assert(MinWidth != null);
+                        sizeDelta.X = (float) (MinWidth - Width);
+                    }
+
+                    if (Width + sizeDelta.X > MaxWidth)
+                    {
+                        Debug.Assert(MaxWidth != null);
+                        sizeDelta.X = (float) (MaxWidth - Width);
+                    }
+
+                    offsetDelta.X -= sizeDelta.X;
                     break;
                 // in this case we are changing the size only. Size increases by the drag x amount
                 case ResizerBorderPosition.Right:
@@ -415,7 +427,18 @@ namespace NuSysApp
                     break;
                 case ResizerBorderPosition.BottomLeft:
                     sizeDelta.X -= pointer.DeltaSinceLastUpdate.X;
-                    offsetDelta.X += pointer.DeltaSinceLastUpdate.X;
+                    if (Width + sizeDelta.X < MinWidth)
+                    {
+                        Debug.Assert(MinWidth != null);
+                        sizeDelta.X = (float)(MinWidth - Width);
+                    }
+
+                    if (Width + sizeDelta.X > MaxWidth)
+                    {
+                        Debug.Assert(MaxWidth != null);
+                        sizeDelta.X = (float)(MaxWidth - Width);
+                    }
+                    offsetDelta.X -= sizeDelta.X;
                     sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
                     break;
                 default:
@@ -479,7 +502,7 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
+        /// <summary>D
         /// Takes in a CanvasPointer and returns the ResizerBorderPosition
         /// </summary>
         /// <param name="pointer"></param>

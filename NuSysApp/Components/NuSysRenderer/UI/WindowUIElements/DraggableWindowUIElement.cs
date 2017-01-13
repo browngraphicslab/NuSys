@@ -101,9 +101,21 @@ namespace NuSysApp
             _initialDragPosition = Transform.LocalPosition;
             if (IsSnapped)
             {
+                // the window is no longer snapped
                 IsSnapped = false;
+
+                // get the local point pressed on the top bar
+                var localPointOnTopBar = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+
+                // normalized horizontal pointer offset of the user's clock
+                var normalizedHorizontalOffset = localPointOnTopBar.X/Width;
+
+                // reset the size to the presnap size
                 Height = (float) PreSnapSize.Height;
                 Width = (float) PreSnapSize.Width;
+
+                Transform.LocalPosition = new Vector2(Transform.LocalX + localPointOnTopBar.X - normalizedHorizontalOffset * Width, Transform.LocalY);
+                _initialDragPosition = Transform.LocalPosition;
             }
         }
 
@@ -303,7 +315,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Sets the location position of the snap preview window
+        /// Sets the location position of the snap preview window, called after SetSnapPreviewDimensions
         /// </summary>
         protected virtual void SetSnapPreviewOffset()
         {
@@ -325,12 +337,12 @@ namespace NuSysApp
                     break;
                 case SnapPosition.Right:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2((float) (SessionController.Instance.ScreenWidth/2), 0),
+                        Vector2.Transform(new Vector2((float) Math.Min(SessionController.Instance.ScreenWidth/2, SessionController.Instance.ScreenWidth - SnapPreviewRect.Width), 0),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.Bottom:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2(0, (float) (SessionController.Instance.ScreenHeight/2)),
+                        Vector2.Transform(new Vector2(0, (float) Math.Min(SessionController.Instance.ScreenHeight/2, SessionController.Instance.ScreenHeight - SnapPreviewRect.Height)),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.TopLeft:
@@ -339,19 +351,19 @@ namespace NuSysApp
                     break;
                 case SnapPosition.TopRight:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2((float) (SessionController.Instance.ScreenWidth/2), 0),
+                        Vector2.Transform(new Vector2((float)Math.Min(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenWidth - SnapPreviewRect.Width), 0),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.BottomLeft:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2(0, (float) (SessionController.Instance.ScreenHeight/2)),
+                        Vector2.Transform(new Vector2(0, (float)Math.Min(SessionController.Instance.ScreenHeight / 2, SessionController.Instance.ScreenHeight - SnapPreviewRect.Height)),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.BottomRight:
                     SnapPreviewRect.Transform.LocalPosition =
                         Vector2.Transform(
-                            new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                                (float) (SessionController.Instance.ScreenHeight/2)), Transform.ScreenToLocalMatrix);
+                            new Vector2((float)Math.Min(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenWidth - SnapPreviewRect.Width),
+                                (float)Math.Min(SessionController.Instance.ScreenHeight / 2, SessionController.Instance.ScreenHeight - SnapPreviewRect.Height)), Transform.ScreenToLocalMatrix);
                     break;
                 case null:
                     break;

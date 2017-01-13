@@ -31,6 +31,7 @@ namespace NuSysApp
         public static int PrimaryStyle = 0;
         public static int SecondaryStyle = 1;
         public static int AccentStyle = 2;
+        public static int DraggableStyle = 2;
 
         #endregion
 
@@ -161,5 +162,6 @@ namespace NuSysApp
         public static Color ScrollButtonColor = Colors.LightGray;
         public static Color ScrollHandleBackground = Colors.LightGray;
         public static Color ScrollBarBackground = Colors.DarkGray;
+        public static BorderType BorderType = BorderType.Inside;
     }
 }

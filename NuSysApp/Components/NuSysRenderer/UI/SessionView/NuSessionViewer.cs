@@ -134,11 +134,17 @@ namespace NuSysApp
         /// The current number of chat notifications
         /// </summary>
         private int _numChatNotifications;
-
+        
         /// <summary>
         /// Keeps track of the last opened library element so that the same one does not cause the windows to reopen.
         /// </summary>
         private LibraryElementController _readOnlyController;
+
+        /// <summary>
+        /// the controller of the current collection
+        /// </summary>
+        private LibraryElementController _currController;
+
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
@@ -171,7 +177,7 @@ namespace NuSysApp
             {
                 TextColor = Constants.ALMOST_BLACK,
                 Background = Colors.Transparent,
-                FontSize = 55,
+                FontSize = 35,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
                 Width = 300,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center
@@ -233,8 +239,9 @@ namespace NuSysApp
             // add the chatbox after the user bubble container so user bubble names do not overlap the bottom of the chatbox
             Chatbox = new ChatBoxUIElement(this, canvas)
             {
-                IsVisible = false
-            };
+
+                IsVisible = false,
+        };
             AddChild(Chatbox);
 
             _detailViewer = new DetailViewMainContainer(this, Canvas)
@@ -243,10 +250,8 @@ namespace NuSysApp
                 Height = 500,
                 MinWidth = 400,
                 MinHeight = 600,
-                KeepAspectRatio = true
+                KeepAspectRatio = false
             };
-            AddChild(_detailViewer);
-
 
             // add presentation node buttons
             _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
@@ -302,6 +307,7 @@ namespace NuSysApp
             AddChild(_readOnlyAliasesWindow);
             _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(30, 100);
 
+            AddChild(_detailViewer);
 
             var st = new ScrollableTextboxUIElement(this, Canvas, true, false);
             AddChild(st);
@@ -393,15 +399,26 @@ namespace NuSysApp
             _readOnlyController = e;
         }
 
+        /// <summary>
+        /// open detail view for present collection if you double tap the title box
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var currCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSessionView.ShowDetailView(currCollectionController);
         }
 
+        /// <summary>
+        /// need to set the title box text here, since otherwise it will throw an exception
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="s"></param>
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
             _titleBox.Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title;
+
             if (SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType ==
                 NusysConstants.AccessType.ReadOnly)
             {
@@ -412,20 +429,29 @@ namespace NuSysApp
                 _readOnlyLinksWindow.UpdateList(currCollectionController);
             }
 
+
+            _currController = SessionController.Instance.ContentController.GetLibraryElementController(
+                SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
+            _currController.TitleChanged += InstanceOnEnterNewCollectionCompleted;
+
         }
 
+        /// <summary>
+        /// updates UI that is dependent on the position of the titlebox
+        /// </summary>
         public void UpdateUI()
         {
-
+            // update title box position
             _titleBox.Transform.LocalPosition =
             new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
             
+            //update settings and back button position to be on either side of the title box
             _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 + _titleBox.Width / 2 - _settingsButton.Width / 2 + 50,
             _titleBox.Height / 2 - _settingsButton.Height / 2);
             _backButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
                 _titleBox.Height / 2 - _backButton.Height / 2);
             
-
+            //if the breadcrumb trail is not docked, then update it to be aligned with the back button, and update the back to waiting room button
             if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 TrailBox.Transform.LocalPosition =
@@ -436,6 +462,7 @@ namespace NuSysApp
                         _backButton.Transform.LocalPosition.X + _backButton.Width/2 - _backToWaitingRoom.Width/2,
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + TrailBox.Height + 30);
             }
+            //if the breadcrumb trail is docked, update it to be right aligned, and update the back to waiting room button to be aligned with the back button
             else
             {
                 TrailBox.Transform.LocalPosition =
@@ -446,6 +473,7 @@ namespace NuSysApp
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
             }
 
+            //trail box is visible dependent on the back to waiting room button
             if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
@@ -455,19 +483,8 @@ namespace NuSysApp
                 TrailBox.IsVisible = true;
             }
 
-
-
+            //set position of settings menu
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2, _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
-
-            _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width/2 + _titleBox.Width/2 - _settingsButton.Width/2 + 50, 
-                _titleBox.Height/2 - _settingsButton.Height/2);
-            AddChild(_settingsButton);
-            _backToWaitingRoom.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
-                _titleBox.Height / 2 - _backToWaitingRoom.Height / 2);
-            AddChild(_backToWaitingRoom);
-            _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width/2 - _settingsMenu.Width/2,
-                _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
-            AddChild(_settingsMenu);
 
         }
 
@@ -547,10 +564,11 @@ namespace NuSysApp
             _backButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backButton.Height/2);
             Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height - 70);
             _backToWaitingRoom.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoom.Height/2);
-            _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
+            _userBubbleContainer.Transform.LocalPosition = new Vector2(_chatButton.Transform.LocalPosition.X + _chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
             _detailViewer.Width = Width/2;
+            _detailViewer.MaxWidth = Width - 60;
 
             // center the presentation mode buttons
             var buttonMargin = 10;
@@ -626,6 +644,7 @@ namespace NuSysApp
             SessionController.Instance.EnterNewCollectionCompleted -= InstanceOnEnterNewCollectionCompleted;
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
+            _currController.TitleChanged -= InstanceOnEnterNewCollectionCompleted;
             base.Dispose();
         }
 

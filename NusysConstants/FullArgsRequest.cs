@@ -32,7 +32,7 @@ namespace NusysIntermediate
         /// This will throw an error if the request wasn't successfull.
         /// Can be null;
         /// </summary>
-        public S ReturnArgs
+        protected S ReturnArgs
         {
             get
             {
@@ -45,6 +45,12 @@ namespace NusysIntermediate
                 return _returnArgs;
             }
         }
+
+        /// <summary>
+        /// Bool indicating whether this FullArgsRequest has been disposed.
+        /// if So, don't make any more method calls to it.
+        /// </summary>
+        public bool IsDisposed { get; private set; } = false;
 
         /// <summary>
         /// This constructor just takes in a fully populated arguments class.
@@ -90,6 +96,16 @@ namespace NusysIntermediate
                 return _returnArgs.WasSuccessful;
             }
             return base.WasSuccessful();
+        }
+
+        /// <summary>
+        /// Completely optional dispose method to dispose of the heavy objects in this class.
+        /// </summary>
+        public virtual void Dispose()
+        {
+            _message = null;
+            _returnArgs = null;
+            _returnMessage = null;
         }
     }
 }

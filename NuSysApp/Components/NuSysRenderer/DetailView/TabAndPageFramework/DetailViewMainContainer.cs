@@ -138,6 +138,7 @@ namespace NuSysApp
             if (controller != null)
             {
                 controller.Deleted -= Controller_Deleted;
+                controller.TitleChanged -= Controller_TitleChanged;
             }
 
         }
@@ -211,8 +212,16 @@ namespace NuSysApp
 
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _mainTabContainer.AddTab(libraryElementModelId, controller.LibraryElementModel.Title);
+            controller.TitleChanged += Controller_TitleChanged;
             controller.Deleted += Controller_Deleted;
 
+        }
+
+        private void Controller_TitleChanged(object sender, string e)
+        {
+            var controller = sender as LibraryElementController;
+            Debug.Assert(controller != null);
+            _mainTabContainer.UpdateTabTitle(controller.LibraryElementModel.LibraryElementId, e);
         }
 
         private void Controller_Deleted(object sender)

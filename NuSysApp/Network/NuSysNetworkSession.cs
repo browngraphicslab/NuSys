@@ -63,7 +63,7 @@ namespace NuSysApp
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnNewNotification += HandleNotification;
-            LockController = LockController ?? new LockController(_serverClient);
+            LockController = LockController ?? new LockController();
 
             //asynchronously run a request that will be loading the user ID to display name dictionary 
             Task.Run(async delegate

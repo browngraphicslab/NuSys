@@ -26,12 +26,6 @@ namespace NuSysApp
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
-        public delegate void LockAddedEventHandler(object sender, string id, string userId);
-        public event LockAddedEventHandler OnLockAdded;
-
-        public delegate void LockRemovedEventHandler(object sender, string id);
-        public event LockRemovedEventHandler OnLockRemoved;
-
         /// <summary>
         /// event fired with a notification's message whenever a new notification comes in
         /// </summary>
@@ -103,7 +97,7 @@ namespace NuSysApp
         {
             try
             {
-                using (DataReader reader = args.GetDataReader())
+                using ( DataReader reader = args.GetDataReader())
                 {
                     reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
                     string read = reader.ReadString(reader.UnconsumedBufferLength);

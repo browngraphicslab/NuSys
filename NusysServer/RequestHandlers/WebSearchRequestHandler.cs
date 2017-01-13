@@ -56,16 +56,18 @@ namespace NusysServer
             {
                 requests.Add(await MakeContentMessage(doc,userId));
             }
-            foreach (var request in requests)
+            foreach (var request in requests.Where(i => i != null))
             {
                 try
                 {
-                    await RequestRouter.HandleRequest(request.GetFinalMessage(), senderHandler);
+                    var handler = new CreateNewContentRequestHandler();
+                    var m = handler.HandleRequest(request, senderHandler);
+                    m[NusysConstants.REQUEST_TYPE_STRING_KEY] = NusysConstants.RequestType.CreateNewLibraryElementRequest;
+                    senderHandler.Send(m.GetSerialized());
                 }
                 catch (Exception e)
                 {
                     var f = new Exception(e.Message + ".  FAILED IN RUNPARSER" );
-                    senderHandler.SendError(f);
                     ErrorLog.AddError(f);
                 }
             }
@@ -80,22 +82,30 @@ namespace NusysServer
         {
             Debug.Assert(dataHolder?.Content != null && dataHolder?.LibraryElement != null);
             var message = new Message();
-            
+
             Debug.Assert(dataHolder.Content.ContentType == NusysConstants.ElementTypeToContentType(dataHolder.LibraryElement.Type));
 
             switch (dataHolder.Content.ContentType)
             {
                 case NusysConstants.ContentType.PDF:
-                    var webRequest = HttpWebRequest.Create(dataHolder.Content.Data);
-                    HttpWebResponse response = (HttpWebResponse)(await webRequest.GetResponseAsync());
-                    Stream stream = response.GetResponseStream();
-                    byte[] bytes;
-                    using (var ms = new MemoryStream())
+                    try
                     {
-                        stream.CopyTo(ms);
-                        bytes = ms.ToArray();
+                        var webRequest = HttpWebRequest.Create(dataHolder.Content.Data);
+                        HttpWebResponse response = (HttpWebResponse) (await webRequest.GetResponseAsync());
+                        Stream stream = response.GetResponseStream();
+                        byte[] bytes;
+                        using (var ms = new MemoryStream())
+                        {
+                            stream.CopyTo(ms);
+                            bytes = ms.ToArray();
+                        }
+                        dataHolder.Content.Data = Convert.ToBase64String(bytes);
                     }
-                    dataHolder.Content.Data = Convert.ToBase64String(bytes);
+                    catch (Exception e)
+                    {
+                        ErrorLog.AddError(e);
+                        return null;
+                    }
                     break;
                 case NusysConstants.ContentType.Image:
                     message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL] =
@@ -135,7 +145,7 @@ namespace NusysServer
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] =
                 dataHolder.LibraryElement.LibraryElementId;
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = dataHolder.LibraryElement.Type;
-
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = dataHolder.LibraryElement.Title;
             var request = new Request(NusysConstants.RequestType.CreateNewContentRequest, message);
             return request;
         }

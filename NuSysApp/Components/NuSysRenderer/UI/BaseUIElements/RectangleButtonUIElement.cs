@@ -39,6 +39,13 @@ namespace NuSysApp
         public RectangleButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, int style = 0, string text = "")
             : base(parent, resourceCreator, new RectangleUIElement(parent, resourceCreator))
         {
+            ButtonText = text;
+            ButtonTextColor = Colors.White;
+            Width = 200;
+            Height = 50;
+            ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+            ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+
             switch (style)
             {
                 case 0:
@@ -49,15 +56,12 @@ namespace NuSysApp
                     Rect.Background = Constants.MED_BLUE;
                     SelectedBackground = Constants.DARK_BLUE;
                     break;
+                case 2:
+                    Rect.Background = Colors.White;
+                    SelectedBackground = Constants.LIGHT_BLUE;
+                    ButtonTextColor = Constants.DARK_BLUE;
+                    break;
             }
-
-            ButtonText = text;
-            ButtonTextColor = Colors.White;
-            Width = 200;
-            Height = 50;
-            ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
-            ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-            
         }
     }
 }

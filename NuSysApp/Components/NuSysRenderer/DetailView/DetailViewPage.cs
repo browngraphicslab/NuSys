@@ -89,6 +89,16 @@ namespace NuSysApp
         /// </summary>
         private FlyoutPopup _addRegionPopup;
 
+        /// <summary>
+        /// button to expand the detail view page, should only happen if the element is an image or a PDF
+        /// </summary>
+        private RectangleButtonUIElement _expandButton;
+        
+        /// <summary>
+        /// button to open word from the detail view if the element is a word element
+        /// </summary>
+        private RectangleButtonUIElement _wordButton;
+
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
             // set the controller properly
@@ -130,9 +140,36 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-            _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle,
-                "Drag to Collection");
+            _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.DraggableStyle,
+                "Drag to Collection")
+            {
+                Bordercolor = Constants.DARK_BLUE,
+                BorderWidth = 2
+            };
+            _dragToCollectionButton.Width = 150;
+            _dragToCollectionButton.Height = 40;
             AddChild(_dragToCollectionButton);
+
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Image ||
+                controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+            {
+                _expandButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Expand");
+                _expandButton.Width = 150;
+                _expandButton.Height = 40;
+                AddChild(_expandButton);
+
+                _expandButton.Tapped += ExpandButton_Tapped;
+            }
+
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
+            {
+                _wordButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Open Word");
+                _wordButton.Width = 150;
+                _wordButton.Height = 40;
+                AddChild(_wordButton);
+
+                _wordButton.Tapped += WordButtonOnTapped;
+            }
 
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
@@ -140,7 +177,17 @@ namespace NuSysApp
             _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
 
-        } 
+        }
+
+        private void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            /// TODO: OPEN WORD FROM THIS HANDLER    
+        }
+
+        protected virtual void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            
+        }
 
         /// <summary>
         /// Fired 60 times a second while the pointer is being dragged after tapping on drag to collection button
@@ -236,6 +283,16 @@ namespace NuSysApp
                 _imageAnalysisLayoutManager.Dispose();
             }
 
+            if (_expandButton != null)
+            {
+                _expandButton.Tapped -= ExpandButton_Tapped;
+            }
+
+            if (_wordButton != null)
+            {
+                _wordButton.Tapped -= WordButtonOnTapped;
+            }
+
             base.Dispose();
         }
 
@@ -264,13 +321,22 @@ namespace NuSysApp
             }
 
 
-            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width/2 + _dragToCollectionButton.Width/2,300);
+            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width/2 + _dragToCollectionButton.Width/2, Height - 50);
 
             //var dragToCollectionHeight = _dragToCollectionButton.Height + 20;
 
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
-            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin, Height*heightMultiplier);
+
+            //set image height based on other ui elements
+            _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin - _dragToCollectionButton.Height, Height * heightMultiplier);
+
+            // set image height if the expand button is present
+            if (_expandButton != null)
+            {
+                _imageHeight = Math.Min(Height - _imageAnalysisMinHeight - _contentLayoutManager.TopMargin - _expandButton.Height
+                    - _dragToCollectionButton.Height, Height * heightMultiplier);
+            }
 
             // set the image
             var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
@@ -281,15 +347,49 @@ namespace NuSysApp
             _contentLayoutManager.ItemHeight = _imageHeight;
             _contentLayoutManager.SetMargins(20);
             _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
+            
 
             if (_showsImageAnalysis)
             {
                 // set the image analysis
-                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin);
+                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin - _dragToCollectionButton.Height);
                 _imageAnalysisLayoutManager.VerticalAlignment = VerticalAlignment.Stretch;
                 _imageAnalysisLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
                 _imageAnalysisLayoutManager.Spacing = 5;
                 _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin));
+            }
+
+            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width / 2 - _dragToCollectionButton.Width / 2, Height - _dragToCollectionButton.Height - 10);
+
+            // if the expand button is present, arrange UI elements accordingly
+            if (_expandButton != null)
+            {
+                _expandButton.Transform.LocalPosition = new Vector2(Width / 2 - _expandButton.Width / 2,
+                    _imageHeight + _contentLayoutManager.TopMargin + 10);
+                if (_showsImageAnalysis)
+                {
+                    _imageAnalysisLayoutManager.SetSize(Width,
+                        Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) -
+                        _dragToCollectionButton.Height);
+                    _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0,
+                        _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
+                }
+            }
+
+            if (_wordButton != null)
+            {
+                _wordButton.Transform.LocalPosition = new Vector2(Width/2 - _wordButton.Width/2,
+                        _imageHeight + _contentLayoutManager.TopMargin + 10);
+            }
+
+            if (_wordButton != null)
+            {
+                _wordButton.Transform.LocalPosition = new Vector2(Width/2 - _wordButton.Width/2, _imageHeight + _contentLayoutManager.TopMargin + 10); 
+                    _imageAnalysisLayoutManager.SetSize(Width,
+                        Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) -
+                        _dragToCollectionButton.Height);
+                    _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0,
+                        _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
             }
 
 

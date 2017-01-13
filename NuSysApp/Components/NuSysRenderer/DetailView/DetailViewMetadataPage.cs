@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml.Automation.Peers;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 
@@ -65,29 +66,29 @@ namespace NuSysApp
             _addKeyBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "Enter a Key",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_addKeyBox);
 
             _addValueBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "Enter Values",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_addValueBox);
 
-            _addKeyValueButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
+            _addKeyValueButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Add Key Value Pair");
             AddChild(_addKeyValueButton);
 
             _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Background = Colors.Azure,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE,
                 PlaceHolderText = "Search"
             };
             AddChild(_searchTextBox);
@@ -107,6 +108,13 @@ namespace NuSysApp
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged += OnSearchTextChanged;
             _showImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
+            _controller.KeywordsChanged += _controller_KeywordsChanged;
+        }
+
+        private void _controller_KeywordsChanged(object sender, HashSet<Keyword> keywords)
+        {
+            _metadata_listview.ClearItems();
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool show_immutable)
@@ -114,6 +122,9 @@ namespace NuSysApp
             filterlist();
         }
 
+        /// <summary>
+        /// call this method to filter the list
+        /// </summary>
         private void filterlist()
         {
             _metadata_listview.ClearItems();
@@ -123,6 +134,13 @@ namespace NuSysApp
             _metadata_listview.AddItems(filtered_metadata);
         }
 
+        /// <summary>
+        /// helper method which takes in a list of metadata entry to filter, and returns only thus that are immutable if
+        /// show_immutable is true, all otherwise
+        /// </summary>
+        /// <param name="metadataToBeFiltered"></param>
+        /// <param name="show_immutable"></param>
+        /// <returns></returns>
         private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool show_immutable)
         {
             if (show_immutable)
@@ -132,6 +150,12 @@ namespace NuSysApp
             return metadataToBeFiltered;
         }
 
+        /// <summary>
+        /// helper method which filters by search text and returns only metadata whose key or values contains the search text
+        /// </summary>
+        /// <param name="metadataToBeFiltered"></param>
+        /// <param name="searchText"></param>
+        /// <returns></returns>
         private List<MetadataEntry> filter_by_search_text(List<MetadataEntry> metadataToBeFiltered, string searchText)
         {
             if (string.IsNullOrEmpty(searchText))
@@ -210,8 +234,8 @@ namespace NuSysApp
             _metadata_listview = new ListViewUIElementContainer<MetadataEntry>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_metadata_listview);
 
@@ -227,19 +251,19 @@ namespace NuSysApp
                 metadataEntry => string.Join(", ", metadataEntry.Values.Select(value => string.Join(", ", value)));
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> {listColumn, listColumn2});
-
             _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         public override async Task Load()
         {
-            _addKeyValueButton.Image =
-                    await
-                        CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/icon_metadata_plus.png"),
-                            ResourceCreator.Dpi);
-
-
             _suggestedTags = await _controller.GetSuggestedTagsAsync(false);
+            var keywords = _controller.GetMetadata("Keywords");
+            Debug.Assert(keywords != null);
+            var tagsToRemove = _suggestedTags.Where(item => keywords.Contains(item.Key));
+            foreach (var tag in tagsToRemove.ToArray())
+            {
+                _suggestedTags.Remove(tag.Key);
+            }
             _rebuildSuggestedTags = true;
             base.Load();
         }
@@ -250,14 +274,10 @@ namespace NuSysApp
             // helper variable, the current vertical spacing from the top of the window
             var vertical_spacing = 20;
             var horizontal_spacing = 20;
+            var addMetadataItemsHeight = 50;
 
             // layout all the elments to add a metadata key value pair
-            var addMetadataItemsHeight = 50;
-            _addKeyValueButton.Width = 50;
-            _addKeyValueButton.Height = addMetadataItemsHeight;
-            _addKeyValueButton.Transform.LocalPosition = new Vector2(Width - _addKeyValueButton.Width - horizontal_spacing, vertical_spacing);
-
-            var textboxWidth = (Width - 4* horizontal_spacing - _addKeyValueButton.Width)/2;
+            var textboxWidth = (Width - 4* horizontal_spacing)/2;
             _addKeyBox.Height = addMetadataItemsHeight;
             _addKeyBox.Width = textboxWidth;
             _addKeyBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
@@ -265,8 +285,10 @@ namespace NuSysApp
             _addValueBox.Width = textboxWidth;
             _addValueBox.Transform.LocalPosition = new Vector2(2 * horizontal_spacing + _addKeyBox.Width, vertical_spacing);
 
+            _addKeyValueButton.Transform.LocalPosition = new Vector2(Width / 2 - _addKeyValueButton.Width / 2, _addKeyBox.Transform.LocalY + _addKeyBox.Height + vertical_spacing);
+
             // layout all the elements for search
-            vertical_spacing += 20 + addMetadataItemsHeight;
+            vertical_spacing += 40 + addMetadataItemsHeight + (int)_addKeyValueButton.Height;
             _searchTextBox.Height = 30;
             _searchTextBox.Width = Width - 2*horizontal_spacing;
             _searchTextBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
