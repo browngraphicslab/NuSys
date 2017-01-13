@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using NusysIntermediate;
 
@@ -8,7 +9,7 @@ namespace NusysServer
 {
     public class BingCognitiveServiceSender
     {
-        public static async Dictionary<string,List<Keyword>> RunTextAnalysis(List<DataHolder> input)
+        public static async Task<Dictionary<string,List<Keyword>>> RunTextAnalysis(List<DataHolder> input)
         {
             var textDataholders = input.Where(e => e is TextDataHolder);
             var docs = new List<CognitiveApiDocument>();
