@@ -300,8 +300,6 @@ namespace NuSysApp
             {
                 return false;
             }
-            var removedHandler = _locksDictionary[lockable.Id].Listeners.Remove(lockable.LockChanged);
-            Debug.Assert(removedHandler, "If this didn't correctly remove handler, maybe there is a memory leak?");
             PrivateReturnLock(lockable.Id);
             return true;
         }
