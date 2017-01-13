@@ -446,6 +446,11 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
 
                 /// <summary>
+                /// The requset key that will hold the direction enum for the requested link
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_DIRECTIONALITY_KEY = "link_library_element_model_direction_key";
+
+                /// <summary>
                 /// the key that will hold the serialized dictionary from string to metadataentry when creating a new library element
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY = "metadata";
@@ -1530,12 +1535,17 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
 
-                                /// <summary>
-                                /// The key that will hold the LibraryElementId for the OUT libary element
-                                /// </summary>
-                                public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+            /// <summary>
+            /// The database key that will hold the string representing the directionality of the link
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_DIRECTIONALITY_KEY = "link_direction_enum";
 
-                            #endregion LinkLibraryElementModel
+            /// <summary>
+            /// The key that will hold the LibraryElementId for the OUT libary element
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+
+            #endregion LinkLibraryElementModel
 
             #endregion LibraryElementModel
 
