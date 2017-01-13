@@ -18,6 +18,7 @@ using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI;
 using WinRTXamlToolkit.IO.Extensions;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
@@ -92,6 +93,7 @@ namespace NuSysApp
         public FocusManager FocusManager { get; private set; }
 
         private LayoutWindowUIElement _layoutWindow;
+        private EditTagsUIElement _editTagsElement;
         private bool _customLayoutDrawing = false;
 
         public FreeFormViewer()
@@ -801,6 +803,16 @@ namespace NuSysApp
                 _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
                 RenderEngine.Root.AddChild(_layoutWindow);
             }
+            if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
+            {
+                // edit tags
+                _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
+                    _editTagsElement.UpdatePositionWithSize;
+                Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
+                RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
+                _editTagsElement.Load();
+            }
         }
 
         /// <summary>
@@ -1168,6 +1180,12 @@ namespace NuSysApp
             {
                 RenderEngine.Root.RemoveChild(_layoutWindow);
                 _layoutWindow = null;
+            }
+
+            if (_editTagsElement != null)
+            {
+                RenderEngine.ElementSelectionRect.RemoveChild(_editTagsElement);
+                _editTagsElement = null;
             }
         }
 
