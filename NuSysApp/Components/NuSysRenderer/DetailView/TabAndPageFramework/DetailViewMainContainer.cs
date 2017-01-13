@@ -44,6 +44,11 @@ namespace NuSysApp
         /// </summary>
         private EllipseButtonUIElement _closeButton;
 
+        /// <summary>
+        /// stack layout manager to arrange the positions of user bubbles on the side of the detail view
+        /// </summary>
+        private StackLayoutManager _userLayoutManager;
+
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // create the _mainTabContainer, this is the tabs at the top of the page which represent different elements open in the detail view
@@ -102,6 +107,44 @@ namespace NuSysApp
             _pageContainer.OnPageTabChanged += PageContainerOnPageTabChanged;
 
             _closeButton.Tapped += CloseButtonOnTapped;
+        }
+
+        /// <summary>
+        /// shows the users on the current element visible in the detail view
+        /// </summary>
+        private void CreateUserBubbles(string libraryElementId)
+        {
+            var users = SessionController.Instance.UserController.GetUsersOfLibraryElement(libraryElementId);
+            if (_userLayoutManager != null)
+            {
+                _userLayoutManager.ClearStack(this);
+            }
+            else
+            {
+                _userLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
+                _userLayoutManager.Spacing = 10;
+                _userLayoutManager.BottomMargin = 10;
+                _userLayoutManager.LeftMargin = -40;
+                _userLayoutManager.ItemWidth = 30;
+                _userLayoutManager.ItemHeight = 30;
+            }
+
+            float height = 0;
+
+            foreach (var user in users)
+            {
+                var userId = SessionController.Instance.NuSysNetworkSession.NetworkMembers[user];
+                var displayName = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[user].ToUpper();
+                var userBubble = new EllipseButtonUIElement(this, Canvas, UIDefaults.Bubble, displayName[0].ToString())
+                {
+                    Background = userId.Color
+                };
+                AddChild(userBubble);
+                _userLayoutManager.AddElement(userBubble);
+                height += userBubble.Height + _userLayoutManager.Spacing;
+            }
+
+            _userLayoutManager.TopMargin = Height - height - 10;
         }
 
         private void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -184,6 +227,8 @@ namespace NuSysApp
             }
 
             _pageContainer.ShowLibraryElement(libElemId, currPage);
+
+            CreateUserBubbles(libElemId);
         }
 
         /// <summary>
@@ -241,6 +286,11 @@ namespace NuSysApp
             // this makes the mainTabContainer fill the entire window
             _mainTabLayoutManager.SetSize(Width, Height);
             _mainTabLayoutManager.ArrangeItems();
+
+            if (_userLayoutManager != null)
+            {
+                _userLayoutManager.ArrangeItems();
+            }
 
             base.Update(parentLocalToScreenTransform);
         }
