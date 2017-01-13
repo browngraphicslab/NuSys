@@ -109,6 +109,11 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Get the height of all the rows in the list view
+        /// </summary>
+        public float HeightOfAllRows => ListView.HeightOfAllRows;
+
 
         /// <summary>
         /// Sets the width of the list
@@ -134,7 +139,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Sets the Height of the width
+        /// Sets the Height of the width, //todo find out who did this and give them a medal
         /// </summary>
         public override float Height
         {

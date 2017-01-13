@@ -76,18 +76,21 @@ namespace NuSysApp
             set { _dropDownList.BorderWidth = value; }
         }
 
-        
+        /// <summary>
+        /// private helper variable for the maximum height of the dropdown list
+        /// </summary>
+        private float _maxListHeight;
 
         /// <summary>
-        /// The height of the dropdown list
+        /// The maximum height of the dropdown list
         /// </summary>
-        public float ListHeight
+        public float MaxListHeight
         {
-            get { return _dropDownList.Height; }
+            get { return _maxListHeight; }
             set
             {
                 Debug.Assert(value >= 0);
-                _dropDownList.Height = value;
+                _maxListHeight = value;
             }
         }
 
@@ -105,6 +108,7 @@ namespace NuSysApp
         /// Column for the drop down list
         /// </summary>
         private ListTextColumn<string> _dropDownItems;
+
 
         public delegate void SelectedHandler(DropdownUIElement sender, string item);
 
@@ -161,7 +165,7 @@ namespace NuSysApp
 
             // set default height and width for the dropdown list
             RowHeight = 30;
-            ListHeight = 300;
+            MaxListHeight = 300;
 
             _dropDownItems = new ListTextColumn<string>()
             {
@@ -225,6 +229,8 @@ namespace NuSysApp
             if (_dropDownList.GetItems().Count(s => s.Equals(item)) == 0)
             {
                 _dropDownList.AddItems(new List<string> { item });
+                _dropDownList.Height = Math.Min(MaxListHeight, _dropDownList.HeightOfAllRows);
+
             }
         }
 
