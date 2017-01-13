@@ -566,7 +566,7 @@ namespace NuSysApp
             _backButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backButton.Height/2);
             Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height - 70);
             _backToWaitingRoom.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoom.Height/2);
-            _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
+            _userBubbleContainer.Transform.LocalPosition = new Vector2(_chatButton.Transform.LocalPosition.X + _chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
             _detailViewer.Width = Width/2;
