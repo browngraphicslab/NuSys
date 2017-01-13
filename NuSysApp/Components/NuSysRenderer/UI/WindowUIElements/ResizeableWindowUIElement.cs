@@ -479,7 +479,7 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
+        /// <summary>D
         /// Takes in a CanvasPointer and returns the ResizerBorderPosition
         /// </summary>
         /// <param name="pointer"></param>
