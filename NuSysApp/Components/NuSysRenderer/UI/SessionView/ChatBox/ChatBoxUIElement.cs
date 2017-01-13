@@ -10,6 +10,8 @@ using Windows.UI;
 using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
 using SharpDX.Direct2D1.Effects;
+using NusysIntermediate;
+using NuSysAp;
 
 namespace NuSysApp
 {
@@ -98,6 +100,13 @@ namespace NuSysApp
         /// <param name="text"></param>
         private async void SendMessage(string text)
         {
+            /*
+            var searchRequest = new WebSearchRequest(new WebSearchRequestArgs() {SearchString = text});
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(searchRequest);
+            var s = searchRequest.WasSuccessful();
+            */
+            //web search parser testing
+
             var chatRequest = new ChatRequest(SessionController.Instance.NuSysNetworkSession.NetworkMembers[WaitingRoomView.UserID], text);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(chatRequest);
             if (chatRequest.WasSuccessful() == true)

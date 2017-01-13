@@ -37,6 +37,8 @@ namespace NuSysApp
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
         };
 
+        public event EventHandler<LibraryElementController> CameraOnCentered;
+
         protected List<BaseRenderItem> _renderItems0 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems1 = new List<BaseRenderItem>();
 
@@ -749,6 +751,8 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
                     .UpdateDryInkTransform();
                 SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+                CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
+
             });
         }
     }

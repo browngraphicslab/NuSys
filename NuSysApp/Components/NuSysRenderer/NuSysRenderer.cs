@@ -216,9 +216,11 @@ namespace NuSysApp
 
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", Root, CanvasAnimatedControl);
+            BtnDelete.Label = "delete";
             BtnDelete.IsVisible = false;
 
-            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", Root, CanvasAnimatedControl);
+            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/html export.png", Root, CanvasAnimatedControl);
+            BtnExportTrail.Label = "export one-way trail";
             BtnExportTrail.IsVisible = false;
 
             Root.AddChild(ElementSelectionRect);
