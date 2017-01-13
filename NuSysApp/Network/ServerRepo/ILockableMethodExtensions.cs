@@ -76,5 +76,26 @@ namespace NuSysApp
             Debug.Assert(lockable?.Id != null);
             return SessionController.Instance.NuSysNetworkSession.LockController.UnRegister(lockable);
         }
+
+        /// <summary>
+        /// Method to call to request a local fetch of the lock for this id. 
+        /// </summary>
+        /// <param name="lockable"></param>
+        public static void GetLock(this ILockable lockable)
+        {
+            Debug.Assert(lockable?.Id != null);
+            SessionController.Instance.NuSysNetworkSession.LockController.GetLock(lockable);
+        }
+
+        /// <summary>
+        /// Method to return a lock if we have it locally.
+        /// This will return false if we don't have a lock locally to return
+        /// </summary>
+        /// <param name="lockable"></param>
+        /// <returns></returns>
+        public static bool ReturnLock(this ILockable lockable)
+        {
+            return SessionController.Instance.NuSysNetworkSession.LockController.ReturnLock(lockable);
+        }
     }
 }
