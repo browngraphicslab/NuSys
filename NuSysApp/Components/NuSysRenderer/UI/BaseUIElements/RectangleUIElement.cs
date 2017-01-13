@@ -22,6 +22,7 @@ namespace NuSysApp
             Background = UIDefaults.Background;
             BorderWidth = UIDefaults.Borderwidth;
             Bordercolor = UIDefaults.Bordercolor;
+            BorderType = UIDefaults.BorderType;
         }
 
         /// <summary>
@@ -48,6 +49,8 @@ namespace NuSysApp
         public override ICanvasImage Image { get; set; }
 
         public override Rect? ImageBounds { get; set; }
+
+        public override BorderType BorderType { get; set; }
 
         /// <summary>
         /// The height of the rectangle
@@ -134,9 +137,16 @@ namespace NuSysApp
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
+            if (BorderType == BorderType.Inside)
+            {
+                // draw the border inside the rectangle
+                ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth, 0), Height - BorderWidth), Bordercolor, BorderWidth);
+            }else if (BorderType == BorderType.Outside)
+            {
+                // draw the border outside the rectangle
+                ds.DrawRectangle(new Rect(-BorderWidth/2, -BorderWidth/2, Width + BorderWidth, Height + BorderWidth), Bordercolor, BorderWidth);
 
-            // draw the border inside the rectangle
-            ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth,0), Height - BorderWidth), Bordercolor, BorderWidth);
+            }
 
             ds.Transform = orgTransform;
         }
@@ -168,9 +178,12 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            // draw the background of the rectangle
-            ds.FillRectangle(new Rect(0, 0, Width, Height), Background);
+            if (BorderType == BorderType.Inside||BorderType == BorderType.Outside)
+            {
+                // draw the background of the rectangle
+                ds.FillRectangle(new Rect(0, 0, Width, Height), Background);
 
+            }
             ds.Transform = orgTransform;
         }
 

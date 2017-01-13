@@ -111,6 +111,8 @@ namespace NuSysApp
             }
         }
 
+        public override BorderType BorderType { set; get; } = UIDefaults.BorderType;
+
 
         /// <summary>
         /// Draws the rectangle onto the canvas drawing session
@@ -148,9 +150,19 @@ namespace NuSysApp
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
+            if (BorderType == BorderType.Inside)
+            {
+                // draw the border inside the rectangle
+                ds.DrawRoundedRectangle(
+                    new Rect(BorderWidth/2, BorderWidth/2, Width - BorderWidth, Height - BorderWidth), Radius, Radius,
+                    Bordercolor);
+            }
+            else
+            {
+                // draw the border outside the rectangle
+                ds.DrawRoundedRectangle(new Rect(-BorderWidth / 2, -BorderWidth / 2, Width + BorderWidth, Height + BorderWidth), Radius, Radius, Bordercolor);
 
-            // draw the border inside the rectangle
-            ds.DrawRoundedRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Width - BorderWidth, Height - BorderWidth), Radius, Radius, Bordercolor);
+            }
 
             ds.Transform = orgTransform;
         }
