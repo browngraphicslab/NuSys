@@ -12,7 +12,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         /// <summary>
         /// a boolean representing whether we are using the test server by default or the live server
@@ -1785,11 +1785,6 @@ namespace NusysIntermediate
         public enum NotificationType
         {
             /// <summary>
-            /// Notification type used to tell the clients when a new user has taken control of a lock they were watching
-            /// </summary>
-            LockHolderChanged,
-
-            /// <summary>
             /// to notify of a new user on the system
             /// </summary>
             AddUser,
@@ -1807,7 +1802,12 @@ namespace NusysIntermediate
             /// <summary>
             /// Notification for telling all clients about an updated word document.
             /// </summary>
-            WordChanged
+            WordChanged,
+
+            /// <summary>
+            /// Notification type used to tell the clients when a new user has taken control of a lock they were watching
+            /// </summary>
+            LockHolderChanged,
         }
 
         /// <summary>
