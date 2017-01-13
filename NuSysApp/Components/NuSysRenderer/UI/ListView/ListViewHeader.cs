@@ -77,8 +77,8 @@ namespace NuSysApp
         /// <param name="listview"></param>
         public void RefreshTitles(List<ListColumn<T>> listColumns, float width, float sumOfColRelWidths, ICanvasResourceCreatorWithDpi resourceCreator)
         {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
-            {
+            
+
                 var indexPointer = 0f;
                 foreach (var child in _children)
                 {
@@ -103,10 +103,14 @@ namespace NuSysApp
                     this.AddChild(headerItem);
                     indexPointer += headerItem.Width;
                 }
-            });
+
         }
 
-        
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+
+            base.Update(parentLocalToScreenTransform);
+        }
 
         /// <summary>
         /// This just repositions all the titles.
@@ -207,10 +211,6 @@ namespace NuSysApp
             {
                 var index = _children.IndexOf(header);
                 Debug.Assert(index >= 0);
-                if (index == 2)
-                {
-                    var x = 4;
-                }
                 HeaderDragged?.Invoke(header, index, pointer);
             }
         }
@@ -223,6 +223,8 @@ namespace NuSysApp
         {
             header.Tapped -= Header_Tapped;
             header.Dragged -= Header_Dragged;
+            header.AddColumnTapped -= HeaderOnAddColumnTapped;
+            header.DeleteColumnTapped -= HeaderOnDeleteColumnTapped;
             header.DragCompleted -= Header_DragCompleted;
             header.HeaderResizing -= HeaderItemResizing;
             header.HeaderResizeCompleted -= HeaderItemResizeCompleted;

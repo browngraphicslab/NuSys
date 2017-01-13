@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
@@ -269,6 +270,12 @@ namespace NuSysApp
             }
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+
+            base.Update(parentLocalToScreenTransform);
+        }
+
         private void OnColumnOptionTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var button = item as ButtonUIElement;
@@ -377,25 +384,37 @@ namespace NuSysApp
         {
             var newX = header.Transform.LocalX + pointer.DeltaSinceLastUpdate.X;
 
-            if (newX > 0 && newX + header.Width < Width)
+            if (pointer.DeltaSinceLastUpdate.X > 0 && colIndex == _header.GetChildren().Count - 1)
             {
-                header.Transform.LocalX = newX;
-                var pointerX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
-
-                float centerOfNextHeader = _header.GetColumnHeaderCenter(colIndex + 1);
-                float centerOfPreviousHeader = _header.GetColumnHeaderCenter(colIndex - 1);
-
-                if (pointerX > centerOfNextHeader)
-                {
-                    _header.SwapHeaders(colIndex, colIndex + 1);
-                    _listview.SwapColumns(colIndex, colIndex + 1);
-                }
-                else if (pointerX < centerOfPreviousHeader)
-                {
-                    _header.SwapHeaders(colIndex, colIndex -1);
-                    _listview.SwapColumns(colIndex, colIndex - 1);
-                }
+                return;
             }
+
+            else if (pointer.DeltaSinceLastUpdate.X < 0 && colIndex == 0)
+            {
+                return;
+            }
+
+            header.Transform.LocalX = newX;
+
+            var pointerX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
+
+            var headerCenter = header.Transform.LocalX + header.Width/2;
+
+            float centerOfNextHeader = _header.GetColumnHeaderCenter(colIndex + 1);
+            float centerOfPreviousHeader = _header.GetColumnHeaderCenter(colIndex - 1);
+
+            //Debug.WriteLine("CenterOfNextHeader: " + centerOfNextHeader.ToString() + ". Center of PreviousHeader:" + centerOfPreviousHeader.ToString() + " . Point = " + pointerX.ToString());
+            if (headerCenter > centerOfNextHeader)
+            {
+                _header.SwapHeaders(colIndex, colIndex + 1);
+                _listview.SwapColumns(colIndex, colIndex + 1);
+            }
+            else if (headerCenter < centerOfPreviousHeader)
+            {
+                _header.SwapHeaders(colIndex, colIndex -1);
+                _listview.SwapColumns(colIndex, colIndex - 1);
+            }
+            
 
         }
 
