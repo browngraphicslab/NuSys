@@ -18,6 +18,8 @@ namespace NuSysApp
         // BaseRenderItem that is currently in focus
         public BaseRenderItem ActiveFocusElement { get; set; }
 
+        private IEnumerable<BaseRenderItem> _parentsWithFocus;
+
         // Used to set the pointerpressed event of the canvas to fire the
         // pointer pressed function
         private CanvasInteractionManager _canvasInteractionManager;
@@ -46,6 +48,8 @@ namespace NuSysApp
 
             _canvasInteractionManager = cim;
             _canvasRenderEngine = cre;
+
+            _parentsWithFocus = new List<BaseRenderItem>();
 
             _canvasInteractionManager.PointerPressed += _canvasInteractionManager_PointerPressed;
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyDown += FireKeyPressed;
@@ -85,15 +89,54 @@ namespace NuSysApp
             ActiveFocusElement = null;
         }
 
-        // Changes the focus from the currently focused item to the one passed in. Sets this as the ActiveFocusElement
+        /// <summary>
+        /// Changes the focus to the passed in item. The passed in itme becomes the ActiveFocusElement.
+        /// If the passed in item is the ActiveFocusElement, or is not focusable, then nothing happens.
+        /// Otherwise the child focus and got focus events are fired correctly
+        /// </summary>
+        /// <param name="newBaseRenderItem"></param>
         public void ChangeFocus(BaseRenderItem newBaseRenderItem)
         {
-            if (!InReadOnly && newBaseRenderItem.IsFocusable)
+            // if we are not in read only, and the newBaseRenderItem is focusable, and the new base render
+            // item is not currently focused
+            if (!InReadOnly && newBaseRenderItem.IsFocusable && newBaseRenderItem != ActiveFocusElement)
             {
-                newBaseRenderItem.GotFocus();
+                var newParentsWithFocus = GetParents(newBaseRenderItem);
+                var parentsWhoLostFocus = _parentsWithFocus.Except(newParentsWithFocus);
+
+                foreach (var parent in parentsWhoLostFocus)
+                {
+                    parent.ChildLostFocus();
+                }
+
+                var parentsWhoGainedFocus = newParentsWithFocus.Except(_parentsWithFocus);
+                foreach (var parent in parentsWhoGainedFocus)
+                {
+                    parent.ChildGotFocus();
+                }
+                _parentsWithFocus = newParentsWithFocus;
+
                 ActiveFocusElement?.LostFocus();
+                newBaseRenderItem.GotFocus();
                 ActiveFocusElement = newBaseRenderItem;
             }     
+        }
+
+        /// <summary>
+        /// Gets all the parents of a base render item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private List<BaseRenderItem> GetParents(BaseRenderItem item)
+        {
+            List<BaseRenderItem> parents = new List<BaseRenderItem>();
+            while (item.Parent != null)
+            {
+                item = item.Parent;
+                parents.Add(item);
+            }
+
+            return parents;
         }
 
         // Prevent memory leaks by disposing of resources
