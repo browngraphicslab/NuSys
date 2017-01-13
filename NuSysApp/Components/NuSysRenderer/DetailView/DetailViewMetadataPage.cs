@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml.Automation.Peers;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 
@@ -107,6 +108,13 @@ namespace NuSysApp
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged += OnSearchTextChanged;
             _showImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
+            _controller.KeywordsChanged += _controller_KeywordsChanged;
+        }
+
+        private void _controller_KeywordsChanged(object sender, HashSet<Keyword> keywords)
+        {
+            _metadata_listview.ClearItems();
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool show_immutable)
@@ -240,6 +248,13 @@ namespace NuSysApp
 
 
             _suggestedTags = await _controller.GetSuggestedTagsAsync(false);
+            var keywords = _controller.GetMetadata("Keywords");
+            Debug.Assert(keywords != null);
+            var tagsToRemove = _suggestedTags.Where(item => keywords.Contains(item.Key));
+            foreach (var tag in tagsToRemove.ToArray())
+            {
+                _suggestedTags.Remove(tag.Key);
+            }
             _rebuildSuggestedTags = true;
             base.Load();
         }
