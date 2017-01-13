@@ -132,6 +132,7 @@
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\html export.png" />
     <Content Include="Assets\new icons\left arrow.png" />
+    <Content Include="Assets\new icons\multitag.png" />
     <Content Include="Assets\new icons\node.png" />
     <Content Include="Assets\new icons\present white.png" />
     <Content Include="Assets\new icons\recording.png" />
@@ -399,6 +400,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\EditTagsUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
