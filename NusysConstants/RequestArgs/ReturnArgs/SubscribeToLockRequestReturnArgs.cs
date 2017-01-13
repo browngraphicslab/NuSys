@@ -22,7 +22,7 @@ namespace NusysIntermediate
         /// <returns></returns>
         protected override bool CheckIsValid()
         {
-            return UserIdOfLockHolder != null && base.CheckIsValid();
+            return base.CheckIsValid();
         }
     }
 }

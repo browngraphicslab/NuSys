@@ -19,8 +19,10 @@ namespace NusysServer
         /// <returns></returns>
         public static string GetUserId(this NuWebSocketHandler handler)
         {
-            Debug.Assert(handler != null);
-            Debug.Assert(NusysClient.IDtoUsers.ContainsKey(handler));
+            if (handler == null || !NusysClient.IDtoUsers.ContainsKey(handler))
+            {
+                return null;
+            }
             return NusysClient.IDtoUsers[handler].UserID;
         }
     }

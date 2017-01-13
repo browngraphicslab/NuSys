@@ -46,6 +46,7 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<NetworkUser> RegisterAsync(this ILockable lockable, bool requestLock = true)
         {
+            Debug.Assert(lockable?.Id != null);
             return await SessionController.Instance.NuSysNetworkSession.LockController.RegisterAsync(lockable, requestLock);
         }
 
@@ -60,7 +61,20 @@ namespace NuSysApp
         /// <returns></returns>
         public static bool Register(this ILockable lockable, bool requestLock = true)
         {
+            Debug.Assert(lockable?.Id != null);
             return SessionController.Instance.NuSysNetworkSession.LockController.Register(lockable, requestLock);
+        }
+
+        /// <summary>
+        /// This method will unregister an ILockabel from the locks controller.
+        /// It will return a successful unregistering if it was previously registered.  
+        /// </summary>
+        /// <param name="lockable"></param>
+        /// <returns></returns>
+        public static bool UnRegister(this ILockable lockable)
+        {
+            Debug.Assert(lockable?.Id != null);
+            return SessionController.Instance.NuSysNetworkSession.LockController.UnRegister(lockable);
         }
     }
 }

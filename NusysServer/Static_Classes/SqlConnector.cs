@@ -53,7 +53,7 @@ namespace NusysServer
             //SetUpTables();
 
             TestFunc();
-            ErrorLog.AddError(new Exception("test!"));
+            ErrorLog.AddError(new Exception("Server Starting..."));
         }
 
         public void CloseSqlConnection()

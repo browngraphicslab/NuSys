@@ -27,7 +27,7 @@ namespace NusysServer
             }
             ContentController.Instance.LockListeners.AddUserToListenToLock(args.LockableId, senderHandler);//listens to future updates to this lock
             var holder = ContentController.Instance.LockController.GetUserFromLock(args.LockableId);
-            returnArgs.UserIdOfLockHolder = NusysClient.IDtoUsers[holder].UserID;
+            returnArgs.UserIdOfLockHolder = (holder != null && NusysClient.IDtoUsers.ContainsKey(holder)) ? NusysClient.IDtoUsers[holder].UserID : null;
             returnArgs.WasSuccessful = true;
             return returnArgs;
         }

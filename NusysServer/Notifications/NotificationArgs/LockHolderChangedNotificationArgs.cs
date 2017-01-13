@@ -30,7 +30,6 @@ namespace NusysServer
         {
             var m = new Message();
             Debug.Assert(LockableId != null);
-            Debug.Assert(HolderUserId != null);
             m[NusysConstants.LOCK_HOLDER_CHANGED_NOTIFICATION_LOCKABLE_ID_KEY] = LockableId;
             m[NusysConstants.LOCK_HOLDER_CHANGED_NOTIFICATION_USER_ID_KEY] = HolderUserId;
             return m;
