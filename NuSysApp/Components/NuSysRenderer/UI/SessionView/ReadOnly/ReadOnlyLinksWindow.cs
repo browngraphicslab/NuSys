@@ -109,11 +109,6 @@ namespace NuSysApp
             _link_listview.Width = Width -  ( 2 * horizontalMargin);
             _link_listview.Height = Height - (_label.Height + verticalMargin*2);
 
-            if (_controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
-            {
-                IsVisible = false;
-            }
-
             base.Update(parentLocalToScreenTransform);
         }
 

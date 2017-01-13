@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
@@ -11,14 +12,15 @@ namespace NuSysApp
 {
     public class ReadOnlyModeWindow : ResizeableWindowUIElement
     {
-        private RoundedRectButtonUIElement _closeButton;
+        private EllipseButtonUIElement _closeButton;
         public ReadOnlyModeWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            _closeButton = new RoundedRectButtonUIElement(this, resourceCreator, 1, "X");
-            
-            _closeButton.Height = 15;
-            _closeButton.Width = 15;
-            _closeButton.Background = Colors.SlateGray;
+            _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
+            {
+                Height = 15,
+                Width = 15,
+                ImageBounds = new Rect(7.5, 7.5, 15, 15)
+            };
             AddChild(_closeButton);
 
             MinHeight = 300;
