@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +36,22 @@ namespace NuSysApp
             controller.DropUser(userId);
             // do something to make bubble disappear on screen
             // maybe have elementrenderitem constantly updating the bubbles
+        }
+
+        /// <summary>
+        /// will return IEnumerable of user ids for people viewing a certain library element;
+        /// </summary>
+        /// <param name="libraryElementId"></param>
+        /// <returns></returns>
+        public IEnumerable<string> GetUsersOfLibraryElement(string libraryElementId)
+        {
+            Debug.Assert(libraryElementId != null);
+            return
+                ControllerIdToUserIdList.Keys.Where(
+                    i =>
+                        SessionController.Instance.ElementModelIdToElementController.ContainsKey(i) &&
+                        SessionController.Instance.ElementModelIdToElementController[i]?.Model?.LibraryId ==
+                        libraryElementId).SelectMany(elementId => ControllerIdToUserIdList[elementId]).ToImmutableHashSet();
         }
 
         private void UserController_UserAdded(string controllerId, string userId)

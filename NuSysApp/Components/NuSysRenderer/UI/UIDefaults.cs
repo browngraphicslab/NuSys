@@ -32,6 +32,7 @@ namespace NuSysApp
         public static int SecondaryStyle = 1;
         public static int AccentStyle = 2;
         public static int DraggableStyle = 2;
+        public static int Bubble = 3;
 
         #endregion
 
