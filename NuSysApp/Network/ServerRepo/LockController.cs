@@ -107,7 +107,11 @@ namespace NuSysApp
         public string GetUserIdOfLockHolder(string lockId)
         {
             Debug.Assert(!string.IsNullOrEmpty(lockId));
-            return null;
+            if (!_locksDictionary.ContainsKey(lockId))
+            {
+                return null;
+            }
+            return _locksDictionary[lockId].LockHolderId;
         }
 
         /// <summary>
@@ -274,8 +278,6 @@ namespace NuSysApp
         {
             Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
             Debug.Assert(!lockable.HasLock());
-            Debug.Assert(!_locksDictionary.ContainsKey(lockable.Id) || _locksDictionary[lockable.Id].LockHolderId == null,
-                "if this isn't null, we are requesting a lock that clearly is already taken.  WTF, bro?");
             if (lockable.HasLock() ||
                 (_locksDictionary.ContainsKey(lockable.Id) && _locksDictionary[lockable.Id].LockHolderId != null))
             {
@@ -298,8 +300,6 @@ namespace NuSysApp
             {
                 return false;
             }
-            var removedHandler = _locksDictionary[lockable.Id].Listeners.Remove(lockable.LockChanged);
-            Debug.Assert(removedHandler, "If this didn't correctly remove handler, maybe there is a memory leak?");
             PrivateReturnLock(lockable.Id);
             return true;
         }
