@@ -7,16 +7,33 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class LockController
+    public class LockController : INuSysDisposable
     {
         private ServerClient _serverClient;
         private Dictionary<string, ILockable> _lockables;
+
+        public event EventHandler Disposed;
+
         public LockController(ServerClient serverClient)
         {
             _serverClient = serverClient;
             _lockables = new Dictionary<string, ILockable>();
             serverClient.OnLockAdded += LockAdded;
             serverClient.OnLockRemoved += LockRemoved;
+        }
+
+        /// <summary>
+        /// Dispose method simply removes itself from _serverClient events.
+        /// </summary>
+        public void Dispose()
+        {
+            Debug.Assert(_serverClient != null);
+            if (_serverClient != null)
+            {
+                _serverClient.OnLockAdded -= LockAdded;
+                _serverClient.OnLockRemoved -= LockRemoved;
+            }
+            Disposed?.Invoke(this,EventArgs.Empty);
         }
 
         /// <summary>
@@ -60,6 +77,21 @@ namespace NuSysApp
         {
             Debug.Assert(lockable != null);
             _lockables[lockable.Id] = lockable;
+        }
+
+        /// <summary>
+        /// Method to call to remove 
+        /// </summary>
+        /// <param name="lockable"></param>
+        public void RemoveLockable(ILockable lockable)
+        {
+            Debug.Assert(lockable != null);
+            Debug.Assert(_lockables.ContainsKey(lockable.Id));
+            _lockables.Remove(lockable.Id);
+            if (lockable.IsLocked)
+            {
+                lockable.UnLock();
+            }
         }
     }
 }

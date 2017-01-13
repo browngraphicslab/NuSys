@@ -28,8 +28,6 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             Debug.Assert(controller?.LibraryElementController is WordNodeLibraryElementController);
             var wnlec = controller?.LibraryElementController as WordNodeLibraryElementController;
-            wnlec.Locked += LibraryElementController_Locked;
-            wnlec.UnLocked += LibraryElementController_UnLocked;
             controller.LibraryElementController.ContentDataController.ContentDataUpdated += ChangeContent;
         }
         private void ChangeContent(object source, string contentData)
@@ -50,12 +48,6 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            var wnlec = Controller?.LibraryElementController as WordNodeLibraryElementController;
-            if (wnlec != null)
-            {
-                wnlec.Locked -= LibraryElementController_Locked;
-                wnlec.UnLocked -= LibraryElementController_UnLocked;
-            }
             if (Controller?.LibraryElementController?.ContentDataController != null)
             {
                 Controller.LibraryElementController.ContentDataController.ContentDataUpdated -= ChangeContent;

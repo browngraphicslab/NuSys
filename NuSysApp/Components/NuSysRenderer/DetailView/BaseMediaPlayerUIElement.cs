@@ -347,9 +347,6 @@ namespace NuSysApp
             _mediaContent.Width = Width;
             _mediaContent.Height = Height - _buttonsBarHeight - _scubBarHeight - _mediaContentPaddingToScrubBar;
             
-
-
-
             base.Update(parentLocalToScreenTransform);
         }
 

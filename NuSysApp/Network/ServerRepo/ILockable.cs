@@ -8,7 +8,8 @@ namespace NuSysApp
 {
     public interface ILockable
     {
-        bool IsLocked { get; set; }
+        bool IsLocked { get; set;}
+
         string Id { get; }
         void Lock(string userId);
         void UnLock();

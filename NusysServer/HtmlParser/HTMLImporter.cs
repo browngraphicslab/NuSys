@@ -575,7 +575,7 @@ namespace NusysServer
                     }
                 }
                 //We cannot parse pdfs or things on the blacklist
-                if (isBad || json.webPages.value[i].displayUrl.Contains(".pdf"))
+                if (isBad || json.webPages.value[i].displayUrl.Contains(".pdf") || json.webPages.value[i].displayUrl.Contains(".ppt") || json.webPages.value[i].displayUrl.Contains(".doc"))
                 {
                     balance++;
                     continue;

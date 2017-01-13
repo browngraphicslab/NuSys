@@ -37,6 +37,7 @@ namespace NuSysApp
                 TextColor = Constants.RED,
                 Text = "",
                 FontFamily = UIDefaults.FontFamily,
+                FontSize = 10,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Top,
                 Background = Colors.Transparent,

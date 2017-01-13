@@ -1444,21 +1444,30 @@ namespace NuSysApp
                 xAddPublicRadioButton.IsChecked = true;
                 xAddPrivateRadioButton.IsChecked = false;
 
+                xFullScreenVideoAddRegionButton.Background = new SolidColorBrush(Constants.DARK_BLUE);
+                xFullScreenVideoAddRegionButton.Foreground = new SolidColorBrush(Colors.White);
+                xFullScreenVideoCloseButton.Background = new SolidColorBrush(Constants.DARK_BLUE);
+                xFullScreenVideoCloseButton.Foreground = new SolidColorBrush(Colors.White);
+                xAddRegionMenu.Background = new SolidColorBrush(Colors.White);
+                xAddRegionMenu.BorderThickness = new Thickness(1, 1, 1, 1);
+                xAddRegionMenu.BorderBrush = new SolidColorBrush(Constants.DARK_BLUE);
+
                 // set the size of the full screen element
                 xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth,
-                    SessionController.Instance.ScreenHeight - 50);
+                    SessionController.Instance.ScreenHeight - xFullScreenVideoAddRegionButton.Height);
                 xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
 
                 // set the position of the add region button
-                Canvas.SetTop(xFullScreenVideoAddRegionButton,
-                    xFullScreenVideoElement.Height/2 - xFullScreenVideoAddRegionButton.Height/2);
-                Canvas.SetLeft(xFullScreenVideoAddRegionButton, 0);
+                Canvas.SetTop(xFullScreenVideoAddRegionButton, SessionController.Instance.ScreenHeight - xFullScreenVideoAddRegionButton.Height - 20);
+                Canvas.SetLeft(xFullScreenVideoAddRegionButton, SessionController.Instance.ScreenWidth/2 - xFullScreenVideoAddRegionButton.Width/2 - 150);
 
                 // set the positon of the add region menu
-                Canvas.SetTop(xAddRegionMenu,
-                    xFullScreenVideoElement.Height/2 - xFullScreenVideoAddRegionButton.Height/2 +
-                    xFullScreenVideoAddRegionButton.Height);
-                Canvas.SetLeft(xAddRegionMenu, 0);
+                Canvas.SetTop(xAddRegionMenu, SessionController.Instance.ScreenHeight/2 - xAddRegionMenu.Height/2);
+                Canvas.SetLeft(xAddRegionMenu, SessionController.Instance.ScreenWidth/2 - xAddRegionMenu.Width/2);
+
+                // set the position of the close button
+                Canvas.SetTop(xFullScreenVideoCloseButton, SessionController.Instance.ScreenHeight - xFullScreenVideoCloseButton.Height - 20);
+                Canvas.SetLeft(xFullScreenVideoCloseButton, SessionController.Instance.ScreenWidth/2 - xFullScreenVideoCloseButton.Width / 2 + 150);
             });
         }
 
@@ -1467,6 +1476,7 @@ namespace NuSysApp
             xFullScreenVideoElement.Visibility = Visibility.Collapsed;
             xFullScreenVideoCloseButton.Visibility = Visibility.Collapsed;
             xFullScreenVideoBackground.Visibility = Visibility.Collapsed;
+            xFullScreenVideoAddRegionButton.Visibility = Visibility.Collapsed;
             xAddRegionMenu.Visibility = Visibility.Collapsed;;
             xFullScreenVideoElement.Pause();
 
@@ -1513,6 +1523,8 @@ namespace NuSysApp
             var request = new CreateNewLibraryElementRequest(regionRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             request.AddReturnedLibraryElementToLibrary();
+
+            xAddRegionMenu.Visibility = Visibility.Collapsed;
         }
     }
 }
