@@ -144,6 +144,7 @@ namespace NuSysApp
             _dragToCollectionButton.Width = 150;
             _dragToCollectionButton.Height = 40;
             AddChild(_dragToCollectionButton);
+
             if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Image ||
                 controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
             {
