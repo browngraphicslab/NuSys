@@ -177,8 +177,10 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void RemoveItem(T item)
         {
+            Debug.Assert(_itemsToDisplayElements.ContainsKey(item));
             if (_itemsToDisplayElements.ContainsKey(item))
             {
+                RemoveElement(_itemsToDisplayElements[item]);
                 var displayElement = _itemsToDisplayElements[item];
                 _itemsToDisplayElements.Remove(item);
                 if (_displayElements.Contains(displayElement))
@@ -190,6 +192,7 @@ namespace NuSysApp
                     }
                 }
             }
+            IsDirty = true;
             UpdateElementGridLocations();
         }
 

@@ -107,11 +107,6 @@ namespace NuSysApp
         /// </summary>
         private FilterMenu _filterMenu { get; }
 
-        ///// <summary>
-        ///// TEST BUTTON
-        ///// </summary>
-        //private RectangleButtonUIElement _testbutton;
-
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -123,13 +118,13 @@ namespace NuSysApp
             // set up the ui of the add file button
             _addFileButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
-                ImageBounds = new Rect(10,10,30,30)
+                ImageBounds = new Rect(10, 10, 30, 30)
             };
             // add the addfile button to the window
             AddButton(_addFileButton, TopBarPosition.Right);
 
             // initialize the search bar
-            _searchBar = new ScrollableTextboxUIElement(this, Canvas,false,true)
+            _searchBar = new ScrollableTextboxUIElement(this, Canvas, false, true)
             {
                 Height = _searchBarHeight,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
@@ -147,6 +142,8 @@ namespace NuSysApp
             Background = Colors.White;
             Bordercolor = Constants.MED_BLUE;
             BorderWidth = 1;
+            IsSnappable = true;
+
 
             // initialize the filter button
             _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
@@ -161,7 +158,7 @@ namespace NuSysApp
                 IsVisible = false
             };
             AddChild(_filterMenu);
-            
+
 
             // initialize the list of library drag elements
             _libraryDragElements = new List<RectangleUIElement>();
@@ -183,12 +180,7 @@ namespace NuSysApp
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
         }
-        
-        //private void _testbutton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        //{
-        //    CenteredPopup test = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "this is a test");
-        //    SessionController.Instance.NuSessionView.AddChild(test);
-        //}
+
 
         /// <summary>
         /// Event handler for when the text of the library search bar changes
@@ -295,7 +287,7 @@ namespace NuSysApp
         public override async Task Load()
         {
             _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
-            base.Load(); 
+            base.Load();
         }
 
         /// <summary>
@@ -320,11 +312,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
-            if (_dragCanceled)
-            {
-                _dragCanceled = false;
-                return;
-            }
+
             // remove each of the drag elements
             foreach (var rect in _libraryDragElements.ToArray())
             {
@@ -334,6 +322,11 @@ namespace NuSysApp
             }
             _isDragVisible = false;
 
+            if (_dragCanceled)
+            {
+                _dragCanceled = false;
+                return;
+            }
             // add each of the items to the collection
             foreach (var lem in LibraryListView.GetSelectedItems())
             {
@@ -343,6 +336,7 @@ namespace NuSysApp
                 StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
             }
         }
+
 
         /// <summary>
         /// Fired when a row is dragged from
@@ -414,6 +408,7 @@ namespace NuSysApp
                 }
             }
         }
+        
 
         public override void Dispose()
         {
@@ -441,7 +436,7 @@ namespace NuSysApp
             LibraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
             {
                 MultipleSelections = false
-               
+
             };
 
             var listColumn1 = new ListTextColumn<LibraryElementModel>();
@@ -470,10 +465,10 @@ namespace NuSysApp
             listColumn5.RelativeWidth = 1f;
             listColumn5.ColumnFunction = model => model.Keywords != null ? string.Join(", ", model.Keywords.Select(i => i.Text)) : "";
 
-            var listColumn6= new ListTextColumn<LibraryElementModel>();
+            var listColumn6 = new ListTextColumn<LibraryElementModel>();
             listColumn6.Title = "Parent";
             listColumn6.RelativeWidth = 1f;
-            listColumn6.ColumnFunction = model => SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId) != null? SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId).Title : "" ;
+            listColumn6.ColumnFunction = model => SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId) != null ? SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId).Title : "";
 
             LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
@@ -499,7 +494,7 @@ namespace NuSysApp
         /// <param name="element"></param>
         private void UpdateLibraryListToRemoveElement(LibraryElementModel element)
         {
-            LibraryListView.RemoveItems(new List<LibraryElementModel> {element});
+            LibraryListView.RemoveItems(new List<LibraryElementModel> { element });
         }
 
         /// <summary>
@@ -508,7 +503,7 @@ namespace NuSysApp
         /// <param name="libraryElement"></param>
         private void UpdateLibraryListWithNewElement(LibraryElementModel libraryElement)
         {
-            LibraryListView.AddItems(new List<LibraryElementModel> {libraryElement});
+            LibraryListView.AddItems(new List<LibraryElementModel> { libraryElement });
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -517,7 +512,7 @@ namespace NuSysApp
             LibraryListView.Width = Width - 2 * BorderWidth;
             LibraryListView.Height = Height - TopBarHeight - BorderWidth - _searchBarHeight;
             LibraryListView.Transform.LocalPosition = new Vector2(BorderWidth, TopBarHeight);
-            _searchBar.Width = Width - 2*BorderWidth - _filterButtonWidth;
+            _searchBar.Width = Width - 2 * BorderWidth - _filterButtonWidth;
             _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - _searchBarHeight);
             _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - _searchBarHeight);
             _filterMenu.Transform.LocalPosition = new Vector2(Width, 0);
@@ -817,7 +812,7 @@ namespace NuSysApp
                         // add the library element controller of the new content to the list we are going to return
                         addedLibraryElemControllers.Add(SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId));
                     }
-                    
+
 
                     vm.ClearSelection();
                 }

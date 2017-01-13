@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dotMemory.Unit, Version=103.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.dotMemoryUnit.2.3.20160517.113140\lib\dotMemory.Unit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="GemBox.Document, Version=25.3.30.1243, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
       <HintPath>..\packages\GemBox.Document.25.3.30.1243\lib\net30\GemBox.Document.dll</HintPath>
       <Private>True</Private>
@@ -211,7 +215,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="mupdfapi.dll">
+    <Content Include="mupdfapit1.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="scripts\ai.0.22.9-build00167.js" />
@@ -252,6 +256,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="HtmlParser\AudioDataHolder.cs" />
+    <Compile Include="HtmlParser\BingCognitiveServiceSender.cs" />
     <Compile Include="HtmlParser\DataHolder.cs" />
     <Compile Include="HtmlParser\HTMLImporter.cs" />
     <Compile Include="HtmlParser\ImageDataHolder.cs" />

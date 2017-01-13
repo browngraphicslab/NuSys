@@ -33,17 +33,9 @@ namespace NuSysApp
             _collectionGridView = new DetailViewCollectionGridView(this, resourceCreator, _controller);
             AddChild(_collectionGridView);
 
-            _enterCollectionButton = new ButtonUIElement(this, resourceCreator)
-            {
-                Background = Colors.Azure,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
-                ButtonText = "Enter Collection",
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                Height = 50,
-                Width = 200
-            };
+            _enterCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Enter Collection");
+            _enterCollectionButton.Width = 150;
+            _enterCollectionButton.Height = 40;
             AddChild(_enterCollectionButton);
 
 
@@ -78,7 +70,7 @@ namespace NuSysApp
 
             // layout the collection grid view
             _collectionGridView.Width = Width - 2*horizontal_spacing;
-            _collectionGridView.Height = Height - 3*vertical_spacing - _enterCollectionButton.Height;
+            _collectionGridView.Height = Height - vertical_spacing - _enterCollectionButton.Height;
             _collectionGridView.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
 
             vertical_spacing += _collectionGridView.Height + 20;

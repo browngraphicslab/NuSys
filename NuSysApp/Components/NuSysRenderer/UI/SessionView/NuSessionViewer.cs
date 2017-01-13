@@ -11,7 +11,11 @@ using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+
 using NuSysApp.Components.NuSysRenderer.UI.Textbox;
+
+using NusysIntermediate;
+
 using NuSysApp.Network.Requests;
 using ReverseMarkdown.Converters;
 using WinRTXamlToolkit.Controls.DataVisualization;
@@ -39,6 +43,15 @@ namespace NuSysApp
         /// button for the settings of the session
         /// </summary>
         private ButtonUIElement _settingsButton;
+
+        /// <summary>
+        /// Various windows that appear in read only mode.
+        /// </summary>
+        private ReadOnlyLinksWindow _readOnlyLinksWindow;
+
+        private ReadOnlyMetadataWindow _readOnlyMetadataWindow;
+
+        private ReadOnlyAliasesWindow _readOnlyAliasesWindow;
 
         /// <summary>
         /// The menu UI for the settings of the session
@@ -121,6 +134,17 @@ namespace NuSysApp
         /// The current number of chat notifications
         /// </summary>
         private int _numChatNotifications;
+        
+        /// <summary>
+        /// Keeps track of the last opened library element so that the same one does not cause the windows to reopen.
+        /// </summary>
+        private LibraryElementController _readOnlyController;
+
+        /// <summary>
+        /// the controller of the current collection
+        /// </summary>
+        private LibraryElementController _currController;
+
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
@@ -153,7 +177,7 @@ namespace NuSysApp
             {
                 TextColor = Constants.ALMOST_BLACK,
                 Background = Colors.Transparent,
-                FontSize = 55,
+                FontSize = 35,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
                 Width = 300,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center
@@ -225,9 +249,8 @@ namespace NuSysApp
                 Height = 500,
                 MinWidth = 400,
                 MinHeight = 600,
-                KeepAspectRatio = true
+                KeepAspectRatio = false
             };
-            AddChild(_detailViewer);
 
             // add presentation node buttons
             _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
@@ -254,6 +277,37 @@ namespace NuSysApp
             UpdateUI();
 
             _titleBox.DoubleTapped += _titleBox_DoubleTapped;
+
+            _readOnlyLinksWindow = new ReadOnlyLinksWindow(this, Canvas)
+            {
+                Background = Constants.LIGHT_BLUE,
+                Height = 300,
+                Width = 250
+            };
+            AddChild(_readOnlyLinksWindow);
+            _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(300, 100);
+
+            _readOnlyMetadataWindow = new ReadOnlyMetadataWindow(this, Canvas)
+            {
+                Background = Constants.LIGHT_BLUE,
+                Height = 300,
+                Width = 250
+            };
+
+            AddChild(_readOnlyMetadataWindow);
+            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(30, 450);
+
+            _readOnlyAliasesWindow = new ReadOnlyAliasesWindow(this, Canvas)
+            {
+                Background = Constants.LIGHT_BLUE,
+                Height = 300,
+                Width = 250
+            };
+            AddChild(_readOnlyAliasesWindow);
+            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(30, 100);
+
+            AddChild(_detailViewer);
+
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped; 
@@ -261,6 +315,7 @@ namespace NuSysApp
             _backButton.Tapped += BackTapped;
             _backToWaitingRoom.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
+
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
         }
 
@@ -317,31 +372,78 @@ namespace NuSysApp
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
+
+           
         }
 
+        private void CameraCenteredOnElement(object sender, LibraryElementController e)
+        {
+            if (e == _readOnlyController)
+            {
+                return;
+            }
+            _readOnlyLinksWindow.UpdateList(e);
+            _readOnlyAliasesWindow.UpdateList(e);
+            _readOnlyMetadataWindow.UpdateList(e);
+            _readOnlyLinksWindow.IsVisible = true;
+            _readOnlyMetadataWindow.IsVisible = true;
+            _readOnlyAliasesWindow.IsVisible = true;
+            _readOnlyController = e;
+        }
+
+        /// <summary>
+        /// open detail view for present collection if you double tap the title box
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var currCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSessionView.ShowDetailView(currCollectionController);
         }
 
+        /// <summary>
+        /// need to set the title box text here, since otherwise it will throw an exception
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="s"></param>
         private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
         {
             _titleBox.Text = SessionController.Instance.CurrentCollectionLibraryElementModel.Title;
+
+            if (SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType ==
+                NusysConstants.AccessType.ReadOnly)
+            {
+                var currCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(
+                    SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
+                _readOnlyMetadataWindow.UpdateList(currCollectionController);
+                _readOnlyAliasesWindow.UpdateList(currCollectionController);
+                _readOnlyLinksWindow.UpdateList(currCollectionController);
+            }
+
+
+            _currController = SessionController.Instance.ContentController.GetLibraryElementController(
+                SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
+            _currController.TitleChanged += InstanceOnEnterNewCollectionCompleted;
+
         }
 
+        /// <summary>
+        /// updates UI that is dependent on the position of the titlebox
+        /// </summary>
         public void UpdateUI()
         {
-
+            // update title box position
             _titleBox.Transform.LocalPosition =
             new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2, 0);
             
+            //update settings and back button position to be on either side of the title box
             _settingsButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 + _titleBox.Width / 2 - _settingsButton.Width / 2 + 50,
             _titleBox.Height / 2 - _settingsButton.Height / 2);
             _backButton.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - _titleBox.Width / 2 - _settingsButton.Width / 2 - 50,
                 _titleBox.Height / 2 - _backButton.Height / 2);
             
-
+            //if the breadcrumb trail is not docked, then update it to be aligned with the back button, and update the back to waiting room button
             if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 TrailBox.Transform.LocalPosition =
@@ -352,6 +454,7 @@ namespace NuSysApp
                         _backButton.Transform.LocalPosition.X + _backButton.Width/2 - _backToWaitingRoom.Width/2,
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + TrailBox.Height + 30);
             }
+            //if the breadcrumb trail is docked, update it to be right aligned, and update the back to waiting room button to be aligned with the back button
             else
             {
                 TrailBox.Transform.LocalPosition =
@@ -362,6 +465,7 @@ namespace NuSysApp
                         _backButton.Transform.LocalPosition.Y + _backButton.Height + 15);
             }
 
+            //trail box is visible dependent on the back to waiting room button
             if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
             {
                 TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
@@ -371,8 +475,43 @@ namespace NuSysApp
                 TrailBox.IsVisible = true;
             }
 
-
+            //set position of settings menu
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2, _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
+
+        }
+
+        /// <summary>
+        /// Method to call to make the current workspace have the read-only ui.
+        /// This should mainly hide things like the floating menu.
+        /// </summary>
+        public void MakeReadOnly()
+        {
+            _readOnlyLinksWindow.IsVisible = true;
+            _readOnlyAliasesWindow.IsVisible = true;
+            _readOnlyMetadataWindow.IsVisible = true;
+            _detailViewer.HideDetailView();
+            _detailViewer.DisableDetailView();
+            _floatingMenu.HideFloatingMenu();
+            _floatingMenu.IsVisible = false;
+
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
+
+        }
+
+        /// <summary>
+        /// Method to call to undo the MakeReadOnly method and reapply the editable UI.
+        /// </summary>
+        public void MakeEditable()
+        {
+            _readOnlyLinksWindow.IsVisible = false;
+            _readOnlyAliasesWindow.IsVisible = false;
+            _readOnlyMetadataWindow.IsVisible = false;
+            _detailViewer.EnableDetailView();
+            _floatingMenu.ShowFloatingMenu();
+
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
         }
 
         /// <summary>
@@ -417,10 +556,11 @@ namespace NuSysApp
             _backButton.Transform.LocalPosition = new Vector2(10, Height/2 - _backButton.Height/2);
             Chatbox.Transform.LocalPosition = new Vector2(10, Height - Chatbox.Height - 70);
             _backToWaitingRoom.Transform.LocalPosition = new Vector2(10, Height/2 - _backToWaitingRoom.Height/2);
-            _userBubbleContainer.Transform.LocalPosition = _chatButton.Transform.LocalPosition + new Vector2(_chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
+            _userBubbleContainer.Transform.LocalPosition = new Vector2(_chatButton.Transform.LocalPosition.X + _chatButton.Width + 10, Height - _userBubbleContainer.Height - 10);
             _detailViewer.Transform.LocalPosition = new Vector2(Width/2, 0);
             _detailViewer.Height = Height;
             _detailViewer.Width = Width/2;
+            _detailViewer.MaxWidth = Width - 60;
 
             // center the presentation mode buttons
             var buttonMargin = 10;
@@ -494,6 +634,9 @@ namespace NuSysApp
             _backToWaitingRoom.Tapped -= BackToWaitingRoomOnTapped;
             SessionController.Instance.OnModeChanged -= Instance_OnModeChanged;
             SessionController.Instance.EnterNewCollectionCompleted -= InstanceOnEnterNewCollectionCompleted;
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
+            _currController.TitleChanged -= InstanceOnEnterNewCollectionCompleted;
             base.Dispose();
         }
 
@@ -533,21 +676,6 @@ namespace NuSysApp
         public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
             _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
-        }
-
-        /// <summary>
-        /// Method to call to make the current workspace have the read-only ui.
-        /// This should mainly hide things like the floating menu.
-        /// </summary>
-        public void MakeReadOnly()
-        {
-        }
-
-        /// <summary>
-        /// Method to call to undo the MakeReadOnly method and reapply the editable UI.
-        /// </summary>
-        public void MakeEditable()
-        {
         }
 
         /// <summary>
@@ -697,6 +825,24 @@ namespace NuSysApp
                 _chatButtonNotifications.Text = _numChatNotifications.ToString();
                 _chatButtonNotifications.IsVisible = true;
             }
+        }
+
+        /// <summary>
+        /// This is a listener for the Canvas Panned event. In read only mode if the windows are only made 
+        /// visible on focus, this hides the various windows.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CanvasPanned(object sender, bool e)
+        {
+            if (SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible ==
+                ReadOnlyViewingMode.VisibleOnFocus)
+            {
+                _readOnlyLinksWindow.IsVisible = false;
+                _readOnlyAliasesWindow.IsVisible = false;
+                _readOnlyMetadataWindow.IsVisible = false;
+            }
+
         }
     }
 }

@@ -126,12 +126,16 @@
     <Content Include="Assets\new icons\back.png" />
     <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
+    <Content Include="Assets\new icons\custom arrange.png" />
     <Content Include="Assets\new icons\down arrow.png" />
     <Content Include="Assets\new icons\enter collection white.png" />
     <Content Include="Assets\new icons\gear.png" />
+    <Content Include="Assets\new icons\html export.png" />
+    <Content Include="Assets\new icons\left arrow.png" />
     <Content Include="Assets\new icons\node.png" />
     <Content Include="Assets\new icons\present white.png" />
     <Content Include="Assets\new icons\recording.png" />
+    <Content Include="Assets\new icons\right arrow.png" />
     <Content Include="Assets\new icons\text.png" />
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
@@ -447,6 +451,10 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPdfRegionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyLinksWindow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyMetadataWindow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyModeWindow.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyAliasesWindow.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\SessionSettingsMenu.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UserBubbles.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElements\DraggableWindowUIElement.cs" />

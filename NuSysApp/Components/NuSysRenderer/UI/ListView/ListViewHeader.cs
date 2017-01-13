@@ -10,6 +10,7 @@ using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using NuSysApp;
 
 namespace NuSysApp
 {
@@ -76,9 +77,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="listview"></param>
         public void RefreshTitles(List<ListColumn<T>> listColumns, float width, float sumOfColRelWidths, ICanvasResourceCreatorWithDpi resourceCreator)
-        {
-            
-
+        {            
                 var indexPointer = 0f;
                 foreach (var child in _children)
                 {
@@ -104,12 +103,6 @@ namespace NuSysApp
                     indexPointer += headerItem.Width;
                 }
 
-        }
-
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-
-            base.Update(parentLocalToScreenTransform);
         }
 
         /// <summary>
@@ -207,10 +200,13 @@ namespace NuSysApp
         {
             //_headerBeingDragged = true;
             var header = item as ButtonUIElement;
+
             if (header != null)
             {
                 var index = _children.IndexOf(header);
                 Debug.Assert(index >= 0);
+                var totalWidth = _children.Sum(child => (child as ListViewHeaderItem<T>).Width);
+
                 HeaderDragged?.Invoke(header, index, pointer);
             }
         }
@@ -310,6 +306,8 @@ namespace NuSysApp
                 return;
             }
             var index = _children.IndexOf(header);
+            
+            Debug.WriteLine(index);
             if (index < 0 || index > _children.Count - 1)
             {
                 return;
@@ -354,13 +352,36 @@ namespace NuSysApp
                 return;
             }
 
-            left.Width += deltaX;  
+            left.Width += deltaX;
             right.Width -= deltaX;
             right.Transform.LocalX += deltaX;
             HeaderResizing?.Invoke(index, pointer, edgeBeingDragged);
 
+        }
+
+        public float GetEdge<T>(int columnIndex, ListViewHeaderItem<T>.Edge edge)
+        {
+            if (columnIndex < 0)
+            {
+                return -1;
+            }
+            else if (columnIndex > _children.Count - 1)
+            {
+                return float.PositiveInfinity;
+            }
+            var column = _children[columnIndex] as ButtonUIElement;
+            Debug.Assert(column != null);
+            if (edge == ListViewHeaderItem<T>.Edge.Left)
+            {
+                return column.Transform.LocalX;
+            }
+            else 
+            {
+                return column.Transform.LocalX + Width;
+            }
 
         }
+
 
 
         /// <summary>

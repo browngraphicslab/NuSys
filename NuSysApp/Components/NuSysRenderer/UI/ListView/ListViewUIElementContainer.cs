@@ -110,6 +110,11 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Get the height of all the rows in the list view
+        /// </summary>
+        public float HeightOfAllRows => ListView.HeightOfAllRows;
+
 
         /// <summary>
         /// Sets the width of the list
@@ -135,7 +140,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Sets the Height of the width
+        /// Sets the Height of the width, //todo find out who did this and give them a medal
         /// </summary>
         public override float Height
         {
@@ -384,37 +389,39 @@ namespace NuSysApp
         {
             var newX = header.Transform.LocalX + pointer.DeltaSinceLastUpdate.X;
 
-            if (pointer.DeltaSinceLastUpdate.X > 0 && colIndex == _header.GetChildren().Count - 1)
+            if (pointer.DeltaSinceLastUpdate.X > 0 && colIndex == _header.GetChildren().Count - 1 && newX + header.Width > Width)
             {
+                //header.Transform.LocalX = Width - header.Width;
                 return;
             }
 
-            else if (pointer.DeltaSinceLastUpdate.X < 0 && colIndex == 0)
+            else if (pointer.DeltaSinceLastUpdate.X < 0 && colIndex == 0 && newX < 0)
             {
+                //header.Transform.LocalX = 0;
                 return;
             }
-
             header.Transform.LocalX = newX;
-
-            var pointerX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
 
             var headerCenter = header.Transform.LocalX + header.Width/2;
 
-            float centerOfNextHeader = _header.GetColumnHeaderCenter(colIndex + 1);
-            float centerOfPreviousHeader = _header.GetColumnHeaderCenter(colIndex - 1);
+            float rightEdgeOfPreviousHeader = _header.GetEdge(colIndex - 1, ListViewHeaderItem<T>.Edge.Right);
+            float leftEdgeOfNextHeader = _header.GetEdge(colIndex + 1, ListViewHeaderItem<T>.Edge.Left);
 
-            //Debug.WriteLine("CenterOfNextHeader: " + centerOfNextHeader.ToString() + ". Center of PreviousHeader:" + centerOfPreviousHeader.ToString() + " . Point = " + pointerX.ToString());
-            if (headerCenter > centerOfNextHeader)
+            if (headerCenter > leftEdgeOfNextHeader)
             {
                 _header.SwapHeaders(colIndex, colIndex + 1);
                 _listview.SwapColumns(colIndex, colIndex + 1);
             }
-            else if (headerCenter < centerOfPreviousHeader)
+            else if (headerCenter < rightEdgeOfPreviousHeader)
             {
                 _header.SwapHeaders(colIndex, colIndex -1);
                 _listview.SwapColumns(colIndex, colIndex - 1);
             }
-            
+
+            //Update header in case it went too far
+            header.Transform.LocalX = Math.Max(0, header.Transform.LocalX);
+            header.Transform.LocalX = Math.Min(Width - header.Width, header.Transform.LocalX);
+
 
         }
 

@@ -31,6 +31,7 @@ namespace NuSysApp
         public static int PrimaryStyle = 0;
         public static int SecondaryStyle = 1;
         public static int AccentStyle = 2;
+        public static int DraggableStyle = 2;
 
         #endregion
 
@@ -74,12 +75,17 @@ namespace NuSysApp
         public static bool WindowIsResizeable = true;
         public static bool WindowKeepsAspectRatio = true;
         public static bool WindowIsDraggable = true;
+        public static bool WindowIsSnappable = false;
         public static float? WindowMaxWidth = 5000;
         public static float? WindowMaxHeight = 5000;
         public static float? WindowMinWidth = 25;
         public static float? WindowMinHeight = 25;
         public static float WindowBorderWidth = 3;
         public static Color ResizeHighlightColor = Constants.DARK_BLUE;
+        public static float WindowDragBuffer = 25;
+        public static float SnapBuffer = 30;
+        public static Color SnapPreviewRectColor = Color.FromArgb(150, 208, 207, 184);
+
 
         #endregion
 
