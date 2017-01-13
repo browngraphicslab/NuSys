@@ -65,29 +65,29 @@ namespace NuSysApp
             _addKeyBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "Enter a Key",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_addKeyBox);
 
             _addValueBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "Enter Values",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_addValueBox);
 
-            _addKeyValueButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas));
+            _addKeyValueButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Add Key Value Pair");
             AddChild(_addKeyValueButton);
 
             _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Background = Colors.Azure,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
+                Background = Colors.White,
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE,
                 PlaceHolderText = "Search"
             };
             AddChild(_searchTextBox);
@@ -210,8 +210,8 @@ namespace NuSysApp
             _metadata_listview = new ListViewUIElementContainer<MetadataEntry>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_metadata_listview);
 
@@ -233,12 +233,6 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _addKeyValueButton.Image =
-                    await
-                        CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/icon_metadata_plus.png"),
-                            ResourceCreator.Dpi);
-
-
             _suggestedTags = await _controller.GetSuggestedTagsAsync(false);
             _rebuildSuggestedTags = true;
             base.Load();
@@ -250,14 +244,10 @@ namespace NuSysApp
             // helper variable, the current vertical spacing from the top of the window
             var vertical_spacing = 20;
             var horizontal_spacing = 20;
+            var addMetadataItemsHeight = 50;
 
             // layout all the elments to add a metadata key value pair
-            var addMetadataItemsHeight = 50;
-            _addKeyValueButton.Width = 50;
-            _addKeyValueButton.Height = addMetadataItemsHeight;
-            _addKeyValueButton.Transform.LocalPosition = new Vector2(Width - _addKeyValueButton.Width - horizontal_spacing, vertical_spacing);
-
-            var textboxWidth = (Width - 4* horizontal_spacing - _addKeyValueButton.Width)/2;
+            var textboxWidth = (Width - 4* horizontal_spacing)/2;
             _addKeyBox.Height = addMetadataItemsHeight;
             _addKeyBox.Width = textboxWidth;
             _addKeyBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
@@ -265,8 +255,10 @@ namespace NuSysApp
             _addValueBox.Width = textboxWidth;
             _addValueBox.Transform.LocalPosition = new Vector2(2 * horizontal_spacing + _addKeyBox.Width, vertical_spacing);
 
+            _addKeyValueButton.Transform.LocalPosition = new Vector2(Width / 2 - _addKeyValueButton.Width / 2, _addKeyBox.Transform.LocalY + _addKeyBox.Height + vertical_spacing);
+
             // layout all the elements for search
-            vertical_spacing += 20 + addMetadataItemsHeight;
+            vertical_spacing += 40 + addMetadataItemsHeight + (int)_addKeyValueButton.Height;
             _searchTextBox.Height = 30;
             _searchTextBox.Width = Width - 2*horizontal_spacing;
             _searchTextBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
