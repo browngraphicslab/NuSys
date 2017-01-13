@@ -968,7 +968,7 @@ namespace NuSysApp
             // Sets the cursor's location based on the offsets
             // Cursor should be to the right of characters except when it is -1, then it should
             // be to the left of the first character
-            if (CaretCharacterIndex > -1)
+            if (CaretCharacterIndex > -1 && CaretCharacterIndex <Text.Length)
             {
                 TextLayout.GetCaretPosition(CaretCharacterIndex, false, out textLayoutRegion);
 
