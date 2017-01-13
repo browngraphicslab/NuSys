@@ -415,6 +415,14 @@ namespace NuSysApp
             int charIndex = GetHitIndex(pointer.CurrentPoint);
             CaretCharacterIndex = charIndex;
 
+<<<<<<< Updated upstream
+=======
+            if (Text == string.Empty)
+            {
+                CaretCharacterIndex = -1;
+            }
+
+>>>>>>> Stashed changes
             //check if the previous character was a new line
             //if (CaretCharacterIndex != 0 && CaretCharacterIndex < Text.Length && CaretCharacterIndex != -1 &&
             //    Text.Substring(CaretCharacterIndex - 1, 1) == "\n")
@@ -502,6 +510,7 @@ namespace NuSysApp
                 _currCaretX = 0;
 
                 if (_hasSelection)
+<<<<<<< Updated upstream
                 {
                     CaretCharacterIndex = Math.Max(_selectionStartIndex, _selectionEndIndex);
                     CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex);
@@ -514,6 +523,20 @@ namespace NuSysApp
                     // ('a' is text with length 1, CaretCharacterIndex 0 is to the right of 'a') thats why we subtract one from the length
                     CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex + 1);
                 }
+=======
+                {
+                    CaretCharacterIndex = Math.Max(_selectionStartIndex, _selectionEndIndex);
+                    CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex);
+                    ClearSelection(false);
+                }
+                else
+                {
+                    // try to incremenet the CaretCharacterIndex, but do not let the CaretCharacter
+                    // index increment to beyond the length of the text - 1. 
+                    // ('a' is text with length 1, CaretCharacterIndex 0 is to the right of 'a') thats why we subtract one from the length
+                    CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex + 1);
+                }
+>>>>>>> Stashed changes
 
 
             }
