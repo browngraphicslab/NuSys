@@ -100,9 +100,9 @@ namespace NuSysApp
 
         #region slider
 
-        public static Color ThumbColor = Colors.LightGray;
-        public static Color SliderHighlightColor = Colors.DodgerBlue;
-        public static Color SliderBackground = Colors.LightGray;
+        public static Color ThumbColor = Constants.DARK_BLUE;
+        public static Color SliderHighlightColor = Constants.MED_BLUE;
+        public static Color SliderBackground = Colors.White;
         public static float SliderPosition = 1;
         public static bool IsSliderTooltipEnabled = true;
 
