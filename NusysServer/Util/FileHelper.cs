@@ -211,8 +211,9 @@ namespace NusysServer
                             }
                             catch (Exception e)
                             {
-                                ErrorLog.AddError(e);
-                                throw new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
+                                var e2 = new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
+                                ErrorLog.AddError(e2);
+                                throw e2;
                             }
                         }
                         try
@@ -234,13 +235,17 @@ namespace NusysServer
                 }
                 if (filePath == null || fileUrl == null)
                 {
-                    throw new Exception("this content type is not supported yet for creating Content Data Files");
+                    var e = new Exception("this content type is not supported yet for creating Content Data Files");
+                    ErrorLog.AddError(e);
+                    throw e;
                 }
                 return fileUrl;
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message + "  FileHelper Method: CreateDataFile");
+                var e2 = new Exception(e.Message + "  FileHelper Method: CreateDataFile");
+                ErrorLog.AddError(e2);
+                throw e2;
             }
         }
 

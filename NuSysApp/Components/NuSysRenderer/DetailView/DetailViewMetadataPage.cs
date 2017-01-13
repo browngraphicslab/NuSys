@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml.Automation.Peers;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 
@@ -107,6 +108,13 @@ namespace NuSysApp
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged += OnSearchTextChanged;
             _showImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
+            _controller.KeywordsChanged += _controller_KeywordsChanged;
+        }
+
+        private void _controller_KeywordsChanged(object sender, HashSet<Keyword> keywords)
+        {
+            _metadata_listview.ClearItems();
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool show_immutable)
@@ -114,6 +122,9 @@ namespace NuSysApp
             filterlist();
         }
 
+        /// <summary>
+        /// call this method to filter the list
+        /// </summary>
         private void filterlist()
         {
             _metadata_listview.ClearItems();
@@ -123,6 +134,13 @@ namespace NuSysApp
             _metadata_listview.AddItems(filtered_metadata);
         }
 
+        /// <summary>
+        /// helper method which takes in a list of metadata entry to filter, and returns only thus that are immutable if
+        /// show_immutable is true, all otherwise
+        /// </summary>
+        /// <param name="metadataToBeFiltered"></param>
+        /// <param name="show_immutable"></param>
+        /// <returns></returns>
         private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool show_immutable)
         {
             if (show_immutable)
@@ -132,6 +150,12 @@ namespace NuSysApp
             return metadataToBeFiltered;
         }
 
+        /// <summary>
+        /// helper method which filters by search text and returns only metadata whose key or values contains the search text
+        /// </summary>
+        /// <param name="metadataToBeFiltered"></param>
+        /// <param name="searchText"></param>
+        /// <returns></returns>
         private List<MetadataEntry> filter_by_search_text(List<MetadataEntry> metadataToBeFiltered, string searchText)
         {
             if (string.IsNullOrEmpty(searchText))
@@ -227,13 +251,19 @@ namespace NuSysApp
                 metadataEntry => string.Join(", ", metadataEntry.Values.Select(value => string.Join(", ", value)));
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> {listColumn, listColumn2});
-
             _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         public override async Task Load()
         {
             _suggestedTags = await _controller.GetSuggestedTagsAsync(false);
+            var keywords = _controller.GetMetadata("Keywords");
+            Debug.Assert(keywords != null);
+            var tagsToRemove = _suggestedTags.Where(item => keywords.Contains(item.Key));
+            foreach (var tag in tagsToRemove.ToArray())
+            {
+                _suggestedTags.Remove(tag.Key);
+            }
             _rebuildSuggestedTags = true;
             base.Load();
         }

@@ -46,6 +46,10 @@ namespace NuSysApp
         public abstract float BorderWidth { get; set; }
 
         /// <summary>
+        /// The border type of the UIElement
+        /// </summary>
+        public abstract BorderType BorderType { get; set; }
+        /// <summary>
         /// The color of the Border of the UI Element;
         /// </summary>
         public abstract Color Bordercolor { get; set; }

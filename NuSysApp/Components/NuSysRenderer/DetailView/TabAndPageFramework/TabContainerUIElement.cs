@@ -239,6 +239,15 @@ namespace NuSysApp
             
         }
 
+        public void UpdateTabTitle(T tabToUpdate, string newTitle)
+        {
+            var buttonToUpdate = _tabList.FirstOrDefault(e => IsEqual(e.Tab, tabToUpdate));
+            if (buttonToUpdate != null)
+            {
+                buttonToUpdate.Title = newTitle;
+            }
+        }
+
         /// <summary>
         /// Initializes a new Tab and return a TabButtonUIElement
         /// </summary>

@@ -87,9 +87,9 @@ namespace NuSysApp
             IsCloseable = UIDefaults.TabIsCloseable;
 
             // add the background button as a child
-            base.AddChild(_backgroundButton);
+            AddChild(_backgroundButton);
             // add the close button as a child
-            base.AddChild(_closeButton);
+            AddChild(_closeButton);
 
             _closeButton.Tapped += _closeButton_Tapped;
             _backgroundButton.Tapped += TabButtonUIElement_Tapped;
@@ -131,16 +131,12 @@ namespace NuSysApp
             OnClosed?.Invoke(Tab);
         }
 
-        public override void Draw(CanvasDrawingSession ds)
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            // return if the item is disposed or is not visible
-            if (IsDisposed || !IsVisible)
-                return;
-
             // set the parameters for the close button
             SetBackgroundAndCloseButtonParams();
 
-            base.Draw(ds);
+            base.Update(parentLocalToScreenTransform);
         }
 
         /// <summary>

@@ -24,6 +24,7 @@ namespace NusysServer
             LibraryElement.Title = title;
             LibraryElement.ContentDataModelId = Content.ContentId;
             Content.Data = uri.AbsoluteUri;
+            Content.ContentType = NusysConstants.ContentType.PDF;
             this.Uri = uri;
         }
     }

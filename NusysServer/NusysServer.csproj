@@ -282,8 +282,10 @@
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
     <Compile Include="Notifications\AnalysisModelMadeNotification.cs" />
     <Compile Include="Notifications\DropUserNotification.cs" />
+    <Compile Include="Notifications\LockHolderChangedNotification.cs" />
     <Compile Include="Notifications\NewUserNotification.cs" />
     <Compile Include="Notifications\NotificationArgs\AnalysisModelMadeNotificationArgs.cs" />
+    <Compile Include="Notifications\NotificationArgs\LockHolderChangedNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\NewUserNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\WordChangedNotificationArgs.cs" />
@@ -304,10 +306,14 @@
     <Compile Include="RequestHandlers\GetAliasesOfLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetLastUsedCollectionsRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetLockRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetWordDocumentRequestHandler.cs" />
     <Compile Include="RequestHandlers\MoveElementToCollectionRequestHandler.cs" />
+    <Compile Include="RequestHandlers\ReturnLockRequestHandler.cs" />
+    <Compile Include="RequestHandlers\SubscribeToLockRequestHandler.cs" />
+    <Compile Include="RequestHandlers\UnSubscribeToLockRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteMetadataRequestHandler.cs" />
@@ -360,6 +366,8 @@
     <Compile Include="Util\Constants.cs" />
     <Compile Include="Util\ErrorLog.cs" />
     <Compile Include="Util\FileHelper.cs" />
+    <Compile Include="Util\LockListenersController.cs" />
+    <Compile Include="Util\LocksController.cs" />
     <Compile Include="Util\PropertiesAndMetadataParser.cs" />
     <Compile Include="Util\PropertiesParser.cs" />
     <Compile Include="Util\RequestToSqlKeyMappings.cs" />
@@ -373,6 +381,7 @@
     <Compile Include="Util\SQLQuery\SQLUpdatePropertiesArgs.cs" />
     <Compile Include="Util\SQLQuery\SQLUpdateRowQuery.cs" />
     <Compile Include="Util\SQLQuery\SQLQueryConditionals.cs" />
+    <Compile Include="Util\UserExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="apiapp.json" />

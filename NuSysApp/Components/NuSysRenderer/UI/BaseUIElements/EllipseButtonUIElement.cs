@@ -69,7 +69,7 @@ namespace NuSysApp
                 {
                     Height = 30;
                     Width = 30;
-                    ButtonTextColor = Colors.White;
+                    ButtonTextColor = Colors.Black;
                     break;
                 }
                 default:
@@ -91,7 +91,7 @@ namespace NuSysApp
             {
                 // if the ellipse has the style of a bubble then we want the text to be within the circle.
                 // this math returns a rect that is centered and around half the size of the circle.
-                return new Rect((Width - Width / 2) / 2, (Height - Height/2)/2, Width/2, Height/2);
+                return new Rect(Width/4, Height/4, Width/2, Height/2);
             }
             else
             {

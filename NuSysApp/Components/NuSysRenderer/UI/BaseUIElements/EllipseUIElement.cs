@@ -86,6 +86,9 @@ namespace NuSysApp
                 _borderWidth = value >= 0 ? value : 0;
             }
         }
+
+        public override BorderType BorderType { get; set; } = UIDefaults.BorderType;
+
         /// <summary>
         /// The color of the border of the ellipse
         /// </summary>
@@ -144,8 +147,14 @@ namespace NuSysApp
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-
-            ds.DrawEllipse(CenterPoint, _radiusX - BorderWidth / 2, _radiusY - BorderWidth / 2, Bordercolor, BorderWidth);
+            if (BorderType == BorderType.Inside)
+            {
+                ds.DrawEllipse(CenterPoint, _radiusX - BorderWidth/2, _radiusY - BorderWidth/2, Bordercolor, BorderWidth);
+            }
+            else
+            {
+                ds.DrawEllipse(CenterPoint, _radiusX + BorderWidth / 2, _radiusY + BorderWidth / 2, Bordercolor, BorderWidth);
+            }
 
             ds.Transform = orgTransform;
         }

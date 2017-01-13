@@ -273,10 +273,12 @@ namespace NuSysApp
         /// <param name="element"></param>
         public void AddElement(BaseInteractiveUIElement element, Vector2 position)
         {
+            
             _elements.Add(element);
             _scrollAreaRect.AddChild(element);
             AddElementEvents(element);
             element.Transform.LocalPosition = position;
+            IsDirty = true;
         }
 
         private void AddElementEvents(BaseInteractiveUIElement element)
@@ -555,11 +557,8 @@ namespace NuSysApp
             {
                 // recompute crop rect
                 _cropRect = new Rect(_cropRect.X, _cropRect.Y, _cropRect.Width + (VerticalScrollBar.IsVisible ? 0 : VerticalScrollBar.Width), _cropRect.Height + (HorizontalScrollBar.IsVisible ? 0 : HorizontalScrollBar.Height));
-                if (_lowerRightCornerRect != null)
-                {
-                    _lowerRightCornerRect.IsVisible = HorizontalScrollBar.IsVisible || VerticalScrollBar.IsVisible;
-
-                }
+               
+                UpdateScrollBars();
             }
         }
 
@@ -597,6 +596,48 @@ namespace NuSysApp
             }
         }
 
+        private void UpdateScrollBars()
+        {
+            if (VerticalScrollBar == null || HorizontalScrollBar == null || _lowerRightCornerRect == null)
+            {
+                Debug.Fail("Don't call this method if these are null");
+                return;
+            }
+            //Ignore the corner if one of the scroll bars is not present
+            bool needsRightCornerRect = HorizontalScrollBar.IsVisible && VerticalScrollBar.IsVisible;
+
+            if (needsRightCornerRect)
+            {
+                _lowerRightCornerRect.IsVisible = true;
+                //Place the corner in the right spot
+                _lowerRightCornerRect.Transform.LocalPosition =
+                    new Vector2(Width - _lowerRightCornerRect.Width - BorderWidth,
+                        Height - _lowerRightCornerRect.Height - BorderWidth);
+
+                //Shorten the scroll bars
+                HorizontalScrollBar.Width = Width - _lowerRightCornerRect.Width - 2 * BorderWidth;
+                VerticalScrollBar.Height = Height - _lowerRightCornerRect.Height - 2 * BorderWidth;
+
+            }
+            else
+            {
+                //Hide the corner
+                _lowerRightCornerRect.IsVisible = false;
+
+                // place the horizontal scroll bar in the correct position
+                HorizontalScrollBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - HorizontalScrollBar.Height);
+
+                // place the vertical scrollbar in the correct position
+                VerticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - VerticalScrollBar.Width, BorderWidth);
+
+                //give the scrollbars their full size
+                HorizontalScrollBar.Width = Width - 2 * BorderWidth;
+                VerticalScrollBar.Height = Height - 2 * BorderWidth;
+
+
+            }
+        }
+
         /// <summary>
         /// Called whenever the size of the scrolling canvas is changed
         /// </summary>
@@ -604,15 +645,9 @@ namespace NuSysApp
         {
             if (_lowerRightCornerRect != null && HorizontalScrollBar != null && VerticalScrollBar != null)
             {
-                _lowerRightCornerRect.Transform.LocalPosition = new Vector2(Width - _lowerRightCornerRect.Width - BorderWidth, Height - _lowerRightCornerRect.Height - BorderWidth);
+                UpdateScrollBars();
 
-                // place the horizontal scroll bar in the correct position
-                HorizontalScrollBar.Width = Width - _lowerRightCornerRect.Width - 2*BorderWidth;
-                HorizontalScrollBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - HorizontalScrollBar.Height);
 
-                // place the vertical scrollbar in the correct position
-                VerticalScrollBar.Height = Height - _lowerRightCornerRect.Height - 2*BorderWidth;
-                VerticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - VerticalScrollBar.Width, BorderWidth);
             }
 
             if (_scrollAreaRect != null && _cropRect != null)
@@ -672,7 +707,7 @@ namespace NuSysApp
             _scrollAreaRect.Mask = new Rect(_cropRect.X, _cropRect.Y, _cropRect.Width, _cropRect.Height);
 
             _scrollAreaRect.Transform.LocalPosition = new Vector2((float) -_cropRect.X, (float) -_cropRect.Y);
-
+            
             // stop refreshing the ui it was just refreshed
             IsDirty = false;
         }
