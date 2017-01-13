@@ -91,7 +91,7 @@ namespace NuSysApp
             {
                 // if the ellipse has the style of a bubble then we want the text to be within the circle.
                 // this math returns a rect that is centered and around half the size of the circle.
-                return new Rect(Width/4, Height/4, Width/2, Height/2);
+                return new Rect(Width/4, 5, Width/2, Height/2);
             }
             else
             {
