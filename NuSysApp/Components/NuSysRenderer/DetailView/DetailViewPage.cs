@@ -93,6 +93,11 @@ namespace NuSysApp
         /// button to expand the detail view page, should only happen if the element is an image or a PDF
         /// </summary>
         private RectangleButtonUIElement _expandButton;
+        
+        /// <summary>
+        /// button to open word from the detail view if the element is a word element
+        /// </summary>
+        private RectangleButtonUIElement _wordButton;
 
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
@@ -156,12 +161,27 @@ namespace NuSysApp
                 _expandButton.Tapped += ExpandButton_Tapped;
             }
 
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
+            {
+                _wordButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Open Word");
+                _wordButton.Width = 150;
+                _wordButton.Height = 40;
+                AddChild(_wordButton);
+
+                _wordButton.Tapped += WordButtonOnTapped;
+            }
+
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
             _dragToCollectionButton.DragCompleted += _dragToCollectionButton_DragCompleted;
             _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
 
+        }
+
+        private void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            /// TODO: OPEN WORD FROM THIS HANDLER    
         }
 
         protected virtual void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -268,6 +288,11 @@ namespace NuSysApp
                 _expandButton.Tapped -= ExpandButton_Tapped;
             }
 
+            if (_wordButton != null)
+            {
+                _wordButton.Tapped -= WordButtonOnTapped;
+            }
+
             base.Dispose();
         }
 
@@ -348,8 +373,13 @@ namespace NuSysApp
                 }
             }
 
+            if (_wordButton != null)
+            {
+                _wordButton.Transform.LocalPosition = new Vector2(Width/2 - _wordButton.Width/2, _imageHeight + _contentLayoutManager.TopMargin + 10);    
+            }
 
-                base.Update(parentLocalToScreenTransform);
+
+            base.Update(parentLocalToScreenTransform);
         }
 
         public override async Task Load()
