@@ -26,10 +26,11 @@ namespace NuSysApp
             _searchbar = new ScrollableTextboxUIElement(this, resourceCreator, false, false);
             AddChild(_searchbar);
 
-            _addResults = new ButtonUIElement(this, ResourceCreator)
+            _addResults = new RectangleButtonUIElement(this, ResourceCreator)
             {
                 ButtonText = "Add",
-                BorderWidth = 1
+                Height = 50,
+                Width = 50
             };
             AddChild(_addResults);
 

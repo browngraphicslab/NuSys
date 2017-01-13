@@ -130,9 +130,9 @@ namespace NuSysApp
             AddChild(LibraryListView);
 
             //setup the bing button and it's popup
-            _bingButton = new ButtonUIElement(this, ResourceCreator)
+            _bingButton = new TransparentButtonUIElement(this, ResourceCreator)
             {
-                ButtonText = "BING"
+                ImageBounds = new Rect(10, 10, 30, 30)
             };
             AddButton(_bingButton, TopBarPosition.Right);
 
@@ -315,6 +315,8 @@ namespace NuSysApp
         public override async Task Load()
         {
             _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
+            _bingButton.Image =
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/logo_bing_en-US.png"));
             base.Load(); 
         }
 

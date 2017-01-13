@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -51,6 +52,11 @@ namespace NuSysApp
         private StackLayoutManager _settingsStackLayout;
 
         /// <summary>
+        /// text to say what slider does
+        /// </summary>
+        private TextboxUIElement _sliderText;
+
+        /// <summary>
         /// Constructor will instatiate the private buttons.
         /// </summary>
         /// <param name="parent"></param>
@@ -80,8 +86,21 @@ namespace NuSysApp
             _readOnlyModeSettingButton = new RectangleButtonUIElement(this, ResourceCreator);
             AddChild(_readOnlyModeSettingButton);
 
+            _sliderText = new TextboxUIElement(this, ResourceCreator)
+            {
+                Background = Colors.Transparent,
+                FontSize = 12,
+                TextColor = Constants.ALMOST_BLACK,
+                Width = 200,
+                Height = 20,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                TextVerticalAlignment = CanvasVerticalAlignment.Top,
+                Text = "Adjust Text Size"
+            };
+            AddChild(_sliderText);
+
             MinWidth = 220;
-            MinHeight = 415;
+            MinHeight = 435;
             
             _settingsStackLayout = new StackLayoutManager(StackAlignment.Vertical);
             _settingsStackLayout.ItemHeight = _showLinksButton.Height;
@@ -96,7 +115,7 @@ namespace NuSysApp
             _settingsStackLayout.AddElement(_dockBreadCrumbsButton);
             _settingsStackLayout.AddElement(_readOnlyModeSettingButton);
             _settingsStackLayout.AddElement(_textSizeSlider);
-
+            _settingsStackLayout.AddElement(_sliderText);
 
             _resizeElementTitlesButton.Tapped += ResizeElementTitlesButtonOnTapped;
             _showLinksButton.Tapped += ShowLinksButtonOnTapped;
