@@ -419,6 +419,20 @@ namespace NuSysApp
                                       loc.Y - UIDefaults.YTextPadding);
             int charIndex = GetHitIndex(pos);
             CaretCharacterIndex = charIndex;
+
+            // check if the previous character was a new line
+            if (CaretCharacterIndex != 0 && CaretCharacterIndex < Text.Length &&
+                Text.Substring(CaretCharacterIndex - 1, 1) == "\n")
+            {
+                CaretCharacterIndex--;
+            }
+
+            // bound the caret character index to the length of the text
+            if (CaretCharacterIndex >= Text.Length)
+            {
+                CaretCharacterIndex = Text.Length - 1;
+            }
+
             if (Text == "")
             {
                 CaretCharacterIndex = -1;
@@ -477,19 +491,39 @@ namespace NuSysApp
             {
                 _currCaretX = 0;
 
-                // try to decrement the CaretCharacterIndex, but do not let the CaretCharacter
-                // index decrement below -1
-                CaretCharacterIndex = Math.Max(-1, CaretCharacterIndex - 1);
+                if (_hasSelection)
+                {
+                    CaretCharacterIndex = Math.Min(_selectionStartIndex, _selectionEndIndex) - 1;
+                    CaretCharacterIndex = Math.Max(CaretCharacterIndex, -1);
+                    ClearSelection(false);
+                }
+                else
+                {
+                    // try to decrement the CaretCharacterIndex, but do not let the CaretCharacter
+                    // index decrement below -1
+                    CaretCharacterIndex = Math.Max(-1, CaretCharacterIndex - 1);
+                }              
             }
             // Move cursor right
             else if (args.VirtualKey == VirtualKey.Right)
             {
                 _currCaretX = 0;
 
-                // try to incremenet the CaretCharacterIndex, but do not let the CaretCharacter
-                // index increment to beyond the length of the text - 1. 
-                // ('a' is text with length 1, CaretCharacterIndex 0 is to the right of 'a') thats why we subtract one from the length
-                CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex + 1);
+                if (_hasSelection)
+                {
+                    CaretCharacterIndex = Math.Max(_selectionStartIndex, _selectionEndIndex);
+                    CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex);
+                    ClearSelection(false);
+                }
+                else
+                {
+                    // try to incremenet the CaretCharacterIndex, but do not let the CaretCharacter
+                    // index increment to beyond the length of the text - 1. 
+                    // ('a' is text with length 1, CaretCharacterIndex 0 is to the right of 'a') thats why we subtract one from the length
+                    CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex + 1);
+                }
+
+
             }
             // Move cursor up
             else if (args.VirtualKey == VirtualKey.Up)
@@ -561,8 +595,22 @@ namespace NuSysApp
             }
             else if (args.VirtualKey == VirtualKey.Tab)
             {
+                if (_hasSelection)
+                {
+                    ClearSelection();
+                }
                 Text = Text.Insert(CaretCharacterIndex + 1, "    ");
                 CaretCharacterIndex += 4;
+            } else if (args.VirtualKey == VirtualKey.Enter)
+            {
+                if (_hasSelection)
+                {
+                    ClearSelection();
+                }
+                _currCaretX = 0;
+                Text = Text.Insert(CaretCharacterIndex + 1, "\n");
+                CaretCharacterIndex++;
+                OnTextChanged(Text);
             }
             // Type the letter into the box
             else
@@ -641,6 +689,13 @@ namespace NuSysApp
                 Rect bounds = textLayoutRegion.LayoutBounds;
                 bounds.X += _xOffset;
                 bounds.Y += _yOffset;
+
+                if (Text.Substring(CaretCharacterIndex, 1) == "\r" || Text.Substring(CaretCharacterIndex, 1) == "\n")
+                {
+                    // move the cursor to the next line
+                    bounds.Y += bounds.Height;
+                    bounds.X = _xOffset;
+                }
 
                 newCursorLoc = new Vector2((float)bounds.Right + UIDefaults.XTextPadding + BorderWidth,
                                            (float)bounds.Top + UIDefaults.YTextPadding);
@@ -886,6 +941,8 @@ namespace NuSysApp
             // dont return anything if we don't actually have selection
             if (!_hasSelection)
             {
+                _selectionStartIndex = 0;
+                _selectionEndIndex = 0;
                 return null;
             }
 
@@ -901,8 +958,12 @@ namespace NuSysApp
             try
             {
                 selection = Text.Substring(firstIndex, length);
-                Text = Text.Remove(firstIndex, length);
-                CaretCharacterIndex = Math.Max(CaretCharacterIndex - length, -1);
+                if (deleteSelection)
+                {
+                    Text = Text.Remove(firstIndex, length);
+                    CaretCharacterIndex = Math.Max(CaretCharacterIndex - length, -1);
+                }
+
             }
             catch (ArgumentOutOfRangeException e)
             {

@@ -1390,6 +1390,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Components\NuSysRenderer\TextEditor\" />
     <Folder Include="Icons\" />
     <Folder Include="Models\Regions\" />
   </ItemGroup>
