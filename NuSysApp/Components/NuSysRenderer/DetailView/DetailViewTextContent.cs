@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    public class DetailViewTextContent : RectangleUIElement
+    public class DetailViewTextContent : RectangleUIElement, ILockable
     {
         /// <summary>
         /// The main textbox we write in
@@ -26,10 +26,19 @@ namespace NuSysApp
         /// </summary>
         private LibraryElementController _controller;
 
+        /// <summary>
+        ///This is for the IIlockable interface.  This will be the ID of the content Data model.
+        /// </summary>
+        public string Id
+        {
+            get { return _controller?.ContentDataController?.ContentDataModel?.ContentId; }
+        }
+
         public DetailViewTextContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
             LibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
+            this.Register(true);
 
             // create the main textbox
             _mainTextBox = new ScrollableTextboxUIElement(this, resourceCreator, true, true)
@@ -75,6 +84,7 @@ namespace NuSysApp
         {
             _controller.ContentDataController.ContentDataUpdated -= LibraryElementControllerOnContentChanged;
             _mainTextBox.TextChanged -= _mainTextBox_TextChanged;
+            this.UnRegister();
             base.Dispose();
         }
 
@@ -83,6 +93,11 @@ namespace NuSysApp
             _mainTextboxLayoutManager.SetSize(Width, Height);
             _mainTextboxLayoutManager.ArrangeItems();
             base.Update(parentLocalToScreenTransform);
+        }
+
+        public void LockChanged(object sender, NetworkUser currentUser)
+        {
+            
         }
     }
 }

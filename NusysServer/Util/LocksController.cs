@@ -89,7 +89,7 @@ namespace NusysServer
         private void RemoveLockInternally(string id)
         {
             Debug.Assert(_lockToUser.ContainsKey(id));
-            if (_lockToUser.ContainsKey(id))
+            if (!_lockToUser.ContainsKey(id))
             {
                 throw new Exception("Lock wasn't found for given lockable id");
             }

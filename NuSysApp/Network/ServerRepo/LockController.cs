@@ -38,6 +38,7 @@ namespace NuSysApp
         public LockController()
         {
             _locksDictionary = new Dictionary<string, Lock>();
+            _registeredLockables = new HashSet<ILockable>();
         }
 
         /// <summary>

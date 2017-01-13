@@ -398,6 +398,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
@@ -801,6 +802,7 @@
     <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AnalysisModelMadeNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\LockHolderChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\WordChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
