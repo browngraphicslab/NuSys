@@ -235,7 +235,6 @@ namespace NuSysApp
                 metadataEntry => string.Join(", ", metadataEntry.Values.Select(value => string.Join(", ", value)));
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> {listColumn, listColumn2});
-
             _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
