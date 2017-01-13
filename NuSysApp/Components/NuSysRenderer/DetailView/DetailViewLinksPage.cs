@@ -171,8 +171,8 @@ namespace NuSysApp
             _link_listview = new ListViewUIElementContainer<LinkLibraryElementController>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                BorderWidth = 1,
+                Bordercolor = Constants.DARK_BLUE
             };
             AddChild(_link_listview);
 

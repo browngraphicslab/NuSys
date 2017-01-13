@@ -321,7 +321,6 @@ namespace NuSysApp
             _contentLayoutManager.ItemHeight = _imageHeight;
             _contentLayoutManager.SetMargins(20);
             _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
-
             
 
             if (_showsImageAnalysis)
