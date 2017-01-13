@@ -217,9 +217,9 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// The combined height of every listviewuielementrow
+        /// The total height of all the rows in the list view
         /// </summary>
-        private float _heightOfAllRows { get { return _filteredItems.Count * RowHeight; } }
+        public float HeightOfAllRows { get { return _filteredItems.Count * RowHeight; } }
 
         /// <summary>
         /// Current filter function that takes in a T (eg, a LibraryElementModel) and returns
@@ -463,7 +463,7 @@ namespace NuSysApp
 
             //Update position and range of scroll
             SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
-            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
+            ScrollBar.Range = (Height - BorderWidth * 2f) / (HeightOfAllRows);
 
         }
         #endregion Filtering
@@ -523,7 +523,7 @@ namespace NuSysApp
             {
                 position = 0;
             }
-            _scrollOffset = position * (_heightOfAllRows);
+            _scrollOffset = position * (HeightOfAllRows);
             ScrollBar.Position = position;
         }
         /// <summary>
@@ -748,7 +748,7 @@ namespace NuSysApp
 
             //Update position and range of scroll
             SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
-            ScrollBar.Range = (Height - BorderWidth * 2f) / (_heightOfAllRows);
+            ScrollBar.Range = (Height - BorderWidth * 2f) / (HeightOfAllRows);
 
             UpdateListRows();
 
@@ -810,7 +810,7 @@ namespace NuSysApp
                 return;
             }
             //Change position based on scroll velocity
-            var deltaY = -_scrollVelocity / _heightOfAllRows;
+            var deltaY = -_scrollVelocity / HeightOfAllRows;
             ChangePosition(deltaY);
             //Acceleration is relative to RowHeight
             var acceleration = RowHeight/30f; 
@@ -975,7 +975,7 @@ namespace NuSysApp
             {
 
                 //scroll if in bounds
-                var deltaY = -dY / (_heightOfAllRows);
+                var deltaY = -dY / (HeightOfAllRows);
 
                 if (Math.Abs(dY) > 0)
                 {

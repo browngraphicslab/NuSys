@@ -43,8 +43,8 @@ namespace NuSysApp
         private static Vector2 GRID_BUTTON_POSITION = new Vector2(PANEL_INSET + BUTTON_PADDING, HORIZONTAL_BUTTON_POSITION.Y + BUTTON_SIZE + BUTTON_PADDING);
         private static Vector2 CUSTOM_BUTTON_POSITION = new Vector2(VERTICAL_BUTTON_POSITION.X, GRID_BUTTON_POSITION.Y);
         private static float DROPDOWN_INSET = 2.0f * PANEL_INSET;
-        private static string LAYOUT_STYLE_TITLE_TEXT = "title";
-        private static string LAYOUT_STYLE_DATE_TEXT = "date";
+        private const string LAYOUT_STYLE_TITLE_TEXT = "title";
+        private const string LAYOUT_STYLE_DATE_TEXT = "date";
         private static string CLOSE_BUTTON_TEXT = "X X X X X";
         private static float CLOSE_BUTTON_SIZE = 100.0f;
         private static String CUSTOM_LAYOUT_TEXT = "Draw to arrange";
@@ -58,7 +58,6 @@ namespace NuSysApp
         private ButtonUIElement _verticalLayoutButton;
         private ButtonUIElement _gridLayoutButton;
         private ButtonUIElement _customLayoutButton;
-        private ButtonUIElement _dropdownButton;
         private ButtonUIElement _closePanelButton;
 
         // Labels
@@ -167,34 +166,15 @@ namespace NuSysApp
             _arrangeByLabel.Transform.LocalPosition = ARRANGE_BY_TEXT_POSITION;
             AddChild(_arrangeByLabel);
 
-            // dropdown menu button - custom button
-            _dropdownButton = new RectangleButtonUIElement(this, resourceCreator)
-            {
-                Background = Colors.White,
-                Bordercolor = Constants.DARK_BLUE,
-                BorderWidth = 1
-            };
-            _dropdownButton.ButtonText = LAYOUT_STYLE_TITLE_TEXT;
-            _dropdownButton.Width = PANEL_WIDTH - 2 * DROPDOWN_INSET;
-            _dropdownButton.Height = 40.0f;
-            _dropdownButton.ButtonTextColor = Constants.ALMOST_BLACK;
-            _dropdownButton.SelectedBackground = Constants.LIGHT_BLUE;
-            _dropdownButton.ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
-            _dropdownButton.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
-
-            _dropdownButton.Tapped += ViewListButtonTapped;
-
-            _dropdownButton.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, ARRANGE_BY_TEXT_POSITION.Y + _arrangeByLabel.Height);
-            AddChild(_dropdownButton);
-
             // dropdown menu
             _dropdown = new DropdownUIElement(this, resourceCreator);
             _dropdown.Width = PANEL_WIDTH - 2 * DROPDOWN_INSET;
-            _dropdown.AddOption("title");
-            _dropdown.AddOption("date");
+            _dropdown.Height = 30f;
+            _dropdown.AddOption(LAYOUT_STYLE_TITLE_TEXT);
+            _dropdown.AddOption(LAYOUT_STYLE_DATE_TEXT);
+            _dropdown.CurrentSelection = LAYOUT_STYLE_TITLE_TEXT;
             _dropdown.Selected += ListButtonTapped;
-            _dropdown.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, _dropdownButton.Transform.LocalPosition.Y + _dropdownButton.Height);
-            _dropdown.IsVisible = false;
+            _dropdown.Transform.LocalPosition = new Vector2(DROPDOWN_INSET, ARRANGE_BY_TEXT_POSITION.Y + _arrangeByLabel.Height);
             AddChild(_dropdown);
         }
 
@@ -317,17 +297,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Callback for the arrange type list button.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void ViewListButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _dropdown.IsVisible = true;
-            _dropdownButton.Background = Constants.LIGHT_BLUE;
-        }
-
-        /// <summary>
         /// Resets the button colors to their defaults.
         /// </summary>
         private void ResetButtonColors()
@@ -347,19 +316,16 @@ namespace NuSysApp
         {
             switch (item)
             {
-                case "title":
+                case LAYOUT_STYLE_TITLE_TEXT:
                     _layoutSorting = LayoutSorting.Title;
-                    _dropdownButton.ButtonText = LAYOUT_STYLE_TITLE_TEXT;
                     break; 
-                case "date":
+                case LAYOUT_STYLE_DATE_TEXT:
                     _layoutSorting = LayoutSorting.Date;
-                    _dropdownButton.ButtonText = LAYOUT_STYLE_DATE_TEXT;
                     break;
                 default:
                     break;
             }
-            _dropdown.IsVisible = false;
-            _dropdownButton.Background = Colors.White;
+            sender.HideDropDown();
         }
 
         public override void Dispose()
