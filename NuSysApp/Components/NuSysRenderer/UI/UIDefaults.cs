@@ -158,7 +158,7 @@ namespace NuSysApp
 
         public static Color PlaceHolderTextColor = Constants.MED_BLUE;
         public static float MaxDropDownHeight = 250;
-        public static Color HighlightColor = Colors.Yellow;
+        public static Color HighlightColor = Constants.RED_TRANSLUCENT;
         public static float ScrollBarWidth = 15;
         public static Color ScrollButtonColor = Colors.LightGray;
         public static Color ScrollHandleBackground = Colors.LightGray;
