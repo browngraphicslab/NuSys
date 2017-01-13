@@ -341,12 +341,18 @@ namespace NuSysApp
             {
                 _expandButton.Transform.LocalPosition = new Vector2(Width / 2 - _expandButton.Width / 2,
                     _imageHeight + _contentLayoutManager.TopMargin + 10);
-                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) - _dragToCollectionButton.Height);
-                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
+                if (_showsImageAnalysis)
+                {
+                    _imageAnalysisLayoutManager.SetSize(Width,
+                        Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) -
+                        _dragToCollectionButton.Height);
+                    _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0,
+                        _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
+                }
             }
 
 
-                base.Update(parentLocalToScreenTransform);
+            base.Update(parentLocalToScreenTransform);
         }
 
         public override async Task Load()
