@@ -55,7 +55,7 @@ namespace NuSysApp
             BtnEnterCollection.Label = "enter collection";
             BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
             BtnLayoutTool.Label = "edit layout";
-            BtnEditTags = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+            BtnEditTags = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/multitag.png", parent, resourceCreator);
             BtnEditTags.Label = "edit tags";
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
