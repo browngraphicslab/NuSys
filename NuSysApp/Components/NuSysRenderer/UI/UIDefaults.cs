@@ -156,5 +156,6 @@ namespace NuSysApp
         public static Color ScrollButtonColor = Colors.LightGray;
         public static Color ScrollHandleBackground = Colors.LightGray;
         public static Color ScrollBarBackground = Colors.DarkGray;
+        public static BorderType BorderType = BorderType.Inside;
     }
 }

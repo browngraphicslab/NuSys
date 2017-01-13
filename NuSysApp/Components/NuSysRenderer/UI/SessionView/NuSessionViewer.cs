@@ -215,8 +215,9 @@ namespace NuSysApp
             // add the chatbox after the user bubble container so user bubble names do not overlap the bottom of the chatbox
             Chatbox = new ChatBoxUIElement(this, canvas)
             {
-                IsVisible = false
-            };
+
+                IsVisible = false,
+        };
             AddChild(Chatbox);
 
             _detailViewer = new DetailViewMainContainer(this, Canvas)

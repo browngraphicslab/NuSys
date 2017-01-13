@@ -28,6 +28,8 @@ namespace NuSysApp
             get { return Shape.Background; }
             set { Shape.Background = value; } }
 
+        public override BorderType BorderType { get; set; } = UIDefaults.BorderType;
+
         /// <summary>
         /// The color of the Border of the UI Element;
         /// </summary>
