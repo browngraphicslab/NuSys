@@ -21,7 +21,7 @@ namespace NuSysApp
             Height = UIDefaults.Height;
             Background = UIDefaults.Background;
             BorderWidth = UIDefaults.Borderwidth;
-            Bordercolor = UIDefaults.Bordercolor;
+            BorderColor = UIDefaults.Bordercolor;
             BorderType = UIDefaults.BorderType;
         }
 
@@ -98,7 +98,7 @@ namespace NuSysApp
         /// <summary>
         /// The BorderColor of the Rectangle
         /// </summary>
-        public override Windows.UI.Color Bordercolor { get; set; }
+        public override Windows.UI.Color BorderColor { get; set; }
 
         /// <summary>
         /// Draws the background and the border
@@ -140,11 +140,11 @@ namespace NuSysApp
             if (BorderType == BorderType.Inside)
             {
                 // draw the border inside the rectangle
-                ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth, 0), Height - BorderWidth), Bordercolor, BorderWidth);
+                ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth, 0), Height - BorderWidth), BorderColor, BorderWidth);
             }else if (BorderType == BorderType.Outside)
             {
                 // draw the border outside the rectangle
-                ds.DrawRectangle(new Rect(-BorderWidth/2, -BorderWidth/2, Width + BorderWidth, Height + BorderWidth), Bordercolor, BorderWidth);
+                ds.DrawRectangle(new Rect(-BorderWidth/2, -BorderWidth/2, Width + BorderWidth, Height + BorderWidth), BorderColor, BorderWidth);
 
             }
 

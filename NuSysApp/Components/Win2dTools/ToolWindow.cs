@@ -365,7 +365,7 @@ namespace NuSysApp
                 RowHeight = FILTER_CHOOSER_HEIGHT,
                 ButtonTextColor = Constants.color3,
                 BorderWidth = 2,
-                Bordercolor = Constants.color3,
+                BorderColor = Constants.color3,
                 ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
                 Background = Constants.color1,

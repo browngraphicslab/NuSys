@@ -67,7 +67,7 @@ namespace NuSysApp
             Height = 100;
             Background = Colors.White;
             BorderWidth = 1;
-            Bordercolor = Constants.MED_BLUE;
+            BorderColor = Constants.MED_BLUE;
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace NuSysApp
             flyoutItem.Height = _flyoutItemHeight;
             flyoutItem.Width = Width;
             flyoutItem.Background = Colors.White;
-            flyoutItem.Bordercolor = Constants.MED_BLUE;
+            flyoutItem.BorderColor = Constants.MED_BLUE;
             flyoutItem.ButtonTextColor = Constants.ALMOST_BLACK;
             flyoutItem.BorderWidth = 1;
             flyoutItem.ButtonText = text;

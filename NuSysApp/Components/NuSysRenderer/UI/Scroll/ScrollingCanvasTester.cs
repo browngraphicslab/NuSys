@@ -36,7 +36,7 @@ namespace NuSysApp
                         Width = 50,
                         Height = 50,
                         BorderWidth = 1,
-                        Bordercolor = Colors.Red,
+                        BorderColor = Colors.Red,
                         ButtonText = $"({i}, {j})",
                         ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
                         ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,

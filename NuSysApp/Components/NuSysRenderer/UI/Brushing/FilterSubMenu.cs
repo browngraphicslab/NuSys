@@ -122,7 +122,7 @@ namespace NuSysApp
                 Background = Colors.LightGray,
                 TextColor = Colors.Black,
                 BorderWidth = 2,
-                Bordercolor = Colors.Black,
+                BorderColor = Colors.Black,
                 IsVisible = false
             };
             AddChild(_creationDateHeader);
@@ -134,7 +134,7 @@ namespace NuSysApp
                 Background = Colors.LightGray,
                 TextColor = Colors.Black,
                 BorderWidth = 2,
-                Bordercolor = Colors.Black,
+                BorderColor = Colors.Black,
                 IsVisible = false
             };
             AddChild(_lastEditedDateHeader);

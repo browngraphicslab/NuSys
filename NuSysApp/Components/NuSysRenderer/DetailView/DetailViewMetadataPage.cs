@@ -68,7 +68,7 @@ namespace NuSysApp
                 PlaceHolderText = "Enter a Key",
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_addKeyBox);
 
@@ -77,7 +77,7 @@ namespace NuSysApp
                 PlaceHolderText = "Enter Values",
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_addValueBox);
 
@@ -88,7 +88,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE,
+                BorderColor = Constants.DARK_BLUE,
                 PlaceHolderText = "Search"
             };
             AddChild(_searchTextBox);
@@ -235,7 +235,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_metadata_listview);
 

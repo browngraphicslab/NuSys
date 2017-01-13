@@ -65,7 +65,7 @@ namespace NuSysApp
             {
                 PlaceHolderText = "Link annotations...",
                 BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
+                BorderColor = Colors.DarkSlateGray,
                 Text = _controller.ContentDataController.ContentDataModel.Data
             };
             AddChild(_linkAnnotationsInputBox);

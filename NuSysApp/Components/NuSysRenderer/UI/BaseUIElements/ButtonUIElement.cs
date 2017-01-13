@@ -33,9 +33,9 @@ namespace NuSysApp
         /// <summary>
         /// The color of the Border of the UI Element;
         /// </summary>
-        public override Color Bordercolor {
-            get { return Shape.Bordercolor; }
-            set { Shape.Bordercolor = value; }
+        public override Color BorderColor {
+            get { return Shape.BorderColor; }
+            set { Shape.BorderColor = value; }
         }
 
 
@@ -265,7 +265,7 @@ namespace NuSysApp
            
             // reset the Background and Bordercolor to the original colors
             Background = _orgBackground;
-            Bordercolor = _orgBorder;
+            BorderColor = _orgBorder;
 
             base.OnReleased(pointer);
         }
@@ -293,11 +293,11 @@ namespace NuSysApp
 
             // save the Background and Bordercolor to reset them when the button is no longer pressed
             _orgBackground = Background;
-            _orgBorder = Bordercolor;
+            _orgBorder = BorderColor;
 
             // set the Background and Border to SelectedBackground and SelectedBorder if either of those is not null
             Background = SelectedBackground ?? Background;
-            Bordercolor = SelectedBorder ?? Background;
+            BorderColor = SelectedBorder ?? Background;
 
             base.OnPressed(pointer);
         }

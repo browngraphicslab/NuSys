@@ -132,7 +132,7 @@ namespace NuSysApp
                 Background = TopBarColor,
                 Height = TopBarHeight
             };
-            _topBar.Bordercolor = Bordercolor;
+            _topBar.BorderColor = BorderColor;
             _topBar.BorderWidth = BorderWidth;
             AddChild(_topBar);
 
@@ -245,7 +245,7 @@ namespace NuSysApp
             _rightButtonLayoutManager.ItemHeight = TopBarButtonHeight;
             _rightButtonLayoutManager.ArrangeItems();
 
-            _topBar.Bordercolor = Bordercolor;
+            _topBar.BorderColor = BorderColor;
             _topBar.BorderWidth = BorderWidth;
 
             base.Update(parentLocalToScreenTransform);

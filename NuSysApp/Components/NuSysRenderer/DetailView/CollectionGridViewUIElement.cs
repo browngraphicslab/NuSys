@@ -53,7 +53,7 @@ namespace NuSysApp
             // UI Defaults
             DisplayMetadata = DetailViewCollectionGridView.GridSortOption.Title; // automatically display titles
             BorderWidth = 2;
-            Bordercolor = Colors.Black;
+            BorderColor = Colors.Black;
 
             _imageRect = new RectangleUIElement(this, resourceCreator)
             {

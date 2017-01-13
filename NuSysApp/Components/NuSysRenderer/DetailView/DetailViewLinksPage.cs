@@ -62,7 +62,7 @@ namespace NuSysApp
                 PlaceHolderText = "link title...",
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_addLinkTitleBox);
 
@@ -71,7 +71,7 @@ namespace NuSysApp
                 PlaceHolderText = "link to...",
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE,
+                BorderColor = Constants.DARK_BLUE,
                 ColumnFunction = elementController => elementController.Title,
                 FilterFunction = delegate(string s)
                 {
@@ -86,7 +86,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE,
+                BorderColor = Constants.DARK_BLUE,
                 PlaceHolderText = "tags - separate with commas"
             };
             AddChild(_addLinkTagsBox);
@@ -172,7 +172,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 1,
-                Bordercolor = Constants.DARK_BLUE
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_link_listview);
 

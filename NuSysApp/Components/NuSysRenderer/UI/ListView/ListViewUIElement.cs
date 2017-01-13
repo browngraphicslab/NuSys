@@ -603,7 +603,7 @@ namespace NuSysApp
                     var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
                     listViewRowUIElement.Item = itemSource;
                     listViewRowUIElement.Background = Colors.White;
-                    listViewRowUIElement.Bordercolor = Constants.MED_BLUE;
+                    listViewRowUIElement.BorderColor = Constants.MED_BLUE;
                     listViewRowUIElement.BorderWidth = RowBorderThickness;
                     listViewRowUIElement.Width = Width - BorderWidth * 2;
                     listViewRowUIElement.Height = RowHeight;

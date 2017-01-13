@@ -210,7 +210,7 @@ namespace NuSysApp
                 Height = 30,
                 SelectedBackground = Constants.LIGHT_BLUE_TRANSLUCENT,
                 BorderWidth =  0,
-                Bordercolor = Colors.Transparent,
+                BorderColor = Colors.Transparent,
                 Background = Colors.Transparent
             };
             _backButton.ImageBounds = new Rect(_backButton.BorderWidth,
