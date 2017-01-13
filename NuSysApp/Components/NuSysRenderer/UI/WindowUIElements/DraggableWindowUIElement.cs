@@ -101,9 +101,21 @@ namespace NuSysApp
             _initialDragPosition = Transform.LocalPosition;
             if (IsSnapped)
             {
+                // the window is no longer snapped
                 IsSnapped = false;
+
+                // get the local point pressed on the top bar
+                var localPointOnTopBar = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+
+                // normalized horizontal pointer offset of the user's clock
+                var normalizedHorizontalOffset = localPointOnTopBar.X/Width;
+
+                // reset the size to the presnap size
                 Height = (float) PreSnapSize.Height;
                 Width = (float) PreSnapSize.Width;
+
+                Transform.LocalPosition = new Vector2(Transform.LocalX + localPointOnTopBar.X - normalizedHorizontalOffset * Width, Transform.LocalY);
+                _initialDragPosition = Transform.LocalPosition;
             }
         }
 

@@ -105,6 +105,12 @@ namespace NuSysApp
             // always add this as the last child since it has a drop down
             AddChild(_addLinkToElementBox);
 
+            // create the list view to display the events
+            CreateListView();
+
+            _controller.LinkAdded += OnLinkAdded;
+            _controller.LinkRemoved += OnLinkRemoved;
+
         }
 
         /// <summary>
