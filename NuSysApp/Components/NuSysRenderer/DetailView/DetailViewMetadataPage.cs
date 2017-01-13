@@ -114,6 +114,9 @@ namespace NuSysApp
             filterlist();
         }
 
+        /// <summary>
+        /// call this method to filter the list
+        /// </summary>
         private void filterlist()
         {
             _metadata_listview.ClearItems();
@@ -123,6 +126,13 @@ namespace NuSysApp
             _metadata_listview.AddItems(filtered_metadata);
         }
 
+        /// <summary>
+        /// helper method which takes in a list of metadata entry to filter, and returns only thus that are immutable if
+        /// show_immutable is true, all otherwise
+        /// </summary>
+        /// <param name="metadataToBeFiltered"></param>
+        /// <param name="show_immutable"></param>
+        /// <returns></returns>
         private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool show_immutable)
         {
             if (show_immutable)
@@ -132,6 +142,12 @@ namespace NuSysApp
             return metadataToBeFiltered;
         }
 
+        /// <summary>
+        /// helper method which filters by search text and returns only metadata whose key or values contains the search text
+        /// </summary>
+        /// <param name="metadataToBeFiltered"></param>
+        /// <param name="searchText"></param>
+        /// <returns></returns>
         private List<MetadataEntry> filter_by_search_text(List<MetadataEntry> metadataToBeFiltered, string searchText)
         {
             if (string.IsNullOrEmpty(searchText))
