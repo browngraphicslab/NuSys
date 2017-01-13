@@ -792,6 +792,7 @@
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\GetLastUsedCollectionsRequest.cs" />
+    <Compile Include="Network\Requests\GetLockRequest.cs" />
     <Compile Include="Network\Requests\GetRelatedDocumentsRequest.cs" />
     <Compile Include="Network\Requests\GetUserIdToDisplayNameDictionaryRequest.cs" />
     <Compile Include="Network\Requests\GetWordDocumentRequest.cs" />
@@ -817,7 +818,10 @@
     <Compile Include="Network\Requests\RequestArgs\UpdateContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdatePresentationLinkRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdateMetadataEntryRequestArgs.cs" />
+    <Compile Include="Network\Requests\ReturnLockRequest.cs" />
     <Compile Include="Network\Requests\SearchRequest.cs" />
+    <Compile Include="Network\Requests\SubscribeToLockRequest.cs" />
+    <Compile Include="Network\Requests\UnSubscribeToLockRequest.cs" />
     <Compile Include="Network\Requests\UpdateContentRequest.cs" />
     <Compile Include="Network\Requests\UpdateMetadataEntryRequest.cs" />
     <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
@@ -849,6 +853,7 @@
     <Compile Include="Network\Requests\UploadCollectionBackgroundImageRequest.cs" />
     <Compile Include="Network\Requests\WebSearchRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
+    <Compile Include="Network\ServerRepo\ILockableMethodExtensions.cs" />
     <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />

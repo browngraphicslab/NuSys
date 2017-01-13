@@ -19,6 +19,22 @@ namespace NusysServer
     public class NuWebSocketHandler : WebSocketHandler
     {
         /// <summary>
+        /// Event fired whenever a client connects to the server
+        /// </summary>
+        public static event EventHandler<NuWebSocketHandler> ClientConnected;
+
+        /// <summary>
+        /// Event fired whenever a client drops from the server
+        /// </summary>
+        public static event EventHandler<NuWebSocketHandler> ClientDropped;
+
+        /// <summary>
+        /// Called when this nuwebsocketHandler instance closes.
+        /// The passed string is the UserId of this closed handler.
+        /// </summary>
+        public event EventHandler<string> Closed; 
+
+        /// <summary>
         /// the list of all the current connected clients.  Each client is one websockethandler
         /// </summary>
         private static WebSocketCollection AllClients = new WebSocketCollection();
@@ -43,6 +59,7 @@ namespace NusysServer
                     this.Notify(dict);
                 }
             }
+            ClientConnected?.Invoke(this,this);
         }
 
         /// <summary>
@@ -70,12 +87,17 @@ namespace NusysServer
         /// </summary>
         public override void OnClose()
         {
+            string id = null;
             if (NusysClient.IDtoUsers.ContainsKey(this))
             {
+                id = NusysClient.IDtoUsers[this].UserID;
                 BroadcastRemovingUser(NusysClient.IDtoUsers[this]);
                 NusysClient outClient;
                 NusysClient.IDtoUsers.TryRemove(this, out outClient);
             }
+            AllClients.Remove(this);
+            ClientDropped?.Invoke(this,this);
+            Closed?.Invoke(this,id);
         }
 
         /// <summary>

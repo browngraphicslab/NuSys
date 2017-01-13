@@ -55,7 +55,7 @@ namespace NusysServer
 
             var t = Type.GetType(requestMessage.GetString(NusysConstants.FULL_ARGS_REQUEST_ARGS_INSTANCE_TYPE_KEY)+",NusysIntermediate", false, true) ?? typeof(T);
             //this will assert the type of request
-            var args = this.GetRequestArgsInstance(request,t);
+            var args = GetRequestArgsInstance(request,t);
             S s;
             try
             {
@@ -75,6 +75,12 @@ namespace NusysServer
             return m;
         }
 
+        /// <summary>
+        /// This method will get the args instance of a very specific type
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
         protected T GetRequestArgsInstance(Request request, Type t)
         {
             var castRequest = new ServerArgsRequest<T>(request); //cast the request essentially

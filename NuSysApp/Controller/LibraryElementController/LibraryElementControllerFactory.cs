@@ -44,7 +44,6 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Word:
                     var wordModel = model as WordLibraryElementModel; //TODO maybe make an actual word library element model at some point
                     controller = new WordNodeLibraryElementController(wordModel);
-                    SessionController.Instance.NuSysNetworkSession.LockController.AddLockable((ILockable)controller);
                     break;
                 case NusysConstants.ElementType.Collection:
                     var collectionModel = model as CollectionLibraryElementModel;
