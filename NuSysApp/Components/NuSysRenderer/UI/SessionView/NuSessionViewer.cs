@@ -309,13 +309,6 @@ namespace NuSysApp
 
             AddChild(_detailViewer);
 
-            var st = new ScrollableTextboxUIElement(this, Canvas, true, false);
-            AddChild(st);
-            st.Width = 500;
-            st.Height = 500;
-            st.Transform.LocalPosition = new Vector2(300, 300);
-            st.Background = Colors.AntiqueWhite;
-
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
             _snapshotButton.Tapped += SnapShotButtonTapped; 
