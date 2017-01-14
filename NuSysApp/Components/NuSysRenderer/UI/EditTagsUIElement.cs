@@ -40,7 +40,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 PlaceHolderText = SEARCH_BAR_TEXT,
                 Background = Colors.Azure,
                 BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray,
+                BorderColor = Colors.DarkSlateGray,
                 ColumnFunction = keyword => keyword.Text,
                 Width = 200.0f,
                 Height = 30.0f,

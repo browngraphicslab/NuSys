@@ -20,7 +20,7 @@ namespace NuSysApp
             //set appearance
             Background = Colors.White;
             BorderWidth = 2;
-            Bordercolor = Constants.DARK_BLUE;
+            BorderColor = Constants.DARK_BLUE;
             Height = 50;
 
             _searchbar = new ScrollableTextboxUIElement(this, resourceCreator, false, false);

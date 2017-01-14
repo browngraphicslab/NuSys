@@ -166,7 +166,7 @@ namespace NuSysApp
         /// overrides draw call of textboxuielement to call ds.drawlayout instead of ds.drawtext
         /// </summary>
         /// <param name="ds"></param>
-        public override void DrawText(CanvasDrawingSession ds)
+        protected override void DrawText(CanvasDrawingSession ds)
         {
             if (!_resourcesCreated)
             {

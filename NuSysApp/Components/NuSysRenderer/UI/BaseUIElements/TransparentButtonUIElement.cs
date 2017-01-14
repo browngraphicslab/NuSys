@@ -23,7 +23,7 @@ namespace NuSysApp
             Height = _menuButtonHeight + 10;
             Width = _menuButtonWidth;
             Background = Colors.Transparent;
-            Bordercolor = Colors.Transparent;
+            BorderColor = Colors.Transparent;
             BorderWidth = 0;
             ImageBounds = new Rect(0, 0, _menuButtonWidth, _menuButtonHeight);
             ButtonText = label;
