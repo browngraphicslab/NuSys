@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
@@ -26,24 +28,20 @@ namespace NuSysApp
         public delegate void TextHandler(InteractiveBaseRenderItem item, String text);
 
         /// <summary>
-        /// private helper for public property text
-        /// </summary>
-        private string text { get; set; }
-
-        /// <summary>
         /// The text to be displayed in the textbox.
         /// </summary>
         public override string Text
         {
-            get { return text; }
+            get { return base.Text; }
             set
             {
-                text = value;
+                // replace all new lines in input with the constant new line character
+                base.Text = value;
                 if (_loaded)
                 {
                     EditableTextboxUIElement_TextChanged(this, value);
-                    OnTextChanged(text);
                 }
+                OnTextChanged(Text);
             }
         }
 
@@ -92,6 +90,13 @@ namespace NuSysApp
         /// </summary>
         private RectangleUIElement _caret;
 
+        /// <summary>
+        /// Regex for finding all instances of new line in text
+        /// </summary>
+
+        private static Regex _newLineRegex = new Regex(@"\r\n?|\n", RegexOptions.Compiled);
+
+        private const string Newline = "\n";
 
         /// <summary>
         /// The caret character index is the zero based index of the character the caret is to the right of
@@ -130,8 +135,6 @@ namespace NuSysApp
         /// </summary>
         private double _yOffset;
 
-
-
         // Maximum offsets
         private double _maxXOffset;
         private double _maxYOffset;
@@ -140,6 +143,26 @@ namespace NuSysApp
         private int _maxIndex;
         private int _minIndex;
         private bool _loaded;
+
+        /// <summary>
+        /// List of rectangles which combined make up the currently selected text
+        /// </summary>
+        private List<Rect> _selectionRects;
+
+        /// <summary>
+        /// True if we want to update the selection rects false otherwise
+        /// </summary>
+        private bool _updateSelectionRects;
+
+        /// <summary>
+        /// True if we want to update the transform of the cursor
+        /// </summary>
+        private bool _updateCaretTransform;
+
+        /// <summary>
+        /// Brush used to draw the selectionRects
+        /// </summary>
+        private CanvasSolidColorBrush _selectionBrush;
 
         /// <summary>
         /// The color of the placeholder text
@@ -171,6 +194,9 @@ namespace NuSysApp
             // the initial caret character index is to the left of the first character
             CaretCharacterIndex = -1;
 
+            // initialize the list of selection rects
+            _selectionRects = new List<Rect>();
+
         }
 
         /// <summary>
@@ -194,6 +220,12 @@ namespace NuSysApp
 
             // set the caret height to reflect the line height
             UpdateCaretHeight();
+
+            // create the brush used to draw selections
+            _selectionBrush = new CanvasSolidColorBrush(resourceCreator, Colors.Black)
+            {
+                Opacity = .25f
+            };
 
             // Set up events
             Pressed += EditableTextboxUIElement_Pressed;
@@ -222,55 +254,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Update the height of the caret to reflect the height of the line
-        /// this should be performed whenever the height of a line changes (font size etc.)
-        /// </summary>
-        private void UpdateCaretHeight()
-        {
-            // if we don't have access to the proper resources 
-            // then just return
-            if (!_loaded)
-            {
-                return;
-            }
-
-            // use the bounds returned by the GetCaretPosition call
-            // to set the size of the cursor to the size of the height of the line
-            CanvasTextLayoutRegion textLayoutRegion;
-            TextLayout.GetCaretPosition(0, false, out textLayoutRegion);
-            var bounds = textLayoutRegion.LayoutBounds;
-
-            Debug.Assert(_caret != null);
-            _caret.Height = (float)bounds.Height;
-        }
-
-        /// <summary>
-        /// Creates a new text layout. Should be called whenever the height or width changes
-        /// </summary>
-        /// <param name="resourceCreator"></param>
-        /// <returns></returns>
-        public virtual void UpdateCanvasTextLayout()
-        {
-            // if we haven't loaded the resource creator may not exist yet, so return
-            if (!_loaded)
-            {
-                return;
-            }
-
-            // otherwise create a new CanvasTextLayout, if we are scrolling vertically then we don't care about
-            // the vertical height so we give the text layout the option of using up to float.MaxValue pixels
-            // as its height, if we are scrolling horizontally we don't care about the horizontal height so we
-            // give the text layout the option of using up to float.MaxValue pixels as its width
-            // the actual text layout returned has LayoutBounds, which extend only to the height and width
-            // needed to display text
-            TextLayout = _scrollVert ? new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat,
-                                           Width - 2 * (BorderWidth + UIDefaults.XTextPadding), float.MaxValue) :
-                                           new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue,
-                                           Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
-
-        }
-
-        /// <summary>
         /// Load the scrollable textbox ui elements resources, we need to do this
         /// because the textbox relies on elements which require the ResourceCreator to be completely instantiated
         /// There is no way of assuring that resources have been created until the Load call, especially when adding 
@@ -296,6 +279,10 @@ namespace NuSysApp
         {
             //todo check this method to see if it works
             ClearSelection(false);
+
+            // we want to update the cursor transform
+            _updateCaretTransform = true;
+
             var charIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
             if (Text == "")
             {
@@ -359,11 +346,15 @@ namespace NuSysApp
             if (_selectionEndIndex != _selectionStartIndex)
             {
                 _hasSelection = true;
+                _updateSelectionRects = true;
             }
             else // otherwise we do not have selection
             {
                 _hasSelection = false;
             }
+
+            // update the transform of the cursor
+            _updateCaretTransform = true;
         }
 
 
@@ -377,6 +368,9 @@ namespace NuSysApp
             ClearSelection(false);
             CaretCharacterIndex  = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
             _upDownCaretNavHorizonalOffset = float.MinValue;
+
+            // we want to update the cursor transform
+            _updateCaretTransform = true;
         }
 
         /// <summary>
@@ -416,6 +410,9 @@ namespace NuSysApp
         {
             // set the caret visibility to true
             _caret.IsVisible = true;
+
+            // we want to update the cursor transform
+            _updateCaretTransform = true;
 
             // set the caret offset to 0 if we are not
             // navigating up or down
@@ -570,7 +567,7 @@ namespace NuSysApp
                 {
                     ClearSelection();
                 }
-                Text = Text.Insert(CaretCharacterIndex + 1, "\n");
+                Text = Text.Insert(CaretCharacterIndex + 1, Newline);
                 CaretCharacterIndex++;
             }
             // Type the letter into the box
@@ -632,102 +629,71 @@ namespace NuSysApp
             // Highlight selected characters
             if (_hasSelection)
             {
-                var firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex) == -1 ? 0 : Math.Min(_selectionStartIndex, _selectionEndIndex) + 1;
-                var length = Math.Abs(_selectionEndIndex - _selectionStartIndex);
-
-
-                var descriptions = TextLayout.GetCharacterRegions(firstIndex, length);
-                foreach (var description in descriptions)
+                // draw all the selection rects
+                foreach (var rect in _selectionRects.ToArray())
                 {
-                    ICanvasBrush b = new CanvasSolidColorBrush(ds, Colors.Black);
-                    b.Opacity = 0.25f;
-
-                    var r = description.LayoutBounds;
-                    r.X += _xOffset + UIDefaults.XTextPadding + BorderWidth;
-                    r.Y += _yOffset + UIDefaults.YTextPadding + BorderWidth;
-
-                    // Only draw selection within the bounds of the textbox
-                    using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, 0, 0, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), 
-                                                                            Height - (UIDefaults.YTextPadding + 2*BorderWidth))))
-                    {
-                        ds.FillRectangle(r, b);
-                    }
+                    ds.FillRectangle(rect, _selectionBrush);
                 }
             }
         }
 
-
-        // Override the textbox drawtext method to only draw the active text
-        public override void DrawText(CanvasDrawingSession ds)
+        /// <summary>
+        /// Draws the text the selection, and the cursor, we combine all those calls into one
+        /// so that we can order the draw stack correctly, otherwise we would have to call base.Draw
+        /// then draw the text, cursor, and selection
+        /// </summary>
+        /// <param name="ds"></param>
+        protected override void DrawText(CanvasDrawingSession ds)
         {
-            // save the current transform of the drawing session
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-
-            if (Text != null)
-            {
-
-                Debug.Assert(Width - 2 * BorderWidth > 0 && Height - 2 * BorderWidth > 0, "these must be greater than zero or drawText crashes below");
-
-                // Only draw text in bounds of textbox
-                using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, BorderWidth + UIDefaults.XTextPadding, BorderWidth + UIDefaults.YTextPadding,
-                                                                        Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
-                                                                        Height - 2 * (BorderWidth + UIDefaults.YTextPadding))))
-                {
-                    if (_scrollVert)
-                    {
-                        ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
-                                    BorderWidth + UIDefaults.YTextPadding + _yOffset,
-                                    Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
-                                    TextColor, CanvasTextFormat);
-                    }
-                    else
-                    {
-                        ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
-                                    BorderWidth + UIDefaults.YTextPadding + _yOffset, double.MaxValue,
-                                    Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
-                                    TextColor, CanvasTextFormat);
-                    }
-                }
-            }
-
-            ds.Transform = orgTransform;
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            if (!_loaded)
+            if (!_loaded || Text == null)
             {
                 return;
             }
 
-            base.Draw(ds);
-
-            //// Shift the textbox based on where the user is dragging
-            //if (_dragging)
-            //{
-            //    ShiftTextOnDrag();
-            //}
-            //// Make sure the text fits to the box if able
-            //ShiftTextToFit();
-
-
+            // save the current transform of the drawing session
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
+            // Only draw text in bounds of textbox
+            using (
+                ds.CreateLayer(1,
+                    CanvasGeometry.CreateRectangle(Canvas, BorderWidth + UIDefaults.XTextPadding,
+                        BorderWidth + UIDefaults.YTextPadding,
+                        Width - 2*(BorderWidth + UIDefaults.XTextPadding),
+                        Height - 2*(BorderWidth + UIDefaults.YTextPadding))))
+            {
+                Debug.Assert(Width - 2 * BorderWidth > 0 && Height - 2 * BorderWidth > 0,
+                        "these must be greater than zero or drawText crashes below");
+                
+                // DrawPlaceHolderText
+                DrawPlaceHolderText(ds);
 
-            DrawPlaceHolderText(ds);
+                // Draw Regular Text
+                if (_scrollVert)
+                {
+                    ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
+                        BorderWidth + UIDefaults.YTextPadding + _yOffset,
+                        Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
+                        TextColor, CanvasTextFormat);
+                }
+                else
+                {
+                    ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
+                        BorderWidth + UIDefaults.YTextPadding + _yOffset, double.MaxValue,
+                        Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
+                        TextColor, CanvasTextFormat);
+                }
 
-            DrawSelection(ds);
+                // Draw Selection
+                DrawSelection(ds);
 
-            DrawCursor(ds);
+                // Draw the cursor
+                DrawCursor(ds);
+            }
+                
 
             ds.Transform = orgTransform;
-
         }
-
-
-
         #endregion draw
 
         ///// <summary>
@@ -822,6 +788,87 @@ namespace NuSysApp
             
         }
 
+
+#region update
+        /// <summary>
+        /// Update the height of the caret to reflect the height of the line
+        /// this should be performed whenever the height of a line changes (font size etc.)
+        /// </summary>
+        private void UpdateCaretHeight()
+        {
+            // if we don't have access to the proper resources 
+            // then just return
+            if (!_loaded)
+            {
+                return;
+            }
+
+            // use the bounds returned by the GetCaretPosition call
+            // to set the size of the cursor to the size of the height of the line
+            CanvasTextLayoutRegion textLayoutRegion;
+            TextLayout.GetCaretPosition(0, false, out textLayoutRegion);
+            var bounds = textLayoutRegion.LayoutBounds;
+
+            Debug.Assert(_caret != null);
+            _caret.Height = (float)bounds.Height;
+        }
+
+        /// <summary>
+        /// Creates a new text layout. Should be called whenever the height or width changes
+        /// </summary>
+        /// <param name="resourceCreator"></param>
+        /// <returns></returns>
+        public virtual void UpdateCanvasTextLayout()
+        {
+            // if we haven't loaded the resource creator may not exist yet, so return
+            if (!_loaded)
+            {
+                return;
+            }
+
+            // otherwise create a new CanvasTextLayout, if we are scrolling vertically then we don't care about
+            // the vertical height so we give the text layout the option of using up to float.MaxValue pixels
+            // as its height, if we are scrolling horizontally we don't care about the horizontal height so we
+            // give the text layout the option of using up to float.MaxValue pixels as its width
+            // the actual text layout returned has LayoutBounds, which extend only to the height and width
+            // needed to display text
+            TextLayout = _scrollVert ? new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat,
+                                           Width - 2 * (BorderWidth + UIDefaults.XTextPadding), float.MaxValue) :
+                                           new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue,
+                                           Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+
+        }
+
+        /// <summary>
+        /// Call this to update the list of selection rects drawn in the DrawSelection method
+        /// </summary>
+        private void UpdateSelectionRects()
+        {
+            // Highlight selected characters
+            if (_hasSelection && _loaded)
+            {
+                // clear the current selection rects
+                _selectionRects.Clear();
+
+                var firstIndex = Math.Min(_selectionStartIndex, _selectionEndIndex) == -1 ? 0 : Math.Min(_selectionStartIndex, _selectionEndIndex) + 1;
+                var length = Math.Abs(_selectionEndIndex - _selectionStartIndex);
+
+
+                var selectedCharacterBounds = TextLayout.GetCharacterRegions(firstIndex, length);
+                foreach (var characterBounds in selectedCharacterBounds)
+                {
+                    var boundRect = characterBounds.LayoutBounds;
+                    boundRect.X += _xOffset + UIDefaults.XTextPadding + BorderWidth;
+                    boundRect.Y += _yOffset + UIDefaults.YTextPadding + BorderWidth;
+
+                    _selectionRects.Add(boundRect);
+                }
+            }
+
+            _updateSelectionRects = false;
+        }
+
+
         /// <summary>
         /// Update the blinking cursor
         /// </summary>
@@ -829,7 +876,16 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             // update the transform for the cursor
-            UpdateCursorTransform();
+            if (_updateCaretTransform)
+            {
+                UpdateCaretTransform();
+            }
+
+            // update the locations of all the selection rects
+            if (_updateSelectionRects)
+            {
+                UpdateSelectionRects();
+            }
 
             if (HasFocus)
             {
@@ -849,6 +905,7 @@ namespace NuSysApp
 
             base.Update(parentLocalToScreenTransform);           
         }
+#endregion update
 
         public override void Dispose()
         {
@@ -926,7 +983,7 @@ namespace NuSysApp
 
             // if the character we clicked on is a newline, determine if we clicked on the next line
             // or on the previous line
-            if (characterIndex != -1 && text.Substring(characterIndex, 1) == "\n")
+            if (characterIndex != -1 && Text.Substring(characterIndex, 1) == "\n")
             {
                 // if the point we are checking is above the bottom of the character then we clicked on the same line
                 // so the cursor should be before the new line
@@ -956,7 +1013,7 @@ namespace NuSysApp
         /// <summary>
         /// Update the cursor's transform based on the current CaretCharacterIndex
         /// </summary>
-        private void UpdateCursorTransform()
+        private void UpdateCaretTransform()
         {
             if (!_loaded)
             {
@@ -1004,6 +1061,8 @@ namespace NuSysApp
                 CheckTextInBounds(newCursorLoc);
             }
             _caret.Transform.LocalPosition = newCursorLoc;
+
+            _updateCaretTransform = false;
         }
 
         #endregion caretPositiong
@@ -1035,6 +1094,7 @@ namespace NuSysApp
 
             // set the CaretCharacterIndex to the minimum of the selection start and end indexes
             CaretCharacterIndex = Math.Min(_selectionStartIndex, _selectionEndIndex);
+            _updateCaretTransform = true;
 
 
             // try to remove the selection
@@ -1055,6 +1115,8 @@ namespace NuSysApp
             _hasSelection = false;
             _selectionStartIndex = 0;
             _selectionEndIndex = 0;
+            _selectionRects.Clear();
+
 
             // return the string we removed
             return selection;
@@ -1129,6 +1191,10 @@ namespace NuSysApp
                     ClearSelection();
                 }
                 var text = await dataPackageView.GetTextAsync();
+                
+                // make sure we are only using "\n" new lines instead of carriage returns
+                text = NormalizeNewLines(text);
+
                 OnTextPasted(text);
                 // Paste text from clipboard into the text
                 if (CaretCharacterIndex != -1)
@@ -1139,11 +1205,22 @@ namespace NuSysApp
                     Text = Text.Insert(CaretCharacterIndex + 1, text);
                 }  
                 CaretCharacterIndex += text.Length;
+                _updateCaretTransform = true;
                 OnTextChanged(Text);
             }
         }
 
-#endregion data-operations-copy-cut-paste
+        /// <summary>
+        /// Returns the input text with newlines replaced by the proper new lines
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private string NormalizeNewLines(string text)
+        {
+            return _newLineRegex.Replace(text, Newline);
+        }
+
+        #endregion data-operations-copy-cut-paste
 
         /// <summary>
         /// Checks whether the text to be drawn is in bounds based on the cursor position
@@ -1156,13 +1233,13 @@ namespace NuSysApp
                 {
                     double over = (cursorLoc.Y + _caret.Height) - (Height - (UIDefaults.YTextPadding + BorderWidth));
                     _yOffset -= over;
-                    UpdateCursorTransform();
+                    UpdateCaretTransform();
                 }
                 else if (cursorLoc.Y < (UIDefaults.YTextPadding))
                 {
                     double under = (UIDefaults.YTextPadding) - cursorLoc.Y;
                     _yOffset += under;
-                    UpdateCursorTransform();
+                    UpdateCaretTransform();
                 }
             } else
             {
@@ -1170,13 +1247,13 @@ namespace NuSysApp
                 {
                     double over = cursorLoc.X - (Width - (UIDefaults.XTextPadding + BorderWidth));
                     _xOffset -= over;
-                    UpdateCursorTransform();
+                    UpdateCaretTransform();
                 }
                 else if (cursorLoc.X < (UIDefaults.XTextPadding))
                 {
                     double under = (UIDefaults.XTextPadding) - cursorLoc.X;
                     _xOffset += under + _caret.Width;
-                    UpdateCursorTransform();
+                    UpdateCaretTransform();
                 }
             }
             

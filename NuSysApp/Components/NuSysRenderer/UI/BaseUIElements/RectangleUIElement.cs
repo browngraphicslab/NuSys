@@ -121,12 +121,24 @@ namespace NuSysApp
             // draw the image over the background
             DrawImage(ds);
 
+            // draw text used by elements which inherit from this
+            DrawText(ds);
+
             // draw the border in the rectangle
             DrawBorder(ds);
 
             ds.Transform = orgTransform;
 
             base.Draw(ds);
+        }
+
+        /// <summary>
+        /// Not implemented in the rectangleuielement
+        /// but used by classes which inherit from this
+        /// </summary>
+        /// <param name="ds"></param>
+        protected virtual void DrawText(CanvasDrawingSession ds)
+        {
         }
 
         /// <summary>

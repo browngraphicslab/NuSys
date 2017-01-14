@@ -117,7 +117,7 @@ namespace NuSysApp
         /// overrides draw call of textboxuielement to call ds.drawlayout instead of ds.drawtext
         /// </summary>
         /// <param name="ds"></param>
-        public override void DrawText(CanvasDrawingSession ds)
+        protected override void DrawText(CanvasDrawingSession ds)
         {
             // save the current transform of the drawing session
             var orgTransform = ds.Transform;
