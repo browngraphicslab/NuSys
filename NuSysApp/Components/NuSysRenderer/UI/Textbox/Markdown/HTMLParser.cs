@@ -15,25 +15,42 @@ namespace NuSysApp
         public string Text;
         public int StartIndex;
         public int Length;
-
     }
     public class HTMLParser
     {
         private ICanvasResourceCreator _resourceCreator;
         private CanvasTextFormat _textFormat;
 
-        public HTMLParser(ICanvasResourceCreator resourceCreator)
+        public HTMLParser(ICanvasResourceCreator resourceCreator, CanvasTextFormat textFormat = null)
         {
             _resourceCreator = resourceCreator;
-            _textFormat = new CanvasTextFormat();
-            _textFormat.WordWrapping = CanvasWordWrapping.Wrap;
-            _textFormat.FontSize = 13;
-            _textFormat.FontFamily = "/Assets/fonts/freightsanslight.ttf#FreightSans Light";
+
+            if (textFormat == null)
+            {
+                _textFormat = new CanvasTextFormat();
+                _textFormat.WordWrapping = CanvasWordWrapping.Wrap;
+                _textFormat.FontSize = UIDefaults.FontSize;
+                _textFormat.FontFamily = UIDefaults.FontFamily;
+            }
+            else
+            {
+                _textFormat = textFormat;
+            }
+
+        }
+
+        /// <summary>
+        /// Update the canvas text format used to format text
+        /// </summary>
+        /// <param name="newCanvasTextFormat"></param>
+        public void UpdateCanvasTextFormat(CanvasTextFormat newCanvasTextFormat)
+        {
+            _textFormat = newCanvasTextFormat;
         }
 
         public CanvasTextLayout GetParsedText(string html, double canvasHeight, double canvasWidth)
         {
-            _textFormat.FontSize = 13;
+            //_textFormat.FontSize = 13;
             var parsedItems = new List<ParseItem>();
             var htmlDocument = GetHTMLDocumentFromString(html);
             RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0, parsedItems);
@@ -49,9 +66,9 @@ namespace NuSysApp
             foreach (var parsedItem in parsedItems.ToArray())
             {
 
-                if (parsedItem.Tag == "b")
+                if (parsedItem.Tag == "strong")
                 {
-                    textLayout.SetFontWeight(parsedItem.StartIndex, parsedItem.Length, FontWeights.ExtraBold);
+                    textLayout.SetFontWeight(parsedItem.StartIndex, parsedItem.Length, FontWeights.Bold);
                 }
 
                 if (parsedItem.Tag == "u")
@@ -59,12 +76,12 @@ namespace NuSysApp
                     textLayout.SetUnderline(parsedItem.StartIndex, parsedItem.Length, true);
                 }
 
-                if (parsedItem.Tag == "i")
+                if (parsedItem.Tag == "em")
                 {
                     textLayout.SetFontStyle(parsedItem.StartIndex, parsedItem.Length, FontStyle.Italic);
                 }
 
-                if (parsedItem.Tag == "strike")
+                if (parsedItem.Tag == "del")
                 {
                     textLayout.SetStrikethrough(parsedItem.StartIndex, parsedItem.Length, true);
                 }
@@ -119,7 +136,7 @@ namespace NuSysApp
             document.LoadHtml(htmlString);
             return document;
         }
-        
+
         private void RecursiveParsing(IEnumerable<HtmlNode> children, int currentIndex, List<ParseItem> parsedItems)
         {
             var characterIndex = currentIndex;
@@ -142,6 +159,12 @@ namespace NuSysApp
                 characterIndex += item.Length;
             }
         }
+
+        /// <summary>
+        /// Replaces elements with whtiespace
+        /// </summary>
+        /// <param name="htmlString"></param>
+        /// <returns></returns>
         private string AddWhiteSpace(string htmlString)
         {
             htmlString = htmlString.Replace("<br>", "\n");
@@ -153,9 +176,6 @@ namespace NuSysApp
             htmlString = htmlString.Replace("</ol>", "\n");
             htmlString = htmlString.Replace("<li>", "\n \u2022 \u0020");
             htmlString = htmlString.Replace("&nbsp;", " ");
-            //htmlString = htmlString.Replace("<font size=\"5\">", "<title>");
-            //htmlString = htmlString.Replace("<font size=\"4\">", "<subtitle>");
-            //htmlString = htmlString.Replace("<font size=\"3\">", "<normalText>");
             htmlString = htmlString.Replace("<div>", "");
             htmlString = htmlString.Replace("</div>", "\n");
            

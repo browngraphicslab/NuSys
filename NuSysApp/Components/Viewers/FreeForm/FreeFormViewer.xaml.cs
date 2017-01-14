@@ -28,7 +28,7 @@ using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
-    /// <summary>
+    /// <summary> 
     /// This is the view for the entire workspace. It instantiates the WorkspaceViewModel. 
     /// </summary>
     public sealed partial class FreeFormViewer
