@@ -42,6 +42,58 @@ namespace NuSysApp
         private HTMLParser _htmlParser;
 
         /// <summary>
+        /// private string to hold the current markdown's html value.
+        /// </summary>
+        private string _textHtml = "";
+
+        /// <summary>
+        /// private IsDirty boolean for the text layout object
+        /// </summary>
+        private bool _textLayoutIsDirty = false;
+
+        /// <summary>
+        /// Overriding the text from base class.
+        /// The setter now updates the internal html
+        /// </summary>
+        public string Text
+        {
+            get { return base.Text; }
+            set
+            {
+                _textHtml = CommonMarkConverter.Convert(value);
+                _textLayoutIsDirty = true;
+                base.Text = value;
+            }
+        }
+
+        /// <summary>
+        /// Overriding the width just sets the base value and requires the text layout to update
+        /// </summary>
+        public float Width
+        {
+            get { return base.Width; }
+            set
+            {
+                base.Width = value;
+                _textLayoutIsDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// overidden height also sets the test layout is dirty bool to true.
+        /// Other than that it just sets and gets the base value
+        /// </summary>
+        public float Height
+        {
+            get { return base.Height; }
+            set
+            {
+                base.Height = value;
+                _textLayoutIsDirty = true;
+            }
+        }
+
+        /// <summary>
         /// YOU MUST CALL LOAD ON THE MARKDWON CONVERTING TEXTBOX
         /// </summary>
         /// <param name="parent"></param>
@@ -55,6 +107,22 @@ namespace NuSysApp
 
             // enable the strike through tilde by default
             CommonMarkSettings.Default.AdditionalFeatures = CommonMarkAdditionalFeatures.StrikethroughTilde;
+            if (!string.IsNullOrEmpty(base.Text))
+            {
+                Text = base.Text;
+            }
+        }
+
+        /// <summary>
+        /// Only use this if you want to bypass the Markdown-to-HTML parser.
+        /// The passed in text must be valid html.  
+        /// Dont use this method unless you know about the internals of this class
+        /// </summary>
+        /// <param name="html"></param>
+        public void SetHtmlDirectly(string html)
+        {
+            _textHtml = html;
+            _textLayoutIsDirty = true;
         }
 
         public override Task Load()
@@ -161,7 +229,22 @@ namespace NuSysApp
             if (_resourcesCreated)
                 _canvasTextLayout.SetFontSize(start, charCount, size);
         }
-             
+
+        /// <summary>
+        /// This upadate override simply takes into account the _textLayoutIsDirty bool.
+        /// If its true, it updates the private layout object
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            if (_textLayoutIsDirty)
+            {
+                UpdateCanvasLayout();
+                _textLayoutIsDirty = false;
+            }
+            base.Update(parentLocalToScreenTransform);
+        }
+
         /// <summary>
         /// overrides draw call of textboxuielement to call ds.drawlayout instead of ds.drawtext
         /// </summary>
@@ -197,15 +280,11 @@ namespace NuSysApp
             ds.Transform = orgTransform;
         }
 
-        public void UpdateMarkdown(string markDownText)
+        private void UpdateCanvasLayout()
         {
-            var html = CommonMarkConverter.Convert(markDownText);
-
-
-            _canvasTextLayout = _htmlParser.GetParsedText(html, Width - 2*(BorderWidth + UIDefaults.XTextPadding),
-                Height - 2*(BorderWidth + UIDefaults.YTextPadding));
+            _canvasTextLayout = _htmlParser.GetParsedText(_textHtml, Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
+    Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
         }
-
 
 
     }

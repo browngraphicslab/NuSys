@@ -48,7 +48,7 @@ namespace NuSysApp
             _textFormat = newCanvasTextFormat;
         }
 
-        public CanvasTextLayout GetParsedText(string html, double canvasHeight, double canvasWidth)
+        public CanvasTextLayout GetParsedText(string html, double canvasWidth, double canvasHeight)
         {
             //_textFormat.FontSize = 13;
             var parsedItems = new List<ParseItem>();
@@ -167,6 +167,7 @@ namespace NuSysApp
         /// <returns></returns>
         private string AddWhiteSpace(string htmlString)
         {
+            htmlString = htmlString ?? "";
             htmlString = htmlString.Replace("<br>", "\n");
             htmlString = htmlString.Replace("<p>", "\n \t");
             htmlString = htmlString.Replace("</p>", "\n");
