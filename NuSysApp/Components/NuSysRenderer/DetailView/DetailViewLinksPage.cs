@@ -78,7 +78,7 @@ namespace NuSysApp
                     return
                         new List<LibraryElementModel>(
                             SessionController.Instance.ContentController.AllLibraryElementModels.Where(
-                                lem => lem.Title.Contains(s)));
+                                lem => lem.Title.ToLower().Contains(s.ToLower())));
                 },
             };
 

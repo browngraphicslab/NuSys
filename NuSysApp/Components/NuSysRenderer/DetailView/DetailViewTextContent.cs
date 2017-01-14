@@ -102,7 +102,6 @@ namespace NuSysApp
             _mainTextBox.TextChanged -= _mainTextBox_TextChanged;
             _mainTextBox.OnFocusGained -= MainTextBoxOnOnFocusGained;
             _mainTextBox.OnFocusLost -= MainTextBoxOnOnFocusLost;
-
             this.UnRegister();
             base.Dispose();
         }
