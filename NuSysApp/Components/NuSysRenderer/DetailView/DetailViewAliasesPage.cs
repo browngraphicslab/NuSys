@@ -43,7 +43,7 @@ namespace NuSysApp
             var itemParentCollectionController =
                 SessionController.Instance.ContentController.GetLibraryElementController(item.ParentCollectionId) as
                     CollectionLibraryElementController;
-            Debug.Assert(itemParentCollectionController != null);
+            Debug.Assert(itemParentCollectionController != null);///anybody know why this happens?
             if (itemParentCollectionController == null)
             {
                 return;
