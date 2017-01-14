@@ -135,7 +135,7 @@ namespace NuSysApp
             var success = request.WasSuccessful();
             Debug.Assert(success == true);
             var currentHolderId = request.LockHolderUserId();
-            _locksDictionary[lockId].LockHolderId = currentHolderId;
+            UpdateLock(lockId, currentHolderId);
         }
 
         /// <summary>
@@ -164,11 +164,11 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// private static method to get the network user associated with a userId.
+        /// static method to get the network user associated with a userId.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private static NetworkUser GetNetworkUser(string id)
+        public static NetworkUser GetNetworkUser(string id)
         {
             Debug.Assert(!string.IsNullOrEmpty(id));
             if (SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id))

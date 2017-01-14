@@ -97,5 +97,24 @@ namespace NuSysApp
         {
             return SessionController.Instance.NuSysNetworkSession.LockController.ReturnLock(lockable);
         }
+
+        /// <summary>
+        /// Returns the network user who currently owns the lock, or nul if nobody does or network user cant be found
+        /// </summary>
+        /// <param name="lockable"></param>
+        /// <returns></returns>
+        public static NetworkUser GetLockOwner(this ILockable lockable)
+        {
+            var id = SessionController.Instance.NuSysNetworkSession.LockController.GetUserIdOfLockHolder(lockable.Id);
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            if (SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id))
+            {
+                return SessionController.Instance.NuSysNetworkSession.NetworkMembers[id];
+            }
+            return null;
+        }
     }
 }
