@@ -229,7 +229,7 @@ namespace NuSysApp
             _metadataKeysList = new ListViewUIElementContainer<string>(this, ResourceCreator);
             _metadataKeysList.ShowHeader = true;
             _metadataKeysList.BorderWidth = 0.5f;
-            _metadataKeysList.Bordercolor = Constants.color3;
+            _metadataKeysList.BorderColor = Constants.color3;
             _metadataKeysList.RowBorderThickness = 0;
             _metadataKeysList.DisableSelectionByClick = true;
             _metadataKeysList.MultipleSelections = false;
@@ -254,7 +254,7 @@ namespace NuSysApp
             _metadataValuesList.ShowHeader = true;
             _metadataValuesList.RowBorderThickness = 0;
             _metadataValuesList.BorderWidth = 0.5f;
-            _metadataValuesList.Bordercolor = Constants.color3;
+            _metadataValuesList.BorderColor = Constants.color3;
             _metadataValuesList.DisableSelectionByClick = true;
             var listColumn = new ListTextColumn<KeyValuePair<string, double>>();
             listColumn.Title = "VALUES";

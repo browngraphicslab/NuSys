@@ -125,7 +125,7 @@ namespace NuSysApp
             Height = 400;
             Width = 400;
             BorderWidth = 3;
-            Bordercolor = Colors.CadetBlue;
+            BorderColor = Colors.CadetBlue;
             TopBarColor = Colors.CadetBlue;
 
             // set default starting media type to audio
@@ -137,7 +137,7 @@ namespace NuSysApp
                 Height = 50,
                 Width = 50,
                 Background = Colors.CadetBlue,
-                Bordercolor = Colors.CadetBlue,
+                BorderColor = Colors.CadetBlue,
                 SelectedBorder = Colors.LightGray,
                 BorderWidth = 5,
             };
@@ -151,7 +151,7 @@ namespace NuSysApp
                 Height = 50,
                 Width = 50,
                 Background = Colors.Red,
-                Bordercolor = Colors.Red,
+                BorderColor = Colors.Red,
                 SelectedBorder = Colors.LightGray,
                 BorderWidth = 5
             };
@@ -164,7 +164,7 @@ namespace NuSysApp
                 Height = 50,
                 Width = 50,
                 Background = Colors.Red,
-                Bordercolor = Colors.Red,
+                BorderColor = Colors.Red,
                 SelectedBorder = Colors.LightGray,
                 BorderWidth = 5
             };

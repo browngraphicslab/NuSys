@@ -96,7 +96,7 @@ namespace NuSysApp
             Height = 40;
             Width = 200;
             BorderWidth = 3;
-            Bordercolor = Colors.Black;
+            BorderColor = Colors.Black;
             
 
             _dropDownManager = new StackLayoutManager()

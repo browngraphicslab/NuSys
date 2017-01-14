@@ -77,10 +77,10 @@ namespace NuSysApp
         /// </summary>
         public Color CheckBoxBorderColor
         {
-            get { return _checkBoxButton.Bordercolor; }
+            get { return _checkBoxButton.BorderColor; }
             set
             {
-                _checkBoxButton.Bordercolor = value;
+                _checkBoxButton.BorderColor = value;
                 _checkBoxButton.SelectedBorder = value; // we don't want the border to flash on tapped
             }
         }
@@ -324,7 +324,7 @@ namespace NuSysApp
         {
 
             // set the default border color and selected border color of the checkbox button
-            _checkBoxButton.Bordercolor = CheckBoxBorderColor;
+            _checkBoxButton.BorderColor = CheckBoxBorderColor;
             _checkBoxButton.SelectedBorder = CheckBoxBorderColor;
 
             // set the background and size and location of the selectionIndicatorRect

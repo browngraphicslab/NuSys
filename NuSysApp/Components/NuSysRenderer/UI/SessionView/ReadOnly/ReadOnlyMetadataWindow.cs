@@ -38,7 +38,7 @@ namespace NuSysApp
             {
                 Background = Colors.Azure,
                 BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
+                BorderColor = Colors.DarkSlateGray,
                 PlaceHolderText = "Search"
             };
             AddChild(_searchTextBox);
@@ -117,7 +117,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 3,
-                Bordercolor = Constants.DARK_BLUE
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_metadata_listview);
 

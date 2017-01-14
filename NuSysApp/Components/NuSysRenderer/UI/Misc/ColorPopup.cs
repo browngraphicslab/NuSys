@@ -55,7 +55,7 @@ namespace NuSysApp
             //set appearance
             Background = Colors.White;
             BorderWidth = 2;
-            Bordercolor = Constants.DARK_BLUE;
+            BorderColor = Constants.DARK_BLUE;
             Width = 600;
             Height = 500;
 

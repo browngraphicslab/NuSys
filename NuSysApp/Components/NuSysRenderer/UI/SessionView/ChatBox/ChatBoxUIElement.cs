@@ -44,13 +44,13 @@ namespace NuSysApp
             Height = 300;
             KeepAspectRatio = false;
             BorderWidth = 3;
-            Bordercolor = Constants.LIGHT_BLUE;
+            BorderColor = Constants.LIGHT_BLUE;
             BorderType  = BorderType.Outside;
             
 
             _typingRectContainer = new RectangleUIElement(this, ResourceCreator)
             {
-                Bordercolor = Constants.LIGHT_BLUE,
+                BorderColor = Constants.LIGHT_BLUE,
                 BorderWidth = this.BorderWidth,
                 Background = Colors.White,
                 Height = 50,

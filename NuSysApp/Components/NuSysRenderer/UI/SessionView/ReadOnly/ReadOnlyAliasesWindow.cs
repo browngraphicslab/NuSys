@@ -139,7 +139,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 BorderWidth = 3,
-                Bordercolor = Constants.DARK_BLUE
+                BorderColor = Constants.DARK_BLUE
             };
             _listView.AddItems(_aliasList);
 

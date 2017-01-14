@@ -36,7 +36,7 @@ namespace NuSysApp
         {
             CanDrawLabel = false;
             IsSelected = false;
-            Bordercolor = Constants.ALMOST_BLACK;
+            BorderColor = Constants.ALMOST_BLACK;
         }
 
 

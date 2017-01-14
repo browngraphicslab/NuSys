@@ -52,7 +52,7 @@ namespace NuSysApp
         /// <summary>
         /// The color of the Border of the UI Element;
         /// </summary>
-        public abstract Color Bordercolor { get; set; }
+        public abstract Color BorderColor { get; set; }
 
         /// <summary>
         /// The image which can be drawn on the UIElement

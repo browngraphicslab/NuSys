@@ -81,7 +81,7 @@ namespace NuSysApp
         /// <summary>
         /// The BorderColor of the Rectangle
         /// </summary>
-        public override Color Bordercolor { get; set; }
+        public override Color BorderColor { get; set; }
 
         /// <summary>
         /// The image to display on the rounded rectangle
@@ -155,12 +155,12 @@ namespace NuSysApp
                 // draw the border inside the rectangle
                 ds.DrawRoundedRectangle(
                     new Rect(BorderWidth/2, BorderWidth/2, Width - BorderWidth, Height - BorderWidth), Radius, Radius,
-                    Bordercolor);
+                    BorderColor);
             }
             else
             {
                 // draw the border outside the rectangle
-                ds.DrawRoundedRectangle(new Rect(-BorderWidth / 2, -BorderWidth / 2, Width + BorderWidth, Height + BorderWidth), Radius, Radius, Bordercolor);
+                ds.DrawRoundedRectangle(new Rect(-BorderWidth / 2, -BorderWidth / 2, Width + BorderWidth, Height + BorderWidth), Radius, Radius, BorderColor);
 
             }
 

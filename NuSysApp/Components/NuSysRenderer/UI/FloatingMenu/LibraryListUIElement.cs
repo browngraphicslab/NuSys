@@ -151,7 +151,7 @@ namespace NuSysApp
                 TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 FontSize = 14,
                 BorderWidth = 1,
-                Bordercolor = Constants.MED_BLUE,
+                BorderColor = Constants.MED_BLUE,
                 Background = Colors.White
             };
             _searchBar.TextChanged += SearchBarTextChanged;
@@ -160,7 +160,7 @@ namespace NuSysApp
             TopBarColor = Constants.LIGHT_BLUE;
             TopBarHeight = 50;
             Background = Colors.White;
-            Bordercolor = Constants.MED_BLUE;
+            BorderColor = Constants.MED_BLUE;
             BorderWidth = 1;
             IsSnappable = true;
 
@@ -505,7 +505,7 @@ namespace NuSysApp
                            SessionController.Instance.ContentController.ContentValues.ToList());
 
             BorderWidth = 5;
-            Bordercolor = Colors.Black;
+            BorderColor = Colors.Black;
             TopBarColor = Colors.Azure;
             Width = 500;
             Height = 400;

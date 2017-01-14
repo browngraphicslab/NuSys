@@ -26,7 +26,7 @@ namespace NuSysApp
         {
             Background = Colors.White;
             BorderWidth = 1;
-            Bordercolor = Constants.DARK_BLUE;
+            BorderColor = Constants.DARK_BLUE;
             Height = 200;
             Width = 300;
             SetNotDismissable(Canvas, "OK");

@@ -158,7 +158,7 @@ namespace NuSysApp
                 Height = VIEW_BUTTON_HEIGHT,
                 Width = VIEW_BUTTON_HEIGHT,
                 BorderWidth = 1,
-                Bordercolor = Constants.color2
+                BorderColor = Constants.color2
             };
             _barToolViewButton = new ButtonUIElement(this, ResourceCreator, barButtonRectangle);
             _barToolViewButton.Tapped += BarToolViewButton_Tapped;

@@ -56,7 +56,7 @@ namespace NuSysApp
             {
                 Width = (RelativeWidth/sumOfAllColumnRelativeWidths)*listViewRowUIElement.Width,
                 BorderWidth = BorderWidth,
-                Bordercolor = BorderColor,
+                BorderColor = BorderColor,
                 Height = rowHeight,
                 Background = Colors.Transparent,
                 LabelText = ColumnFunction(itemSource),

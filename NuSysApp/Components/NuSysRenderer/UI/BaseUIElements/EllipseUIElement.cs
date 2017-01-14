@@ -92,7 +92,7 @@ namespace NuSysApp
         /// <summary>
         /// The color of the border of the ellipse
         /// </summary>
-        public override Color Bordercolor { get; set; }
+        public override Color BorderColor { get; set; }
 
         /// <summary>
         /// The image to draw on the ellipse
@@ -149,11 +149,11 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
             if (BorderType == BorderType.Inside)
             {
-                ds.DrawEllipse(CenterPoint, _radiusX - BorderWidth/2, _radiusY - BorderWidth/2, Bordercolor, BorderWidth);
+                ds.DrawEllipse(CenterPoint, _radiusX - BorderWidth/2, _radiusY - BorderWidth/2, BorderColor, BorderWidth);
             }
             else
             {
-                ds.DrawEllipse(CenterPoint, _radiusX + BorderWidth / 2, _radiusY + BorderWidth / 2, Bordercolor, BorderWidth);
+                ds.DrawEllipse(CenterPoint, _radiusX + BorderWidth / 2, _radiusY + BorderWidth / 2, BorderColor, BorderWidth);
             }
 
             ds.Transform = orgTransform;

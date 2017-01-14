@@ -424,7 +424,7 @@ namespace NuSysApp
             _tabBar.Width = Width - 2*BorderWidth;
             _tabBar.Transform.LocalPosition = new Vector2(BorderWidth);
             _tabBar.Background = TabBarBackground;
-            _tabBar.Bordercolor = TabBarBorderColor;
+            _tabBar.BorderColor = TabBarBorderColor;
             _tabBar.BorderWidth = TabBarBorderWidth;
 
             // arrange the tabs

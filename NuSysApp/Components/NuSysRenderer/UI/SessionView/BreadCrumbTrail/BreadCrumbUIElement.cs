@@ -48,7 +48,7 @@ namespace NuSysApp
             Height = DefaultHeight;
             Image = crumb.Icon;
             BorderWidth = 5;
-            Bordercolor = crumb.Color;
+            BorderColor = crumb.Color;
             ImageBounds = new Rect(0, 0, Width, Height);
 
             // initialize the title box

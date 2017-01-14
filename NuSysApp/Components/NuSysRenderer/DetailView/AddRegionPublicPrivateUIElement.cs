@@ -45,7 +45,7 @@ namespace NuSysApp
         {
             // set default ui values
             Background = Colors.AliceBlue;
-            Bordercolor = Colors.DarkGray;
+            BorderColor = Colors.DarkGray;
             BorderWidth = 2;
 
             // initialize the layout manager

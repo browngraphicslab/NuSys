@@ -134,7 +134,7 @@ namespace NuSysApp
             _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.DraggableStyle,
                 "Drag to Collection")
             {
-                Bordercolor = Constants.DARK_BLUE,
+                BorderColor = Constants.DARK_BLUE,
                 BorderWidth = 2
             };
             _dragToCollectionButton.Width = 150;
