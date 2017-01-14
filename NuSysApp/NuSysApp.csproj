@@ -132,6 +132,7 @@
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\html export.png" />
     <Content Include="Assets\new icons\left arrow.png" />
+    <Content Include="Assets\new icons\logo_bing_en-US.png" />
     <Content Include="Assets\new icons\multitag.png" />
     <Content Include="Assets\new icons\node.png" />
     <Content Include="Assets\new icons\present white.png" />
@@ -295,6 +296,7 @@
     <Content Include="Assets\fonts\freightsanslight.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\web search.png" />
     <Content Include="Themes\audio_node_template.html" />
     <Content Include="Themes\image_node_template.html" />
     <Content Include="Themes\node_template.css" />

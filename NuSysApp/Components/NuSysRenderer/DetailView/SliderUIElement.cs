@@ -172,8 +172,8 @@ namespace NuSysApp
             set
             {
                 base.Height = value;
-                _thumb.Width = Height/3;
-                _thumb.Height = Height/3;
+                _thumb.Width = Height/5;
+                _thumb.Height = Height/5;
             }
         }
 
@@ -327,9 +327,9 @@ namespace NuSysApp
         {
             // get helper values for setting the offsets and position of elements
             var thumbDiameter = Height/2;
-            var thumbVerticalOffset = Height/2 - thumbDiameter/2;
-            var sliderHeight = thumbDiameter/2;
-            var sliderVerticalOffset = Height/2 - sliderHeight/2;
+            var sliderHeight = thumbDiameter/4;
+            var sliderVerticalOffset = Height/2;
+            var thumbVerticalOffset = Height/2 - thumbDiameter/2 + sliderHeight/2;
 
             // set the highlighted portion of the slider so that it is to the left of the thumb
             _highlightSlider.Width = SliderPosition*Width;

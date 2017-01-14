@@ -77,10 +77,10 @@ namespace NuSysApp
         private StackLayoutManager _buttonLayoutManager;
 
         private float buttonHeight = 50;
-        private float leftMargin = 5;
+        private float leftMargin = 10;
         private float topMargin;
-        private float rightMargin = 5;
-        private float spacing = 5;
+        private float rightMargin = 10;
+        private float spacing = 10;
 
 
         private ButtonUIElement _removeFilterButton;
@@ -88,7 +88,11 @@ namespace NuSysApp
         public FilterMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             topMargin = TopBarHeight;
-            TopBarColor = Colors.Azure;
+            TopBarColor = Constants.MED_BLUE;
+            TopBarHeight = 10;
+            Background = Colors.White;
+            BorderWidth = 1;
+            Bordercolor = Constants.DARK_BLUE;
 
             // initialize the button layout manager so buttons are stretched horizontally and stay at the top 
             // of the window
