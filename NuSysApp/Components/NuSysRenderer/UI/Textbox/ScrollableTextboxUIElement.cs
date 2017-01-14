@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
@@ -135,13 +136,9 @@ namespace NuSysApp
         /// </summary>
         private double _yOffset;
 
-        // Maximum offsets
-        private double _maxXOffset;
-        private double _maxYOffset;
-
-        // Min and max indices in the text to be drawn on the screen
-        private int _maxIndex;
-        private int _minIndex;
+        /// <summary>
+        /// True if the load call has been made and all the proper resources have been created
+        /// </summary>
         private bool _loaded;
 
         /// <summary>
@@ -175,6 +172,26 @@ namespace NuSysApp
         public string PlaceHolderText { get; set; } = string.Empty;
 
         /// <summary>
+        ///  the vertical scrollbar
+        /// </summary>
+        private ScrollBarUIElement _verticalScrollbar;
+
+        /// <summary>
+        /// the initial _yOffset when drag scrolling
+        /// </summary>
+        private double _initialDragYOffset;
+
+        /// <summary>
+        /// the initial _xOffset when drag scrolling
+        /// </summary>
+        private double _initialDragXOffset;
+
+        /// <summary>
+        /// true if we want to scroll to keep the caret on the screen
+        /// </summary>
+        private bool _keepCaretOnScreen;
+
+        /// <summary>
         /// Models a text box which the user can type into and edit
         /// Inherits from TextboxUIElement
         /// </summary>
@@ -184,7 +201,6 @@ namespace NuSysApp
             bool scrollVert, bool showScrollBar) : base(parent, resourceCreator)
         {
             _scrollVert = scrollVert;
-            _hasSelection = false;
             TextVerticalAlignment = CanvasVerticalAlignment.Top;
 
             // Don't wrap text if it is a horizontally scrolling textbox
@@ -196,6 +212,18 @@ namespace NuSysApp
 
             // initialize the list of selection rects
             _selectionRects = new List<Rect>();
+
+            if (scrollVert)
+            {
+                _verticalScrollbar = new ScrollBarUIElement(this, resourceCreator,
+                    ScrollBarUIElement.Orientation.Vertical)
+                {
+                    Width = 15
+                };
+                AddChild(_verticalScrollbar);
+
+                _verticalScrollbar.ScrollBarPositionChanged += _verticalScrollbar_ScrollBarPositionChanged;
+            }
 
         }
 
@@ -236,6 +264,7 @@ namespace NuSysApp
             DragStarted += ScrollableTextboxUIElement_DragStarted;
             Dragged += ScrollableTextboxUIElement_Dragged;
             DoubleTapped += ScrollableTextboxUIElement_DoubleTapped;
+            PointerWheelChanged += ScrollableTextboxUIElement_PointerWheelChanged;
         }
 
         /// <summary>
@@ -243,14 +272,19 @@ namespace NuSysApp
         /// </summary>
         private void InitializeNewCaret()
         {
-            // Initialize cursor and add it to the textbox
+            // Initialize cursor don't add it as a child because we want to draw it
+            // outside of the usual hierarchy
             _caret = new RectangleUIElement(this, ResourceCreator)
             {
                 Width = 2,
                 Background = Colors.Black,
                 IsVisible = false
             };
-            AddChild(_caret);
+
+            // instead of adding it as a child we just set the parent of the child's 
+            // transform to the textbox itself
+            _caret.Transform.SetParent(Transform);
+
         }
 
         /// <summary>
@@ -269,6 +303,25 @@ namespace NuSysApp
         }
 
         #region mouse-input
+
+        /// <summary>
+        /// Called whenever the pointer wheel changes on the scrolling textbox
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        /// <param name="delta"></param>
+        private void ScrollableTextboxUIElement_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
+        {
+            // if we scroll vertically
+            if (_scrollVert)
+            {
+                // change the position of the scrollbar
+                _yOffset -= TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height*(delta > 0 ? -.05 : .05);
+                BoundYOffset();
+                _updateCaretTransform = true;
+                _updateSelectionRects = true;
+            }
+        }
 
         /// <summary>
         /// Used to select a whole word when the box is double tapped
@@ -308,7 +361,7 @@ namespace NuSysApp
                 start--;
             }
 
-            while (end < (Text.Length - 1))
+            while (end < Text.Length - 1)
             {
                 var nextC = Text[end + 1];
                 if (Char.IsWhiteSpace(nextC))
@@ -332,10 +385,40 @@ namespace NuSysApp
         {
             // set the _selectionStartIndex to the current caret position
             _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+
+            _initialDragXOffset = _xOffset;
+            _initialDragYOffset = _yOffset;
         }
 
+        /// <summary>
+        /// Fired whenever the pointer is dragged on the scrollable textbox, if the pointer is a touch pointer
+        /// then we scroll otherwise we make a selection
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            // when we are using touch scroll on drag
+            if (pointer.DeviceType == PointerDeviceType.Touch)
+            {
+                if (_scrollVert)
+                {
+                    _yOffset = _initialDragYOffset + pointer.Delta.Y;
+                    BoundYOffset();
+                    _updateCaretTransform = true;
+                    _updateSelectionRects = true;
+                }
+                else
+                {
+                    _xOffset = _initialDragXOffset + pointer.Delta.X;
+                    BoundXOffset();
+                    _updateCaretTransform = true;
+                    _updateSelectionRects = true;
+                }
+
+                return;
+            }
+
             // update the caret character index to reflect the current point
             CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
 
@@ -355,6 +438,9 @@ namespace NuSysApp
 
             // update the transform of the cursor
             _updateCaretTransform = true;
+
+            // keep the caret on the screen
+            _keepCaretOnScreen = true;
         }
 
 
@@ -380,11 +466,8 @@ namespace NuSysApp
         /// <param name="text"></param>
         private void EditableTextboxUIElement_TextChanged(InteractiveBaseRenderItem item, string text)
         {
-            //todo check this method to see if it works
             UpdateCanvasTextLayout();
-            var r = TextLayout.LayoutBounds;
-            _maxXOffset = r.Width <= (Width - 2 * UIDefaults.XTextPadding) ? 0 : r.Width - (Width - 2 * (UIDefaults.XTextPadding + BorderWidth));
-            _maxYOffset = r.Height <= (Height - 2 * UIDefaults.YTextPadding) ? 0 : r.Height - (Height - 2 * (UIDefaults.YTextPadding + BorderWidth));
+            TextChanged?.Invoke(this, text);
         }
 #endregion mouse-input
 
@@ -413,6 +496,9 @@ namespace NuSysApp
 
             // we want to update the cursor transform
             _updateCaretTransform = true;
+
+            // we want to keep the caret on the screen
+            _keepCaretOnScreen = true;
 
             // set the caret offset to 0 if we are not
             // navigating up or down
@@ -448,7 +534,7 @@ namespace NuSysApp
                 }
                 // as long as we are not the last character in the document
                 // remove the next character, 
-                else if (CaretCharacterIndex < (Text.Length-1))
+                else if (CaretCharacterIndex < Text.Length-1)
                 {
                     Text = Text.Remove(CaretCharacterIndex+1, 1);
                 }
@@ -615,7 +701,7 @@ namespace NuSysApp
         /// Draw the cursor at its appropriate position
         /// </summary>
         /// <param name="ds"></param>
-        private void DrawCursor(CanvasDrawingSession ds)
+        private void DrawCaret(CanvasDrawingSession ds)
         {
             _caret.Draw(ds);
         }
@@ -634,6 +720,21 @@ namespace NuSysApp
                 {
                     ds.FillRectangle(rect, _selectionBrush);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Draws the placeholder text if the textbox is empty
+        /// </summary>
+        /// <param name="ds"></param>
+        private void DrawPlaceHolderText(CanvasDrawingSession ds)
+        {
+            if (string.IsNullOrEmpty(Text))
+            {
+                ds.DrawText(PlaceHolderText, new Rect(BorderWidth + UIDefaults.XTextPadding,
+            BorderWidth + UIDefaults.YTextPadding,
+            Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
+            PlaceHolderTextColor, CanvasTextFormat);
             }
         }
 
@@ -688,7 +789,7 @@ namespace NuSysApp
                 DrawSelection(ds);
 
                 // Draw the cursor
-                DrawCursor(ds);
+                DrawCaret(ds);
             }
                 
 
@@ -696,100 +797,7 @@ namespace NuSysApp
         }
         #endregion draw
 
-        ///// <summary>
-        ///// Shifts the text to stay visible as the user is highlighting text
-        ///// </summary>
-        //private void ShiftTextOnDrag()
-        //{
-        //    _selectionEndIndex = GetCaretCharacterIndexFromPoint(_draggedPointer.CurrentPoint);
-        //    var loc = Vector2.Transform(_draggedPointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-        //    Vector2 pos = new Vector2(loc.X - UIDefaults.XTextPadding,
-        //                              loc.Y - UIDefaults.YTextPadding);
-
-        //    // Update y offset if vertical scrolling textbox, x offset otherwise
-        //    if (_scrollVert)
-        //    {
-        //        if (pos.Y < 0)
-        //        {
-        //            double under = -pos.Y;
-        //            _yOffset += under;
-        //            if (_yOffset > 0)
-        //            {
-        //                _yOffset = 0;
-        //            }
-        //        } else if (pos.Y > (Height - 2*UIDefaults.YTextPadding))
-        //        {
-        //            double over = pos.Y - (Height - 2 * UIDefaults.YTextPadding);
-        //            _yOffset -= over;
-        //            if (_yOffset < -_maxYOffset)
-        //            {
-        //                _yOffset = -_maxYOffset;
-        //            }
-        //        }
-        //    } else
-        //    {
-        //        if (pos.X < 0)
-        //        {
-        //            double under = -pos.X;
-        //            _xOffset += under;
-        //            if (_xOffset > 0)
-        //            {
-        //                _xOffset = 0;
-        //            }
-        //        }
-        //        else if (pos.X > (Width - 2 * UIDefaults.XTextPadding))
-        //        {
-        //            double over = pos.X - (Width - 2 * UIDefaults.XTextPadding);
-        //            _xOffset -= over;
-        //            if (_xOffset < -_maxXOffset)
-        //            {
-        //                _xOffset = -_maxXOffset;
-        //            }
-        //        }
-        //    }  
-        //}
-
-        /// <summary>
-        /// Shifts the text to fill the box as much as possible. Looks for empty shifts text accordingly.
-        /// </summary>
-        private void ShiftTextToFit()
-        {
-            if (Text.Length == 0)
-            {
-                return;
-            }
-            CanvasTextLayoutRegion textLayoutRegion;
-            TextLayout.GetCaretPosition(Text.Length-1, false, out textLayoutRegion);
-            var r = textLayoutRegion.LayoutBounds;
-            r.X += _xOffset;
-            r.Y += _yOffset;
-
-            if (_scrollVert)
-            {
-                var h = TextLayout.LayoutBounds.Height;
-                var end = r.Bottom;
-                double size = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
-                if (end < size && h > size)
-                {
-                    var under = size - end;
-                    _yOffset += under;
-                }
-            } else
-            {
-                var w = TextLayout.LayoutBounds.Width;
-                var end = r.Right;
-                double size = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
-                if (end < size && w > size)
-                {
-                    var under = size - end;
-                    _xOffset += under;
-                }
-            }
-            
-        }
-
-
-#region update
+        #region update
         /// <summary>
         /// Update the height of the caret to reflect the height of the line
         /// this should be performed whenever the height of a line changes (font size etc.)
@@ -832,10 +840,19 @@ namespace NuSysApp
             // give the text layout the option of using up to float.MaxValue pixels as its width
             // the actual text layout returned has LayoutBounds, which extend only to the height and width
             // needed to display text
-            TextLayout = _scrollVert ? new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat,
-                                           Width - 2 * (BorderWidth + UIDefaults.XTextPadding), float.MaxValue) :
-                                           new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue,
+            if (_scrollVert)
+            {
+                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat,
+                    Math.Max(0,
+                        Width - 2*(BorderWidth + UIDefaults.XTextPadding) -
+                        (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0)), float.MaxValue);
+            }
+            else
+            {
+                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue,
                                            Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+            }
+                                           
 
         }
 
@@ -879,6 +896,11 @@ namespace NuSysApp
             if (_updateCaretTransform)
             {
                 UpdateCaretTransform();
+                if (_keepCaretOnScreen)
+                {
+                    ScrollTextToContainCaret();
+                    _keepCaretOnScreen = false;
+                }
             }
 
             // update the locations of all the selection rects
@@ -902,10 +924,39 @@ namespace NuSysApp
                 }
             }
 
+            if (_scrollVert && _loaded)
+            {
+                _verticalScrollbar.Height = Height - 2 *BorderWidth;
+                _verticalScrollbar.Transform.LocalPosition = new Vector2(Width - _verticalScrollbar.Width - BorderWidth, BorderWidth);
+
+                // set the position and rang eof the vertical scroll bar
+                SetVerticalScrollBarPositionAndRange();
+
+                // shift the text so it fills the textbox if it can
+                if (Math.Abs(_verticalScrollbar.Range - 1) < .001)
+                {
+                    _yOffset = 0;
+                }
+            }
+
+            // shfit the text so it fills the whole textbox if it can
+            if (!_scrollVert && _loaded)
+            {
+                if ((Width - 2*BorderWidth - UIDefaults.XTextPadding)/
+                    TextLayout.LayoutBoundsIncludingTrailingWhitespace.Width >= 1)
+                {
+                    _xOffset = 0;
+                }
+            }
+
+            if (_loaded)
+            {
+                _caret.Update(Transform.LocalToScreenMatrix);
+            }
 
             base.Update(parentLocalToScreenTransform);           
         }
-#endregion update
+        #endregion update
 
         public override void Dispose()
         {
@@ -919,6 +970,12 @@ namespace NuSysApp
                 DragStarted -= ScrollableTextboxUIElement_DragStarted;
                 Dragged -= ScrollableTextboxUIElement_Dragged;
                 DoubleTapped -= ScrollableTextboxUIElement_DoubleTapped;
+                PointerWheelChanged -= ScrollableTextboxUIElement_PointerWheelChanged;
+                if (_scrollVert)
+                {
+                    _verticalScrollbar.ScrollBarPositionChanged -= _verticalScrollbar_ScrollBarPositionChanged;
+
+                }
             }
 
 
@@ -1055,11 +1112,6 @@ namespace NuSysApp
                                            (float)bounds.Top + UIDefaults.YTextPadding + BorderWidth);
             }
 
-            // Only want to shift the box if the cursor is visible
-            if (_caret.IsVisible)
-            {
-                CheckTextInBounds(newCursorLoc);
-            }
             _caret.Transform.LocalPosition = newCursorLoc;
 
             _updateCaretTransform = false;
@@ -1067,6 +1119,59 @@ namespace NuSysApp
 
         #endregion caretPositiong
 
+
+        #region scrolling
+
+
+        /// <summary>
+        /// call this to set the position and range of the vertical scrollbar
+        /// </summary>
+        private void SetVerticalScrollBarPositionAndRange()
+        {
+            if (!_loaded || !_scrollVert)
+            {
+                return;
+            }
+
+            _verticalScrollbar.Position = (float)(-_yOffset / TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
+            _verticalScrollbar.Range =
+                (float)
+                    ((Height - 2* ( BorderWidth + UIDefaults.YTextPadding)) /
+                     TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
+
+            BoundVerticalScrollBarPosition();
+
+        }
+
+        /// <summary>
+        /// Call this to bound the vertical scroll bar
+        /// </summary>
+        private void BoundVerticalScrollBarPosition()
+        {
+            // bound the vertical scroll bar postiion
+            if (_verticalScrollbar.Position + _verticalScrollbar.Range > 1)
+            {
+                _verticalScrollbar.Position = 1 - _verticalScrollbar.Range;
+            }
+            if (_verticalScrollbar.Position < 0)
+            {
+                _verticalScrollbar.Position = 0;
+            }
+        }
+
+        /// <summary>
+        /// Fired whenever the vertical scroll bar's position changes
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
+        private void _verticalScrollbar_ScrollBarPositionChanged(object source, float position)
+        {
+            _yOffset = -position*TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height;
+            _updateCaretTransform = true;
+            _updateSelectionRects = true;
+        }
+
+        #endregion scrolling
 
         #region selection
         /// <summary>
@@ -1223,58 +1328,87 @@ namespace NuSysApp
         #endregion data-operations-copy-cut-paste
 
         /// <summary>
-        /// Checks whether the text to be drawn is in bounds based on the cursor position
+        /// If the caret is not within the bounds of the textbox, scrolls the textbox so the caret is back within the 
+        /// bounds of the textbox
         /// </summary>
-        private void CheckTextInBounds(Vector2 cursorLoc)
+        private void ScrollTextToContainCaret()
         {
+            var caretLocation = _caret.Transform.LocalPosition;
+
+            // we are scrolling vertically check y position of the caret
             if (_scrollVert)
             {
-                if ((cursorLoc.Y + _caret.Height) > (Height - (UIDefaults.YTextPadding + BorderWidth)))
+                // if the caret's y position is below the bottom of the textbox
+                if (caretLocation.Y + _caret.Height > Height - (UIDefaults.YTextPadding + BorderWidth))
                 {
-                    double over = (cursorLoc.Y + _caret.Height) - (Height - (UIDefaults.YTextPadding + BorderWidth));
+                    // decrement the offset of the textbox by the amount the caret is over
+                    double over = caretLocation.Y + _caret.Height - (Height - (UIDefaults.YTextPadding + BorderWidth));
                     _yOffset -= over;
-                    UpdateCaretTransform();
+
+                    // then update the caret's transform
+                    _caret.Transform.LocalPosition = new Vector2(_caret.Transform.LocalX, (float) (_caret.Transform.LocalY - over));
                 }
-                else if (cursorLoc.Y < (UIDefaults.YTextPadding))
+                // otherwise if the caret's y position is above the top of the textbox
+                else if (caretLocation.Y < UIDefaults.YTextPadding)
                 {
-                    double under = (UIDefaults.YTextPadding) - cursorLoc.Y;
+                    // increment the offest of the textbox by the amount the caret is under
+                    double under = UIDefaults.YTextPadding - caretLocation.Y;
                     _yOffset += under;
-                    UpdateCaretTransform();
+
+                    // then update the caret's transform
+                    _caret.Transform.LocalPosition = new Vector2(_caret.Transform.LocalX, (float)(_caret.Transform.LocalY + under));
                 }
             } else
             {
-                if (cursorLoc.X > (Width - (UIDefaults.XTextPadding + BorderWidth)))
+                // otherwise if the caret is greater than the width of the textbox
+                if (caretLocation.X > Width - (UIDefaults.XTextPadding + BorderWidth))
                 {
-                    double over = cursorLoc.X - (Width - (UIDefaults.XTextPadding + BorderWidth));
+                    // decrement the xoffset of the textbox by the amoutn the caret is over
+                    double over = caretLocation.X - (Width - UIDefaults.XTextPadding - BorderWidth);
                     _xOffset -= over;
-                    UpdateCaretTransform();
+
+                    // decrement the caret's x location
+                    _caret.Transform.LocalPosition = new Vector2((float) (_caret.Transform.LocalX - over), _caret.Transform.LocalY);
                 }
-                else if (cursorLoc.X < (UIDefaults.XTextPadding))
+                else if (caretLocation.X < UIDefaults.XTextPadding)
                 {
-                    double under = (UIDefaults.XTextPadding) - cursorLoc.X;
+                    double under = UIDefaults.XTextPadding - caretLocation.X;
                     _xOffset += under + _caret.Width;
-                    UpdateCaretTransform();
+                    _caret.Transform.LocalPosition = new Vector2((float)(_caret.Transform.LocalX + under), _caret.Transform.LocalY);
                 }
             }
-            
+
         }
 
         /// <summary>
-        /// Draws the placeholder text if the textbox is empty
+        /// Bound the y offset
         /// </summary>
-        /// <param name="ds"></param>
-        private void DrawPlaceHolderText(CanvasDrawingSession ds)
+        public void BoundYOffset()
         {
-            if (string.IsNullOrEmpty(Text))
+            if (!_loaded)
             {
-                var orgTransform = ds.Transform;
-                ds.Transform = Transform.LocalToScreenMatrix;
-                ds.DrawText(PlaceHolderText, new Rect(BorderWidth + UIDefaults.XTextPadding,
-            BorderWidth + UIDefaults.YTextPadding,
-            Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
-            PlaceHolderTextColor, CanvasTextFormat);
-                ds.Transform = orgTransform;
+                return;
             }
+
+            _yOffset = Math.Min(0, _yOffset);
+
+            _yOffset = Math.Max(- (TextLayout.LayoutBounds.Height - Height + 2* (UIDefaults.YTextPadding + BorderWidth)), _yOffset);
+
+        }
+
+        /// <summary>
+        /// Bound the X offset
+        /// </summary>
+        public void BoundXOffset()
+        {
+            if (!_loaded)
+            {
+                return;
+            }
+
+            _xOffset = Math.Min(0, _xOffset);
+            _xOffset = Math.Max(-(TextLayout.LayoutBounds.Width - Width + 2 * (UIDefaults.XTextPadding + BorderWidth)), _xOffset);
+
         }
 
         /// <summary>
