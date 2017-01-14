@@ -44,6 +44,10 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.GetLibraryElementController(item.ParentCollectionId) as
                     CollectionLibraryElementController;
             Debug.Assert(itemParentCollectionController != null);
+            if (itemParentCollectionController == null)
+            {
+                return;
+            }
 
             // get the element controller of the elementModel we clicked on
             var elementController = itemParentCollectionController.CollectionModel.Children.Where(id => SessionController.Instance.ElementModelIdToElementController.ContainsKey(id) && id == item.Id).Select(id => SessionController.Instance.ElementModelIdToElementController[id]).FirstOrDefault();

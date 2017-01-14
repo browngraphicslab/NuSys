@@ -13,6 +13,15 @@ namespace NusysIntermediate
     public class LinkLibraryElementModel: LibraryElementModel
     {
         /// <summary>
+        /// Enum to specify directionality of a link
+        /// </summary>
+        public enum LinkDirection
+        {
+            None,
+            Forward,
+            Backwards
+        }
+        /// <summary>
         /// This is the library element id of the in library element 
         /// </summary>
         public string InAtomId { get; set; }
@@ -21,6 +30,11 @@ namespace NusysIntermediate
         /// This is the library element id of the out library element
         /// </summary>
         public string OutAtomId { get; set; }
+
+        /// <summary>
+        /// The directionality of the link hand
+        /// </summary>
+        public LinkDirection Direction { get; set; } = LinkDirection.None;
 
         //public Color Color { get; set; }
         public LinkLibraryElementModel(string id): base(id, NusysConstants.ElementType.Link)
@@ -36,6 +50,10 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY))
             {
                 OutAtomId = message.GetString(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_DIRECTIONALITY_KEY))
+            {
+                Direction = message.GetEnum<LinkDirection>(NusysConstants.LINK_LIBRARY_ELEMENT_DIRECTIONALITY_KEY);
             }
             base.UnPackFromDatabaseKeys(message);
         }

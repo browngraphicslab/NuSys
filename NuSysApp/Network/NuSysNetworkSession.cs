@@ -150,6 +150,9 @@ namespace NuSysApp
                 case NusysConstants.NotificationType.AnalysisModelMade:
                     handler = new AnalysisModelMadeNotificationHandler();
                     break;
+                case NusysConstants.NotificationType.LockHolderChanged:
+                    handler = new LockHolderChangedNotificationHandler();
+                    break;
                 default:
                     throw new Exception("we don't handle that notification type yet");
             }

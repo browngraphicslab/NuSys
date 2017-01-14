@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -46,6 +47,16 @@ namespace NuSysApp
         private ButtonUIElement _readOnlyModeSettingButton;
 
         /// <summary>
+        /// stack layout manager to arrange buttons
+        /// </summary>
+        private StackLayoutManager _settingsStackLayout;
+
+        /// <summary>
+        /// text to say what slider does
+        /// </summary>
+        private TextboxUIElement _sliderText;
+
+        /// <summary>
         /// Constructor will instatiate the private buttons.
         /// </summary>
         /// <param name="parent"></param>
@@ -75,15 +86,37 @@ namespace NuSysApp
             _readOnlyModeSettingButton = new RectangleButtonUIElement(this, ResourceCreator);
             AddChild(_readOnlyModeSettingButton);
 
-            MinWidth = 220;
-            MinHeight = 415;
+            _sliderText = new TextboxUIElement(this, ResourceCreator)
+            {
+                Background = Colors.Transparent,
+                FontSize = 12,
+                TextColor = Constants.ALMOST_BLACK,
+                Width = 200,
+                Height = 20,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                TextVerticalAlignment = CanvasVerticalAlignment.Top,
+                Text = "Adjust Text Size"
+            };
+            AddChild(_sliderText);
 
-            _resizeElementTitlesButton.Transform.LocalPosition = new Vector2(10, 35);
-            _showLinksButton.Transform.LocalPosition = new Vector2(10, 100);
-            _showMinimapButton.Transform.LocalPosition = new Vector2(10, 165);
-            _dockBreadCrumbsButton.Transform.LocalPosition = new Vector2(10, 230);
-            _textSizeSlider.Transform.LocalPosition = new Vector2(10, 295);
-            _readOnlyModeSettingButton.Transform.LocalPosition = new Vector2(10, 360);
+            MinWidth = 220;
+            MinHeight = 435;
+            
+            _settingsStackLayout = new StackLayoutManager(StackAlignment.Vertical);
+            _settingsStackLayout.ItemHeight = _showLinksButton.Height;
+            _settingsStackLayout.ItemWidth = _showLinksButton.Width;
+            _settingsStackLayout.Spacing = 10;
+            _settingsStackLayout.VerticalAlignment = VerticalAlignment.Center;
+            _settingsStackLayout.HorizontalAlignment = HorizontalAlignment.Center;
+
+            _settingsStackLayout.AddElement(_resizeElementTitlesButton);
+            _settingsStackLayout.AddElement(_showLinksButton);
+            _settingsStackLayout.AddElement(_showMinimapButton);
+            _settingsStackLayout.AddElement(_dockBreadCrumbsButton);
+            _settingsStackLayout.AddElement(_readOnlyModeSettingButton);
+            _settingsStackLayout.AddElement(_textSizeSlider);
+            _settingsStackLayout.AddElement(_sliderText);
+
             _resizeElementTitlesButton.Tapped += ResizeElementTitlesButtonOnTapped;
             _showLinksButton.Tapped += ShowLinksButtonOnTapped;
             _showMinimapButton.Tapped += ShowMinimapTapped;
@@ -279,6 +312,12 @@ namespace NuSysApp
         private void ReadOnlyModeSettingButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible = (ReadOnlyViewingMode)(((int)SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible + 1) % Enum.GetNames(typeof(ReadOnlyViewingMode)).Length);
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _settingsStackLayout.ArrangeItems(new Vector2(Width/2, Height/2));
+            base.Update(parentLocalToScreenTransform);
         }
 
     }

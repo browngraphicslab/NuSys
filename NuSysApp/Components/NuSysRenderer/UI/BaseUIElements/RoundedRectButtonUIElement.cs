@@ -28,7 +28,14 @@ namespace NuSysApp
             int style = 0, string text = "")
             : base(parent, resourceCreator, new RoundedRectangleUIElement(parent, resourceCreator))
         {
+            ButtonText = text;
+            ButtonTextColor = Colors.White;
+            Width = 200;
+            Height = 50;
+            ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+            ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             RoundedRect.Radius = 5;
+
             switch (style) 
             {
                 case 0:
@@ -37,14 +44,11 @@ namespace NuSysApp
                 case 1:
                     RoundedRect.Background = Constants.MED_BLUE;
                     break;
+                default:
+                    break;
             }
 
-            ButtonText = text;
-            ButtonTextColor = Colors.White;
-            Width = 200;
-            Height = 50;
-            ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
-            ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+
         }
     }
 }

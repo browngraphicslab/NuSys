@@ -23,7 +23,7 @@ namespace NuSysApp
         public static Color SelectedBorderColor = Constants.DARK_BLUE;
         public static float TopBarHeight = 25;
         public static Color TopBarColor = Colors.Transparent;
-        public static float ErrorMargin = 25;
+        public static float ErrorMargin = 15;
 
         public static string FontFamily = "Arial";//"/Assets/fonts/freightsans.ttf#FreightSans BookSC";
 
@@ -32,6 +32,7 @@ namespace NuSysApp
         public static int SecondaryStyle = 1;
         public static int AccentStyle = 2;
         public static int DraggableStyle = 2;
+        public static int Bubble = 3;
 
         #endregion
 
@@ -99,9 +100,9 @@ namespace NuSysApp
 
         #region slider
 
-        public static Color ThumbColor = Colors.LightGray;
-        public static Color SliderHighlightColor = Colors.DodgerBlue;
-        public static Color SliderBackground = Colors.LightGray;
+        public static Color ThumbColor = Constants.DARK_BLUE;
+        public static Color SliderHighlightColor = Constants.MED_BLUE;
+        public static Color SliderBackground = Colors.White;
         public static float SliderPosition = 1;
         public static bool IsSliderTooltipEnabled = true;
 
@@ -157,7 +158,7 @@ namespace NuSysApp
 
         public static Color PlaceHolderTextColor = Constants.MED_BLUE;
         public static float MaxDropDownHeight = 250;
-        public static Color HighlightColor = Colors.Yellow;
+        public static Color HighlightColor = Constants.RED_TRANSLUCENT;
         public static float ScrollBarWidth = 15;
         public static Color ScrollButtonColor = Colors.LightGray;
         public static Color ScrollHandleBackground = Colors.LightGray;

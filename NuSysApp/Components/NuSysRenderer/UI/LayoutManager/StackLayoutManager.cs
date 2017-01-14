@@ -270,7 +270,16 @@ namespace NuSysApp
         public override void Dispose()
         {
             _elements.RemoveRange(0, _elements.Count);
+        }
 
+        public void ClearStack(BaseInteractiveUIElement parent)
+        {
+            for (int i = 0; i < _elements.Count; i++)
+            {
+                var element = _elements[i];
+                parent.RemoveChild(element);
+                _elements.Remove(element);
+            }
         }
 
         /// <summary>

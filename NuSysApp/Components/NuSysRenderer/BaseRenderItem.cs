@@ -40,7 +40,7 @@ namespace NuSysApp
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
-        public bool IsDirty { get; set; } = true;
+        public virtual bool IsDirty { get; set; } = true;
 
         // Boolean which determines whether this render item can gain focus
         public bool IsFocusable { get; set; } = true;

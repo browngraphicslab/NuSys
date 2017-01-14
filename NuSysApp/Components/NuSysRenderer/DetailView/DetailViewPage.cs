@@ -34,11 +34,6 @@ namespace NuSysApp
         private StackLayoutManager _contentLayoutManager;
 
         /// <summary>
-        /// The layout manager for the add region button
-        /// </summary>
-        private StackLayoutManager _addRegionButtonLayoutManager;
-
-        /// <summary>
         /// The add region button
         /// </summary>
         private ButtonUIElement _addRegionButton;
@@ -46,12 +41,7 @@ namespace NuSysApp
         /// <summary>
         /// The width of the add region button
         /// </summary>
-        private float _addRegionButtonWidth = 25;
-
-        /// <summary>
-        /// The margin on the left and right of the add region button
-        /// </summary>
-        private float _addRegionButtonLeftRightMargin = 10;
+        private float _addRegionButtonWidth = 150;
 
         /// <summary>
         /// The _analysis ui element associated with the regions page
@@ -114,11 +104,12 @@ namespace NuSysApp
             _showRegions = showRegions;
 
             // initialize the add region button and the _addRegionButtonLayoutManager
-            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle);
-
-            _addRegionButtonLayoutManager = new StackLayoutManager();
+            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Add Region")
+            {
+                Width=150,
+                Height = 40
+            };
             AddChild(_addRegionButton);
-            _addRegionButtonLayoutManager.AddElement(_addRegionButton);
 
             /// add the analysis stuff only if it is supported
             if (_showsImageAnalysis)
@@ -232,7 +223,7 @@ namespace NuSysApp
             var addRegionButton = interactiveBaseRenderItem as ButtonUIElement;
             Debug.Assert(addRegionButton!= null);
             _addRegionPopup = new FlyoutPopup(this, Canvas);
-            _addRegionPopup.Transform.LocalPosition = new Vector2(addRegionButton.Transform.LocalPosition.X - _addRegionPopup.Width / 2,
+            _addRegionPopup.Transform.LocalPosition = new Vector2(addRegionButton.Transform.LocalPosition.X,
                 addRegionButton.Transform.LocalPosition.Y + addRegionButton.Height);
             _addRegionPopup.AddFlyoutItem("Public", OnAddPublicRegionFlyoutTapped, Canvas);
             _addRegionPopup.AddFlyoutItem("Private", OnAddPrivateRegionFlyoutTapped, Canvas);
@@ -271,7 +262,6 @@ namespace NuSysApp
                 return;
 
             _contentLayoutManager.Dispose();
-            _addRegionButtonLayoutManager.Dispose();
 
             _addRegionButton.Tapped -= AddRegionButton_Tapped;
             _dragToCollectionButton.DragCompleted -= _dragToCollectionButton_DragCompleted;
@@ -302,29 +292,6 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            if (_showRegions)
-            {
-                // set the add region button
-                _addRegionButtonLayoutManager.SetSize(_addRegionButtonLeftRightMargin*2 + _addRegionButtonWidth, Height);
-                _addRegionButtonLayoutManager.VerticalAlignment = VerticalAlignment.Center;
-                _addRegionButtonLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
-                _addRegionButtonLayoutManager.ItemWidth = _addRegionButtonWidth;
-                _addRegionButtonLayoutManager.ItemHeight = _addRegionButtonWidth;
-                _addRegionButtonLayoutManager.ArrangeItems();
-
-                // set visibility of add region button
-                _addRegionButton.IsVisible = true;
-            }
-            else
-            {
-                _addRegionButton.IsVisible = false;
-            }
-
-
-            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width/2 + _dragToCollectionButton.Width/2, Height - 50);
-
-            //var dragToCollectionHeight = _dragToCollectionButton.Height + 20;
-
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
 
@@ -339,15 +306,24 @@ namespace NuSysApp
             }
 
             // set the image
-            var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
-            _contentLayoutManager.SetSize(Width - imageOffsetFromRegionButton, _imageHeight);
+            _contentLayoutManager.SetSize(Width, _imageHeight);
             _contentLayoutManager.VerticalAlignment = VerticalAlignment.Top;
             _contentLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
-            _contentLayoutManager.ItemWidth = Width - imageOffsetFromRegionButton - 20;
+            _contentLayoutManager.ItemWidth = Width - 20;
             _contentLayoutManager.ItemHeight = _imageHeight;
             _contentLayoutManager.SetMargins(20);
-            _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
-            
+            _contentLayoutManager.ArrangeItems(new Vector2(0, 0));
+
+            if (_showRegions)
+            {
+                _addRegionButton.IsVisible = true;
+                _addRegionButton.Transform.LocalPosition = new Vector2(Width / 2 - _addRegionButton.Width / 2,
+                        _imageHeight + _contentLayoutManager.TopMargin + 10);
+            }
+            else
+            {
+                _addRegionButton.IsVisible = false;
+            }
 
             if (_showsImageAnalysis)
             {
@@ -374,6 +350,11 @@ namespace NuSysApp
                     _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0,
                         _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
                 }
+                if (_showRegions)
+                {
+                    _addRegionButton.Transform.LocalPosition = new Vector2(Width / 2 - _addRegionButton.Width / 2,
+                        _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20);
+                }
             }
 
             if (_wordButton != null)
@@ -382,23 +363,11 @@ namespace NuSysApp
                         _imageHeight + _contentLayoutManager.TopMargin + 10);
             }
 
-            if (_wordButton != null)
-            {
-                _wordButton.Transform.LocalPosition = new Vector2(Width/2 - _wordButton.Width/2, _imageHeight + _contentLayoutManager.TopMargin + 10); 
-                    _imageAnalysisLayoutManager.SetSize(Width,
-                        Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) -
-                        _dragToCollectionButton.Height);
-                    _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0,
-                        _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
-            }
-
-
             base.Update(parentLocalToScreenTransform);
         }
 
         public override async Task Load()
         {
-            _addRegionButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements white.png"));
             base.Load();
         }
 

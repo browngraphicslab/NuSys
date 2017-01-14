@@ -20,6 +20,14 @@ namespace NuSysApp
         public TransparentButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, int style = 0, string label = "")
             : base(parent, resourceCreator, new RectangleUIElement(parent, resourceCreator))
         {
+            Height = _menuButtonHeight + 10;
+            Width = _menuButtonWidth;
+            Background = Colors.Transparent;
+            Bordercolor = Colors.Transparent;
+            BorderWidth = 0;
+            ImageBounds = new Rect(0, 0, _menuButtonWidth, _menuButtonHeight);
+            ButtonText = label;
+
             switch (style)
             {
                 //primary style for ellipse
@@ -30,15 +38,9 @@ namespace NuSysApp
                 case 1:
                     ButtonTextColor = Constants.RED;
                     break;
+                default:
+                    break;
             }
-
-            Height = _menuButtonHeight +10;
-            Width = _menuButtonWidth;
-            Background = Colors.Transparent;
-            BorderColor = Colors.Transparent;
-            BorderWidth = 0;
-            ImageBounds = new Rect(0, 0, _menuButtonWidth, _menuButtonHeight);
-            ButtonText = label;
 
             SetOriginalValues();
         }

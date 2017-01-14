@@ -177,7 +177,6 @@ namespace NusysServer
                 {
                     var currentLockHolder = _lockController.GetUserFromLock(lockableId);
                     Debug.Assert(user != null);
-                    Debug.Assert(currentLockHolder != null);
 
                     //If the user that has the lock is the one we are about to notify, dont notify him since he would already know
                     if (user == currentLockHolder)
@@ -187,7 +186,7 @@ namespace NusysServer
                     
                     var notification = new LockHolderChangedNotification(new LockHolderChangedNotificationArgs()
                     {
-                        HolderUserId = currentLockHolder.GetUserId(),
+                        HolderUserId = currentLockHolder?.GetUserId(),
                         LockableId = lockableId
                     });
                     user.Notify(notification);
