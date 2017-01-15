@@ -41,6 +41,7 @@ namespace NuSysApp
         public float InkSize = 4;
         public BiDictionary<string, InkStroke> StrokesMap = new BiDictionary<string, InkStroke>();
         public bool ClampInkToBounds = true;
+        private Rect _imageRect;
 
         public InkableUIElement(IInkController inkController, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -62,6 +63,13 @@ namespace NuSysApp
                 }
                 _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, new Size(1000.0, 1000.0));
             });
+        }
+
+        public InkableUIElement(ImageLibraryElementController controller, BaseRenderItem parent,
+            ICanvasResourceCreatorWithDpi resourceCreator) : this(controller.ContentDataController, parent, resourceCreator)
+        {
+            ImageLibraryElementModel model = controller.ImageLibraryElementModel;
+             _imageRect = new Rect(model.NormalizedX, model.NormalizedY, model.NormalizedWidth, model.NormalizedHeight);
         }
 
         private void CanvasInteractionManagerOnInteractionTypeChanged(object sender, CanvasInteractionManager.InteractionType interactionType)
@@ -123,18 +131,14 @@ namespace NuSysApp
 
             _currentInkPoints = new List<InkPoint>();
             var np = Vector2.Transform(e.CurrentPoint, _transform);
-            _currentInkPoints.Add(new InkPoint(new Point(1000 * np.X / Width, 1000 * np.Y / Height), e.Pressure));
+            _currentInkPoints.Add(PointerToInkPoint(np, e.Pressure));
             _needsWetStrokeUpdate = true;
         }
 
         public void UpdateInkByEvent(CanvasPointer e)
         {
             var np = Vector2.Transform(e.CurrentPoint, _transform);
-            if (ClampInkToBounds)
-            {
-                np = Vector2.Clamp(np, new Vector2(0, 0), new Vector2(Width, Height));
-            }
-            _currentInkPoints.Add(new InkPoint(new Point(1000 * np.X / Width, 1000 * np.Y / Height), e.Pressure));
+            _currentInkPoints.Add(PointerToInkPoint(np, e.Pressure));
             _needsWetStrokeUpdate = true;
         }
 
@@ -142,14 +146,19 @@ namespace NuSysApp
         {
             InkRenderItem.StopCanvasInk = false;
             var np = Vector2.Transform(e.CurrentPoint, _transform);
+            _currentInkPoints.Add(PointerToInkPoint(np, e.Pressure));
+            var builder = new InkStrokeBuilder();
+            builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+            return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
+        }
+
+        private InkPoint PointerToInkPoint(Vector2 np, float pressure)
+        {
             if (ClampInkToBounds)
             {
                 np = Vector2.Clamp(np, new Vector2(0, 0), new Vector2(Width, Height));
             }
-            _currentInkPoints.Add(new InkPoint(new Point(1000 * np.X / Width, 1000 * np.Y / Height), e.Pressure));
-            var builder = new InkStrokeBuilder();
-            builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-            return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
+            return (new InkPoint(new Point(1000 * (_imageRect.Width * np.X + _imageRect.X * Width) / Width, 1000 * (_imageRect.Height * np.Y + _imageRect.Y * Height) / Height), pressure));
         }
 
         public async Task StopInkByEvent(CanvasPointer e)
@@ -301,20 +310,20 @@ namespace NuSysApp
                 {
                     dss.Clear(Colors.Transparent);
                     var dryStrokes = _strokesToDraw;
-                    dss.Transform = Matrix3x2.Identity;
+                    dss.Transform = Matrix3x2.CreateTranslation((float)(-_imageRect.X * 1000), (float)(-_imageRect.Y * 1000));
                     dss.DrawInk(dryStrokes);
 
                     _needsDryStrokesUpdate = false;
                 }
             }
 
-            ds.Transform = Matrix3x2.CreateScale(Width / 1000, Height / 1000) * Transform.LocalToScreenMatrix;
+            ds.Transform = Matrix3x2.CreateScale((float)(Width / (1000 * _imageRect.Width)), (float)(Height / (1000 * _imageRect.Height))) * Transform.LocalToScreenMatrix;
             if (_dryStrokesTarget != null)
             {
                 ds.DrawImage(_dryStrokesTarget);
             }
 
-            ds.Transform = Matrix3x2.CreateScale(Width / 1000, Height / 1000) * Transform.LocalToScreenMatrix;
+            ds.Transform = Matrix3x2.CreateTranslation((float)(-_imageRect.X * 1000), (float)(-_imageRect.Y * 1000)) * Matrix3x2.CreateScale((float)(Width / (1000 * _imageRect.Width)), (float)(Height / (1000 * _imageRect.Height))) * Transform.LocalToScreenMatrix;
             if (_currentInkPoints != null && _currentInkPoints.Count > 2)
             {
                 if (_builder == null)
