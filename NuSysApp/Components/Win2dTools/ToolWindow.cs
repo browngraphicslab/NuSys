@@ -321,7 +321,7 @@ namespace NuSysApp
             {
                 Debug.Assert(item == _draggableStackElement);
                 _stackDragIcon.IsVisible = false;
-                Vm.CreateStack(canvasCoordinate.X, canvasCoordinate.Y);
+                Vm.CreateStack(pointer.CurrentPoint);
 
             }
         }
