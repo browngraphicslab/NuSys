@@ -152,7 +152,7 @@ namespace NuSysApp
                 string CollectionId = el.ParentCollectionId;
                 var collectionController =
                     SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
-                return collectionController.Title;
+                return collectionController?.Title;
             };
 
             ListTextColumn<ElementModel> creator = new ListTextColumn<ElementModel>();
@@ -167,7 +167,7 @@ namespace NuSysApp
             {
                 var collectionController =
                     SessionController.Instance.ContentController.GetLibraryElementController(el.ParentCollectionId);
-                return collectionController.LibraryElementModel.LastEditedTimestamp;
+                return collectionController?.LibraryElementModel.LastEditedTimestamp;
             };
 
             List<ListColumn<ElementModel>> cols = new List<ListColumn<ElementModel>>();
