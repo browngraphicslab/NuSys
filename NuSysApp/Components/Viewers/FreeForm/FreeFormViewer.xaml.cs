@@ -1350,9 +1350,13 @@ namespace NuSysApp
             var ncx = center.X;
             var ncy = center.Y;
 
-            target.LocalPosition = new Vector2(ntx, nty);
-            target.LocalScaleCenter = new Vector2(ncx, ncy);
-            target.LocalScale = new Vector2(nsx, nsy);
+            // put a bound on how much we zoom out
+            if (nsx > 0.01 && nsy > 0.01)
+            {
+                target.LocalPosition = new Vector2(ntx, nty);
+                target.LocalScaleCenter = new Vector2(ncx, ncy);
+                target.LocalScale = new Vector2(nsx, nsy);
+            }
         }
 
 

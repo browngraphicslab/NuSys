@@ -708,7 +708,7 @@ namespace NuSysApp
         /// <param name="row"></param>
         private void PopulateListRow(ListViewRowUIElement<T> row)
         {
-            foreach (var column in _listColumns)
+            foreach (var column in _listColumns?.ToArray())
             {
                 Debug.Assert(column != null);
                 RectangleUIElement cell;
@@ -862,7 +862,7 @@ namespace NuSysApp
             {
                 return scrollBarht;
             }
-            foreach (var row in Rows)
+            foreach (var row in Rows.ToArray())
             {
                 var ht = row.HitTest(screenPoint);
                 if (ht != null)

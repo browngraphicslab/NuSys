@@ -321,6 +321,16 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// shows popup that tells user they cannot put a private element on a public collection.
+        /// this way when they do that they don't just end up wondering why nothing happened (gotta have that visual feedback yo).
+        /// </summary>
+        public void ShowPrivateOnPublicPopup()
+        {
+            var popup = new CenteredPopup(this, Canvas, "You cannot put a private element on a collection that is not private.");
+            AddChild(popup);
+        }
+
+        /// <summary>
 
         /// show both the breadcrumb trail window and the back to waiting room button
         /// </summary>

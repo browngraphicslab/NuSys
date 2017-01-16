@@ -42,7 +42,7 @@ namespace NuSysApp
         public ImageDetailRenderItem(ImageLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             ImageUrl = controller.ContentDataController.ContentDataModel.Data;
-
+            Debug.WriteLine(ImageUrl);
             _controller = controller;
             _canvasSize = maxSize;
 
@@ -139,21 +139,7 @@ namespace NuSysApp
             _bmp?.Dispose();
             await Task.Run(async () =>
             {
-                try
-                {
-                    _bmp =
-                        await
-                            CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
-                                ResourceCreator.Dpi);
-                }
-                catch (Exception e)
-                {
-                    _bmp =
-                        await
-                            CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/refresh.png"),
-                                ResourceCreator.Dpi);
-                    Debug.WriteLine("Image failed to load, using default icon instead");
-                }
+                _bmp = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
             });
             ReRender();
             _isLoading = false;

@@ -497,9 +497,19 @@ namespace NuSysApp
             listColumn6.RelativeWidth = 1f;
             listColumn6.ColumnFunction = model => SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId) != null? SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId).Title : "" ;
 
+            var listColumn7 = new ListTextColumn<LibraryElementModel>();
+            listColumn7.Title = "Creation Date";
+            listColumn7.RelativeWidth = 1f;
+            listColumn7.ColumnFunction = model => model.GetController().GetCreationTimestampInMinutes();
+
+            var listColumn8 = new ListTextColumn<LibraryElementModel>();
+            listColumn8.Title = "Access";
+            listColumn8.RelativeWidth = 1f;
+            listColumn8.ColumnFunction = model => model.AccessType.ToString();
+
             LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
-            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4, listColumn5, listColumn6 });
+            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4, listColumn5, listColumn8, listColumn7,listColumn6  });
 
             LibraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());

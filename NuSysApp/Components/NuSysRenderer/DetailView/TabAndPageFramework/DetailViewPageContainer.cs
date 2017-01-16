@@ -338,10 +338,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="text"></param>
-        private void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
+        private async void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
         {
             _currentController.TitleChanged -= OnCurrentControllerTitleChanged;
-            _currentController.SetTitle(text);
+            await UITask.Run(() =>
+            {
+                _currentController.SetTitle(text);
+            });
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
         }
 
@@ -352,7 +355,7 @@ namespace NuSysApp
         public void ShowLibraryElement(string libraryElementModelId, DetailViewPageTabType pageToShow)
         {
             // if we are already showing the library elment model that was selected then just return
-            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId)
+            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId || !_loaded)
             {
                 return;
             }
@@ -365,6 +368,10 @@ namespace NuSysApp
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _titleBox.Text = _currentController.Title;
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
+            {
+                _titleBox.IsEditable = _currentController.LibraryElementModel.Creator == WaitingRoomView.UserID;
+            }
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
 
 

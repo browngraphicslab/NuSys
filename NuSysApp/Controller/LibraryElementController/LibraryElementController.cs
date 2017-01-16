@@ -469,7 +469,7 @@ namespace NuSysApp
         /// This will change make the content libraryElementController remove the library element model and this libraryElementController
         /// then it will fire the deleted event and dispose of this libraryElementController
         /// </summary>
-        public void Delete()
+        public virtual void Delete()
         {
             SessionController.Instance.ActiveFreeFormViewer?.DeselectAll();
             SessionController.Instance.ContentController.Remove(this.LibraryElementModel);
@@ -802,7 +802,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns time stamp in minutes, rather than seconds
+        /// Returns last edited time stamp in minutes, rather than seconds
         /// For example:
         /// 1/18/2017 10:42 PM
         /// </summary>
@@ -825,8 +825,32 @@ namespace NuSysApp
             {
                 return time.Remove(lastIndex, 3);
             }
-            
+        }
 
+        /// <summary>
+        /// Returns creation time stamp in minutes, rather than seconds
+        /// For example:
+        /// 1/18/2017 10:42 PM
+        /// </summary>
+        /// <returns></returns>
+        public string GetCreationTimestampInMinutes()
+        {
+            string time = _libraryElementModel.Timestamp;
+
+            if (string.IsNullOrEmpty(time))
+            {
+                return "";
+            }
+
+            int lastIndex = time.LastIndexOf(':');
+            if (lastIndex < 0)
+            {
+                return time;
+            }
+            else
+            {
+                return time.Remove(lastIndex, 3);
+            }
         }
 
         public void FireAliasRemoved(ElementModel elementModel)

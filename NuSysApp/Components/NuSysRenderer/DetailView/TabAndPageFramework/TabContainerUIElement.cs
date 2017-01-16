@@ -279,7 +279,16 @@ namespace NuSysApp
         {
             // get the tab which is going to be removed from the list of tabs
             var tabToBeRemoved = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.Tab));
-            Debug.Assert(tabToBeRemoved != null);
+            if (tabToBeRemoved == null)
+            {
+                // if there are no tabs left then close the tab container
+                if (_tabList.Count == 0)
+                {
+                    CloseTabContainer();
+                }
+
+                return;
+            }
 
             // get the index of the tab that is going to be removed
             var index = _tabList.IndexOf(tabToBeRemoved);

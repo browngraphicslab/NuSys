@@ -260,8 +260,10 @@ namespace NuSysApp
             // if the item is private and the workspace is public or the item is the current workspace then don't add it
             if ((lec.LibraryElementModel.AccessType == NusysConstants.AccessType.Private &&
                 SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType == NusysConstants.AccessType.Public) || 
-                lec.LibraryElementModel.LibraryElementId == SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId)
+                lec.LibraryElementModel.LibraryElementId == SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId ||
+                (lec.LibraryElementModel.AccessType == NusysConstants.AccessType.Private && SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly))
             {
+                SessionController.Instance.NuSessionView.ShowPrivateOnPublicPopup();
                 return;
             }
 

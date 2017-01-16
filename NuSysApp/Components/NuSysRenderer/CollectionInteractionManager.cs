@@ -536,7 +536,11 @@ namespace NuSysApp
 
                 if (_canvasInteractionManager.ActiveCanvasPointers.Count == 0 && pointer.MillisecondsActive < 150)
                 {
-                    SelectionsCleared?.Invoke();
+                    var keyStateShift = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift);
+                    if (!keyStateShift.HasFlag(CoreVirtualKeyStates.Down))
+                    {
+                        SelectionsCleared?.Invoke();
+                    }
                 }
                 ItemSelected?.Invoke(elementRenderItem);
             }
