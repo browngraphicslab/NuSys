@@ -27,7 +27,7 @@ namespace NuSysApp
             _content = new DetailViewImageRegionContent(this, Canvas, controller, showRegions);
             SetContent(_content);
 
-            _inkable = new InkableUIElement(controller.ContentDataController, this, resourceCreator);
+            _inkable = new InkableUIElement(controller, this, resourceCreator);
             _inkable.Background = Colors.Transparent;
             AddChild(_inkable);
             _inkable.Transform.SetParent(_content.Transform);
