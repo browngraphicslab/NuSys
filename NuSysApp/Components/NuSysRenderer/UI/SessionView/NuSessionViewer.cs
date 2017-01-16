@@ -855,5 +855,40 @@ namespace NuSysApp
             }
 
         }
+
+        /// <summary>
+        /// Method to call in a public collection when an item is double tapped
+        /// </summary>
+        /// <param name="elementToFocus"></param>
+        public void ShowReadOnlyWindows(ElementModel elementToFocus)
+        {
+            Debug.Assert(elementToFocus?.LibraryId != null);
+            var libraryElement = SessionController.Instance.ContentController.GetLibraryElementController(elementToFocus.LibraryId);
+
+            _readOnlyAliasesWindow.UpdateList(libraryElement);
+            _readOnlyLinksWindow.UpdateList(libraryElement);
+            _readOnlyMetadataWindow.UpdateList(libraryElement);
+
+            _readOnlyLinksWindow.IsVisible = true;
+            _readOnlyAliasesWindow.IsVisible = true;
+            _readOnlyMetadataWindow.IsVisible = true;
+
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += TempReadOnlyCanvasPanned;
+        }
+
+        /// <summary>
+        /// Event handler for when the canvas is panned during a public-collection-readonly-element viewing.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TempReadOnlyCanvasPanned(object sender, bool e)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
+            _readOnlyLinksWindow.IsVisible = false;
+            _readOnlyAliasesWindow.IsVisible = false;
+            _readOnlyMetadataWindow.IsVisible = false;
+
+        }
     }
 }

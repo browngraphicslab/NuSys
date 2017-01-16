@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Storage;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -170,9 +176,32 @@ namespace NuSysApp
 
         }
 
-        private void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            /// TODO: OPEN WORD FROM THIS HANDLER    
+            Debug.Assert(_controller.LibraryElementModel.Type == NusysConstants.ElementType.Word);
+            var request = new GetWordDocumentRequest(new GetWordDocumentRequestArgs() {ContentId =  _controller.LibraryElementModel.ContentDataModelId});
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            Debug.Assert(request.WasSuccessful() == true);
+            if (request.WasSuccessful() == true)
+            {
+                var bytes = request.GetReturnedDocumentBytes();
+                var path = _controller.LibraryElementModel.ContentDataModelId + ".docx";
+                NuSysStorages.SaveFolder.CreateFileAsync(path,CreationCollisionOption.ReplaceExisting);
+                File.WriteAllBytes(path,bytes);
+
+                var launcherOptions = new LauncherOptions() { UI = { PreferredPlacement = Placement.Right, InvocationPoint = new Point(SessionController.Instance.SessionView.ActualWidth / 2, 0.0) } };
+                launcherOptions.TreatAsUntrusted = false;
+                launcherOptions.PreferredApplicationDisplayName = "NUSYS";
+                launcherOptions.PreferredApplicationPackageFamilyName = "NuSys";
+                launcherOptions.DesiredRemainingView = ViewSizePreference.UseHalf;
+                await Task.Run(async delegate
+                {
+                    var storageFile = await StorageFile.GetFileFromPathAsync(path);
+                    File.SetAttributes(path, System.IO.FileAttributes.Normal);
+                    await Launcher.LaunchFileAsync(storageFile, launcherOptions);
+                });
+            }
         }
 
         protected virtual void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)

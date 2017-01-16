@@ -23,27 +23,27 @@ namespace NusysServer
     public class MediaProcessor
     {
         //Dll imports and things for MuPdf
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr Open(byte[] data, int length);
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ActivateDocument(IntPtr document);
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int RenderPage(int width, int height);
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetTextBytes(byte[] sb);
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetBuffer();
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageWidth();
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageHeight();
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumComponents();
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumPages();
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GotoPage(int page);
-        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Dispose(IntPtr pointer);
 
         /// <summary>
