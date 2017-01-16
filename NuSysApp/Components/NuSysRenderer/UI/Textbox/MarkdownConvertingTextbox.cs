@@ -83,6 +83,15 @@ namespace NuSysApp
         public event ScrollBarUIElement.ScrollBarPositionChangedHandler ScrollBarPositionChanged;
 
         /// <summary>
+        /// public bool to hide or show the scrollbar and allow or disallow scrolling
+        /// </summary>
+        public bool Scrollable
+        {
+            get { return _verticalScrollBar.IsVisible; }
+            set { _verticalScrollBar.IsVisible = value; }
+        }
+
+        /// <summary>
         /// Overriding the text from base class.
         /// The setter now updates the internal html
         /// </summary>
@@ -156,12 +165,20 @@ namespace NuSysApp
 
         private void MarkdownConvertingTextbox_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
         {
+            if (!Scrollable)
+            {
+                return;
+            }
             _yOffset -= (float)(_canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height * (delta > 0 ? -.05 : .05));
             BoundYOffset();
         }
 
         private void MarkdownConvertingTextbox_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (!Scrollable)
+            {
+                return;
+            }
             _yOffset = _initialDragYOffset + pointer.Delta.Y;
             BoundYOffset();
         }
@@ -200,6 +217,10 @@ namespace NuSysApp
         /// <param name="position"></param>
         private void _verticalScrollBar_ScrollBarPositionChanged(object source, float position)
         {
+            if (!Scrollable)
+            {
+                return;
+            }
             _yOffset = (float) (-position * _canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
             BoundYOffset();
             ScrollBarPositionChanged?.Invoke(this, position);
@@ -390,8 +411,15 @@ namespace NuSysApp
                             Height - 2*(BorderWidth + UIDefaults.YTextPadding))))
                 {
                     // draw the text within the proper bounds
-                    ds.DrawTextLayout(_canvasTextLayout, _xOffset + BorderWidth + UIDefaults.XTextPadding, _yOffset + BorderWidth + UIDefaults.YTextPadding, TextColor);
-
+                    try
+                    {
+                        ds.DrawTextLayout(_canvasTextLayout, _xOffset + BorderWidth + UIDefaults.XTextPadding,
+                            _yOffset + BorderWidth + UIDefaults.YTextPadding, TextColor);
+                    }
+                    catch (Exception e)
+                    {
+                        //TODO maybe notify the user?
+                    }
                 }
             }
 

@@ -90,6 +90,13 @@ namespace NuSysApp
         /// </summary>
         public event ScrollBarPositionChangedHandler ScrollBarPositionChanged;
 
+
+        /// <summary>
+        /// bool for if the bar should be visible or not.  
+        /// This is an internal bool that is different than IsVisible
+        /// </summary>
+        private bool _isBarVisible;
+
         /// <summary>
         /// Range is the normalized length of the slider. The end position - start position.
         /// </summary>
@@ -98,7 +105,7 @@ namespace NuSysApp
             set
             {
                 _range = Math.Min(1, value);
-                IsVisible = _range != 1f; //Scrolling should only be active if range is not equal to 1
+                _isBarVisible = _range != 1f; //Scrolling should only be active if range is not equal to 1
 
             }
             get
@@ -375,6 +382,16 @@ namespace NuSysApp
 
         }
 
-
+        /// <summary>
+        /// Override allows us to hide the bar if it would be the entire height and should be hiddwen
+        /// </summary>
+        /// <param name="ds"></param>
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            if (_isBarVisible)
+            {
+                base.Draw(ds);
+            }
+        }
     }
 }

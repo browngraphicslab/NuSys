@@ -862,7 +862,7 @@ namespace NuSysApp
             {
                 return scrollBarht;
             }
-            foreach (var row in Rows)
+            foreach (var row in Rows.ToArray())
             {
                 var ht = row.HitTest(screenPoint);
                 if (ht != null)

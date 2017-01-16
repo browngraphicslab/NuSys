@@ -802,7 +802,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns time stamp in minutes, rather than seconds
+        /// Returns last edited time stamp in minutes, rather than seconds
         /// For example:
         /// 1/18/2017 10:42 PM
         /// </summary>
@@ -825,8 +825,32 @@ namespace NuSysApp
             {
                 return time.Remove(lastIndex, 3);
             }
-            
+        }
 
+        /// <summary>
+        /// Returns creation time stamp in minutes, rather than seconds
+        /// For example:
+        /// 1/18/2017 10:42 PM
+        /// </summary>
+        /// <returns></returns>
+        public string GetCreationTimestampInMinutes()
+        {
+            string time = _libraryElementModel.Timestamp;
+
+            if (string.IsNullOrEmpty(time))
+            {
+                return "";
+            }
+
+            int lastIndex = time.LastIndexOf(':');
+            if (lastIndex < 0)
+            {
+                return time;
+            }
+            else
+            {
+                return time.Remove(lastIndex, 3);
+            }
         }
 
         public void FireAliasRemoved(ElementModel elementModel)

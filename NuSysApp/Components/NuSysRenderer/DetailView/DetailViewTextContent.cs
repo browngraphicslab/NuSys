@@ -101,7 +101,7 @@ namespace NuSysApp
                 BorderColor = Constants.DARK_BLUE,
                 Background = Colors.White,
                 PlaceHolderText = "Enter text here...",
-                Text = _controller.ContentDataController.ContentDataModel.Data
+                Text = _controller.ContentDataController.ContentDataModel.Data,
             };
             AddChild(_mainTextBox);
 
@@ -113,6 +113,7 @@ namespace NuSysApp
             };
             AddChild(_overlay);
             _overlay.IsVisible = false;
+            _overlay.Tapped += OverlayOnTapped;
 
             //button to toggle display
             _toggleDisplayButton = new RectangleButtonUIElement(this, resourceCreator, text: "Toggle Display");
@@ -150,6 +151,19 @@ namespace NuSysApp
             _mainTextBox.OnFocusLost += MainTextBoxOnOnFocusLost;
             _mainTextBox.ScrollBarPositionChanged += _mainTextBox_ScrollBarPositionChanged;
             _markdownBox.ScrollBarPositionChanged += _markdownBox_ScrollBarPositionChanged;
+        }
+        
+        /// <summary>
+        /// event fired whenever the overlay is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OverlayOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_overlay.IsVisible)
+            {
+                _overlay.Background = Constants.LIGHT_BLUE_TRANSLUCENT;
+            }
         }
 
         private void _markdownBox_ScrollBarPositionChanged(object source, float position)
@@ -208,17 +222,11 @@ namespace NuSysApp
         private void HideOverlay()
         {
             _overlay.IsVisible = false;
-            _mainTextBox.IsHitTestVisible = true;
         }
 
         private void ShowOverlay()
         {
             _overlay.IsVisible = true;
-            _mainTextBox.IsHitTestVisible = false;
-            SessionController.Instance.FocusManager.ClearFocus();
-            _mainTextBox.OnFocusLost -= MainTextBoxOnOnFocusLost;
-            _mainTextBox.LostFocus();
-            _mainTextBox.OnFocusLost += MainTextBoxOnOnFocusLost;
         }
 
         private void MainTextBoxOnOnFocusGained(BaseRenderItem item)
@@ -369,18 +377,34 @@ namespace NuSysApp
 
         public void LockChanged(object sender, NetworkUser currentUser)
         {
-            if (currentUser != null)
-            {
-                if (!currentUser.IsLocalUser())
-                {
-                    _isEditing.IsVisible = true;
-                }
-            }
-            else
+            if (currentUser?.IsLocalUser() == true) // if we have the lock
             {
                 HideOverlay();
+                
+                _mainTextBox.IsFocusable = true;
+                _mainTextBox.IsHitTestVisible = true;
                 _isEditing.IsVisible = false;
             }
+            else if (currentUser == null)// if nobody has the lock
+            {
+                HideOverlay();
+                _mainTextBox.IsFocusable = true;
+                _mainTextBox.IsHitTestVisible = true;
+                _isEditing.IsVisible = false;
+            }
+            else //current controlling user is null or not the local user
+            {
+                _overlay.Background = new Color() {A=5,B=_overlay.Background.B, G = _overlay.Background.G , R = _overlay.Background.R };
+                _isEditing.IsVisible = true;
+                _isEditing.Text = currentUser.DisplayName + " is editing...";
+                _mainTextBox.IsFocusable = false;
+                _mainTextBox.IsHitTestVisible = false;
+                SessionController.Instance.FocusManager.ClearFocus();
+                ShowOverlay();
+            }
+
+            _mainTextBox.BorderColor = currentUser == null ? UIDefaults.Bordercolor : currentUser.Color;
+            _mainTextBox.BorderWidth = currentUser == null ? 1 : 7;
         }
     }
 }
