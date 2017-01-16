@@ -365,6 +365,10 @@ namespace NuSysApp
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _titleBox.Text = _currentController.Title;
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
+            {
+                _titleBox.IsEditable = _currentController.LibraryElementModel.Creator == WaitingRoomView.UserID;
+            }
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
 
 
