@@ -137,9 +137,7 @@ namespace NuSysApp
         /// but used by classes which inherit from this
         /// </summary>
         /// <param name="ds"></param>
-        protected virtual void DrawText(CanvasDrawingSession ds)
-        {
-        }
+        protected virtual void DrawText(CanvasDrawingSession ds){}
 
         /// <summary>
         /// Draws the border inside the Rectangle UIElement
@@ -193,7 +191,7 @@ namespace NuSysApp
             if (BorderType == BorderType.Inside||BorderType == BorderType.Outside)
             {
                 // draw the background of the rectangle
-                ds.FillRectangle(new Rect(0, 0, Width, Height), Background);
+                ds.FillRectangle(0, 0, Width, Height, Background);
 
             }
             ds.Transform = orgTransform;
