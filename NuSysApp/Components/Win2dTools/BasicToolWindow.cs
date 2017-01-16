@@ -113,7 +113,7 @@ namespace NuSysApp
             _toolView.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT;
             _toolView.Width = Width;
             _toolView.Transform.LocalPosition = new Vector2(0, FILTER_CHOOSER_HEIGHT);
-            
+
             base.Update(parentLocalToScreenTransform);
         }
 
@@ -124,45 +124,37 @@ namespace NuSysApp
         private void SetUpBottomButtons()
         {
             //Set up list button
-            var listButtonRectangle = new RectangleUIElement(this, ResourceCreator)
+            _listToolViewButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
-                Background = Colors.Transparent,
                 Height = VIEW_BUTTON_HEIGHT,
-                Width = VIEW_BUTTON_HEIGHT,
+                Width = VIEW_BUTTON_HEIGHT
             };
-            _listToolViewButton = new ButtonUIElement(this, ResourceCreator, listButtonRectangle);
             _listToolViewButton.Tapped += ListToolViewButton_Tapped;
+            _listToolViewButton.ButtonTextColor = Constants.ALMOST_BLACK;
             _listToolViewButton.Transform.LocalPosition = new Vector2(VIEW_BUTTON_MARGIN,
                 ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
             AddChild(_listToolViewButton);
 
-            //Set up pie button 
-            var pieButtonRectangle = new RectangleUIElement(this, ResourceCreator)
+            _pieToolViewButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
-                Background = Colors.Transparent,
                 Height = VIEW_BUTTON_HEIGHT,
-                Width = VIEW_BUTTON_HEIGHT,
+                Width = VIEW_BUTTON_HEIGHT
             };
-            _pieToolViewButton = new ButtonUIElement(this, ResourceCreator, pieButtonRectangle);
             _pieToolViewButton.Tapped += PieToolViewButton_Tapped;
-            _pieToolViewButton.ButtonTextColor = Constants.color3;
+            _pieToolViewButton.ButtonTextColor = Constants.ALMOST_BLACK;
             _pieToolViewButton.Transform.LocalPosition =
                 new Vector2(_listToolViewButton.Transform.LocalX + _listToolViewButton.Width + VIEW_BUTTON_MARGIN,
                     ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
             AddChild(_pieToolViewButton);
 
             //Set up bar chart button 
-            var barButtonRectangle = new RectangleUIElement(this, ResourceCreator)
+            _barToolViewButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
-                Background = Colors.Transparent,
                 Height = VIEW_BUTTON_HEIGHT,
-                Width = VIEW_BUTTON_HEIGHT,
-                BorderWidth = 1,
-                BorderColor = Constants.color2
+                Width = VIEW_BUTTON_HEIGHT
             };
-            _barToolViewButton = new ButtonUIElement(this, ResourceCreator, barButtonRectangle);
             _barToolViewButton.Tapped += BarToolViewButton_Tapped;
-            _barToolViewButton.ButtonTextColor = Colors.Black;
+            _barToolViewButton.ButtonTextColor = Constants.ALMOST_BLACK;
             _barToolViewButton.Transform.LocalPosition =
                 new Vector2(_pieToolViewButton.Transform.LocalX + _pieToolViewButton.Width + VIEW_BUTTON_MARGIN,
                     ButtonBarRectangle.Transform.LocalY + VIEW_BUTTON_MARGIN);
@@ -172,17 +164,17 @@ namespace NuSysApp
             UITask.Run(async delegate
             {
                 _listToolViewButton.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/listview bluegreen.png"));
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/listview.png"));
                 _listToolViewButton.ImageBounds = new Rect(_listToolViewButton.Width / 4, _listToolViewButton.Height / 4, _listToolViewButton.Width / 2, _listToolViewButton.Height / 2);
 
 
                 _pieToolViewButton.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/piegraph bluegreen.png"));
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pie chart.png"));
                 _pieToolViewButton.ImageBounds = new Rect(_pieToolViewButton.Width / 4, _pieToolViewButton.Height / 4, _pieToolViewButton.Width / 2, _pieToolViewButton.Height / 2);
 
 
                 _barToolViewButton.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/bar chart icon.png"));
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/bar chart.png"));
                 _barToolViewButton.ImageBounds = new Rect(_barToolViewButton.Width / 4, _barToolViewButton.Height / 4, _barToolViewButton.Width / 2, _barToolViewButton.Height / 2);
 
             });

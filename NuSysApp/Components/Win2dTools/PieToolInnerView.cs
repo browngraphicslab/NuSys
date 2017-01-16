@@ -17,6 +17,9 @@ namespace NuSysApp
 
         public PieToolInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel vm) : base(parent, resourceCreator, vm)
         {
+            Background = Colors.White;
+            BorderWidth = 1;
+            BorderColor = Constants.LIGHT_BLUE;
             SetUpPieChart();
         }
 

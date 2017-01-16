@@ -9,6 +9,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Converters;
+using SharpDX.Direct2D1.Effects;
 
 namespace NuSysApp
 {
@@ -61,14 +62,14 @@ namespace NuSysApp
         /// <summary>
         /// The height of the rows and button for the filter chooser dropdown menu
         /// </summary>
-        protected const int FILTER_CHOOSER_HEIGHT = 60;
+        protected const int FILTER_CHOOSER_HEIGHT = 50;
 
         /// <summary>
         ///Height of the button bar at the bottom of the tool
         /// </summary>
-        protected const int BUTTON_BAR_HEIGHT = 60;
+        protected const int BUTTON_BAR_HEIGHT = 50;
 
-        private const int PARENT_OPERATOR_BUTTON_HEIGHT = 50;
+        private const int PARENT_OPERATOR_BUTTON_HEIGHT = 30;
 
         private const int PARENT_OPERATOR_BUTTON_WIDTH = 150;
 
@@ -97,7 +98,9 @@ namespace NuSysApp
             SetUpBottomButtonBar();
             SetUpResizer();
             Vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
-            this.BorderWidth = 0;
+            Background = Colors.White;
+            Vm.Height = 500;
+            Vm.Width = 400;
             Height = (float)Vm.Height;
             Width = (float)Vm.Width;
             Transform.LocalX = (float)Vm.X;
@@ -108,8 +111,8 @@ namespace NuSysApp
         {
             _resizer = new ToolResizerRenderItem(this, ResourceCreator)
             {
-                Width = 60,
-                Height = 60,
+                Width = BUTTON_BAR_HEIGHT,
+                Height = BUTTON_BAR_HEIGHT,
             };
             //_resizer.
             _resizer.Dragged += _resizer_Dragged;
@@ -204,7 +207,7 @@ namespace NuSysApp
         {
             ButtonBarRectangle = new RectangleUIElement(this, ResourceCreator)
             {
-                Background = Constants.color1,
+                Background = Constants.LIGHT_BLUE,
                 Height = BUTTON_BAR_HEIGHT,
                 Width = Width
             };
@@ -218,23 +221,12 @@ namespace NuSysApp
         private void SetUpDraggableIcons()
         {
             //Sets collection button to be dragged
-            var collectionRectangle = new RectangleUIElement(this, ResourceCreator)
+            _draggableCollectionElement = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle, "collection")
             {
-                Background = Colors.Transparent,
-                Height = 50,
-                Width = 50,
-            };
-            _draggableCollectionElement = new ButtonUIElement(this, ResourceCreator, collectionRectangle)
-            {
-                ButtonText = "collection",
                 ButtonTextSize = 10,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 ButtonTextColor = Constants.DARK_BLUE
             };
-            _draggableCollectionElement.ImageBounds = new Rect(_draggableCollectionElement.Width/4,
-                _draggableCollectionElement.Height/4, _draggableCollectionElement.Width/2,
-                _draggableCollectionElement.Height/2);
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
             _draggableCollectionElement.Dragged += CollectionOrStack_Dragging; 
             _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted; 
@@ -252,22 +244,14 @@ namespace NuSysApp
 
 
             //Set up stack button to be dragged
-            var stackRectangle = new RectangleUIElement(this, ResourceCreator)
+
+            _draggableStackElement = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle, "stack")
             {
-                Background = Colors.Transparent,
-                Height = 50,
-                Width = 50,
-            };
-            _draggableStackElement = new ButtonUIElement(this, ResourceCreator, stackRectangle)
-            {
-                ButtonText = "stack",
                 ButtonTextSize = 10,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 ButtonTextColor = Constants.DARK_BLUE
             };
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
-            _draggableStackElement.ImageBounds = new Rect(_draggableStackElement.Width/4, _draggableStackElement.Height/4, _draggableStackElement.Width/2, _draggableStackElement.Height/2);
             _draggableStackElement.Dragged += CollectionOrStack_Dragging; 
             _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted; 
             AddChild(_draggableStackElement);
@@ -285,16 +269,14 @@ namespace NuSysApp
             UITask.Run(async delegate
             {
                 _draggableCollectionElement.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
 
-                _collectionDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+                _collectionDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
 
                 _draggableStackElement.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/stack.png"));
 
-
-
-                _stackDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection icon bluegreen.png"));
+                _stackDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/stack.png"));
 
             });
 
@@ -363,15 +345,13 @@ namespace NuSysApp
                 Width = Width,
                 Height = FILTER_CHOOSER_HEIGHT,
                 RowHeight = FILTER_CHOOSER_HEIGHT,
-                ButtonTextColor = Constants.color3,
-                BorderWidth = 2,
-                BorderColor = Constants.color3,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left,
+                ButtonTextColor = Constants.ALMOST_BLACK,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextSize = 24,
+                BorderWidth = 0,
+                Background = Constants.LIGHT_BLUE,
                 ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                Background = Constants.color1,
-                ListBackground = Constants.color2,
-                ListBorder = 1
-                
+                ListBackground = Constants.LIGHT_BLUE,
             };
             foreach (var filterType in Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>())
             {
@@ -526,8 +506,6 @@ namespace NuSysApp
             {
                 _filterChooser.Width = Width;
             }
-
-            
 
             if (_parentOperatorButton != null)
             {
