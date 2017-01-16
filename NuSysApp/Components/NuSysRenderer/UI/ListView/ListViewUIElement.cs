@@ -708,7 +708,7 @@ namespace NuSysApp
         /// <param name="row"></param>
         private void PopulateListRow(ListViewRowUIElement<T> row)
         {
-            foreach (var column in _listColumns)
+            foreach (var column in _listColumns?.ToArray())
             {
                 Debug.Assert(column != null);
                 RectangleUIElement cell;

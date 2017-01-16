@@ -14,33 +14,38 @@ namespace NusysServer
     public class FileHelper
     {
 
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr Open(byte[] data, int length);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ActivateDocument(IntPtr document);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int RenderPage(int width, int height);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetTextBytes(byte[] sb);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetBuffer();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageWidth();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageHeight();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumComponents();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumPages();
 
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GotoPage(int page);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Dispose(IntPtr pointer);
         /// <summary>
         /// the encoding when writing bytes to a file.
         /// </summary>
         private static UnicodeEncoding Encoding = new UnicodeEncoding();
+
+        /// <summary>
+        /// the pdf lock object
+        /// </summary>
+        public static object MuPdfLock = new object();
 
         /// <summary>
         /// returns the correct data for a ContentDataModel based on the contentUrl from the database. 
@@ -169,63 +174,68 @@ namespace NusysServer
                         break;
 
                     case NusysConstants.ContentType.PDF:
-                        var pdfBytes = Convert.FromBase64String(contentData);
-                        var doc = Open(pdfBytes, pdfBytes.Length);
-
-                        // Active the pdf document
-                        ActivateDocument(doc);
-                        var listOfUrls = new List<string>();
-                        for (int page = 0; page < GetNumPages() ; page++)
+                        lock (MuPdfLock)
                         {
-                            // Goto a page
-                            GotoPage(page);
+                            var pdfBytes = Convert.FromBase64String(contentData);
+                            var doc = Open(pdfBytes, pdfBytes.Length);
 
-                            // Get aspect ratio of the page
-                            var aspectRatio = GetPageWidth()/(double) GetPageHeight();
+                            // Active the pdf document
+                            ActivateDocument(doc);
+                            var listOfUrls = new List<string>();
+                            for (int page = 0; page < GetNumPages(); page++)
+                            {
+                                // Goto a page
+                                GotoPage(page);
 
-                            // Render the Page
-                            var size = 2000;
-                            var numBytes = RenderPage((int) (size*aspectRatio), size);
+                                // Get aspect ratio of the page
+                                var aspectRatio = GetPageWidth()/(double) GetPageHeight();
 
-                            // Get a reference to the buffer that contains the rendererd page
-                            var buffer = GetBuffer();
+                                // Render the Page
+                                var size = 2000;
+                                var numBytes = RenderPage((int) (size*aspectRatio), size);
 
-                            // Copy the buffer from unmanaged to managed memory (mngdArray contains the bytes of the pdf page rendered as PNG)
-                            byte[] mngdArray = new byte[numBytes];
+                                // Get a reference to the buffer that contains the rendererd page
+                                var buffer = GetBuffer();
+
+                                // Copy the buffer from unmanaged to managed memory (mngdArray contains the bytes of the pdf page rendered as PNG)
+                                byte[] mngdArray = new byte[numBytes];
+                                try
+                                {
+                                    Marshal.Copy(buffer, mngdArray, 0, numBytes);
+                                    filePath = Constants.WWW_ROOT + contentDataModelId + "_" + page +
+                                               NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
+
+                                    var stream1 = File.Create(filePath);
+                                    stream1.Dispose();
+
+                                    using (var fstream = File.OpenWrite(filePath))
+                                    {
+                                        var bytes = mngdArray;
+                                        fstream.Write(bytes, 0, bytes.Length);
+                                    }
+                                    listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + page +
+                                                   NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                                }
+                                catch (Exception e)
+                                {
+                                    var e2 =
+                                        new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
+                                    ErrorLog.AddError(e2);
+                                    throw e2;
+                                }
+                            }
                             try
                             {
-                                Marshal.Copy(buffer, mngdArray, 0, numBytes);
-                                filePath = Constants.WWW_ROOT + contentDataModelId + "_" + page +
-                                           NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
-
-                                var stream1 = File.Create(filePath);
-                                stream1.Dispose();
-
-                                using (var fstream = File.OpenWrite(filePath))
-                                {
-                                    var bytes = mngdArray;
-                                    fstream.Write(bytes, 0, bytes.Length);
-                                }
-                                listOfUrls.Add(Constants.SERVER_ADDRESS + contentDataModelId + "_" + page +
-                                               NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                                Dispose(doc);
                             }
                             catch (Exception e)
                             {
-                                var e2 = new Exception(e.Message + ".  Error creating pdf and copying bytes for image");
-                                ErrorLog.AddError(e2);
-                                throw e2;
+                                ErrorLog.AddError(e);
+                                return JsonConvert.SerializeObject(listOfUrls);
                             }
-                        }
-                        try
-                        {
-                            Dispose(doc);
-                        }
-                        catch (Exception e)
-                        {
-                            ErrorLog.AddError(e);
+
                             return JsonConvert.SerializeObject(listOfUrls);
                         }
-                        return JsonConvert.SerializeObject(listOfUrls);
                         break;
                     case NusysConstants.ContentType.Text:
                     case NusysConstants.ContentType.Collection:
@@ -273,32 +283,45 @@ namespace NusysServer
             {
                 throw new Exception("the contentDataModelId cannot be null when creating a word thumbnail");
             }
-
-            var doc = Open(pdfBytes, pdfBytes.Length);
-            ActivateDocument(doc);
-            GotoPage(0);
-            var aspectRatio = GetPageWidth() / (double)GetPageHeight();
-
-            foreach (var s in Enum.GetValues(typeof(NusysConstants.ThumbnailSize)))
+            lock (MuPdfLock)
             {
-                var size = (NusysConstants.ThumbnailSize)s;
-                var fileName = NusysConstants.GetDefaultThumbnailFileName(contentDataModelId, size) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
-
-                //hard to read but just switches on size and sets the width accordingly
-                var height = size == NusysConstants.ThumbnailSize.Small ? 100 : (size == NusysConstants.ThumbnailSize.Medium ? 250 : 500);
-
-                var numBytes = RenderPage((int)(height * aspectRatio), height);
-                var buffer = GetBuffer();
-
-                byte[] mngdArray = new byte[numBytes];
-
-                var fileStream = File.Create(Constants.WWW_ROOT + fileName);
-                fileStream.Dispose();
-
-                Marshal.Copy(buffer, mngdArray, 0, numBytes);
-                using (var fstream = File.OpenWrite(Constants.WWW_ROOT + fileName))
+                try
                 {
-                    fstream.Write(mngdArray, 0, mngdArray.Length);
+                    var doc = Open(pdfBytes, pdfBytes.Length);
+                    ActivateDocument(doc);
+                    GotoPage(0);
+                    var aspectRatio = GetPageWidth()/(double) GetPageHeight();
+
+                    foreach (var s in Enum.GetValues(typeof(NusysConstants.ThumbnailSize)))
+                    {
+                        var size = (NusysConstants.ThumbnailSize) s;
+                        var fileName = NusysConstants.GetDefaultThumbnailFileName(contentDataModelId, size) +
+                                       NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
+
+                        //hard to read but just switches on size and sets the width accordingly
+                        var height = size == NusysConstants.ThumbnailSize.Small
+                            ? 100
+                            : (size == NusysConstants.ThumbnailSize.Medium ? 250 : 500);
+
+                        var numBytes = RenderPage((int) (height*aspectRatio), height);
+                        var buffer = GetBuffer();
+
+                        byte[] mngdArray = new byte[numBytes];
+
+                        var fileStream = File.Create(Constants.WWW_ROOT + fileName);
+                        fileStream.Dispose();
+
+                        Marshal.Copy(buffer, mngdArray, 0, numBytes);
+                        using (var fstream = File.OpenWrite(Constants.WWW_ROOT + fileName))
+                        {
+                            fstream.Write(mngdArray, 0, mngdArray.Length);
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    ErrorLog.AddError(new Exception(e.Message + "  ADDING WORD THUMBNAILS FAILURE."));
                 }
             }
         }

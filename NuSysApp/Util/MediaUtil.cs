@@ -15,6 +15,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -99,6 +100,36 @@ namespace NuSysApp
             return document;
         }
 
+        /// <summary>
+        /// Method to call isntead of await CanvasBitmap.LoadAsync.
+        /// This will try catch the load and make sure it has a proper url.
+        /// </summary>
+        /// <param name="resourceCreator"></param>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
+        {
+            try
+            {
+                Debug.WriteLine(uri.AbsoluteUri);
+                if (dpi != null)
+                {
+                    return await CanvasBitmap.LoadAsync(resourceCreator, uri, dpi.Value);
+                }
+                else
+                {
+                    return await CanvasBitmap.LoadAsync(resourceCreator, uri);
+                }
+            }
+            catch(Exception e)
+            {
+                if (dpi != null)
+                {
+                    return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_play.png"),dpi.Value);
+                }
+                return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_play.png"));
+            }
+        }
 
         /// <summary>
         /// Returns a dictionary mapping thumbnail strings to all thumbnailsize 

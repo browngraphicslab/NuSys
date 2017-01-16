@@ -40,7 +40,7 @@ namespace NuSysApp
 
             AddChild(_image);
 
-            _inkable = new InkableUIElement(_pdfLibraryElementController.ContentDataController, this, resourceCreator);
+            _inkable = new InkableUIElement(_pdfLibraryElementController, this, resourceCreator);
             _inkable.Background = Colors.Transparent;
             AddChild(_inkable);
             _inkable.Transform.SetParent(_image.Transform);

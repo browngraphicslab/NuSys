@@ -25,6 +25,12 @@ namespace NuSysApp
         {
         }
 
+        public void SetAspectRatio(double aspectRatio)
+        {
+            ImageLibraryElementModel.Ratio = aspectRatio;
+            _debouncingDictionary.Add(NusysConstants.IMAGE_LIBRARY_ELEMENT_MODEL_RATIO_KEY, aspectRatio);
+        }
+
         public void SetSize(double width, double height)
         {
             ImageLibraryElementModel.NormalizedWidth = width;

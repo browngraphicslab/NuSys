@@ -24,7 +24,7 @@ namespace NuSysApp
             _content = new DetailViewPdfRegionContent(this, resourceCreator, controller, showRegions);
             SetContent(_content);
 
-            _inkable = new InkableUIElement(controller.ContentDataController, this, resourceCreator);
+            _inkable = new InkableUIElement(controller, this, resourceCreator);
             _inkable.Background = Colors.Transparent;
             _content.AddChild(_inkable);
         }

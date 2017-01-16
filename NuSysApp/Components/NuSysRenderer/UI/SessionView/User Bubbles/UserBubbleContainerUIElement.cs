@@ -98,6 +98,10 @@ namespace NuSysApp
 
         private void NewNetworkUser(NetworkUser user)
         {
+            if (_userIds_toBubbles.ContainsKey(user.UserID))
+            {
+                return;
+            }
             // get the name of the user formatted correctly
             var name = user.DisplayName ?? user.UserID;
             name = name.Length == 0 ? "_" : name.TrimStart().Substring(0, 1).ToUpper();
@@ -139,7 +143,13 @@ namespace NuSysApp
             _userNameRect.Transform.LocalPosition = userbubble.Transform.LocalPosition -
                                                     new Vector2(_userNameRect.Width/2 - userbubble.Width/2, _userNameRect.Height + 5);
             // get the user id of the button that was selected
-            var user_id = _userIds_toBubbles.Where(kv => kv.Value == userbubble).Select(kv => kv.Key).First();
+            var user_id = _userIds_toBubbles.Where(kv => kv.Value == userbubble).Select(kv => kv.Key).FirstOrDefault();
+
+            Debug.Assert(user_id != null);
+            if (user_id == null)
+            {
+                return;
+            }
 
             // hide the rectangle if the button clicked is already being displayed
             if (_currentUserNameDisplayed_userid == user_id)

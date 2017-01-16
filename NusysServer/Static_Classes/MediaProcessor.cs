@@ -23,27 +23,27 @@ namespace NusysServer
     public class MediaProcessor
     {
         //Dll imports and things for MuPdf
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr Open(byte[] data, int length);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ActivateDocument(IntPtr document);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int RenderPage(int width, int height);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetTextBytes(byte[] sb);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetBuffer();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageWidth();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetPageHeight();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumComponents();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNumPages();
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GotoPage(int page);
-        [DllImport("mupdfapit1", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("mupdfapit2", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Dispose(IntPtr pointer);
 
         /// <summary>
@@ -57,7 +57,6 @@ namespace NusysServer
         /// <param name="senderHandler"></param>
         public static void ProcessCreateContentDataModelRequestMedia(Message contentDataModelMessage, string contentDataModelId, string contentUrl, NusysConstants.ElementType elementType, NuWebSocketHandler senderHandler)
         {
-            return;
             var title = contentDataModelMessage.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY); //get the current title of tje library element model used for this
             //create a new async Task so we don't slow down the request
             Task.Run(async delegate
@@ -69,6 +68,7 @@ namespace NusysServer
                 switch (contentType)
                 {
                     case NusysConstants.ContentType.PDF:
+                        return;
                         //store the pdf text as local variable
                         var pdfText = new List<string>();
 

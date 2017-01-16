@@ -706,8 +706,9 @@ namespace NuSysApp
                         outLibElemController.FireLinkRemoved(linkLibraryElementId);
                     }
 
-                    SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.RemoveLink(
-                        linkLibraryElementId);
+                    SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.RemoveLink(linkLibraryElementId);
+
+
 
                     // return true because request was performed succesfully
                     return true;

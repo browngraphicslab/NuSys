@@ -57,7 +57,7 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
-            var transform = xImage.RenderTransform as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
             Debug.Assert(transform != null);
             transform.ScaleX = 1;
             transform.ScaleY = 1;
@@ -96,7 +96,13 @@ namespace NuSysApp
             SetCanvasSize();
             Visibility = Visibility.Visible;
             xImage.Source = new BitmapImage(imageUri);
-            xImage.RenderTransform = new CompositeTransform();
+            var tg = new TransformGroup();
+            tg.Children.Add(new CompositeTransform());
+            tg.Children.Add(new CompositeTransform());
+            tg.Children.Add(new CompositeTransform());
+            tg.Children.Add(new CompositeTransform());
+            xImage.RenderTransform = tg ;
+
             ResetImage();
         }
 
@@ -115,13 +121,13 @@ namespace NuSysApp
 
         private void XCanvas_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            var transform = xImage.RenderTransform as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
             Debug.Assert(transform != null);
         }
 
         private void XCanvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var transform = xImage.RenderTransform as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
             Debug.Assert(transform != null);
 
             /*
@@ -185,11 +191,19 @@ namespace NuSysApp
 
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            var start = (xImage.RenderTransform as TransformGroup).Children[1] as CompositeTransform;
+            start.CenterX = e.Position.X;
+            start.CenterY = e.Position.Y;
+
+            var rotate = (xImage.RenderTransform as TransformGroup).Children[2] as CompositeTransform;
+            //rotate.Rotation += e.Delta.Rotation;
+            var end = (xImage.RenderTransform as TransformGroup).Children[3] as CompositeTransform;
         }
 
         private void XImage_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            var transform = xImage.RenderTransform as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
             Debug.Assert(transform != null);
 
             //transform.CenterX = e.Position.X;
@@ -202,7 +216,7 @@ namespace NuSysApp
 
         private void XImage_OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-            var transform = xImage.RenderTransform as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
             var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
             var compositeTransform = transform;
             var center = e.GetCurrentPoint(xImage).Position;
