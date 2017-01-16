@@ -406,7 +406,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
-            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -40);
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -50);
             RenderEngine.BtnDelete.IsVisible = true;
 
             //HTML export
@@ -418,9 +418,11 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element, CanvasPointer pointer)
         {
-            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0,-40);
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(40,0);
             RenderEngine.BtnDelete.IsVisible = true;
             _selectedLink = element;
+
+            RenderEngine.BtnExportTrail.IsVisible = false;
         }
 
         private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,

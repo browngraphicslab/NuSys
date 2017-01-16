@@ -12,7 +12,7 @@ namespace NusysServer
 
         public static void AddError(Exception e)
         {
-            AddErrorString(e.Message + "  " + e.Source + "  " + e.StackTrace);
+            AddErrorString(e.Message + "  " + e.Source + "  " + e.StackTrace + "\n");
         }
         public static void AddErrorString(string error, bool secondAttempt = false)
         {

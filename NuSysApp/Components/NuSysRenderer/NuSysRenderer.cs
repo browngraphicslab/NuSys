@@ -34,8 +34,6 @@ namespace NuSysApp
 {
     public class NuSysRenderer : CanvasRenderEngine
     { 
-        
-        private MinimapRenderItem _minimap;
         public ElementSelectionRenderItem ElementSelectionRect;
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
         public InkOptionsRenderItem InkOptions;
