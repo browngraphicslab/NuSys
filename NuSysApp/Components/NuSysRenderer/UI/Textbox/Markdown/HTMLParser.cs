@@ -54,7 +54,7 @@ namespace NuSysApp
             var parsedItems = new List<ParseItem>();
             var htmlDocument = GetHTMLDocumentFromString(html);
             RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0, parsedItems);
-            var text = HTMLHelper.StripTagsRegex(AddWhiteSpace(html));
+            var text = System.Net.WebUtility.HtmlDecode(HTMLHelper.StripTagsRegex(AddWhiteSpace(html)));
             var textLayout = new CanvasTextLayout(_resourceCreator, text, _textFormat, (float) canvasWidth, (float) canvasHeight);
             ApplyFormatting(textLayout, parsedItems);
             return textLayout;
