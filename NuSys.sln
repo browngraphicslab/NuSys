@@ -35,6 +35,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{F4A65E4A-F3B3-4F22-B86E-34AC5B656689}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkScorerGUI", "LinkScorerGUI\LinkScorerGUI.csproj", "{AC883197-5EF5-438A-82FE-1A08926A4F86}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2614CF85-5115-4081-A993-84B2E23FD03D} = {2614CF85-5115-4081-A993-84B2E23FD03D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserHelper", "ParserHelper\ParserHelper.csproj", "{2614CF85-5115-4081-A993-84B2E23FD03D}"
 EndProject

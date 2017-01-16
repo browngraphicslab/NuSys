@@ -26,15 +26,27 @@ namespace ParserHelper
         /// <summary>
         /// These are the expressions that once detected in a title will be removed because they are some type of spam
         /// </summary>
-        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|more.$)");
+        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|learn more|references?|follow( me)?|e-handbook|posted by:|credits?|^\s*thank you\s*$|\d+.*?this (?:year|day|month|hour|minute|night|decade|lifetime)|\d+.*?(?:predictions?|trends?|news?|facts?)|see also)");
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
-        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement|writing\? check your grammar now!|all headlines|\(.*?(?:repl(y)?(ies)?|ratings?|comments?).*?\)|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off)");
+        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement|writing\? check your grammar now!|all headlines|\(.*?(?:repl(y)?(ies)?|ratings?|comments?).*?\)|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|login.*?(?:register|create|make)|(?:posts?|photos?|articles?) by)");
+        /// <summary>
+        /// These are the expressions that will remove a text in a textdataholder if they are in that text
+        /// </summary>
+        private static Regex _shortContentToRemove = new Regex(@"(?:more.*|quiz|test)");
+        /// <summary>
+        /// These are the expressions that will remove a text in a textdataholder if they are in that text
+        /// </summary>
+        private static Regex _longTitlesToRemove = new Regex(@"(?:download.*?free|^\s*content\s*$)");
         /// <summary>
         /// These are things that are going to be removed from the text but aren't markers for spam
         /// </summary>
-        private static Regex _contentToReplace = new Regex(@"(?:\[.*?edit.*?\]|\[.*?\d+.*?\]|\[.*?citation needed.*?\]|&.*?;|)");
+        private static Regex _contentToReplace = new Regex(@"(?:\[.*?edit.*?\]|\[.*?\d+.*?\]|\[.*?citation needed.*?\]|&.*?;|\[.*?change.*?\])");
+        /// <summary>
+        /// When looking through different tags, these are the ones we want to exclude 
+        /// </summary>
+        public static Regex _tagsToRemove = new Regex(@"(?:sidebar|quiz|aside|o-hit|top-story|stickycolumn)");
         /// <summary>
         /// This is so that I can clean the whitespace that makes the sites look messy
         /// </summary>
@@ -43,9 +55,12 @@ namespace ParserHelper
         /// <summary>
         /// This is a list of websites that we don't want to parse
         /// </summary>
-        private static List<string> blacklist= new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies","worldatlas","vectorstock.com","freepik.com","containerstore.com","yourshot.nationalgeographic","myspace.com","store.","treesdallas.com","epicurious.com","krispykreme.com",
-                                                            "imdb.com"};
-        
+        private static List<string> blacklist = new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies","worldatlas","vectorstock.com","freepik.com","containerstore.com","yourshot.nationalgeographic","myspace.com","store.","treesdallas.com","epicurious.com","krispykreme.com",
+                                                            "imdb.com","wikihow.com","support.","currys.co.uk"};
+        /// <summary>
+        /// We do not want a sub article structure because it usually is a fragment of an article or some kind of link so we only look at the top article
+        /// </summary>
+        private static bool isArticleFound = false;
         /// <summary>
         /// Running this will fetch and parse the html document that is specified by the uri of any useful information
         /// </summary>
@@ -61,7 +76,7 @@ namespace ParserHelper
             }
             //We only want websites that qualify as an article so we check to see if certain tags are in the site
             var articleTopNode = SiteScoreTaker.GetArticle(doc);
-            if (articleTopNode==null)
+            if (articleTopNode == null)
             {
                 return null;
             }
@@ -72,9 +87,10 @@ namespace ParserHelper
             var models = new List<DataHolder>();
             // This recursively goes through each node in the html document, depth first, and parses data
             await RecursiveAdd(articleTopNode, models);
+            isArticleFound = false;
             //We store the data for the text nodes based on the headers and the content between those headers so we need 
             //to go through and make the text data holders
-             var text = "";
+            var text = "";
             foreach (var paragraphs in _paragraphCollections)
             {
                 var title = "";
@@ -83,11 +99,11 @@ namespace ParserHelper
                 {
                     if (!hasTitle)
                     {
-                        title = _contentToReplace.Replace(RecursiveSpan(node),"");
+                        title = _cleanWhiteSpace.Replace(_contentToReplace.Replace(RecursiveSpan(node), ""), " ");
                         hasTitle = true;
                         continue;
                     }
-                    text += _cleanWhiteSpace.Replace(_contentToReplace.Replace(RecursiveSpan(node), "") ," ")+ "\n";
+                    text += _cleanWhiteSpace.Replace(_contentToReplace.Replace(RecursiveSpan(node), ""), " ") + "\n";
                 }
                 //This gets rid of any sections that dont contain anything and are therefore not usefull, this is helpful for 
                 //footers and headers
@@ -99,12 +115,12 @@ namespace ParserHelper
                     continue;
                 }
                 //If theres a tiny title then we can just aggregate all of the tiny titles into a larger block
-                if (title.Length <= 3)
+                if (title.Length <= 5)
                 {
                     continue;
                 }
                 //If there is a match with any of the spam filters then we remove it
-                if (IsNullOrWhiteSpace(title) || IsNullOrWhiteSpace(text) || (_titlesToRemove.IsMatch(title.ToLower().Trim())&&title.Length<50) || (_contentToRemove.IsMatch(text.ToLower().Trim())&&text.Length<50))
+                if(!isTextValid(text)||!isTitleValid(title))
                 {
                     text = "";
                     continue;
@@ -163,10 +179,18 @@ namespace ParserHelper
         /// <returns></returns>
         private async Task RecursiveAdd(HtmlNode node, List<DataHolder> models)
         {
-            if (node.Name.ToLower() == "script")
+            
+            if (node.Name.ToLower() == "script" || node.Name.ToLower() == "article" && isArticleFound)
             {
                 return;
             }
+            isArticleFound = true;
+
+            if (_tagsToRemove.IsMatch(node.Name.ToLower()) || _tagsToRemove.IsMatch(node.Id.ToLower()) || _tagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
+            {
+                return;
+            }
+            
             //Matches if there is a header tag (h1,h2...) or a bold tag and uses that as a title
             var reh = new Regex(@"^(?:h\d|strong)");
             if (reh.IsMatch(node.Name))
@@ -194,7 +218,7 @@ namespace ParserHelper
                         if (url == null)
                         {
                             continue;
-                       }
+                        }
                         _citationUrlCollections[i].Add(url);
                         break;
                     }
@@ -235,9 +259,12 @@ namespace ParserHelper
                     {
                         title = SearchForTitle(node);
                     }
-                    //Create the dataholder and stash it with the rest
-                    var content = new VideoDataHolder(uri, title);
-                    models.Add(content);
+                    if (isTitleValid(title))
+                    {
+                        //Create the dataholder and stash it with the rest
+                        var content = new VideoDataHolder(uri, title);
+                        models.Add(content);
+                    }
                 }
             }
             //This is the standard tag for images
@@ -246,7 +273,7 @@ namespace ParserHelper
                 //We then get the image source uri
                 var src = FormatSource(node.GetAttributeValue("src", null));
                 //We dont want any svgs because they mess up the server
-                var re = new Regex(@"(?:svg|gif|ico\.png)$");
+                var re = new Regex(@"(?:svg|gif|(?:info|ico)\.png)$");
                 var re1 = new Regex(@"https?:\/\/[^\/]*?\..*?\/.*\.");
                 if (src == null || re.IsMatch(src) || !re1.IsMatch(src))
                 {
@@ -264,7 +291,7 @@ namespace ParserHelper
                 if (height > 75 && width > 75)
                 {
                     //Usually there is a title in the alt tag but if not then we can search for a caption
-                    var title = node.GetAttributeValue("alt", null);
+                    var title = node.GetAttributeValue("alt", "");
                     if (IsNullOrEmpty(title))
                     {
                         title = SearchForTitle(node);
@@ -272,9 +299,9 @@ namespace ParserHelper
                     //removes any html or json titles, which are undesireable
                     var reg = new Regex(@"^(?:<!|\{.*\}$)");
                     //We then create the Data Holder and introduce it to the rest
-                    if (!string.IsNullOrEmpty(title) && !string.IsNullOrWhiteSpace(title) && !reg.IsMatch(title) && !(_titlesToRemove.IsMatch(title.ToLower()) && title.Length<45))
+                    if (isTitleValid(title) && !reg.IsMatch(title))
                     {
-                        var content = new ImageDataHolder(new Uri(src), title);
+                        var content = new ImageDataHolder(new Uri(src), _cleanWhiteSpace.Replace(_contentToReplace.Replace(title,""), " "));
                         models.Add(content);
                     }
                 }
@@ -302,10 +329,12 @@ namespace ParserHelper
                     {
                         title = SearchForTitle(node);
                     }
-
-                    //Aha! We've gotten out successfully! Throw the pdf with the rest of stash!
-                    var content = new PdfDataHolder(new Uri(src), title);
-                    models.Add(content);
+                    if (isTitleValid(title))
+                    {
+                        //Aha! We've gotten out successfully! Throw the pdf with the rest of stash!
+                        var content = new PdfDataHolder(new Uri(src), title);
+                        models.Add(content);
+                    }
                 }
                 //If theres any audio we can also snag that! It's a little less exciting but it's still a good find.
                 if (href.Contains(".mp3") || href.Contains(".ogg") || href.Contains(".flac") || href.Contains(".wav") || href.Contains(".m4a"))
@@ -319,8 +348,11 @@ namespace ParserHelper
                     }
 
                     //A good find! Put it in a Dataholder and with the rest of the stash!
-                    var content = new AudioDataHolder(new Uri(src), title);
-                    models.Add(content);
+                    if (!string.IsNullOrEmpty(src) && isTitleValid(title))
+                    {
+                        var content = new AudioDataHolder(new Uri(src), title);
+                        models.Add(content);
+                    }
                 }
             }
             if (node.Name == "title")
@@ -342,10 +374,10 @@ namespace ParserHelper
             {
                 return "";
             }
-
+            Regex re = new Regex(@"[.#].*?\{");
             //If theres text we snag it and move along to each of the children to do the same
             var s = "";
-            if (node.NodeType == HtmlNodeType.Text)
+            if (node.NodeType == HtmlNodeType.Text && !re.IsMatch(node.InnerText))
             {
                 s += node.InnerText;
             }
@@ -368,6 +400,10 @@ namespace ParserHelper
             try
             {
                 var s = FormatSourcePrivate(src);
+                if (s == null || !Uri.IsWellFormedUriString(s, UriKind.Absolute))
+                {
+                    return null;
+                }
                 //If this crashes one creation of a uri then it hasn't been formatted correctly and thus we return null
                 var uri = new Uri(s);
                 return s;
@@ -385,6 +421,13 @@ namespace ParserHelper
             {
                 return null;
             }
+            if (src.StartsWith("//upload.wikimedia.org"))
+            {
+                Regex re = new Regex(@"thumb\/");
+                src = re.Replace(src, "");
+                re = new Regex(@"\/\d+px.*?$");
+                src = re.Replace(src, "");
+            }
             if (src.StartsWith("/~/"))
             {
                 return "http:/" + src.Substring(2);
@@ -399,7 +442,7 @@ namespace ParserHelper
             }
             if (src.StartsWith("/wiki/"))
             {
-                return "http://wikipedia.com" + src;
+                return "http://wikipedia.org" + src;
             }
             if (src.StartsWith("/"))
             {
@@ -408,16 +451,6 @@ namespace ParserHelper
             return "http://" + src;
         }
 
-        /// <summary>
-        /// This sees if the text that is being presented is valid text and is useful information
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private bool IsValidText(string text)
-        {
-            //Arbitrary af, this will be fixed
-            return text.Length > 50;
-        }
 
         /// <summary>
         /// This gets rid of all of the whitespace in a text
@@ -504,11 +537,24 @@ namespace ParserHelper
         /// <returns></returns>
         private string GetTitle(HtmlNode node)
         {
-            if (!IsValidText(node.InnerText)) return null;
+            if (!isTitleValid(node.InnerText)) return null;
             var text = node.InnerText;
             // Kinda arbitrary but if theres more than 325 characters then we can assume that it is much longer than a caption and is
             // instead a text block with information
             return text.Length > 325 ? null : StripText(text);
+        }
+
+        private static bool isTitleValid(string title)
+        {
+            return !(IsNullOrWhiteSpace(title) || (_titlesToRemove.IsMatch(title.ToLower().Trim()) && title.Length < 50) ||
+                    _longTitlesToRemove.IsMatch(title.ToLower()));
+        }
+
+        private static bool isTextValid(string text)
+        {
+            return !(IsNullOrWhiteSpace(text) ||
+                    _contentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 50 ||
+                    _shortContentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 30);
         }
 
         /// <summary>
@@ -559,7 +605,7 @@ namespace ParserHelper
             //This is so that we can parse the data
             var htmlImporter = new HtmlImporter();
             var balance = 0;
-            while (i < urls.Count-1 && i < 4+balance)
+            while (i < urls.Count - 1 && i < 4 + balance)
             {
                 i++;
                 bool isBad = false;
@@ -573,21 +619,20 @@ namespace ParserHelper
                     }
                 }
                 //We cannot parse pdfs or things on the blacklist
-                if (isBad || json.webPages.value[i].displayUrl.Contains(".pdf"))
+                if (isBad || json.webPages.value[i].displayUrl.Contains(".pdf") || json.webPages.value[i].displayUrl.Contains(".ppt") || json.webPages.value[i].displayUrl.Contains(".doc"))
                 {
                     balance++;
                     continue;
                 }
-                //If there is a parse response(It is and article and we are able to parse) then we continue
                 var dataholders = await htmlImporter.Run(new Uri(urls[i]));
-                if(dataholders == null || dataholders.Count==0)
+                if (dataholders == null || dataholders.Count == 0)
                 {
                     balance++;
                     continue;
                 }
                 //Yay we have our models!
                 models.First().Add(new TextDataHolder(json.webPages.value[i].displayUrl, urls[i]));
-                models.Add( dataholders);
+                models.Add(dataholders);
             }
             return models;
         }

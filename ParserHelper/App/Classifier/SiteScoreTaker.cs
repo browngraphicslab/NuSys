@@ -75,6 +75,11 @@ namespace ParserHelper
                 RecursiveSearch(child);
             }
         }
+
+
+        /// <summary>
+        /// When looking through different tags, these are the ones we want to exclude 
+        /// </summary>
         /// <summary>
         /// This finds out whether the website has certain tags that would make it a good candidate for search
         /// </summary>
@@ -82,6 +87,11 @@ namespace ParserHelper
         /// <returns></returns>
         public static HtmlNode RecursiveGetArticle(HtmlNode node)
         {
+            if (HtmlImporter._tagsToRemove.IsMatch(node.Name.ToLower()) || HtmlImporter._tagsToRemove.IsMatch(node.Id.ToLower()) || HtmlImporter._tagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
+            {
+                return null;
+            }
+            
             //These are the tags that we want to search for in a website, article is generic and bodyCotent is a wikipedia thing
             var re = new Regex("^(?:article|bodyContent)$");
             //These are tags we don't want to see
