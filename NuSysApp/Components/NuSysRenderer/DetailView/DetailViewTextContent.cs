@@ -72,6 +72,12 @@ namespace NuSysApp
         /// </summary>
         private MarkdownConvertingTextbox _markdownBox;
 
+        /// <summary>
+        /// True if positioning of the scrollbar's is dirty, positioning is performed during update
+        /// so to avoid infinite loops in the event handlers we must reset handlers after base.Update
+        /// </summary>
+        private bool _scrollBarPositioningIsDirty;
+
         public DetailViewTextContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
             LibraryElementController controller) : base(parent, resourceCreator)
         {
@@ -142,6 +148,31 @@ namespace NuSysApp
 
             _mainTextBox.OnFocusGained += MainTextBoxOnOnFocusGained;
             _mainTextBox.OnFocusLost += MainTextBoxOnOnFocusLost;
+            _mainTextBox.ScrollBarPositionChanged += _mainTextBox_ScrollBarPositionChanged;
+            _markdownBox.ScrollBarPositionChanged += _markdownBox_ScrollBarPositionChanged;
+        }
+
+        private void _markdownBox_ScrollBarPositionChanged(object source, float position)
+        {
+
+            if (!_scrollBarPositioningIsDirty)
+            {
+                _mainTextBox.ScrollBarPositionChanged -= _mainTextBox_ScrollBarPositionChanged;
+            }
+            // set positioning to dirty and remove the events, to be reset in the update call
+            _scrollBarPositioningIsDirty = true;
+            _mainTextBox.SetVerticalScrollBarPosition(position);
+        }
+
+        private void _mainTextBox_ScrollBarPositionChanged(object source, float position)
+        {
+            if (!_scrollBarPositioningIsDirty)
+            {
+                _markdownBox.ScrollBarPositionChanged -= _mainTextBox_ScrollBarPositionChanged;
+            }
+            _scrollBarPositioningIsDirty = true;
+            _markdownBox.ScrollBarPositionChanged -= _markdownBox_ScrollBarPositionChanged;
+            _markdownBox.SetVerticalScrollBarPosition(position);
         }
 
         /// <summary>
@@ -240,6 +271,9 @@ namespace NuSysApp
             _mainTextBox.TextChanged -= _mainTextBox_TextChanged;
             _mainTextBox.OnFocusGained -= MainTextBoxOnOnFocusGained;
             _mainTextBox.OnFocusLost -= MainTextBoxOnOnFocusLost;
+            _mainTextBox.ScrollBarPositionChanged -= _mainTextBox_ScrollBarPositionChanged;
+            _markdownBox.ScrollBarPositionChanged -= _markdownBox_ScrollBarPositionChanged;
+
             this.UnRegister();
             base.Dispose();
         }
@@ -322,6 +356,15 @@ namespace NuSysApp
 
             _toggleDisplayButton.Transform.LocalPosition = new Vector2((Width - BorderWidth * 2 - _toggleDisplayButton.Width)/2,_isEditing.Transform.LocalY + 10 + _isEditing.Height);
             base.Update(parentLocalToScreenTransform);
+
+            if (_scrollBarPositioningIsDirty)
+            {
+                _mainTextBox.ScrollBarPositionChanged -= _mainTextBox_ScrollBarPositionChanged;
+                _markdownBox.ScrollBarPositionChanged -= _markdownBox_ScrollBarPositionChanged;
+                _mainTextBox.ScrollBarPositionChanged += _mainTextBox_ScrollBarPositionChanged;
+                _markdownBox.ScrollBarPositionChanged += _markdownBox_ScrollBarPositionChanged;
+                _scrollBarPositioningIsDirty = false;
+            }
         }
 
         public void LockChanged(object sender, NetworkUser currentUser)

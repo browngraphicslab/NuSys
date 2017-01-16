@@ -12,6 +12,7 @@ using Microsoft.Graphics.Canvas.Text;
 using Windows.UI;
 using CommonMark;
 using CommonMark.Syntax;
+using Microsoft.Graphics.Canvas.Geometry;
 using NuSysApp.Components.NuSysRenderer.UI.Textbox.Markdown;
 
 namespace NuSysApp
@@ -50,6 +51,36 @@ namespace NuSysApp
         /// private IsDirty boolean for the text layout object
         /// </summary>
         private bool _textLayoutIsDirty = false;
+
+        /// <summary>
+        /// Vertical scrollbar used in conjunction with the markdown
+        /// </summary>
+        private ScrollBarUIElement _verticalScrollBar;
+
+        /// <summary>
+        /// The x offset of the upper left corner of the text not including borderwidth or UIDefaults.XTextpadding
+        /// </summary>
+        private float _xOffset;
+
+        /// <summary>
+        /// The y offset of the upper left corner of the text not including borderwidth or UIDefaults.YTextpadding
+        /// </summary>
+        private float _yOffset;
+
+        /// <summary>
+        /// The initial x offset while dragging
+        /// </summary>
+        private float _initialDragXOffset;
+
+        /// <summary>
+        /// The initial y offset while dragging
+        /// </summary>
+        private float _initialDragYOffset;
+
+        /// <summary>
+        /// Position is a float from 0 to 1 representing the start of the scroll bar, fired whenever the scrollbar position changes
+        /// </summary>
+        public event ScrollBarUIElement.ScrollBarPositionChangedHandler ScrollBarPositionChanged;
 
         /// <summary>
         /// Overriding the text from base class.
@@ -111,6 +142,77 @@ namespace NuSysApp
             {
                 Text = base.Text;
             }
+
+            // add the vertical scroll bar to the markdown converting textbox
+            _verticalScrollBar = new ScrollBarUIElement(this, resourceCreator, ScrollBarUIElement.Orientation.Vertical);
+            _verticalScrollBar.Width = 15;
+            AddChild(_verticalScrollBar);
+
+            _verticalScrollBar.ScrollBarPositionChanged += _verticalScrollBar_ScrollBarPositionChanged;
+            DragStarted += MarkdownConvertingTextbox_DragStarted;
+            Dragged += MarkdownConvertingTextbox_Dragged;
+            PointerWheelChanged += MarkdownConvertingTextbox_PointerWheelChanged;
+        }
+
+        private void MarkdownConvertingTextbox_PointerWheelChanged(InteractiveBaseRenderItem item, CanvasPointer pointer, float delta)
+        {
+            _yOffset -= (float)(_canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height * (delta > 0 ? -.05 : .05));
+            BoundYOffset();
+        }
+
+        private void MarkdownConvertingTextbox_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _yOffset = _initialDragYOffset + pointer.Delta.Y;
+            BoundYOffset();
+        }
+
+        private void MarkdownConvertingTextbox_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _initialDragXOffset = _xOffset;
+            _initialDragYOffset = _yOffset;
+        }
+
+        /// <summary>
+        /// Bound the y offset
+        /// </summary>
+        public void BoundYOffset()
+        {
+            if (!_resourcesCreated)
+            {
+                return;
+            }
+
+            _yOffset = Math.Min(0, _yOffset);
+
+            _yOffset = (float) Math.Max(-(_canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height - Height + 2 * (UIDefaults.YTextPadding + BorderWidth)), _yOffset);
+
+            // shift the text so it fills the textbox if it can
+            if (Math.Abs(_verticalScrollBar.Range - 1) < .001)
+            {
+                _yOffset = 0;
+            }
+        }
+
+        /// <summary>
+        /// Event fired whenever the markdown converting textbox's vertical scroll bar position changes
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
+        private void _verticalScrollBar_ScrollBarPositionChanged(object source, float position)
+        {
+            _yOffset = (float) (-position * _canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
+            BoundYOffset();
+            ScrollBarPositionChanged?.Invoke(this, position);
+        }
+
+        public override void Dispose()
+        {
+            _verticalScrollBar.ScrollBarPositionChanged -= _verticalScrollBar_ScrollBarPositionChanged;
+            DragStarted -= MarkdownConvertingTextbox_DragStarted;
+            Dragged -= MarkdownConvertingTextbox_Dragged;
+            PointerWheelChanged -= MarkdownConvertingTextbox_PointerWheelChanged;
+
+            base.Dispose();
         }
 
         /// <summary>
@@ -184,53 +286,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// underlines a substring of the string
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="charCount"></param>
-        public void UnderlineFragment(int start, int charCount)
-        {
-            if(_resourcesCreated)
-                _canvasTextLayout.SetUnderline(start, charCount, true);
-        }
-
-        /// <summary>
-        /// set font family for substring
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="charCount"></param>
-        /// <param name="fontFamily"></param>
-        public void SetFontFragment(int start, int charCount, string fontFamily)
-        {
-            if(_resourcesCreated)
-                _canvasTextLayout.SetFontFamily(start, charCount, fontFamily);
-        }
-
-        /// <summary>
-        /// set font style for substring
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="charCount"></param>
-        /// <param name="fontStyle"></param>
-        public void SetFontStyle(int start, int charCount, Windows.UI.Text.FontStyle fontStyle)
-        {
-            if(_resourcesCreated)
-                _canvasTextLayout.SetFontStyle(start, charCount, fontStyle);
-        }
-
-        /// <summary>
-        /// set font size for substring
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="charCount"></param>
-        /// <param name="size"></param>
-        public void SetFontSize(int start, int charCount, float size)
-        {
-            if (_resourcesCreated)
-                _canvasTextLayout.SetFontSize(start, charCount, size);
-        }
-
-        /// <summary>
         /// This upadate override simply takes into account the _textLayoutIsDirty bool.
         /// If its true, it updates the private layout object
         /// </summary>
@@ -242,7 +297,71 @@ namespace NuSysApp
                 UpdateCanvasLayout();
                 _textLayoutIsDirty = false;
             }
+
+            if (_resourcesCreated)
+            {
+                _verticalScrollBar.Height = Height - 2 * BorderWidth;
+                _verticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - _verticalScrollBar.Width,
+                    BorderWidth);
+
+                // set the position and rang eof the vertical scroll bar
+                SetVerticalScrollBarPositionAndRange();
+
+                // shift the text so it fills the textbox if it can
+                if (Math.Abs(_verticalScrollBar.Range - 1) < .001)
+                {
+                    _yOffset = 0;
+                }
+            }
+
             base.Update(parentLocalToScreenTransform);
+        }
+
+        private void SetVerticalScrollBarPositionAndRange()
+        {
+            if (!_resourcesCreated)
+            {
+                return;
+            }
+            var _vertScrollPrevPosition = _verticalScrollBar.Position;
+
+            _verticalScrollBar.Position = (float)(-_yOffset / _canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
+            _verticalScrollBar.Range =
+                (float)
+                    ((Height - 2 * (BorderWidth + UIDefaults.YTextPadding)) /
+                     _canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
+
+            BoundVerticalScrollBarPosition();
+
+
+
+            if (Math.Abs(_vertScrollPrevPosition - _verticalScrollBar.Position) > .005)
+            {
+                ScrollBarPositionChanged?.Invoke(this, _verticalScrollBar.Position);
+            }
+        }
+
+        public void SetVerticalScrollBarPosition(float newPosition)
+        {
+            _yOffset = (float)(-newPosition * _canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
+            BoundYOffset();
+        }
+
+
+        /// <summary>
+        /// Call this to bound the vertical scroll bar
+        /// </summary>
+        private void BoundVerticalScrollBarPosition()
+        {
+            // bound the vertical scroll bar postiion
+            if (_verticalScrollBar.Position + _verticalScrollBar.Range > 1)
+            {
+                _verticalScrollBar.Position = 1 - _verticalScrollBar.Range;
+            }
+            if (_verticalScrollBar.Position < 0)
+            {
+                _verticalScrollBar.Position = 0;
+            }
         }
 
         /// <summary>
@@ -260,21 +379,20 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
+
             if (Text != null)
             {
-                Debug.Assert(Width - 2 * (BorderWidth + UIDefaults.XTextPadding) > 0 && Height - 2 * (BorderWidth + UIDefaults.YTextPadding) > 0, "these must be greater than zero or drawText crashes below");
+                using (
+                    ds.CreateLayer(1,
+                        CanvasGeometry.CreateRectangle(Canvas, BorderWidth + UIDefaults.XTextPadding,
+                            BorderWidth + UIDefaults.YTextPadding,
+                            Width - 2*(BorderWidth + UIDefaults.XTextPadding),
+                            Height - 2*(BorderWidth + UIDefaults.YTextPadding))))
+                {
+                    // draw the text within the proper bounds
+                    ds.DrawTextLayout(_canvasTextLayout, _xOffset + BorderWidth + UIDefaults.XTextPadding, _yOffset + BorderWidth + UIDefaults.YTextPadding, TextColor);
 
-
-                // update the font size based on the accessibility settings
-                //CanvasTextFormat.FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale;
-
-
-                // draw the text within the proper bounds
-                var xOffset = BorderWidth + UIDefaults.XTextPadding;
-                var yOffset = BorderWidth + UIDefaults.YTextPadding;
-
-                ds.DrawTextLayout(_canvasTextLayout, xOffset, yOffset, TextColor);
-                //ds.DrawText(Text, new Rect(x, y, width, height), TextColor, CanvasTextFormat);
+                }
             }
 
             ds.Transform = orgTransform;
@@ -282,8 +400,7 @@ namespace NuSysApp
 
         private void UpdateCanvasLayout()
         {
-            _canvasTextLayout = _htmlParser.GetParsedText(_textHtml, Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
-    Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+            _canvasTextLayout = _htmlParser.GetParsedText(_textHtml, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue);
         }
 
 

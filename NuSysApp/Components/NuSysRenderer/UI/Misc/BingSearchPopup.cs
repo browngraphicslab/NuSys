@@ -41,7 +41,7 @@ namespace NuSysApp
             };
             _layoutManager.AddRows(new List<float>() {1});
             _layoutManager.AddColumns(new List<float>() {5,1});
-            _layoutManager.AddElement(_searchbar,0,1);
+            _layoutManager.AddElement(_searchbar,0,0);
             _layoutManager.AddElement(_addResults,0,1);
             
             _addResults.Tapped += _addResults_Tapped;
