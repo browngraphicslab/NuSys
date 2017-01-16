@@ -122,6 +122,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
+            base.Load();
             if (_controller == null)
             {
                 return;
@@ -130,7 +131,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
             _aliasList = req.GetReturnedElementModels();
             CreateAliasList();
-            base.Load();
+            
         }
 
         private void CreateAliasList()

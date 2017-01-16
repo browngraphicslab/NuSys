@@ -121,12 +121,12 @@ namespace NuSysApp
             : base(parent, resourceCreator)
         {
             // set default ui values
-            Background = Colors.Azure;
+            Background = Constants.LIGHT_BLUE;
             Height = 400;
             Width = 400;
-            BorderWidth = 3;
-            BorderColor = Colors.CadetBlue;
-            TopBarColor = Colors.CadetBlue;
+            BorderWidth = 1;
+            BorderColor = Constants.MED_BLUE;
+            TopBarColor = Constants.MED_BLUE;
 
             // set default starting media type to audio
             _currRecordingType = RecordingType.Audio;
@@ -136,10 +136,10 @@ namespace NuSysApp
             {
                 Height = 50,
                 Width = 50,
-                Background = Colors.CadetBlue,
-                BorderColor = Colors.CadetBlue,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5,
+                Background = Constants.DARK_BLUE,
+                BorderColor = Constants.DARK_BLUE,
+                SelectedBorder = Constants.LIGHT_BLUE,
+                BorderWidth = 3,
             };
             _mediaTypeSwitch.ImageBounds = new Rect(_mediaTypeSwitch.Width/4, _mediaTypeSwitch.Height/4,
                 _mediaTypeSwitch.Width/2, _mediaTypeSwitch.Height/2);
@@ -150,10 +150,10 @@ namespace NuSysApp
             {
                 Height = 50,
                 Width = 50,
-                Background = Colors.Red,
-                BorderColor = Colors.Red,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5
+                Background = Constants.RED,
+                BorderColor = Constants.RED,
+                SelectedBorder = Colors.White,
+                BorderWidth = 3
             };
             _recordPauseButton.ImageBounds = new Rect(_recordPauseButton.Width / 4, _recordPauseButton.Height / 4,
                    _recordPauseButton.Width / 2, _recordPauseButton.Height / 2);
@@ -163,10 +163,10 @@ namespace NuSysApp
             {
                 Height = 50,
                 Width = 50,
-                Background = Colors.Red,
-                BorderColor = Colors.Red,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5
+                Background = Constants.RED,
+                BorderColor = Constants.RED,
+                SelectedBorder = Colors.White,
+                BorderWidth = 3
             };
             _stopButton.ImageBounds = new Rect(_stopButton.Width / 4, _stopButton.Height / 4,
                 _stopButton.Width / 2, _stopButton.Height / 2);
@@ -175,8 +175,9 @@ namespace NuSysApp
             // add the currMediaType to display and set default ui values
             _textDisplayOfRecordingType = new TextboxUIElement(this, Canvas)
             {
-                Background = Colors.Azure,
-                TextColor = Colors.Black,
+                Background = Colors.Transparent,
+                TextColor = Constants.ALMOST_BLACK,
+                FontSize = 20,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center,
                 Height = 25,
@@ -185,10 +186,7 @@ namespace NuSysApp
             AddChild(_textDisplayOfRecordingType);
 
             // close button for closing the recording node without recording anything
-            _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Background = Colors.Red
-            };
+            _closeButton = new TransparentButtonUIElement(this, Canvas);
             AddButton(_closeButton, TopBarPosition.Right);
 
             _mediaTypeSwitch.Tapped += MediaTypeSwitchOnTapped;

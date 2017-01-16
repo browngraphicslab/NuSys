@@ -296,7 +296,7 @@ namespace NuSysApp
             };
 
             AddChild(_readOnlyMetadataWindow);
-            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(30, 450);
+            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(60, 450);
 
             _readOnlyAliasesWindow = new ReadOnlyAliasesWindow(this, Canvas)
             {
@@ -305,7 +305,7 @@ namespace NuSysApp
                 Width = 250
             };
             AddChild(_readOnlyAliasesWindow);
-            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(30, 100);
+            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
             AddChild(_detailViewer);
 
