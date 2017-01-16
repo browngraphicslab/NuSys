@@ -17,6 +17,8 @@ namespace NuSysApp
 
         public static ResizeableWindowUIElement CurrentlyDraggingWindow { get; private set; }
 
+        
+
         /// <summary>
         /// The maximum width of the resizable window
         /// </summary>
@@ -377,6 +379,8 @@ namespace NuSysApp
             OnFocusLost -= FocusLostHideHighlight;
             OnFocusLost -= FocusLostHideHighlight;
 
+            
+
             base.Dispose();
         }
 
@@ -564,6 +568,8 @@ namespace NuSysApp
             return null;
         }
 
+
+
         private void ToggleResizeHighlight(bool visible)
         {
             _leftResizeHighlight.IsVisible = visible;
@@ -591,6 +597,8 @@ namespace NuSysApp
             _bottomRightResizeHighlight.Transform.LocalPosition = new Vector2(Width, Height);
             _bottomRightResizeHighlight.Width = ErrorMargin;
             _bottomRightResizeHighlight.Height = ErrorMargin;
+
+            
             base.Update(parentLocalToScreenTransform);
         }
 

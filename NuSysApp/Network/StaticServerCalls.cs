@@ -263,6 +263,7 @@ namespace NuSysApp
                 lec.LibraryElementModel.LibraryElementId == SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId ||
                 (lec.LibraryElementModel.AccessType == NusysConstants.AccessType.Private && SessionController.Instance.CurrentCollectionLibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly))
             {
+                SessionController.Instance.NuSessionView.ShowPrivateOnPublicPopup();
                 return;
             }
 

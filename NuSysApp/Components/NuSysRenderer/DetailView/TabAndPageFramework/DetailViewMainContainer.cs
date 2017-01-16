@@ -40,11 +40,6 @@ namespace NuSysApp
         private Dictionary<string, DetailViewPageTabType> _libElemToCurrTabOpen;
 
         /// <summary>
-        /// button that floats along side of detail view. you click it to close the detail view.
-        /// </summary>
-        private EllipseButtonUIElement _closeButton;
-
-        /// <summary>
         /// stack layout manager to arrange the positions of user bubbles on the side of the detail view
         /// </summary>
         private StackLayoutManager _userLayoutManager;
@@ -82,14 +77,9 @@ namespace NuSysApp
             // dictionary of library element ids
             _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
 
-            _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
-            {
-                Height = 30,
-                Width = 30,
-                ImageBounds = new Rect(7.5,7.5,15,15)
-            };
-            AddChild(_closeButton);
-            _closeButton.Transform.LocalPosition = new Vector2(-40, 80);
+            ShowClosable();
+
+            _closeButton.Transform.LocalPosition = new Vector2(_closeButton.Transform.LocalX, 80);
 
             // setup the mainTabLayoutManager so that the mainTabContainer fills the entire detail viewer window
             _mainTabLayoutManager = new StackLayoutManager
@@ -110,8 +100,6 @@ namespace NuSysApp
             _mainTabContainer.OnCurrentTabChanged += _mainTabContainer_OnCurrentTabChanged;
             _mainTabContainer.OnTabRemoved += _mainTabContainer_OnTabRemoved;
             _pageContainer.OnPageTabChanged += PageContainerOnPageTabChanged;
-
-            _closeButton.Tapped += CloseButtonOnTapped;
         }
 
         /// <summary>
@@ -150,18 +138,6 @@ namespace NuSysApp
             }
 
             _userLayoutManager.TopMargin = Height - height - 10;
-        }
-
-        private void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            HideDetailView();
-        }
-
-        public override async Task Load()
-        {
-            _closeButton.Image = _closeButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
-            base.Load();
-            _loaded = true;
         }
 
         /// <summary>
@@ -211,8 +187,13 @@ namespace NuSysApp
             _mainTabContainer.OnCurrentTabChanged -= _mainTabContainer_OnCurrentTabChanged;
             _mainTabContainer.OnTabRemoved -= _mainTabContainer_OnTabRemoved;
             _pageContainer.OnPageTabChanged -= PageContainerOnPageTabChanged;
-            _closeButton.Tapped -= CloseButtonOnTapped;
             base.Dispose();
+        }
+
+        public override async Task Load()
+        {
+            base.Load();
+            _loaded = true;
         }
 
         /// <summary>

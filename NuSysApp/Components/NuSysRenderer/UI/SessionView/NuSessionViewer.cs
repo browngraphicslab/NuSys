@@ -298,7 +298,7 @@ namespace NuSysApp
             };
 
             AddChild(_readOnlyMetadataWindow);
-            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(30, 450);
+            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(60, 450);
 
             _readOnlyAliasesWindow = new ReadOnlyAliasesWindow(this, Canvas)
             {
@@ -307,7 +307,7 @@ namespace NuSysApp
                 Width = 250
             };
             AddChild(_readOnlyAliasesWindow);
-            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(30, 100);
+            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
@@ -319,6 +319,16 @@ namespace NuSysApp
             _settingsButton.Tapped += SettingsButtonOnTapped;
 
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
+        }
+
+        /// <summary>
+        /// shows popup that tells user they cannot put a private element on a public collection.
+        /// this way when they do that they don't just end up wondering why nothing happened (gotta have that visual feedback yo).
+        /// </summary>
+        public void ShowPrivateOnPublicPopup()
+        {
+            var popup = new CenteredPopup(this, Canvas, "You cannot put a private element on a collection that is not private.");
+            AddChild(popup);
         }
 
         /// <summary>

@@ -164,6 +164,7 @@ namespace NuSysApp
             BorderWidth = 1;
             IsSnappable = true;
 
+            ShowClosable();
 
             // initialize the filter button
             _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
