@@ -185,9 +185,8 @@ namespace NuSysApp
             };
             AddChild(_textDisplayOfRecordingType);
 
-            // close button for closing the recording node without recording anything
-            _closeButton = new TransparentButtonUIElement(this, Canvas);
-            AddButton(_closeButton, TopBarPosition.Right);
+            
+            
 
             _mediaTypeSwitch.Tapped += MediaTypeSwitchOnTapped;
             _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
