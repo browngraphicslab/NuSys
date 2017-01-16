@@ -34,7 +34,7 @@ namespace NuSysApp
             _message = new TextboxUIElement(this, Canvas);
             _message.Width = Width - 20;
             _message.Text = message;
-            _message.FontFamily = UIDefaults.FontFamily;
+            _message.FontFamily = UIDefaults.TextFont;
             _message.Background = Colors.White;
             _message.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
             _message.Transform.LocalPosition = new Vector2(this.Width/2 - _message.Width/2, 10);

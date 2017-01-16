@@ -26,7 +26,7 @@ namespace NuSysApp
             var format = new CanvasTextFormat
             {
                 FontSize = 15f,
-                FontFamily = "/Assets/fonts/Frutiger LT 56 Italic.ttf#Frutiger LT 55 Roman",
+                FontFamily = UIDefaults.TextFont,
             };
 
             _textLayout = new CanvasTextLayout(resourceCreator, text, format, 500, 500);

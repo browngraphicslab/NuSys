@@ -383,7 +383,8 @@ namespace NuSysApp
                 WordWrapping = CanvasWordWrapping.NoWrap,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
                 TrimmingSign = CanvasTrimmingSign.Ellipsis,
-                FontSize = ButtonTextSize
+                FontSize = ButtonTextSize,
+                FontFamily = UIDefaults.TextFont
             };
 
             return textFormat;

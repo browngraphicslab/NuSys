@@ -307,6 +307,13 @@
     <Content Include="Themes\pdf_node_template.html" />
     <Content Include="Themes\text_node_template.html" />
     <Content Include="Themes\video_node_template.html" />
+    <Content Include="Assets\fonts\FiraSans-Light.ttf" />
+    <Content Include="Assets\fonts\FiraSans-LightItalic.ttf" />
+    <Content Include="Assets\fonts\FiraSans-SemiBold.ttf" />
+    <Content Include="Assets\fonts\FiraSans-SemiBoldItalic.ttf" />
+    <Content Include="Assets\fonts\Rubik-Medium.ttf" />
+    <Content Include="Assets\fonts\Rubik-MediumItalic.ttf" />
+    <Content Include="Assets\fonts\Rubik-Regular.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />

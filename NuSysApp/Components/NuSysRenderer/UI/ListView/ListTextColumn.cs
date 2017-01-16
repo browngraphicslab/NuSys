@@ -37,6 +37,7 @@ namespace NuSysApp
             cell.Height = rowHeight;
             cell.Background = Colors.Transparent;
             cell.Text = ColumnFunction(itemSource);
+            cell.FontSize = 14;
             cell.TextHorizontalAlignment = TextHorizontalAlignment;
             cell.TextVerticalAlignment = TextVerticalAlignment;
             return cell;

@@ -277,7 +277,7 @@ namespace NuSysApp
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center,
                 FontSize = 30,
-                FontFamily = UIDefaults.FontFamily
+                FontFamily = UIDefaults.TitleFont
             };
             AddChild(_titleBox);
             _titleBox.TextChanged += OnTitleTextChanged;

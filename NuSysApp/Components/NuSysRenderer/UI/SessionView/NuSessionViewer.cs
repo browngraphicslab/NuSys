@@ -180,7 +180,8 @@ namespace NuSysApp
                 FontSize = 35,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
                 Width = 300,
-                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                FontFamily = UIDefaults.TitleFont
             };
             AddChild(_titleBox);
 
