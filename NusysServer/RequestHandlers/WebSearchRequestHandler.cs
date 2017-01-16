@@ -60,7 +60,7 @@ namespace NusysServer
             var requests = new List<Request>();
             foreach (var doc in docs)
             {
-                var m = await MakeContentMessage(doc, userId);
+                var m = await MakeContentMessage(doc, userId,  searchString);
                 if (m != null)
                 {
                     requests.Add(m);
@@ -88,7 +88,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="dataHolder"></param>
         /// <returns></returns>
-        private async Task<Request> MakeContentMessage(DataHolder dataHolder, string userId)
+        private async Task<Request> MakeContentMessage(DataHolder dataHolder, string userId, string searchString)
         {
             Debug.Assert(dataHolder?.Content != null && dataHolder?.LibraryElement != null);
             var message = new Message();
@@ -147,6 +147,8 @@ namespace NusysServer
                 case NusysConstants.ElementType.PDF:
                     message[NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY] = 10000;
                     message[NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY] = 0;
+                    message[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT] = 1;
+                    message[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH] = 1;
                     break;
 
             }
@@ -156,6 +158,7 @@ namespace NusysServer
                 dataHolder.LibraryElement.LibraryElementId;
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = dataHolder.LibraryElement.Type;
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = dataHolder.LibraryElement.Title;
+
             var request = new Request(NusysConstants.RequestType.CreateNewContentRequest, message);
             return request;
         }

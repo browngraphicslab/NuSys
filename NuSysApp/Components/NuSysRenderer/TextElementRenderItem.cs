@@ -44,7 +44,8 @@ namespace NuSysApp
             {
                 Wrapping = CanvasWordWrapping.WholeWord,
                 TextVerticalAlignment = CanvasVerticalAlignment.Top,
-                Text = _vm?.Controller?.LibraryElementController?.ContentDataController?.ContentDataModel.Data ?? ""
+                Text = _vm?.Controller?.LibraryElementController?.ContentDataController?.ContentDataModel.Data ?? "",
+                Scrollable = false
             };
             AddChild(_textBox);
         }

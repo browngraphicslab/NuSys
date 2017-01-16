@@ -192,6 +192,22 @@ namespace NuSysApp
         private bool _keepCaretOnScreen;
 
         /// <summary>
+        /// The current line being edited by the user
+        /// </summary>
+        public int CurrentLineBeingEdited { get; private set; }
+
+        /// <summary>
+        /// The y offset of the current line being edited by the user
+        /// </summary>
+        public float CurrentLineYOffset { get; private set; }
+
+
+        /// <summary>
+        /// Position is a float from 0 to 1 representing the start of the scroll bar, fired whenever the scrollbar position changes
+        /// </summary>
+        public event ScrollBarUIElement.ScrollBarPositionChangedHandler ScrollBarPositionChanged;
+
+        /// <summary>
         /// Models a text box which the user can type into and edit
         /// Inherits from TextboxUIElement
         /// </summary>
@@ -901,6 +917,7 @@ namespace NuSysApp
                     ScrollTextToContainCaret();
                     _keepCaretOnScreen = false;
                 }
+                UpdateCurrentLineBeingEdited();
             }
 
             // update the locations of all the selection rects
@@ -956,6 +973,37 @@ namespace NuSysApp
 
             base.Update(parentLocalToScreenTransform);           
         }
+
+        private void UpdateCurrentLineBeingEdited()
+        {
+            if (!_loaded)
+            {
+                return;
+            }
+
+            
+            // Sets the cursor's location based on the offsets
+            // Cursor should be to the right of characters except when it is -1, then it should
+            // be to the left of the first character
+            if (CaretCharacterIndex > -1)
+            {
+                CurrentLineBeingEdited = Text.Substring(0, CaretCharacterIndex).Split('\n').Length;
+
+                if (Text.Substring(CaretCharacterIndex, 1) == "\r" || Text.Substring(CaretCharacterIndex, 1) == "\n")
+                {
+                    CurrentLineBeingEdited += 1;
+                }
+            }
+            else
+            {
+                CurrentLineBeingEdited = 0;
+            }
+
+            CurrentLineYOffset = (float) (_caret.Transform.LocalY - _yOffset);
+
+            _updateCaretTransform = false;
+        }
+
         #endregion update
 
         public override void Dispose()
@@ -1133,6 +1181,8 @@ namespace NuSysApp
                 return;
             }
 
+            var _vertScrollPrevPosition = _verticalScrollbar.Position;
+
             _verticalScrollbar.Position = (float)(-_yOffset / TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
             _verticalScrollbar.Range =
                 (float)
@@ -1141,6 +1191,11 @@ namespace NuSysApp
 
             BoundVerticalScrollBarPosition();
 
+
+            if (Math.Abs(_vertScrollPrevPosition - _verticalScrollbar.Position) > .005)
+            {
+                ScrollBarPositionChanged?.Invoke(this, _verticalScrollbar.Position);
+            }
         }
 
         /// <summary>
@@ -1167,6 +1222,20 @@ namespace NuSysApp
         private void _verticalScrollbar_ScrollBarPositionChanged(object source, float position)
         {
             _yOffset = -position*TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height;
+            BoundYOffset();
+            ScrollBarPositionChanged?.Invoke(this, position);
+            _updateCaretTransform = true;
+            _updateSelectionRects = true;
+        }
+
+        /// <summary>
+        /// Set the vertical scroll bar position publicly
+        /// </summary>
+        /// <param name="newPosition"></param>
+        public void SetVerticalScrollBarPosition(float newPosition)
+        {
+            _yOffset = (float)(-newPosition * TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
+            BoundYOffset();
             _updateCaretTransform = true;
             _updateSelectionRects = true;
         }
@@ -1394,6 +1463,12 @@ namespace NuSysApp
 
             _yOffset = Math.Max(- (TextLayout.LayoutBounds.Height - Height + 2* (UIDefaults.YTextPadding + BorderWidth)), _yOffset);
 
+
+            // shift the text so it fills the textbox if it can
+            if (Math.Abs(_verticalScrollbar.Range - 1) < .001)
+            {
+                _yOffset = 0;
+            }
         }
 
         /// <summary>
