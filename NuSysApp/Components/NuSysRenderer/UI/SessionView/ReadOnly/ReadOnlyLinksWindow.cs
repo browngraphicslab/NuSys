@@ -40,6 +40,13 @@ namespace NuSysApp
             AddChild(_label);
         }
 
+        public override Task Load()
+        {
+            CreateListView();
+
+            return base.Load();
+        }
+
         /// <summary>
         /// Create the list view to display all the links
         /// </summary>
@@ -52,6 +59,7 @@ namespace NuSysApp
                 BorderColor = Constants.DARK_BLUE
             };
             AddChild(_link_listview);
+            _link_listview.Load();
 
             var listColumn = new ListTextColumn<LinkLibraryElementController>();
             listColumn.Title = "Title";
@@ -125,7 +133,9 @@ namespace NuSysApp
                 _controller.LinkRemoved -= OnLinkRemoved;
             }
             _controller = controller;
-            CreateListView();
+            _link_listview.ClearItems();
+            _link_listview.ClearFilter();
+            _link_listview.AddItems(new List<LinkLibraryElementController>(_controller.GetAllLinks()));
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
         }

@@ -30,7 +30,7 @@ namespace NuSysApp
         Idle,
         SelectNode,
         PenGlobalInk,
-        Exploration,
+        ReadOnly,
         PanZoomOnly,
         Presentation
     }

@@ -465,14 +465,12 @@ namespace NuSysApp
                 var request = new GetEntireWorkspaceRequest(collectionLibraryId);
 
                 //awaits the requests return after execution
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                await Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
 
 
                 // Create a content model/controller for the collection that we're about to enter
-                var mainContentDataId =
-                    SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryId)
-                        .ContentDataModelId;
+                var mainContentDataId = Instance.ContentController.GetLibraryElementModel(collectionLibraryId).ContentDataModelId;
                 var mainContentDataModel =
                     request.GetReturnedContentDataModels().FirstOrDefault(i => i.ContentId == mainContentDataId);
 
@@ -568,7 +566,6 @@ namespace NuSysApp
 
                 SessionView.ShowBlockingScreen(false);
                 EnterNewCollectionCompleted?.Invoke(this, collectionLibraryId);
-                SwitchMode(Options.PanZoomOnly);
             });
         }
 
@@ -578,8 +575,8 @@ namespace NuSysApp
         /// </summary>
         public void MakeWorkspaceReadonly()
         {
+            SwitchMode(Options.ReadOnly);
             IsReadonly = true;
-            NuSessionView.MakeReadOnly();
         }
 
         /// <summary>
@@ -587,8 +584,8 @@ namespace NuSysApp
         /// </summary>
         public void MakeWorkspaceEditable()
         {
+            SwitchMode(Options.PanZoomOnly);
             IsReadonly = false;
-            NuSessionView.MakeEditable();
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)

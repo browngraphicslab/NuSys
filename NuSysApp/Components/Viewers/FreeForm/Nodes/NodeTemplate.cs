@@ -560,7 +560,7 @@ namespace NuSysApp
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
 
-            SessionController.Instance.SwitchMode(Options.Exploration);         
+            SessionController.Instance.SwitchMode(Options.ReadOnly);         
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

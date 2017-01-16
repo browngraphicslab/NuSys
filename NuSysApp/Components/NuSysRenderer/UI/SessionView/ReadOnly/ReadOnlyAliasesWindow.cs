@@ -47,7 +47,7 @@ namespace NuSysApp
             AddChild(_label);
         }
 
-        public void UpdateList(LibraryElementController controller)
+        public async void UpdateList(LibraryElementController controller)
         {
             if (_controller != null)
             {
@@ -56,7 +56,12 @@ namespace NuSysApp
             }
             
             _controller = controller;
-            CreateAliasList();
+            var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
+            _aliasList = req.GetReturnedElementModels();
+            _listView.ClearFilter();
+            _listView.ClearItems();
+            _listView.AddItems(_aliasList);
 
             // add events for the controller so that aliases are automatically added and removed from the list
             _controller.AliasAdded += OnAliasAdded;
@@ -126,10 +131,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
-            _aliasList = req.GetReturnedElementModels();
             CreateAliasList();
+            UpdateList(_controller);
             base.Load();
         }
 
@@ -176,6 +179,7 @@ namespace NuSysApp
             _listView.AddColumns(cols);
 
             AddChild(_listView);
+            _listView.Load();
 
             _listView.RowDoubleTapped += ListView_OnRowDoubleTapped;
 
