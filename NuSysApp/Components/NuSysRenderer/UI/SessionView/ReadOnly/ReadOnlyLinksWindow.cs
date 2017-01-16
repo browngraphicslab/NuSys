@@ -72,8 +72,6 @@ namespace NuSysApp
             listColumn2.ColumnFunction = getOppositeLinkedToTitle;
 
             _link_listview.AddColumns(new List<ListColumn<LinkLibraryElementController>> { listColumn, listColumn2 });
-
-            _link_listview.AddItems(new List<LinkLibraryElementController>(_controller.GetAllLinks()));
         }
 
 
@@ -101,7 +99,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            if (_link_listview == null)
+            if (_link_listview == null || _controller == null)
             {
                 return;
             }

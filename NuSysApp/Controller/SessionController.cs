@@ -541,14 +541,13 @@ namespace NuSysApp
 
                 //TODO redo read only or editable implementation
 
+                IsReadonly = elementCollectionInstanceController.LibraryElementModel.AccessType ==
+                                               NusysConstants.AccessType.ReadOnly && userID != creator;
+
                 await UITask.Run(async delegate
                 {
                     await SessionView.FreeFormViewer.LoadInitialCollection(ActiveFreeFormViewer);
                 });
-                if (elementModelId != null)
-                {
-                    SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
-                }
 
                 if (elementCollectionInstanceController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly && userID != creator)
                 {
@@ -559,6 +558,10 @@ namespace NuSysApp
                     Instance.MakeWorkspaceEditable();
                 }
 
+                if (elementModelId != null)
+                {
+                    SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
+                }
 
                 var controller = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
                 // add the bread crumb for the collection

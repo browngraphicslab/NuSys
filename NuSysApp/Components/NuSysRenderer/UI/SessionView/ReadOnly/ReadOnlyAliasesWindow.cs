@@ -49,6 +49,11 @@ namespace NuSysApp
 
         public async void UpdateList(LibraryElementController controller)
         {
+            if (controller == null)
+            {
+                return;
+            }
+
             if (_controller != null)
             {
                 _controller.AliasAdded += OnAliasAdded;
@@ -127,10 +132,6 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            if (_controller == null)
-            {
-                return;
-            }
             CreateAliasList();
             UpdateList(_controller);
             base.Load();
