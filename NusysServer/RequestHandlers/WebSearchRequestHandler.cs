@@ -102,11 +102,12 @@ namespace NusysServer
                     //var currentKeywordsQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.LibraryElement,Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY)),new SqlQueryEquals(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY,kvp.Key));
                     //var currentKeywords = JsonConvert.DeserializeObject<List<Keyword>>(currentKeywordsQuery.ExecuteCommand().FirstOrDefault().GetString(Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY).FirstOrDefault()));
                     message[NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY] = JsonConvert.SerializeObject(kvp.Value);
+                    message[NusysConstants.REQUEST_TYPE_STRING_KEY] = NusysConstants.RequestType.UpdateLibraryElementModelRequest;
                     var request = new Request(NusysConstants.RequestType.UpdateLibraryElementModelRequest, message);
                     var handler = new UpdateLibraryElementRequestHandler();
                     var m = handler.HandleRequest(request, senderHandler);
-                    message[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
-                    message[NusysConstants.REQUEST_TYPE_STRING_KEY] = m.GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY);
+                    message[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = m.GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY);
+                    message[NusysConstants.REQUEST_TYPE_STRING_KEY] = NusysConstants.RequestType.UpdateLibraryElementModelRequest;
                     senderHandler.Send(message.GetSerialized());
                 }
             }
