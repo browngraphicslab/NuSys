@@ -124,6 +124,7 @@
     <Content Include="Assets\new icons\add elements white.png" />
     <Content Include="Assets\new icons\add elements.png" />
     <Content Include="Assets\new icons\back.png" />
+    <Content Include="Assets\new icons\bar chart.png" />
     <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
     <Content Include="Assets\new icons\custom arrange.png" />
@@ -132,12 +133,15 @@
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\html export.png" />
     <Content Include="Assets\new icons\left arrow.png" />
+    <Content Include="Assets\new icons\listview.png" />
     <Content Include="Assets\new icons\logo_bing_en-US.png" />
     <Content Include="Assets\new icons\multitag.png" />
     <Content Include="Assets\new icons\node.png" />
+    <Content Include="Assets\new icons\pie chart.png" />
     <Content Include="Assets\new icons\present white.png" />
     <Content Include="Assets\new icons\recording.png" />
     <Content Include="Assets\new icons\right arrow.png" />
+    <Content Include="Assets\new icons\stack.png" />
     <Content Include="Assets\new icons\text.png" />
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
@@ -608,7 +612,6 @@
     <Compile Include="Components\Win2dTools\iLink.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
     <Compile Include="Components\Win2dTools\PieToolInnerView.cs" />
-    <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkController.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkRenderitem.cs" />

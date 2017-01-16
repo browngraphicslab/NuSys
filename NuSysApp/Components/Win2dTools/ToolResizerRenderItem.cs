@@ -24,7 +24,7 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             if (_triangle != null)
-                ds.FillGeometry(_triangle, new Vector2(0, 0), Colors.Black);
+                ds.FillGeometry(_triangle, new Vector2(0, 0), Constants.MED_BLUE);
 
             ds.Transform = orgTransform;
 

@@ -557,7 +557,9 @@ namespace NuSysApp
             }*/
             if (vm is BasicToolViewModel)
             {
+                var toolvm = (BasicToolViewModel)vm;
                 var tool = new BasicToolWindow(this, ResourceCreator, (BasicToolViewModel) vm);
+
                 tool.Load();
                 _renderItems3?.Add(tool);
             }
