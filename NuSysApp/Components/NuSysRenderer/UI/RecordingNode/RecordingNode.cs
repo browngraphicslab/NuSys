@@ -82,11 +82,6 @@ namespace NuSysApp
         private CanvasBitmap _stopIcon;
 
         /// <summary>
-        /// Icon used on the close button
-        /// </summary>
-        private CanvasBitmap _closeIcon;
-
-        /// <summary>
         /// Media capture element that actually does the heavy lifting of recording audio and video
         /// </summary>
         private MediaCapture _mediaCapture;
@@ -110,11 +105,6 @@ namespace NuSysApp
         /// File we are going to use to store our recorded data
         /// </summary>
         private StorageFile _file;
-        
-        /// <summary>
-        /// Close button used to close the recording node without recording anything
-        /// </summary>
-        private ButtonUIElement _closeButton;
 
 
         public RecordingNode(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
@@ -186,12 +176,11 @@ namespace NuSysApp
             AddChild(_textDisplayOfRecordingType);
 
             
-            
+            ShowClosable();
 
             _mediaTypeSwitch.Tapped += MediaTypeSwitchOnTapped;
             _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
             _stopButton.Tapped += StopButtonOnTapped;
-            _closeButton.Tapped += OnCloseButtonTapped;
         }
 
         /// <summary>
@@ -199,7 +188,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void OnCloseButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override async void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // remove button events
             RemoveButtonEvents();
@@ -404,7 +393,6 @@ namespace NuSysApp
             _mediaTypeSwitch.Tapped -= MediaTypeSwitchOnTapped;
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
-            _closeButton.Tapped -= OnCloseButtonTapped;
             _mediaCapture?.Dispose();
             _audioIcon?.Dispose(); // TODO not sure if disposing of these images is necessary
             _recordIcon?.Dispose();
@@ -449,11 +437,9 @@ namespace NuSysApp
             _videoIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_video.png"));
             _audioIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/record.png"));
             _pauseIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_pause.png"));
-            _closeIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_whitex.png"));
 
             // set these images here they do not change dynamically
             _stopButton.Image = _stopIcon;
-            _closeButton.Image = _closeIcon;
 
             // set the ui for the _currMediatype, this should already be set in the constructor to audio
             SetUIForCurrentState();
@@ -522,14 +508,12 @@ namespace NuSysApp
         {
             _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
             _stopButton.Tapped += StopButtonOnTapped;
-            _closeButton.Tapped += OnCloseButtonTapped;
         }
 
         private void RemoveButtonEvents()
         {
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
-            _closeButton.Tapped -= OnCloseButtonTapped;
         }
 
     }

@@ -163,6 +163,11 @@ namespace NuSysApp
 
         }
 
+        protected override void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            HideDetailView();
+        }
+
         /// <summary>
         /// fired when the mainTabContainer is closed (i.e. has no more tabs to display)
         /// </summary>

@@ -406,11 +406,12 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// closes the window if the close button is visible
+        /// closes the window if the close button is visible.
+        /// overridable if this needs to have other things in it.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             IsVisible = false;
         }
