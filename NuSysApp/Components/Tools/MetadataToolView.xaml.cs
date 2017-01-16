@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
@@ -354,7 +355,7 @@ namespace NuSysApp
                 }
                 else if(sender == xStackElement)
                 {
-                    vm.CreateStack(r.X, r.Y);
+                    vm.CreateStack(new Vector2((float) p.X, (float) p.Y));
                 }
             }
             ReleasePointerCaptures();

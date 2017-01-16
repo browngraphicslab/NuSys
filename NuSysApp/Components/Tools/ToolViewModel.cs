@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -66,16 +67,8 @@ namespace NuSysApp
                 var collectionLibElemId = SessionController.Instance.GenerateId();
 
                 // We determine the access type of the tool generated collection based on the collection we're in and pass that in to the request
-                NusysConstants.AccessType newCollectionAccessType;
-                var currWorkSpaceAccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
-                if (currWorkSpaceAccessType == NusysConstants.AccessType.Public)
-                {
-                    newCollectionAccessType = NusysConstants.AccessType.Public;
-                }
-                else
-                {
-                    newCollectionAccessType = NusysConstants.AccessType.Private;
-                }
+                var newCollectionAccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+
                 // create a new library element args class to assist in creating the collection
                 var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs
                 {
@@ -91,7 +84,6 @@ namespace NuSysApp
                 {
                     LibraryElementArgs = createNewLibraryElementRequestArgs
                 };
-
 
                 var args = new CreateNewCollectionServerRequestArgs();
                 args.CreateNewContentRequestDictionary = createNewContentRequestArgs.PackToRequestKeys().ToDictionary(k => k.Key, v => v.Value);
@@ -117,7 +109,9 @@ namespace NuSysApp
                     var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
 
                     // if the library element model doesn't exist, or is a link don't add it to the collection
-                    if (lem == null || lem.Type == NusysConstants.ElementType.Link)
+                    if (lem == null || lem.Type == NusysConstants.ElementType.Link || 
+                    (lem.AccessType == NusysConstants.AccessType.Private && newCollectionAccessType == NusysConstants.AccessType.ReadOnly) ||
+                    (lem.AccessType == NusysConstants.AccessType.Private && newCollectionAccessType == NusysConstants.AccessType.Public))
                     {
                         continue;
                     }
@@ -163,7 +157,7 @@ namespace NuSysApp
         /// <summary>
         /// Creates a stack of elements from this tools output library ids
         /// </summary>
-        public async void CreateStack(double x, double y)
+        public async void CreateStack(Vector2 screenpoint)
         {
             Task.Run(async delegate
             {
@@ -176,38 +170,17 @@ namespace NuSysApp
                     {
                         break;
                     }
-                    // get the library element model which needs to be added to the stack
-                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
+                    // get the controller for the element we are adding to the collection
+                    var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
 
                     // if the library element model doesn't exist, is a link, or is greater than 20, don't add it to the session
-                    if (lem == null || lem.Type == NusysConstants.ElementType.Link)
+                    if (controller == null || controller.LibraryElementModel.Type == NusysConstants.ElementType.Link)
                     {
                         continue;
                     }
 
-                    // create a new element request args, and pass in the required fields
-                    var newElementRequestArgs = new NewElementRequestArgs
-                    {
-                        // set the position
-                        X = x + i*offset,
-                        Y = y + i*offset,
-
-                        // size
-                        Width = Constants.DefaultNodeSize,
-                        Height = Constants.DefaultNodeSize,
-
-                        // ids
-                        ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
-                        LibraryElementId = lem.LibraryElementId
-                    };
-
-                    // execute the request
-                    var request = new NewElementRequest(newElementRequestArgs);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    if (request.WasSuccessful() == true)
-                    {
-                        await request.AddReturnedElementToSessionAsync();
-                    }
+                    // add the element to the collection
+                    StaticServerCalls.AddElementToCurrentCollection(screenpoint + new Vector2(i*offset), controller.LibraryElementModel.Type, controller);
 
                     // increment to finish loop and perform offset
                     i++;

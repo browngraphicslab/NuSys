@@ -338,10 +338,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="text"></param>
-        private void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
+        private async void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
         {
             _currentController.TitleChanged -= OnCurrentControllerTitleChanged;
-            _currentController.SetTitle(text);
+            await UITask.Run(() =>
+            {
+                _currentController.SetTitle(text);
+            });
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
         }
 
@@ -352,7 +355,7 @@ namespace NuSysApp
         public void ShowLibraryElement(string libraryElementModelId, DetailViewPageTabType pageToShow)
         {
             // if we are already showing the library elment model that was selected then just return
-            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId)
+            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId || !_loaded)
             {
                 return;
             }
