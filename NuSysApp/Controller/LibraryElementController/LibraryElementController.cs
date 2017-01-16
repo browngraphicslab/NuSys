@@ -469,7 +469,7 @@ namespace NuSysApp
         /// This will change make the content libraryElementController remove the library element model and this libraryElementController
         /// then it will fire the deleted event and dispose of this libraryElementController
         /// </summary>
-        public void Delete()
+        public virtual void Delete()
         {
             SessionController.Instance.ActiveFreeFormViewer?.DeselectAll();
             SessionController.Instance.ContentController.Remove(this.LibraryElementModel);
