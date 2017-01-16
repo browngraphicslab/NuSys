@@ -12,6 +12,11 @@ namespace NuSysApp
     public class DraggableWindowUIElement : WindowUIElement
     {
         /// <summary>
+        /// optional close button - call "ShowCloseButton" in order to have it
+        /// </summary>
+        protected EllipseButtonUIElement _closeButton;
+
+        /// <summary>
         /// Set this to true to support Dragging the DraggableWindowUIElement around the screen using the top bar.
         /// </summary>
         public bool IsDraggable;
@@ -372,6 +377,45 @@ namespace NuSysApp
             }
         }
 
+        public override async Task Load()
+        {
+            if (_closeButton != null)
+            {
+                _closeButton.Image = _closeButton.Image ??
+                                     await
+                                         CanvasBitmap.LoadAsync(Canvas,
+                                             new Uri("ms-appx:///Assets/new icons/x white.png"));
+            }
+            base.Load();
+        }
+
+        /// <summary>
+        /// shows a close button to the left of the window
+        /// </summary>
+        public void ShowClosable()
+        {
+            _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
+            {
+                Height = 30,
+                Width = 30,
+                ImageBounds = new Rect(7.5, 7.5, 15, 15)
+            };
+            AddChild(_closeButton);
+            _closeButton.Transform.LocalPosition = new Vector2(-_closeButton.Width - 10, TopBarHeight + 10);
+            _closeButton.Tapped += CloseButtonOnTapped;
+        }
+
+        /// <summary>
+        /// closes the window if the close button is visible.
+        /// overridable if this needs to have other things in it.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected virtual void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            IsVisible = false;
+        }
+
         /// <summary>
         /// Called when the DraggableWindowUIElement is disposed.
         /// Remove event handlers here
@@ -381,6 +425,10 @@ namespace NuSysApp
             TopBarDragged -= OnTopBarDragged;
             TopBarDragStarted -= OnTopBarDragStarted;
             TopBarDragCompleted -= OnTopBarDragCompleted;
+            if (_closeButton != null)
+            {
+                _closeButton.Tapped -= CloseButtonOnTapped;
+            }
             base.Dispose();
         }
 
@@ -390,6 +438,11 @@ namespace NuSysApp
 
             SetSnapPreviewDimensions();
             SetSnapPreviewOffset();
+
+            if (_closeButton != null)
+            {
+                _closeButton.Transform.LocalPosition = new Vector2(_closeButton.Transform.LocalX, _closeButton.Transform.LocalY);
+            }
 
             base.Update(parentLocalToScreenTransform);
         }
