@@ -43,8 +43,16 @@ namespace NuSysApp
             };
             AddChild(_searchTextBox);
 
+
             _searchTextBox.TextChanged += OnSearchTextChanged;
 
+        }
+
+        public override Task Load()
+        {
+            CreateListView();
+
+            return base.Load();
         }
 
         public void UpdateList(LibraryElementController controller)
@@ -54,13 +62,12 @@ namespace NuSysApp
                 _controller.MetadataChanged -= _controller_MetadataChanged;
             }
             _controller = controller;
-            CreateListView();
-            _controller.MetadataChanged += _controller_MetadataChanged;
-        }
-
-        private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool show_immutable)
-        {
+            _metadata_listview.ClearItems();
+            _metadata_listview.ClearFilter();
+            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
             filterlist();
+
+            _controller.MetadataChanged += _controller_MetadataChanged;
         }
 
         private void filterlist()
@@ -133,8 +140,6 @@ namespace NuSysApp
                 metadataEntry => string.Join(", ", metadataEntry.Values.Select(value => string.Join(", ", value)));
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> { listColumn, listColumn2 });
-
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

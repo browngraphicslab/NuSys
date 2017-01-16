@@ -241,7 +241,7 @@ namespace NuSysApp
             {
 
                 IsVisible = false,
-        };
+            };
             AddChild(Chatbox);
 
             _detailViewer = new DetailViewMainContainer(this, Canvas)
@@ -252,6 +252,8 @@ namespace NuSysApp
                 MinHeight = 600,
                 KeepAspectRatio = false
             };
+            AddChild(_detailViewer);
+
 
             // add presentation node buttons
             _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
@@ -307,7 +309,6 @@ namespace NuSysApp
             AddChild(_readOnlyAliasesWindow);
             _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
-            AddChild(_detailViewer);
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
@@ -367,6 +368,7 @@ namespace NuSysApp
                     {
                         TrailBox.IsVisible = true;
                     }
+                    MakeEditable();
                     break;
                 case Options.Presentation:
                     _detailViewer.IsVisible = false;
@@ -379,6 +381,9 @@ namespace NuSysApp
                     {
                         TrailBox.IsVisible = false;
                     }
+                    break;
+                case Options.ReadOnly:
+                    MakeReadOnly();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
