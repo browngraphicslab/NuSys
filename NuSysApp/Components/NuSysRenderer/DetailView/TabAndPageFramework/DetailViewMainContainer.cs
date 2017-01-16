@@ -49,6 +49,11 @@ namespace NuSysApp
         /// </summary>
         private StackLayoutManager _userLayoutManager;
 
+        /// <summary>
+        /// true if the main container has been loaded
+        /// </summary>
+        private bool _loaded;
+
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // create the _mainTabContainer, this is the tabs at the top of the page which represent different elements open in the detail view
@@ -156,6 +161,7 @@ namespace NuSysApp
         {
             _closeButton.Image = _closeButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
             base.Load();
+            _loaded = true;
         }
 
         /// <summary>
@@ -243,7 +249,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (_disabled)
+            if (_disabled || !_loaded)
             {
                 return;
             }

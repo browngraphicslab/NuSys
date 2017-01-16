@@ -31,6 +31,7 @@ namespace NuSysApp
         private Rect _cropAreaNormalized;
         private Rect _bitmap;
         private double _totalScale;
+        private Rect _imageRegionRect;
         public ImageLibraryElementModel LibraryElementModel { get; set; }
 
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
@@ -59,12 +60,12 @@ namespace NuSysApp
             LibraryElementModel = libraryElementModel;
 
 
-            var rect = new Rect(LibraryElementModel.NormalizedX,
+            _imageRegionRect = new Rect(LibraryElementModel.NormalizedX,
                                 LibraryElementModel.NormalizedY,
                                 LibraryElementModel.NormalizedWidth,
                                 LibraryElementModel.NormalizedHeight);
 
-            IsModifiable = IsModifiable && IsFullyContained(rect);
+            IsModifiable = IsModifiable && IsFullyContained(_imageRegionRect);
             if (IsModifiable) { 
                 _resizer = new ImageDetailRegionResizerRenderItem(this, ResourceCreator);
                 _resizer.ResizerDragged += ResizerOnResizerDragged;
@@ -117,11 +118,13 @@ namespace NuSysApp
         private void ControllerOnLocationChanged(object sender, Point topLeft)
         {
             UpdateImageBound(_totalScale);
-         }
+            IsModifiable = IsModifiable && IsFullyContained(_imageRegionRect);
+        }
 
         private void ControllerOnSizeChanged(object sender, double width, double height)
         {
             UpdateImageBound(_totalScale);
+            IsModifiable = IsModifiable && IsFullyContained(_imageRegionRect);
         }
 
         public override void Dispose()

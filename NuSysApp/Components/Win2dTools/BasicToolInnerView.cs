@@ -21,6 +21,7 @@ namespace NuSysApp
         protected BasicToolViewModel Vm;
         public BasicToolInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel viewModel) : base(parent, resourceCreator)
         {
+            Background = Colors.White;
             Debug.Assert(viewModel != null);
             Vm = viewModel;
             SetUpDragFilterItem();
@@ -33,8 +34,8 @@ namespace NuSysApp
         {
             _dragFilterItem = new RectangleUIElement(this, ResourceCreator)
             {
-                Height = 50,
-                Width = 50,
+                Height = 40,
+                Width = 40,
                 Background = Colors.Transparent
             };
             _dragFilterItem.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/filter.png"));

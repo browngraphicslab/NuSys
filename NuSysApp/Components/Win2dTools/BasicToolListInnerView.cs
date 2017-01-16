@@ -25,6 +25,8 @@ namespace NuSysApp
             _listView = new ListViewUIElementContainer<string>(this, ResourceCreator);
             _listView.ShowHeader = false;
             _listView.RowBorderThickness = 0;
+            _listView.BorderWidth = 1;
+            _listView.BorderColor = Constants.LIGHT_BLUE;
             _listView.DisableSelectionByClick = true;
             var listColumn = new ListTextColumn<string>();
             listColumn.Title = "Title";

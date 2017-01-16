@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -12,6 +13,9 @@ namespace NuSysApp
         private BarChartUIElement _barChart;
         public BarToolInnerView(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BasicToolViewModel viewModel) : base(parent, resourceCreator, viewModel)
         {
+            Background = Colors.White;
+            BorderWidth = 1;
+            BorderColor = Constants.LIGHT_BLUE;
             SetUpBarChart();
 
         }

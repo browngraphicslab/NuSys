@@ -201,6 +201,27 @@ namespace NuSysApp
         /// </summary>
         public float CurrentLineYOffset { get; private set; }
 
+        /// <summary>
+        ///  private helper for public boolean IsEditable
+        /// </summary>
+        private bool _isEditable { get; set; }
+
+        /// <summary>
+        /// True if the scrollable textbox ui element is editable
+        /// </summary>
+        public bool IsEditable
+        {
+            get { return _isEditable; }
+            set
+            {
+                _isEditable = value;
+                if (!IsEditable)
+                {
+                    _caret.IsVisible = false;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Position is a float from 0 to 1 representing the start of the scroll bar, fired whenever the scrollbar position changes
@@ -240,6 +261,8 @@ namespace NuSysApp
 
                 _verticalScrollbar.ScrollBarPositionChanged += _verticalScrollbar_ScrollBarPositionChanged;
             }
+
+            IsEditable = true;
 
         }
 
@@ -399,11 +422,16 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            // set the _selectionStartIndex to the current caret position
-            _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+            if (IsEditable)
+            {
+                // set the _selectionStartIndex to the current caret position
+                _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
 
-            _initialDragXOffset = _xOffset;
-            _initialDragYOffset = _yOffset;
+                _initialDragXOffset = _xOffset;
+                _initialDragYOffset = _yOffset;
+            }
+
+
         }
 
         /// <summary>
@@ -435,28 +463,31 @@ namespace NuSysApp
                 return;
             }
 
-            // update the caret character index to reflect the current point
-            CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-
-            // set the selection end index to the current caret position
-            _selectionEndIndex = CaretCharacterIndex;
-
-            // if we have selected at least one character then we have selection
-            if (_selectionEndIndex != _selectionStartIndex)
+            if (IsEditable)
             {
-                _hasSelection = true;
-                _updateSelectionRects = true;
-            }
-            else // otherwise we do not have selection
-            {
-                _hasSelection = false;
-            }
+                // update the caret character index to reflect the current point
+                CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
 
-            // update the transform of the cursor
-            _updateCaretTransform = true;
+                // set the selection end index to the current caret position
+                _selectionEndIndex = CaretCharacterIndex;
 
-            // keep the caret on the screen
-            _keepCaretOnScreen = true;
+                // if we have selected at least one character then we have selection
+                if (_selectionEndIndex != _selectionStartIndex)
+                {
+                    _hasSelection = true;
+                    _updateSelectionRects = true;
+                }
+                else // otherwise we do not have selection
+                {
+                    _hasSelection = false;
+                }
+
+                // update the transform of the cursor
+                _updateCaretTransform = true;
+
+                // keep the caret on the screen
+                _keepCaretOnScreen = true;
+            }
         }
 
 
@@ -467,12 +498,16 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void EditableTextboxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            ClearSelection(false);
-            CaretCharacterIndex  = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-            _upDownCaretNavHorizonalOffset = float.MinValue;
+            if (IsEditable)
+            {
+                ClearSelection(false);
+                CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                _upDownCaretNavHorizonalOffset = float.MinValue;
 
-            // we want to update the cursor transform
-            _updateCaretTransform = true;
+                // we want to update the cursor transform
+                _updateCaretTransform = true;
+            }
+
         }
 
         /// <summary>
@@ -507,6 +542,11 @@ namespace NuSysApp
         /// <param name="args"></param>
         private void EditableTextboxUIElement_KeyPressed(KeyEventArgs args)
         {
+            if (!IsEditable)
+            {
+                return;
+            }
+
             // set the caret visibility to true
             _caret.IsVisible = true;
 
@@ -707,7 +747,15 @@ namespace NuSysApp
         /// <param name="item"></param>
         private void EditableTextboxUIElement_OnFocusGained(BaseRenderItem item)
         {
-            _caret.IsVisible = true;
+            if (IsEditable)
+            {
+                _caret.IsVisible = true;
+            }
+            else
+            {
+                _caret.IsVisible = false;
+
+            }
         }
         #endregion focus
 
@@ -926,7 +974,7 @@ namespace NuSysApp
                 UpdateSelectionRects();
             }
 
-            if (HasFocus)
+            if (HasFocus && _isEditable)
             {
                 // update the blink counter
                 _blinkCounter++;
@@ -1138,12 +1186,20 @@ namespace NuSysApp
                 bounds.X += _xOffset;
                 bounds.Y += _yOffset;
 
-                if (Text.Substring(CaretCharacterIndex, 1) == "\r" || Text.Substring(CaretCharacterIndex, 1) == "\n")
+                try
                 {
-                    // move the cursor to the next line
-                    bounds.Y += bounds.Height;
-                    bounds.X = _xOffset;
+                    if (Text.Substring(CaretCharacterIndex, 1) == "\r" || Text.Substring(CaretCharacterIndex, 1) == "\n")
+                    {
+                        // move the cursor to the next line
+                        bounds.Y += bounds.Height;
+                        bounds.X = _xOffset;
+                    }
                 }
+                catch (ArgumentOutOfRangeException exception)
+                {
+                    
+                }
+
 
                 newCursorLoc = new Vector2((float)bounds.Right + UIDefaults.XTextPadding + BorderWidth,
                                            (float)bounds.Top + UIDefaults.YTextPadding + BorderWidth);

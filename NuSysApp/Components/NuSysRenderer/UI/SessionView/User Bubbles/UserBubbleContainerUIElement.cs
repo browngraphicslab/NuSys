@@ -92,6 +92,10 @@ namespace NuSysApp
                 RemoveChild(bubble);
                 bubble.Tapped -= ShowUserNameOnBubbleTapped;
                 _userIds_toBubbles.Remove(userid);
+                if (_currentUserNameDisplayed_userid == userid)
+                {
+                    _userNameRect.IsVisible = false;
+                }
             }
             
         }

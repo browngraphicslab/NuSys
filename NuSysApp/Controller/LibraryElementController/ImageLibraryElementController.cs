@@ -119,5 +119,11 @@ namespace NuSysApp
             base.UnPack(message);
             SetBlockServerBoolean(false);
         }
+
+        public override void Delete()
+        {
+            base.Delete();
+            SessionController.Instance.RegionsController.RemoveRegion(this.LibraryElementModel);
+        }
     }
 }
