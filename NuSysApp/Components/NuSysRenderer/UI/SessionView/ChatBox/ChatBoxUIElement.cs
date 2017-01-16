@@ -11,7 +11,6 @@ using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
 using SharpDX.Direct2D1.Effects;
 using NusysIntermediate;
-using NuSysAp;
 
 namespace NuSysApp
 {

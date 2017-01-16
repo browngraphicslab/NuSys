@@ -111,6 +111,7 @@ namespace NuSysApp
         {
             try
             {
+                Debug.WriteLine(uri.AbsoluteUri);
                 if (dpi != null)
                 {
                     return await CanvasBitmap.LoadAsync(resourceCreator, uri, dpi.Value);

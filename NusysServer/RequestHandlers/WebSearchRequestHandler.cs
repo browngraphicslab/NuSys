@@ -137,7 +137,7 @@ namespace NusysServer
             {
                 case NusysConstants.ElementType.Image:
                     message[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT] = 1;
-                    message[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT] = 1;
+                    message[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH] = 1;
                     break;
                 case NusysConstants.ElementType.Link:
                     Debug.Assert(dataHolder.LibraryElement is LinkLibraryElementModel);
@@ -150,7 +150,7 @@ namespace NusysServer
                     break;
 
             }
-
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = NusysConstants.AccessType.Public.ToString();
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY] = userId;
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] =
                 dataHolder.LibraryElement.LibraryElementId;
