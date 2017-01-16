@@ -190,6 +190,12 @@ namespace NuSysApp
             base.Dispose();
         }
 
+        public override async Task Load()
+        {
+            base.Load();
+            _loaded = true;
+        }
+
         /// <summary>
         /// Invoked whenever the current tab changes in the detail viewer
         /// </summary>
