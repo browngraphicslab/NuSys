@@ -139,6 +139,8 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected virtual void DrawText(CanvasDrawingSession ds){}
 
+
+
         /// <summary>
         /// Draws the border inside the Rectangle UIElement
         /// </summary>

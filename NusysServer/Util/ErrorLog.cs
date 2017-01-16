@@ -29,7 +29,7 @@ namespace NusysServer
                 lines += DateTime.UtcNow + "   " + error;
                 using (StreamWriter outputFile = new StreamWriter(_filepath))
                 {
-                    outputFile.WriteLine(lines);
+                    outputFile.Write(lines);
                 }
             }
             catch (Exception e)
