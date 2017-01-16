@@ -147,6 +147,8 @@ namespace NusysServer
                 case NusysConstants.ElementType.PDF:
                     message[NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY] = 10000;
                     message[NusysConstants.NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_START_KEY] = 0;
+                    message[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT] = 1;
+                    message[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH] = 1;
                     break;
 
             }
