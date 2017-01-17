@@ -19,6 +19,11 @@ namespace NuSysApp
         private IEnumerable<LibraryElementController> libraryElements;
 
         /// <summary>
+        /// string of search term
+        /// </summary>
+        private string _searchTerm;
+
+        /// <summary>
         /// This handle notication method should simpy create a chatbot chat telling you of the completed search request
         /// </summary>
         /// <param name="message"></param>
@@ -28,6 +33,7 @@ namespace NuSysApp
             Debug.Assert(message.ContainsKey(NusysConstants.WEB_SEARCH_COMPLETED_NOTIFICATION_LIBRARY_IDS_KEY));
 
             var originalSearch = message.GetString(NusysConstants.WEB_SEARCH_COMPLETED_NOTIFICATION_SEARCH_STRING_KEY);
+            _searchTerm = originalSearch;
             var libraryElementIds = message.GetList<string>(NusysConstants.WEB_SEARCH_COMPLETED_NOTIFICATION_LIBRARY_IDS_KEY);
 
             libraryElements =
@@ -42,7 +48,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// private method to
+        /// private method to make a pop up appear after chat is clicked
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
@@ -50,6 +56,7 @@ namespace NuSysApp
         {
             item.Tapped -= ChatClickedCallback;
             //miranda put your function here and use libraryElements
+            SessionController.Instance.NuSessionView.ShowSearchResultPopup(libraryElements.ToList(), _searchTerm);
         }
     }
 }

@@ -75,11 +75,10 @@ namespace NuSysApp
         /// <param name="pointer">Where the pointer was pressed</param>
         private void _canvasInteractionManager_PointerPressed(CanvasPointer pointer)
         {
-            if (!InReadOnly)
-            {
+
                 BaseRenderItem curr = _canvasRenderEngine.GetRenderItemAt(pointer.CurrentPoint);
                 ChangeFocus(curr);
-            }
+            
         }
 
         // Clears the focus of the current BaseRenderItem in focus
@@ -99,7 +98,7 @@ namespace NuSysApp
         {
             // if we are not in read only, and the newBaseRenderItem is focusable, and the new base render
             // item is not currently focused
-            if (!InReadOnly && newBaseRenderItem.IsFocusable && newBaseRenderItem != ActiveFocusElement)
+            if (newBaseRenderItem.IsFocusable && newBaseRenderItem != ActiveFocusElement)
             {
                 var newParentsWithFocus = GetParents(newBaseRenderItem);
                 var parentsWhoLostFocus = _parentsWithFocus.Except(newParentsWithFocus);

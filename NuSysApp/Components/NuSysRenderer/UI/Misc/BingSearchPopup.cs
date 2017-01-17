@@ -15,6 +15,7 @@ namespace NuSysApp
         private ScrollableTextboxUIElement _searchbar;
         private ButtonUIElement _addResults;
         private GridLayoutManager _layoutManager;
+        private float _searchBarHeight = 25;
 
         public BingSearchPopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -22,7 +23,7 @@ namespace NuSysApp
             Background = Colors.White;
             BorderWidth = 2;
             BorderColor = Constants.DARK_BLUE;
-            Height = 50;
+            Height = _searchBarHeight;
 
             _searchbar = new ScrollableTextboxUIElement(this, resourceCreator, false, false);
             _searchbar.Load();
@@ -31,8 +32,8 @@ namespace NuSysApp
             _addResults = new RectangleButtonUIElement(this, ResourceCreator)
             {
                 ButtonText = "Add",
-                Height = 50,
-                Width = 50
+                Height = _searchBarHeight,
+                Width = _searchBarHeight
             };
             AddChild(_addResults);
 
@@ -56,6 +57,8 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(searchRequest);
             var s = searchRequest.WasSuccessful();
             DismissPopup();
+            var notification = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "Your search results are loading. Check your chat for a notification of when it finishes.");
+            SessionController.Instance.NuSessionView.AddChild(notification);
         }
         public override void Update(Matrix3x2 parentToLocalTransform)
         {

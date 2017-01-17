@@ -289,7 +289,6 @@ namespace NuSysApp
                 Width = 250
             };
             AddChild(_readOnlyLinksWindow);
-            _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(300, 100);
 
             _readOnlyMetadataWindow = new ReadOnlyMetadataWindow(this, Canvas)
             {
@@ -320,6 +319,15 @@ namespace NuSysApp
             _settingsButton.Tapped += SettingsButtonOnTapped;
 
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
+        }
+
+        /// <summary>
+        /// shows the search result pop up for when the search results have completed loading
+        /// </summary>
+        public void ShowSearchResultPopup(List<LibraryElementController> elements, string searchTerm)
+        {
+            var popup = new SearchResultsPopup(this, Canvas, elements, searchTerm);
+            AddChild(popup);
         }
 
         /// <summary>
@@ -510,7 +518,7 @@ namespace NuSysApp
             _detailViewer.DisableDetailView();
             _floatingMenu.HideFloatingMenu();
             _floatingMenu.IsVisible = false;
-
+            _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width - _readOnlyLinksWindow.Width - 20, 100);
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
 
