@@ -302,5 +302,107 @@ namespace NuSysApp
             newRecNode.Transform.LocalPosition = screenPoint;
             SessionController.Instance.NuSessionView.AddChild(newRecNode);
         }
+
+        /// <summary>
+        /// creates a collection from a provided screen point, list of element models, and a title (to be the title of the collection)
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <param name="elementModels"></param>
+        /// <param name="title"></param>
+        public static async Task CreateCollectionOnMainCollection(Vector2 screenPoint, List<LibraryElementModel> elementModels, string title)
+        {
+            // the library element id of the collection we are creating, used as the parent collection id when adding elements to it later in the method
+            var collectionLibElemId = SessionController.Instance.GenerateId();
+
+            // We determine the access type of the tool generated collection based on the collection we're in and pass that in to the request
+            var newCollectionAccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType;
+
+            // create a new library element args class to assist in creating the collection
+            var createNewLibraryElementRequestArgs = new CreateNewLibraryElementRequestArgs
+            {
+                ContentId = SessionController.Instance.GenerateId(),
+                LibraryElementType = NusysConstants.ElementType.Collection,
+                Title = title,
+                LibraryElementId = collectionLibElemId,
+                AccessType = newCollectionAccessType
+            };
+
+            // create a new content request args to assist in creating the collection
+            var createNewContentRequestArgs = new CreateNewContentRequestArgs
+            {
+                LibraryElementArgs = createNewLibraryElementRequestArgs
+            };
+
+            var args = new CreateNewCollectionServerRequestArgs();
+            args.CreateNewContentRequestDictionary = createNewContentRequestArgs.PackToRequestKeys().ToDictionary(k => k.Key, v => v.Value);
+            args.NewElementRequestDictionaries = new List<Dictionary<string, object>>();
+
+            // Add all the elements to the newly created collection
+            foreach (var lem in elementModels)
+            {
+                // if the library element model doesn't exist, or is a link don't add it to the collection
+                if (lem == null || lem.Type == NusysConstants.ElementType.Link ||
+                (lem.AccessType == NusysConstants.AccessType.Private && newCollectionAccessType == NusysConstants.AccessType.ReadOnly) ||
+                (lem.AccessType == NusysConstants.AccessType.Private && newCollectionAccessType == NusysConstants.AccessType.Public))
+                {
+                    continue;
+                }
+
+                // create a new element request args, and pass in the required fields
+                var newElementRequestArgs = new NewElementRequestArgs
+                {
+                    // set the position
+                    X = 50000,
+                    Y = 50000,
+
+                    // size
+                    Width = Constants.DefaultNodeSize,
+                    Height = Constants.DefaultNodeSize,
+
+                    // ids
+                    ParentCollectionId = collectionLibElemId,
+                    LibraryElementId = lem.LibraryElementId
+                };
+
+                args.NewElementRequestDictionaries.Add(newElementRequestArgs.PackToRequestKeys().ToDictionary(k => k.Key, v => v.Value));
+            }
+
+            var request = new CreateNewCollectionRequest(args);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
+
+            // add the collection to the current session
+            var collectionLEM = SessionController.Instance.ContentController.GetLibraryElementController(collectionLibElemId);
+            collectionLEM.AddElementAtPosition(screenPoint.X, screenPoint.Y);
+        }
+
+        /// <summary>
+        /// creates a stack of elements on the main collection from a list of elementmodels
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <param name="elementModels"></param>
+        public static async Task CreateStackOnMainCollection(Vector2 screenPoint, List<LibraryElementModel> elementModels)
+        {
+            // use the i counter to offset each new element in the stack
+            int i = 0;
+            int offset = 40;
+            foreach (var element in elementModels)
+            {
+                // get the controller for the element we are adding to the collection
+                var controller = element.GetController();
+
+                // if the library element model doesn't exist, is a link, or is greater than 20, don't add it to the session
+                if (controller == null || controller.LibraryElementModel.Type == NusysConstants.ElementType.Link)
+                {
+                    continue;
+                }
+
+                // add the element to the collection
+                AddElementToCurrentCollection(screenPoint + new Vector2(i * offset), controller.LibraryElementModel.Type, controller);
+
+                // increment to finish loop and perform offset
+                i++;
+            }
+        }
     }
 }

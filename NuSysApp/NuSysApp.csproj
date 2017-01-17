@@ -415,6 +415,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EditTagsUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\SearchResultsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\EditShapePopup.cs" />
