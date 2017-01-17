@@ -322,6 +322,15 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// shows the search result pop up for when the search results have completed loading
+        /// </summary>
+        public void ShowSearchResultPopup(List<LibraryElementController> elements, string searchTerm)
+        {
+            var popup = new SearchResultsPopup(this, Canvas, elements, searchTerm);
+            AddChild(popup);
+        }
+
+        /// <summary>
         /// shows popup that tells user they cannot put a private element on a public collection.
         /// this way when they do that they don't just end up wondering why nothing happened (gotta have that visual feedback yo).
         /// </summary>

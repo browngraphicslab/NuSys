@@ -57,6 +57,8 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(searchRequest);
             var s = searchRequest.WasSuccessful();
             DismissPopup();
+            var notification = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "Your search results are loading. Check your chat for a notification of when it finishes.");
+            SessionController.Instance.NuSessionView.AddChild(notification);
         }
         public override void Update(Matrix3x2 parentToLocalTransform)
         {

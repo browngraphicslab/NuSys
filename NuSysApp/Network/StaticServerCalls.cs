@@ -447,7 +447,7 @@ namespace NuSysApp
         /// <param name="screenPoint"></param>
         /// <param name="elementModels"></param>
         /// <param name="title"></param>
-        public static async Task CreateCollectionOnMainCollection(Vector2 screenPoint, List<LibraryElementModel> elementModels, string title)
+        public static async Task CreateCollectionOnMainCollection(Vector2 screenPoint, List<LibraryElementController> elements, string title)
         {
             // the library element id of the collection we are creating, used as the parent collection id when adding elements to it later in the method
             var collectionLibElemId = SessionController.Instance.GenerateId();
@@ -476,8 +476,10 @@ namespace NuSysApp
             args.NewElementRequestDictionaries = new List<Dictionary<string, object>>();
 
             // Add all the elements to the newly created collection
-            foreach (var lem in elementModels)
+            foreach (var controller in elements)
             {
+                var lem = controller.LibraryElementModel;
+
                 // if the library element model doesn't exist, or is a link don't add it to the collection
                 if (lem == null || lem.Type == NusysConstants.ElementType.Link ||
                 (lem.AccessType == NusysConstants.AccessType.Private && newCollectionAccessType == NusysConstants.AccessType.ReadOnly) ||
@@ -519,16 +521,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="screenPoint"></param>
         /// <param name="elementModels"></param>
-        public static async Task CreateStackOnMainCollection(Vector2 screenPoint, List<LibraryElementModel> elementModels)
+        public static async Task CreateStackOnMainCollection(Vector2 screenPoint, List<LibraryElementController> elements)
         {
             // use the i counter to offset each new element in the stack
             int i = 0;
             int offset = 40;
-            foreach (var element in elementModels)
+            foreach (var controller in elements)
             {
-                // get the controller for the element we are adding to the collection
-                var controller = element.GetController();
-
                 // if the library element model doesn't exist, is a link, or is greater than 20, don't add it to the session
                 if (controller == null || controller.LibraryElementModel.Type == NusysConstants.ElementType.Link)
                 {
