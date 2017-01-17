@@ -82,7 +82,7 @@ namespace NusysServer
                     ErrorLog.AddError(f);
                 }
             }
-            RunTopicModelling(docs.Where(doc => doc.Content.ContentType == NusysConstants.ContentType.Text),senderHandler);
+            RunTopicModelling(docs.Where(doc => doc.Content.ContentType == NusysConstants.ContentType.Text),senderHandler, searchString);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="docs"></param>
         /// <returns></returns>
-        private async Task RunTopicModelling(IEnumerable<DataHolder> docs, NuWebSocketHandler senderHandler)
+        private async Task RunTopicModelling(IEnumerable<DataHolder> docs, NuWebSocketHandler senderHandler, string searchString)
         {
             try
             {
@@ -99,12 +99,17 @@ namespace NusysServer
                 {
                     var message = new Message();
                     message[NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID] = kvp.Key;
+
+                    var kvpTags = new List<Keyword>(kvp.Value.Concat(new List<Keyword>() {new Keyword("Search for: " + searchString)}));
+
                     //var currentKeywordsQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.LibraryElement,Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY)),new SqlQueryEquals(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY,kvp.Key));
                     //var currentKeywords = JsonConvert.DeserializeObject<List<Keyword>>(currentKeywordsQuery.ExecuteCommand().FirstOrDefault().GetString(Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY).FirstOrDefault()));
-                    message[NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY] = JsonConvert.SerializeObject(kvp.Value);
+
+                    message[NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY] = JsonConvert.SerializeObject(kvpTags);
                     message[NusysConstants.REQUEST_TYPE_STRING_KEY] = NusysConstants.RequestType.UpdateLibraryElementModelRequest;
                     var request = new Request(NusysConstants.RequestType.UpdateLibraryElementModelRequest, message);
                     var handler = new UpdateLibraryElementRequestHandler();
+
                     var m = handler.HandleRequest(request, senderHandler);
                     message[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = m.GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY);
                     message[NusysConstants.REQUEST_TYPE_STRING_KEY] = NusysConstants.RequestType.UpdateLibraryElementModelRequest;

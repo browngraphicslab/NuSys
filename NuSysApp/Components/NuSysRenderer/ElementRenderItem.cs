@@ -285,7 +285,7 @@ namespace NuSysApp
                 highlightRect.Width += margin * 2;
                 highlightRect.Height += margin * 2;
                 ds.Transform = Transform.LocalToScreenMatrix;
-                ds.DrawRectangle(highlightRect, _highlightBackground, 10);
+                ds.DrawRectangle(highlightRect, _highlightBackground, 10,new CanvasStrokeStyle() {TransformBehavior = CanvasStrokeTransformBehavior.Fixed});
             }
             ds.Transform = oldTransform;
             base.Draw(ds);

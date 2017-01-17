@@ -418,7 +418,7 @@ namespace NuSysApp
                     }
                     catch (Exception e)
                     {
-                        //TODO maybe notify the user?
+                        //TODO fix this 
                     }
                 }
             }

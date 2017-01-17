@@ -305,6 +305,21 @@ namespace NuSysApp
             var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
             Debug.Assert(controller != null);
             var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
+
+            if (controller?.CollectionModel?.Shape?.ShapePoints == null &&
+                controller?.CollectionModel?.Shape?.ImageUrl != null && controller?.CollectionModel?.Shape?.AspectRatio != null
+                && controller?.CollectionModel?.Shape?.AspectRatio != 0)
+            {
+                var aspcRatio = controller?.CollectionModel?.Shape?.AspectRatio;
+                pts = new Vector2[]
+                {
+                    new Vector2(50000,50000),
+                    new Vector2((float)(50000+1000*aspcRatio), 50000),
+                    new Vector2((float)(50000+1000*aspcRatio),51000),
+                    new Vector2(50000,51000),
+                };
+            }
+
             if (ViewModel.IsShaped || ViewModel.IsFinite)
             {
                 if (_shapeStatus == ShapedStatus.Image)
