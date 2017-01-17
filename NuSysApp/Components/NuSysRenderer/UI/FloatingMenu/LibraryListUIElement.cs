@@ -428,7 +428,7 @@ namespace NuSysApp
                 foreach (var controller in selectedControllers)
                 {
                     var rect = new RectangleUIElement(this, ResourceCreator);
-                    rect.Image = await CanvasBitmap.LoadAsync(Canvas, controller.SmallIconUri);
+                    rect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, controller.SmallIconUri);
                     rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
                     _libraryDragElements.Add(rect);
                     position += new Vector2(_itemDropOffset, _itemDropOffset);

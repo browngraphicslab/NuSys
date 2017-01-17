@@ -131,9 +131,9 @@ namespace NuSysApp
                 _controller.LinkRemoved -= OnLinkRemoved;
             }
             _controller = controller;
-            _link_listview.ClearItems();
-            _link_listview.ClearFilter();
-            _link_listview.AddItems(new List<LinkLibraryElementController>(_controller.GetAllLinks()));
+            _link_listview?.ClearItems();
+            _link_listview?.ClearFilter();
+            _link_listview?.AddItems(new List<LinkLibraryElementController>(_controller.GetAllLinks()));
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
         }

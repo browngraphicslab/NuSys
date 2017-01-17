@@ -49,6 +49,11 @@ namespace NuSysApp
         /// </summary>
         private bool _loaded;
 
+        /// <summary>
+        /// event fired whenever the detal view shows a new library element
+        /// </summary>
+        public event EventHandler<LibraryElementController> NewLibraryElementShown; 
+
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // create the _mainTabContainer, this is the tabs at the top of the page which represent different elements open in the detail view
@@ -246,7 +251,7 @@ namespace NuSysApp
             _mainTabContainer.AddTab(libraryElementModelId, controller.LibraryElementModel.Title);
             controller.TitleChanged += Controller_TitleChanged;
             controller.Deleted += Controller_Deleted;
-
+            NewLibraryElementShown?.Invoke(this,controller);
         }
 
         private void Controller_TitleChanged(object sender, string e)

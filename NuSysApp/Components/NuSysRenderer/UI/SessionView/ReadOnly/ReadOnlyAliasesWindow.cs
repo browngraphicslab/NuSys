@@ -64,9 +64,9 @@ namespace NuSysApp
             var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
             _aliasList = req.GetReturnedElementModels();
-            _listView.ClearFilter();
-            _listView.ClearItems();
-            _listView.AddItems(_aliasList);
+            _listView?.ClearFilter();
+            _listView?.ClearItems();
+            _listView?.AddItems(_aliasList);
 
             // add events for the controller so that aliases are automatically added and removed from the list
             _controller.AliasAdded += OnAliasAdded;

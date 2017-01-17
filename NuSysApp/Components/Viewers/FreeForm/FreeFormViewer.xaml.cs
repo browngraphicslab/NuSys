@@ -1218,21 +1218,42 @@ namespace NuSysApp
             if (item == CurrentCollection || item == InitialCollection)
                 return;
 
-            if (item is ElementRenderItem)
+
+            //if this item needs to be readonly
+            if ((item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.ViewInReadOnly() == true ||
+                (item as LinkRenderItem)?.ViewModel?.Controller?.LibraryElementController?.LibraryElementModel?.ViewInReadOnly() == true)
             {
-                var libraryElementModelId = (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
-                if (libraryElementModelId != null)
+                if (item is ElementRenderItem) //if it is an element render item, not a link
                 {
-                    var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+                    Debug.Assert((item as ElementRenderItem)?.ViewModel?.Model != null);
+                    SessionController.Instance.NuSessionView.ShowReadOnlyWindows(
+                        (item as ElementRenderItem)?.ViewModel?.Model);
+                }
+            }
+            else //if we are in regular mode
+            {
+                if (item is ElementRenderItem)
+                {
+                    var libraryElementModelId =
+                        (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
+                    if (libraryElementModelId != null)
+                    {
+                        var controller =
+                            SessionController.Instance.ContentController.GetLibraryElementController(
+                                libraryElementModelId);
+                        SessionController.Instance.NuSessionView.ShowDetailView(controller);
+                    }
+                }
+                else if (item is LinkRenderItem)
+                {
+                    var libraryElementModelId =
+                        (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel
+                            .LibraryElementId;
+                    var controller =
+                        SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
                     SessionController.Instance.NuSessionView.ShowDetailView(controller);
                 }
-            } else if (item is LinkRenderItem)
-            {
-                var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
-                var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             }
-
         }
 
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)

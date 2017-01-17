@@ -62,9 +62,9 @@ namespace NuSysApp
                 _controller.MetadataChanged -= _controller_MetadataChanged;
             }
             _controller = controller;
-            _metadata_listview.ClearItems();
-            _metadata_listview.ClearFilter();
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
+            _metadata_listview?.ClearItems();
+            _metadata_listview?.ClearFilter();
+            _metadata_listview?.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
             filterlist();
 
             _controller.MetadataChanged += _controller_MetadataChanged;
@@ -72,10 +72,10 @@ namespace NuSysApp
 
         private void filterlist()
         {
-            _metadata_listview.ClearItems();
+            _metadata_listview?.ClearItems();
             var filtered_metadata = filter_by_search_text(new List<MetadataEntry>(_controller.GetMetadata().Values),
                 _searchTextBox.Text);
-            _metadata_listview.AddItems(filtered_metadata);
+            _metadata_listview?.AddItems(filtered_metadata);
         }
 
         private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool show_immutable)

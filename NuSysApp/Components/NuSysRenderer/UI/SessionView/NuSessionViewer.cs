@@ -653,6 +653,8 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
             _currController.TitleChanged -= InstanceOnEnterNewCollectionCompleted;
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
+            _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
             base.Dispose();
         }
 
@@ -878,8 +880,23 @@ namespace NuSysApp
             _readOnlyAliasesWindow.IsVisible = true;
             _readOnlyMetadataWindow.IsVisible = true;
 
+            _detailViewer.HideDetailView();
+
+            _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
+            _detailViewer.NewLibraryElementShown += DetailViewerOnNewLibraryElementShown;
+
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += TempReadOnlyCanvasPanned;
+        }
+
+        /// <summary>
+        /// Event handler whenever read-only windows are visible used to track the detail viewer's new elements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="libraryElementController"></param>
+        private void DetailViewerOnNewLibraryElementShown(object sender, LibraryElementController libraryElementController)
+        {
+            GetOutOfTempReadOnly();
         }
 
         /// <summary>
@@ -889,11 +906,22 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void TempReadOnlyCanvasPanned(object sender, bool e)
         {
+
+            GetOutOfTempReadOnly();
+        }
+
+        /// <summary>
+        /// private method to be called to hide the temp read only windows
+        /// </summary>
+        private void GetOutOfTempReadOnly()
+        {
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
+            _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
+            _detailViewer.IsVisible = true;
+
             _readOnlyLinksWindow.IsVisible = false;
             _readOnlyAliasesWindow.IsVisible = false;
             _readOnlyMetadataWindow.IsVisible = false;
-
         }
     }
 }
