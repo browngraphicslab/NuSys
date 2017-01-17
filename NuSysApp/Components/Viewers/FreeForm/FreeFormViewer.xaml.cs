@@ -388,6 +388,7 @@ namespace NuSysApp
                 trailItem.ViewModel.DeletePresentationLink();
             }
             RenderEngine.BtnDelete.IsVisible = false;
+            RenderEngine.BtnExportTrail.IsVisible = false;
         }
 
         private void OnRenderItemPressed(BaseRenderItem item, CanvasPointer point)
