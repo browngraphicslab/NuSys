@@ -53,6 +53,11 @@ namespace NuSysApp
 
         public void Show(double x = 100, double y= 100, bool showShapeOptions = false)
         {
+            // bound the x and y so the entire box is on the canvas with a slight margin
+            var margin = 15;
+            x = Math.Min(x, SessionController.Instance.ScreenWidth - GroupSettings.Width - margin);
+            y = Math.Min(y, SessionController.Instance.ScreenHeight - GroupSettings.Height - margin);
+
             Canvas.SetLeft(this, x);
             Canvas.SetTop(this, y);
             ColorPicker.Visibility = Visibility.Collapsed;
