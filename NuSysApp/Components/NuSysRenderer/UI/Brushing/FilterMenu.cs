@@ -89,10 +89,11 @@ namespace NuSysApp
         {
             topMargin = TopBarHeight;
             TopBarColor = Constants.MED_BLUE;
-            TopBarHeight = 10;
             Background = Colors.White;
             BorderWidth = 1;
-            BorderColor = Constants.DARK_BLUE;
+            BorderColor = Constants.LIGHT_BLUE;
+
+            TopBarHeight = 0;
 
             // initialize the button layout manager so buttons are stretched horizontally and stay at the top 
             // of the window

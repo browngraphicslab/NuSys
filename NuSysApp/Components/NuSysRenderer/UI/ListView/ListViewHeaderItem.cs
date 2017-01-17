@@ -240,7 +240,7 @@ namespace NuSysApp
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
                 TrimmingSign = CanvasTrimmingSign.Ellipsis,
                 FontSize = 18,
-                FontFamily = UIDefaults.TitleFont
+                FontFamily = UIDefaults.TextFont
             };
 
             return textFormat;

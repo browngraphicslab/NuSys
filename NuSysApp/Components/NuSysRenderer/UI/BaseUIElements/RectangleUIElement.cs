@@ -152,7 +152,7 @@ namespace NuSysApp
             if (BorderType == BorderType.Inside)
             {
                 // draw the border inside the rectangle
-                ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth, 0), Height - BorderWidth), BorderColor, BorderWidth);
+                ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth, 0), Math.Max(Height - BorderWidth,0)), BorderColor, BorderWidth);
             }else if (BorderType == BorderType.Outside)
             {
                 // draw the border outside the rectangle
