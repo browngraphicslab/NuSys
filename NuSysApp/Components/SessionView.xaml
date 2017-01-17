@@ -48,5 +48,8 @@
         <Grid x:Name="xLoadingGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#55000000" Visibility="Collapsed">
             <local:LoadingScreen></local:LoadingScreen>
         </Grid>
+        <Grid x:Name="xSuspendedGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#eeeeee" Visibility="Collapsed">
+            <Button Tapped="ReloadButtonOnTapped">Reload Workspace</Button>
+        </Grid>
     </Grid>
 </Page>
