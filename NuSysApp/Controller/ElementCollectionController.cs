@@ -46,8 +46,6 @@ namespace NuSysApp
                 collectionController.OnChildRemoved += RemoveChildById;
             }
             ToolController.ToolControllers.Add(Id, this);
-
-            Disposed += OnDisposed;
         }
 
         /// <summary>
@@ -92,7 +90,7 @@ namespace NuSysApp
             contentModel.IsFinite = finite;
         }
 
-        private void OnDisposed(object source, object args)
+        public override void Dispose()
         {
             var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId) as CollectionLibraryElementController;
             if (collectionController != null)
@@ -102,7 +100,8 @@ namespace NuSysApp
             }
             ToolController.ToolControllers.Remove(Id);
 
-            Disposed -= OnDisposed;
+            base.Dispose();
+
         }
 
         private void AddChildById(string id)
