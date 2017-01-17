@@ -363,8 +363,7 @@ namespace NuSysApp
             {
                 var libraryElementController =
                     SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-
-                StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
+                StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
             }
         }
 

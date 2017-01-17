@@ -299,6 +299,8 @@ namespace NuSysApp
                 CollectionInteractionManagerOnTwoElementsReleased();
             }
 
+            // if the thing we were selecting was a collection render item update it's camera transforms
+            // since we may have moved it
             if (_selectedRenderItem is CollectionRenderItem)
             {
                 var coll = (CollectionRenderItem)_selectedRenderItem;
@@ -307,15 +309,25 @@ namespace NuSysApp
                 coll.ViewModel.CameraScale = coll.Camera.S.M11;
             }
 
+
+            // the currentCollection is the collection that has focus, if we long tap on a collection that will be the current collection
             var currentCollection = _freeFormViewer.CurrentCollection;
+
+            // if the thing we moved is not a "node" or it is the current collection or we have multiple pointers down or ... interactions too long etc
+            // then don't do anything
             if (!(_selectedRenderItem is ElementRenderItem) || _selectedRenderItem == currentCollection || _canvasInteractionManager.ActiveCanvasPointers.Count > 0 || pointer.MillisecondsActive < 500 || pointer.DistanceTraveled < 50)
             {
                 return;
             }
 
-
+            // otherwise get a list of the elements which lie under the node that was released
             var hits = _freeFormViewer.RenderEngine.GetRenderItemsAt(pointer.CurrentPoint);
+
+            // get a list of the collections which lie under the thing we released
             var underlyingCollections = hits.OfType<CollectionRenderItem>().ToList();
+
+            // when is the underlying collection count one you make ask?
+            // simply when we take a node and drag it out of a currently focused collection onto the main workspace
             if (underlyingCollections.Count() == 1)
             {
                 var hit = underlyingCollections.First();
@@ -323,22 +335,32 @@ namespace NuSysApp
                     ElementAddedToCollection?.Invoke((ElementRenderItem) _selectedRenderItem, hit, pointer);
             } else if (underlyingCollections.Count() > 1)
             {
+                // if we were dragging a collection remove it from the list of hit items
                 while (underlyingCollections.Last() == _selectedRenderItem)
                 {
                     underlyingCollections.RemoveAt(underlyingCollections.Count-1);
                 }
+
+                // get the last thing we hit, if we dragged over nested collections this would be the inner most collection
                 var hit = underlyingCollections.Last();
                 var selectedCollection = (_selectedRenderItem as CollectionRenderItem);
+
+                // if the thing we dragged was a collection
                 if (selectedCollection != null)
                 {
+
+                    // get a list of the render items inside of the collection
                     var renderitems = selectedCollection.GetChildren();
-                    if (hit != currentCollection && hit != _selectedRenderItem && renderitems != null &&
-                        !renderitems.Contains(hit) && hit.ViewModel.Model.ParentCollectionId == currentCollection.ViewModel.Model.LibraryId)
+                    if (hit != currentCollection &&  // if the hit is not the collection we are focusing on
+                        hit != _selectedRenderItem &&  // and the hit is not the collection we clicked on
+                        renderitems != null && // null check the collection's children
+                        !renderitems.Contains(hit) // if the thing we hit was not contained in the collection we were dragging
+                        /*&& (hit.ViewModel.Model.ParentCollectionId == null || hit.ViewModel.Model.ParentCollectionId == currentCollection.ViewModel.Model.LibraryId)*/)
                         ElementAddedToCollection?.Invoke((ElementRenderItem) _selectedRenderItem, hit, pointer);
                 }
                 else
                 {
-                    if (hit != currentCollection && hit != _selectedRenderItem && hit.ViewModel.Model.ParentCollectionId == currentCollection.ViewModel.Model.LibraryId)
+                    if (hit != currentCollection && hit != _selectedRenderItem /*&& hit.ViewModel.Model.ParentCollectionId == currentCollection.ViewModel.Model.LibraryId*/)
                     {
                         ElementAddedToCollection?.Invoke((ElementRenderItem) _selectedRenderItem, hit, pointer);
                     }

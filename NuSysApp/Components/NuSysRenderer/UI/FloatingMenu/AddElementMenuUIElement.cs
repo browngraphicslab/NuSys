@@ -183,7 +183,7 @@ namespace NuSysApp
             _dragRect.IsVisible = false;
 
             // Add the element at the dropped location          
-            StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, _elementType);
+            StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType);
 
         }
 
