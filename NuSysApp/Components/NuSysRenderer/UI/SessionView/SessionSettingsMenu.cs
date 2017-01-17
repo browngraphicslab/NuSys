@@ -102,6 +102,8 @@ namespace NuSysApp
             MinWidth = 220;
             MinHeight = 435;
             
+            ShowClosable();
+
             _settingsStackLayout = new StackLayoutManager(StackAlignment.Vertical);
             _settingsStackLayout.ItemHeight = _showLinksButton.Height;
             _settingsStackLayout.ItemWidth = _showLinksButton.Width;

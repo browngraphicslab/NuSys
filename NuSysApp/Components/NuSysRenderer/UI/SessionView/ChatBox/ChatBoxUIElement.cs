@@ -47,6 +47,7 @@ namespace NuSysApp
             BorderColor = Constants.LIGHT_BLUE;
             BorderType  = BorderType.Outside;
             
+            ShowClosable();
 
             _typingRectContainer = new RectangleUIElement(this, ResourceCreator)
             {
