@@ -11,6 +11,12 @@ namespace NuSysApp
 {
     public class NetworkUser : BaseClient
     {
+        public static NetworkUser ChatBot
+        {
+            get { return new NetworkUser("chatbot") {DisplayName = "ChatBot"}; }
+        }
+
+
         #region Public Variables
         public Color Color
         {

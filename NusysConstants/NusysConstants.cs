@@ -804,6 +804,20 @@ namespace NusysIntermediate
 
         #endregion LockHolderChanged
 
+        #region WebSearchCompleted
+
+        /// <summary>
+        /// The string in the web search completed notification containing the original string search
+        /// </summary>
+        public static readonly string WEB_SEARCH_COMPLETED_NOTIFICATION_SEARCH_STRING_KEY = "search_string_key";
+
+        /// <summary>
+        /// The string in the web search completed notification containing the list of library element ids for the created library elements
+        /// </summary>
+        public static readonly string WEB_SEARCH_COMPLETED_NOTIFICATION_LIBRARY_IDS_KEY = "library_ids_made";
+
+        #endregion WebSearchCompleted
+
         #region AddNetworkUserNotification
 
         /// <summary>
@@ -1818,6 +1832,11 @@ namespace NusysIntermediate
             /// Notification type used to tell the clients when a new user has taken control of a lock they were watching
             /// </summary>
             LockHolderChanged,
+
+            /// <summary>
+            /// Notification for telling the clients when their web search has finished
+            /// </summary>
+            WebSearchCompleted
         }
 
         /// <summary>

@@ -82,6 +82,14 @@ namespace NusysServer
                     ErrorLog.AddError(f);
                 }
             }
+
+            var notification = new WebSearchCompletedNotification(new WebSearchCompletedNotificationArgs()
+            {
+                OriginalSearch = searchString,
+                LibraryElementIds = new List<string>(docs.Select(doc => doc?.LibraryElement?.LibraryElementId).Where(i => i != null))
+            });
+            senderHandler?.Notify(notification);
+
             RunTopicModelling(docs.Where(doc => doc.Content.ContentType == NusysConstants.ContentType.Text),senderHandler, searchString);
         }
 

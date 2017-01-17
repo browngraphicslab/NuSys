@@ -153,6 +153,9 @@ namespace NuSysApp
                 case NusysConstants.NotificationType.LockHolderChanged:
                     handler = new LockHolderChangedNotificationHandler();
                     break;
+                case NusysConstants.NotificationType.WebSearchCompleted:
+                    handler = new WebSearchCompletedNotificationHandler();
+                    break;
                 default:
                     throw new Exception("we don't handle that notification type yet");
             }

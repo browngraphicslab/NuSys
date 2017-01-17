@@ -820,6 +820,7 @@
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\LockHolderChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\WebSearchCompletedNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\WordChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
