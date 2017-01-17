@@ -363,8 +363,7 @@ namespace NuSysApp
             {
                 var libraryElementController =
                     SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-
-                StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
+                StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
             }
         }
 
@@ -566,6 +565,9 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<List<LibraryElementController>> AddFile(IReadOnlyList<StorageFile> storageFiles = null)
         {
+
+            // clear the fileIdToAccessMap
+            _fileIdToAccessMap.Clear();
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
             NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;

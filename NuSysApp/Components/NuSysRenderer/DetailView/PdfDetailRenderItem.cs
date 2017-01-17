@@ -22,10 +22,23 @@ namespace NuSysApp
         {
             var content = controller.ContentDataController.ContentDataModel as PdfContentDataModel;
             ImageUrl = content.PageUrls[0];
-
+            controller.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
             _controller = controller;
             _canvasSize = maxSize;
         }
+
+        /// <summary>
+        /// event hander called whenever the pdf changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="s"></param>
+        private void ContentDataControllerOnContentDataUpdated(object sender, string s)
+        {
+            Debug.Assert(_controller.ContentDataController.ContentDataModel is PdfContentDataModel);
+            ImageUrl = (_controller.ContentDataController.ContentDataModel as PdfContentDataModel).PageUrls[CurrentPage];
+            Load();
+        }
+
 
         protected override void ComputeRegions()
         {
@@ -69,6 +82,7 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
+            _controller.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
             base.Dispose();
         }
     }

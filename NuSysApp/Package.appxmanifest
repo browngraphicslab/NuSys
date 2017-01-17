@@ -35,7 +35,6 @@
               <uap:FileType>.jpg</uap:FileType>
               <uap:FileType>.pptx#3</uap:FileType>
               <uap:FileType>.pptx</uap:FileType>
-              <uap:FileType>.docx</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
@@ -54,6 +53,7 @@
               <uap:FileType>.mp4</uap:FileType>
               <uap:FileType>.html</uap:FileType>
               <uap:FileType>.css</uap:FileType>
+              <uap:FileType>.docx</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

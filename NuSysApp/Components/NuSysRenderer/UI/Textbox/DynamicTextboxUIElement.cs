@@ -77,11 +77,11 @@ namespace NuSysApp
             Width = UIDefaults.Width;
         }
 
-        public override Task Load()
+        public override async Task Load()
         {
             _loaded = true;
             RefreshDimensions();
-            return base.Load();
+            await base.Load();
         }
 
 

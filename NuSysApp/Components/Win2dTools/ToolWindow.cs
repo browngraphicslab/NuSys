@@ -85,6 +85,11 @@ namespace NuSysApp
 
         public ToolViewModel Vm { get; private set; }
 
+        /// <summary>
+        /// The initial drag position of the view model
+        /// </summary>
+        private Vector2 _InitialVmDragPosition;
+
         private const int BUTTON_MARGIN = 10;
         public ToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ToolViewModel vm) : base(vm,parent as CollectionRenderItem, resourceCreator)
         {
@@ -169,6 +174,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             _filterChooser.Dragged -= FilterChooserDropdownButtonOnDragged;
+            _filterChooser.DragStarted -= _filterChooser_DragStarted;
             _filterChooser.Selected -= FilterChooserItem_Clicked;
 
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
@@ -360,21 +366,27 @@ namespace NuSysApp
             _filterChooser.CurrentSelection = Vm.Filter.ToString();
 
             // add a method for when an item is selected in the dropdown
-            _filterChooser.Selected += FilterChooserItem_Clicked; 
+            _filterChooser.Selected += FilterChooserItem_Clicked;
 
             // add all the filter options to the dropdown
+            _filterChooser.DragStarted += _filterChooser_DragStarted;
             _filterChooser.Dragged += FilterChooserDropdownButtonOnDragged;
 
             AddChild(_filterChooser);
+        }
+
+        private void _filterChooser_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _InitialVmDragPosition = new Vector2((float)Vm.X, (float)Vm.Y);
         }
 
         private void FilterChooserDropdownButtonOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
             var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
-            var delta = pointer.DeltaSinceLastUpdate;
-            var newX = Vm.X + delta.X / (transform.M11 * collection.Camera.S.M11);
-            var newY = Vm.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
+            var delta = pointer.CurrentPoint - pointer.StartPoint;
+            var newX = _InitialVmDragPosition.X + delta.X / (transform.M11 * collection.Camera.S.M11);
+            var newY = _InitialVmDragPosition.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
             this.Vm.Controller.SetPosition(newX,newY);
             SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
         }

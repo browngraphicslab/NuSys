@@ -411,6 +411,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EditTagsUIElement.cs" />
@@ -820,6 +821,7 @@
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\LockHolderChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\WebSearchCompletedNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\WordChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />

@@ -77,7 +77,7 @@ namespace NuSysApp
 
             _textSizeSlider = new SliderUIElement(this, resourceCreator, 1, 10)
             {
-                SliderPosition = (float)((SessionController.Instance.SessionSettings.TextScale - .75)/3),
+                SliderPosition = (float)((SessionController.Instance.SessionSettings.TextScale - .75)/2),
                 Width = 200,
                 Height = 50
             };
@@ -250,7 +250,7 @@ namespace NuSysApp
         /// <param name="currSliderPosition"></param>
         private void SliderChanged(SliderUIElement sender, double currSliderPosition)
         {
-            SessionController.Instance.SessionSettings.TextScale = Math.Round(Math.Max(currSliderPosition * 3,0) + .75,1);
+            SessionController.Instance.SessionSettings.TextScale = Math.Round(Math.Max(currSliderPosition * 2,0) + .75,1);
         }
 
 

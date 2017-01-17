@@ -125,6 +125,9 @@ namespace NusysServer
                         case NusysConstants.RequestType.UploadCollectionImageRequest:
                             requestHandler = new UploadCollectionBackgroundImageRequestHandler();
                             break;
+                        case NusysConstants.RequestType.GetWordDocumentRequest:
+                            requestHandler = new GetWordDocumentRequestHandler();
+                            break;
                         case NusysConstants.RequestType.WebSearchRequest:
                             requestHandler = new WebSearchRequestHandler();
                             break;
