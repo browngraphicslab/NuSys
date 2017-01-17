@@ -331,17 +331,32 @@ namespace NuSysApp
             return rect.Contains(new Point(point.X, point.Y));
         }
 
+        /// <summary>
+        /// Returns the rectangle the element occupies on the screen
+        /// </summary>
+        /// <returns></returns>
         public Rect GetScreenRect()
         {
+            // we will use the local to screen matrix to transform from local coordinates to screen coordinates
             var transform = Transform.Parent.LocalToScreenMatrix;
+
+            // transform the local position of the element render item's upper left corner to the screen matrix
+            // the local position if the offset from the upper left cornder of the workspace
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
-            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), transform);
+
+            // get the wrapRect from the children, and get it's height, if there is no wrap rect the height is 0
+            var wrapRect = _children.Where(item => item.GetType() == typeof(WrapRenderItem)).FirstOrDefault();
+            var wrapRectHeight = wrapRect?.GetLocalBounds().Height ?? 0;
+
+
+            // transform the local position of the element render item's lower right corner to the screen matrix
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height + wrapRectHeight)), transform);
             var rect = new Rect
             {
-                X = sp.X,
+                X = sp.X, // set the upper left corner of the new rect to the upper left corner of the element render item
                 Y = sp.Y,
-                Width = spr.X - sp.X,
-                Height = spr.Y - sp.Y
+                Width = spr.X - sp.X, // set the width to the lower right corner X minus the upper left corner X
+                Height = spr.Y - sp.Y // set the height to the lower rigth corner Y minus the upper left corner Y
             };
 
             return rect;

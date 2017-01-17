@@ -399,26 +399,35 @@ namespace NuSysApp
                 DrawBackgroundShapeImage(ds, pts);
                 var screenRect = GetScreenRect();
 
+                // draw the ink render item
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 
+                // not sure what is on the layer if anything yet
                 foreach (var item in _renderItems1?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
+                // this layer contains tools and element render items
                 foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
                 {
+                    // if the item is a tool window, draw the tool window
                     if (item is ToolWindow)
                     {
                         (item as ToolWindow).Draw(ds);
                     }
+
+                    // check to see if the item is an element render item
                     var element = item as ElementRenderItem;
                     if (element == null)
                         return;
 
+                    // if the item is a tool, or the rectangle the screen takes up intersects with the rectangle that
+                    // bounds the element on the screen, then draw it
                     if (element is PseudoElementRenderItem || screenRect.Intersects(element.GetScreenRect()))
                         item.Draw(ds);
                  }
 
+                // not sure what is on the layer if anything yet
                 foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
