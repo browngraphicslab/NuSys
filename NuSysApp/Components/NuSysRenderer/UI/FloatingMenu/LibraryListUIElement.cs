@@ -565,6 +565,9 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<List<LibraryElementController>> AddFile(IReadOnlyList<StorageFile> storageFiles = null)
         {
+
+            // clear the fileIdToAccessMap
+            _fileIdToAccessMap.Clear();
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
             NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;
