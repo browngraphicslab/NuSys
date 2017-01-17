@@ -94,14 +94,16 @@ namespace NuSysApp
             _createLinkButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Add Link");
             AddChild(_createLinkButton);
 
-            // always add this as the last child since it has a drop down
-            AddChild(_addLinkToElementBox);
-
             // create the list view to display the events
             CreateListView();
 
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
+            _createLinkButton.Tapped += OnCreateLinkButtonTapped;
+
+
+            // always add this as the last child since it has a drop down
+            AddChild(_addLinkToElementBox);
 
         }
 
@@ -113,7 +115,7 @@ namespace NuSysApp
         private void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // if the auto suggest button has a selection chosen, and there isn't an empty title then create a link
-            if (_addLinkToElementBox.HasSelection && !string.IsNullOrEmpty(_addLinkTitleBox.Text))
+            if (_addLinkToElementBox.HasSelection)
             {
 
                 // get the tags from the tags box
@@ -126,8 +128,14 @@ namespace NuSysApp
                     keywords.Add(new Keyword(tagString));
                 }
 
+                var title = _addLinkTitleBox.Text;
+                if (string.IsNullOrEmpty(title))
+                {
+                    title = null;
+                }
+
                 // try to add a link between the two controllers
-                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), _addLinkTitleBox.Text,keywords);
+                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), title,keywords);
             }
         }
 

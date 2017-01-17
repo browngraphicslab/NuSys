@@ -23,6 +23,7 @@ using MyToolkit.Mathematics;
 using MyToolkit.Utilities;
 using NusysIntermediate;
 using Wintellect.PowerCollections;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -217,17 +218,26 @@ namespace NuSysApp
             _children.Add(child);
         }
 
+        /// <summary>
+        /// Removes all instances of the passed in link from the current collection
+        /// </summary>
+        /// <param name="libraryElementId"></param>
         public void RemoveLink(string libraryElementId)
         {
+            // get all the links we want to remove
             var soughtLinks = ViewModel.Links.Where(l => l.Controller.LibraryElementController.LibraryElementModel.LibraryElementId == libraryElementId);
+
+            // if no instances of the link exist just return
             if (!soughtLinks.Any())
             {
                 return;
             }
 
-            ViewModel.Links.Remove(soughtLinks.First());
+            // otherwise remove all the links from the collection
+            soughtLinks.ToArray().ForEach(i => ViewModel.Links.Remove(i));
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
+                // refresh the list of render items
                 _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
             });
         }

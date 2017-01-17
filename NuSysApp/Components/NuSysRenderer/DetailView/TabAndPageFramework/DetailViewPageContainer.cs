@@ -237,15 +237,27 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void OnDeleteFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            DeleteLibraryElementRequest request = new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            if (request.WasSuccessful() == true)
+            // if the thing we are deleting was a linke
+            if (_currentController.LibraryElementModel.Type ==NusysConstants.ElementType.Link)
             {
-                request.DeleteLocally();
-               
-            }
-            //Dismisses the flyout popup
+                await SessionController.Instance.LinksController.RemoveLink(_currentController.LibraryElementModel.LibraryElementId);
+                if (SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.BtnDelete.IsVisible == true)
+                {
+                    SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.BtnDelete.IsVisible = false;
+                }
+            } else
+            {
 
+                DeleteLibraryElementRequest request = new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                if (request.WasSuccessful() == true)
+                {
+                    request.DeleteLocally();
+
+                }
+            }
+
+            //Dismisses the flyout popup
             var popup = item.Parent as FlyoutPopup;
             Debug.Assert(popup != null);
             if (popup == null)
