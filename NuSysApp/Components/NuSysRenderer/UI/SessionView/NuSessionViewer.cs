@@ -257,22 +257,22 @@ namespace NuSysApp
 
 
             // add presentation node buttons
-            _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false
             };
             AddChild(_previousNode);
-            _nextNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _nextNode = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false
             };
             AddChild(_nextNode);
-            _currentNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _currentNode = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false,
             };
             AddChild(_currentNode);
-            _exitPresentation = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _exitPresentation = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false
             };
@@ -632,9 +632,12 @@ namespace NuSysApp
 
             // set the images for presentation mode
             _nextNode.Image = _nextNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_forward.png"));
+            _nextNode.ImageBounds = new Rect(10,10,30,30);
             _previousNode.Image = _previousNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
-            _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/node.png"));
-            _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/trash can white.png"));
+            _previousNode.ImageBounds = new Rect(10,10,30,30);
+            _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
+            _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
+            _exitPresentation.ImageBounds = new Rect(10,10,30,30);
 
             _loaded = true;
 
