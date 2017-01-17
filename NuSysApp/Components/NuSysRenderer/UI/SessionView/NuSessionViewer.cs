@@ -632,12 +632,9 @@ namespace NuSysApp
 
             // set the images for presentation mode
             _nextNode.Image = _nextNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_forward.png"));
-            _nextNode.ImageBounds = new Rect(10,10,30,30);
             _previousNode.Image = _previousNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
-            _previousNode.ImageBounds = new Rect(10,10,30,30);
             _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
             _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
-            _exitPresentation.ImageBounds = new Rect(10,10,30,30);
 
             _loaded = true;
 
