@@ -293,21 +293,38 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// This method is used to return the rectangle that creates the selection bounding rect
+        /// </summary>
+        /// <returns></returns>
         public Rect GetSelectionBoundingRect()
         {
             if (_textLayout == null)
                 return new Rect();
+
+            // we are going to transform to the screen matrix using the local to screen matrix of the parent, which is a collection
+            // that is displayed to the user
             var transform = Transform.Parent.LocalToScreenMatrix;
-            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
-            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height)), transform);
-            var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
+
+            // get a rectangle describing the height and width of the _tagRenderItem
             var tagsMeasurement = _tagRenderItem.GetLocalBounds();
+
+            // get the screen point for the upper left point of the element render item
+            var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
+
+            // get the screen poitn for the lower right point of the element render item including the height of the tagsMeasurement
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height + tagsMeasurement.Height + 10)), transform);
+
+            // get the position for the upper left point of the title
+            var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
+
+            // return the rectangle described by these objects
             var rect = new Rect
             {
-                X = Math.Min(sp.X, titlePos.X),
-                Y = Math.Min(sp.Y, titlePos.Y),
-                Width = Math.Max(_textLayout.DrawBounds.Width, spr.X - sp.X),
-                Height = spr.Y- titlePos.Y + tagsMeasurement.Height + 10
+                X = Math.Min(sp.X, titlePos.X), // the upper left x is the minimum of the left axis of the node and the left axis of the title
+                Y = Math.Min(sp.Y, titlePos.Y), // the upper left y is the minimum of the y axis of the node and the y axis of the title
+                Width = Math.Max(_textLayout.DrawBounds.Width, spr.X - sp.X), // the width is the maximum of the title width, and the width of the node itself
+                Height = spr.Y - titlePos.Y // the height is the bottommost point minus the topmost point, assuming the topmost point is the y position of the title
             };
             return rect;
         }
@@ -332,7 +349,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns the rectangle the element occupies on the screen
+        /// Returns the rectangle the element occupies on the screen. This method is used to get the rectangle used for culling
+        /// the workspace
         /// </summary>
         /// <returns></returns>
         public Rect GetScreenRect()
@@ -344,13 +362,12 @@ namespace NuSysApp
             // the local position if the offset from the upper left cornder of the workspace
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
 
-            // get the wrapRect from the children, and get it's height, if there is no wrap rect the height is 0
-            var wrapRect = _children.Where(item => item.GetType() == typeof(WrapRenderItem)).FirstOrDefault();
-            var wrapRectHeight = wrapRect?.GetLocalBounds().Height ?? 0;
+            // get the tagRectangle from the children, and get it's height, if there is no tag rect the height is 0
+            var tagRectHeight = _tagRenderItem?.GetLocalBounds().Height ?? 0;
 
 
             // transform the local position of the element render item's lower right corner to the screen matrix
-            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height + wrapRectHeight)), transform);
+            var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height + tagRectHeight)), transform);
             var rect = new Rect
             {
                 X = sp.X, // set the upper left corner of the new rect to the upper left corner of the element render item
