@@ -49,7 +49,6 @@ namespace NuSysApp
             _activeFreeFormViewer.Height = ActualHeight;
             mainCanvas.Children.Insert(0, _activeFreeFormViewer);
             
-            xLoadingGrid.PointerPressed += XLoadingGridOnPointerPressed;
         }
 
         private void XLoadingGridOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
@@ -88,12 +87,22 @@ namespace NuSysApp
             });
         }
 
+        public void ShowSuspendedScreen(bool visible)
+        {
+            UITask.Run(delegate {
+                xSuspendedGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            });
+        }
         public Canvas MainCanvas
         {
             get { return mainCanvas; }
         }
-
+        
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
 
+        private void ReloadButtonOnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            SessionController.Instance.LoadCapturedState();
+        }
     }
 }

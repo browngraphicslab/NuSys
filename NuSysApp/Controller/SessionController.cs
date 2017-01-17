@@ -241,7 +241,7 @@ namespace NuSysApp
                     camera.LocalScale.X,
                     camera.LocalScale.Y);
                 _capturedState = currentState;
-                SessionView.ShowBlockingScreen(true);
+                SessionView.ShowSuspendedScreen(true);
             });
             NuSysNetworkSession.CloseConnection();
         }
@@ -283,7 +283,7 @@ namespace NuSysApp
                     ActiveFreeFormViewer.CompositeTransform.ScaleY = _capturedState.YZoomLevel;
                     
 
-                    SessionView.ShowBlockingScreen(false);
+                    SessionView.ShowSuspendedScreen(false);
 
                     _capturedState = null;
                 });
