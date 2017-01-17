@@ -154,9 +154,9 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ColorButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            _collectionController.CollectionContentDataController.ClearShape();
             if (_collectionController.CollectionContentDataController.CollectionModel.Shape == null)
             {
-                _collectionController.CollectionContentDataController.ClearShape();
                 ///sets shape to the bounding square
                 _collectionController.CollectionContentDataController.SetShapePoints(new List<PointModel>()
                 {
