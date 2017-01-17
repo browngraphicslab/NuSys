@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,22 +30,32 @@ namespace NuSysApp
                             rectangle = new DetailViewTextPage(parent, resourceCreator, controller);
                             break;
                         case NusysConstants.ElementType.Image:
+                            Debug.Assert(controller is ImageLibraryElementController);
                             rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Collection:
+                            Debug.Assert(controller is CollectionLibraryElementController);
                             rectangle = new DetailViewCollectionPage(parent, resourceCreator, controller as CollectionLibraryElementController);
                             break;
                         case NusysConstants.ElementType.PDF:
+                            Debug.Assert(controller is PdfLibraryElementController);
                             rectangle = new DetailViewPdfPage(parent, resourceCreator, controller as PdfLibraryElementController, true, false);
                             break;
                         case NusysConstants.ElementType.Audio:
+                            Debug.Assert(controller is AudioLibraryElementController);
                             rectangle = new DetailViewAudioPage(parent, resourceCreator, controller as AudioLibraryElementController, false);
                             break;
                         case NusysConstants.ElementType.Video:
+                            Debug.Assert(controller is VideoLibraryElementController);
                             rectangle = new DetailViewVideoPage(parent, resourceCreator, controller as VideoLibraryElementController, false);
                             break;
                         case NusysConstants.ElementType.Link:
+                            Debug.Assert(controller is LinkLibraryElementController);
                             rectangle = new DetailViewLinkPage(parent, resourceCreator, controller as LinkLibraryElementController);
+                            break;
+                        case NusysConstants.ElementType.Word:
+                            Debug.Assert(controller is WordNodeLibraryElementController);
+                            rectangle = new DetailViewWordPage(parent, resourceCreator, controller as WordNodeLibraryElementController);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementType),

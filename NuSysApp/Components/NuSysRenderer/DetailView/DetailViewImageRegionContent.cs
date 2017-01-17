@@ -125,7 +125,6 @@ namespace NuSysApp
         public DetailViewImageRegionContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ImageLibraryElementController controller, bool showRegions) : base(parent, resourceCreator)
         {
             _controller = controller;
-            ImageUrl = controller.ContentDataController.ContentDataModel.Data;
 
             // set defaults
             IsRegionsModifiable = true;
@@ -205,13 +204,14 @@ namespace NuSysApp
             {
                 return;
             }
+            var url = new Uri(ImageUrl);
 
             await Task.Run(async () =>
             {
                 _imageBitmap = await
-                    MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri(ImageUrl),
+                    MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, url,
                         ResourceCreator.Dpi);
-                if (_controller.ImageLibraryElementModel.Ratio == 0)
+                if (_controller.ImageLibraryElementModel.Type == NusysConstants.ElementType.Image && _controller.ImageLibraryElementModel.Ratio == 0)
                 {
                     _controller.SetAspectRatio(_imageBitmap.Size.Width/_imageBitmap.Size.Height);
                 }

@@ -185,21 +185,36 @@ namespace NuSysApp
             Debug.Assert(request.WasSuccessful() == true);
             if (request.WasSuccessful() == true)
             {
-                var bytes = request.GetReturnedDocumentBytes();
-                var path = _controller.LibraryElementModel.ContentDataModelId + ".docx";
-                NuSysStorages.SaveFolder.CreateFileAsync(path,CreationCollisionOption.ReplaceExisting);
-                File.WriteAllBytes(path,bytes);
+                await UITask.Run(async delegate{ 
+                    var bytes = request.GetReturnedDocumentBytes();
+                    var path = _controller.LibraryElementModel.ContentDataModelId + ".docx";
+                    var fullPath = NuSysStorages.SaveFolder.Path + "\\" + path;
 
-                var launcherOptions = new LauncherOptions() { UI = { PreferredPlacement = Placement.Right, InvocationPoint = new Point(SessionController.Instance.SessionView.ActualWidth / 2, 0.0) } };
-                launcherOptions.TreatAsUntrusted = false;
-                launcherOptions.PreferredApplicationDisplayName = "NUSYS";
-                launcherOptions.PreferredApplicationPackageFamilyName = "NuSys";
-                launcherOptions.DesiredRemainingView = ViewSizePreference.UseHalf;
-                await Task.Run(async delegate
-                {
-                    var storageFile = await StorageFile.GetFileFromPathAsync(path);
-                    File.SetAttributes(path, System.IO.FileAttributes.Normal);
-                    await Launcher.LaunchFileAsync(storageFile, launcherOptions);
+                    await Task.Run(async delegate
+                    {
+                        NuSysStorages.SaveFolder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
+                        try
+                        {
+                            File.WriteAllBytes(fullPath, bytes);
+                        }
+                        catch (Exception e)
+                        {
+                            //do nothing
+                        }
+                    });
+
+                    var launcherOptions = new LauncherOptions() { UI = { PreferredPlacement = Placement.Right, InvocationPoint = new Point(SessionController.Instance.SessionView.ActualWidth / 2, 0.0) } };
+                    launcherOptions.TreatAsUntrusted = false;
+                    launcherOptions.PreferredApplicationDisplayName = "NUSYS";
+                    launcherOptions.PreferredApplicationPackageFamilyName = "NuSys";
+                    launcherOptions.DesiredRemainingView = ViewSizePreference.UseHalf;
+
+                    await Task.Run(async delegate
+                    {
+                        var storageFile = await StorageFile.GetFileFromPathAsync(fullPath);
+                        File.SetAttributes(fullPath, System.IO.FileAttributes.Normal);
+                        await Launcher.LaunchFileAsync(storageFile, launcherOptions);
+                    });
                 });
             }
         }

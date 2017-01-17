@@ -9,7 +9,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    class DetailViewPdfRegionRenderItem : DetailViewImageRegionContent
+    public class DetailViewPdfRegionRenderItem : DetailViewImageRegionContent
     {
         /// <summary>
         /// Helper for the current page of the pdf
@@ -61,8 +61,35 @@ namespace NuSysApp
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
+            _controller.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
+
             _controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;          
+        }
+
+        /// <summary>
+        /// this dispose overrride simply removes the handlers for all events
+        /// </summary>
+        public override void Dispose()
+        {
+            _controller.LocationChanged -= ControllerOnLocationChanged;
+            _controller.SizeChanged -= ControllerOnSizeChanged;
+
+            _controller.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
+
+            _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            base.Dispose();
+        }
+
+        /// <summary>
+        /// event handler called whenever the content data changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="s"></param>
+        private void ContentDataControllerOnContentDataUpdated(object sender, string s)
+        {
+            CurrentPage = CurrentPage;
         }
 
         protected override void ComputeRegions()

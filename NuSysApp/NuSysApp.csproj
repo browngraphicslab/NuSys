@@ -411,6 +411,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EditTagsUIElement.cs" />

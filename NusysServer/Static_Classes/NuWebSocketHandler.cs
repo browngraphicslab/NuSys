@@ -40,6 +40,8 @@ namespace NusysServer
         private static WebSocketCollection AllClients = new WebSocketCollection();
         private static JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
 
+        public string UserId { get; private set; }
+
         /// <summary>
         /// essentially the constructor.  Called whenever a new client, and therefore new nuwebsockethandler, is made
         /// </summary>
@@ -49,7 +51,7 @@ namespace NusysServer
             var ip = this.WebSocketContext.UserHostAddress;
 
             this.MaxIncomingMessageSize = Int32.MaxValue;//TODO broadcast this openeing somewhere
-
+            UserId = NusysClient.IDtoUsers[this].UserID;
             BroadcastNewUser(NusysClient.IDtoUsers[this]);
             foreach (var activeClient in NusysClient.IDtoUsers)
             {

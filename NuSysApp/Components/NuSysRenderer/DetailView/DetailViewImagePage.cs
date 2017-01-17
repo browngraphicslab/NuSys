@@ -25,6 +25,7 @@ namespace NuSysApp
 
             // initialize the image rectangle and the _imageLayoutManager
             _content = new DetailViewImageRegionContent(this, Canvas, controller, showRegions);
+            _content.ImageUrl = controller.Data;
             SetContent(_content);
 
             _inkable = new InkableUIElement(controller, this, resourceCreator);
