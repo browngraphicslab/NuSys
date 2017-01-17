@@ -350,12 +350,11 @@ namespace NuSysApp
                 return;
             }
             // remove each of the drag elements
-            foreach (var rect in _libraryDragElements.ToArray())
+            foreach (var rect in _libraryDragElements)
             {
-                rect.Dispose();
                 RemoveChild(rect);
-                _libraryDragElements.Remove(rect);
             }
+            _libraryDragElements.Clear();
             _isDragVisible = false;
 
             // add each of the items to the collection
@@ -373,7 +372,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private async void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        private void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
             if (_dragCanceled)
             {
@@ -389,12 +388,11 @@ namespace NuSysApp
                 if (LibraryListView.HitTest(pointer.CurrentPoint) != null)
                 {
                     // remove each of the drag elements
-                    foreach (var rect in _libraryDragElements.ToArray())
+                    foreach (var rect in _libraryDragElements)
                     {
-                        rect.Dispose();
                         RemoveChild(rect);
-                        _libraryDragElements.Remove(rect);
                     }
+                    _libraryDragElements.Clear();
                     _isDragVisible = false;
                     _dragCanceled = true;
                 }
@@ -423,19 +421,22 @@ namespace NuSysApp
                                 SessionController.Instance.ContentController.GetLibraryElementController(
                                     model.LibraryElementId))
                         .ToList();
-
-                // add each of the controllers smalliconurls as drag icons
                 foreach (var controller in selectedControllers)
                 {
                     var rect = new RectangleUIElement(this, ResourceCreator);
-                    rect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, controller.SmallIconUri);
+                    var task = Task.Run(() => LoadCanvasBitmap(controller.SmallIconUri));
+                    rect.Image = task.Result;
                     rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
                     _libraryDragElements.Add(rect);
                     position += new Vector2(_itemDropOffset, _itemDropOffset);
                     AddChild(rect);
-
                 }
             }
+        }
+
+        private async Task<ICanvasImage> LoadCanvasBitmap(Uri smallIconURI)
+        {
+            return await MediaUtil.LoadCanvasBitmapAsync(Canvas, smallIconURI);
         }
 
         public override void Dispose()
