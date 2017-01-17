@@ -30,7 +30,7 @@ namespace NuSysApp
                 _textFormat = new CanvasTextFormat();
                 _textFormat.WordWrapping = CanvasWordWrapping.Wrap;
                 _textFormat.FontSize = UIDefaults.FontSize;
-                _textFormat.FontFamily = UIDefaults.FontFamily;
+                _textFormat.FontFamily = UIDefaults.TextFont;
             }
             else
             {

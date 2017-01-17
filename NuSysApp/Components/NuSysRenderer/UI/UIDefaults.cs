@@ -25,8 +25,6 @@ namespace NuSysApp
         public static Color TopBarColor = Colors.Transparent;
         public static float ErrorMargin = 15;
 
-        public static string FontFamily = "Arial";//"/Assets/fonts/freightsans.ttf#FreightSans BookSC";
-
         public static float Padding = 2;
         public static int PrimaryStyle = 0;
         public static int SecondaryStyle = 1;
@@ -38,8 +36,8 @@ namespace NuSysApp
 
         #region font and text
 
-        public static string TitleFont = "Arial"; /*"/Assets/fonts/freightsans.ttf#FreightSans BookSC"*/
-        public static string TextFont;
+        public static string TitleFont = "ms-appx:///Assets/fonts/Rubik-Regular.ttf#Rubik"; /*"/Assets/fonts/freightsans.ttf#FreightSans BookSC"*/
+        public static string TextFont = "Arial";
         public static CanvasHorizontalAlignment TextHorizontalAlignment = CanvasHorizontalAlignment.Left;
         public static CanvasVerticalAlignment TextVerticalAlignment = CanvasVerticalAlignment.Center;
         public static Color TextColor = Constants.ALMOST_BLACK;

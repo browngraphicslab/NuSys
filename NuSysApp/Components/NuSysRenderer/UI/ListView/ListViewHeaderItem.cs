@@ -228,5 +228,22 @@ namespace NuSysApp
             Tapped -= ListViewHeaderItem_Tapped;
             Holding -= ListViewHeaderItem_Holding;
         }
+
+        protected override CanvasTextFormat GetCanvasTextFormat()
+        {
+            // create a text format object
+            var textFormat = new CanvasTextFormat
+            {
+                HorizontalAlignment = ButtonTextHorizontalAlignment,
+                VerticalAlignment = ButtonTextVerticalAlignment,
+                WordWrapping = CanvasWordWrapping.NoWrap,
+                TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
+                TrimmingSign = CanvasTrimmingSign.Ellipsis,
+                FontSize = 18,
+                FontFamily = UIDefaults.TextFont
+            };
+
+            return textFormat;
+        }
     }
 }

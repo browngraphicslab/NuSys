@@ -24,9 +24,10 @@ namespace NuSysApp
         {
             _label = new TextboxUIElement(this, ResourceCreator);
             _label.Text = "metadata";
+            _label.FontFamily = UIDefaults.TitleFont;
             _label.Width = Width;
             _label.Height = 38;
-            _label.FontSize = 32;
+            _label.FontSize = 20;
             _label.TextColor = Constants.DARK_BLUE;
             _label.Background = Constants.LIGHT_BLUE;
             _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
@@ -36,9 +37,9 @@ namespace NuSysApp
 
             _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Background = Colors.Azure,
-                BorderWidth = 3,
-                BorderColor = Colors.DarkSlateGray,
+                Background = Colors.White,
+                BorderWidth = 1,
+                BorderColor = Constants.LIGHT_BLUE,
                 PlaceHolderText = "Search"
             };
             AddChild(_searchTextBox);
@@ -123,8 +124,8 @@ namespace NuSysApp
             _metadata_listview = new ListViewUIElementContainer<MetadataEntry>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                BorderColor = Constants.DARK_BLUE
+                BorderWidth = 1,
+                BorderColor = Constants.LIGHT_BLUE
             };
             AddChild(_metadata_listview);
 
@@ -149,8 +150,8 @@ namespace NuSysApp
                 return;
             }
             // helper variable, the current vertical spacing from the top of the window
-            var vertical_margin = 5;
-            var horizontal_margin = 10;
+            var vertical_margin = 0;
+            var horizontal_margin = 0;
             var searchTextBoxHeight = 30;
 
             _label.Width = Width;

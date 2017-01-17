@@ -97,7 +97,7 @@ namespace NuSysApp
                     headerItem.Height = 40;
                     headerItem.Background = Colors.White;
                     headerItem.BorderWidth = 1;
-                    headerItem.BorderColor = Constants.DARK_BLUE;
+                    headerItem.BorderColor = Constants.LIGHT_BLUE;
                     headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
                     AddHeaderHandlers(headerItem);
                     this.AddChild(headerItem);

@@ -152,7 +152,8 @@ namespace NuSysApp
                 FontSize = 14,
                 BorderWidth = 1,
                 BorderColor = Constants.MED_BLUE,
-                Background = Colors.White
+                Background = Colors.White,
+                FontFamily = UIDefaults.TextFont
             };
             _searchBar.TextChanged += SearchBarTextChanged;
             AddChild(_searchBar);

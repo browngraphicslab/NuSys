@@ -79,10 +79,12 @@ namespace NuSysApp
         {
 
             TopBarColor = Constants.MED_BLUE;
-            TopBarHeight = 10;
+            TopBarHeight = 0;
             Height = 400;
             Width = 300;
             Background = Colors.White;
+            BorderWidth = 1;
+            BorderColor = Constants.LIGHT_BLUE;
 
             // instantiate a new _libraryElementListview
             _userIdListView = new ListViewUIElementContainer<string>(this, ResourceCreator)
@@ -383,7 +385,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            var padding = 10;
+            var padding = 0;
             // make sure the list views fill the height and width of the cotnainer
             _userIdListView.Width = Width - 2*BorderWidth - padding*2;
             _userIdListView.Height = Height - 2 * BorderWidth - TopBarHeight;

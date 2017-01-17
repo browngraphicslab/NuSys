@@ -199,7 +199,7 @@ namespace NuSysApp
             TextColor = UIDefaults.TextColor;
             FontStyle = UIDefaults.FontStyle;
             FontSize = UIDefaults.FontSize;
-            FontFamily = UIDefaults.TitleFont;
+            FontFamily = UIDefaults.TextFont;
             Wrapping = UIDefaults.Wrapping;
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;

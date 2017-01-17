@@ -29,9 +29,10 @@ namespace NuSysApp
         {
             _label = new TextboxUIElement(this, ResourceCreator);
             _label.Text = "links";
+            _label.FontFamily = UIDefaults.TitleFont;
             _label.Width = Width;
             _label.Height = 38;
-            _label.FontSize = 32;
+            _label.FontSize = 20;
             _label.TextColor = Constants.DARK_BLUE;
             _label.Background = Constants.LIGHT_BLUE;
             _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
@@ -55,8 +56,8 @@ namespace NuSysApp
             _link_listview = new ListViewUIElementContainer<LinkLibraryElementController>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                BorderColor = Constants.DARK_BLUE
+                BorderWidth = 1,
+                BorderColor = Constants.LIGHT_BLUE
             };
             AddChild(_link_listview);
             _link_listview.Load();
@@ -104,8 +105,8 @@ namespace NuSysApp
                 return;
             }
 
-            var horizontalMargin = 10;
-            var verticalMargin = 5;
+            var horizontalMargin = 0;
+            var verticalMargin = 0;
 
             _label.Width = Width;
             _label.Transform.LocalPosition = new Vector2( 0, verticalMargin);

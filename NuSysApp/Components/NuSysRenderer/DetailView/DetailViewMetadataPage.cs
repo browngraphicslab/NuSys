@@ -360,7 +360,7 @@ namespace NuSysApp
                     Background = Constants.color4,
                     TextColor = Constants.color6,
                     FontSize = 15f,
-                    FontFamily = "/Assets/fonts/Frutiger LT 56 Italic.ttf#Frutiger LT 55 Roman"
+                    FontFamily = UIDefaults.TextFont
                 };
                 newTag.SetLoaded();
                 newTag.Height = height-2*_tagVerticalSpacing;

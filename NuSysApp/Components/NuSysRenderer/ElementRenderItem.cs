@@ -105,7 +105,7 @@ namespace NuSysApp
                 FontSize = 17f * (float)SessionController.Instance.SessionSettings.TextScale,
                 WordWrapping = CanvasWordWrapping.Wrap,
                 HorizontalAlignment = CanvasHorizontalAlignment.Center,
-                FontFamily = "/Assets/fonts/freightsans.ttf#FreightSans BookSC"
+                FontFamily = UIDefaults.TitleFont
             };
             _needsTitleUpdate = true;
         }
