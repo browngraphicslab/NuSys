@@ -598,7 +598,17 @@ namespace NuSysApp
             _bottomRightResizeHighlight.Width = ErrorMargin;
             _bottomRightResizeHighlight.Height = ErrorMargin;
 
-            
+            // check gradient visibility 
+            if ((HasFocus == true || ChildHasFocus == true) && _leftResizeHighlight.IsVisible == false)
+            {
+                ToggleResizeHighlight(true);
+            }
+            if ((HasFocus == false && ChildHasFocus == false) && _leftResizeHighlight.IsVisible == true)
+            {
+                ToggleResizeHighlight(false);
+            }
+
+
             base.Update(parentLocalToScreenTransform);
         }
 
