@@ -410,8 +410,8 @@ namespace NuSysApp
         /// <param name="columnIndex"></param>
         private void Header_HeaderTapped(int columnIndex, CanvasPointer pointer)
         {
-            _listview.SortByCol(columnIndex);
-
+            SortByCol(columnIndex);
+        
         }
 
 

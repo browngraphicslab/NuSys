@@ -153,10 +153,10 @@ namespace NuSysApp
 
         #region private
         /// <summary>
-        /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
-        /// this is -1.
+        /// This represents the column that the list is sorted by. If it isn't sorted by any index,
+        /// this is null
         /// </summary>
-        private int _columnIndexSortedBy;
+        private ListColumn<T> _columnSortedBy;
 
         /// <summary>
         /// Count of how many times Dragged has been called since DragStarted
@@ -255,7 +255,6 @@ namespace NuSysApp
             _scrollOffset = 0;
             MultipleSelections = false;
             BorderWidth = 0;
-            _columnIndexSortedBy = -1;
             Rows = new List<ListViewRowUIElement<T>>();
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
@@ -1084,46 +1083,44 @@ namespace NuSysApp
         #endregion Event handlers
 
         #region Sorting
+
         /// <summary>
         /// This will sort the list by the column index
         /// </summary>
         /// <param name="columnIndex"></param>
         public void SortByCol(int columnIndex)
         {
+            var column = ListColumns[columnIndex];
 
-            Debug.Assert(columnIndex < _listColumns.Count);
-            //If it isn't sorted by this index then just sort it normally
-            if (columnIndex != _columnIndexSortedBy)
-            {
-                _children.Sort(delegate (BaseRenderItem row1, BaseRenderItem row2)
-                {
-                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    if (str1 == null || str2 == null)
-                    {
-                        return 0;
-                    }
-                    return str1.CompareTo(str2);
-                });
-                _columnIndexSortedBy = columnIndex;
-            }
-            //If it is sorted by this index then sort it with reverse order
-            else
-            {
-                _children.Sort(delegate (BaseRenderItem row1, BaseRenderItem row2)
-                {
-                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    if (str1 == null || str2 == null)
-                    {
-                        return 0;
-                    }
-                    return str1.CompareTo(str2) * -1;
-                });
-                _columnIndexSortedBy = -1;
-            }
+            Debug.Assert(column != null);
+            Comparer<T> comparer = column.Comparer ?? column.GetDefaultComparer();
+            Sort(column, comparer);
 
         }
+
+
+        private void Sort(ListColumn<T> column, Comparer<T> comparer)
+        {
+            if (comparer == null)
+            {
+                return;
+            }
+
+            if (_columnSortedBy == column)
+            {
+                _itemsSource.Reverse();
+                _filteredItems.Reverse();
+            }
+            else
+            {
+                _itemsSource.Sort(comparer);
+                _filteredItems.Sort(comparer);
+            }
+
+            _columnSortedBy = column;
+        }
+
+
         #endregion Sorting
 
         #region Selection

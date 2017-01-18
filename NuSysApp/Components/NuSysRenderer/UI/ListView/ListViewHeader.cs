@@ -236,8 +236,6 @@ namespace NuSysApp
         {
             header.Tapped += Header_Tapped;
             header.Dragged += Header_Dragged;
-            header.AddColumnTapped += HeaderOnAddColumnTapped;
-            header.DeleteColumnTapped += HeaderOnDeleteColumnTapped;
             header.DragCompleted += Header_DragCompleted;
             header.HeaderResizing += HeaderItemResizing;
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;

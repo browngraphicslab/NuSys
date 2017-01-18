@@ -17,7 +17,11 @@ namespace NuSysApp
         /// that will be placed in the list. The height will always fill the row completely. The width will be set based on the
         /// width parameter of the list column. The opacity will also be overwritten.
         /// </summary>
-        public virtual Func<T, object> ColumnFunction { private get; set; }
+        public virtual Func<T, object> ColumnFunction { get; set; }
+
+
+        public Comparer<T> Comparer { get; internal set; }
+
 
         /// <summary>
         /// Title of the column
@@ -55,5 +59,16 @@ namespace NuSysApp
         public abstract RectangleUIElement GetColumnCellFromItem(T itemSource,
             ListViewRowUIElement<T> listViewRowUIElement,
             ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths);
+
+        /// <summary>
+        /// Returns the default comparer used to sort a list
+        /// Returns null if no such comparer 
+        /// </summary>
+        /// <returns></returns>
+        public virtual Comparer<T> GetDefaultComparer()
+        {
+            return null;
+        }
+    
     }
 }
