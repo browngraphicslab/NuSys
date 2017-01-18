@@ -5,6 +5,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -14,7 +16,7 @@ namespace NuSysApp
     /// </summary>
     public class WordElementRenderItem : PdfElementRenderItem
     {
-        private RectangleUIElement _wordUIcon;
+        private ICanvasImage _wordUIcon;
 
         /// <summary>
         /// constructor takes in the usual parameters but enforces to take in a wordnode view model
@@ -25,8 +27,6 @@ namespace NuSysApp
         public WordElementRenderItem(WordNodeViewModel vm, CollectionRenderItem parent,
             ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
         {
-            _wordUIcon = new RectangleUIElement(this, resourceCreator);
-            AddChild(_wordUIcon);
         }
 
         /// <summary>
@@ -35,19 +35,30 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            _wordUIcon.Image = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
+            _wordUIcon = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
             await base.Load();
         }
 
 
         /// <summary>
-        /// this override should only set the location of the word icon
+        /// this draw override will just draw the word icon.
         /// </summary>
-        /// <param name="parentLocalToScreenTransform"></param>
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        /// <param name="ds"></param>
+        public override void Draw(CanvasDrawingSession ds)
         {
-            
-            base.Update(parentLocalToScreenTransform);
+            base.Draw(ds);
+            if (_wordUIcon != null)
+            {
+                var orgTransform = ds.Transform;
+                ds.Transform = Transform.LocalToScreenMatrix;
+
+                using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
+                {
+                    ds.DrawImage(_wordUIcon, new Rect(0,0,Constants.DefaultNodeSize * .05, Constants.DefaultNodeSize * .05), _wordUIcon.GetBounds(Canvas));
+                }
+
+                ds.Transform = orgTransform;
+            }
         }
     }
 }

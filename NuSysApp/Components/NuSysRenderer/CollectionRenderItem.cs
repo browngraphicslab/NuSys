@@ -644,18 +644,19 @@ namespace NuSysApp
                 await item.Load();
                 _renderItems2?.Add(item);
             }
-            else if (vm is PdfNodeViewModel)
-            {
-                item = new PdfElementRenderItem((PdfNodeViewModel)vm, this, ResourceCreator);
-                await item.Load();
-                _renderItems2?.Add(item);
-            }
             else if (vm is WordNodeViewModel)
             {
                 item = new WordElementRenderItem((WordNodeViewModel)vm, this, ResourceCreator);
                 await item.Load();
                 _renderItems2?.Add(item);
             }
+            else if (vm is PdfNodeViewModel)
+            {
+                item = new PdfElementRenderItem((PdfNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+
             else if (vm is AudioNodeViewModel)
             {
                 item = new AudioElementRenderItem((AudioNodeViewModel)vm, this, ResourceCreator);
