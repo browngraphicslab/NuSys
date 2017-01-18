@@ -57,11 +57,14 @@ namespace NuSysApp
                     SelectedBackground = Constants.DARK_BLUE;
                     break;
                 case 2:
+                    Rect.Background = Constants.RED;
+                    ButtonTextColor = Colors.White;
+                    break;
+                default:
                     Rect.Background = Colors.White;
                     SelectedBackground = Constants.LIGHT_BLUE;
                     ButtonTextColor = Constants.DARK_BLUE;
-                    break;
-                default:
+
                     break;
             }
         }
