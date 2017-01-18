@@ -113,7 +113,7 @@ namespace NuSysApp
         /// <summary>
         /// the library list 
         /// </summary>
-        public LibraryListUIElement Library => _floatingMenu.Library;
+        public LibraryListUIElement Library { get; private set; }
 
         /// <summary>
         /// Rectangle used to display confirmation message to go back to the waiting room
@@ -635,6 +635,16 @@ namespace NuSysApp
             _previousNode.Image = _previousNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
             _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
             _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
+
+
+            // created here because it must be created after the create resources method is called on the main canvas animated control
+            if (Library == null)
+            {
+                Library = new LibraryListUIElement(this, Canvas);
+                Library.KeepAspectRatio = false;
+                AddChild(Library);
+            }
+            Library.IsVisible = false;
 
             _loaded = true;
 
