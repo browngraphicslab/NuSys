@@ -173,7 +173,7 @@ namespace NuSysApp
         #endregion list
 
         #region scrollbar
-        public static float MinSliderSize = 40f;
+        public static float MinSliderSize = 15f;
 
         #endregion scrollbar
     }

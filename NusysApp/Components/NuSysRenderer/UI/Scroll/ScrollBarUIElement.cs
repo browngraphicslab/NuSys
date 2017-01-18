@@ -275,9 +275,19 @@ namespace NuSysApp
                 _barWidth = Height;
                 _barLength = Width - 2 * _barWidth;
                 _slider.Height = _barWidth;
-                _slider.Width = Math.Max(_barLength * Range, UIDefaults.MinSliderSize);
                 _slider.Transform.LocalPosition = new Vector2(_barWidth + _barLength * Position, 0);
 
+                if (_barLength * Range >= UIDefaults.MinSliderSize)
+                {
+                    _slider.Height = _barLength * Range;
+                    _slider.Transform.LocalPosition = new Vector2(_barWidth + _barLength * Position, 0);
+
+                }
+                else
+                {
+                    _slider.Height = UIDefaults.MinSliderSize;
+                    _slider.Transform.LocalPosition = new Vector2(_barWidth + (_barLength - _slider.Width) * Position,0);
+                }
                 _plusArrow.Width = _barWidth;
                 _plusArrow.Height = _barWidth;
                 _minusArrow.Width = _barWidth;
@@ -302,11 +312,8 @@ namespace NuSysApp
                 }else
                 {
                     _slider.Height = UIDefaults.MinSliderSize;
-                    _slider.Transform.LocalPosition = new Vector2(0, _barWidth + (_barLength) * Position);
-
+                    _slider.Transform.LocalPosition = new Vector2(0, _barWidth + (_barLength - _slider.Height) * Position);
                 }
-
-
 
                 _plusArrow.Width = _barWidth;
                 _plusArrow.Height = _barWidth;
