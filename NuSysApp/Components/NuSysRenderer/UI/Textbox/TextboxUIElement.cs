@@ -229,8 +229,10 @@ namespace NuSysApp
                 FontFamily = FontFamily,
                 FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale,
                 FontStyle = FontStyle,
-                FontWeight = FontWeight
+                FontWeight = FontWeight                
             };
+
+
         }
 
         /// <summary>

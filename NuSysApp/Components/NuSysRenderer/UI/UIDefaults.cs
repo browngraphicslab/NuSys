@@ -44,7 +44,7 @@ namespace NuSysApp
         public static FontStyle FontStyle = FontStyle.Normal;
         public static FontWeight FontWeight = FontWeights.Normal;
         public static float FontSize = 14;
-        public static CanvasWordWrapping Wrapping = CanvasWordWrapping.Wrap;
+        public static CanvasWordWrapping Wrapping = CanvasWordWrapping.EmergencyBreak;
         public static CanvasTrimmingSign TrimmingSign = CanvasTrimmingSign.Ellipsis;
         public static CanvasTextTrimmingGranularity TrimmingGranularity = CanvasTextTrimmingGranularity.Character;
         public static int XTextPadding = 10;

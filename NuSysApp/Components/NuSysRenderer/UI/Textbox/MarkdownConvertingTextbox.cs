@@ -302,6 +302,7 @@ namespace NuSysApp
                 TrimmingSign = TrimmingSign,
             };
 
+
             // update the canvas text format in the html parser
             _htmlParser.UpdateCanvasTextFormat(CanvasTextFormat);
         }
@@ -324,6 +325,8 @@ namespace NuSysApp
                 _verticalScrollBar.Height = Height - 2 * BorderWidth;
                 _verticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - _verticalScrollBar.Width,
                     BorderWidth);
+
+                var x = _verticalScrollBar.IsVisible;
 
                 // set the position and rang eof the vertical scroll bar
                 SetVerticalScrollBarPositionAndRange();

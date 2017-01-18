@@ -433,11 +433,13 @@ namespace NuSysApp
                     HorizontalScrollBar.Position = 1 - HorizontalScrollBar.Range;
                     break;
                 case ScrollTo.Bottom:
-                    VerticalScrollBar.Position = 1 - HorizontalScrollBar.Range;
+                    VerticalScrollBar.Position = 1 - VerticalScrollBar.Range;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(locationToScrollTo), locationToScrollTo, null);
             }
+
+            IsDirty = true;
         }
 
         /// <summary>
