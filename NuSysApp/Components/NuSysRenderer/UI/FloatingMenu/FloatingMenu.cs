@@ -17,8 +17,6 @@ namespace NuSysApp
         private ButtonUIElement _openLibraryButton;
         private StackLayoutManager _buttonLayoutManager;
 
-        public LibraryListUIElement Library { get; private set; }
-
         private AddElementMenuUIElement _addElementMenu;
 
         private bool _disabled = false;
@@ -113,10 +111,7 @@ namespace NuSysApp
 
         private void OpenLibraryButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-            Library.IsVisible = !Library.IsVisible;
-            var openLibraryButton = interactiveBaseRenderItem as ButtonUIElement;
-            Debug.Assert(openLibraryButton != null, "The open library button should be a button ui element");
-            Library.Transform.LocalPosition = openLibraryButton.Transform.LocalPosition + new Vector2(openLibraryButton.Width*2, openLibraryButton.Height);
+            SessionController.Instance.NuSessionView.Library.IsVisible = !SessionController.Instance.NuSessionView.Library.IsVisible;
         }
 
         /// <summary>
@@ -126,15 +121,6 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            // created here because it must be created after the create resources method is called on the main canvas animated control
-            if (Library == null)
-            {
-                Library = new LibraryListUIElement(this, Canvas);
-                Library.KeepAspectRatio = false;
-                AddChild(Library);
-            }
-            Library.IsVisible = false;
-
             _addElementButton.Image = _addElementButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements white.png"));
             _openLibraryButton.Image = _openLibraryButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/collection main menu.png"));
 
