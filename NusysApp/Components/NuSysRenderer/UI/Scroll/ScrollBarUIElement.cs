@@ -306,7 +306,7 @@ namespace NuSysApp
                 if(_barLength*Range >= UIDefaults.MinSliderSize)
                 {
                     _slider.Height = _barLength * Range;
-                    _slider.Transform.LocalPosition = new Vector2(0, _barWidth + (_barLength) * Position);
+                    _slider.Transform.LocalPosition = new Vector2(0, _barWidth + (_barLength - _slider.Height) * Position);
 
                 }else
                 {
