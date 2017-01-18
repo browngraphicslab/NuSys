@@ -449,6 +449,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Popup\CenteredPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\LockableTextBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\MarkdownConvertingTextbox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\CustomHtmlFormatter.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\ScrollableTextboxUIElement.cs" />

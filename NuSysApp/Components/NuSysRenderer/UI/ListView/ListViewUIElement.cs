@@ -100,9 +100,9 @@ namespace NuSysApp
             get { return _listColumns; }
         }
 
-        public List<ListColumn<T>> ListColumnOptions
+        public HashSet<ListColumn<T>> ColumnOptions
         {
-            get { return _listColumnOptions; }
+            get { return _columnOptions; }
         }
 
         /// <summary>
@@ -153,10 +153,10 @@ namespace NuSysApp
 
         #region private
         /// <summary>
-        /// This represents the column index that the array is sorted by. If it isn't sorted by any index,
-        /// this is -1.
+        /// This represents the column that the list is sorted by. If it isn't sorted by any index,
+        /// this is null
         /// </summary>
-        private int _columnIndexSortedBy;
+        private ListColumn<T> _columnSortedBy;
 
         /// <summary>
         /// Count of how many times Dragged has been called since DragStarted
@@ -197,7 +197,7 @@ namespace NuSysApp
         /// </summary>
         private List<ListColumn<T>> _listColumns;
 
-        private List<ListColumn<T>> _listColumnOptions;
+        private HashSet<ListColumn<T>> _columnOptions;
 
         /// <summary>
         /// A hashset of the selected rows
@@ -248,14 +248,13 @@ namespace NuSysApp
             _itemsSource = new List<T>();
             _filteredItems = new List<T>();
             _listColumns = new List<ListColumn<T>>();
-            _listColumnOptions = new List<ListColumn<T>>();
+            _columnOptions = new HashSet<ListColumn<T>>();
 
             DragThreshold = 0.2f;
             DragAngleThreshold = 0.8f;
             _scrollOffset = 0;
             MultipleSelections = false;
             BorderWidth = 0;
-            _columnIndexSortedBy = -1;
             Rows = new List<ListViewRowUIElement<T>>();
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
@@ -357,6 +356,8 @@ namespace NuSysApp
                 Debug.Write("You are trying to add a null list of column to the list view");
                 return;
             }
+            
+            _columnOptions.UnionWith(listColumns);
             _listColumns.AddRange(listColumns);
             foreach (var col in listColumns)
             {
@@ -367,7 +368,7 @@ namespace NuSysApp
 
         public void AddColumnOptions(IEnumerable<ListColumn<T>> listColumns)
         {
-            _listColumnOptions.AddRange(listColumns);
+            _columnOptions.UnionWith(listColumns);
         }
 
         /// <summary>
@@ -964,7 +965,7 @@ namespace NuSysApp
             if(_isDragging)
             {
                 //If it's the first time we are leaving the listview, select the item
-                if (firstTimeDraggingOut && !DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ShiftHeld))
+                if (firstTimeDraggingOut && !DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld))
                 {
                     SelectItem(_draggedItem);
                 }
@@ -996,7 +997,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ShiftHeld)
+            if (pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld)
             {
                 MultipleSelections = true;
                 if (_selectedElements.Contains(item))
@@ -1084,46 +1085,44 @@ namespace NuSysApp
         #endregion Event handlers
 
         #region Sorting
+
         /// <summary>
         /// This will sort the list by the column index
         /// </summary>
         /// <param name="columnIndex"></param>
         public void SortByCol(int columnIndex)
         {
+            var column = ListColumns[columnIndex];
 
-            Debug.Assert(columnIndex < _listColumns.Count);
-            //If it isn't sorted by this index then just sort it normally
-            if (columnIndex != _columnIndexSortedBy)
-            {
-                _children.Sort(delegate (BaseRenderItem row1, BaseRenderItem row2)
-                {
-                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    if (str1 == null || str2 == null)
-                    {
-                        return 0;
-                    }
-                    return str1.CompareTo(str2);
-                });
-                _columnIndexSortedBy = columnIndex;
-            }
-            //If it is sorted by this index then sort it with reverse order
-            else
-            {
-                _children.Sort(delegate (BaseRenderItem row1, BaseRenderItem row2)
-                {
-                    var str1 = (row1 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    var str2 = (row2 as ListViewRowUIElement<T>)?.GetStringValueOfCell(columnIndex);
-                    if (str1 == null || str2 == null)
-                    {
-                        return 0;
-                    }
-                    return str1.CompareTo(str2) * -1;
-                });
-                _columnIndexSortedBy = -1;
-            }
+            Debug.Assert(column != null);
+            Comparer<T> comparer = column.Comparer ?? column.GetDefaultComparer();
+            Sort(column, comparer);
 
         }
+
+
+        private void Sort(ListColumn<T> column, Comparer<T> comparer)
+        {
+            if (comparer == null)
+            {
+                return;
+            }
+
+            if (_columnSortedBy == column)
+            {
+                _itemsSource.Reverse();
+                _filteredItems.Reverse();
+            }
+            else
+            {
+                _itemsSource.Sort(comparer);
+                _filteredItems.Sort(comparer);
+            }
+
+            _columnSortedBy = column;
+        }
+
+
         #endregion Sorting
 
         #region Selection

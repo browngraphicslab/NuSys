@@ -78,5 +78,7 @@ namespace NuSysApp
             cell.LabelFontSize = LabelFontSize;
             cell.SetCheckBoxSelection(isSelected);
         }
+
+
     }
 }

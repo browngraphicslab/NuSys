@@ -127,14 +127,14 @@ namespace NuSysApp
         private bool CheckForChatbotChat(string text)
         {
             var tokenized = text.Trim().Replace("  ", " ").ToLower().Split(' ');
-            if (!tokenized.Any())
+            if (!tokenized.Any() || tokenized.Count() < 2)
             {
                 return false;
             }
             if (tokenized[0] == "join")
             {
                 var name = tokenized[1];
-                var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
+                var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower().Split(' ').FirstOrDefault() == name).Select(kvp => kvp.Key).FirstOrDefault();
                 if (id != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id) && id != WaitingRoomView.UserID)
                 {
                     StaticServerCalls.JoinCollaborator(id);
@@ -145,7 +145,7 @@ namespace NuSysApp
             if (tokenized[0] == "invite")
             {
                 var name = tokenized[1];
-                var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
+                var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower().Split(' ').FirstOrDefault() == name).Select(kvp => kvp.Key).FirstOrDefault();
                 if (id != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id) && id != WaitingRoomView.UserID)
                 {
                     StaticServerCalls.InviteCollaboratorToCollection(id);
