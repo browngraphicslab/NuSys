@@ -18,7 +18,7 @@ namespace NuSysApp
     public class MetadataToolWindow : ToolWindow
     {
 
-        private const float SEARCHBAR_HEIGHT = 22f;
+        private const float SEARCHBAR_HEIGHT = 26f;
 
         private ListViewUIElementContainer<string> _metadataKeysList;
         private ListViewUIElementContainer<KeyValuePair<string, double>> _metadataValuesList;
