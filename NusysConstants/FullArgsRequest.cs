@@ -38,7 +38,6 @@ namespace NusysIntermediate
             {
                 if (_returnArgs == null && !_returnArgsParsed)
                 {
-                    CheckWasSuccessfull();
                     _returnArgs = _returnMessage.Get<S>(NusysConstants.FULL_ARGS_REQUEST_RETURN_ARGS_KEY);
                     _returnArgsParsed = true;
                 }
@@ -66,7 +65,10 @@ namespace NusysIntermediate
         /// default constructor for deserialzing from the server
         /// </summary>
         /// <param name="message"></param>
-        public FullArgsRequest(Message message) : base(message) { }
+        public FullArgsRequest(Message message) : base(message)
+        {
+            SetReturnMessage(message);
+        }
 
         /// <summary>
         /// Method that is called whenever another client makes the request.
