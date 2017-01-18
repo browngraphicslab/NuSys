@@ -188,7 +188,6 @@ namespace NuSysApp
         /// </summary>
         private void CreateArrows()
         {
-            //TODO: add arrow images to these
             _plusArrow = new TransparentButtonUIElement(this, ResourceCreator);
             _minusArrow = new TransparentButtonUIElement(this, ResourceCreator);
 
@@ -275,8 +274,8 @@ namespace NuSysApp
             {
                 _barWidth = Height;
                 _barLength = Width - 2 * _barWidth;
-                _slider.Width = _barLength * Range;
                 _slider.Height = _barWidth;
+                _slider.Width = Math.Max(_barLength * Range, UIDefaults.MinSliderSize);
                 _slider.Transform.LocalPosition = new Vector2(_barWidth + _barLength * Position, 0);
 
                 _plusArrow.Width = _barWidth;
@@ -294,8 +293,19 @@ namespace NuSysApp
                 _barWidth = Width;
                 _barLength = Height - 2 * _barWidth;
                 _slider.Width = _barWidth;
-                _slider.Height = _barLength * Range;
-                _slider.Transform.LocalPosition = new Vector2(0, _barWidth + _barLength * Position);
+
+                if(_barLength*Range >= UIDefaults.MinSliderSize)
+                {
+                    _slider.Height = _barLength * Range;
+                    _slider.Transform.LocalPosition = new Vector2(0, _barWidth + (_barLength) * Position);
+
+                }else
+                {
+                    _slider.Height = UIDefaults.MinSliderSize;
+                    _slider.Transform.LocalPosition = new Vector2(0, _barWidth + (_barLength) * Position);
+
+                }
+
 
 
                 _plusArrow.Width = _barWidth;

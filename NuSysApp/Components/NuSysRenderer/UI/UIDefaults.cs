@@ -170,8 +170,11 @@ namespace NuSysApp
         #region list
 
         public static float ListHeaderHeight = 40;
-
         #endregion list
 
+        #region scrollbar
+        public static float MinSliderSize = 40f;
+
+        #endregion scrollbar
     }
 }
