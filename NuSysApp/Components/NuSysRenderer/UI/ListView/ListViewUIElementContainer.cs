@@ -88,6 +88,7 @@ namespace NuSysApp
         /// </summary>
         private ListViewHeader<T> _header;
 
+        private FlyoutPopupGroup _popupGroup;
 
         /// <summary>
         /// setter and getter for listview
@@ -207,60 +208,36 @@ namespace NuSysApp
 
 
             _header = new ListViewHeader<T>(this, resourceCreator);
-            _header.HeaderDragged += Header_HeaderDragged;
-            _header.HeaderDragCompleted += Header_HeaderDragCompleted;
-            _header.HeaderTapped += Header_HeaderTapped;
-            _header.HeaderAddColumnTapped += Header_AddColumnTapped;
-            _header.HeaderDeleteColumnTapped += Header_DeleteColumnTapped;
-
-            _header.HeaderResizing += Header_HeaderResizing;
-            _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
+            AddHeaderHandlers();
             AddChild(_header);
             ShowHeader = true;
         }
 
-        /// <summary>
-        /// Deletes the column if there exists at least two columns.
-        /// </summary>
-        /// <param name="header"></param>
-        /// <param name="group"></param>
-        /// <param name="popup"></param>
-        /// <param name="flyoutItem"></param>
-        /// <param name="pointer"></param>
-        private void Header_DeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void AddHeaderHandlers()
         {
-            if (ListView.ListColumns.Count() <= 1)
-            {
-                //If no options available, do not create a new popup
-                popup.DismissPopup();
-                return;
-            }
-            RemoveColumn(header.Column);
-
+            _header.HeaderDragged += Header_HeaderDragged;
+            _header.HeaderDragCompleted += Header_HeaderDragCompleted;
+            _header.HeaderTapped += Header_HeaderTapped;
+            _header.HeaderOptionsActivated += Header_HeaderOptionsActivated;
+            _header.HeaderResizing += Header_HeaderResizing;
+            _header.HeaderResizeCompleted += Header_HeaderResizeCompleted;
         }
 
-        /// <summary>
-        /// Gets the column options that the ListView does not already contain and displays the options as a new FlyoutPopup
-        /// </summary>
-        /// <param name="header"></param>
-        /// <param name="group"></param>
-        /// <param name="popup"></param>
-        /// <param name="flyoutItem"></param>
-        /// <param name="pointer"></param>
-        private void Header_AddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+
+
+        private void RemoveHeaderHandlers()
         {
-            var options = ListView.ListColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
-            if (options.Count() < 1)
-            {
-                //If no options available, do not create a new popup
-                popup.DismissPopup();
-                return;
-            }
-
-            var newpopup = group.AddFlyoutPopup(popup, flyoutItem);
-            AddColumnOptionsToPopup(newpopup, options);
-
+            _header.HeaderDragged -= Header_HeaderDragged;
+            _header.HeaderDragCompleted -= Header_HeaderDragCompleted;
+            _header.HeaderTapped -= Header_HeaderTapped;
+            _header.HeaderOptionsActivated -= Header_HeaderOptionsActivated;
+            _header.HeaderResizing-= Header_HeaderResizing;
+            _header.HeaderResizeCompleted -= Header_HeaderResizeCompleted;
         }
+
+
+
+
         /// <summary>
         /// Adds the column options as ButtonUIElements to the popup passed in
         /// </summary>
@@ -277,17 +254,19 @@ namespace NuSysApp
         private void OnColumnOptionTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var button = item as ButtonUIElement;
-            var columns = ListView.ListColumnOptions.Where(a => a.Title == button.ButtonText);
+            var columns = ListView.ColumnOptions.Where(a => a.Title == button.ButtonText);
             var column = columns.First();
-
-            Debug.Assert(column != null);
 
             if (column == null)
             {
+                Debug.Fail("Column should not be null");
                 return;
             }
             AddColumn(column);
+            _popupGroup.DismissAllPopups();
+
         }
+
 
         /// <summary>
         /// Calls ListViewUIElement's clearfilter method
@@ -403,6 +382,52 @@ namespace NuSysApp
             }
 
         }
+
+        private void Header_HeaderOptionsActivated(ListViewHeaderItem<T> header)
+        {
+            _popupGroup = new FlyoutPopupGroup(this, Canvas, header);
+            var addDeleteColumns = _popupGroup.AddHeadFlyoutPopup();
+            //Only add the Add Column option if there are any column options not already in the list
+            if (ListView.ColumnOptions.Where(col => !ListView.ListColumns.Contains(col)).Count() > 0)
+            {
+                addDeleteColumns.AddFlyoutItem("add column", AddColumnTapped, Canvas);
+            }
+            //Only add the Delete Column option if there are more than one columns
+            if (ListView.ListColumns.Count > 1)
+            {
+                addDeleteColumns.AddFlyoutItem("delete", DeleteColumnTapped, Canvas);
+            }
+            _popupGroup.Transform.LocalPosition = new Vector2(header.Transform.LocalX, header.Height);
+            AddChild(_popupGroup);
+        }
+        /// <summary>
+        /// Called when you press the "add column" flyout item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void AddColumnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var options = ListView.ColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
+            var button = item as ButtonUIElement;
+            var newpopup = _popupGroup.AddFlyoutPopup(button);
+            AddColumnOptionsToPopup(newpopup, options);
+        }
+        /// <summary>
+        /// Called when you press the "delete" flyout item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void DeleteColumnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var header = _popupGroup.Source as ListViewHeaderItem<T>;
+            if (header == null)
+            {
+                return;
+            }
+            RemoveColumn(header.Column);
+            _popupGroup.DismissAllPopups();
+        }
+
 
         /// <summary>
         /// Whenever a header is tapped just sort the list by that column
@@ -643,7 +668,7 @@ namespace NuSysApp
             {
                 _header.Transform.LocalPosition = new Vector2(0,0);
                 _header.Width = this.Width;
-                _header.Height = 40;
+                _header.Height = UIDefaults.ListHeaderHeight;
                 _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }
         }
@@ -673,6 +698,13 @@ namespace NuSysApp
             _listview.Transform.LocalPosition = new Vector2(0, offset);
 
             base.Draw(ds);
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            _header.Width = Width;
+
+            base.Update(parentLocalToScreenTransform);
         }
     }
 }

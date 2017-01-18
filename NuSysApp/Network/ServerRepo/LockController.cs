@@ -159,7 +159,6 @@ namespace NuSysApp
         public bool IsRegistered(ILockable lockable)
         {
             Debug.Assert(lockable != null);
-            Debug.Assert(!string.IsNullOrEmpty(lockable.LockId));
             return _registeredLockables.Contains(lockable);
         }
 

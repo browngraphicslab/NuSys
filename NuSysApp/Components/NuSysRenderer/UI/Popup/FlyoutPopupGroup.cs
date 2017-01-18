@@ -15,10 +15,26 @@ namespace NuSysApp
     /// </summary>
     public class FlyoutPopupGroup : RectangleUIElement
     {
+        /// <summary>
+        /// The source of the flyoutpopup group. For example, if a header item triggers the creation of a flyoutpopupgroup, 
+        /// the headeritem is its source. 
+        /// 
+        /// </summary>
+        public BaseInteractiveUIElement Source { set; get; }
 
-        public FlyoutPopupGroup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, FlyoutPopup head = null) : base(parent, resourceCreator)
+        public FlyoutPopupGroup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement source) : base(parent, resourceCreator)
         {
+            Source = source;
             Background = Colors.Transparent;
+            OnChildFocusLost += FlyoutPopupGroup_OnChildFocusLost;
+        }
+        /// <summary>
+        /// When a single flyoutpopup's focus is lost, make sure to dismiss every single popup
+        /// </summary>
+        /// <param name="item"></param>
+        private void FlyoutPopupGroup_OnChildFocusLost(BaseRenderItem item)
+        {
+            DismissAllPopups();
         }
 
         /// <summary>
@@ -37,27 +53,34 @@ namespace NuSysApp
         /// <param name="popup"></param>
         /// <param name="flyoutItem"></param>
         /// <returns></returns>
-        public FlyoutPopup AddFlyoutPopup(FlyoutPopup popup, ButtonUIElement flyoutItem)
+        public FlyoutPopup AddFlyoutPopup(ButtonUIElement flyoutItem)
         {
-            var newPopup = new FlyoutPopup(this, ResourceCreator);
+            var parent = flyoutItem.Parent as FlyoutPopup;
+            parent.Dismissable = false; //Makes sure that the parent flyoutpopup is not dismissed
 
+            var newPopup = new FlyoutPopup(this, ResourceCreator);
             AddChild(newPopup);
-            newPopup.Transform.LocalPosition = new Vector2(popup.Width, popup.FlyoutItems.IndexOf(flyoutItem) * popup.FlyoutItemHeight);
-            newPopup.ParentPopup = popup;
+            newPopup.Transform.LocalPosition = new Vector2(flyoutItem.Transform.LocalX + flyoutItem.Width, flyoutItem.Transform.LocalY);
             return newPopup;
         }
 
         /// <summary>
         /// Calls dismiss on every Popup
         /// </summary>
-        private void DismissAllPopups()
+        public void DismissAllPopups()
         {
-            foreach (var child in _children)
+            foreach (var child in GetChildren())
             {
                 var popup = child as PopupUIElement;
+                popup.Dismissable = true;
                 popup?.DismissPopup();
             }
         }
 
+        public override void Dispose()
+        {
+            OnChildFocusLost -= FlyoutPopupGroup_OnChildFocusLost;
+            base.Dispose();
+        }
     }
 }

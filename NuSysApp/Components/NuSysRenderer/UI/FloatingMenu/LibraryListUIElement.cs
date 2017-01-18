@@ -511,7 +511,7 @@ namespace NuSysApp
 
             LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
-            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4, listColumn5, listColumn8, listColumn7,listColumn6  });
+            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> {listColumn5, listColumn8, listColumn7,listColumn6 });
 
             LibraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());
