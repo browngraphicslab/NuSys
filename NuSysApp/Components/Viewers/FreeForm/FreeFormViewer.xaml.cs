@@ -711,7 +711,7 @@ namespace NuSysApp
                 Shape = new CollectionShapeModel() {
                     ShapePoints = shapePoints,
                     AspectRatio = targetRectInCollection.Width / targetRectInCollection.Height,
-                    ShapeColor = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
+                    ShapeColor = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor == Colors.Black ? Colors.CadetBlue : CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
                 }
             };
 

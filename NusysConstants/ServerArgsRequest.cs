@@ -16,6 +16,12 @@ namespace NusysIntermediate
     public class ServerArgsRequest<T> : Request where T : ServerRequestArgsBase 
     {
         /// <summary>
+        /// Default constructor for derserializing messages from the server.
+        /// </summary>
+        /// <param name="message"></param>
+        public ServerArgsRequest(Message message) : base(message) { }
+
+        /// <summary>
         /// the base constructor takes in an args class.  
         /// It will create a request based on the request type of the request args.
         /// This will then set the requests' arguments class key's value to the serialzed version of the request args.

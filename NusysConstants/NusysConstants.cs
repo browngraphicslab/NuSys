@@ -1800,7 +1800,11 @@ namespace NusysIntermediate
             /// request used to fetch the dictionary of ALL user ID's to DisplayNames.  
             /// This will be used to show the display names of people instead of the seemingly random hash
             /// </summary>
-            GetUserIdToDisplayNameDictionaryRequest
+            GetUserIdToDisplayNameDictionaryRequest,
+
+            GetCollaboratorCoordinatesRequest,
+            SendCollaboratorCoordinatesRequest,
+
         }
 
         /// <summary>

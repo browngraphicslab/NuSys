@@ -254,7 +254,12 @@ namespace NuSysApp
                 case NusysConstants.RequestType.DeletePresentationLinkRequest:
                     request = new DeletePresentationLinkRequest(message);
                     break;
-
+                case NusysConstants.RequestType.GetCollaboratorCoordinatesRequest:
+                    request = new GetCollaboratorCoordinatesRequest(message);
+                    break;
+                case NusysConstants.RequestType.SendCollaboratorCoordinatesRequest:
+                    request = new SendCollaboratorCoordinatesRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }

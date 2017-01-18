@@ -30,6 +30,12 @@ namespace NusysServer
         /// <returns></returns>
         protected abstract S HandleArgsRequest(T args, NuWebSocketHandler senderHandler);
 
+        /// <summary>
+        /// forwarsd the T and S instances to the other users
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="returnArgs"></param>
+        /// <param name="handlerToIgnore"></param>
         protected void ForwardRequest(T args, S returnArgs, NuWebSocketHandler handlerToIgnore = null)
         {
             var m = new Message();
@@ -37,6 +43,21 @@ namespace NusysServer
             m[NusysConstants.FULL_ARGS_REQUEST_RETURN_ARGS_KEY] = returnArgs;
             m[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = args;
             ForwardMessage(m,handlerToIgnore);
+        }
+
+        /// <summary>
+        /// forwards a full args request to a specific user
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="returnArgs"></param>
+        /// <param name="recipient"></param>
+        protected void ForwardToUser(T args, S returnArgs, NuWebSocketHandler recipient)
+        {
+            var m = new Message();
+            m[NusysConstants.REQUEST_TYPE_STRING_KEY] = args.RequestType.ToString();
+            m[NusysConstants.FULL_ARGS_REQUEST_RETURN_ARGS_KEY] = returnArgs;
+            m[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = args;
+            recipient.Send(m.GetSerialized());
         }
 
         /// <summary>

@@ -68,7 +68,7 @@ namespace NuSysApp
             {
                 return
                 (Controller?.LibraryElementController?.ContentDataController?.ContentDataModel as
-                    CollectionContentDataModel)?.Shape?.ShapeColor?.ToColor() ?? Colors.Black;
+                    CollectionContentDataModel)?.Shape?.ShapeColor?.ToColor() ?? Colors.CadetBlue;
             }
         }
 

@@ -319,6 +319,7 @@
     <Compile Include="RequestHandlers\FullArgsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAliasesOfLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetCollaboratorCoordinatesRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetLastUsedCollectionsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetLockRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
@@ -326,6 +327,7 @@
     <Compile Include="RequestHandlers\GetWordDocumentRequestHandler.cs" />
     <Compile Include="RequestHandlers\MoveElementToCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\ReturnLockRequestHandler.cs" />
+    <Compile Include="RequestHandlers\SendCollaboratorCoordinatesRequestHandler.cs" />
     <Compile Include="RequestHandlers\SubscribeToLockRequestHandler.cs" />
     <Compile Include="RequestHandlers\UnSubscribeToLockRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />

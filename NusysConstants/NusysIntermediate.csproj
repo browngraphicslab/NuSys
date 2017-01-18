@@ -49,6 +49,7 @@
     <Compile Include="Models\VideoLibraryElementModel.cs" />
     <Compile Include="Models\WordLibraryElementModel.cs" />
     <Compile Include="RequestArgs\AddNewLastUsedCollectionServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\GetCollaboratorCoordinatesRequestArgs.cs" />
     <Compile Include="RequestArgs\GetLastUsedCollectionsServerRequestArgs.cs" />
     <Compile Include="RequestArgs\GetLockRequestArgs.cs" />
     <Compile Include="RequestArgs\GetWordDocumentRequestArgs.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="RequestArgs\ReturnArgs\SubscribeToLockRequestReturnArgs.cs" />
     <Compile Include="RequestArgs\ReturnArgs\UploadCollectionBackgroundImageReturnArgs.cs" />
     <Compile Include="RequestArgs\ReturnLockRequestArgs.cs" />
+    <Compile Include="RequestArgs\SendCollaboratorCoordinatesRequestArgs.cs" />
     <Compile Include="RequestArgs\SubscribeToLockRequestArgs.cs" />
     <Compile Include="RequestArgs\UnSubscribeToLockRequestArgs.cs" />
     <Compile Include="RequestArgs\UploadCollectionBackgroundImageServerRequestArgs.cs" />
