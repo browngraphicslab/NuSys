@@ -26,6 +26,15 @@ namespace NuSysApp
         {
             Source = source;
             Background = Colors.Transparent;
+            OnChildFocusLost += FlyoutPopupGroup_OnChildFocusLost;
+        }
+        /// <summary>
+        /// When a single flyoutpopup's focus is lost, make sure to dismiss every single popup
+        /// </summary>
+        /// <param name="item"></param>
+        private void FlyoutPopupGroup_OnChildFocusLost(BaseRenderItem item)
+        {
+            DismissAllPopups();
         }
 
         /// <summary>
@@ -46,8 +55,10 @@ namespace NuSysApp
         /// <returns></returns>
         public FlyoutPopup AddFlyoutPopup(ButtonUIElement flyoutItem)
         {
-            var newPopup = new FlyoutPopup(this, ResourceCreator);
+            var parent = flyoutItem.Parent as FlyoutPopup;
+            parent.Dismissable = false; //Makes sure that the parent flyoutpopup is not dismissed
 
+            var newPopup = new FlyoutPopup(this, ResourceCreator);
             AddChild(newPopup);
             newPopup.Transform.LocalPosition = new Vector2(flyoutItem.Transform.LocalX + flyoutItem.Width, flyoutItem.Transform.LocalY);
             return newPopup;
@@ -61,9 +72,15 @@ namespace NuSysApp
             foreach (var child in GetChildren())
             {
                 var popup = child as PopupUIElement;
+                popup.Dismissable = true;
                 popup?.DismissPopup();
             }
         }
 
+        public override void Dispose()
+        {
+            OnChildFocusLost -= FlyoutPopupGroup_OnChildFocusLost
+            base.Dispose();
+        }
     }
 }

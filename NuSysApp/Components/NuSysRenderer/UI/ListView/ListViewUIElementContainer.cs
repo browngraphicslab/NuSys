@@ -257,10 +257,9 @@ namespace NuSysApp
             var columns = ListView.ColumnOptions.Where(a => a.Title == button.ButtonText);
             var column = columns.First();
 
-            Debug.Assert(column != null);
-
             if (column == null)
             {
+                Debug.Fail("Column should not be null");
                 return;
             }
             AddColumn(column);

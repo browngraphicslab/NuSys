@@ -45,6 +45,7 @@ namespace NuSysApp
 
         public bool Dismissable
         {
+            set { _dismissable = value; }
             get { return _dismissable;}
         }
         /// <summary>
@@ -84,8 +85,6 @@ namespace NuSysApp
             OnChildFocusLost += PopupUIElement_OnFocusLost;
             OnFocusLost += PopupUIElement_OnFocusLost;
 
-            //SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.PointerPressed +=
-            //    CanvasInteractionManager_ClosePopup;
         }
 
         public virtual void PopupUIElement_OnFocusLost(BaseRenderItem item)
