@@ -52,8 +52,9 @@ namespace NuSysApp
         /// <param name="senderArgs"></param>
         private async Task JoinCollection(SendCollaboratorCoordinatesRequestArgs senderArgs, CollectionLibraryElementController collectionLibraryElementController)
         {
-            await SessionController.Instance.EnterCollection(collectionLibraryElementController.LibraryElementModel.LibraryElementId);
-            var collectionController = SessionController.Instance.ActiveFreeFormViewer.Controller as ElementCollectionController;
+            if(collectionLibraryElementController.LibraryElementModel.LibraryElementId != SessionController.Instance.ActiveFreeFormViewer.LibraryElementId) { 
+                await SessionController.Instance.EnterCollection(collectionLibraryElementController.LibraryElementModel.LibraryElementId);
+            }
 
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition = new Vector2(senderArgs.XCoordinatePosition.Value, senderArgs.YCoordinatePosition.Value);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2((float)senderArgs.XLocalScaleCenter.Value, (float)senderArgs.YLocalScaleCenter.Value);
