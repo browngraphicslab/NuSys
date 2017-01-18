@@ -341,7 +341,7 @@ namespace NuSysApp
             _labelElement.Width = Width - CheckBoxWidth - SpaceBetweenCheckboxAndLabel - 2 * BorderWidth;
             _labelElement.Height = Height - 2 * BorderWidth;
             _labelElement.BorderWidth = 0;
-            _labelElement.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
+            _labelElement.TextHorizontalAlignment = LabelTextHorizontalAlignment;
 
             // position the checkbox and label based on the LabelPosition
             switch (LabelPosition)

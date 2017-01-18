@@ -44,7 +44,7 @@ namespace NuSysApp
         public static FontStyle FontStyle = FontStyle.Normal;
         public static FontWeight FontWeight = FontWeights.Normal;
         public static float FontSize = 14;
-        public static CanvasWordWrapping Wrapping = CanvasWordWrapping.Wrap;
+        public static CanvasWordWrapping Wrapping = CanvasWordWrapping.EmergencyBreak;
         public static CanvasTrimmingSign TrimmingSign = CanvasTrimmingSign.Ellipsis;
         public static CanvasTextTrimmingGranularity TrimmingGranularity = CanvasTextTrimmingGranularity.Character;
         public static int XTextPadding = 10;
@@ -165,7 +165,7 @@ namespace NuSysApp
 
 
         public static readonly float ScrollableTextboxBorderWidth = 7f;
-        public static readonly Color ScrollableTextboxOverlayColor = new Color() {A = 100, R = Background.R, G = Background.G , B = Background.B };
+        public static readonly Color ScrollableTextboxOverlayColor = new Color() {A = 100, R = Colors.LightGray.R, G = Colors.LightGray.G , B = Colors.LightGray.B };
 
         #region list
 

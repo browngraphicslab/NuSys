@@ -100,11 +100,22 @@ namespace NuSysApp
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
             _createLinkButton.Tapped += OnCreateLinkButtonTapped;
-
+            _link_listview.RowDoubleTapped += _link_listview_RowDoubleTapped;
 
             // always add this as the last child since it has a drop down
             AddChild(_addLinkToElementBox);
 
+        }
+
+        /// <summary>
+        /// Fired when a row in the links list is double tapped, opens that element in the detail view
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void _link_listview_RowDoubleTapped(LinkLibraryElementController item, string columnName, CanvasPointer pointer)
+        {
+            SessionController.Instance.NuSessionView.ShowDetailView(item);
         }
 
         /// <summary>
@@ -167,6 +178,7 @@ namespace NuSysApp
             _controller.LinkAdded -= OnLinkAdded;
             _controller.LinkRemoved -= OnLinkRemoved;
             _createLinkButton.Tapped -= OnCreateLinkButtonTapped;
+            _link_listview.RowDoubleTapped -= _link_listview_RowDoubleTapped;
 
             base.Dispose();
         }

@@ -57,7 +57,7 @@ namespace NuSysApp
             _elementController1 = null;
             _elementController2 = null;
             _vm = null;
-            _path.Dispose();
+            _path?.Dispose();
             _path = null;
 
             base.Dispose();

@@ -37,6 +37,10 @@ namespace NuSysApp
         private float _newMessageYOffset;
 
         private TextboxUIElement _chatTitle;
+        /// <summary>
+        /// True if we want to scroll to the bottom of the page
+        /// </summary>
+        private bool _scrollToBottom;
 
         public ChatBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -67,7 +71,8 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 Width = _typingRectContainer.Width,
-                Height = _typingRectContainer.Height
+                Height = _typingRectContainer.Height,
+                PlaceHolderText = "Enter message here..."
             };
             _typingRectContainer.AddChild(_typingRect);
             AddChild(_typingRectContainer);
@@ -84,14 +89,17 @@ namespace NuSysApp
             _chatTitle = new TextboxUIElement(this, Canvas)
             {
                 Background = Colors.Transparent,
+                TextColor = Constants.ALMOST_BLACK,
                 BorderWidth =  0,
                 FontSize = 20,
                 FontFamily = UIDefaults.TitleFont,
-                Text = "Text",
-                Height = 50
+                Text = "Chat",
+                Height = 40,
+                Width = 100
             };
-            _chatTitle.Width = Width;
             AddChild(_chatTitle);
+            _chatTitle.Transform.LocalPosition = new Vector2(this.Transform.LocalX,
+                this.Transform.LocalY - _chatTitle.Height);
 
             _typingRect.KeyPressed += _typingRect_KeyPressed;
         }
@@ -181,9 +189,6 @@ namespace NuSysApp
             _readingRect.Height = Height - _typingRectContainer.Height - TopBarHeight;
             _readingRect.Width = Width;
 
-            _chatTitle.Transform.LocalPosition = new Vector2(this.Transform.LocalX,
-                this.Transform.LocalY - _chatTitle.Height);
-
             _readingRect.Transform.LocalPosition = new Vector2(0, TopBarHeight);
             _typingRectContainer.Transform.LocalPosition = new Vector2(0, TopBarHeight + _readingRect.Height);
             _typingRect.Transform.LocalPosition = new Vector2(BorderWidth, BorderWidth);
@@ -202,6 +207,14 @@ namespace NuSysApp
             UpdateScrollAreaSize();
 
             base.Update(parentLocalToScreenTransform);
+
+
+            if (_scrollToBottom)
+            {
+                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
+                _scrollToBottom = false;
+            }
+
         }
 
         /// <summary>
@@ -216,13 +229,22 @@ namespace NuSysApp
         {
             Debug.Assert(user != null);
 
+            int numberToLeaveFunctional = 3;
+
             //linq statement to clear the callback of all existing functional chats
-            _readingRect.Elements.OfType<FunctionalDynamicTextboxUIElement>().ForEach(i => i.ClearCallback());
+            _readingRect.Elements.OfType<FunctionalDynamicTextboxUIElement>().Reverse().Skip(numberToLeaveFunctional-1).ForEach(i => i.ClearCallback());
 
             var headerGrid = GetHeaderGrid(user);
             var messageBox = GetMessageBox(chatMessage);
             messageBox.Callback = callback;
             AddChat(headerGrid, messageBox);
+
+            // if the chat box is currently hidden or the chat was sent by the current user
+            // then scroll the chat down
+            if (!IsVisible || user.UserID == WaitingRoomView.UserID)
+            {
+                _scrollToBottom = true;
+            }
         }
 
 
@@ -237,6 +259,14 @@ namespace NuSysApp
             var headerGrid = GetHeaderGrid(user);
             var messageBox = GetMessageBox(chatMessage);
             AddChat(headerGrid, messageBox);
+
+            // if the chat box is currently hidden or the chat was sent by the current user
+            // then scroll the chat down
+            if (!IsVisible || user.UserID == WaitingRoomView.UserID)
+            {
+                _scrollToBottom = true;
+            }
+
         }
 
         /// <summary>
@@ -256,11 +286,8 @@ namespace NuSysApp
             // add the element to the scroling canvas
             _readingRect.AddElement(messageBox, new Vector2(0, _newMessageYOffset));
 
-            // increase the y offset by the new messages height
+            // increment the message y offset by the height of the messageBox box
             _newMessageYOffset += messageBox.Height;
-
-            // set the scroll area size so that it can contain the new message
-            UpdateScrollAreaSize();
         }
 
         /// <summary>
