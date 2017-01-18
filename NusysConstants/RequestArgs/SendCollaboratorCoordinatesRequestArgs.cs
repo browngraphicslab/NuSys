@@ -27,6 +27,21 @@ namespace NusysIntermediate
         public string CollectionLibraryId { get; set; }
 
         /// <summary>
+        /// REQUIRED: the X coordinate of the current collection transform
+        /// </summary>
+        public float? XCoordinate { get; set; }
+
+        /// <summary>
+        /// REQUIRED: the Y coordinate of the current collection transform
+        /// </summary>
+        public float? YCoordinate { get; set; }
+
+        /// <summary>
+        /// REQUIRED: the camera scale of the current collection transform
+        /// </summary>
+        public float? CameraScale { get; set; }
+
+        /// <summary>
         /// parameterless constructor just sets the requset type in the base abstract class
         /// </summary>
         public SendCollaboratorCoordinatesRequestArgs() : base(NusysConstants.RequestType.SendCollaboratorCoordinatesRequest){}
@@ -37,7 +52,8 @@ namespace NusysIntermediate
         /// <returns></returns>
         protected override bool CheckArgsAreComplete()
         {
-            return !string.IsNullOrEmpty(RecipientUserId) && !string.IsNullOrEmpty(CollectionLibraryId);
+            return !string.IsNullOrEmpty(RecipientUserId) && !string.IsNullOrEmpty(CollectionLibraryId) &&
+                   YCoordinate != null && XCoordinate != null && CameraScale != null;
         }
     }
 }

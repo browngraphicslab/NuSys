@@ -40,7 +40,16 @@ namespace NuSysApp
                 //todo alert the user that the collection was invalid, probably because of a ACL's issue.
                 return;
             }
+            JoinCollection(senderArgs);
+        }
 
+        /// <summary>
+        /// private method to actually join a collection at a specific point
+        /// </summary>
+        /// <param name="senderArgs"></param>
+        private void JoinCollection(SendCollaboratorCoordinatesRequestArgs senderArgs)
+        {
+            throw new NotImplementedException();
         }
     }
 }

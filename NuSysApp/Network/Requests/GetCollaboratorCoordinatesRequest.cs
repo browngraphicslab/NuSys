@@ -35,7 +35,10 @@ namespace NuSysApp
             var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
             {
                 CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
-                RecipientUserId = senderArgs.OriginalSenderId
+                RecipientUserId = senderArgs.OriginalSenderId,
+                XCoordinate = SessionController.Instance.ActiveFreeFormViewer.CameraCenter.X,
+                YCoordinate = SessionController.Instance.ActiveFreeFormViewer.CameraCenter.Y,
+                CameraScale = SessionController.Instance.ActiveFreeFormViewer.CameraScale
             });
             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }

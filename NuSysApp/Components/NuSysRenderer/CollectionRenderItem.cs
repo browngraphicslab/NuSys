@@ -86,7 +86,19 @@ namespace NuSysApp
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
             vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
+            vm.Controller.ScaleChanged += ControllerOnScaleChanged;
             UpdateShapeStatus();
+        }
+
+        /// <summary>
+        /// event handler called whenevr the element controller changes scale
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="sx"></param>
+        /// <param name="sy"></param>
+        private void ControllerOnScaleChanged(object source, double sx, double sy)
+        {
+            Camera.CameraScale = (float)sx;
         }
 
         private void ContentDataControllerOnContentDataUpdated(object sender, string s)
@@ -138,7 +150,7 @@ namespace NuSysApp
                 ViewModel.Trails.CollectionChanged -= OnElementsChanged;
                 ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
                 ViewModel.Controller.LibraryElementController.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
-
+                ViewModel.Controller.ScaleChanged -= ControllerOnScaleChanged;
                 foreach (var item in _renderItems0.ToArray())
                     Remove(item);
 

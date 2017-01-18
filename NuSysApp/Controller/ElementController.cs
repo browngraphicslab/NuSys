@@ -112,12 +112,6 @@ namespace NuSysApp
             Model.ScaleY = sy;
 
             ScaleChanged?.Invoke(this, sx, sy);
-
-            if (!_blockServerInteraction)
-            {
-                _debouncingDictionary.Add("scaleX", sx);
-                _debouncingDictionary.Add("scaleY", sy);
-            }
         }
 
         public void Selected(bool selected)
