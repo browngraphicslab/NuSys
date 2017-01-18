@@ -131,48 +131,96 @@ namespace NuSysApp
         /// <summary>
         /// Event fired whenever a user clicks on a user bubble, displays the name of the user above the bubble
         /// hides the name of the user if the button is tapped again
+        /// 
+        /// if the bubble is right tapped, then a flyout will show that will allow you to either invite the user to join your session 
+        /// or allow you to join the user's session.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
         private void ShowUserNameOnBubbleTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
-
-            var userbubble = interactiveBaseRenderItem as ButtonUIElement;
-            Debug.Assert(userbubble != null);
-
-
-            // set the color of the username to the background of the button that was clicked
-            _userNameRect.TextColor = userbubble.Background;
-            // move the rect so it is centered over the button that was tapped
-            _userNameRect.Transform.LocalPosition = userbubble.Transform.LocalPosition -
-                                                    new Vector2(_userNameRect.Width/2 - userbubble.Width/2, _userNameRect.Height + 5);
-            // get the user id of the button that was selected
-            var user_id = _userIds_toBubbles.Where(kv => kv.Value == userbubble).Select(kv => kv.Key).FirstOrDefault();
-
-            Debug.Assert(user_id != null);
-            if (user_id == null)
+            if (pointer.IsRightButtonPressed)
             {
-                return;
-            }
+                var userBubble = interactiveBaseRenderItem as ButtonUIElement;
+                Debug.Assert(userBubble != null);
 
-            // hide the rectangle if the button clicked is already being displayed
-            if (_currentUserNameDisplayed_userid == user_id)
-            {
-                _userNameRect.IsVisible = false;
-                _currentUserNameDisplayed_userid = null;
-                return;
-            }
+                _currentUserNameDisplayed_userid =
+                    _userIds_toBubbles.Where(kv => kv.Value == userBubble).Select(kv => kv.Key).FirstOrDefault();
 
-            // if the user id is a valid one then display the first ten characters of the name associated with the user id
-            if (SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(user_id))
-            {
-                var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[user_id];
-                var name = user.DisplayName ?? user.UserID;
-                name = name.TrimStart();
-                _userNameRect.Text = name.Length == 0 ? "_" : name.Substring(0, Math.Min(name.Length, 10 )).ToUpper();
+                var flyout = new FlyoutPopup(SessionController.Instance.NuSessionView, Canvas);
+                flyout.AddFlyoutItem("Join", JoinOnTappedEvent, Canvas);
+                flyout.AddFlyoutItem("Invite", InviteOnTappedEvent, Canvas);
+                SessionController.Instance.NuSessionView.AddChild(flyout);
+                flyout.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y - flyout.FlyoutItemHeight * 2);
             }
-            _userNameRect.IsVisible = true;
-            _currentUserNameDisplayed_userid = user_id;
+            else
+            {
+
+                var userbubble = interactiveBaseRenderItem as ButtonUIElement;
+                Debug.Assert(userbubble != null);
+
+         
+                // set the color of the username to the background of the button that was clicked
+                _userNameRect.TextColor = userbubble.Background;
+                // move the rect so it is centered over the button that was tapped
+                _userNameRect.Transform.LocalPosition = userbubble.Transform.LocalPosition -
+                                                        new Vector2(_userNameRect.Width/2 - userbubble.Width/2,
+                                                            _userNameRect.Height + 5);
+                // get the user id of the button that was selected
+                var user_id =
+                    _userIds_toBubbles.Where(kv => kv.Value == userbubble).Select(kv => kv.Key).FirstOrDefault();
+
+                Debug.Assert(user_id != null);
+                if (user_id == null)
+                {
+                    return;
+                }
+
+                // hide the rectangle if the button clicked is already being displayed
+                if (_currentUserNameDisplayed_userid == user_id)
+                {
+                    _userNameRect.IsVisible = false;
+                    _currentUserNameDisplayed_userid = null;
+                    return;
+                }
+
+                // if the user id is a valid one then display the first ten characters of the name associated with the user id
+                if (SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(user_id))
+                {
+                    var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[user_id];
+                    var name = user.DisplayName ?? user.UserID;
+                    name = name.TrimStart();
+                    _userNameRect.Text = name.Length == 0 ? "_" : name.Substring(0, Math.Min(name.Length, 10)).ToUpper();
+                }
+                _userNameRect.IsVisible = true;
+                _currentUserNameDisplayed_userid = user_id;
+            }
+        }
+
+        /// <summary>
+        /// user will invite the user they clicked on to join their session, and then it clears the current user displayed.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void InviteOnTappedEvent(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StaticServerCalls.InviteCollaboratorToCollection(_currentUserNameDisplayed_userid);
+            _currentUserNameDisplayed_userid = null;
+            var flyoutParent = item.Parent as FlyoutPopup;
+            flyoutParent.DismissPopup();
+        }
+
+        /// <summary>
+        /// user will join the session of the user bubble they clicked on
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void JoinOnTappedEvent(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StaticServerCalls.JoinCollaborator(_currentUserNameDisplayed_userid);
+            _currentUserNameDisplayed_userid = null;
+            var flyoutParent = item.Parent as FlyoutPopup;
+            flyoutParent.DismissPopup();
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

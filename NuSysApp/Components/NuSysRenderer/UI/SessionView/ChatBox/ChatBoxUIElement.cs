@@ -49,11 +49,12 @@ namespace NuSysApp
             Width = 300;
             Height = 300;
             KeepAspectRatio = false;
-            BorderWidth = 3;
+            BorderWidth = 1;
             BorderColor = Constants.LIGHT_BLUE;
             BorderType  = BorderType.Outside;
             
             ShowClosable();
+            IsSnappable = true;
 
             _typingRectContainer = new RectangleUIElement(this, ResourceCreator)
             {

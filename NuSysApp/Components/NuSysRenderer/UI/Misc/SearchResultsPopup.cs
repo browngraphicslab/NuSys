@@ -44,6 +44,11 @@ namespace NuSysApp
         private RectangleButtonUIElement _addStack;
 
         /// <summary>
+        /// closes the popup
+        /// </summary>
+        private RectangleButtonUIElement _closebutton;
+
+        /// <summary>
         /// top padding for elements within popup
         /// </summary>
         private float _topPadding = 20;
@@ -61,7 +66,7 @@ namespace NuSysApp
             BorderWidth = 1;
             BorderColor = Constants.DARK_BLUE;
             Height = 300;
-            Width = 300;
+            Width = 500;
 
             // set values of results and search term
             _results = results;
@@ -89,13 +94,29 @@ namespace NuSysApp
             AddChild(_addStack);
             _addStack.Transform.LocalPosition = new Vector2(Width/2 - _addStack.Width/2, _addCollection.Transform.LocalY + _addCollection.Height + _topPadding);
 
+            //set up close button
+            _closebutton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.PrimaryStyle, "Do Nothing");
+            AddChild(_closebutton);
+            _closebutton.Transform.LocalPosition = new Vector2(Width/2 - _closebutton.Width/2, _addStack.Transform.LocalY + _addStack.Height + _topPadding);
+
             // add handlers to the two buttons
             _addCollection.Tapped += AddCollection_Tapped;
             _addStack.Tapped += AddStack_Tapped;
+            _closebutton.Tapped += Closebutton_Tapped;
 
             // set position
             Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - Width / 2, SessionController.Instance.NuSessionView.Height / 2 - Height / 2);
 
+        }
+
+        /// <summary>
+        /// closes the popup without doing anything to the search results
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void Closebutton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            DismissPopup();
         }
 
         /// <summary>
@@ -128,6 +149,7 @@ namespace NuSysApp
         {
             _addCollection.Tapped -= AddCollection_Tapped;
             _addStack.Tapped -= AddStack_Tapped;
+            _closebutton.Tapped -= Closebutton_Tapped;
         }
     }
 }
