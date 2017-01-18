@@ -232,7 +232,9 @@ namespace NuSysApp
         {
             header.Tapped += Header_Tapped;
             header.Dragged += Header_Dragged;
+
             header.HeaderOptionsActivated += Header_OptionsActivated;
+
             header.DragCompleted += Header_DragCompleted;
             header.HeaderResizing += HeaderItemResizing;
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;

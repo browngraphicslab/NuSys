@@ -105,7 +105,6 @@ namespace NuSysApp
             ButtonTextColor = Constants.ALMOST_BLACK;
             ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
 
-            Tapped += ListViewHeaderItem_Tapped;
             Holding += ListViewHeaderItem_Holding;
         }
 
@@ -115,16 +114,17 @@ namespace NuSysApp
         }
 
 
-        private void ListViewHeaderItem_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        public override void OnTapped(CanvasPointer pointer)
         {
             if (pointer.IsRightButtonPressed)
             {
                 HeaderOptionsActivated?.Invoke(this);
             }
+            else
+            {
+                base.OnTapped(pointer);
+            }
         }
-
-
-
 
         public override void OnDragStarted(CanvasPointer pointer)
         {
@@ -205,7 +205,6 @@ namespace NuSysApp
         {
             base.Dispose();
 
-            Tapped -= ListViewHeaderItem_Tapped;
             Holding -= ListViewHeaderItem_Holding;
         }
 
