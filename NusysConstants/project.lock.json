@@ -1,5 +1,4 @@
 {
-  "locked": false,
   "version": 2,
   "targets": {
     ".NETPortable,Version=v4.5,Profile=Profile7": {
@@ -1889,5 +1888,10 @@
       "Newtonsoft.Json >= 8.0.3"
     ],
     ".NETPortable,Version=v4.5,Profile=Profile7": []
+  },
+  "tools": {},
+  "projectFileToolGroups": {},
+  "packageFolders": {
+    "C:\\Users\\GFX Lab\\.nuget\\packages\\": {}
   }
 }
