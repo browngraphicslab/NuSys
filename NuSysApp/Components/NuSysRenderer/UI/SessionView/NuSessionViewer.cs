@@ -201,7 +201,7 @@ namespace NuSysApp
             AddChild(_chatButtonNotifications);
 
 
-            _snapshotButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle);
+            _snapshotButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle, "snapshot");
             AddChild(_snapshotButton);
 
             //custom button
@@ -688,10 +688,12 @@ namespace NuSysApp
             CreateSnapshotOfCollectionRequest request = new CreateSnapshotOfCollectionRequest(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.LibraryElementModel.LibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             request.AddSnapshotCollectionLocally();
+            var popup = new CenteredPopup(this, Canvas, "Your snapshot has been added, called " + SessionController.Instance.CurrentCollectionLibraryElementModel.Title + " Snapshot.");
+            AddChild(popup);
         }
 
         /// <summary>
-        /// Fired whenever the waiting room button is clicked, returns the user to the waitin groom
+        /// Fired whenever the waiting room button is clicked, returns the user to the waiting room
         /// </summary>
         private async void BackToWaitingRoomOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
