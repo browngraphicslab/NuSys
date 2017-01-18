@@ -932,7 +932,6 @@ namespace NuSysApp
         {
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
             _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
-            _detailViewer.IsVisible = true;
 
             _readOnlyLinksWindow.IsVisible = false;
             _readOnlyAliasesWindow.IsVisible = false;

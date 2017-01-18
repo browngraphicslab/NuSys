@@ -24,13 +24,28 @@ namespace NuSysApp
         public static bool ViewInReadOnly(this LibraryElementModel model)
         {
             Debug.Assert(model != null);
-            if (model.Creator == WaitingRoomView.UserID)
+            if (model.Type == NusysConstants.ElementType.Link)
             {
-                return false;
+                var link = model as LinkLibraryElementModel;
+                Debug.Assert(link != null);
+                if (link == null)
+                {
+                    return true;
+                }
+                return
+                    !(SessionController.Instance.ContentController.GetLibraryElementController(link.OutAtomId) != null &&
+                      SessionController.Instance.ContentController.GetLibraryElementController(link.InAtomId) != null);
             }
-            if (model.AccessType == NusysConstants.AccessType.ReadOnly)
+            else
             {
-                return true;
+                if (model.Creator == WaitingRoomView.UserID)
+                {
+                    return false;
+                }
+                if (model.AccessType == NusysConstants.AccessType.ReadOnly)
+                {
+                    return true;
+                }
             }
             return false;
         }

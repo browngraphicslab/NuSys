@@ -64,7 +64,7 @@ namespace NuSysApp
             _controller = controller;
             var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
-            _aliasList = req.GetReturnedElementModels();
+            _aliasList = new List<ElementModel>(req.GetReturnedElementModels().Where(em => SessionController.Instance.ContentController.GetLibraryElementController(em?.ParentCollectionId) != null));
             _listView?.ClearFilter();
             _listView?.ClearItems();
             _listView?.AddItems(_aliasList);

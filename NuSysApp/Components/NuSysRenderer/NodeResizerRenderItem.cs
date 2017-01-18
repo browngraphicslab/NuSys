@@ -24,7 +24,7 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-            _triangle.Dispose();
+            _triangle?.Dispose();
             _triangle = null;
             base.Dispose();
         }

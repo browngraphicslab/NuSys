@@ -185,6 +185,8 @@ namespace NuSysApp
                     }
                 }
 
+                //remove bad links
+                SessionController.Instance.LinksController.GarbageCollectLinks();
 
                 //set items in collectionlist alphabetically
                 await ApplyFilter(FilterType.Mine);
