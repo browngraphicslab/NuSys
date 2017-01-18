@@ -295,9 +295,13 @@ namespace NuSysApp
             {
                 if (_shapeImage != null)
                 {
+                    Debug.Assert(pts != null && pts.Any());
                     var bounds = _shape.ComputeBounds();
+                    var ratio = bounds.Width/bounds.Height;
                     bounds.X = pts.Min(l => l.X);
                     bounds.Y = pts.Min(l => l.Y);
+                    bounds.Width = pts.Max(l => l.X) - bounds.X;
+                    bounds.Height = bounds.Width/ratio;
                     ds.DrawImage((CanvasBitmap)_shapeImage, bounds);
                 }
             }
