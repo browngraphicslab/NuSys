@@ -199,8 +199,10 @@ namespace NuSysApp
         {
             Debug.Assert(user != null);
 
+            int numberToLeaveFunctional = 3;
+
             //linq statement to clear the callback of all existing functional chats
-            _readingRect.Elements.OfType<FunctionalDynamicTextboxUIElement>().ForEach(i => i.ClearCallback());
+            _readingRect.Elements.OfType<FunctionalDynamicTextboxUIElement>().Reverse().Skip(numberToLeaveFunctional-1).ForEach(i => i.ClearCallback());
 
             var headerGrid = GetHeaderGrid(user);
             var messageBox = GetMessageBox(chatMessage);

@@ -336,15 +336,15 @@ namespace NuSysApp
 
             if (controller?.CollectionModel?.Shape?.ShapePoints == null &&
                 controller?.CollectionModel?.Shape?.ImageUrl != null && controller?.CollectionModel?.Shape?.AspectRatio != null
-                && controller?.CollectionModel?.Shape?.AspectRatio != 0)
+                && controller?.CollectionModel?.Shape?.AspectRatio != 0 && _shapeImage != null)
             {
-                var aspcRatio = controller?.CollectionModel?.Shape?.AspectRatio;
+                var bounds = _shapeImage.GetBounds(ResourceCreator);
                 pts = new Vector2[]
                 {
                     new Vector2(50000,50000),
-                    new Vector2((float)(50000+1000*aspcRatio), 50000),
-                    new Vector2((float)(50000+1000*aspcRatio),51000),
-                    new Vector2(50000,51000),
+                    new Vector2((float)(50000+bounds.Width), 50000),
+                    new Vector2((float)(50000+bounds.Width),50000+(float)bounds.Height),
+                    new Vector2(50000,50000+(float)bounds.Height),
                 };
             }
 

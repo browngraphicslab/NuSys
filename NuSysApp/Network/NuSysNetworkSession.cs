@@ -260,6 +260,9 @@ namespace NuSysApp
                 case NusysConstants.RequestType.SendCollaboratorCoordinatesRequest:
                     request = new SendCollaboratorCoordinatesRequest(message);
                     break;
+                case NusysConstants.RequestType.CreateSnapshotOfCollectionRequest:
+                    request = new CreateSnapshotOfCollectionRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }
