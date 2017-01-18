@@ -69,7 +69,7 @@ namespace NuSysApp
         /// <summary>
         /// If the user has made a selection of text this is true
         /// </summary>
-        private  bool _hasSelection;
+        private bool _hasSelection;
 
         /// <summary>
         /// True if the control key is pressed, used for keyboard shortcuts
@@ -100,10 +100,20 @@ namespace NuSysApp
         private const string Newline = "\n";
 
         /// <summary>
+        /// private helper for public variable character index
+        /// </summary>
+        private int _caretCharacterIndex {get;set;}
+
+        /// <summary>
         /// The caret character index is the zero based index of the character the caret is to the right of
         /// thus the caret can be at location -1 if it is to the left of the first character in the textbox
         /// </summary>
-        public int CaretCharacterIndex { get; set; }
+        public int CaretCharacterIndex
+        {
+            get { return _caretCharacterIndex; }
+            // bound the CaretCharacterIndex from -1 to Text.Length -1 inclusive
+            set { _caretCharacterIndex = Math.Max(-1, Math.Min(Text.Length - 1, value)); }
+        }
 
         /// <summary>
         /// The x position we try to preserve when moving up or down in the textbox using the arrow keys,
@@ -192,14 +202,10 @@ namespace NuSysApp
         private bool _keepCaretOnScreen;
 
         /// <summary>
-        /// The current line being edited by the user
+        /// True if we want to update the canvas text layout, when this is true we also update the caret transform
+        /// and the selection rects
         /// </summary>
-        public int CurrentLineBeingEdited { get; private set; }
-
-        /// <summary>
-        /// The y offset of the current line being edited by the user
-        /// </summary>
-        public float CurrentLineYOffset { get; private set; }
+        private bool _updateCanvasTextLayout;
 
         /// <summary>
         ///  private helper for public boolean IsEditable
@@ -221,6 +227,77 @@ namespace NuSysApp
                 }
             }
         }
+
+        /// <summary>
+        /// Handler for the input submitted event, fired whenever the user hits the enter button on a non vertically scrolling textbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="input"></param>
+        public delegate void InputSubmittedHandler(ScrollableTextboxUIElement sender, string input);
+
+        /// <summary>
+        /// The input submitted event, fired when the user hits the enter button on a non vertically scrolling textbox
+        /// </summary>
+        public event InputSubmittedHandler InputSubmitted;
+
+        ///// <summary>
+        ///// The previous width of the textbox, we update this when the width changes
+        ///// by some arbitrarily small delta amount. Used to determine when we need to update the canvas text layout
+        ///// </summary>
+        //private float _previousWidth;
+
+        ///// <summary>
+        ///// The width of the scrollabletextboxuielement
+        ///// </summary>
+        //public override float Width
+        //{
+        //    get
+        //    {
+        //        return base.Width;
+        //    }
+
+        //    set
+        //    {
+        //        base.Width = value;
+        //        if (Math.Abs(Width - _previousWidth) > .1)
+        //        {
+        //            _previousWidth = Width;
+        //            _updateCanvasTextLayout = true;
+        //        }
+        //    }
+        //}
+
+        ///// <summary>
+        ///// The previous height of the textbox, we update this when the height changes
+        ///// by some arbitrarily small delta amount. Used to determine when we need to update the canvas text layout
+        ///// </summary>
+        //private float _previousHeight;
+
+        ///// <summary>
+        ///// The previous vertical scrollbar visibility, when this changes we update the canvas text layout
+        ///// </summary>
+        //private bool _lastVertScrollBarVisibility;
+
+        ///// <summary>
+        ///// The width of the scrollabletextboxuielement
+        ///// </summary>
+        //public override float Height
+        //{
+        //    get
+        //    {
+        //        return base.Height;
+        //    }
+
+        //    set
+        //    {
+        //        base.Height = value;
+        //        if (Math.Abs(Height - _previousHeight) > .1)
+        //        {
+        //            _previousHeight = Height;
+        //            _updateCanvasTextLayout = true;
+        //        }
+        //    }
+        //}
 
 
         /// <summary>
@@ -576,9 +653,8 @@ namespace NuSysApp
                 else if (CaretCharacterIndex >= 0)
                 {
                     // remove the character from the text
-                    Text = Text.Remove(CaretCharacterIndex, 1);
+                    Text = Text.Remove(CaretCharacterIndex--, 1);
                     // decrement the current character so its on the previous character
-                    CaretCharacterIndex--;
                 }
             }
             // Delete Key
@@ -605,9 +681,8 @@ namespace NuSysApp
                 }
                 else
                 {
-                    // try to decrement the CaretCharacterIndex, but do not let the CaretCharacter
-                    // index decrement below -1
-                    CaretCharacterIndex = Math.Max(-1, CaretCharacterIndex - 1);
+                    // decrement the CaretCharacterIndex
+                    CaretCharacterIndex--;
                 }              
             }
             // Move cursor right
@@ -624,7 +699,7 @@ namespace NuSysApp
                     // try to incremenet the CaretCharacterIndex, but do not let the CaretCharacter
                     // index increment to beyond the length of the text - 1. 
                     // ('a' is text with length 1, CaretCharacterIndex 0 is to the right of 'a') thats why we subtract one from the length
-                    CaretCharacterIndex = Math.Min(Text.Length - 1, CaretCharacterIndex + 1);
+                    CaretCharacterIndex++;
                 }
             }
             // Move cursor up
@@ -709,8 +784,16 @@ namespace NuSysApp
                 {
                     ClearSelection();
                 }
-                Text = Text.Insert(CaretCharacterIndex + 1, Newline);
-                CaretCharacterIndex++;
+
+                if (_scrollVert)
+                {
+                    Text = Text.Insert(CaretCharacterIndex + 1, Newline);
+                    CaretCharacterIndex++;
+                } else
+                {
+                    OnInputSubmitted();
+                }
+
             }
             // Type the letter into the box
             else
@@ -726,6 +809,14 @@ namespace NuSysApp
                     CaretCharacterIndex++;
                 }
             }
+        }
+
+        /// <summary>
+        /// Fires the input submitted event, only fired on non vertically scrolling textboxes when the enter key is pressed
+        /// </summary>
+        private void OnInputSubmitted()
+        {
+            InputSubmitted?.Invoke(this, Text);
         }
 
         #endregion keyboard-input
@@ -797,7 +888,7 @@ namespace NuSysApp
             {
                 ds.DrawText(PlaceHolderText, new Rect(BorderWidth + UIDefaults.XTextPadding,
             BorderWidth + UIDefaults.YTextPadding,
-            Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
+            Width - 2*(BorderWidth + UIDefaults.XTextPadding) - (_verticalScrollbar?.IsVisible ?? false ? _verticalScrollbar.Width : 0), double.MaxValue),
             PlaceHolderTextColor, CanvasTextFormat);
             }
         }
@@ -824,8 +915,8 @@ namespace NuSysApp
                 ds.CreateLayer(1,
                     CanvasGeometry.CreateRectangle(Canvas, BorderWidth + UIDefaults.XTextPadding,
                         BorderWidth + UIDefaults.YTextPadding,
-                        Width - 2*(BorderWidth + UIDefaults.XTextPadding),
-                        Height - 2*(BorderWidth + UIDefaults.YTextPadding))))
+                        Width - (BorderWidth + UIDefaults.XTextPadding),
+                        Height - (BorderWidth + UIDefaults.YTextPadding))))
             {
                 Debug.Assert(Width - 2 * BorderWidth > 0 && Height - 2 * BorderWidth > 0,
                         "these must be greater than zero or drawText crashes below");
@@ -838,14 +929,15 @@ namespace NuSysApp
                 {
                     ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                         BorderWidth + UIDefaults.YTextPadding + _yOffset,
-                        Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue),
+                        Width - 2*(BorderWidth + UIDefaults.XTextPadding) -
+                        (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0), double.MaxValue),
                         TextColor, CanvasTextFormat);
                 }
                 else
                 {
                     ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                         BorderWidth + UIDefaults.YTextPadding + _yOffset, double.MaxValue,
-                        Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
+                        Height - 2*(BorderWidth + UIDefaults.YTextPadding)),
                         TextColor, CanvasTextFormat);
                 }
 
@@ -916,8 +1008,30 @@ namespace NuSysApp
                 TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue,
                                            Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
             }
-                                           
 
+            //_updateCanvasTextLayout = false;                        
+
+        }
+
+        /// <summary>
+        /// Checks to make sure that the text layout bounds are equivalent to the draw bounds
+        /// </summary>
+        /// <returns></returns>
+        private bool? CheckTextLayoutBoundsEqualDrawBounds()
+        {
+            if (!_loaded)
+            {
+                return null;
+            }
+
+            if (_scrollVert)
+            {
+                return TextLayout.LayoutBounds.Width == Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
+                        (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0);
+            } else
+            {
+                return TextLayout.LayoutBounds.Height == Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+            }
         }
 
         /// <summary>
@@ -956,6 +1070,14 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            // update the canvas text layout
+            if (CheckTextLayoutBoundsEqualDrawBounds() == false)
+            {
+                UpdateCanvasTextLayout();
+                _updateCaretTransform = true;
+                _updateSelectionRects = true;
+            }
+
             // update the transform for the cursor
             if (_updateCaretTransform)
             {
@@ -963,9 +1085,7 @@ namespace NuSysApp
                 if (_keepCaretOnScreen)
                 {
                     ScrollTextToContainCaret();
-                    _keepCaretOnScreen = false;
                 }
-                UpdateCurrentLineBeingEdited();
             }
 
             // update the locations of all the selection rects
@@ -1020,36 +1140,6 @@ namespace NuSysApp
             }
 
             base.Update(parentLocalToScreenTransform);           
-        }
-
-        private void UpdateCurrentLineBeingEdited()
-        {
-            if (!_loaded)
-            {
-                return;
-            }
-
-            
-            // Sets the cursor's location based on the offsets
-            // Cursor should be to the right of characters except when it is -1, then it should
-            // be to the left of the first character
-            if (CaretCharacterIndex > -1)
-            {
-                CurrentLineBeingEdited = Text.Substring(0, CaretCharacterIndex).Split('\n').Length;
-
-                if (Text.Substring(CaretCharacterIndex, 1) == "\r" || Text.Substring(CaretCharacterIndex, 1) == "\n")
-                {
-                    CurrentLineBeingEdited += 1;
-                }
-            }
-            else
-            {
-                CurrentLineBeingEdited = 0;
-            }
-
-            CurrentLineYOffset = (float) (_caret.Transform.LocalY - _yOffset);
-
-            _updateCaretTransform = false;
         }
 
         #endregion update
@@ -1136,7 +1226,7 @@ namespace NuSysApp
 
             // if the character we clicked on is a newline, determine if we clicked on the next line
             // or on the previous line
-            if (characterIndex != -1 && Text.Substring(characterIndex, 1) == "\n")
+            if (characterIndex != -1 && Text.Substring(characterIndex, 1) == Newline)
             {
                 // if the point we are checking is above the bottom of the character then we clicked on the same line
                 // so the cursor should be before the new line
@@ -1436,6 +1526,7 @@ namespace NuSysApp
                 }  
                 CaretCharacterIndex += text.Length;
                 _updateCaretTransform = true;
+                _keepCaretOnScreen = true;
                 OnTextChanged(Text);
             }
         }
@@ -1447,7 +1538,13 @@ namespace NuSysApp
         /// <returns></returns>
         private string NormalizeNewLines(string text)
         {
-            return _newLineRegex.Replace(text, Newline);
+            if (_scrollVert)
+            {
+                return _newLineRegex.Replace(text, Newline);
+            } else
+            {
+                return _newLineRegex.Replace(text, " ");
+            }
         }
 
         #endregion data-operations-copy-cut-paste
@@ -1474,10 +1571,10 @@ namespace NuSysApp
                     _caret.Transform.LocalPosition = new Vector2(_caret.Transform.LocalX, (float) (_caret.Transform.LocalY - over));
                 }
                 // otherwise if the caret's y position is above the top of the textbox
-                else if (caretLocation.Y < UIDefaults.YTextPadding)
+                else if (caretLocation.Y < UIDefaults.YTextPadding + BorderWidth)
                 {
                     // increment the offest of the textbox by the amount the caret is under
-                    double under = UIDefaults.YTextPadding - caretLocation.Y;
+                    double under = UIDefaults.YTextPadding + BorderWidth - caretLocation.Y;
                     _yOffset += under;
 
                     // then update the caret's transform
@@ -1502,6 +1599,8 @@ namespace NuSysApp
                     _caret.Transform.LocalPosition = new Vector2((float)(_caret.Transform.LocalX + under), _caret.Transform.LocalY);
                 }
             }
+
+            _keepCaretOnScreen = false;
 
         }
 
