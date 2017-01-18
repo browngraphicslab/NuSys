@@ -277,7 +277,6 @@ namespace NuSysApp
         public void GetLock(ILockable lockable)
         {
             Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
-            Debug.Assert(!lockable.HasLock());
             if (lockable.HasLock() ||
                 (_locksDictionary.ContainsKey(lockable.Id) && _locksDictionary[lockable.Id].LockHolderId != null))
             {

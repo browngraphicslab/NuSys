@@ -737,6 +737,36 @@ namespace NuSysApp
             return false;
         }
 
+        /// <summary>
+        /// this method was created because of a simple issue: some links have private endpoints that we cant see.
+        /// However, there are cases when we still need to get these links, and simply need to remove them from clients that don't have access to the endpoints.
+        /// Since we want to support future linking to links and we also can't always iterate through library elements with links being made after there endpoints,
+        /// we have to remove them after everything has been added to the library upon initial populating.  
+        /// 
+        /// This method will remove all links that have either endpoint not present.
+        /// This only needs to be called after the inital populating has occurred
+        /// </summary>
+        public void GarbageCollectLinks()
+        {
+            var allLinks =
+                SessionController.Instance.ContentController.AllLibraryElementModels.Where(
+                        m => m.Type == NusysConstants.ElementType.Link)
+                    .Select(l => l as LinkLibraryElementModel)
+                    .Where(l => l != null);
+            var linksToRemove = allLinks.Where(
+                link =>
+                    SessionController.Instance.ContentController.GetLibraryElementController(link.InAtomId) == null || 
+                    SessionController.Instance.ContentController.GetLibraryElementController(link.OutAtomId) == null);
+
+            foreach (var link in linksToRemove)
+            {
+                HashSet<string> outStrings;
+                _contentIdToLinkableIds.TryRemove(link.LibraryElementId, out outStrings);
+                _contentIdToLinkContentIds.TryRemove(link.LibraryElementId, out outStrings);
+                SessionController.Instance.ContentController.Remove(link);
+            }
+        }
+
 
         /// <summary>
         /// This is a essentially static method that adds a presentation link to the library when given a presentation link model

@@ -40,20 +40,45 @@ namespace NuSysApp
                 senderArgs.XLocalScaleCenter == null || senderArgs.YLocalScaleCenter == null ||
                 senderArgs.YCoordinatePosition == null || senderArgs.XCoordinatePosition == null || senderArgs.CameraScaleY == null)
             {
-                //todo alert the user that the collection was invalid, probably because of a ACL's issue.
+                SessionController.Instance.NuSessionView.Chatbox.AddChat(NetworkUser.ChatBot, 
+                    "Due to an access issue, you are unable to join " + SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[senderArgs.OriginalSenderId]+"'s current workspace.");
                 return;
             }
-            JoinCollection(senderArgs, collectionLibraryElementController);
+
+            if (senderArgs.AskBeforeJoining)
+            {
+                AddChatbotQuery(senderArgs, collectionLibraryElementController);
+            }
+            else
+            {
+                JoinCollection(senderArgs, collectionLibraryElementController);
+            }
+        }
+
+        /// <summary>
+        /// private method to have the chatbot ask the user before joining
+        /// </summary>
+        /// <param name="senderArgs"></param>
+        private void AddChatbotQuery(SendCollaboratorCoordinatesRequestArgs senderArgs, CollectionLibraryElementController collectionLibraryElementController)
+        {
+            SessionController.Instance.NuSessionView.Chatbox.AddFunctionalChat(NetworkUser.ChatBot, SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[senderArgs.OriginalSenderId] + 
+                " has invited you to join the collection "+ collectionLibraryElementController.CollectionModel.Title+". Click this message to accept. ",
+                (item, pointer) =>
+                {
+                    JoinCollection(senderArgs, collectionLibraryElementController);
+                });
+            SessionController.Instance.NuSessionView.IncrementChatNotifications();
         }
 
         /// <summary>
         /// private method to actually join a collection at a specific point
         /// </summary>
         /// <param name="senderArgs"></param>
-        private async Task JoinCollection(SendCollaboratorCoordinatesRequestArgs senderArgs, CollectionLibraryElementController collectionLibraryElementController)
+        private static async Task JoinCollection(SendCollaboratorCoordinatesRequestArgs senderArgs, CollectionLibraryElementController collectionLibraryElementController)
         {
-            await SessionController.Instance.EnterCollection(collectionLibraryElementController.LibraryElementModel.LibraryElementId);
-            var collectionController = SessionController.Instance.ActiveFreeFormViewer.Controller as ElementCollectionController;
+            if(collectionLibraryElementController.LibraryElementModel.LibraryElementId != SessionController.Instance.ActiveFreeFormViewer.LibraryElementId) { 
+                await SessionController.Instance.EnterCollection(collectionLibraryElementController.LibraryElementModel.LibraryElementId);
+            }
 
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition = new Vector2(senderArgs.XCoordinatePosition.Value, senderArgs.YCoordinatePosition.Value);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2((float)senderArgs.XLocalScaleCenter.Value, (float)senderArgs.YLocalScaleCenter.Value);

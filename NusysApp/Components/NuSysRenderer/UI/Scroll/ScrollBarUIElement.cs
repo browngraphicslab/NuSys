@@ -98,6 +98,15 @@ namespace NuSysApp
         private bool _isBarVisible;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return base.IsVisible && _isBarVisible; }
+            set { base.IsVisible = value; }
+        }
+
+        /// <summary>
         /// Range is the normalized length of the slider. The end position - start position.
         /// </summary>
         public float Range
@@ -105,6 +114,13 @@ namespace NuSysApp
             set
             {
                 _range = Math.Min(1, value);
+                if (_range == 1)
+                {
+                    IsVisible = false;
+                } else
+                {
+                    IsVisible = true;
+                }
                 _isBarVisible = _range != 1f; //Scrolling should only be active if range is not equal to 1
 
             }
@@ -388,7 +404,7 @@ namespace NuSysApp
         /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (_isBarVisible)
+            if (IsVisible)
             {
                 base.Draw(ds);
             }

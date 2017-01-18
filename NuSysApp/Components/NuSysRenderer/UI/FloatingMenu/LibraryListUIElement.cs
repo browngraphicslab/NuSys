@@ -533,7 +533,8 @@ namespace NuSysApp
         /// <param name="element"></param>
         private void UpdateLibraryListToRemoveElement(LibraryElementModel element)
         {
-            LibraryListView.RemoveItems(new List<LibraryElementModel> {element});
+            Debug.Assert(element != null);
+            LibraryListView?.RemoveItems(new List<LibraryElementModel> {element});
         }
 
         /// <summary>

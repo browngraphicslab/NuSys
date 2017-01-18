@@ -403,8 +403,8 @@ namespace NuSysApp
                 ShowOverlay();
             }
 
-            _mainTextBox.BorderColor = currentUser == null ? UIDefaults.Bordercolor : currentUser.Color;
-            _mainTextBox.BorderWidth = currentUser == null ? 1 : 7;
+            _mainTextBox.BorderColor = currentUser == null ? Colors.Transparent : currentUser.Color;
+            _mainTextBox.BorderWidth = 7;
         }
     }
 }

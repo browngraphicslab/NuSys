@@ -83,7 +83,34 @@ namespace NuSysApp
         private bool AddModelStringToSession(string libraryElementModelString)
         {
             var libraryElement = LibraryElementModelFactory.DeserializeFromString(libraryElementModelString);
-            return SessionController.Instance.ContentController.Add(libraryElement) != null;
+            if (!IsInvalidLink(libraryElement))
+            {
+                return SessionController.Instance.ContentController.Add(libraryElement) != null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// returns true if the item is a link and is linked to inaccessible elements (aka ACL's)
+        /// </summary>
+        /// <param name="libraryElement"></param>
+        /// <returns></returns>
+        private bool IsInvalidLink(LibraryElementModel libraryElement)
+        {
+            var link = libraryElement as LinkLibraryElementModel;
+            if (link == null)
+            {
+                return false;
+            }
+            if (SessionController.Instance.ContentController.GetLibraryElementController(link?.InAtomId) == null)
+            {
+                return true;
+            }
+            if (SessionController.Instance.ContentController.GetLibraryElementController(link?.OutAtomId) == null)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

@@ -295,9 +295,13 @@ namespace NuSysApp
             {
                 if (_shapeImage != null)
                 {
+                    Debug.Assert(pts != null && pts.Any());
                     var bounds = _shape.ComputeBounds();
+                    var ratio = bounds.Width/bounds.Height;
                     bounds.X = pts.Min(l => l.X);
                     bounds.Y = pts.Min(l => l.Y);
+                    bounds.Width = pts.Max(l => l.X) - bounds.X;
+                    bounds.Height = bounds.Width/ratio;
                     ds.DrawImage((CanvasBitmap)_shapeImage, bounds);
                 }
             }
@@ -644,18 +648,19 @@ namespace NuSysApp
                 await item.Load();
                 _renderItems2?.Add(item);
             }
-            else if (vm is PdfNodeViewModel)
-            {
-                item = new PdfElementRenderItem((PdfNodeViewModel)vm, this, ResourceCreator);
-                await item.Load();
-                _renderItems2?.Add(item);
-            }
             else if (vm is WordNodeViewModel)
             {
                 item = new WordElementRenderItem((WordNodeViewModel)vm, this, ResourceCreator);
                 await item.Load();
                 _renderItems2?.Add(item);
             }
+            else if (vm is PdfNodeViewModel)
+            {
+                item = new PdfElementRenderItem((PdfNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
+
             else if (vm is AudioNodeViewModel)
             {
                 item = new AudioElementRenderItem((AudioNodeViewModel)vm, this, ResourceCreator);

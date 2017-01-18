@@ -52,7 +52,7 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
          
-            _bmp.Dispose();
+            _bmp?.Dispose();
             _bmp = null;
             base.Dispose();
         }

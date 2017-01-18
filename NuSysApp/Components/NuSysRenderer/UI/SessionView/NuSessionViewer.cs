@@ -113,7 +113,7 @@ namespace NuSysApp
         /// <summary>
         /// the library list 
         /// </summary>
-        public LibraryListUIElement Library => _floatingMenu.Library;
+        public LibraryListUIElement Library { get; private set; }
 
         /// <summary>
         /// Rectangle used to display confirmation message to go back to the waiting room
@@ -257,22 +257,22 @@ namespace NuSysApp
 
 
             // add presentation node buttons
-            _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false
             };
             AddChild(_previousNode);
-            _nextNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _nextNode = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false
             };
             AddChild(_nextNode);
-            _currentNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _currentNode = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false,
             };
             AddChild(_currentNode);
-            _exitPresentation = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
+            _exitPresentation = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
                 IsVisible = false
             };
@@ -633,8 +633,18 @@ namespace NuSysApp
             // set the images for presentation mode
             _nextNode.Image = _nextNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_forward.png"));
             _previousNode.Image = _previousNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
-            _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/node.png"));
-            _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/trash can white.png"));
+            _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
+            _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
+
+
+            // created here because it must be created after the create resources method is called on the main canvas animated control
+            if (Library == null)
+            {
+                Library = new LibraryListUIElement(this, Canvas);
+                Library.KeepAspectRatio = false;
+                AddChild(Library);
+            }
+            Library.IsVisible = false;
 
             _loaded = true;
 
@@ -700,8 +710,14 @@ namespace NuSysApp
         /// </summary>
         /// <param name="viewable"></param>
         /// <param name="tabToOpenTo"></param>
-        public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
+        public void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
+            Debug.Assert(viewable != null);
+            Debug.Assert(!viewable.LibraryElementModel.ViewInReadOnly());
+            if (viewable.LibraryElementModel.ViewInReadOnly()) //if we don't have access rights to this, return
+            {
+                return;
+            }
             _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
         }
 
@@ -926,7 +942,6 @@ namespace NuSysApp
         {
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
             _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
-            _detailViewer.IsVisible = true;
 
             _readOnlyLinksWindow.IsVisible = false;
             _readOnlyAliasesWindow.IsVisible = false;

@@ -12,6 +12,11 @@ namespace NusysIntermediate
     public class SendCollaboratorCoordinatesRequestArgs : ServerRequestArgsBase
     {
         /// <summary>
+        /// public bool used to indicate whether the chatbot should ask the reciever before joining the collection defined by these args
+        /// </summary>
+        public bool AskBeforeJoining { get; set; } = false;
+
+        /// <summary>
         /// REQUIRED: the string user id of the intended reciepient of this client's coordinates
         /// </summary>
         public string RecipientUserId { get; set; }

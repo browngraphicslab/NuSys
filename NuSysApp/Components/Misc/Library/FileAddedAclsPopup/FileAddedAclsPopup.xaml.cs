@@ -176,6 +176,10 @@ namespace NuSysApp
                 {
                     selectedAcess = NusysConstants.AccessType.Private;
                 }
+                else if (radioButton.Name == "readOnlyRadio")
+                {
+                    selectedAcess = NusysConstants.AccessType.ReadOnly;
+                }
                 else
                 {
                     Debug.Fail("Sorry these are switched by name, make sure the strings above match the strings in the xaml list view");
@@ -218,7 +222,7 @@ namespace NuSysApp
 
             // deselect the opposite checkbox, and set the name of the child to search in the list
             string childName = "";
-            if (publicSelectAll.Name == checkBox.Name)
+            if (publicSelectAll?.Name == checkBox.Name)
             {
                 // privateSelectall can be null because we use a default checkbox in xaml
                 if (privateSelectAll != null)
@@ -227,15 +231,32 @@ namespace NuSysApp
                 }
                 childName = "publicRadio"; // if the select all isn't working its most likely because these names don't match the xaml names for radio buttons
             }
-            else
+            else if (privateSelectAll?.Name == checkBox.Name)
             {
                 // publicSelectAll can be null because we use a default checkbox in xaml
                 if (publicSelectAll != null)
                 {
                     publicSelectAll.IsChecked = false;
                 }
+                if (readOnlySelectAll != null)
+                {
+                    publicSelectAll.IsChecked = false;
+                }
                 childName = "privateRadio"; // if the select all isn't working its most likely because these names don't match the xaml names for radio buttons
+            } else if (readOnlySelectAll?.Name == checkBox.Name)
+            {
+                // publicSelectAll can be null because we use a default checkbox in xaml
+                if (publicSelectAll != null)
+                {
+                    publicSelectAll.IsChecked = false;
+                }
+                if (privateSelectAll != null)
+                {
+                    privateSelectAll.IsChecked = false;
+                }
+                childName = "readOnlyRadio"; // if the select all isn't working its most likely because these names don't match the xaml names for radio buttons
             }
+
 
 
             // foreach item in the listview, select the proper radio button
@@ -314,12 +335,19 @@ namespace NuSysApp
             {
                 // deselect the public select all box
                 publicSelectAll.IsChecked = false;
+                readOnlySelectAll.IsChecked = false;
             }
             // else if the sender was a public radio button
             else if (radioButton.Name == "publicRadio")
             {
                 // deselect the private select all box
                 privateSelectAll.IsChecked = false;
+                readOnlySelectAll.IsChecked = false;
+            }
+            else if (radioButton.Name == "readOnlyRadio")
+            {
+                privateSelectAll.IsChecked = false;
+                publicSelectAll.IsChecked = false;
             }
             else
             {

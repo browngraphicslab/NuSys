@@ -175,7 +175,9 @@ namespace NuSysApp
                 ds.Transform = Transform.LocalToScreenMatrix;
 
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
-                ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                {
+                    ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                }
 
                 ds.Transform = orgTransform;
             }

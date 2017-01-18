@@ -966,12 +966,11 @@ namespace NuSysApp
             if(_isDragging)
             {
                 //If it's the first time we are leaving the listview, select the item
-                if (firstTimeDraggingOut && !DisableSelectionByClick && pointer.DeviceType != PointerDeviceType.Pen)
+                if (firstTimeDraggingOut && !DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ShiftHeld))
                 {
                     SelectItem(_draggedItem);
                 }
-                RowDragged?.Invoke(_draggedItem,
-         rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+                RowDragged?.Invoke(_draggedItem, rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
             }        
             else
             {
@@ -999,7 +998,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (pointer.DeviceType == PointerDeviceType.Pen)
+            if (pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ShiftHeld)
             {
                 MultipleSelections = true;
                 if (_selectedElements.Contains(item))
