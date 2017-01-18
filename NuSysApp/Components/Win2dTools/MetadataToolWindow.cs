@@ -11,22 +11,51 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
     public class MetadataToolWindow : ToolWindow
     {
+
+        private const float SEARCHBAR_HEIGHT = 26f;
+
         private ListViewUIElementContainer<string> _metadataKeysList;
         private ListViewUIElementContainer<KeyValuePair<string, double>> _metadataValuesList;
         private RectangleUIElement _dragFilterItem;
-
+        private ScrollableTextboxUIElement _searchBar;
         public MetadataToolWindow(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, MetadataToolViewModel vm) : base(parent, resourceCreator, vm)
         {
             SetUpDragFilterItem();
             SetUpMetadataLists();
+            SetUpSearchBar();
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
             (vm.Controller as MetadataToolController).SelectionChanged += On_SelectionChanged;
             vm.ReloadPropertiesToDisplay();
+        }
+
+        private void SetUpSearchBar()
+        {
+            // initialize the search bar
+            _searchBar = new ScrollableTextboxUIElement(this, Canvas, false, true)
+            {
+                Height = SEARCHBAR_HEIGHT,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
+                TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
+                FontSize = 14,
+                BorderWidth = 1,
+                BorderColor = Constants.MED_BLUE,
+                Background = Colors.White,
+                FontFamily = UIDefaults.TextFont
+            };
+            AddChild(_searchBar);
+            _searchBar.TextChanged += SearchBarTextChanged;
+
+        }
+
+        private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
+        {
+            RefreshValueList();
         }
 
         /// <summary>
@@ -49,11 +78,17 @@ namespace NuSysApp
         {
             base.Update(parentLocalToScreenTransform);
             _metadataKeysList.Width = Width/2;
-            _metadataKeysList.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT;
+            _metadataKeysList.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT - SEARCHBAR_HEIGHT;
+            _metadataKeysList.Transform.LocalY = SEARCHBAR_HEIGHT + FILTER_CHOOSER_HEIGHT;
 
             _metadataValuesList.Width = Width / 2;
-            _metadataValuesList.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT;
+            _metadataValuesList.Height = Height - FILTER_CHOOSER_HEIGHT - BUTTON_BAR_HEIGHT - SEARCHBAR_HEIGHT;
             _metadataValuesList.Transform.LocalX = Width/2;
+            _metadataKeysList.Transform.LocalY = SEARCHBAR_HEIGHT + FILTER_CHOOSER_HEIGHT;
+
+            _searchBar.Width = Width;
+            _searchBar.Height = SEARCHBAR_HEIGHT;
+            _searchBar.Transform.LocalY = FILTER_CHOOSER_HEIGHT;
         }
 
         /// <summary>
@@ -135,7 +170,7 @@ namespace NuSysApp
                 var vm = (Vm as MetadataToolViewModel);
                 if (vm?.Selection?.Item1 != null && vm.Controller.ToolModel.Selected)
                 {
-                    var filteredList = FilterValuesList(""); //FilterValuesList(xSearchBox.Text);
+                    var filteredList = FilterValuesList(_searchBar.Text); //FilterValuesList(xSearchBox.Text);
                     if (!ScrambledEquals(_metadataValuesList.GetItems().Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
                     {
                         //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
@@ -244,7 +279,7 @@ namespace NuSysApp
             _metadataKeysList.RowDragCompleted += _metadataKeysList_RowDragCompleted; ;
 
             _metadataKeysList.AddItems(new List<string>() { "1", "2", "3", "4", "5", "6", "7", "9", "10", });
-            _metadataKeysList.Transform.LocalPosition = new Vector2(0, FILTER_CHOOSER_HEIGHT);
+            _metadataKeysList.Transform.LocalPosition = new Vector2(0, SEARCHBAR_HEIGHT + FILTER_CHOOSER_HEIGHT);
             _metadataKeysList.AddItems((Vm as MetadataToolViewModel)?.AllMetadataDictionary.Keys.ToList());
 
             AddChild(_metadataKeysList);
@@ -266,7 +301,7 @@ namespace NuSysApp
             _metadataValuesList.RowDragged += _metadataValuesList_RowDragged; ;
             _metadataValuesList.RowDragCompleted += _metadataValuesList_RowDragCompleted; ;
             _metadataValuesList.RowDoubleTapped += _metadataValuesList_RowDoubleTapped; ;
-            _metadataValuesList.Transform.LocalPosition = new Vector2(Width/2, FILTER_CHOOSER_HEIGHT);
+            _metadataValuesList.Transform.LocalPosition = new Vector2(Width/2, SEARCHBAR_HEIGHT + FILTER_CHOOSER_HEIGHT);
 
 
             AddChild(_metadataValuesList);
