@@ -57,12 +57,9 @@ namespace NuSysApp
         /// </summary>
         public event ResizeHeaderCompletedEventHandler HeaderResizeCompleted;
 
+        public delegate void HeaderOptionsActivatedEventHandler(ListViewHeaderItem<T> header);
+        public event HeaderOptionsActivatedEventHandler HeaderOptionsActivated;
 
-        public event HeaderAddColumnTappedEventHandler HeaderAddColumnTapped;
-        public delegate void HeaderAddColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
-
-        public event HeaderDeleteColumnTappedEventHandler HeaderDeleteColumnTapped;
-        public delegate void HeaderDeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
         #endregion events
 
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -77,33 +74,30 @@ namespace NuSysApp
         /// <param name="listview"></param>
         public void RefreshTitles(List<ListColumn<T>> listColumns, float width, float sumOfColRelWidths, ICanvasResourceCreatorWithDpi resourceCreator)
         {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+            var indexPointer = 0f;
+            foreach (var child in _children)
             {
-                var indexPointer = 0f;
-                foreach (var child in _children)
-                {
-                    var header = child as ListViewHeaderItem<T>;
-                    Debug.Assert(header != null);
-                    RemoveHeaderHandlers(header);
-                }
-                ClearChildren();
-                foreach (ListColumn<T> c in listColumns)
-                {
-                    var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
-                    headerItem.Column = c;
-                    headerItem.ButtonText = c.Title;
-                    headerItem.ButtonTextColor = Constants.ALMOST_BLACK;
-                    headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
-                    headerItem.Height = 40;
-                    headerItem.Background = Colors.White;
-                    headerItem.BorderWidth = 1;
-                    headerItem.BorderColor = Constants.LIGHT_BLUE;
-                    headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
-                    AddHeaderHandlers(headerItem);
-                    this.AddChild(headerItem);
-                    indexPointer += headerItem.Width;
-                }
-            });
+                var header = child as ListViewHeaderItem<T>;
+                Debug.Assert(header != null);
+                RemoveHeaderHandlers(header);
+            }
+            ClearChildren();
+            foreach (ListColumn<T> c in listColumns)
+            {
+                var headerItem = new ListViewHeaderItem<T>(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
+                headerItem.Column = c;
+                headerItem.ButtonText = c.Title;
+                headerItem.ButtonTextColor = Constants.ALMOST_BLACK;
+                headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
+                headerItem.Height = 40;
+                headerItem.Background = Colors.White;
+                headerItem.BorderWidth = 1;
+                headerItem.BorderColor = Constants.LIGHT_BLUE;
+                headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
+                AddHeaderHandlers(headerItem);
+                this.AddChild(headerItem);
+                indexPointer += headerItem.Width;
+            }
         }
 
         
@@ -223,9 +217,11 @@ namespace NuSysApp
         {
             header.Tapped -= Header_Tapped;
             header.Dragged -= Header_Dragged;
+            header.HeaderOptionsActivated -= Header_OptionsActivated;
             header.DragCompleted -= Header_DragCompleted;
             header.HeaderResizing -= HeaderItemResizing;
             header.HeaderResizeCompleted -= HeaderItemResizeCompleted;
+
         }
         
         /// <summary>
@@ -236,22 +232,19 @@ namespace NuSysApp
         {
             header.Tapped += Header_Tapped;
             header.Dragged += Header_Dragged;
-            header.AddColumnTapped += HeaderOnAddColumnTapped;
-            header.DeleteColumnTapped += HeaderOnDeleteColumnTapped;
+
+            header.HeaderOptionsActivated += Header_OptionsActivated;
+
             header.DragCompleted += Header_DragCompleted;
             header.HeaderResizing += HeaderItemResizing;
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;
         }
 
-        private void HeaderOnDeleteColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
+        private void Header_OptionsActivated(ListViewHeaderItem<T> header)
         {
-            HeaderDeleteColumnTapped?.Invoke(header, group, popup, flyoutItem, pointer);
+            HeaderOptionsActivated?.Invoke(header);
         }
 
-        private void HeaderOnAddColumnTapped(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer)
-        {
-            HeaderAddColumnTapped?.Invoke(header, group, popup, flyoutItem, pointer);
-        }
 
         /// <summary>
         /// This function is called when the headerItem edge has stopped being dragged. This function figures out which of the two headers for the 

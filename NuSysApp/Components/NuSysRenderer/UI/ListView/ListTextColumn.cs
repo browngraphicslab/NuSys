@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -51,6 +52,11 @@ namespace NuSysApp
             cell.Text = ColumnFunction(itemSource);
             cell.TextHorizontalAlignment = TextHorizontalAlignment;
             cell.TextVerticalAlignment = TextVerticalAlignment;
+        }
+
+        public override Comparer<T> GetDefaultComparer()
+        {
+            return  Comparer<T>.Create((a, b) => String.Compare(ColumnFunction(a), ColumnFunction(b), StringComparison.Ordinal));
         }
     }
 }
