@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
@@ -35,21 +36,29 @@ namespace NuSysApp
         public override void ExecuteRequestFunction(SendCollaboratorCoordinatesRequestArgs senderArgs, ServerReturnArgsBase returnArgs)
         {
             var collectionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(senderArgs.CollectionLibraryId) as CollectionLibraryElementController;
-            if (collectionLibraryElementController == null)
+            if (collectionLibraryElementController == null || senderArgs.CameraScaleX == null ||
+                senderArgs.XLocalScaleCenter == null || senderArgs.YLocalScaleCenter == null ||
+                senderArgs.YCoordinatePosition == null || senderArgs.XCoordinatePosition == null || senderArgs.CameraScaleY == null)
             {
                 //todo alert the user that the collection was invalid, probably because of a ACL's issue.
                 return;
             }
-            JoinCollection(senderArgs);
+            JoinCollection(senderArgs, collectionLibraryElementController);
         }
 
         /// <summary>
         /// private method to actually join a collection at a specific point
         /// </summary>
         /// <param name="senderArgs"></param>
-        private void JoinCollection(SendCollaboratorCoordinatesRequestArgs senderArgs)
+        private async Task JoinCollection(SendCollaboratorCoordinatesRequestArgs senderArgs, CollectionLibraryElementController collectionLibraryElementController)
         {
-            throw new NotImplementedException();
+            await SessionController.Instance.EnterCollection(collectionLibraryElementController.LibraryElementModel.LibraryElementId);
+            var collectionController = SessionController.Instance.ActiveFreeFormViewer.Controller as ElementCollectionController;
+
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition = new Vector2(senderArgs.XCoordinatePosition.Value, senderArgs.YCoordinatePosition.Value);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2((float)senderArgs.XLocalScaleCenter.Value, (float)senderArgs.YLocalScaleCenter.Value);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale = new Vector2((float)senderArgs.CameraScaleX.Value, (float)senderArgs.CameraScaleY.Value);
+            SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
         }
     }
 }

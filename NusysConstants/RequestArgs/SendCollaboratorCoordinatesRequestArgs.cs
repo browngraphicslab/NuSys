@@ -29,17 +29,33 @@ namespace NusysIntermediate
         /// <summary>
         /// REQUIRED: the X coordinate of the current collection transform
         /// </summary>
-        public float? XCoordinate { get; set; }
+        public float? XCoordinatePosition { get; set; }
 
         /// <summary>
         /// REQUIRED: the Y coordinate of the current collection transform
         /// </summary>
-        public float? YCoordinate { get; set; }
+        public float? YCoordinatePosition { get; set; }
 
         /// <summary>
-        /// REQUIRED: the camera scale of the current collection transform
+        /// REQUIRED: the X coordinate of the current collection scale center
         /// </summary>
-        public float? CameraScale { get; set; }
+        public float? XLocalScaleCenter { get; set; }
+
+
+        /// <summary>
+        /// REQUIRED: the Y coordinate of the current collection scale center
+        /// </summary>
+        public float? YLocalScaleCenter { get; set; }
+
+        /// <summary>
+        /// REQUIRED: the camera X component scale of the current collection transform
+        /// </summary>
+        public float? CameraScaleX { get; set; }
+
+        /// <summary>
+        /// REQUIRED: the camera Y component scale of the current collection transform
+        /// </summary>
+        public float? CameraScaleY { get; set; }
 
         /// <summary>
         /// parameterless constructor just sets the requset type in the base abstract class
@@ -53,7 +69,8 @@ namespace NusysIntermediate
         protected override bool CheckArgsAreComplete()
         {
             return !string.IsNullOrEmpty(RecipientUserId) && !string.IsNullOrEmpty(CollectionLibraryId) &&
-                   YCoordinate != null && XCoordinate != null && CameraScale != null;
+                   YCoordinatePosition != null && XCoordinatePosition != null 
+                   && CameraScaleX != null && CameraScaleY != null && YLocalScaleCenter != null && XLocalScaleCenter != null;
         }
     }
 }

@@ -71,6 +71,7 @@ namespace NuSysApp
             var collectionController = (ElementCollectionController)vm.Controller;
             collectionController.CameraPositionChanged += OnCameraPositionChanged;
             collectionController.CameraCenterChanged += OnCameraCenterChanged;
+            collectionController.CameraScaleChanged += CollectionControllerOnCameraScaleChanged;
 
             if (!interactionEnabled)
                 Transform.LocalPosition = new Vector2((float)vm.X, (float)vm.Y);
@@ -86,9 +87,10 @@ namespace NuSysApp
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
             vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
-            vm.Controller.ScaleChanged += ControllerOnScaleChanged;
             UpdateShapeStatus();
         }
+
+
 
         /// <summary>
         /// event handler called whenevr the element controller changes scale
@@ -143,6 +145,7 @@ namespace NuSysApp
                 var collectionController = (ElementCollectionController) ViewModel.Controller;
                 collectionController.CameraPositionChanged -= OnCameraPositionChanged;
                 collectionController.CameraCenterChanged -= OnCameraCenterChanged;
+                collectionController.CameraScaleChanged -= CollectionControllerOnCameraScaleChanged;
 
                 ViewModel.Elements.CollectionChanged -= OnElementsChanged;
                 ViewModel.Links.CollectionChanged -= OnElementsChanged;
@@ -150,7 +153,6 @@ namespace NuSysApp
                 ViewModel.Trails.CollectionChanged -= OnElementsChanged;
                 ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
                 ViewModel.Controller.LibraryElementController.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
-                ViewModel.Controller.ScaleChanged -= ControllerOnScaleChanged;
                 foreach (var item in _renderItems0.ToArray())
                     Remove(item);
 
@@ -551,6 +553,16 @@ namespace NuSysApp
         private void OnCameraPositionChanged(float f, float f1)
         {
             Camera.LocalPosition = new Vector2(f,f1);
+        }
+
+        /// <summary>
+        /// event fired when the camera scale changes
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="f"></param>
+        private void CollectionControllerOnCameraScaleChanged(object source, float f)
+        {
+            Camera.CameraScale = f;
         }
 
         private async void OnElementsChanged(object sender, NotifyCollectionChangedEventArgs e)

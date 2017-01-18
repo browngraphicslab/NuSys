@@ -36,9 +36,11 @@ namespace NuSysApp
             {
                 CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
                 RecipientUserId = senderArgs.OriginalSenderId,
-                XCoordinate = SessionController.Instance.ActiveFreeFormViewer.CameraCenter.X,
-                YCoordinate = SessionController.Instance.ActiveFreeFormViewer.CameraCenter.Y,
-                CameraScale = SessionController.Instance.ActiveFreeFormViewer.CameraScale
+                XCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.X,
+                YCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.Y,
+                YLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.Y,
+                XLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.X,
+                CameraScaleX = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.X
             });
             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }

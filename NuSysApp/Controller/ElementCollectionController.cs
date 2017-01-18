@@ -148,6 +148,12 @@ namespace NuSysApp
             ChildRemoved?.Invoke(this, child);
         }
 
+
+        public void SetCameraScale(float scale)
+        {
+            CameraScaleChanged?.Invoke(this,scale);
+        }
+
         public void SetCameraPosition(float x, float y)
         {
             CameraPositionChanged?.Invoke(x, y);
