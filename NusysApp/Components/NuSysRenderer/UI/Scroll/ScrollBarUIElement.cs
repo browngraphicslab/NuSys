@@ -92,18 +92,24 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// bool for if the bar should be visible or not.  
-        /// This is an internal bool that is different than IsVisible
+        /// bool for whether or not the bar range is one, if the bar range is one
+        /// then we hide the bar
         /// </summary>
-        private bool _isBarVisible;
+        private bool _barRangeNotOne = true;
 
         /// <summary>
-        /// 
+        /// What the user has set the scrollbar to be, default is true
         /// </summary>
+        private bool _isVisible = true;
+
         public bool IsVisible
         {
-            get { return base.IsVisible && _isBarVisible; }
-            set { base.IsVisible = value; }
+            get { return base.IsVisible && _barRangeNotOne && _isVisible; }
+            set
+            {
+                base.IsVisible = value;
+                _isVisible = value;
+            }
         }
 
         /// <summary>
@@ -114,14 +120,7 @@ namespace NuSysApp
             set
             {
                 _range = Math.Min(1, value);
-                if (_range == 1)
-                {
-                    IsVisible = false;
-                } else
-                {
-                    IsVisible = true;
-                }
-                _isBarVisible = _range != 1f; //Scrolling should only be active if range is not equal to 1
+                _barRangeNotOne = _range != 1f; //Scrolling should only be active if range is not equal to 1
 
             }
             get
