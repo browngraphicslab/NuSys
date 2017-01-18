@@ -15,9 +15,16 @@ namespace NuSysApp
     /// </summary>
     public class FlyoutPopupGroup : RectangleUIElement
     {
+        /// <summary>
+        /// The source of the flyoutpopup group. For example, if a header item triggers the creation of a flyoutpopupgroup, 
+        /// the headeritem is its source. 
+        /// 
+        /// </summary>
+        public BaseInteractiveUIElement Source { set; get; }
 
-        public FlyoutPopupGroup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, FlyoutPopup head = null) : base(parent, resourceCreator)
+        public FlyoutPopupGroup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement source) : base(parent, resourceCreator)
         {
+            Source = source;
             Background = Colors.Transparent;
         }
 
@@ -37,22 +44,21 @@ namespace NuSysApp
         /// <param name="popup"></param>
         /// <param name="flyoutItem"></param>
         /// <returns></returns>
-        public FlyoutPopup AddFlyoutPopup(FlyoutPopup popup, ButtonUIElement flyoutItem)
+        public FlyoutPopup AddFlyoutPopup(ButtonUIElement flyoutItem)
         {
             var newPopup = new FlyoutPopup(this, ResourceCreator);
 
             AddChild(newPopup);
-            newPopup.Transform.LocalPosition = new Vector2(popup.Width, popup.FlyoutItems.IndexOf(flyoutItem) * popup.FlyoutItemHeight);
-            newPopup.ParentPopup = popup;
+            newPopup.Transform.LocalPosition = new Vector2(flyoutItem.Transform.LocalX + flyoutItem.Width, flyoutItem.Transform.LocalY);
             return newPopup;
         }
 
         /// <summary>
         /// Calls dismiss on every Popup
         /// </summary>
-        private void DismissAllPopups()
+        public void DismissAllPopups()
         {
-            foreach (var child in _children)
+            foreach (var child in GetChildren())
             {
                 var popup = child as PopupUIElement;
                 popup?.DismissPopup();

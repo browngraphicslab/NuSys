@@ -100,9 +100,9 @@ namespace NuSysApp
             get { return _listColumns; }
         }
 
-        public List<ListColumn<T>> ListColumnOptions
+        public HashSet<ListColumn<T>> ColumnOptions
         {
-            get { return _listColumnOptions; }
+            get { return _columnOptions; }
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace NuSysApp
         /// </summary>
         private List<ListColumn<T>> _listColumns;
 
-        private List<ListColumn<T>> _listColumnOptions;
+        private HashSet<ListColumn<T>> _columnOptions;
 
         /// <summary>
         /// A hashset of the selected rows
@@ -248,7 +248,7 @@ namespace NuSysApp
             _itemsSource = new List<T>();
             _filteredItems = new List<T>();
             _listColumns = new List<ListColumn<T>>();
-            _listColumnOptions = new List<ListColumn<T>>();
+            _columnOptions = new HashSet<ListColumn<T>>();
 
             DragThreshold = 0.2f;
             DragAngleThreshold = 0.8f;
@@ -357,6 +357,8 @@ namespace NuSysApp
                 Debug.Write("You are trying to add a null list of column to the list view");
                 return;
             }
+            
+            _columnOptions.UnionWith(listColumns);
             _listColumns.AddRange(listColumns);
             foreach (var col in listColumns)
             {
@@ -367,7 +369,7 @@ namespace NuSysApp
 
         public void AddColumnOptions(IEnumerable<ListColumn<T>> listColumns)
         {
-            _listColumnOptions.AddRange(listColumns);
+            _columnOptions.UnionWith(listColumns);
         }
 
         /// <summary>
