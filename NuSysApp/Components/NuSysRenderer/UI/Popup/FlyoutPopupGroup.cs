@@ -79,7 +79,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            OnChildFocusLost -= FlyoutPopupGroup_OnChildFocusLost
+            OnChildFocusLost -= FlyoutPopupGroup_OnChildFocusLost;
             base.Dispose();
         }
     }
