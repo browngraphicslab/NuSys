@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,17 +33,24 @@ namespace NuSysApp
         /// <param name="returnArgs"></param>
         public override void ExecuteRequestFunction(GetCollaboratorCoordinatesRequestArgs senderArgs, ServerReturnArgsBase returnArgs)
         {
-            var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
-            {
-                CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
-                RecipientUserId = senderArgs.OriginalSenderId,
-                XCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.X,
-                YCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.Y,
-                YLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.Y,
-                XLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.X,
-                CameraScaleX = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.X
-            });
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            try { 
+                var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
+                {
+                    CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                    RecipientUserId = senderArgs.OriginalSenderId,
+                    XCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.X,
+                    YCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.Y,
+                    YLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.Y,
+                    XLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.X,
+                    CameraScaleX = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.X,
+                    CameraScaleY = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.Y,
+                });
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            }
+            catch (Exception e)
+            { 
+                Debug.WriteLine("Couldn't respond to join request");
+            }
         }
     }
 }

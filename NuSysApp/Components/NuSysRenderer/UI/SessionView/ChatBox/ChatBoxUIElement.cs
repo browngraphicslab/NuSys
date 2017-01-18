@@ -128,7 +128,7 @@ namespace NuSysApp
             {
                 var name = text.ToLower().Trim().Substring(5);
                 var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
-                if (id != null)
+                if (id != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id))
                 {
                     var request = new GetCollaboratorCoordinatesRequest(new GetCollaboratorCoordinatesRequestArgs()
                     {
