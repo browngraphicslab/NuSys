@@ -324,7 +324,7 @@ namespace NuSysApp
             TextVerticalAlignment = CanvasVerticalAlignment.Top;
 
             // Don't wrap text if it is a horizontally scrolling textbox
-            Wrapping = scrollVert ? CanvasWordWrapping.WholeWord : CanvasWordWrapping.NoWrap;
+            Wrapping = scrollVert ? CanvasWordWrapping.EmergencyBreak : CanvasWordWrapping.NoWrap;
             TrimmingSign = CanvasTrimmingSign.None;
 
             // the initial caret character index is to the left of the first character
