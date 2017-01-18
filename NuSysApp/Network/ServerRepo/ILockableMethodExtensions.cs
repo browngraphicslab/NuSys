@@ -20,8 +20,8 @@ namespace NuSysApp
         /// <returns></returns>
         public static bool HasLock(this ILockable lockable)
         {
-            Debug.Assert(lockable?.Id != null);
-            return SessionController.Instance.NuSysNetworkSession.LockController.GetUserIdOfLockHolder(lockable.Id) == WaitingRoomView.UserID;
+            Debug.Assert(lockable?.LockId != null);
+            return SessionController.Instance.NuSysNetworkSession.LockController.GetUserIdOfLockHolder(lockable.LockId) == WaitingRoomView.UserID;
         }
 
         /// <summary>
@@ -31,7 +31,6 @@ namespace NuSysApp
         /// <returns></returns>
         public static bool IsRegistered(this ILockable lockable)
         {
-            Debug.Assert(lockable?.Id != null);
             return SessionController.Instance.NuSysNetworkSession.LockController.IsRegistered(lockable);
         }
 
@@ -46,7 +45,7 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<NetworkUser> RegisterAsync(this ILockable lockable, bool requestLock = true)
         {
-            Debug.Assert(lockable?.Id != null);
+            Debug.Assert(lockable?.LockId != null);
             return await SessionController.Instance.NuSysNetworkSession.LockController.RegisterAsync(lockable, requestLock);
         }
 
@@ -61,7 +60,7 @@ namespace NuSysApp
         /// <returns></returns>
         public static bool Register(this ILockable lockable, bool requestLock = true)
         {
-            Debug.Assert(lockable?.Id != null);
+            Debug.Assert(lockable?.LockId != null);
             return SessionController.Instance.NuSysNetworkSession.LockController.Register(lockable, requestLock);
         }
 
@@ -73,7 +72,7 @@ namespace NuSysApp
         /// <returns></returns>
         public static bool UnRegister(this ILockable lockable)
         {
-            Debug.Assert(lockable?.Id != null);
+            Debug.Assert(lockable?.LockId != null);
             return SessionController.Instance.NuSysNetworkSession.LockController.UnRegister(lockable);
         }
 
@@ -83,7 +82,7 @@ namespace NuSysApp
         /// <param name="lockable"></param>
         public static void GetLock(this ILockable lockable)
         {
-            Debug.Assert(lockable?.Id != null);
+            Debug.Assert(lockable?.LockId != null);
             SessionController.Instance.NuSysNetworkSession.LockController.GetLock(lockable);
         }
 
@@ -105,7 +104,7 @@ namespace NuSysApp
         /// <returns></returns>
         public static NetworkUser GetLockOwner(this ILockable lockable)
         {
-            var id = SessionController.Instance.NuSysNetworkSession.LockController.GetUserIdOfLockHolder(lockable.Id);
+            var id = SessionController.Instance.NuSysNetworkSession.LockController.GetUserIdOfLockHolder(lockable.LockId);
             if (string.IsNullOrEmpty(id))
             {
                 return null;

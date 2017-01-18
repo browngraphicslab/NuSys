@@ -16,7 +16,7 @@ namespace NuSysApp
         /// The ID of this lockable element. 
         /// Can be any unique id as long as it's globally consistent with the identical locking element remotely.
         /// </summary>
-        string Id { get; }
+        string LockId { get; }
 
         /// <summary>
         /// Event handler fired whenever this lockable's lock holder is changed.

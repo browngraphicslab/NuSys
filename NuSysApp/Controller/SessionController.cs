@@ -118,6 +118,11 @@ namespace NuSysApp
 
         public string SpeechString { get; set; }
 
+        /// <summary>
+        /// bool representing if the shift key is held
+        /// </summary>
+        public bool ShiftHeld { get; set; }
+
         public FreeFormViewerViewModel ActiveFreeFormViewer
         {
             get { return _activeFreeFormViewer; }

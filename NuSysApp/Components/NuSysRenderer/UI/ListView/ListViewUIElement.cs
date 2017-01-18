@@ -964,7 +964,7 @@ namespace NuSysApp
             if(_isDragging)
             {
                 //If it's the first time we are leaving the listview, select the item
-                if (firstTimeDraggingOut && !DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ShiftHeld))
+                if (firstTimeDraggingOut && !DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld))
                 {
                     SelectItem(_draggedItem);
                 }
@@ -996,7 +996,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ShiftHeld)
+            if (pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld)
             {
                 MultipleSelections = true;
                 if (_selectedElements.Contains(item))

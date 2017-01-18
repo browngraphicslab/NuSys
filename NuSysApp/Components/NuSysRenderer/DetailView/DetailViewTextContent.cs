@@ -46,7 +46,7 @@ namespace NuSysApp
         /// <summary>
         ///This is for the IIlockable interface.  This will be the ID of the content Data model.
         /// </summary>
-        public string Id
+        public string LockId
         {
             get { return _controller?.ContentDataController?.ContentDataModel?.ContentId; }
         }
