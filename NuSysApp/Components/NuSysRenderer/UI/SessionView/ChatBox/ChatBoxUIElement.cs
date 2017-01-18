@@ -36,6 +36,8 @@ namespace NuSysApp
 
         private float _newMessageYOffset;
 
+        private TextboxUIElement _chatTitle;
+
         public ChatBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the min height and min width
@@ -78,6 +80,18 @@ namespace NuSysApp
             };
             _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, _readingRect.Height);
             AddChild(_readingRect);
+
+            _chatTitle = new TextboxUIElement(this, Canvas)
+            {
+                Background = Colors.Transparent,
+                BorderWidth =  0,
+                FontSize = 20,
+                FontFamily = UIDefaults.TitleFont,
+                Text = "Text",
+                Height = 50
+            };
+            _chatTitle.Width = Width;
+            AddChild(_chatTitle);
 
             _typingRect.KeyPressed += _typingRect_KeyPressed;
         }
@@ -166,7 +180,9 @@ namespace NuSysApp
             _typingRect.Height = _typingRectContainer.Height - 2* _typingRectContainer.BorderWidth;
             _readingRect.Height = Height - _typingRectContainer.Height - TopBarHeight;
             _readingRect.Width = Width;
-            
+
+            _chatTitle.Transform.LocalPosition = new Vector2(this.Transform.LocalX,
+                this.Transform.LocalY - _chatTitle.Height);
 
             _readingRect.Transform.LocalPosition = new Vector2(0, TopBarHeight);
             _typingRectContainer.Transform.LocalPosition = new Vector2(0, TopBarHeight + _readingRect.Height);
