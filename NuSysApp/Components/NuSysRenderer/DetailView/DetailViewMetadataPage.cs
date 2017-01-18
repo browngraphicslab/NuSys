@@ -106,16 +106,21 @@ namespace NuSysApp
             _suggestedTagElements = new List<DynamicTextboxUIElement>();
 
             _controller.MetadataChanged += _controller_MetadataChanged;
+            _controller.TitleChanged += _controller_TitleChanged;
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged += OnSearchTextChanged;
             _hideImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
             _controller.KeywordsChanged += _controller_KeywordsChanged;
         }
 
+        private void _controller_TitleChanged(object sender, string e)
+        {
+            filterlist();
+        }
+
         private void _controller_KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
-            _metadata_listview.ClearItems();
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
+            filterlist();
         }
 
         private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool hide_immutable)
@@ -173,11 +178,12 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-
             _controller.MetadataChanged -= _controller_MetadataChanged;
+            _controller.TitleChanged -= _controller_TitleChanged;
             _addKeyValueButton.Tapped -= AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged -= OnSearchTextChanged;
             _hideImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
+            _controller.KeywordsChanged -= _controller_KeywordsChanged;
 
             foreach (var element in _suggestedTagElements)
             {
@@ -225,8 +231,7 @@ namespace NuSysApp
 
         private void _controller_MetadataChanged(object source)
         {
-            _metadata_listview.ClearItems();
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
+            filterlist();
         }
 
         private void CreateListView()
