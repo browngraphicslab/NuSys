@@ -104,6 +104,7 @@ namespace NuSysApp
         {
             if (CheckForChatbotChat(text))
             {
+                _typingRect.ClearText();
                 return;
             }
 
@@ -143,6 +144,7 @@ namespace NuSysApp
                     SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                     return true;
                 }
+                AddChat(NetworkUser.ChatBot, "Request sent to join "+SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[id]+"'s current workspace.");
                 return false;
             }
             if (tokenized[0] == "invite")
@@ -164,6 +166,7 @@ namespace NuSysApp
                         AskBeforeJoining = true
                     });
                     SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    AddChat(NetworkUser.ChatBot, "Invitation sent for " + SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[id] + " to join your current workspace.");
                     return true;
                 }
                 return false;
@@ -215,7 +218,7 @@ namespace NuSysApp
             Debug.Assert(user != null);
 
             //linq statement to clear the callback of all existing functional chats
-            _children.OfType<FunctionalDynamicTextboxUIElement>().ForEach(i => i.ClearCallback());
+            _readingRect.Elements.OfType<FunctionalDynamicTextboxUIElement>().ForEach(i => i.ClearCallback());
 
             var headerGrid = GetHeaderGrid(user);
             var messageBox = GetMessageBox(chatMessage);

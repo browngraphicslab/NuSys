@@ -40,9 +40,11 @@ namespace NuSysApp
                 senderArgs.XLocalScaleCenter == null || senderArgs.YLocalScaleCenter == null ||
                 senderArgs.YCoordinatePosition == null || senderArgs.XCoordinatePosition == null || senderArgs.CameraScaleY == null)
             {
-                //todo alert the user that the collection was invalid, probably because of a ACL's issue.
+                SessionController.Instance.NuSessionView.Chatbox.AddChat(NetworkUser.ChatBot, 
+                    "Due to an access issue, you are unable to join " + SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[senderArgs.OriginalSenderId]+"'s current workspace.");
                 return;
             }
+
             if (senderArgs.AskBeforeJoining)
             {
                 AddChatbotQuery(senderArgs, collectionLibraryElementController);
@@ -65,6 +67,7 @@ namespace NuSysApp
                 {
                     JoinCollection(senderArgs, collectionLibraryElementController);
                 });
+            SessionController.Instance.NuSessionView.IncrementChatNotifications();
         }
 
         /// <summary>
