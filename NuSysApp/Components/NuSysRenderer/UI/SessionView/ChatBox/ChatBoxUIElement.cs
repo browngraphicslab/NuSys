@@ -12,6 +12,7 @@ using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
 using SharpDX.Direct2D1.Effects;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -124,15 +125,43 @@ namespace NuSysApp
         /// <returns></returns>
         private bool CheckForChatbotChat(string text)
         {
-            if (text.ToLower().Trim().StartsWith("join "))
+            var tokenized = text.Trim().Replace("  ", " ").ToLower().Split(' ');
+            if (!tokenized.Any())
             {
-                var name = text.ToLower().Trim().Substring(5);
+                return false;
+            }
+            if (tokenized[0] == "join")
+            {
+                var name = tokenized[1];
                 var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
                 if (id != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id) && id != WaitingRoomView.UserID)
                 {
                     var request = new GetCollaboratorCoordinatesRequest(new GetCollaboratorCoordinatesRequestArgs()
                     {
                         UserId = id
+                    });
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    return true;
+                }
+                return false;
+            }
+            if (tokenized[0] == "invite")
+            {
+                var name = tokenized[1];
+                var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
+                if (id != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id) && id != WaitingRoomView.UserID)
+                {
+                    var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
+                    {
+                        CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                        RecipientUserId = id,
+                        XCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.X,
+                        YCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.Y,
+                        YLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.Y,
+                        XLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.X,
+                        CameraScaleX = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.X,
+                        CameraScaleY = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.Y,
+                        AskBeforeJoining = true
                     });
                     SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                     return true;
@@ -184,9 +213,13 @@ namespace NuSysApp
         public void AddFunctionalChat(NetworkUser user, string chatMessage, PointerHandler callback)
         {
             Debug.Assert(user != null);
+
+            //linq statement to clear the callback of all existing functional chats
+            _children.OfType<FunctionalDynamicTextboxUIElement>().ForEach(i => i.ClearCallback());
+
             var headerGrid = GetHeaderGrid(user);
             var messageBox = GetMessageBox(chatMessage);
-            messageBox.Tapped += callback;
+            messageBox.Callback = callback;
             AddChat(headerGrid, messageBox);
         }
 
@@ -235,10 +268,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="chatMessage"></param>
         /// <returns></returns>
-        private DynamicTextboxUIElement GetMessageBox(string chatMessage)
+        private FunctionalDynamicTextboxUIElement GetMessageBox(string chatMessage)
         {
             // add a new message box to the caht window with the background the same as the user's color
-            var messageBox = new DynamicTextboxUIElement(this, Canvas)
+            var messageBox = new FunctionalDynamicTextboxUIElement(this, Canvas)
             {
                 Background = Colors.White,
                 Text = chatMessage ?? "",
@@ -299,6 +332,69 @@ namespace NuSysApp
         {
             _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, Math.Max(_readingRect.Height, _newMessageYOffset - _readingRect.HorizontalScrollBarHeight));
 
+        }
+
+        /// <summary>
+        /// private class extending DynamicTextboxUIElement used to add custom, self-removing click handlers
+        /// </summary>
+        private class FunctionalDynamicTextboxUIElement : DynamicTextboxUIElement
+        {
+            /// <summary>
+            /// the private version of Callback
+            /// </summary>
+            private PointerHandler _callback;
+
+            /// <summary>
+            /// Constructor is the same as the base class.
+            /// </summary>
+            /// <param name="parent"></param>
+            /// <param name="resourceCreator"></param>
+            public FunctionalDynamicTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator){}
+
+            /// <summary>
+            /// the callback function to call after being clicked
+            /// </summary>
+            public PointerHandler Callback {
+                get
+                {
+                    return _callback;
+                }
+                set
+                {
+                    _callback = value;
+                    Tapped -= OnTapped;
+                    Tapped += OnTapped;
+                }
+            }
+
+            /// <summary>
+            /// method to call to remoev the callback from this functional textbox if one exitst
+            /// </summary>
+            public void ClearCallback()
+            {
+                Tapped -= OnTapped;
+                _callback = null;
+            }
+
+            /// <summary>
+            /// event handler called whenever this class is tapped;
+            /// </summary>
+            /// <param name="item"></param>
+            /// <param name="pointer"></param>
+            private void OnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+            {
+                Tapped -= OnTapped;
+                _callback?.Invoke(item,pointer);
+            }
+
+            /// <summary>
+            /// override dispose method simply removes the tapped handler
+            /// </summary>
+            public override void Dispose()
+            {
+                ClearCallback();
+                base.Dispose();
+            }
         }
     }
 }

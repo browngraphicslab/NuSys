@@ -11,9 +11,20 @@ namespace NuSysApp
 {
     public class NetworkUser : BaseClient
     {
+        /// <summary>
+        /// static getter for a 'chatbot' network user
+        /// </summary>
         public static NetworkUser ChatBot
         {
             get { return new NetworkUser("chatbot") {DisplayName = "ChatBot"}; }
+        }
+
+        /// <summary>
+        /// static getter for the local network user
+        /// </summary>
+        public static NetworkUser Local
+        {
+            get { return SessionController.Instance.NuSysNetworkSession.NetworkMembers[WaitingRoomView.UserID]; }
         }
 
 
