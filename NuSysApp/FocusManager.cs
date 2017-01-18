@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
@@ -39,6 +40,8 @@ namespace NuSysApp
         // Fired when a key is pressed on the application anywhere
         public event KeyReleasedDelegate OnKeyReleased;
 
+
+
         public FocusManager(CanvasInteractionManager cim, CanvasRenderEngine cre)
         {
             Debug.Assert(cim != null);
@@ -59,13 +62,21 @@ namespace NuSysApp
         // Fired whenever a key is pressed on the application - Invokes OnKeyPressed
         private void FireKeyPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
-            OnKeyPressed?.Invoke(args);    
+            OnKeyPressed?.Invoke(args);
+            if (args.VirtualKey == VirtualKey.Shift)
+            {
+                SessionController.Instance.ShiftHeld = true;
+            }
         }
 
         // Fired whenever a key is released on the application - Invokes OnKeyReleased
         private void FireKeyReleased(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
             OnKeyReleased?.Invoke(args);
+            if (args.VirtualKey == VirtualKey.Shift)
+            {
+                SessionController.Instance.ShiftHeld = false;
+            }
         }
 
         /// <summary>

@@ -196,7 +196,7 @@ namespace NuSysApp
 
             _filterButton.Tapped += OnFilterButtonTapped;
             _bingButton.Tapped += _bingButton_Tapped;
-
+            BrushManager.BrushUpdated += BrushManager_BrushUpdated;
 
             _dragCanceled = false;
 
@@ -206,53 +206,93 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Event handler for when the filter is changed in the filter menu
+        /// </summary>
+        /// <param name="controllersRemoved"></param>
+        /// <param name="controllersAdded"></param>
+        private void BrushManager_BrushUpdated(IEnumerable<LibraryElementController> controllersRemoved, IEnumerable<LibraryElementController> controllersAdded)
+        {
+            LibraryListView.FilterBy(ApplyFilter);
+        }
+
+        /// <summary>
         /// Event handler for when the text of the library search bar changes
         /// </summary>
         /// <param name="item"></param>
         /// <param name="text"></param>
-        private async void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
+        private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-            //If text inputted is negligible, simply clear the filter
-            if (string.IsNullOrEmpty(text))
-            {
-                LibraryListView.ClearFilter();
-                return;
-            }
-            //Otherwise, compare the search string to the title, creator, type, and keywords of a libraryelementmodel
-            //If any of these contains the search string, return true
-            var search = text.ToLower();
-            Func<LibraryElementModel, bool> func = libraryElementModel =>
-            {
-                if (libraryElementModel.Title.ToLower().Contains(search))
-                {
-                    return true;
-                }
-                var creator =
-                    SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(libraryElementModel.Creator);
-                if (creator.ToLower().Contains(search))
-                {
-                    return true;
-                }
+            //Finally, filter by the search function
+            LibraryListView.FilterBy(ApplyFilter);
+        }
 
-                if (libraryElementModel.Type.ToString().ToLower().Contains(search))
+        /// <summary>
+        /// Applies both the brush filter and the search filter to the library search function
+        /// </summary>
+        /// <param name="lem"></param>
+        /// <returns></returns>
+        private bool ApplyFilter(LibraryElementModel lem)
+        {
+            return ApplySearchTextFilter(lem) && ApplyBrushFilter(lem);
+        }
+
+        /// <summary>
+        /// private method to apply the search text filter the library search function
+        /// </summary>
+        /// <param name="lem"></param>
+        /// <returns></returns>
+        private bool ApplySearchTextFilter(LibraryElementModel lem)
+        {
+            var search = _searchBar.Text;
+            if (string.IsNullOrEmpty(search))
+            {
+                return true;
+            }
+
+            if (lem.Title.ToLower().Contains(search))
+            {
+                return true;
+            }
+            var creator =
+                SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(lem.Creator);
+            if (creator.ToLower().Contains(search))
+            {
+                return true;
+            }
+
+            if (lem.Type.ToString().ToLower().Contains(search))
+            {
+                return true;
+            }
+            if (lem.Keywords != null)
+            {
+                foreach (var tag in lem.Keywords)
                 {
-                    return true;
-                }
-                if (libraryElementModel.Keywords != null)
-                {
-                    foreach (var tag in libraryElementModel.Keywords)
+                    if (tag.Text.ToLower().Contains(search))
                     {
-                        if (tag.Text.ToLower().Contains(search))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
+            }
 
-                return false;
-            };
-            //Finally, filter by the search function
-            LibraryListView.FilterBy(func);
+            return false;
+        }
+
+        /// <summary>
+        /// private method to apply the brush filter the library search function
+        /// </summary>
+        /// <param name="lem"></param>
+        /// <returns></returns>
+        private bool ApplyBrushFilter(LibraryElementModel lem)
+        {
+            if (!BrushManager.ControllersWithHighlight.Any())
+            {
+                return true;
+            } else
+            {
+                return BrushManager.ControllersWithHighlight.Any(cont => cont.LibraryElementModel == lem);
+            }
+
         }
 
         private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -454,6 +494,9 @@ namespace NuSysApp
             _addFileButton.Tapped -= AddFileButtonTapped;
 
             _searchBar.TextChanged -= SearchBarTextChanged;
+
+            _bingButton.Tapped -= _bingButton_Tapped;
+            BrushManager.BrushUpdated -= BrushManager_BrushUpdated;
             base.Dispose();
         }
 
@@ -511,7 +554,7 @@ namespace NuSysApp
 
             LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
-            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4, listColumn5, listColumn8, listColumn7,listColumn6  });
+            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> {listColumn5, listColumn8, listColumn7,listColumn6 });
 
             LibraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());

@@ -40,7 +40,7 @@ namespace NuSysApp
         /// <summary>
         /// The title of the library element
         /// </summary>
-        private ScrollableTextboxUIElement _titleBox;
+        private LockableTextBoxUIElement _titleBox;
 
         private ButtonUIElement _settingsButton;
 
@@ -283,7 +283,7 @@ namespace NuSysApp
         public override async Task Load()
         {
             //todo figure out why ScrollableTextbox breaks if you put these in the constructor. 
-            _titleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
+            _titleBox = new LockableTextBoxUIElement(this, Canvas, null, false, false)
             {
                 Height = 50,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
@@ -384,6 +384,8 @@ namespace NuSysApp
             _titleBox.TextChanged -= OnTitleTextChanged;
             _titleBox.Text = _currentController.Title;
             _titleBox.TextChanged += OnTitleTextChanged;
+
+            _titleBox.SetNewId(_currentController.LibraryElementModel.LibraryElementId);
 
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
             {

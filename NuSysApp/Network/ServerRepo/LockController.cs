@@ -145,10 +145,10 @@ namespace NuSysApp
         {
             Debug.Assert(lockable != null);
             Debug.Assert(!_registeredLockables.Contains(lockable));
-            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            Debug.Assert(!string.IsNullOrEmpty(lockable.LockId));
 
             _registeredLockables.Add(lockable);
-            _locksDictionary[lockable.Id].Listeners.Add(lockable.LockChanged);
+            _locksDictionary[lockable.LockId].Listeners.Add(lockable.LockChanged);
         }
 
         /// <summary>
@@ -159,7 +159,6 @@ namespace NuSysApp
         public bool IsRegistered(ILockable lockable)
         {
             Debug.Assert(lockable != null);
-            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
             return _registeredLockables.Contains(lockable);
         }
 
@@ -191,21 +190,21 @@ namespace NuSysApp
         public async Task<NetworkUser> RegisterAsync(ILockable lockable, bool requestLock = true)
         {
             Debug.Assert(lockable != null);
-            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            Debug.Assert(!string.IsNullOrEmpty(lockable.LockId));
 
             if (IsRegistered(lockable))
             {
-                return GetNetworkUser(_locksDictionary[lockable.Id].LockHolderId);
+                return GetNetworkUser(_locksDictionary[lockable.LockId].LockHolderId);
             }
 
 
-            if (!_locksDictionary.ContainsKey(lockable.Id))
+            if (!_locksDictionary.ContainsKey(lockable.LockId))
             {
-                _locksDictionary.Add(lockable.Id, new Lock());
-                await SendSubscribeRequestAsync(lockable.Id, requestLock);
+                _locksDictionary.Add(lockable.LockId, new Lock());
+                await SendSubscribeRequestAsync(lockable.LockId, requestLock);
             }
             PrivateRegister(lockable);
-            return GetNetworkUser(_locksDictionary[lockable.Id].LockHolderId);
+            return GetNetworkUser(_locksDictionary[lockable.LockId].LockHolderId);
         }
 
         /// <summary>
@@ -222,17 +221,17 @@ namespace NuSysApp
         public bool Register(ILockable lockable, bool requestLock = true)
         {
             Debug.Assert(lockable != null);
-            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            Debug.Assert(!string.IsNullOrEmpty(lockable.LockId));
 
             if (IsRegistered(lockable))
             {
                 return false;
             }
 
-            if (!_locksDictionary.ContainsKey(lockable.Id))
+            if (!_locksDictionary.ContainsKey(lockable.LockId))
             {
-                _locksDictionary.Add(lockable.Id, new Lock());
-                SendSubscribeRequestAsync(lockable.Id, requestLock);
+                _locksDictionary.Add(lockable.LockId, new Lock());
+                SendSubscribeRequestAsync(lockable.LockId, requestLock);
             }
             PrivateRegister(lockable);
             return true;
@@ -248,22 +247,22 @@ namespace NuSysApp
         public bool UnRegister(ILockable lockable)
         {
             Debug.Assert(lockable != null);
-            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            Debug.Assert(!string.IsNullOrEmpty(lockable.LockId));
 
             if (!IsRegistered(lockable))
             {
                 return false;
             }
 
-            Debug.Assert(_locksDictionary.ContainsKey(lockable.Id));
-            Debug.Assert(_locksDictionary[lockable.Id].Listeners.Contains(lockable.LockChanged));
+            Debug.Assert(_locksDictionary.ContainsKey(lockable.LockId));
+            Debug.Assert(_locksDictionary[lockable.LockId].Listeners.Contains(lockable.LockChanged));
 
             _registeredLockables.Remove(lockable);
-            _locksDictionary[lockable.Id].Listeners.Remove(lockable.LockChanged);
-            if (_locksDictionary[lockable.Id].ListenerCount == 0)
+            _locksDictionary[lockable.LockId].Listeners.Remove(lockable.LockChanged);
+            if (_locksDictionary[lockable.LockId].ListenerCount == 0)
             {
-                _locksDictionary.Remove(lockable.Id);
-                PrivateSenderUnSubscribeRequest(new List<string>() {lockable.Id});
+                _locksDictionary.Remove(lockable.LockId);
+                PrivateSenderUnSubscribeRequest(new List<string>() {lockable.LockId });
             }
             return true;
         }
@@ -276,13 +275,13 @@ namespace NuSysApp
         /// <param name="lockable"></param>
         public void GetLock(ILockable lockable)
         {
-            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            Debug.Assert(!string.IsNullOrEmpty(lockable.LockId));
             if (lockable.HasLock() ||
-                (_locksDictionary.ContainsKey(lockable.Id) && _locksDictionary[lockable.Id].LockHolderId != null))
+                (_locksDictionary.ContainsKey(lockable.LockId) && _locksDictionary[lockable.LockId].LockHolderId != null))
             {
                 return;
             }
-            PrivateGetLock(lockable.Id);
+            PrivateGetLock(lockable.LockId);
         }
 
         /// <summary>
@@ -294,12 +293,12 @@ namespace NuSysApp
         public bool ReturnLock(ILockable lockable)
         {
             Debug.Assert(lockable != null);
-            Debug.Assert(!string.IsNullOrEmpty(lockable.Id));
+            Debug.Assert(!string.IsNullOrEmpty(lockable.LockId));
             if (!lockable.HasLock())
             {
                 return false;
             }
-            PrivateReturnLock(lockable.Id);
+            PrivateReturnLock(lockable.LockId);
             return true;
         }
 

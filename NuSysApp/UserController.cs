@@ -31,6 +31,11 @@ namespace NuSysApp
         private void UserController_UserRemoved(string controllerId, string userId)
         {
             NetworkUser user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[userId];
+            if (!(SessionController.Instance.ElementModelIdToElementController.ContainsKey(controllerId)))
+            {
+                Debug.Fail("This should not happen");
+                return;
+            }
             ElementController controller = SessionController.Instance.ElementModelIdToElementController[controllerId];
 
             controller.DropUser(userId);

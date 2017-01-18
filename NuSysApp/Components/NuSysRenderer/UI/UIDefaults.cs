@@ -162,5 +162,16 @@ namespace NuSysApp
         public static Color ScrollHandleBackground = Colors.LightGray;
         public static Color ScrollBarBackground = Colors.DarkGray;
         public static BorderType BorderType = BorderType.Inside;
+
+
+        public static readonly float ScrollableTextboxBorderWidth = 7f;
+        public static readonly Color ScrollableTextboxOverlayColor = new Color() {A = 100, R = Background.R, G = Background.G , B = Background.B };
+
+        #region list
+
+        public static float ListHeaderHeight = 40;
+
+        #endregion list
+
     }
 }
