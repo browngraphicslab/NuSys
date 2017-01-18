@@ -164,9 +164,9 @@ namespace NuSysApp
         {
             // create the change Access menu
             _changeAccessPopup = new FlyoutPopup(this, Canvas);
-            var flyout = item as BaseInteractiveUIElement;
-            Debug.Assert(flyout != null);
-            _changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - _changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
+
+            _changeAccessPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - _changeAccessPopup.Width / 2,
+                _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
 
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
             {
