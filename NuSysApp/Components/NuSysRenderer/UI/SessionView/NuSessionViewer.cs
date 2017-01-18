@@ -700,8 +700,14 @@ namespace NuSysApp
         /// </summary>
         /// <param name="viewable"></param>
         /// <param name="tabToOpenTo"></param>
-        public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
+        public void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
+            Debug.Assert(viewable != null);
+            Debug.Assert(!viewable.LibraryElementModel.ViewInReadOnly());
+            if (viewable.LibraryElementModel.ViewInReadOnly()) //if we don't have access rights to this, return
+            {
+                return;
+            }
             _detailViewer.ShowLibraryElement(viewable.LibraryElementModel.LibraryElementId);
         }
 
