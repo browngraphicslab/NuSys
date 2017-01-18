@@ -317,6 +317,47 @@ namespace NuSysApp
             await elementRequest.AddReturnedElementToSessionAsync();
         }
 
+        /// <summary>
+        /// async static method to invite someone to your collection.
+        /// Pass is the UserID of the person you wish to invite.
+        /// This will take care of notifying the local user of the sent invite
+        /// </summary>
+        /// <param name="collaboratorId"></param>
+        /// <returns></returns>
+        public static async Task InviteCollaboratorToCollection(string collaboratorId)
+        {
+            var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
+            {
+                CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
+                RecipientUserId = collaboratorId,
+                XCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.X,
+                YCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.Y,
+                YLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.Y,
+                XLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.X,
+                CameraScaleX = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.X,
+                CameraScaleY = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.Y,
+                AskBeforeJoining = true
+            });
+            SessionController.Instance.NuSessionView.Chatbox.AddChat(NetworkUser.ChatBot, "Invitation sent for " + SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[collaboratorId] + " to join your current workspace.");
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+        }
+
+        /// <summary>
+        /// async static method to request to join someone's collection.
+        /// Pass is the UserID of the person you wish to join.
+        /// This will automatically notify the local user of the join request sent
+        /// </summary>
+        /// <param name="collaboratorId"></param>
+        /// <returns></returns>
+        public static async Task JoinCollaborator(string collaboratorId)
+        {
+            var request = new GetCollaboratorCoordinatesRequest(new GetCollaboratorCoordinatesRequestArgs()
+            {
+                UserId = collaboratorId
+            });
+            SessionController.Instance.NuSessionView.Chatbox.AddChat(NetworkUser.ChatBot, "Request sent to join " + SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[collaboratorId] + "'s current workspace.");
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+        }
 
         /// <summary>
         /// Adds an element of elementType to the current collection, at the point on the collection directly under screenpoint. If the element can exist without any
@@ -328,7 +369,7 @@ namespace NuSysApp
         /// <param name="elementType">The type of the elementy we are going to create. Must be able to exist without predefined content if library element controller is null</param>
         /// <param name="lec">The libraryy element controller of the element we are going to add</param>
         public static async void AddElementToCurrentCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null)
-        {
+            {
             // transform the passed in screenpoint to a point on the main collection
             var collectionPoint = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(screenPoint, SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
             var libraryElementId = lec?.LibraryElementModel.LibraryElementId; // variable to hold the library element id of the element we are adding

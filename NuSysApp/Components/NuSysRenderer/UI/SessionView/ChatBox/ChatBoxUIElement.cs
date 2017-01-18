@@ -137,14 +137,9 @@ namespace NuSysApp
                 var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
                 if (id != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id) && id != WaitingRoomView.UserID)
                 {
-                    var request = new GetCollaboratorCoordinatesRequest(new GetCollaboratorCoordinatesRequestArgs()
-                    {
-                        UserId = id
-                    });
-                    SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    StaticServerCalls.JoinCollaborator(id);
                     return true;
                 }
-                AddChat(NetworkUser.ChatBot, "Request sent to join "+SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[id]+"'s current workspace.");
                 return false;
             }
             if (tokenized[0] == "invite")
@@ -153,20 +148,7 @@ namespace NuSysApp
                 var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
                 if (id != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(id) && id != WaitingRoomView.UserID)
                 {
-                    var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
-                    {
-                        CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
-                        RecipientUserId = id,
-                        XCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.X,
-                        YCoordinatePosition = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition.Y,
-                        YLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.Y,
-                        XLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.X,
-                        CameraScaleX = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.X,
-                        CameraScaleY = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.Y,
-                        AskBeforeJoining = true
-                    });
-                    SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                    AddChat(NetworkUser.ChatBot, "Invitation sent for " + SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[id] + " to join your current workspace.");
+                    StaticServerCalls.InviteCollaboratorToCollection(id);
                     return true;
                 }
                 return false;
