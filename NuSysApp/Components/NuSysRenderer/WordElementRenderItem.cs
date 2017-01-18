@@ -35,7 +35,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            _wordUIcon = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
+            _wordUIcon = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/word.png"));
             await base.Load();
         }
 
