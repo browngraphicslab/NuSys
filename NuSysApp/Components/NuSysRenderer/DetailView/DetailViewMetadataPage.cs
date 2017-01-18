@@ -11,6 +11,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Automation.Peers;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -306,7 +307,8 @@ namespace NuSysApp
             vertical_spacing += 20 + (int)_metadata_listview.Height;
 
             _hideImmutableCheckbox.Height = immutable_checkbox_height;
-            _hideImmutableCheckbox.Width = 150;
+            _hideImmutableCheckbox.Width = 300;
+            _hideImmutableCheckbox.LabelTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
             _hideImmutableCheckbox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
 
             // layout the suggested tags box
