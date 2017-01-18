@@ -31,10 +31,12 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Foreground="{StaticResource color3}"  Text="Select All" VerticalAlignment="Center" Margin="0,0,20,0"></TextBlock>
             <CheckBox Grid.Column="1" Style="{StaticResource NuSysCheckBox}"  Foreground="{StaticResource color3}"  x:Name="publicSelectAll" Margin="5" Content="Public" Checked="SelectAll_OnChecked"/>
-            <CheckBox Grid.Column="2" Style="{StaticResource NuSysCheckBox}"  x:Name="privateSelectAll" Margin="5" Content="Private" Checked="SelectAll_OnChecked"/>
+            <CheckBox Grid.Column="2" Style="{StaticResource NuSysCheckBox}"  x:Name="readOnlySelectAll" Margin="5" Content="ReadOnly" Checked="SelectAll_OnChecked"/>
+            <CheckBox Grid.Column="3" Style="{StaticResource NuSysCheckBox}"  x:Name="privateSelectAll" Margin="5" Content="Private" Checked="SelectAll_OnChecked"/>
         </Grid>
         <!-- ListView Containing file names and acls options -->
             <ListView x:Name="ListView" Grid.Row="1" ItemsSource="{Binding Files}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollMode="Enabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -60,10 +62,12 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{Binding DisplayName}" Foreground="{StaticResource color3}" VerticalAlignment="Center"></TextBlock>
                             <RadioButton Grid.Column="1" Style="{StaticResource NuSysRadioButton}"  x:Name="publicRadio" Margin="5" Content="Public" Checked="Access_OnChecked" IsChecked="True"/>
-                            <RadioButton Grid.Column="2" Style="{StaticResource NuSysRadioButton}"  x:Name="privateRadio" Margin="5" Content="Private" Checked="Access_OnChecked"/>
+                            <RadioButton Grid.Column="2" Style="{StaticResource NuSysRadioButton}"  x:Name="readOnlyRadio" Margin="5" Content="ReadOnly" Checked="Access_OnChecked"/>
+                            <RadioButton Grid.Column="3" Style="{StaticResource NuSysRadioButton}"  x:Name="privateRadio" Margin="5" Content="Private" Checked="Access_OnChecked"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
