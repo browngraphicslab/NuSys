@@ -164,9 +164,9 @@ namespace NuSysApp
         {
             // create the change Access menu
             _changeAccessPopup = new FlyoutPopup(this, Canvas);
-            var flyout = item as BaseInteractiveUIElement;
-            Debug.Assert(flyout != null);
-            _changeAccessPopup.Transform.LocalPosition = new Vector2(flyout.Transform.LocalPosition.X - _changeAccessPopup.Width, flyout.Transform.LocalPosition.Y);
+
+            _changeAccessPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - _changeAccessPopup.Width / 2,
+                _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
 
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
             {
@@ -379,8 +379,14 @@ namespace NuSysApp
 
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+
+            // set the title of the title box but don't send a request to the server
+            _titleBox.TextChanged -= OnTitleTextChanged;
             _titleBox.Text = _currentController.Title;
+            _titleBox.TextChanged += OnTitleTextChanged;
+
             _titleBox.SetNewId(_currentController.LibraryElementModel.LibraryElementId);
+
             if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
             {
                 _titleBox.IsEditable = _currentController.LibraryElementModel.Creator == WaitingRoomView.UserID;

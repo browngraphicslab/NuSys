@@ -124,7 +124,7 @@ namespace NuSysApp
                 AddChild(button);
             }
 
-            _removeFilterButton = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle,
+            _removeFilterButton = new RectangleButtonUIElement(this, ResourceCreator, UIDefaults.AccentStyle,
                 "Remove Filter")
             {
                 IsVisible = false

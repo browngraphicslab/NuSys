@@ -36,6 +36,11 @@ namespace NuSysApp
 
         private float _newMessageYOffset;
 
+        /// <summary>
+        /// True if we want to scroll to the bottom of the page
+        /// </summary>
+        private bool _scrollToBottom;
+
         public ChatBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the min height and min width
@@ -44,11 +49,12 @@ namespace NuSysApp
             Width = 300;
             Height = 300;
             KeepAspectRatio = false;
-            BorderWidth = 3;
+            BorderWidth = 1;
             BorderColor = Constants.LIGHT_BLUE;
             BorderType  = BorderType.Outside;
             
             ShowClosable();
+            IsSnappable = true;
 
             _typingRectContainer = new RectangleUIElement(this, ResourceCreator)
             {
@@ -185,6 +191,14 @@ namespace NuSysApp
             UpdateScrollAreaSize();
 
             base.Update(parentLocalToScreenTransform);
+
+
+            if (_scrollToBottom)
+            {
+                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
+                _scrollToBottom = false;
+            }
+
         }
 
         /// <summary>
@@ -199,13 +213,22 @@ namespace NuSysApp
         {
             Debug.Assert(user != null);
 
+            int numberToLeaveFunctional = 3;
+
             //linq statement to clear the callback of all existing functional chats
-            _readingRect.Elements.OfType<FunctionalDynamicTextboxUIElement>().ForEach(i => i.ClearCallback());
+            _readingRect.Elements.OfType<FunctionalDynamicTextboxUIElement>().Reverse().Skip(numberToLeaveFunctional-1).ForEach(i => i.ClearCallback());
 
             var headerGrid = GetHeaderGrid(user);
             var messageBox = GetMessageBox(chatMessage);
             messageBox.Callback = callback;
             AddChat(headerGrid, messageBox);
+
+            // if the chat box is currently hidden or the chat was sent by the current user
+            // then scroll the chat down
+            if (!IsVisible || user.UserID == WaitingRoomView.UserID)
+            {
+                _scrollToBottom = true;
+            }
         }
 
 
@@ -220,6 +243,14 @@ namespace NuSysApp
             var headerGrid = GetHeaderGrid(user);
             var messageBox = GetMessageBox(chatMessage);
             AddChat(headerGrid, messageBox);
+
+            // if the chat box is currently hidden or the chat was sent by the current user
+            // then scroll the chat down
+            if (!IsVisible || user.UserID == WaitingRoomView.UserID)
+            {
+                _scrollToBottom = true;
+            }
+
         }
 
         /// <summary>
@@ -239,11 +270,8 @@ namespace NuSysApp
             // add the element to the scroling canvas
             _readingRect.AddElement(messageBox, new Vector2(0, _newMessageYOffset));
 
-            // increase the y offset by the new messages height
+            // increment the message y offset by the height of the messageBox box
             _newMessageYOffset += messageBox.Height;
-
-            // set the scroll area size so that it can contain the new message
-            UpdateScrollAreaSize();
         }
 
         /// <summary>

@@ -53,7 +53,7 @@ namespace NuSysApp
 
             _vm.Controller.LibraryElementController.Deleted -= LibraryElementControllerOnDeleted;
 
-            _path.Dispose();
+            _path?.Dispose();
             base.Dispose();
         }
 

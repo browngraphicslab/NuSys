@@ -37,6 +37,7 @@ namespace NuSysApp
                 _textFormat = textFormat;
             }
 
+
         }
 
         /// <summary>
@@ -46,6 +47,7 @@ namespace NuSysApp
         public void UpdateCanvasTextFormat(CanvasTextFormat newCanvasTextFormat)
         {
             _textFormat = newCanvasTextFormat;
+
         }
 
         public CanvasTextLayout GetParsedText(string html, double canvasWidth, double canvasHeight)

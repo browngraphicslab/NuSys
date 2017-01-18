@@ -11,6 +11,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Automation.Peers;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using Microsoft.Graphics.Canvas.Text;
 
 namespace NuSysApp
 {
@@ -27,7 +28,7 @@ namespace NuSysApp
 
         private ListViewUIElementContainer<MetadataEntry> _metadata_listview;
 
-        private CheckBoxUIElement _showImmutableCheckbox;
+        private CheckBoxUIElement _hideImmutableCheckbox;
 
         private LibraryElementController _controller;
 
@@ -96,28 +97,33 @@ namespace NuSysApp
             // create the list view to display the metadata
             CreateListView();
 
-            _showImmutableCheckbox = new CheckBoxUIElement(this, ResourceCreator, false)
+            _hideImmutableCheckbox = new CheckBoxUIElement(this, ResourceCreator, false)
             {
-                LabelText = "Show Immutable"
+                LabelText = "Hide Immutable"
             };
-            AddChild(_showImmutableCheckbox);
+            AddChild(_hideImmutableCheckbox);
 
             _suggestedTagElements = new List<DynamicTextboxUIElement>();
 
             _controller.MetadataChanged += _controller_MetadataChanged;
+            _controller.TitleChanged += _controller_TitleChanged;
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged += OnSearchTextChanged;
-            _showImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
+            _hideImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
             _controller.KeywordsChanged += _controller_KeywordsChanged;
+        }
+
+        private void _controller_TitleChanged(object sender, string e)
+        {
+            filterlist();
         }
 
         private void _controller_KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
-            _metadata_listview.ClearItems();
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
+            filterlist();
         }
 
-        private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool show_immutable)
+        private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool hide_immutable)
         {
             filterlist();
         }
@@ -129,7 +135,7 @@ namespace NuSysApp
         {
             _metadata_listview.ClearItems();
             var filtered_metadata = filter_by_mutability(new List<MetadataEntry>(_controller.GetMetadata().Values),
-                _showImmutableCheckbox.IsSelected);
+                _hideImmutableCheckbox.IsSelected);
             filtered_metadata = filter_by_search_text(filtered_metadata, _searchTextBox.Text);
             _metadata_listview.AddItems(filtered_metadata);
         }
@@ -139,13 +145,13 @@ namespace NuSysApp
         /// show_immutable is true, all otherwise
         /// </summary>
         /// <param name="metadataToBeFiltered"></param>
-        /// <param name="show_immutable"></param>
+        /// <param name="hide_immutable"></param>
         /// <returns></returns>
-        private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool show_immutable)
+        private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool hide_immutable)
         {
-            if (show_immutable)
+            if (hide_immutable)
             {
-                return new List<MetadataEntry>(metadataToBeFiltered.Where(entry => entry.Mutability == MetadataMutability.IMMUTABLE));
+                return new List<MetadataEntry>(metadataToBeFiltered.Where(entry => entry.Mutability == MetadataMutability.MUTABLE));
             }
             return metadataToBeFiltered;
         }
@@ -172,11 +178,12 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-
             _controller.MetadataChanged -= _controller_MetadataChanged;
+            _controller.TitleChanged -= _controller_TitleChanged;
             _addKeyValueButton.Tapped -= AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged -= OnSearchTextChanged;
-            _showImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
+            _hideImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
+            _controller.KeywordsChanged -= _controller_KeywordsChanged;
 
             foreach (var element in _suggestedTagElements)
             {
@@ -224,8 +231,7 @@ namespace NuSysApp
 
         private void _controller_MetadataChanged(object source)
         {
-            _metadata_listview.ClearItems();
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
+            filterlist();
         }
 
         private void CreateListView()
@@ -305,12 +311,13 @@ namespace NuSysApp
             // layout the show immutable checkbox
             vertical_spacing += 20 + (int)_metadata_listview.Height;
 
-            _showImmutableCheckbox.Height = immutable_checkbox_height;
-            _showImmutableCheckbox.Width = 150;
-            _showImmutableCheckbox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            _hideImmutableCheckbox.Height = immutable_checkbox_height;
+            _hideImmutableCheckbox.Width = 300;
+            _hideImmutableCheckbox.LabelTextHorizontalAlignment = CanvasHorizontalAlignment.Left;
+            _hideImmutableCheckbox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
 
             // layout the suggested tags box
-            vertical_spacing += 20 + (int)_showImmutableCheckbox.Height;
+            vertical_spacing += 20 + (int)_hideImmutableCheckbox.Height;
 
             BuildSuggestedTags(suggested_tags_box_height, Width - 2*horizontal_spacing,
                 new Vector2(horizontal_spacing, vertical_spacing));
