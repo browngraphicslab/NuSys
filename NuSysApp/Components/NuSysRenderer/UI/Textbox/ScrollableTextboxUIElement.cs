@@ -41,6 +41,12 @@ namespace NuSysApp
                 if (_loaded)
                 {
                     EditableTextboxUIElement_TextChanged(this, value);
+
+                    // if text is being programatically changed bound the caret character index
+                    if (!HasFocus)
+                    {
+                        CaretCharacterIndex = Math.Min(-1, Math.Max(CaretCharacterIndex, Text.Length - 1));
+                    }
                 }
                 OnTextChanged(Text);
             }
@@ -830,6 +836,7 @@ namespace NuSysApp
         private void EditableTextboxUIElement_OnFocusLost(BaseRenderItem item)
         {
             _caret.IsVisible = false;
+            ClearSelection(false);
         }
 
         /// <summary>
