@@ -18,6 +18,7 @@ using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI;
 using WinRTXamlToolkit.IO.Extensions;
 using PathGeometry = SharpDX.Direct2D1.PathGeometry;
 using Point = Windows.Foundation.Point;
@@ -27,7 +28,7 @@ using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
-    /// <summary>
+    /// <summary> 
     /// This is the view for the entire workspace. It instantiates the WorkspaceViewModel. 
     /// </summary>
     public sealed partial class FreeFormViewer
@@ -92,6 +93,7 @@ namespace NuSysApp
         public FocusManager FocusManager { get; private set; }
 
         private LayoutWindowUIElement _layoutWindow;
+        private EditTagsUIElement _editTagsElement;
         private bool _customLayoutDrawing = false;
 
         public event EventHandler<bool> CanvasPanned;
@@ -386,6 +388,7 @@ namespace NuSysApp
                 trailItem.ViewModel.DeletePresentationLink();
             }
             RenderEngine.BtnDelete.IsVisible = false;
+            RenderEngine.BtnExportTrail.IsVisible = false;
         }
 
         private void OnRenderItemPressed(BaseRenderItem item, CanvasPointer point)
@@ -404,7 +407,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
-            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -40);
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -50);
             RenderEngine.BtnDelete.IsVisible = true;
 
             //HTML export
@@ -416,9 +419,11 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element, CanvasPointer pointer)
         {
-            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0,-40);
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(40,0);
             RenderEngine.BtnDelete.IsVisible = true;
             _selectedLink = element;
+
+            RenderEngine.BtnExportTrail.IsVisible = false;
         }
 
         private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,
@@ -811,6 +816,16 @@ namespace NuSysApp
                 _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
                 RenderEngine.Root.AddChild(_layoutWindow);
             }
+            if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
+            {
+                // edit tags
+                _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
+                    _editTagsElement.UpdatePositionWithSize;
+                Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
+                RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
+                _editTagsElement.Load();
+            }
         }
 
         /// <summary>
@@ -1183,6 +1198,12 @@ namespace NuSysApp
                 RenderEngine.Root.RemoveChild(_layoutWindow);
                 _layoutWindow = null;
             }
+
+            if (_editTagsElement != null)
+            {
+                RenderEngine.ElementSelectionRect.RemoveChild(_editTagsElement);
+                _editTagsElement = null;
+            }
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -1198,21 +1219,42 @@ namespace NuSysApp
             if (item == CurrentCollection || item == InitialCollection)
                 return;
 
-            if (item is ElementRenderItem)
+
+            //if this item needs to be readonly
+            if ((item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.ViewInReadOnly() == true ||
+                (item as LinkRenderItem)?.ViewModel?.Controller?.LibraryElementController?.LibraryElementModel?.ViewInReadOnly() == true)
             {
-                var libraryElementModelId = (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
-                if (libraryElementModelId != null)
+                if (item is ElementRenderItem) //if it is an element render item, not a link
                 {
-                    var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+                    Debug.Assert((item as ElementRenderItem)?.ViewModel?.Model != null);
+                    SessionController.Instance.NuSessionView.ShowReadOnlyWindows(
+                        (item as ElementRenderItem)?.ViewModel?.Model);
+                }
+            }
+            else //if we are in regular mode
+            {
+                if (item is ElementRenderItem)
+                {
+                    var libraryElementModelId =
+                        (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
+                    if (libraryElementModelId != null)
+                    {
+                        var controller =
+                            SessionController.Instance.ContentController.GetLibraryElementController(
+                                libraryElementModelId);
+                        SessionController.Instance.NuSessionView.ShowDetailView(controller);
+                    }
+                }
+                else if (item is LinkRenderItem)
+                {
+                    var libraryElementModelId =
+                        (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel
+                            .LibraryElementId;
+                    var controller =
+                        SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
                     SessionController.Instance.NuSessionView.ShowDetailView(controller);
                 }
-            } else if (item is LinkRenderItem)
-            {
-                var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
-                var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.NuSessionView.ShowDetailView(controller);
             }
-
         }
 
         private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
@@ -1330,9 +1372,13 @@ namespace NuSysApp
             var ncx = center.X;
             var ncy = center.Y;
 
-            target.LocalPosition = new Vector2(ntx, nty);
-            target.LocalScaleCenter = new Vector2(ncx, ncy);
-            target.LocalScale = new Vector2(nsx, nsy);
+            // put a bound on how much we zoom out
+            if (nsx > 0.01 && nsy > 0.01)
+            {
+                target.LocalPosition = new Vector2(ntx, nty);
+                target.LocalScaleCenter = new Vector2(ncx, ncy);
+                target.LocalScale = new Vector2(nsx, nsy);
+            }
         }
 
 

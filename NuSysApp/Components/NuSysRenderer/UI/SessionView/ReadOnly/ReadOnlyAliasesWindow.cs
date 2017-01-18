@@ -36,9 +36,10 @@ namespace NuSysApp
         {
             _label = new TextboxUIElement(this, ResourceCreator);
             _label.Text = "aliases";
+            _label.FontFamily = UIDefaults.TitleFont;
             _label.Width = Width;
             _label.Height = 38;
-            _label.FontSize = 32;
+            _label.FontSize = 20;
             _label.TextColor = Constants.DARK_BLUE;
             _label.Background = Constants.LIGHT_BLUE;
             _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
@@ -47,8 +48,13 @@ namespace NuSysApp
             AddChild(_label);
         }
 
-        public void UpdateList(LibraryElementController controller)
+        public async void UpdateList(LibraryElementController controller)
         {
+            if (controller == null)
+            {
+                return;
+            }
+
             if (_controller != null)
             {
                 _controller.AliasAdded += OnAliasAdded;
@@ -56,7 +62,12 @@ namespace NuSysApp
             }
             
             _controller = controller;
-            CreateAliasList();
+            var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
+            _aliasList = req.GetReturnedElementModels();
+            _listView?.ClearFilter();
+            _listView?.ClearItems();
+            _listView?.AddItems(_aliasList);
 
             // add events for the controller so that aliases are automatically added and removed from the list
             _controller.AliasAdded += OnAliasAdded;
@@ -122,14 +133,8 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            if (_controller == null)
-            {
-                return;
-            }
-            var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
-            _aliasList = req.GetReturnedElementModels();
             CreateAliasList();
+            UpdateList(_controller);
             base.Load();
         }
 
@@ -138,8 +143,8 @@ namespace NuSysApp
             _listView = new ListViewUIElementContainer<ElementModel>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Constants.DARK_BLUE
+                BorderWidth = 1,
+                BorderColor = Constants.LIGHT_BLUE
             };
             _listView.AddItems(_aliasList);
 
@@ -151,7 +156,7 @@ namespace NuSysApp
                 string CollectionId = el.ParentCollectionId;
                 var collectionController =
                     SessionController.Instance.ContentController.GetLibraryElementController(CollectionId);
-                return collectionController.Title;
+                return collectionController?.Title;
             };
 
             ListTextColumn<ElementModel> creator = new ListTextColumn<ElementModel>();
@@ -166,7 +171,7 @@ namespace NuSysApp
             {
                 var collectionController =
                     SessionController.Instance.ContentController.GetLibraryElementController(el.ParentCollectionId);
-                return collectionController.LibraryElementModel.LastEditedTimestamp;
+                return collectionController?.LibraryElementModel.LastEditedTimestamp;
             };
 
             List<ListColumn<ElementModel>> cols = new List<ListColumn<ElementModel>>();
@@ -176,6 +181,7 @@ namespace NuSysApp
             _listView.AddColumns(cols);
 
             AddChild(_listView);
+            _listView.Load();
 
             _listView.RowDoubleTapped += ListView_OnRowDoubleTapped;
 
@@ -188,8 +194,8 @@ namespace NuSysApp
                 return;
             }
 
-            var horizontalMargin = 10;
-            var verticalMargin = 5;
+            var horizontalMargin = 0;
+            var verticalMargin = 0;
 
             _label.Width = Width;
             _label.Transform.LocalPosition = new Vector2(0, verticalMargin);

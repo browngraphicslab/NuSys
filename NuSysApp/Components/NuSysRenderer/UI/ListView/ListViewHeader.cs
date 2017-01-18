@@ -66,6 +66,8 @@ namespace NuSysApp
         public delegate void HeaderDeleteColumnTappedEventHandler(ListViewHeaderItem<T> header, FlyoutPopupGroup group, FlyoutPopup popup, ButtonUIElement flyoutItem, CanvasPointer pointer);
         #endregion events
 
+
+        private float _currentDragX;
         public ListViewHeader(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _headerBeingDragged = false;
@@ -95,8 +97,8 @@ namespace NuSysApp
                     headerItem.Width = c.RelativeWidth / sumOfColRelWidths * width;
                     headerItem.Height = 40;
                     headerItem.Background = Colors.White;
-                    headerItem.BorderWidth = 3;
-                    headerItem.Bordercolor = Constants.LIGHT_BLUE;
+                    headerItem.BorderWidth = 1;
+                    headerItem.BorderColor = Constants.LIGHT_BLUE;
                     headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
                     AddHeaderHandlers(headerItem);
                     this.AddChild(headerItem);
@@ -198,17 +200,17 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void Header_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            //_headerBeingDragged = true;
             var header = item as ButtonUIElement;
-
-            if (header != null)
+            if (header == null)
             {
-                var index = _children.IndexOf(header);
-                Debug.Assert(index >= 0);
-                var totalWidth = _children.Sum(child => (child as ListViewHeaderItem<T>).Width);
-
-                HeaderDragged?.Invoke(header, index, pointer);
+                Debug.Fail("Header should not be null");
+                return;
             }
+            var index = _children.IndexOf(header);
+            Debug.Assert(index >= 0);
+            var totalWidth = _children.Sum(child => (child as ListViewHeaderItem<T>).Width);
+
+            HeaderDragged?.Invoke(header, index, pointer);
         }
 
         /// <summary>

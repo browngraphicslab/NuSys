@@ -23,6 +23,7 @@ using MyToolkit.Mathematics;
 using MyToolkit.Utilities;
 using NusysIntermediate;
 using Wintellect.PowerCollections;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -217,17 +218,26 @@ namespace NuSysApp
             _children.Add(child);
         }
 
+        /// <summary>
+        /// Removes all instances of the passed in link from the current collection
+        /// </summary>
+        /// <param name="libraryElementId"></param>
         public void RemoveLink(string libraryElementId)
         {
+            // get all the links we want to remove
             var soughtLinks = ViewModel.Links.Where(l => l.Controller.LibraryElementController.LibraryElementModel.LibraryElementId == libraryElementId);
+
+            // if no instances of the link exist just return
             if (!soughtLinks.Any())
             {
                 return;
             }
 
-            ViewModel.Links.Remove(soughtLinks.First());
+            // otherwise remove all the links from the collection
+            soughtLinks.ToArray().ForEach(i => ViewModel.Links.Remove(i));
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
+                // refresh the list of render items
                 _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
             });
         }
@@ -305,6 +315,21 @@ namespace NuSysApp
             var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
             Debug.Assert(controller != null);
             var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
+
+            if (controller?.CollectionModel?.Shape?.ShapePoints == null &&
+                controller?.CollectionModel?.Shape?.ImageUrl != null && controller?.CollectionModel?.Shape?.AspectRatio != null
+                && controller?.CollectionModel?.Shape?.AspectRatio != 0)
+            {
+                var aspcRatio = controller?.CollectionModel?.Shape?.AspectRatio;
+                pts = new Vector2[]
+                {
+                    new Vector2(50000,50000),
+                    new Vector2((float)(50000+1000*aspcRatio), 50000),
+                    new Vector2((float)(50000+1000*aspcRatio),51000),
+                    new Vector2(50000,51000),
+                };
+            }
+
             if (ViewModel.IsShaped || ViewModel.IsFinite)
             {
                 if (_shapeStatus == ShapedStatus.Image)
@@ -384,26 +409,35 @@ namespace NuSysApp
                 DrawBackgroundShapeImage(ds, pts);
                 var screenRect = GetScreenRect();
 
+                // draw the ink render item
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 
+                // not sure what is on the layer if anything yet
                 foreach (var item in _renderItems1?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
+                // this layer contains tools and element render items
                 foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
                 {
+                    // if the item is a tool window, draw the tool window
                     if (item is ToolWindow)
                     {
                         (item as ToolWindow).Draw(ds);
                     }
+
+                    // check to see if the item is an element render item
                     var element = item as ElementRenderItem;
                     if (element == null)
                         return;
 
+                    // if the item is a tool, or the rectangle the screen takes up intersects with the rectangle that
+                    // bounds the element on the screen, then draw it
                     if (element is PseudoElementRenderItem || screenRect.Intersects(element.GetScreenRect()))
                         item.Draw(ds);
                  }
 
+                // not sure what is on the layer if anything yet
                 foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
@@ -557,7 +591,9 @@ namespace NuSysApp
             }*/
             if (vm is BasicToolViewModel)
             {
+                var toolvm = (BasicToolViewModel)vm;
                 var tool = new BasicToolWindow(this, ResourceCreator, (BasicToolViewModel) vm);
+
                 tool.Load();
                 _renderItems3?.Add(tool);
             }

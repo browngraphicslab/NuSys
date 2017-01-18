@@ -180,7 +180,8 @@ namespace NuSysApp
                 FontSize = 35,
                 TrimmingGranularity = CanvasTextTrimmingGranularity.Character,
                 Width = 300,
-                TextHorizontalAlignment = CanvasHorizontalAlignment.Center
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                FontFamily = UIDefaults.TitleFont
             };
             AddChild(_titleBox);
 
@@ -210,7 +211,7 @@ namespace NuSysApp
                 Height = 30,
                 SelectedBackground = Constants.LIGHT_BLUE_TRANSLUCENT,
                 BorderWidth =  0,
-                Bordercolor = Colors.Transparent,
+                BorderColor = Colors.Transparent,
                 Background = Colors.Transparent
             };
             _backButton.ImageBounds = new Rect(_backButton.BorderWidth,
@@ -239,7 +240,8 @@ namespace NuSysApp
             // add the chatbox after the user bubble container so user bubble names do not overlap the bottom of the chatbox
             Chatbox = new ChatBoxUIElement(this, canvas)
             {
-                IsVisible = false
+
+                IsVisible = false,
             };
             AddChild(Chatbox);
 
@@ -251,6 +253,8 @@ namespace NuSysApp
                 MinHeight = 600,
                 KeepAspectRatio = false
             };
+            AddChild(_detailViewer);
+
 
             // add presentation node buttons
             _previousNode = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle)
@@ -285,7 +289,6 @@ namespace NuSysApp
                 Width = 250
             };
             AddChild(_readOnlyLinksWindow);
-            _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(300, 100);
 
             _readOnlyMetadataWindow = new ReadOnlyMetadataWindow(this, Canvas)
             {
@@ -295,7 +298,7 @@ namespace NuSysApp
             };
 
             AddChild(_readOnlyMetadataWindow);
-            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(30, 450);
+            _readOnlyMetadataWindow.Transform.LocalPosition = new Vector2(60, 450);
 
             _readOnlyAliasesWindow = new ReadOnlyAliasesWindow(this, Canvas)
             {
@@ -304,9 +307,8 @@ namespace NuSysApp
                 Width = 250
             };
             AddChild(_readOnlyAliasesWindow);
-            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(30, 100);
+            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
-            AddChild(_detailViewer);
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
@@ -317,6 +319,25 @@ namespace NuSysApp
             _settingsButton.Tapped += SettingsButtonOnTapped;
 
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
+        }
+
+        /// <summary>
+        /// shows the search result pop up for when the search results have completed loading
+        /// </summary>
+        public void ShowSearchResultPopup(List<LibraryElementController> elements, string searchTerm)
+        {
+            var popup = new SearchResultsPopup(this, Canvas, elements, searchTerm);
+            AddChild(popup);
+        }
+
+        /// <summary>
+        /// shows popup that tells user they cannot put a private element on a public collection.
+        /// this way when they do that they don't just end up wondering why nothing happened (gotta have that visual feedback yo).
+        /// </summary>
+        public void ShowPrivateOnPublicPopup()
+        {
+            var popup = new CenteredPopup(this, Canvas, "You cannot put a private element on a collection that is not private.");
+            AddChild(popup);
         }
 
         /// <summary>
@@ -356,6 +377,7 @@ namespace NuSysApp
                     {
                         TrailBox.IsVisible = true;
                     }
+                    MakeEditable();
                     break;
                 case Options.Presentation:
                     _detailViewer.IsVisible = false;
@@ -368,6 +390,9 @@ namespace NuSysApp
                     {
                         TrailBox.IsVisible = false;
                     }
+                    break;
+                case Options.ReadOnly:
+                    MakeReadOnly();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
@@ -493,7 +518,7 @@ namespace NuSysApp
             _detailViewer.DisableDetailView();
             _floatingMenu.HideFloatingMenu();
             _floatingMenu.IsVisible = false;
-
+            _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width - _readOnlyLinksWindow.Width - 20, 100);
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
 
@@ -637,6 +662,8 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
             _currController.TitleChanged -= InstanceOnEnterNewCollectionCompleted;
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
+            _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
             base.Dispose();
         }
 
@@ -843,6 +870,67 @@ namespace NuSysApp
                 _readOnlyMetadataWindow.IsVisible = false;
             }
 
+        }
+
+        /// <summary>
+        /// Method to call in a public collection when an item is double tapped
+        /// </summary>
+        /// <param name="elementToFocus"></param>
+        public void ShowReadOnlyWindows(ElementModel elementToFocus)
+        {
+            Debug.Assert(elementToFocus?.LibraryId != null);
+            var libraryElement = SessionController.Instance.ContentController.GetLibraryElementController(elementToFocus.LibraryId);
+
+            _readOnlyAliasesWindow.UpdateList(libraryElement);
+            _readOnlyLinksWindow.UpdateList(libraryElement);
+            _readOnlyMetadataWindow.UpdateList(libraryElement);
+
+            _readOnlyLinksWindow.IsVisible = true;
+            _readOnlyAliasesWindow.IsVisible = true;
+            _readOnlyMetadataWindow.IsVisible = true;
+
+            _detailViewer.HideDetailView();
+
+            _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
+            _detailViewer.NewLibraryElementShown += DetailViewerOnNewLibraryElementShown;
+
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += TempReadOnlyCanvasPanned;
+        }
+
+        /// <summary>
+        /// Event handler whenever read-only windows are visible used to track the detail viewer's new elements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="libraryElementController"></param>
+        private void DetailViewerOnNewLibraryElementShown(object sender, LibraryElementController libraryElementController)
+        {
+            GetOutOfTempReadOnly();
+        }
+
+        /// <summary>
+        /// Event handler for when the canvas is panned during a public-collection-readonly-element viewing.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TempReadOnlyCanvasPanned(object sender, bool e)
+        {
+
+            GetOutOfTempReadOnly();
+        }
+
+        /// <summary>
+        /// private method to be called to hide the temp read only windows
+        /// </summary>
+        private void GetOutOfTempReadOnly()
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
+            _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
+            _detailViewer.IsVisible = true;
+
+            _readOnlyLinksWindow.IsVisible = false;
+            _readOnlyAliasesWindow.IsVisible = false;
+            _readOnlyMetadataWindow.IsVisible = false;
         }
     }
 }

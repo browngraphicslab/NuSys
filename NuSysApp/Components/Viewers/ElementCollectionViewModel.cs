@@ -61,7 +61,16 @@ namespace NuSysApp
         }
 
         public double AspectRatio { get; set; }
-        public Color ShapeColor { get; set; } = Colors.Black;
+
+        public Color ShapeColor
+        {
+            get
+            {
+                return
+                (Controller?.LibraryElementController?.ContentDataController?.ContentDataModel as
+                    CollectionContentDataModel)?.Shape?.ShapeColor?.ToColor() ?? Colors.Black;
+            }
+        }
 
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
@@ -81,11 +90,6 @@ namespace NuSysApp
 
             var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
             AspectRatio = collectionShape?.AspectRatio ?? 0;
-
-            if (collectionShape?.ShapeColor != null)
-            {
-                ShapeColor = collectionShape.ShapeColor.ToColor();
-            }
 
             foreach (var childId in model.Children)
             {

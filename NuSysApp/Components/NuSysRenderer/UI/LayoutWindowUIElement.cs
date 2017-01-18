@@ -82,7 +82,7 @@ namespace NuSysApp
             Height = PANEL_HEIGHT;
 
             Background = Colors.White;
-            Bordercolor = Constants.DARK_BLUE;
+            BorderColor = Constants.DARK_BLUE;
             BorderWidth = 2;
 
             TopBarColor = Constants.MED_BLUE;

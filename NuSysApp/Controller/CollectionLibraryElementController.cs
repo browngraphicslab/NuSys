@@ -18,8 +18,7 @@ namespace NuSysApp
 
         public delegate void InkEventHandler(string id);
         public delegate void TrailEventHandler(PresentationLinkViewModel vm);
-        public event InkEventHandler OnInkAdded;
-        public event InkEventHandler OnInkRemoved;
+
         public event TrailEventHandler OnTrailAdded;
         public event TrailEventHandler OnTrailRemoved;
 
@@ -78,18 +77,6 @@ namespace NuSysApp
             OnTrailRemoved?.Invoke(trailViewModel);
         }
 
-        public void AddInk(string id)
-        {
-            InkLines.Add(id);
-            OnInkAdded?.Invoke(id);
-        }
-
-        public void RemoveInk(string id)
-        {
-            InkLines.Remove(id);
-            OnInkAdded?.Invoke(id);
-        }
-
         public bool AddChild(string id)
         {
             if (!CollectionModel.Children.Contains(id))
@@ -131,26 +118,12 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// this method is used to set the CollectionLibraryElementModel's ShapePoints property.
-        /// This method will set the model, send a server call with the update, and also will eventually fire an event.
-        /// </summary>
-        /// <param name="newPoints"></param>
-        public void SetCollectionPoints(List<PointModel> newPoints)
-        {
-            //tODO add in the event firing
-            Debug.Assert(newPoints != null);
-            Debug.Assert(CollectionModel != null);//check the state of values being used
-            CollectionContentDataController.SetShapePoints(newPoints);
-        }
-
-        /// <summary>
         /// this method is used to update the collection library element model's IsFinite boolean.
         /// This will set the model's property, update the server, and eventually will fire an event for this change
         /// </summary>
         /// <param name="isFiniteValue"></param>
         public void  SetFiniteBoolean(bool isFiniteValue)
         {
-            //tODO add in the event firing
             Debug.Assert(CollectionModel != null);
             CollectionModel.IsFinite = isFiniteValue;
             if (!_blockServerInteraction)
@@ -158,6 +131,21 @@ namespace NuSysApp
                 _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY, isFiniteValue);
             }
             FiniteBoolChanged?.Invoke(this,isFiniteValue);
+        }
+
+        /// <summary>
+        /// override will update the finate boolean
+        /// </summary>
+        /// <param name="message"></param>
+        public override void UnPack(Message message)
+        {
+            _blockServerInteractionCount++;
+            if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY))
+            {
+                SetFiniteBoolean(message.GetBool(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY));
+            }
+            _blockServerInteractionCount--;
+            base.UnPack(message);
         }
     }
 }

@@ -152,7 +152,7 @@ namespace NuSysApp
             ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center;
             ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
             BorderWidth = 1;
-            Bordercolor = Colors.Black;
+            BorderColor = Colors.Black;
             SelectedBorder = Colors.Black;
 
             // instantiate a list and column for the dropdown

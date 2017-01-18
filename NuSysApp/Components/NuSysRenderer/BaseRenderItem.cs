@@ -40,7 +40,7 @@ namespace NuSysApp
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
-        public bool IsDirty { get; set; } = true;
+        public virtual bool IsDirty { get; set; } = true;
 
         // Boolean which determines whether this render item can gain focus
         public bool IsFocusable { get; set; } = true;
@@ -214,32 +214,38 @@ namespace NuSysApp
             return Win2dUtil.TransformRect(GetLocalBounds(), Transform.LocalToScreenMatrix);
         }
 
-        // Called when this item gains focus - fires event
+        /// <summary>
+        /// Called when this item gains focus
+        /// </summary>
         public virtual void GotFocus()
         {
-            OnFocusGained?.Invoke(this);
-            Parent?.ChildrenGotFocus();
             HasFocus = true;
+            OnFocusGained?.Invoke(this);
         }
 
-        // Called when this item loses focus - fires event
+        /// <summary>
+        /// Called when this item loses focus
+        /// </summary>
         public virtual void LostFocus()
         {
-            OnFocusLost?.Invoke(this);
-            Parent?.ChildrenLostFocus();
             HasFocus = false;
+            OnFocusLost?.Invoke(this);
         }
 
-        public virtual void ChildrenGotFocus()
+        /// <summary>
+        /// Called whenever a child of this element gains focus
+        /// </summary>
+        public virtual void ChildGotFocus()
         {
-            Parent?.ChildrenGotFocus();
             ChildHasFocus = true;
             OnChildFocusGained?.Invoke(this);
         }
 
-        public virtual void ChildrenLostFocus()
+        /// <summary>
+        /// Called whenever a child of this element loses focus
+        /// </summary>
+        public virtual void ChildLostFocus()
         {
-            Parent?.ChildrenLostFocus();
             ChildHasFocus = false;
             OnChildFocusLost?.Invoke(this);
         }

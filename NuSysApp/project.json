@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "CommonMark.NET": "0.14.0",
     "GeoAPI": "1.7.4",
     "HtmlAgilityPack": "1.4.9.5",
     "Microsoft.ApplicationInsights": "2.1.0",

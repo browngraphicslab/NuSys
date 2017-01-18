@@ -21,7 +21,8 @@ namespace NuSysApp
             Height = UIDefaults.Height;
             Background = UIDefaults.Background;
             BorderWidth = UIDefaults.Borderwidth;
-            Bordercolor = UIDefaults.Bordercolor;
+            BorderColor = UIDefaults.Bordercolor;
+            BorderType = UIDefaults.BorderType;
         }
 
         /// <summary>
@@ -48,6 +49,8 @@ namespace NuSysApp
         public override ICanvasImage Image { get; set; }
 
         public override Rect? ImageBounds { get; set; }
+
+        public override BorderType BorderType { get; set; }
 
         /// <summary>
         /// The height of the rectangle
@@ -95,7 +98,7 @@ namespace NuSysApp
         /// <summary>
         /// The BorderColor of the Rectangle
         /// </summary>
-        public override Windows.UI.Color Bordercolor { get; set; }
+        public override Color BorderColor { get; set; }
 
         /// <summary>
         /// Draws the background and the border
@@ -118,6 +121,9 @@ namespace NuSysApp
             // draw the image over the background
             DrawImage(ds);
 
+            // draw text used by elements which inherit from this
+            DrawText(ds);
+
             // draw the border in the rectangle
             DrawBorder(ds);
 
@@ -127,6 +133,15 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Not implemented in the rectangleuielement
+        /// but used by classes which inherit from this
+        /// </summary>
+        /// <param name="ds"></param>
+        protected virtual void DrawText(CanvasDrawingSession ds){}
+
+
+
+        /// <summary>
         /// Draws the border inside the Rectangle UIElement
         /// </summary>
         /// <param name="ds"></param>
@@ -134,9 +149,16 @@ namespace NuSysApp
         {
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
+            if (BorderType == BorderType.Inside)
+            {
+                // draw the border inside the rectangle
+                ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth, 0), Math.Max(Height - BorderWidth,0)), BorderColor, BorderWidth);
+            }else if (BorderType == BorderType.Outside)
+            {
+                // draw the border outside the rectangle
+                ds.DrawRectangle(new Rect(-BorderWidth/2, -BorderWidth/2, Width + BorderWidth, Height + BorderWidth), BorderColor, BorderWidth);
 
-            // draw the border inside the rectangle
-            ds.DrawRectangle(new Rect(BorderWidth / 2, BorderWidth / 2, Math.Max(Width - BorderWidth,0), Height - BorderWidth), Bordercolor, BorderWidth);
+            }
 
             ds.Transform = orgTransform;
         }
@@ -168,9 +190,12 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            // draw the background of the rectangle
-            ds.FillRectangle(new Rect(0, 0, Width, Height), Background);
+            if (BorderType == BorderType.Inside||BorderType == BorderType.Outside)
+            {
+                // draw the background of the rectangle
+                ds.FillRectangle(0, 0, Width, Height, Background);
 
+            }
             ds.Transform = orgTransform;
         }
 

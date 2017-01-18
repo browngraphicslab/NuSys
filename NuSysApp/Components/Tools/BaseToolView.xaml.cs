@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -161,7 +162,7 @@ namespace NuSysApp
             {
                 if (sender == xStackElement)
                 {
-                    vm.CreateStack(r.X, r.Y);
+                    vm.CreateStack(new Vector2((float) p.X, (float) p.Y));
                 }
                 else
                 { 

@@ -31,7 +31,7 @@ namespace NuSysApp
                     GridLayoutManager.AddElement(new RectangleUIElement(this, ResourceCreator)
                     {
                         BorderWidth = 2,
-                        Bordercolor = Colors.Green
+                        BorderColor = Colors.Green
                     }, row, col, relativeWidth: .8f, relativeHeight: .8f);
                 }
             }

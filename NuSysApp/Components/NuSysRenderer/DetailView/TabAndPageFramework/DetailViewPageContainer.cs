@@ -148,7 +148,10 @@ namespace NuSysApp
             popup.Height = Height/4;
             popup.Width = Width/2;
             popup.Transform.LocalPosition = new Vector2(Width/2 - popup.Width/2, Height/2 - popup.Height/2);
-            _settingsPopup.DismissPopup();
+            if (_settingsPopup != null)
+            {
+                _settingsPopup.DismissPopup();
+            }            
         }
 
 
@@ -234,15 +237,27 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void OnDeleteFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            DeleteLibraryElementRequest request = new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            if (request.WasSuccessful() == true)
+            // if the thing we are deleting was a linke
+            if (_currentController.LibraryElementModel.Type ==NusysConstants.ElementType.Link)
             {
-                request.DeleteLocally();
-               
-            }
-            //Dismisses the flyout popup
+                await SessionController.Instance.LinksController.RemoveLink(_currentController.LibraryElementModel.LibraryElementId);
+                if (SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.BtnDelete.IsVisible == true)
+                {
+                    SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.BtnDelete.IsVisible = false;
+                }
+            } else
+            {
 
+                DeleteLibraryElementRequest request = new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                if (request.WasSuccessful() == true)
+                {
+                    request.DeleteLocally();
+
+                }
+            }
+
+            //Dismisses the flyout popup
             var popup = item.Parent as FlyoutPopup;
             Debug.Assert(popup != null);
             if (popup == null)
@@ -274,7 +289,7 @@ namespace NuSysApp
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center,
                 FontSize = 30,
-                FontFamily = UIDefaults.FontFamily
+                FontFamily = UIDefaults.TitleFont
             };
             AddChild(_titleBox);
             _titleBox.TextChanged += OnTitleTextChanged;
@@ -335,10 +350,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="text"></param>
-        private void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
+        private async void OnTitleTextChanged(InteractiveBaseRenderItem item, string text)
         {
             _currentController.TitleChanged -= OnCurrentControllerTitleChanged;
-            _currentController.SetTitle(text);
+            await UITask.Run(() =>
+            {
+                _currentController.SetTitle(text);
+            });
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
         }
 
@@ -349,7 +367,7 @@ namespace NuSysApp
         public void ShowLibraryElement(string libraryElementModelId, DetailViewPageTabType pageToShow)
         {
             // if we are already showing the library elment model that was selected then just return
-            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId)
+            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId || !_loaded)
             {
                 return;
             }
@@ -362,6 +380,10 @@ namespace NuSysApp
             // set the _currentController to the new Library element that is going to eb shown
             _currentController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _titleBox.Text = _currentController.Title;
+            if (_currentController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly)
+            {
+                _titleBox.IsEditable = _currentController.LibraryElementModel.Creator == WaitingRoomView.UserID;
+            }
             _currentController.TitleChanged += OnCurrentControllerTitleChanged;
 
 

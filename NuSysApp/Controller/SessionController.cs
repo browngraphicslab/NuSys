@@ -241,7 +241,7 @@ namespace NuSysApp
                     camera.LocalScale.X,
                     camera.LocalScale.Y);
                 _capturedState = currentState;
-                SessionView.ShowBlockingScreen(true);
+                SessionView.ShowSuspendedScreen(true);
             });
             NuSysNetworkSession.CloseConnection();
         }
@@ -283,7 +283,7 @@ namespace NuSysApp
                     ActiveFreeFormViewer.CompositeTransform.ScaleY = _capturedState.YZoomLevel;
                     
 
-                    SessionView.ShowBlockingScreen(false);
+                    SessionView.ShowSuspendedScreen(false);
 
                     _capturedState = null;
                 });
@@ -465,14 +465,12 @@ namespace NuSysApp
                 var request = new GetEntireWorkspaceRequest(collectionLibraryId);
 
                 //awaits the requests return after execution
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                await Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
 
 
                 // Create a content model/controller for the collection that we're about to enter
-                var mainContentDataId =
-                    SessionController.Instance.ContentController.GetLibraryElementModel(collectionLibraryId)
-                        .ContentDataModelId;
+                var mainContentDataId = Instance.ContentController.GetLibraryElementModel(collectionLibraryId).ContentDataModelId;
                 var mainContentDataModel =
                     request.GetReturnedContentDataModels().FirstOrDefault(i => i.ContentId == mainContentDataId);
 
@@ -543,14 +541,13 @@ namespace NuSysApp
 
                 //TODO redo read only or editable implementation
 
+                IsReadonly = elementCollectionInstanceController.LibraryElementModel.AccessType ==
+                                               NusysConstants.AccessType.ReadOnly && userID != creator;
+
                 await UITask.Run(async delegate
                 {
                     await SessionView.FreeFormViewer.LoadInitialCollection(ActiveFreeFormViewer);
                 });
-                if (elementModelId != null)
-                {
-                    SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
-                }
 
                 if (elementCollectionInstanceController.LibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly && userID != creator)
                 {
@@ -561,6 +558,10 @@ namespace NuSysApp
                     Instance.MakeWorkspaceEditable();
                 }
 
+                if (elementModelId != null)
+                {
+                    SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(elementModelId);
+                }
 
                 var controller = Instance.ContentController.GetLibraryElementController(collectionLibraryId);
                 // add the bread crumb for the collection
@@ -568,7 +569,6 @@ namespace NuSysApp
 
                 SessionView.ShowBlockingScreen(false);
                 EnterNewCollectionCompleted?.Invoke(this, collectionLibraryId);
-                SwitchMode(Options.PanZoomOnly);
             });
         }
 
@@ -578,8 +578,8 @@ namespace NuSysApp
         /// </summary>
         public void MakeWorkspaceReadonly()
         {
+            SwitchMode(Options.ReadOnly);
             IsReadonly = true;
-            NuSessionView.MakeReadOnly();
         }
 
         /// <summary>
@@ -587,8 +587,8 @@ namespace NuSysApp
         /// </summary>
         public void MakeWorkspaceEditable()
         {
+            SwitchMode(Options.PanZoomOnly);
             IsReadonly = false;
-            NuSessionView.MakeEditable();
         }
 
         public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)

@@ -29,15 +29,23 @@ namespace NuSysApp
         {
             _label = new TextboxUIElement(this, ResourceCreator);
             _label.Text = "links";
+            _label.FontFamily = UIDefaults.TitleFont;
             _label.Width = Width;
             _label.Height = 38;
-            _label.FontSize = 32;
+            _label.FontSize = 20;
             _label.TextColor = Constants.DARK_BLUE;
             _label.Background = Constants.LIGHT_BLUE;
             _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
             _label.IsHitTestVisible = false;
 
             AddChild(_label);
+        }
+
+        public override Task Load()
+        {
+            CreateListView();
+
+            return base.Load();
         }
 
         /// <summary>
@@ -48,10 +56,11 @@ namespace NuSysApp
             _link_listview = new ListViewUIElementContainer<LinkLibraryElementController>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Constants.DARK_BLUE
+                BorderWidth = 1,
+                BorderColor = Constants.LIGHT_BLUE
             };
             AddChild(_link_listview);
+            _link_listview.Load();
 
             var listColumn = new ListTextColumn<LinkLibraryElementController>();
             listColumn.Title = "Title";
@@ -64,8 +73,6 @@ namespace NuSysApp
             listColumn2.ColumnFunction = getOppositeLinkedToTitle;
 
             _link_listview.AddColumns(new List<ListColumn<LinkLibraryElementController>> { listColumn, listColumn2 });
-
-            _link_listview.AddItems(new List<LinkLibraryElementController>(_controller.GetAllLinks()));
         }
 
 
@@ -93,13 +100,13 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            if (_link_listview == null)
+            if (_link_listview == null || _controller == null)
             {
                 return;
             }
 
-            var horizontalMargin = 10;
-            var verticalMargin = 5;
+            var horizontalMargin = 0;
+            var verticalMargin = 0;
 
             _label.Width = Width;
             _label.Transform.LocalPosition = new Vector2( 0, verticalMargin);
@@ -125,7 +132,9 @@ namespace NuSysApp
                 _controller.LinkRemoved -= OnLinkRemoved;
             }
             _controller = controller;
-            CreateListView();
+            _link_listview?.ClearItems();
+            _link_listview?.ClearFilter();
+            _link_listview?.AddItems(new List<LinkLibraryElementController>(_controller.GetAllLinks()));
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
         }

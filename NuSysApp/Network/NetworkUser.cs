@@ -11,6 +11,12 @@ namespace NuSysApp
 {
     public class NetworkUser : BaseClient
     {
+        public static NetworkUser ChatBot
+        {
+            get { return new NetworkUser("chatbot") {DisplayName = "ChatBot"}; }
+        }
+
+
         #region Public Variables
         public Color Color
         {
@@ -71,6 +77,15 @@ namespace NuSysApp
                 }
                 _currEditingControllerId = controllerId;
             }
+        }
+
+        /// <summary>
+        /// Method to return whether this networkuser instance represents this client
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLocalUser()
+        {
+            return UserID != null && UserID == WaitingRoomView.UserID;
         }
     }
 }

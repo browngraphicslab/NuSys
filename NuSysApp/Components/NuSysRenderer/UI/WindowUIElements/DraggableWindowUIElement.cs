@@ -12,6 +12,11 @@ namespace NuSysApp
     public class DraggableWindowUIElement : WindowUIElement
     {
         /// <summary>
+        /// optional close button - call "ShowCloseButton" in order to have it
+        /// </summary>
+        protected EllipseButtonUIElement _closeButton;
+
+        /// <summary>
         /// Set this to true to support Dragging the DraggableWindowUIElement around the screen using the top bar.
         /// </summary>
         public bool IsDraggable;
@@ -315,7 +320,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Sets the location position of the snap preview window
+        /// Sets the location position of the snap preview window, called after SetSnapPreviewDimensions
         /// </summary>
         protected virtual void SetSnapPreviewOffset()
         {
@@ -337,12 +342,12 @@ namespace NuSysApp
                     break;
                 case SnapPosition.Right:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2((float) (SessionController.Instance.ScreenWidth/2), 0),
+                        Vector2.Transform(new Vector2((float) Math.Min(SessionController.Instance.ScreenWidth/2, SessionController.Instance.ScreenWidth - SnapPreviewRect.Width), 0),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.Bottom:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2(0, (float) (SessionController.Instance.ScreenHeight/2)),
+                        Vector2.Transform(new Vector2(0, (float) Math.Min(SessionController.Instance.ScreenHeight/2, SessionController.Instance.ScreenHeight - SnapPreviewRect.Height)),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.TopLeft:
@@ -351,25 +356,64 @@ namespace NuSysApp
                     break;
                 case SnapPosition.TopRight:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2((float) (SessionController.Instance.ScreenWidth/2), 0),
+                        Vector2.Transform(new Vector2((float)Math.Min(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenWidth - SnapPreviewRect.Width), 0),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.BottomLeft:
                     SnapPreviewRect.Transform.LocalPosition =
-                        Vector2.Transform(new Vector2(0, (float) (SessionController.Instance.ScreenHeight/2)),
+                        Vector2.Transform(new Vector2(0, (float)Math.Min(SessionController.Instance.ScreenHeight / 2, SessionController.Instance.ScreenHeight - SnapPreviewRect.Height)),
                             Transform.ScreenToLocalMatrix);
                     break;
                 case SnapPosition.BottomRight:
                     SnapPreviewRect.Transform.LocalPosition =
                         Vector2.Transform(
-                            new Vector2((float) (SessionController.Instance.ScreenWidth/2),
-                                (float) (SessionController.Instance.ScreenHeight/2)), Transform.ScreenToLocalMatrix);
+                            new Vector2((float)Math.Min(SessionController.Instance.ScreenWidth / 2, SessionController.Instance.ScreenWidth - SnapPreviewRect.Width),
+                                (float)Math.Min(SessionController.Instance.ScreenHeight / 2, SessionController.Instance.ScreenHeight - SnapPreviewRect.Height)), Transform.ScreenToLocalMatrix);
                     break;
                 case null:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public override async Task Load()
+        {
+            if (_closeButton != null)
+            {
+                _closeButton.Image = _closeButton.Image ??
+                                     await
+                                         CanvasBitmap.LoadAsync(Canvas,
+                                             new Uri("ms-appx:///Assets/new icons/x white.png"));
+            }
+            base.Load();
+        }
+
+        /// <summary>
+        /// shows a close button to the left of the window
+        /// </summary>
+        public void ShowClosable()
+        {
+            _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
+            {
+                Height = 30,
+                Width = 30,
+                ImageBounds = new Rect(7.5, 7.5, 15, 15)
+            };
+            AddChild(_closeButton);
+            _closeButton.Transform.LocalPosition = new Vector2(-_closeButton.Width - 10, TopBarHeight + 10);
+            _closeButton.Tapped += CloseButtonOnTapped;
+        }
+
+        /// <summary>
+        /// closes the window if the close button is visible.
+        /// overridable if this needs to have other things in it.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected virtual void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            IsVisible = false;
         }
 
         /// <summary>
@@ -381,6 +425,10 @@ namespace NuSysApp
             TopBarDragged -= OnTopBarDragged;
             TopBarDragStarted -= OnTopBarDragStarted;
             TopBarDragCompleted -= OnTopBarDragCompleted;
+            if (_closeButton != null)
+            {
+                _closeButton.Tapped -= CloseButtonOnTapped;
+            }
             base.Dispose();
         }
 
@@ -390,6 +438,11 @@ namespace NuSysApp
 
             SetSnapPreviewDimensions();
             SetSnapPreviewOffset();
+
+            if (_closeButton != null)
+            {
+                _closeButton.Transform.LocalPosition = new Vector2(_closeButton.Transform.LocalX, _closeButton.Transform.LocalY);
+            }
 
             base.Update(parentLocalToScreenTransform);
         }

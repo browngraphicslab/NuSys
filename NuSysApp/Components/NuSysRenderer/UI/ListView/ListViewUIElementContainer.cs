@@ -194,8 +194,12 @@ namespace NuSysApp
             get { return ListView.RowBorderThickness; }
             set { ListView.RowBorderThickness = value; }
         }
-        
 
+
+
+        private float _currentDragX;
+
+        private bool _isDragging;
         public ListViewUIElementContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _resourceCreator = resourceCreator;
@@ -218,6 +222,7 @@ namespace NuSysApp
             _header.HeaderResizeCompleted += Header_HeaderResizeCompleted; ;
             AddChild(_header);
             ShowHeader = true;
+            _isDragging = false;
         }
 
         /// <summary>
@@ -275,11 +280,6 @@ namespace NuSysApp
             }
         }
 
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
-        {
-
-            base.Update(parentLocalToScreenTransform);
-        }
 
         private void OnColumnOptionTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
@@ -374,6 +374,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void Header_HeaderDragCompleted(ButtonUIElement header, int colIndex, CanvasPointer pointer)
         {
+            _isDragging = false;
             _header.RefreshTitles();
         }
 
@@ -387,40 +388,55 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void Header_HeaderDragged(ButtonUIElement header, int colIndex, CanvasPointer pointer)
         {
+            var curLeftEdge = header.Transform.LocalX;
+            var curRightEdge = curLeftEdge + header.Width;
+            var deltaX = pointer.Delta.X;
             var newX = header.Transform.LocalX + pointer.DeltaSinceLastUpdate.X;
-
-            if (pointer.DeltaSinceLastUpdate.X > 0 && colIndex == _header.GetChildren().Count - 1 && newX + header.Width > Width)
+            
+            //If first time dragging, set isDragging to true and set currentDragX to the start of the header
+            if (!_isDragging)
             {
-                //header.Transform.LocalX = Width - header.Width;
-                return;
+                _currentDragX = header.Transform.LocalX;
+                _isDragging = true;
             }
-
-            else if (pointer.DeltaSinceLastUpdate.X < 0 && colIndex == 0 && newX < 0)
+            else
             {
-                //header.Transform.LocalX = 0;
-                return;
+
+                if ((_currentDragX < 0 && deltaX > 0) || (_currentDragX > Width && deltaX < 0))
+                {
+                    _currentDragX = curLeftEdge;
+                }
+                else
+                {
+                    _currentDragX  += pointer.DeltaSinceLastUpdate.X;
+                }
+
             }
-            header.Transform.LocalX = newX;
-
-            var headerCenter = header.Transform.LocalX + header.Width/2;
-
+            //Get the right edge of previous header and left edge of next header
             float rightEdgeOfPreviousHeader = _header.GetEdge(colIndex - 1, ListViewHeaderItem<T>.Edge.Right);
             float leftEdgeOfNextHeader = _header.GetEdge(colIndex + 1, ListViewHeaderItem<T>.Edge.Left);
 
-            if (headerCenter > leftEdgeOfNextHeader)
+            //If the point we are dragging to triggers a swap, swap headers and columsn
+            if (_currentDragX + header.Width/2 > leftEdgeOfNextHeader)
             {
+                Debug.WriteLine("Swapping because passed left edge");
                 _header.SwapHeaders(colIndex, colIndex + 1);
                 _listview.SwapColumns(colIndex, colIndex + 1);
+                return;
             }
-            else if (headerCenter < rightEdgeOfPreviousHeader)
+            else if (_currentDragX +header.Width/2 < rightEdgeOfPreviousHeader)
             {
-                _header.SwapHeaders(colIndex, colIndex -1);
+                Debug.WriteLine("Swapping because passed right edge");
+
+                _header.SwapHeaders(colIndex, colIndex - 1);
                 _listview.SwapColumns(colIndex, colIndex - 1);
+                return;
             }
 
-            //Update header in case it went too far
-            header.Transform.LocalX = Math.Max(0, header.Transform.LocalX);
-            header.Transform.LocalX = Math.Min(Width - header.Width, header.Transform.LocalX);
+
+            if (!(newX + header.Width > Width || newX < 0)){                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                header.Transform.LocalX += pointer.DeltaSinceLastUpdate.X;
+            }
 
 
         }
@@ -688,7 +704,7 @@ namespace NuSysApp
             float offset = 0;
             if (ShowHeader)
             {
-                offset = _header.Height + 2; //Offset should be header's height if there is a header
+                offset = _header.Height; //Offset should be header's height if there is a header
             }
             //Otherwise, vertical offset should stay 0
             _listview.Transform.LocalPosition = new Vector2(0, offset);

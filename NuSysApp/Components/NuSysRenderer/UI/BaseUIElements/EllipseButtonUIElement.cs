@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 
@@ -27,6 +28,9 @@ namespace NuSysApp
                 return (EllipseUIElement)Shape;
             }
         }
+
+        private int _style;
+
         /// <summary>
         /// constructor for ellipse button UI element - takes in a parent, resource creator, an optional style enum (primary, secondary, etc.),
         /// and an optional string for the button's label.
@@ -39,6 +43,12 @@ namespace NuSysApp
         public EllipseButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
             int style = 0, string text = "") : base(parent, resourceCreator, new EllipseUIElement(parent, resourceCreator))
         {
+            ButtonText = text;
+            Height = 50;
+            Width = 50;
+            ImageBounds = new Rect(10, 10, 30, 30);
+            
+            //style dependent properties
             switch (style) 
             {
                 ///primary style for ellipse
@@ -55,15 +65,20 @@ namespace NuSysApp
                     Ellipse.Background = Constants.RED;
                     ButtonTextColor = Constants.RED;
                     break;
+                case 3:
+                {
+                    Height = 30;
+                    Width = 30;
+                    ButtonTextColor = Colors.Black;
+                    break;
+                }
+                default:
+                    break;
             }
 
-            ///set button text and color
-            ButtonText = text;
-            Height = 50;
-            Width = 50;
-            ImageBounds = new Rect(10, 10, 30, 30);
+            _style = style;
             SetOriginalValues();
-            
+
         }
 
         /// <summary>
@@ -72,7 +87,16 @@ namespace NuSysApp
         /// <returns></returns>
         protected override Rect GetTextBoundingBox()
         {
-            return new Rect(0, Height, Width - 2 * BorderWidth, Height - 2 * BorderWidth);
+            if (_style == 3)
+            {
+                // if the ellipse has the style of a bubble then we want the text to be within the circle.
+                // this math returns a rect that is centered and around half the size of the circle.
+                return new Rect(Width/4, 5, Width/2, Height/2);
+            }
+            else
+            {
+                return new Rect(0, Height, Width - 2*BorderWidth, Height - 2*BorderWidth);
+            }
         }
 
         /// <summary>

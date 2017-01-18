@@ -10,6 +10,7 @@ using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System.Numerics;
 using Windows.Foundation;
+using Windows.UI;
 
 namespace NuSysApp
 {
@@ -26,7 +27,7 @@ namespace NuSysApp
             var format = new CanvasTextFormat
             {
                 FontSize = 15f,
-                FontFamily = "/Assets/fonts/Frutiger LT 56 Italic.ttf#Frutiger LT 55 Roman",
+                FontFamily = UIDefaults.TextFont,
             };
 
             _textLayout = new CanvasTextLayout(resourceCreator, text, format, 500, 500);
@@ -54,8 +55,8 @@ namespace NuSysApp
 
             base.Draw(ds);
             ds.Transform = Transform.LocalToScreenMatrix;
-            ds.FillRectangle(_measurement, Constants.color4);
-            ds.DrawTextLayout(_textLayout, 5, 5, Constants.color6);
+            ds.FillRectangle(_measurement, Constants.RED);
+            ds.DrawTextLayout(_textLayout, 5, 5, Colors.White);
         }
 
         public override Rect GetLocalBounds()

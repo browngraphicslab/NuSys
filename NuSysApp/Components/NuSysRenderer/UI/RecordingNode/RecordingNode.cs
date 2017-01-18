@@ -82,11 +82,6 @@ namespace NuSysApp
         private CanvasBitmap _stopIcon;
 
         /// <summary>
-        /// Icon used on the close button
-        /// </summary>
-        private CanvasBitmap _closeIcon;
-
-        /// <summary>
         /// Media capture element that actually does the heavy lifting of recording audio and video
         /// </summary>
         private MediaCapture _mediaCapture;
@@ -110,23 +105,18 @@ namespace NuSysApp
         /// File we are going to use to store our recorded data
         /// </summary>
         private StorageFile _file;
-        
-        /// <summary>
-        /// Close button used to close the recording node without recording anything
-        /// </summary>
-        private ButtonUIElement _closeButton;
 
 
         public RecordingNode(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
             // set default ui values
-            Background = Colors.Azure;
+            Background = Constants.LIGHT_BLUE;
             Height = 400;
             Width = 400;
-            BorderWidth = 3;
-            Bordercolor = Colors.CadetBlue;
-            TopBarColor = Colors.CadetBlue;
+            BorderWidth = 1;
+            BorderColor = Constants.MED_BLUE;
+            TopBarColor = Constants.MED_BLUE;
 
             // set default starting media type to audio
             _currRecordingType = RecordingType.Audio;
@@ -136,10 +126,10 @@ namespace NuSysApp
             {
                 Height = 50,
                 Width = 50,
-                Background = Colors.CadetBlue,
-                Bordercolor = Colors.CadetBlue,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5,
+                Background = Constants.DARK_BLUE,
+                BorderColor = Constants.DARK_BLUE,
+                SelectedBorder = Constants.LIGHT_BLUE,
+                BorderWidth = 3,
             };
             _mediaTypeSwitch.ImageBounds = new Rect(_mediaTypeSwitch.Width/4, _mediaTypeSwitch.Height/4,
                 _mediaTypeSwitch.Width/2, _mediaTypeSwitch.Height/2);
@@ -150,10 +140,10 @@ namespace NuSysApp
             {
                 Height = 50,
                 Width = 50,
-                Background = Colors.Red,
-                Bordercolor = Colors.Red,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5
+                Background = Constants.RED,
+                BorderColor = Constants.RED,
+                SelectedBorder = Colors.White,
+                BorderWidth = 3
             };
             _recordPauseButton.ImageBounds = new Rect(_recordPauseButton.Width / 4, _recordPauseButton.Height / 4,
                    _recordPauseButton.Width / 2, _recordPauseButton.Height / 2);
@@ -163,10 +153,10 @@ namespace NuSysApp
             {
                 Height = 50,
                 Width = 50,
-                Background = Colors.Red,
-                Bordercolor = Colors.Red,
-                SelectedBorder = Colors.LightGray,
-                BorderWidth = 5
+                Background = Constants.RED,
+                BorderColor = Constants.RED,
+                SelectedBorder = Colors.White,
+                BorderWidth = 3
             };
             _stopButton.ImageBounds = new Rect(_stopButton.Width / 4, _stopButton.Height / 4,
                 _stopButton.Width / 2, _stopButton.Height / 2);
@@ -175,8 +165,9 @@ namespace NuSysApp
             // add the currMediaType to display and set default ui values
             _textDisplayOfRecordingType = new TextboxUIElement(this, Canvas)
             {
-                Background = Colors.Azure,
-                TextColor = Colors.Black,
+                Background = Colors.Transparent,
+                TextColor = Constants.ALMOST_BLACK,
+                FontSize = 20,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center,
                 Height = 25,
@@ -184,17 +175,12 @@ namespace NuSysApp
             };
             AddChild(_textDisplayOfRecordingType);
 
-            // close button for closing the recording node without recording anything
-            _closeButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                Background = Colors.Red
-            };
-            AddButton(_closeButton, TopBarPosition.Right);
+            
+            ShowClosable();
 
             _mediaTypeSwitch.Tapped += MediaTypeSwitchOnTapped;
             _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
             _stopButton.Tapped += StopButtonOnTapped;
-            _closeButton.Tapped += OnCloseButtonTapped;
         }
 
         /// <summary>
@@ -202,7 +188,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void OnCloseButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override async void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // remove button events
             RemoveButtonEvents();
@@ -407,7 +393,6 @@ namespace NuSysApp
             _mediaTypeSwitch.Tapped -= MediaTypeSwitchOnTapped;
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
-            _closeButton.Tapped -= OnCloseButtonTapped;
             _mediaCapture?.Dispose();
             _audioIcon?.Dispose(); // TODO not sure if disposing of these images is necessary
             _recordIcon?.Dispose();
@@ -452,11 +437,9 @@ namespace NuSysApp
             _videoIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_video.png"));
             _audioIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/record.png"));
             _pauseIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_pause.png"));
-            _closeIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_whitex.png"));
 
             // set these images here they do not change dynamically
             _stopButton.Image = _stopIcon;
-            _closeButton.Image = _closeIcon;
 
             // set the ui for the _currMediatype, this should already be set in the constructor to audio
             SetUIForCurrentState();
@@ -525,14 +508,12 @@ namespace NuSysApp
         {
             _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
             _stopButton.Tapped += StopButtonOnTapped;
-            _closeButton.Tapped += OnCloseButtonTapped;
         }
 
         private void RemoveButtonEvents()
         {
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
-            _closeButton.Tapped -= OnCloseButtonTapped;
         }
 
     }

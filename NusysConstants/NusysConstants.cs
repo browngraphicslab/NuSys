@@ -446,6 +446,11 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
 
                 /// <summary>
+                /// The requset key that will hold the direction enum for the requested link
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_DIRECTIONALITY_KEY = "link_library_element_model_direction_key";
+
+                /// <summary>
                 /// the key that will hold the serialized dictionary from string to metadataentry when creating a new library element
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY = "metadata";
@@ -779,18 +784,46 @@ namespace NusysIntermediate
             /// collection
             /// </summary>
             public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY = "y";
-            #endregion MoveElementToCollectionRequest
+        #endregion MoveElementToCollectionRequest
 
         #endregion RequestKeys
 
         #region NotificationKeys
 
-            #region AddNetworkUserNotification
+        #region LockHolderChanged
 
-            /// <summary>
-            /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
-            /// </summary>
-            public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
+        /// <summary>
+        /// the string key used in the lock holder changed notification to denote the holder id
+        /// </summary>
+        public static readonly string LOCK_HOLDER_CHANGED_NOTIFICATION_USER_ID_KEY = "lock_user_holder_id";
+
+        /// <summary>
+        /// the string key used in the lock holder cahnged notificartion used to represnt the id of the lock that has changed
+        /// </summary>
+        public static readonly string LOCK_HOLDER_CHANGED_NOTIFICATION_LOCKABLE_ID_KEY = "lockable_id";
+
+        #endregion LockHolderChanged
+
+        #region WebSearchCompleted
+
+        /// <summary>
+        /// The string in the web search completed notification containing the original string search
+        /// </summary>
+        public static readonly string WEB_SEARCH_COMPLETED_NOTIFICATION_SEARCH_STRING_KEY = "search_string_key";
+
+        /// <summary>
+        /// The string in the web search completed notification containing the list of library element ids for the created library elements
+        /// </summary>
+        public static readonly string WEB_SEARCH_COMPLETED_NOTIFICATION_LIBRARY_IDS_KEY = "library_ids_made";
+
+        #endregion WebSearchCompleted
+
+        #region AddNetworkUserNotification
+
+        /// <summary>
+        /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
+        /// </summary>
+        public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
 
             #endregion AddNetworkUserNotification
 
@@ -1516,12 +1549,17 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
 
-                                /// <summary>
-                                /// The key that will hold the LibraryElementId for the OUT libary element
-                                /// </summary>
-                                public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+            /// <summary>
+            /// The database key that will hold the string representing the directionality of the link
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_DIRECTIONALITY_KEY = "link_direction_enum";
 
-                            #endregion LinkLibraryElementModel
+            /// <summary>
+            /// The key that will hold the LibraryElementId for the OUT libary element
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+
+            #endregion LinkLibraryElementModel
 
             #endregion LibraryElementModel
 
@@ -1685,6 +1723,26 @@ namespace NusysIntermediate
             GetLastUsedCollectionsRequest,
 
             /// <summary>
+            /// Request used to fetch a lock
+            /// </summary>
+            GetLockRequest,
+
+            /// <summary>
+            /// Reuqest used to release a lock
+            /// </summary>
+            ReturnLockRequest,
+
+            /// <summary>
+            /// Request type used to unsubscribe from getting changes to a specific lock instance
+            /// </summary>
+            UnSubscribeToLockRequest,
+
+            /// <summary>
+            /// Request type used to subscribe to get changes to a specific lock instance
+            /// </summary>
+            SubscribeToLockRequest,
+
+            /// <summary>
             /// Web search used to fetch and parse html
             /// </summary>
             WebSearchRequest,
@@ -1768,7 +1826,17 @@ namespace NusysIntermediate
             /// <summary>
             /// Notification for telling all clients about an updated word document.
             /// </summary>
-            WordChanged
+            WordChanged,
+
+            /// <summary>
+            /// Notification type used to tell the clients when a new user has taken control of a lock they were watching
+            /// </summary>
+            LockHolderChanged,
+
+            /// <summary>
+            /// Notification for telling the clients when their web search has finished
+            /// </summary>
+            WebSearchCompleted
         }
 
         /// <summary>

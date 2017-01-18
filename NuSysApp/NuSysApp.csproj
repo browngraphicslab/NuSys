@@ -124,6 +124,7 @@
     <Content Include="Assets\new icons\add elements white.png" />
     <Content Include="Assets\new icons\add elements.png" />
     <Content Include="Assets\new icons\back.png" />
+    <Content Include="Assets\new icons\bar chart.png" />
     <Content Include="Assets\new icons\collection white.png" />
     <Content Include="Assets\new icons\collection.png" />
     <Content Include="Assets\new icons\custom arrange.png" />
@@ -132,10 +133,15 @@
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\html export.png" />
     <Content Include="Assets\new icons\left arrow.png" />
+    <Content Include="Assets\new icons\listview.png" />
+    <Content Include="Assets\new icons\logo_bing_en-US.png" />
+    <Content Include="Assets\new icons\multitag.png" />
     <Content Include="Assets\new icons\node.png" />
+    <Content Include="Assets\new icons\pie chart.png" />
     <Content Include="Assets\new icons\present white.png" />
     <Content Include="Assets\new icons\recording.png" />
     <Content Include="Assets\new icons\right arrow.png" />
+    <Content Include="Assets\new icons\stack.png" />
     <Content Include="Assets\new icons\text.png" />
     <Content Include="Assets\new icons\tools red.png" />
     <Content Include="Assets\new icons\tools.png" />
@@ -294,12 +300,20 @@
     <Content Include="Assets\fonts\freightsanslight.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\web search.png" />
     <Content Include="Themes\audio_node_template.html" />
     <Content Include="Themes\image_node_template.html" />
     <Content Include="Themes\node_template.css" />
     <Content Include="Themes\pdf_node_template.html" />
     <Content Include="Themes\text_node_template.html" />
     <Content Include="Themes\video_node_template.html" />
+    <Content Include="Assets\fonts\FiraSans-Light.ttf" />
+    <Content Include="Assets\fonts\FiraSans-LightItalic.ttf" />
+    <Content Include="Assets\fonts\FiraSans-SemiBold.ttf" />
+    <Content Include="Assets\fonts\FiraSans-SemiBoldItalic.ttf" />
+    <Content Include="Assets\fonts\Rubik-Medium.ttf" />
+    <Content Include="Assets\fonts\Rubik-MediumItalic.ttf" />
+    <Content Include="Assets\fonts\Rubik-Regular.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -397,7 +411,12 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\EditTagsUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\SearchResultsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\EditShapePopup.cs" />
@@ -429,7 +448,8 @@
     <Compile Include="Components\NuSysRenderer\UI\Popup\CenteredPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\PopupUIElement.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\Textbox\RichTextboxUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\MarkdownConvertingTextbox.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\CustomHtmlFormatter.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\MaskedRect.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingCanvas.cs" />
@@ -501,8 +521,8 @@
     <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementSelectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\GameLoopSynchronizationContext.cs" />
-    <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
-    <Compile Include="Components\NuSysRenderer\HTMLParser.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\HTMLHelper.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\HTMLParser.cs" />
     <Compile Include="Components\NuSysRenderer\I2dTransformable.cs" />
     <Compile Include="Components\NuSysRenderer\ImageElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\InkOptionsWidthRenderItem.cs" />
@@ -601,7 +621,6 @@
     <Compile Include="Components\Win2dTools\iLink.cs" />
     <Compile Include="Components\Win2dTools\MetadataToolWindow.cs" />
     <Compile Include="Components\Win2dTools\PieToolInnerView.cs" />
-    <Compile Include="Components\Win2dTools\ToolInnerWindow.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkController.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkModel.cs" />
     <Compile Include="Components\Win2dTools\ToolLinkRenderitem.cs" />
@@ -792,6 +811,7 @@
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\GetLastUsedCollectionsRequest.cs" />
+    <Compile Include="Network\Requests\GetLockRequest.cs" />
     <Compile Include="Network\Requests\GetRelatedDocumentsRequest.cs" />
     <Compile Include="Network\Requests\GetUserIdToDisplayNameDictionaryRequest.cs" />
     <Compile Include="Network\Requests\GetWordDocumentRequest.cs" />
@@ -799,7 +819,9 @@
     <Compile Include="Network\Requests\NotificationHandlers\AddUserNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\AnalysisModelMadeNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\DropUserNotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\LockHolderChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\NotificationHandler.cs" />
+    <Compile Include="Network\Requests\NotificationHandlers\WebSearchCompletedNotificationHandler.cs" />
     <Compile Include="Network\Requests\NotificationHandlers\WordChangedNotificationHandler.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
@@ -817,7 +839,10 @@
     <Compile Include="Network\Requests\RequestArgs\UpdateContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdatePresentationLinkRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\UpdateMetadataEntryRequestArgs.cs" />
+    <Compile Include="Network\Requests\ReturnLockRequest.cs" />
     <Compile Include="Network\Requests\SearchRequest.cs" />
+    <Compile Include="Network\Requests\SubscribeToLockRequest.cs" />
+    <Compile Include="Network\Requests\UnSubscribeToLockRequest.cs" />
     <Compile Include="Network\Requests\UpdateContentRequest.cs" />
     <Compile Include="Network\Requests\UpdateMetadataEntryRequest.cs" />
     <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
@@ -849,6 +874,7 @@
     <Compile Include="Network\Requests\UploadCollectionBackgroundImageRequest.cs" />
     <Compile Include="Network\Requests\WebSearchRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
+    <Compile Include="Network\ServerRepo\ILockableMethodExtensions.cs" />
     <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />

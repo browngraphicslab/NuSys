@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Windows.UI;
 using NusysIntermediate;
 
@@ -34,7 +35,7 @@ namespace NuSysApp
 
         #region Node Dimensions
 
-        public const double DefaultNodeSize = 200;
+        public const double DefaultNodeSize = 500;
         public const double DefaultAnnotationSize = 100;
         public const double ExtraPaddingSpace = 50;
         public const double MinNodeSize = 40;

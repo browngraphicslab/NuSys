@@ -107,6 +107,20 @@ namespace NuSysApp
         /// </summary>
         private FilterMenu _filterMenu { get; }
 
+        /// <summary>
+        /// The button that is used to activate the bing popup
+        /// </summary>
+        private ButtonUIElement _bingButton;
+        /// <summary>
+        /// This is the popup that executes a bing search
+        /// </summary>
+        private BingSearchPopup _bingSearchPopup;
+
+        ///// <summary>
+        ///// TEST BUTTON
+        ///// </summary>
+        //private RectangleButtonUIElement _testbutton;
+
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
@@ -115,7 +129,13 @@ namespace NuSysApp
             // add the libary list view as a child
             AddChild(LibraryListView);
 
-            // set up the ui of the add file button
+            //setup the bing button and it's popup
+            _bingButton = new TransparentButtonUIElement(this, ResourceCreator)
+            {
+                ImageBounds = new Rect(10, 10, 30, 30)
+            };
+            AddButton(_bingButton, TopBarPosition.Right);
+
             _addFileButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
                 ImageBounds = new Rect(10, 10, 30, 30)
@@ -131,8 +151,9 @@ namespace NuSysApp
                 TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 FontSize = 14,
                 BorderWidth = 1,
-                Bordercolor = Constants.MED_BLUE,
-                Background = Colors.White
+                BorderColor = Constants.MED_BLUE,
+                Background = Colors.White,
+                FontFamily = UIDefaults.TextFont
             };
             _searchBar.TextChanged += SearchBarTextChanged;
             AddChild(_searchBar);
@@ -140,10 +161,11 @@ namespace NuSysApp
             TopBarColor = Constants.LIGHT_BLUE;
             TopBarHeight = 50;
             Background = Colors.White;
-            Bordercolor = Constants.MED_BLUE;
+            BorderColor = Constants.MED_BLUE;
             BorderWidth = 1;
             IsSnappable = true;
 
+            ShowClosable();
 
             // initialize the filter button
             _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
@@ -173,6 +195,8 @@ namespace NuSysApp
             LibraryListView.RowDoubleTapped += LibraryListView_RowDoubleTapped;
 
             _filterButton.Tapped += OnFilterButtonTapped;
+            _bingButton.Tapped += _bingButton_Tapped;
+
 
             _dragCanceled = false;
 
@@ -180,7 +204,6 @@ namespace NuSysApp
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
         }
-
 
         /// <summary>
         /// Event handler for when the text of the library search bar changes
@@ -239,6 +262,13 @@ namespace NuSysApp
             _filterMenu.Width = 200;
         }
 
+        private void _bingButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _bingSearchPopup = new BingSearchPopup(this, Canvas);
+            _bingSearchPopup.Width = 300;
+            _bingSearchPopup.Transform.LocalPosition = new Vector2(Width-_bingSearchPopup.Width,_bingButton.Height);
+            AddChild(_bingSearchPopup);
+        }
         /// <summary>
         /// Fired whenever a row is selected, causes the session controller to fetch the content data model for that row
         /// </summary>
@@ -287,7 +317,10 @@ namespace NuSysApp
         public override async Task Load()
         {
             _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
-            base.Load();
+
+            _bingButton.Image =
+                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/logo_bing_en-US.png"));
+            base.Load(); 
         }
 
         /// <summary>
@@ -314,12 +347,11 @@ namespace NuSysApp
         {
 
             // remove each of the drag elements
-            foreach (var rect in _libraryDragElements.ToArray())
+            foreach (var rect in _libraryDragElements)
             {
-                rect.Dispose();
                 RemoveChild(rect);
-                _libraryDragElements.Remove(rect);
             }
+            _libraryDragElements.Clear();
             _isDragVisible = false;
 
             if (_dragCanceled)
@@ -332,8 +364,7 @@ namespace NuSysApp
             {
                 var libraryElementController =
                     SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-
-                StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
+                StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
             }
         }
 
@@ -344,7 +375,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private async void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        private void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
             if (_dragCanceled)
             {
@@ -360,12 +391,11 @@ namespace NuSysApp
                 if (LibraryListView.HitTest(pointer.CurrentPoint) != null)
                 {
                     // remove each of the drag elements
-                    foreach (var rect in _libraryDragElements.ToArray())
+                    foreach (var rect in _libraryDragElements)
                     {
-                        rect.Dispose();
                         RemoveChild(rect);
-                        _libraryDragElements.Remove(rect);
                     }
+                    _libraryDragElements.Clear();
                     _isDragVisible = false;
                     _dragCanceled = true;
                 }
@@ -394,21 +424,24 @@ namespace NuSysApp
                                 SessionController.Instance.ContentController.GetLibraryElementController(
                                     model.LibraryElementId))
                         .ToList();
-
-                // add each of the controllers smalliconurls as drag icons
                 foreach (var controller in selectedControllers)
                 {
                     var rect = new RectangleUIElement(this, ResourceCreator);
-                    rect.Image = await CanvasBitmap.LoadAsync(Canvas, controller.SmallIconUri);
+                    var task = Task.Run(() => LoadCanvasBitmap(controller.SmallIconUri));
+                    rect.Image = task.Result;
                     rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
                     _libraryDragElements.Add(rect);
                     position += new Vector2(_itemDropOffset, _itemDropOffset);
                     AddChild(rect);
-
                 }
             }
         }
         
+
+        private async Task<ICanvasImage> LoadCanvasBitmap(Uri smallIconURI)
+        {
+            return await MediaUtil.LoadCanvasBitmapAsync(Canvas, smallIconURI);
+        }
 
         public override void Dispose()
         {
@@ -470,15 +503,25 @@ namespace NuSysApp
             listColumn6.RelativeWidth = 1f;
             listColumn6.ColumnFunction = model => SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId) != null ? SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId).Title : "";
 
+            var listColumn7 = new ListTextColumn<LibraryElementModel>();
+            listColumn7.Title = "Creation Date";
+            listColumn7.RelativeWidth = 1f;
+            listColumn7.ColumnFunction = model => model.GetController().GetCreationTimestampInMinutes();
+
+            var listColumn8 = new ListTextColumn<LibraryElementModel>();
+            listColumn8.Title = "Access";
+            listColumn8.RelativeWidth = 1f;
+            listColumn8.ColumnFunction = model => model.AccessType.ToString();
+
             LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
 
-            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4, listColumn5, listColumn6 });
+            LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4, listColumn5, listColumn8, listColumn7,listColumn6  });
 
             LibraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());
 
             BorderWidth = 5;
-            Bordercolor = Colors.Black;
+            BorderColor = Colors.Black;
             TopBarColor = Colors.Azure;
             Width = 500;
             Height = 400;
@@ -527,6 +570,9 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<List<LibraryElementController>> AddFile(IReadOnlyList<StorageFile> storageFiles = null)
         {
+
+            // clear the fileIdToAccessMap
+            _fileIdToAccessMap.Clear();
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
             NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;

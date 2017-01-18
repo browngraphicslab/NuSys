@@ -61,6 +61,8 @@ namespace NuSysApp
                     SelectedBackground = Constants.LIGHT_BLUE;
                     ButtonTextColor = Constants.DARK_BLUE;
                     break;
+                default:
+                    break;
             }
         }
     }

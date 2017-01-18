@@ -33,10 +33,11 @@ namespace NuSysApp
             var cell = new TextboxUIElement(listViewRowUIElement, resourceCreator);
             cell.Width = (RelativeWidth / sumOfAllColumnRelativeWidths) * listViewRowUIElement.Width;
             cell.BorderWidth = BorderWidth;
-            cell.Bordercolor = BorderColor;
+            cell.BorderColor = BorderColor;
             cell.Height = rowHeight;
             cell.Background = Colors.Transparent;
             cell.Text = ColumnFunction(itemSource);
+            cell.FontSize = 14;
             cell.TextHorizontalAlignment = TextHorizontalAlignment;
             cell.TextVerticalAlignment = TextVerticalAlignment;
             return cell;

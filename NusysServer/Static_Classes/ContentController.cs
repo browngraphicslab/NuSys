@@ -41,6 +41,11 @@ namespace NusysServer
             }
         }
 
+
+        public LockListenersController LockListeners {get; private set; }
+
+        public LocksController LockController { get; private set; }
+
         /// <summary>
         /// private constructor to make singleton
         /// </summary>
@@ -48,6 +53,8 @@ namespace NusysServer
         {
             _sqlConnector = new SQLConnector();
             _comparisonController = new ComparisonController();
+            LockController = new LocksController();
+            LockListeners = new LockListenersController(LockController);
         }
     }
 }

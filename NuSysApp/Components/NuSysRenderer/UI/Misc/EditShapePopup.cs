@@ -52,13 +52,14 @@ namespace NuSysApp
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
-        public EditShapePopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, CollectionLibraryElementController controller) : base(parent, resourceCreator)
+        public EditShapePopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
+            CollectionLibraryElementController controller) : base(parent, resourceCreator)
         {
             _collectionController = controller;
 
             Background = Colors.White;
             BorderWidth = 2;
-            Bordercolor = Constants.DARK_BLUE;
+            BorderColor = Constants.DARK_BLUE;
             Width = 600;
             Height = 500;
 
@@ -107,22 +108,25 @@ namespace NuSysApp
         private async Task SelectAndSaveImage()
         {
             var storageFiles = await FileManager.PromptUserForFiles(Constants.ImageFileTypes, singleFileOnly: true);
-            var file = new List<StorageFile>(storageFiles).First();
-            var bytes = await MediaUtil.StorageFileToByteArray(file);
+            if (storageFiles != null) { 
+                var file = new List<StorageFile>(storageFiles).First();
+                var bytes = await MediaUtil.StorageFileToByteArray(file);
 
-            var thumb = await file.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
-            var aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;
+                var thumb = await file.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
+                var aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;
 
-            var args = new UploadCollectionBackgroundImageServerRequestArgs()
-            {
-                FileExtension = file.FileType,
-                ImageBytes = bytes
-            };
-            var request = new UploadCollectionBackgroundImageRequest(args);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            Debug.Assert(request.WasSuccessful() == true);
-            var url = request.GetReturnedImageUrl();
-            _collectionController.CollectionContentDataController.SetShapeUrl(url, aspectRatio);
+                var args = new UploadCollectionBackgroundImageServerRequestArgs()
+                {
+                    FileExtension = file.FileType,
+                    ImageBytes = bytes
+                };
+                var request = new UploadCollectionBackgroundImageRequest(args);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                Debug.Assert(request.WasSuccessful() == true);
+                var url = request.GetReturnedImageUrl();
+                _collectionController.CollectionContentDataController.SetShapeUrl(url, aspectRatio);
+            }
+            
         }
 
 

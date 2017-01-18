@@ -60,56 +60,50 @@ namespace NuSysApp
             _addLinkTitleBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
                 PlaceHolderText = "link title...",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray
+                Background = Colors.White,
+                BorderWidth = 1,
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_addLinkTitleBox);
 
             _addLinkToElementBox = new AutoSuggestTextBox<LibraryElementModel>(this, Canvas)
             {
                 PlaceHolderText = "link to...",
-                Background = Colors.Azure,
-                BorderWidth = 2,
-                Bordercolor = Colors.DarkSlateGray,
+                Background = Colors.White,
+                BorderWidth = 1,
+                BorderColor = Constants.DARK_BLUE,
                 ColumnFunction = elementController => elementController.Title,
                 FilterFunction = delegate(string s)
                 {
                     return
                         new List<LibraryElementModel>(
                             SessionController.Instance.ContentController.AllLibraryElementModels.Where(
-                                lem => lem.Title.Contains(s)));
+                                lem => lem.Title.ToLower().Contains(s.ToLower())));
                 },
             };
 
             _addLinkTagsBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Background = Colors.Azure,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
-                PlaceHolderText = "tags - spearate with commas"
+                Background = Colors.White,
+                BorderWidth = 1,
+                BorderColor = Constants.DARK_BLUE,
+                PlaceHolderText = "tags - separate with commas"
             };
             AddChild(_addLinkTagsBox);
 
-            _createLinkButton = new ButtonUIElement(this, Canvas, new RectangleUIElement(this, Canvas))
-            {
-                ButtonText = "Create Link",
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
-                Background = Colors.Azure,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center
-            };
+            _createLinkButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Add Link");
             AddChild(_createLinkButton);
-
-            // always add this as the last child since it has a drop down
-            AddChild(_addLinkToElementBox);
 
             // create the list view to display the events
             CreateListView();
 
             _controller.LinkAdded += OnLinkAdded;
             _controller.LinkRemoved += OnLinkRemoved;
+            _createLinkButton.Tapped += OnCreateLinkButtonTapped;
+
+
+            // always add this as the last child since it has a drop down
+            AddChild(_addLinkToElementBox);
 
         }
 
@@ -121,7 +115,7 @@ namespace NuSysApp
         private void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // if the auto suggest button has a selection chosen, and there isn't an empty title then create a link
-            if (_addLinkToElementBox.HasSelection && !string.IsNullOrEmpty(_addLinkTitleBox.Text))
+            if (_addLinkToElementBox.HasSelection)
             {
 
                 // get the tags from the tags box
@@ -134,8 +128,14 @@ namespace NuSysApp
                     keywords.Add(new Keyword(tagString));
                 }
 
+                var title = _addLinkTitleBox.Text;
+                if (string.IsNullOrEmpty(title))
+                {
+                    title = null;
+                }
+
                 // try to add a link between the two controllers
-                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), _addLinkTitleBox.Text,keywords);
+                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), title,keywords);
             }
         }
 
@@ -179,8 +179,8 @@ namespace NuSysApp
             _link_listview = new ListViewUIElementContainer<LinkLibraryElementController>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray
+                BorderWidth = 1,
+                BorderColor = Constants.DARK_BLUE
             };
             AddChild(_link_listview);
 

@@ -100,7 +100,7 @@ namespace NuSysApp
         public void AddElement(string item, int value)
         {
             var element = new BarChartElement(Parent, ResourceCreator);
-            element.Bordercolor = Colors.Black;
+            element.BorderColor = Colors.Black;
             element.Background = Palette[_children.Count % Palette.Count];
             element.Item = item;
             element.Value = value;

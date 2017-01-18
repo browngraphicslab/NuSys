@@ -239,6 +239,15 @@ namespace NuSysApp
             
         }
 
+        public void UpdateTabTitle(T tabToUpdate, string newTitle)
+        {
+            var buttonToUpdate = _tabList.FirstOrDefault(e => IsEqual(e.Tab, tabToUpdate));
+            if (buttonToUpdate != null)
+            {
+                buttonToUpdate.Title = newTitle;
+            }
+        }
+
         /// <summary>
         /// Initializes a new Tab and return a TabButtonUIElement
         /// </summary>
@@ -270,7 +279,16 @@ namespace NuSysApp
         {
             // get the tab which is going to be removed from the list of tabs
             var tabToBeRemoved = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.Tab));
-            Debug.Assert(tabToBeRemoved != null);
+            if (tabToBeRemoved == null)
+            {
+                // if there are no tabs left then close the tab container
+                if (_tabList.Count == 0)
+                {
+                    CloseTabContainer();
+                }
+
+                return;
+            }
 
             // get the index of the tab that is going to be removed
             var index = _tabList.IndexOf(tabToBeRemoved);
@@ -415,7 +433,7 @@ namespace NuSysApp
             _tabBar.Width = Width - 2*BorderWidth;
             _tabBar.Transform.LocalPosition = new Vector2(BorderWidth);
             _tabBar.Background = TabBarBackground;
-            _tabBar.Bordercolor = TabBarBorderColor;
+            _tabBar.BorderColor = TabBarBorderColor;
             _tabBar.BorderWidth = TabBarBorderWidth;
 
             // arrange the tabs

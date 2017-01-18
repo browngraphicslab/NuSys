@@ -24,9 +24,10 @@ namespace NuSysApp
         {
             _label = new TextboxUIElement(this, ResourceCreator);
             _label.Text = "metadata";
+            _label.FontFamily = UIDefaults.TitleFont;
             _label.Width = Width;
             _label.Height = 38;
-            _label.FontSize = 32;
+            _label.FontSize = 20;
             _label.TextColor = Constants.DARK_BLUE;
             _label.Background = Constants.LIGHT_BLUE;
             _label.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
@@ -36,15 +37,23 @@ namespace NuSysApp
 
             _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
-                Background = Colors.Azure,
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkSlateGray,
+                Background = Colors.White,
+                BorderWidth = 1,
+                BorderColor = Constants.LIGHT_BLUE,
                 PlaceHolderText = "Search"
             };
             AddChild(_searchTextBox);
 
+
             _searchTextBox.TextChanged += OnSearchTextChanged;
 
+        }
+
+        public override Task Load()
+        {
+            CreateListView();
+
+            return base.Load();
         }
 
         public void UpdateList(LibraryElementController controller)
@@ -54,21 +63,20 @@ namespace NuSysApp
                 _controller.MetadataChanged -= _controller_MetadataChanged;
             }
             _controller = controller;
-            CreateListView();
-            _controller.MetadataChanged += _controller_MetadataChanged;
-        }
-
-        private void OnShowImmutableSelectionChanged(CheckBoxUIElement sender, bool show_immutable)
-        {
+            _metadata_listview?.ClearItems();
+            _metadata_listview?.ClearFilter();
+            _metadata_listview?.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
             filterlist();
+
+            _controller.MetadataChanged += _controller_MetadataChanged;
         }
 
         private void filterlist()
         {
-            _metadata_listview.ClearItems();
+            _metadata_listview?.ClearItems();
             var filtered_metadata = filter_by_search_text(new List<MetadataEntry>(_controller.GetMetadata().Values),
                 _searchTextBox.Text);
-            _metadata_listview.AddItems(filtered_metadata);
+            _metadata_listview?.AddItems(filtered_metadata);
         }
 
         private List<MetadataEntry> filter_by_mutability(List<MetadataEntry> metadataToBeFiltered, bool show_immutable)
@@ -116,8 +124,8 @@ namespace NuSysApp
             _metadata_listview = new ListViewUIElementContainer<MetadataEntry>(this, ResourceCreator)
             {
                 Background = Colors.White,
-                BorderWidth = 3,
-                Bordercolor = Constants.DARK_BLUE
+                BorderWidth = 1,
+                BorderColor = Constants.LIGHT_BLUE
             };
             AddChild(_metadata_listview);
 
@@ -133,8 +141,6 @@ namespace NuSysApp
                 metadataEntry => string.Join(", ", metadataEntry.Values.Select(value => string.Join(", ", value)));
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> { listColumn, listColumn2 });
-
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -144,8 +150,8 @@ namespace NuSysApp
                 return;
             }
             // helper variable, the current vertical spacing from the top of the window
-            var vertical_margin = 5;
-            var horizontal_margin = 10;
+            var vertical_margin = 0;
+            var horizontal_margin = 0;
             var searchTextBoxHeight = 30;
 
             _label.Width = Width;

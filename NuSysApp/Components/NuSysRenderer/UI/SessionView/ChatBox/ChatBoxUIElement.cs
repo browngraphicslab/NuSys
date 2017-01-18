@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -9,8 +10,8 @@ using Windows.System;
 using Windows.UI;
 using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
+using SharpDX.Direct2D1.Effects;
 using NusysIntermediate;
-using NuSysAp;
 
 namespace NuSysApp
 {
@@ -20,6 +21,11 @@ namespace NuSysApp
         /// The scrollable rectangle the user types their messages into
         /// </summary>
         private ScrollableTextboxUIElement _typingRect;
+
+        /// <summary>
+        /// The rectangle that contains the textbox. this is useful because we want the border of the textbox to be visible at all times
+        /// </summary>
+        private RectangleUIElement _typingRectContainer;
 
         /// <summary>
         /// ScrollingCanvas that contains a vertically scrolling list of all the messages
@@ -37,23 +43,36 @@ namespace NuSysApp
             Width = 300;
             Height = 300;
             KeepAspectRatio = false;
+            BorderWidth = 3;
+            BorderColor = Constants.LIGHT_BLUE;
+            BorderType  = BorderType.Outside;
+            
+            ShowClosable();
 
+            _typingRectContainer = new RectangleUIElement(this, ResourceCreator)
+            {
+                BorderColor = Constants.LIGHT_BLUE,
+                BorderWidth = this.BorderWidth,
+                Background = Colors.White,
+                Height = 50,
+                Width = Width
+            };
 
             // instantiate the typing and reading rectangles
             _typingRect = new ScrollableTextboxUIElement(this, resourceCreator, true, true)
             {
-                BorderWidth = 3,
-                Bordercolor = Colors.DarkGray,
-                Width = Width,
-                Height = 50
+                Background = Colors.White,
+                Width = _typingRectContainer.Width,
+                Height = _typingRectContainer.Height
             };
-            AddChild(_typingRect);
+            _typingRectContainer.AddChild(_typingRect);
+            AddChild(_typingRectContainer);
 
             _readingRect = new ScrollingCanvas(this, resourceCreator, ScrollingCanvas.ScrollOrientation.Vertical)
             {
-                Background = Colors.Beige,
+                Background = Colors.White,
                 Width = Width,
-                Height = Height - _typingRect.Height - TopBarHeight,
+                Height = Height - _typingRectContainer.Height - TopBarHeight,
             };
             _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, _readingRect.Height);
             AddChild(_readingRect);
@@ -101,12 +120,18 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             // resize so the typing rect is smaller than the reading rect
-            _typingRect.Height = 50;
-            _typingRect.Width = Width;
-            _readingRect.Height = Height - _typingRect.Height - TopBarHeight;
+            _typingRectContainer.Height = 50;
+            _typingRectContainer.Width = Width;
+            _typingRect.Width = _typingRectContainer.Width - 2* _typingRectContainer.BorderWidth;
+            _typingRect.Height = _typingRectContainer.Height - 2* _typingRectContainer.BorderWidth;
+            _readingRect.Height = Height - _typingRectContainer.Height - TopBarHeight;
             _readingRect.Width = Width;
-            _readingRect.Transform.LocalPosition = new Vector2(_readingRect.Transform.LocalPosition.X, TopBarHeight);
-            _typingRect.Transform.LocalPosition = new Vector2(_typingRect.Transform.LocalPosition.X, TopBarHeight + _readingRect.Height);
+            
+
+            _readingRect.Transform.LocalPosition = new Vector2(0, TopBarHeight);
+            _typingRectContainer.Transform.LocalPosition = new Vector2(0, TopBarHeight + _readingRect.Height);
+            _typingRect.Transform.LocalPosition = new Vector2(BorderWidth, BorderWidth);
+
 
             var yOffset = 0f;
             foreach (var element in _readingRect.Elements.ToArray())
@@ -123,39 +148,50 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
+        /// <summary>
+        /// adds functional chat message that will call the callback function when clicked.  
+        /// The callback function MUST remove itself from the sender's tapped event or else we have a memory leak
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="chatMessage"></param>
+        /// <param name="callback"></param>
+        public void AddFunctionalChat(NetworkUser user, string chatMessage, PointerHandler callback)
+        {
+            Debug.Assert(user != null);
+            var headerGrid = GetHeaderGrid(user);
+            var messageBox = GetMessageBox(chatMessage);
+            messageBox.Tapped += callback;
+            AddChat(headerGrid, messageBox);
+        }
+
 
         /// <summary>
         /// Adds a chat message to the ChatBox, called be the requests, and takes care of adding the current user's chats
-        /// as well as other user's chats, as well as updating the number of unseen chats
         /// </summary>
         /// <param name="user"></param>
         /// <param name="chatMessage"></param>
         public void AddChat(NetworkUser user, string chatMessage)
         {
-            var headerBox = new DynamicTextboxUIElement(this, Canvas)
-            {
-                FontWeight = FontWeights.Bold,
-                Text = $"{user.DisplayName}  :  {DateTime.Now.ToString("h:mm:ss tt")}",
-                Background = user.Color,
-                Width = (float) _readingRect.ScrollAreaSize.Width
-            };
-            headerBox.Load();
+            Debug.Assert(user != null);
+            var headerGrid = GetHeaderGrid(user);
+            var messageBox = GetMessageBox(chatMessage);
+            AddChat(headerGrid, messageBox);
+        }
+
+        /// <summary>
+        /// private method to add a chat using the two chat components, the header grid and the message box.
+        /// </summary>
+        /// <param name="headerGrid"></param>
+        /// <param name="messageBox"></param>
+        private void AddChat(GridLayoutManager headerGrid, DynamicTextboxUIElement messageBox)
+        {
 
             // add the element to the scrolling canvas
-            _readingRect.AddElement(headerBox, new Vector2(0, _newMessageYOffset));
+            _readingRect.AddElement(headerGrid, new Vector2(0, _newMessageYOffset));
 
             // increment the message y offset by the height of the header box
-            _newMessageYOffset += headerBox.Height;
-
-            // add a new message box to the caht window with the background the same as the user's color
-            var messageBox = new DynamicTextboxUIElement(this, Canvas)
-            {
-                Background = user.Color,
-                Text = chatMessage,
-                Width = (float) _readingRect.ScrollAreaSize.Width
-            };
-            // load the messageBox this is required for all dynamic text boxes
-            messageBox.Load();
+            _newMessageYOffset += headerGrid.Height;
 
             // add the element to the scroling canvas
             _readingRect.AddElement(messageBox, new Vector2(0, _newMessageYOffset));
@@ -165,6 +201,73 @@ namespace NuSysApp
 
             // set the scroll area size so that it can contain the new message
             UpdateScrollAreaSize();
+        }
+
+        /// <summary>
+        /// private method to get the message textbox from the given chat message.
+        /// The message can be null.
+        /// 
+        /// </summary>
+        /// <param name="chatMessage"></param>
+        /// <returns></returns>
+        private DynamicTextboxUIElement GetMessageBox(string chatMessage)
+        {
+            // add a new message box to the caht window with the background the same as the user's color
+            var messageBox = new DynamicTextboxUIElement(this, Canvas)
+            {
+                Background = Colors.White,
+                Text = chatMessage ?? "",
+                Width = (float)_readingRect.ScrollAreaSize.Width
+            };
+            // load the messageBox this is required for all dynamic text boxes
+            messageBox.Load();
+            return messageBox;;
+        }
+
+        /// <summary>
+        /// private method to get a header grid for a user at the current time
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private GridLayoutManager GetHeaderGrid(NetworkUser user)
+        {
+            var headerGrid = new GridLayoutManager(this, Canvas)
+            {
+                Width = (float)_readingRect.ScrollAreaSize.Width,
+                Height = 25,
+                Background = Colors.White
+            };
+
+            headerGrid.AddColumns(new List<float> { 0.3f, 0.7f, 0.1f });
+            headerGrid.AddRows(new List<float> { 1 });
+
+            var nameBox = new DynamicTextboxUIElement(this, Canvas)
+            {
+                Background = Colors.White,
+                FontWeight = FontWeights.ExtraBold,
+                Text = $"{user.DisplayName}",
+                FontSize = 15,
+                TextColor = user.Color,
+                Width = (float)_readingRect.ScrollAreaSize.Width * 0.3f
+            };
+
+            var timeBox = new DynamicTextboxUIElement(this, Canvas)
+            {
+                FontSize = 12,
+                Background = Colors.White,
+                FontWeight = FontWeights.Normal,
+                Text = $"{DateTime.Now.ToString("h:mm tt")}",
+                TextColor = Constants.ALMOST_BLACK,
+                Width = (float)_readingRect.ScrollAreaSize.Width * 0.7f
+            };
+
+            nameBox.Load();
+            timeBox.Load();
+
+            headerGrid.AddElement(nameBox, 0, 0, HorizontalAlignment.Left, VerticalAlignment.Stretch);
+            headerGrid.AddElement(timeBox, 0, 1, HorizontalAlignment.Right, VerticalAlignment.Stretch);
+
+            return headerGrid;
         }
 
         private void UpdateScrollAreaSize()

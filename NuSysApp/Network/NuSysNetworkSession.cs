@@ -63,7 +63,7 @@ namespace NuSysApp
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnNewNotification += HandleNotification;
-            LockController = LockController ?? new LockController(_serverClient);
+            LockController = LockController ?? new LockController();
 
             //asynchronously run a request that will be loading the user ID to display name dictionary 
             Task.Run(async delegate
@@ -149,6 +149,12 @@ namespace NuSysApp
                     break;
                 case NusysConstants.NotificationType.AnalysisModelMade:
                     handler = new AnalysisModelMadeNotificationHandler();
+                    break;
+                case NusysConstants.NotificationType.LockHolderChanged:
+                    handler = new LockHolderChangedNotificationHandler();
+                    break;
+                case NusysConstants.NotificationType.WebSearchCompleted:
+                    handler = new WebSearchCompletedNotificationHandler();
                     break;
                 default:
                     throw new Exception("we don't handle that notification type yet");

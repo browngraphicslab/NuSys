@@ -131,7 +131,13 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             suggestion_list.Width = Width;
-            suggestion_list.Height = MaxDropDownHeight;
+            if (suggestion_list.GetItems().Any())
+            {
+                suggestion_list.Height = Math.Min(MaxDropDownHeight, suggestion_list.HeightOfAllRows);
+            } else
+            {
+                suggestion_list.Height = MaxDropDownHeight;
+            }
             suggestion_list.Transform.LocalPosition = new Vector2(0, Height);
 
             base.Update(parentLocalToScreenTransform);

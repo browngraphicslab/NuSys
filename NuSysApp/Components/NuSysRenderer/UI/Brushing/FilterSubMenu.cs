@@ -78,9 +78,13 @@ namespace NuSysApp
         public FilterSubMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
-            TopBarColor = Colors.Azure;
+            TopBarColor = Constants.MED_BLUE;
+            TopBarHeight = 0;
             Height = 400;
             Width = 300;
+            Background = Colors.White;
+            BorderWidth = 1;
+            BorderColor = Constants.LIGHT_BLUE;
 
             // instantiate a new _libraryElementListview
             _userIdListView = new ListViewUIElementContainer<string>(this, ResourceCreator)
@@ -118,11 +122,9 @@ namespace NuSysApp
             _creationDateHeader = new TextboxUIElement(this, ResourceCreator)
             {
                 Text = "Creation Date Range",
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                FontSize = 20,
                 Height = 50,
-                Background = Colors.LightGray,
-                TextColor = Colors.Black,
-                BorderWidth = 2,
-                Bordercolor = Colors.Black,
                 IsVisible = false
             };
             AddChild(_creationDateHeader);
@@ -130,11 +132,10 @@ namespace NuSysApp
             _lastEditedDateHeader = new TextboxUIElement(this, ResourceCreator)
             {
                 Text = "Last Edited Date Range",
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                FontSize = 20,
                 Height = 50,
-                Background = Colors.LightGray,
-                TextColor = Colors.Black,
-                BorderWidth = 2,
-                Bordercolor = Colors.Black,
+                TextColor = Constants.ALMOST_BLACK,
                 IsVisible = false
             };
             AddChild(_lastEditedDateHeader);
@@ -384,16 +385,17 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            var padding = 0;
             // make sure the list views fill the height and width of the cotnainer
-            _userIdListView.Width = Width - 2*BorderWidth;
+            _userIdListView.Width = Width - 2*BorderWidth - padding*2;
             _userIdListView.Height = Height - 2 * BorderWidth - TopBarHeight;
-            _userIdListView.Transform.LocalPosition = new Vector2(BorderWidth, BorderWidth + TopBarHeight);
-            _elementTypeListView.Width = Width - 2 * BorderWidth;
+            _userIdListView.Transform.LocalPosition = new Vector2(BorderWidth + padding, BorderWidth + TopBarHeight);
+            _elementTypeListView.Width = Width - 2 * BorderWidth - padding*2;
             _elementTypeListView.Height = Height - 2 * BorderWidth - TopBarHeight;
-            _elementTypeListView.Transform.LocalPosition = new Vector2(BorderWidth, BorderWidth + TopBarHeight);
+            _elementTypeListView.Transform.LocalPosition = new Vector2(BorderWidth + padding, BorderWidth + TopBarHeight);
 
             // set the date views so they are stacked vertically and centered
-            var dateSpacing = 5;
+            var dateSpacing = 10;
             _creationStartDateSelector.Transform.LocalPosition = new Vector2(Width/2 - _creationStartDateSelector.Width/2, Height/2 - _creationStartDateSelector.Height - dateSpacing);
             _creationEndDateSelector.Transform.LocalPosition = new Vector2(Width / 2 - _creationEndDateSelector.Width / 2, Height / 2 + _creationEndDateSelector.Height + dateSpacing);
             _lastEditedStartDateSelector.Transform.LocalPosition = _creationStartDateSelector.Transform.LocalPosition;

@@ -77,10 +77,10 @@ namespace NuSysApp
         /// </summary>
         public Color CheckBoxBorderColor
         {
-            get { return _checkBoxButton.Bordercolor; }
+            get { return _checkBoxButton.BorderColor; }
             set
             {
-                _checkBoxButton.Bordercolor = value;
+                _checkBoxButton.BorderColor = value;
                 _checkBoxButton.SelectedBorder = value; // we don't want the border to flash on tapped
             }
         }
@@ -249,7 +249,7 @@ namespace NuSysApp
             CheckBoxHeight = UIDefaults.CheckBoxHeight;
             SpaceBetweenCheckboxAndLabel = 10; // set this before checkboxwidth since the checkboxWidth uses this in its calculations
             CheckBoxWidth = UIDefaults.CheckBoxWidth;
-            CheckBoxBorderColor = Colors.Black;
+            CheckBoxBorderColor = Constants.ALMOST_BLACK;
             CheckBoxBackground = Colors.White;
 
             // we'll just accept all the default TextBoxUIElementValuesforNow
@@ -270,7 +270,7 @@ namespace NuSysApp
             AddChild(_selectionIndicatorRect);
             
             // set the default selection indicator color, do this after initializing the _selectionIndicatorRect because property changes rect values
-            SelectionIndicatorColor = Colors.Black;
+            SelectionIndicatorColor = Constants.ALMOST_BLACK;
 
 
             // add the proper events
@@ -324,7 +324,7 @@ namespace NuSysApp
         {
 
             // set the default border color and selected border color of the checkbox button
-            _checkBoxButton.Bordercolor = CheckBoxBorderColor;
+            _checkBoxButton.BorderColor = CheckBoxBorderColor;
             _checkBoxButton.SelectedBorder = CheckBoxBorderColor;
 
             // set the background and size and location of the selectionIndicatorRect
@@ -340,6 +340,8 @@ namespace NuSysApp
             // set the height and width of the Label
             _labelElement.Width = Width - CheckBoxWidth - SpaceBetweenCheckboxAndLabel - 2 * BorderWidth;
             _labelElement.Height = Height - 2 * BorderWidth;
+            _labelElement.BorderWidth = 0;
+            _labelElement.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
 
             // position the checkbox and label based on the LabelPosition
             switch (LabelPosition)

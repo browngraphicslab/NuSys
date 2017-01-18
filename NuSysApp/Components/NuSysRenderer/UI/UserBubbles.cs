@@ -15,6 +15,8 @@ namespace NuSysApp
     /// <summary>
     /// Class which represents the rectangle area to the right of the node which houses the bubbles which show
     /// which users are editing the node
+    /// 
+    /// NOTE: hacky class. do not use in areas other than the node.
     /// </summary>
     public class UserBubbles : RectangleUIElement
     {

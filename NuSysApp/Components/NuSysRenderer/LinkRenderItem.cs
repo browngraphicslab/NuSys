@@ -24,6 +24,18 @@ namespace NuSysApp
             _vm = vm;
             _vm.Controller.InElement.AnchorChanged += OnAnchorChanged;
             _vm.Controller.OutElement.AnchorChanged += OnAnchorChanged;
+
+            _vm.Controller.LibraryElementController.Deleted += LibraryElementControllerOnDeleted;
+        }
+
+        /// <summary>
+        /// Event handler called when the library element model is deleted
+        /// </summary>
+        /// <param name="sender"></param>
+        private void LibraryElementControllerOnDeleted(object sender)
+        {
+            Parent?.RemoveChild(this);
+            Dispose();
         }
 
         private void OnAnchorChanged(object sender, Point2d point2D)
@@ -39,9 +51,9 @@ namespace NuSysApp
             _vm.Controller.InElement.AnchorChanged -= OnAnchorChanged;
             _vm.Controller.OutElement.AnchorChanged -= OnAnchorChanged;
 
+            _vm.Controller.LibraryElementController.Deleted -= LibraryElementControllerOnDeleted;
+
             _path.Dispose();
-            _path = null;
-            _vm = null;
             base.Dispose();
         }
 

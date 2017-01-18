@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
 
-namespace NuSysAp
+namespace NuSysApp
 {
     /// <summary>
     /// Request class used to execute a web search from the server

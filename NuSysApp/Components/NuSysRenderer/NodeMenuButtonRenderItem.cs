@@ -36,7 +36,7 @@ namespace NuSysApp
             {
                 TextColor = Constants.RED,
                 Text = "",
-                FontFamily = UIDefaults.FontFamily,
+                FontFamily = UIDefaults.TextFont,
                 FontSize = 10,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Top,
@@ -86,7 +86,7 @@ namespace NuSysApp
 
         public override Rect GetLocalBounds()
         {
-            return new Rect(-15, -15, 30, 30);
+            return new Rect(-25, -25, 50, 50);
         }
 
     }

@@ -17,6 +17,8 @@ namespace NuSysApp
 
         public static ResizeableWindowUIElement CurrentlyDraggingWindow { get; private set; }
 
+        
+
         /// <summary>
         /// The maximum width of the resizable window
         /// </summary>
@@ -377,6 +379,8 @@ namespace NuSysApp
             OnFocusLost -= FocusLostHideHighlight;
             OnFocusLost -= FocusLostHideHighlight;
 
+            
+
             base.Dispose();
         }
 
@@ -398,8 +402,20 @@ namespace NuSysApp
                 // in this case we are changing the size and the offset. Size decreases by drag x amount, offset increases
                 // by drag x amount
                 case ResizerBorderPosition.Left:
-                    sizeDelta.X -= pointer.DeltaSinceLastUpdate.X;
-                    offsetDelta.X += pointer.DeltaSinceLastUpdate.X;
+                    sizeDelta.X = -pointer.DeltaSinceLastUpdate.X;
+                    if (Width + sizeDelta.X < MinWidth)
+                    {
+                        Debug.Assert(MinWidth != null);
+                        sizeDelta.X = (float) (MinWidth - Width);
+                    }
+
+                    if (Width + sizeDelta.X > MaxWidth)
+                    {
+                        Debug.Assert(MaxWidth != null);
+                        sizeDelta.X = (float) (MaxWidth - Width);
+                    }
+
+                    offsetDelta.X -= sizeDelta.X;
                     break;
                 // in this case we are changing the size only. Size increases by the drag x amount
                 case ResizerBorderPosition.Right:
@@ -415,7 +431,18 @@ namespace NuSysApp
                     break;
                 case ResizerBorderPosition.BottomLeft:
                     sizeDelta.X -= pointer.DeltaSinceLastUpdate.X;
-                    offsetDelta.X += pointer.DeltaSinceLastUpdate.X;
+                    if (Width + sizeDelta.X < MinWidth)
+                    {
+                        Debug.Assert(MinWidth != null);
+                        sizeDelta.X = (float)(MinWidth - Width);
+                    }
+
+                    if (Width + sizeDelta.X > MaxWidth)
+                    {
+                        Debug.Assert(MaxWidth != null);
+                        sizeDelta.X = (float)(MaxWidth - Width);
+                    }
+                    offsetDelta.X -= sizeDelta.X;
                     sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
                     break;
                 default:
@@ -479,7 +506,7 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
+        /// <summary>D
         /// Takes in a CanvasPointer and returns the ResizerBorderPosition
         /// </summary>
         /// <param name="pointer"></param>
@@ -541,6 +568,8 @@ namespace NuSysApp
             return null;
         }
 
+
+
         private void ToggleResizeHighlight(bool visible)
         {
             _leftResizeHighlight.IsVisible = visible;
@@ -568,6 +597,18 @@ namespace NuSysApp
             _bottomRightResizeHighlight.Transform.LocalPosition = new Vector2(Width, Height);
             _bottomRightResizeHighlight.Width = ErrorMargin;
             _bottomRightResizeHighlight.Height = ErrorMargin;
+
+            // check gradient visibility 
+            if ((HasFocus == true || ChildHasFocus == true) && _leftResizeHighlight.IsVisible == false)
+            {
+                ToggleResizeHighlight(true);
+            }
+            if ((HasFocus == false && ChildHasFocus == false) && _leftResizeHighlight.IsVisible == true)
+            {
+                ToggleResizeHighlight(false);
+            }
+
+
             base.Update(parentLocalToScreenTransform);
         }
 

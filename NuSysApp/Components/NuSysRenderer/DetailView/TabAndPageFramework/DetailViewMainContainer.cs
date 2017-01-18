@@ -40,9 +40,19 @@ namespace NuSysApp
         private Dictionary<string, DetailViewPageTabType> _libElemToCurrTabOpen;
 
         /// <summary>
-        /// button that floats along side of detail view. you click it to close the detail view.
+        /// stack layout manager to arrange the positions of user bubbles on the side of the detail view
         /// </summary>
-        private EllipseButtonUIElement _closeButton;
+        private StackLayoutManager _userLayoutManager;
+
+        /// <summary>
+        /// true if the main container has been loaded
+        /// </summary>
+        private bool _loaded;
+
+        /// <summary>
+        /// event fired whenever the detal view shows a new library element
+        /// </summary>
+        public event EventHandler<LibraryElementController> NewLibraryElementShown; 
 
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -72,14 +82,9 @@ namespace NuSysApp
             // dictionary of library element ids
             _libElemToCurrTabOpen = new Dictionary<string, DetailViewPageTabType>();
 
-            _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
-            {
-                Height = 30,
-                Width = 30,
-                ImageBounds = new Rect(7.5,7.5,15,15)
-            };
-            AddChild(_closeButton);
-            _closeButton.Transform.LocalPosition = new Vector2(-40, 80);
+            ShowClosable();
+
+            _closeButton.Transform.LocalPosition = new Vector2(_closeButton.Transform.LocalX, 80);
 
             // setup the mainTabLayoutManager so that the mainTabContainer fills the entire detail viewer window
             _mainTabLayoutManager = new StackLayoutManager
@@ -100,19 +105,44 @@ namespace NuSysApp
             _mainTabContainer.OnCurrentTabChanged += _mainTabContainer_OnCurrentTabChanged;
             _mainTabContainer.OnTabRemoved += _mainTabContainer_OnTabRemoved;
             _pageContainer.OnPageTabChanged += PageContainerOnPageTabChanged;
-
-            _closeButton.Tapped += CloseButtonOnTapped;
         }
 
-        private void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// shows the users on the current element visible in the detail view
+        /// </summary>
+        private void CreateUserBubbles(string libraryElementId)
         {
-            HideDetailView();
-        }
+            var users = SessionController.Instance.UserController.GetUsersOfLibraryElement(libraryElementId);
+            if (_userLayoutManager != null)
+            {
+                _userLayoutManager.ClearStack(this);
+            }
+            else
+            {
+                _userLayoutManager = new StackLayoutManager(StackAlignment.Vertical);
+                _userLayoutManager.Spacing = 10;
+                _userLayoutManager.BottomMargin = 10;
+                _userLayoutManager.LeftMargin = -40;
+                _userLayoutManager.ItemWidth = 30;
+                _userLayoutManager.ItemHeight = 30;
+            }
 
-        public override async Task Load()
-        {
-            _closeButton.Image = _closeButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
-            base.Load();
+            float height = 0;
+
+            foreach (var user in users)
+            {
+                var userId = SessionController.Instance.NuSysNetworkSession.NetworkMembers[user];
+                var displayName = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[user].ToUpper();
+                var userBubble = new EllipseButtonUIElement(this, Canvas, UIDefaults.Bubble, displayName[0].ToString())
+                {
+                    Background = userId.Color
+                };
+                AddChild(userBubble);
+                _userLayoutManager.AddElement(userBubble);
+                height += userBubble.Height + _userLayoutManager.Spacing;
+            }
+
+            _userLayoutManager.TopMargin = Height - height - 10;
         }
 
         /// <summary>
@@ -138,6 +168,7 @@ namespace NuSysApp
             if (controller != null)
             {
                 controller.Deleted -= Controller_Deleted;
+                controller.TitleChanged -= Controller_TitleChanged;
             }
 
         }
@@ -161,8 +192,13 @@ namespace NuSysApp
             _mainTabContainer.OnCurrentTabChanged -= _mainTabContainer_OnCurrentTabChanged;
             _mainTabContainer.OnTabRemoved -= _mainTabContainer_OnTabRemoved;
             _pageContainer.OnPageTabChanged -= PageContainerOnPageTabChanged;
-            _closeButton.Tapped -= CloseButtonOnTapped;
             base.Dispose();
+        }
+
+        public override async Task Load()
+        {
+            base.Load();
+            _loaded = true;
         }
 
         /// <summary>
@@ -183,6 +219,8 @@ namespace NuSysApp
             }
 
             _pageContainer.ShowLibraryElement(libElemId, currPage);
+
+            CreateUserBubbles(libElemId);
         }
 
         /// <summary>
@@ -197,7 +235,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (_disabled)
+            if (_disabled || !_loaded)
             {
                 return;
             }
@@ -211,8 +249,16 @@ namespace NuSysApp
 
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
             _mainTabContainer.AddTab(libraryElementModelId, controller.LibraryElementModel.Title);
+            controller.TitleChanged += Controller_TitleChanged;
             controller.Deleted += Controller_Deleted;
+            NewLibraryElementShown?.Invoke(this,controller);
+        }
 
+        private void Controller_TitleChanged(object sender, string e)
+        {
+            var controller = sender as LibraryElementController;
+            Debug.Assert(controller != null);
+            _mainTabContainer.UpdateTabTitle(controller.LibraryElementModel.LibraryElementId, e);
         }
 
         private void Controller_Deleted(object sender)
@@ -232,6 +278,11 @@ namespace NuSysApp
             // this makes the mainTabContainer fill the entire window
             _mainTabLayoutManager.SetSize(Width, Height);
             _mainTabLayoutManager.ArrangeItems();
+
+            if (_userLayoutManager != null)
+            {
+                _userLayoutManager.ArrangeItems();
+            }
 
             base.Update(parentLocalToScreenTransform);
         }

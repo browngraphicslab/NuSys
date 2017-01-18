@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Storage;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -34,11 +40,6 @@ namespace NuSysApp
         private StackLayoutManager _contentLayoutManager;
 
         /// <summary>
-        /// The layout manager for the add region button
-        /// </summary>
-        private StackLayoutManager _addRegionButtonLayoutManager;
-
-        /// <summary>
         /// The add region button
         /// </summary>
         private ButtonUIElement _addRegionButton;
@@ -46,12 +47,7 @@ namespace NuSysApp
         /// <summary>
         /// The width of the add region button
         /// </summary>
-        private float _addRegionButtonWidth = 25;
-
-        /// <summary>
-        /// The margin on the left and right of the add region button
-        /// </summary>
-        private float _addRegionButtonLeftRightMargin = 10;
+        private float _addRegionButtonWidth = 150;
 
         /// <summary>
         /// The _analysis ui element associated with the regions page
@@ -93,6 +89,11 @@ namespace NuSysApp
         /// button to expand the detail view page, should only happen if the element is an image or a PDF
         /// </summary>
         private RectangleButtonUIElement _expandButton;
+        
+        /// <summary>
+        /// button to open word from the detail view if the element is a word element
+        /// </summary>
+        private RectangleButtonUIElement _wordButton;
 
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
@@ -109,11 +110,12 @@ namespace NuSysApp
             _showRegions = showRegions;
 
             // initialize the add region button and the _addRegionButtonLayoutManager
-            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle);
-
-            _addRegionButtonLayoutManager = new StackLayoutManager();
+            _addRegionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Add Region")
+            {
+                Width=150,
+                Height = 40
+            };
             AddChild(_addRegionButton);
-            _addRegionButtonLayoutManager.AddElement(_addRegionButton);
 
             /// add the analysis stuff only if it is supported
             if (_showsImageAnalysis)
@@ -138,12 +140,13 @@ namespace NuSysApp
             _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.DraggableStyle,
                 "Drag to Collection")
             {
-                Bordercolor = Constants.DARK_BLUE,
+                BorderColor = Constants.DARK_BLUE,
                 BorderWidth = 2
             };
             _dragToCollectionButton.Width = 150;
             _dragToCollectionButton.Height = 40;
             AddChild(_dragToCollectionButton);
+
             if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Image ||
                 controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
             {
@@ -155,12 +158,65 @@ namespace NuSysApp
                 _expandButton.Tapped += ExpandButton_Tapped;
             }
 
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
+            {
+                _wordButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Open Word");
+                _wordButton.Width = 150;
+                _wordButton.Height = 40;
+                AddChild(_wordButton);
+
+                _wordButton.Tapped += WordButtonOnTapped;
+            }
+
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
             _dragToCollectionButton.DragCompleted += _dragToCollectionButton_DragCompleted;
             _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
 
+        }
+
+        private async void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            Debug.Assert(_controller.LibraryElementModel.Type == NusysConstants.ElementType.Word);
+            var request = new GetWordDocumentRequest(new GetWordDocumentRequestArgs() {ContentId =  _controller.LibraryElementModel.ContentDataModelId});
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            Debug.Assert(request.WasSuccessful() == true);
+            if (request.WasSuccessful() == true)
+            {
+                await UITask.Run(async delegate{ 
+                    var bytes = request.GetReturnedDocumentBytes();
+                    var path = _controller.LibraryElementModel.ContentDataModelId + ".docx";
+                    var fullPath = NuSysStorages.SaveFolder.Path + "\\" + path;
+
+                    await Task.Run(async delegate
+                    {
+                        NuSysStorages.SaveFolder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
+                        try
+                        {
+                            File.WriteAllBytes(fullPath, bytes);
+                        }
+                        catch (Exception e)
+                        {
+                            //do nothing
+                        }
+                    });
+
+                    var launcherOptions = new LauncherOptions() { UI = { PreferredPlacement = Placement.Right, InvocationPoint = new Point(SessionController.Instance.SessionView.ActualWidth / 2, 0.0) } };
+                    launcherOptions.TreatAsUntrusted = false;
+                    launcherOptions.PreferredApplicationDisplayName = "NUSYS";
+                    launcherOptions.PreferredApplicationPackageFamilyName = "NuSys";
+                    launcherOptions.DesiredRemainingView = ViewSizePreference.UseHalf;
+
+                    await Task.Run(async delegate
+                    {
+                        var storageFile = await StorageFile.GetFileFromPathAsync(fullPath);
+                        File.SetAttributes(fullPath, System.IO.FileAttributes.Normal);
+                        await Launcher.LaunchFileAsync(storageFile, launcherOptions);
+                    });
+                });
+            }
         }
 
         protected virtual void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -211,7 +267,7 @@ namespace NuSysApp
             var addRegionButton = interactiveBaseRenderItem as ButtonUIElement;
             Debug.Assert(addRegionButton!= null);
             _addRegionPopup = new FlyoutPopup(this, Canvas);
-            _addRegionPopup.Transform.LocalPosition = new Vector2(addRegionButton.Transform.LocalPosition.X - _addRegionPopup.Width / 2,
+            _addRegionPopup.Transform.LocalPosition = new Vector2(addRegionButton.Transform.LocalPosition.X,
                 addRegionButton.Transform.LocalPosition.Y + addRegionButton.Height);
             _addRegionPopup.AddFlyoutItem("Public", OnAddPublicRegionFlyoutTapped, Canvas);
             _addRegionPopup.AddFlyoutItem("Private", OnAddPrivateRegionFlyoutTapped, Canvas);
@@ -250,7 +306,6 @@ namespace NuSysApp
                 return;
 
             _contentLayoutManager.Dispose();
-            _addRegionButtonLayoutManager.Dispose();
 
             _addRegionButton.Tapped -= AddRegionButton_Tapped;
             _dragToCollectionButton.DragCompleted -= _dragToCollectionButton_DragCompleted;
@@ -267,6 +322,11 @@ namespace NuSysApp
                 _expandButton.Tapped -= ExpandButton_Tapped;
             }
 
+            if (_wordButton != null)
+            {
+                _wordButton.Tapped -= WordButtonOnTapped;
+            }
+
             base.Dispose();
         }
 
@@ -276,29 +336,6 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            if (_showRegions)
-            {
-                // set the add region button
-                _addRegionButtonLayoutManager.SetSize(_addRegionButtonLeftRightMargin*2 + _addRegionButtonWidth, Height);
-                _addRegionButtonLayoutManager.VerticalAlignment = VerticalAlignment.Center;
-                _addRegionButtonLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
-                _addRegionButtonLayoutManager.ItemWidth = _addRegionButtonWidth;
-                _addRegionButtonLayoutManager.ItemHeight = _addRegionButtonWidth;
-                _addRegionButtonLayoutManager.ArrangeItems();
-
-                // set visibility of add region button
-                _addRegionButton.IsVisible = true;
-            }
-            else
-            {
-                _addRegionButton.IsVisible = false;
-            }
-
-
-            _dragToCollectionButton.Transform.LocalPosition = new Vector2(Width/2 + _dragToCollectionButton.Width/2, Height - 50);
-
-            //var dragToCollectionHeight = _dragToCollectionButton.Height + 20;
-
             // get the image height for use in laying out the image on top of the image analysis
             var heightMultiplier = _showsImageAnalysis ? .75f : .9f;
 
@@ -313,16 +350,24 @@ namespace NuSysApp
             }
 
             // set the image
-            var imageOffsetFromRegionButton = _showRegions ? _addRegionButtonLayoutManager.Width : 0;
-            _contentLayoutManager.SetSize(Width - imageOffsetFromRegionButton, _imageHeight);
+            _contentLayoutManager.SetSize(Width, _imageHeight);
             _contentLayoutManager.VerticalAlignment = VerticalAlignment.Top;
             _contentLayoutManager.HorizontalAlignment = HorizontalAlignment.Center;
-            _contentLayoutManager.ItemWidth = Width - imageOffsetFromRegionButton - 20;
+            _contentLayoutManager.ItemWidth = Width - 20;
             _contentLayoutManager.ItemHeight = _imageHeight;
             _contentLayoutManager.SetMargins(20);
-            _contentLayoutManager.ArrangeItems(new Vector2(imageOffsetFromRegionButton, 0));
+            _contentLayoutManager.ArrangeItems(new Vector2(0, 0));
 
-            
+            if (_showRegions)
+            {
+                _addRegionButton.IsVisible = true;
+                _addRegionButton.Transform.LocalPosition = new Vector2(Width / 2 - _addRegionButton.Width / 2,
+                        _imageHeight + _contentLayoutManager.TopMargin + 10);
+            }
+            else
+            {
+                _addRegionButton.IsVisible = false;
+            }
 
             if (_showsImageAnalysis)
             {
@@ -341,17 +386,32 @@ namespace NuSysApp
             {
                 _expandButton.Transform.LocalPosition = new Vector2(Width / 2 - _expandButton.Width / 2,
                     _imageHeight + _contentLayoutManager.TopMargin + 10);
-                _imageAnalysisLayoutManager.SetSize(Width, Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) - _dragToCollectionButton.Height);
-                _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0, _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
+                if (_showsImageAnalysis)
+                {
+                    _imageAnalysisLayoutManager.SetSize(Width,
+                        Height - _imageHeight - _contentLayoutManager.TopMargin - (_expandButton.Height + 20) -
+                        _dragToCollectionButton.Height);
+                    _imageAnalysisLayoutManager.ArrangeItems(new Vector2(0,
+                        _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20));
+                }
+                if (_showRegions)
+                {
+                    _addRegionButton.Transform.LocalPosition = new Vector2(Width / 2 - _addRegionButton.Width / 2,
+                        _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20);
+                }
             }
 
+            if (_wordButton != null)
+            {
+                _wordButton.Transform.LocalPosition = new Vector2(Width/2 - _wordButton.Width/2,
+                        _imageHeight + _contentLayoutManager.TopMargin + 10);
+            }
 
-                base.Update(parentLocalToScreenTransform);
+            base.Update(parentLocalToScreenTransform);
         }
 
         public override async Task Load()
         {
-            _addRegionButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements white.png"));
             base.Load();
         }
 

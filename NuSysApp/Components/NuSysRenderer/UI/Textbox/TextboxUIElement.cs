@@ -199,7 +199,7 @@ namespace NuSysApp
             TextColor = UIDefaults.TextColor;
             FontStyle = UIDefaults.FontStyle;
             FontSize = UIDefaults.FontSize;
-            FontFamily = UIDefaults.TitleFont;
+            FontFamily = UIDefaults.TextFont;
             Wrapping = UIDefaults.Wrapping;
             TrimmingSign = UIDefaults.TrimmingSign;
             TrimmingGranularity = UIDefaults.TrimmingGranularity;
@@ -210,26 +210,6 @@ namespace NuSysApp
             _constructed = true;
 
             UpdateCanvasTextFormat();
-        }
-
-
-        /// <summary>
-        /// Draws the background and the border and the text
-        /// </summary>
-        /// <param name="ds"></param>
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            // return if the item is disposed or is not visible
-            if (IsDisposed || !IsVisible)
-                return;
-            
-            // draw the background and borders
-            base.Draw(ds);
-
-            // draw the text
-            DrawText(ds);
-
-
         }
 
         protected virtual void UpdateCanvasTextFormat()
@@ -257,7 +237,7 @@ namespace NuSysApp
         /// Draws the text within the textbox
         /// </summary>
         /// <param name="ds"></param>
-        public virtual void DrawText(CanvasDrawingSession ds)
+        protected override void DrawText(CanvasDrawingSession ds)
         {
             // save the current transform of the drawing session
             var orgTransform = ds.Transform;

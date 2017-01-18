@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -40,14 +41,28 @@ namespace NuSysApp
         {
             Depth = 0;
             var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId) as CollectionLibraryElementController;
+
+            Debug.Assert(collectionController != null);
             if (collectionController != null)
             {
                 collectionController.OnChildAdded += AddChildById;
                 collectionController.OnChildRemoved += RemoveChildById;
+                collectionController.FiniteBoolChanged += CollectionControllerOnFiniteBoolChanged;
             }
             ToolController.ToolControllers.Add(Id, this);
+        }
 
-            Disposed += OnDisposed;
+        /// <summary>
+        /// event fired when the library element model's finite boolean changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="b"></param>
+        private void CollectionControllerOnFiniteBoolChanged(object sender, bool b)
+        {
+            if (b)
+            {
+                SetCameraCenter((float) Constants.InitialCenter, (float) Constants.InitialCenter);
+            }
         }
 
         /// <summary>
@@ -92,17 +107,20 @@ namespace NuSysApp
             contentModel.IsFinite = finite;
         }
 
-        private void OnDisposed(object source, object args)
+        public override void Dispose()
         {
             var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId) as CollectionLibraryElementController;
+            Debug.Assert(collectionController != null);
             if (collectionController != null)
             {
                 collectionController.OnChildAdded -= AddChildById;
                 collectionController.OnChildRemoved -= RemoveChildById;
+                collectionController.FiniteBoolChanged -= CollectionControllerOnFiniteBoolChanged;
             }
             ToolController.ToolControllers.Remove(Id);
 
-            Disposed -= OnDisposed;
+            base.Dispose();
+
         }
 
         private void AddChildById(string id)
