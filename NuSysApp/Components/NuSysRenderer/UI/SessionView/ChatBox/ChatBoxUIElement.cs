@@ -101,12 +101,10 @@ namespace NuSysApp
         /// <param name="text"></param>
         private async void SendMessage(string text)
         {
-            /*
-            var searchRequest = new WebSearchRequest(new WebSearchRequestArgs() {SearchString = text});
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(searchRequest);
-            var s = searchRequest.WasSuccessful();
-            */
-            //web search parser testing
+            if (CheckForChatbotChat(text))
+            {
+                return;
+            }
 
             var chatRequest = new ChatRequest(SessionController.Instance.NuSysNetworkSession.NetworkMembers[WaitingRoomView.UserID], text);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(chatRequest);
@@ -115,6 +113,33 @@ namespace NuSysApp
                 _typingRect.ClearText();
                 chatRequest.AddSuccesfullChatLocally();
             }
+        }
+
+        /// <summary>
+        /// private method to parse text before making a chat reuqest.
+        /// Should check to see if there was a special message sent.  
+        /// This should be refactored better and elsewhere later.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private bool CheckForChatbotChat(string text)
+        {
+            if (text.ToLower().Trim().StartsWith("join "))
+            {
+                var name = text.ToLower().Trim().Substring(5);
+                var id = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.Where(kvp => kvp.Value.ToLower() == name).Select(kvp => kvp.Key).FirstOrDefault();
+                if (id != null)
+                {
+                    var request = new GetCollaboratorCoordinatesRequest(new GetCollaboratorCoordinatesRequestArgs()
+                    {
+                        UserId = id
+                    });
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

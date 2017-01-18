@@ -62,6 +62,11 @@ namespace NusysIntermediate
             _message[NusysConstants.FULL_ARGS_REQUEST_ARGS_INSTANCE_TYPE_KEY] = args.GetType().ToString();
         }
 
+        /// <summary>
+        /// default constructor for deserialzing from the server
+        /// </summary>
+        /// <param name="message"></param>
+        public FullArgsRequest(Message message) : base(message) { }
 
         /// <summary>
         /// Method that is called whenever another client makes the request.

@@ -808,6 +808,7 @@
     <Compile Include="Network\Requests\GetAliasesOfLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\GetAllLibraryElementsRequest.cs" />
     <Compile Include="Network\Requests\GetAnalysisModelRequest.cs" />
+    <Compile Include="Network\Requests\GetCollaboratorCoordinatesRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\GetLastUsedCollectionsRequest.cs" />
@@ -841,6 +842,7 @@
     <Compile Include="Network\Requests\RequestArgs\UpdateMetadataEntryRequestArgs.cs" />
     <Compile Include="Network\Requests\ReturnLockRequest.cs" />
     <Compile Include="Network\Requests\SearchRequest.cs" />
+    <Compile Include="Network\Requests\SendCollaboratorCoordinatesRequest.cs" />
     <Compile Include="Network\Requests\SubscribeToLockRequest.cs" />
     <Compile Include="Network\Requests\UnSubscribeToLockRequest.cs" />
     <Compile Include="Network\Requests\UpdateContentRequest.cs" />

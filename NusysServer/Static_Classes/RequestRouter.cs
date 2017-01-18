@@ -143,6 +143,12 @@ namespace NusysServer
                         case NusysConstants.RequestType.ReturnLockRequest:
                             requestHandler =new ReturnLockRequestHandler();
                             break;
+                        case NusysConstants.RequestType.GetCollaboratorCoordinatesRequest:
+                            requestHandler = new GetCollaboratorCoordinatesRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.SendCollaboratorCoordinatesRequest:
+                            requestHandler = new SendCollaboratorCoordinatesRequestHandler();
+                            break;
                         default:
                             throw new Exception("request type not supported on the server yet!");
                     }
