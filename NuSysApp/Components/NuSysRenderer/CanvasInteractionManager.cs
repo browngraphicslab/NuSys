@@ -70,6 +70,11 @@ namespace NuSysApp
         private InteractionType _lastInteractionType = InteractionType.Touch;
 
         /// <summary>
+        /// bool representing if the shift key is held
+        /// </summary>
+        public bool ShiftHeld { get; private set; }
+
+        /// <summary>
         /// The interaction type of the last pointer down event.
         /// </summary>
         public InteractionType LastInteractionType
@@ -88,10 +93,27 @@ namespace NuSysApp
             _canvas.PointerCanceled += CanvasOnPointerExited;
             _canvas.PointerExited += CanvasOnPointerExited;
             _canvas.Holding += OnHolding;
+            _canvas.KeyDown += CanvasOnKeyDown;
+            _canvas.KeyUp += CanvasOnKeyUp;
             AllPointersReleased += OnAllPointersReleased;
             SetEnabled(true);
         }
 
+        private void CanvasOnKeyUp(object sender, KeyRoutedEventArgs keyRoutedEventArgs)
+        {
+            if (keyRoutedEventArgs.Key == VirtualKey.Shift)
+            {
+                ShiftHeld = false;
+            }
+        }
+
+        private void CanvasOnKeyDown(object sender, KeyRoutedEventArgs keyRoutedEventArgs)
+        {
+            if (keyRoutedEventArgs.Key == VirtualKey.Shift)
+            {
+                ShiftHeld = true;
+            }
+        }
 
 
         public virtual void Dispose()
@@ -104,6 +126,8 @@ namespace NuSysApp
             _canvas.PointerCaptureLost -= CanvasOnPointerExited;
             _canvas.PointerCanceled -= CanvasOnPointerExited;
             _canvas.PointerExited -= CanvasOnPointerExited;
+            _canvas.KeyDown -= CanvasOnKeyDown;
+            _canvas.KeyUp -= CanvasOnKeyUp;
             AllPointersReleased -= OnAllPointersReleased;
         }
 

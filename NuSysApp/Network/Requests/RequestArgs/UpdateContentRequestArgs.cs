@@ -17,6 +17,7 @@ namespace NuSysApp
 
         /// <summary>
         /// REQUIRED. Holds the updated content that will replace the old content.
+        /// Can be null
         /// </summary>
         public string UpdatedContent { get; set; }
 
@@ -28,7 +29,6 @@ namespace NuSysApp
         {
             Debug.Assert(ContentId != null);
             Debug.Assert(ContentType != null);
-            Debug.Assert(UpdatedContent != null);
             Message message = new Message();
             message[NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY] = ContentId;
             message[NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY] = ContentType.ToString();

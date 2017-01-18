@@ -147,7 +147,10 @@ namespace NuSysApp
         /// </summary>
         public void OnParentDisposed(object sender, string parentid)
         {
-            RemoveParent(ToolControllers[parentid]);
+            if (ToolControllers.ContainsKey(parentid))
+            {
+                RemoveParent(ToolControllers[parentid]);
+            }
             ToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             OutputLibraryIdsChanged?.Invoke(this, ToolModel.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
