@@ -807,6 +807,7 @@ namespace NuSysApp
                 {
                     Text = Text.Insert(CaretCharacterIndex + 1, Newline);
                     CaretCharacterIndex++;
+                    OnInputSubmitted();
                 } else
                 {
                     OnInputSubmitted();
@@ -1707,6 +1708,7 @@ namespace NuSysApp
         {
             CaretCharacterIndex = -1;
             Text = string.Empty;
+            _updateCaretTransform = true;
             OnTextChanged(Text);
         }
 

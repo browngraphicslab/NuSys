@@ -102,22 +102,19 @@ namespace NuSysApp
             _chatTitle.Transform.LocalPosition = new Vector2(this.Transform.LocalX,
                 this.Transform.LocalY - _chatTitle.Height);
 
-            _typingRect.KeyPressed += _typingRect_KeyPressed;
+            _typingRect.InputSubmitted += _typingRect_InputSubmitted;
+        }
+
+        private void _typingRect_InputSubmitted(ScrollableTextboxUIElement sender, string input)
+        {
+            SendMessage(input.TrimEnd('\n'));
         }
 
         public override void Dispose()
         {
-            _typingRect.KeyPressed -= _typingRect_KeyPressed;
+            _typingRect.InputSubmitted -= _typingRect_InputSubmitted;
 
             base.Dispose();
-        }
-
-        private void _typingRect_KeyPressed(Windows.UI.Core.KeyEventArgs args)
-        {
-            if (args.VirtualKey == VirtualKey.Enter)
-            {
-                SendMessage(_typingRect.Text);
-            }
         }
 
         /// <summary>
