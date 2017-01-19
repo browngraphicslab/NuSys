@@ -36,6 +36,7 @@ namespace NuSysApp
 
         private float _newMessageYOffset;
 
+        private TextboxUIElement _chatTitle;
         /// <summary>
         /// True if we want to scroll to the bottom of the page
         /// </summary>
@@ -70,7 +71,8 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 Width = _typingRectContainer.Width,
-                Height = _typingRectContainer.Height
+                Height = _typingRectContainer.Height,
+                PlaceHolderText = "Enter message here..."
             };
             _typingRectContainer.AddChild(_typingRect);
             AddChild(_typingRectContainer);
@@ -83,6 +85,21 @@ namespace NuSysApp
             };
             _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, _readingRect.Height);
             AddChild(_readingRect);
+
+            _chatTitle = new TextboxUIElement(this, Canvas)
+            {
+                Background = Colors.Transparent,
+                TextColor = Constants.ALMOST_BLACK,
+                BorderWidth =  0,
+                FontSize = 20,
+                FontFamily = UIDefaults.TitleFont,
+                Text = "Chat",
+                Height = 40,
+                Width = 100
+            };
+            AddChild(_chatTitle);
+            _chatTitle.Transform.LocalPosition = new Vector2(this.Transform.LocalX,
+                this.Transform.LocalY - _chatTitle.Height);
 
             _typingRect.KeyPressed += _typingRect_KeyPressed;
         }
@@ -171,7 +188,6 @@ namespace NuSysApp
             _typingRect.Height = _typingRectContainer.Height - 2* _typingRectContainer.BorderWidth;
             _readingRect.Height = Height - _typingRectContainer.Height - TopBarHeight;
             _readingRect.Width = Width;
-            
 
             _readingRect.Transform.LocalPosition = new Vector2(0, TopBarHeight);
             _typingRectContainer.Transform.LocalPosition = new Vector2(0, TopBarHeight + _readingRect.Height);

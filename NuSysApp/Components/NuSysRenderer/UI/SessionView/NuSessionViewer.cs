@@ -644,6 +644,7 @@ namespace NuSysApp
                 Library = new LibraryListUIElement(this, Canvas);
                 Library.KeepAspectRatio = false;
                 AddChild(Library);
+                Library.Transform.LocalPosition = new Vector2(_floatingMenu.Transform.LocalX + _floatingMenu.Width, _floatingMenu.Transform.LocalY + _floatingMenu.Height);
             }
             Library.IsVisible = false;
 
