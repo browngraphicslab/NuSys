@@ -11,6 +11,7 @@ namespace NuSysApp
     {
 
         private DetailViewVideoContent _content;
+        private VideoLibraryElementController _controller;
 
         public DetailViewVideoPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, VideoLibraryElementController controller, bool showRegions) : base(parent, resourceCreator, controller, false, false)
         {
@@ -18,7 +19,13 @@ namespace NuSysApp
             _content = new DetailViewVideoContent(this, Canvas, controller, showRegions);
 
             SetContent(_content);
+            _controller = controller;
 
+        }
+
+        protected override void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo(_controller);
         }
     }
 
