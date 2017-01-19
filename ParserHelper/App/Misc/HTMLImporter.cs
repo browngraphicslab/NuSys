@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using static System.String;
@@ -66,20 +68,17 @@ namespace ParserHelper
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public async Task<List<DataHolder>> Run(Uri url)
+        public async Task<List<DataHolder>> Run(HtmlDocument doc)
         {
-            //Load HTML from the website
-            var doc = await GetDocumentFromUri(url);
-            if (doc == null)
-            {
-                return null;
-            }
+            var lastTime = DateTime.Now;
             //We only want websites that qualify as an article so we check to see if certain tags are in the site
             var articleTopNode = SiteScoreTaker.GetArticle(doc);
             if (articleTopNode == null)
             {
                 return null;
             }
+            Debug.WriteLine("find article "+(DateTime.Now-lastTime).TotalMilliseconds);
+            lastTime=DateTime.Now;
             _paragraphCollections = new HashSet<HashSet<HtmlNode>>();
             _citationCollections = new HashSet<List<string>>();
             _citationUrlCollections = new List<List<string>>();
@@ -87,6 +86,8 @@ namespace ParserHelper
             var models = new List<DataHolder>();
             // This recursively goes through each node in the html document, depth first, and parses data
             await RecursiveAdd(articleTopNode, models);
+            Debug.WriteLine("parse "+(DateTime.Now-lastTime).TotalMilliseconds);
+            lastTime=DateTime.Now;
             isArticleFound = false;
             //We store the data for the text nodes based on the headers and the content between those headers so we need 
             //to go through and make the text data holders
@@ -133,30 +134,46 @@ namespace ParserHelper
                 //reset the text so we don't aggregate it all into blocks larger than we want
                 text = "";
             }
+            Debug.WriteLine("concat text "+(DateTime.Now-lastTime).TotalMilliseconds);
+            lastTime=DateTime.Now;
             return models;
         }
+
         /// <summary>
         /// From a uri we send a webrequest to get the website as an htmldocument or else we return null
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<HtmlDocument> GetDocumentFromUri(Uri url)
+        private static async Task<HtmlDocument> GetDocumentFromUri(Uri url, ConcurrentTaskQueue queue,
+            CancellationToken cts)
         {
             try
             {
                 var doc = new HtmlDocument();
-                var webRequest = WebRequest.Create(url.AbsoluteUri);
-                HttpWebResponse response = (HttpWebResponse)(await webRequest.GetResponseAsync());
-                Stream stream = response.GetResponseStream();
+                var client = new HttpClient();
+                var t = DateTime.Now;
+                var res = await client.GetAsync(url, cts);
+                Debug.WriteLine("fetch took " + (DateTime.Now-t).TotalMilliseconds);
+                Stream stream = await res.Content.ReadAsStreamAsync(); 
                 doc.Load(stream);
                 stream.Dispose();
+                queue.Enqueue(doc);
                 return doc;
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.WriteLine("Fetch timed out");
+                queue.numcanceled++;
+                queue.tasksOut--;
+                return null;
             }
             catch (Exception)
             {
+                queue.tasksOut--;
                 return null;
             }
         }
+
         /// <summary>
         /// Stores each header and grouping of paragraphs to be turned into dataholders for later
         /// </summary>
@@ -581,13 +598,16 @@ namespace ParserHelper
             //This is more tailored towards Wikipedia, the last link generally has the actual url
             return s.Any() ? s.Last() : null;
         }
+
         public static async Task<List<List<DataHolder>>> RunWithSearch(string search)
         {
 
+            var wholeTime = DateTime.Now;
+            var time = DateTime.Now;
             var client = new HttpClient();
             //search += " wikipedia";
             // Add the subscription key to the request header
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "f3e590290fa54bf1865343c3bae6955c");
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "9f62dc75c6ae4ca7bd8efa227939e76b");
             string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search + "&count=25&offset=0&mkt=en-us&safesearch=Moderate";
             // Build the content of the post request
 
@@ -598,42 +618,73 @@ namespace ParserHelper
             //We then turn the json into our class structure 
             var json = JsonConvert.DeserializeObject<BingJson>(jsonString);
             //This takes only the usable urls for us to parse into
-            var urls = json.webPages.value.Select(o => FormatSource(o.Url) ?? "").ToList();
+            var urls =
+                json.webPages.value.Where(
+                    e =>
+                        !blacklist.Any(
+                            r =>
+                                e.displayUrl.Contains(r)) && !e.displayUrl.Contains(".pdf")
+                        && !e.displayUrl.Contains(".doc") && !e.displayUrl.Contains(".ppt")).ToList();
+
+            var priorityParses = new List<string>() {"wikipedia.org", "nytimes"};
+            var priorityResults = urls.Where(e => priorityParses.Any(r => e.displayUrl.Contains(r))).ToList();
+            var urlsToParse = new ConcurrentTaskQueue();
+            foreach (var res in priorityResults)
+            {
+                urlsToParse.tasksOut++;
+                var doc = await GetDocumentFromUri(new Uri(res.Url),urlsToParse,new CancellationToken());
+                urls.Remove(res);
+            }
+            if (!urlsToParse.queue.Any())
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    urlsToParse.tasksOut++;
+                    await GetDocumentFromUri(new Uri(urls[i].Url),urlsToParse, new CancellationToken());
+                }
+                urlsToParse.offset = 4;
+            }
+            urlsToParse.urls = urls;
             //This creates the models that we will then send back as a response 
             var models = new List<List<DataHolder>> { new List<DataHolder>() };
-            int i = -1;
             //This is so that we can parse the data
             var htmlImporter = new HtmlImporter();
-            var balance = 0;
-            while (i < urls.Count - 1 && i < 4 + balance)
+            Debug.WriteLine("bing search "+(DateTime.Now-time).TotalMilliseconds);
+            int zerohits = 0;
+            while (models.Count<6 && (urlsToParse.queue.Any()||urlsToParse.tasksOut>0))
             {
-                i++;
-                bool isBad = false;
-                //We check if the url is in the blacklist, if so we skip it
-                foreach (var item in blacklist)
+                urlsToParse.offset++;
+                bool isempt = false;
+                var timeinwhileloop = DateTime.Now;
+                while (!urlsToParse.queue.Any() && urlsToParse.tasksOut>0)
                 {
-                    if (json.webPages.value[i].displayUrl.Contains(item))
-                    {
-                        isBad = true;
-                        break;
-                    }
+                    isempt = true;
+                    await Task.Delay(50);
                 }
-                //We cannot parse pdfs or things on the blacklist
-                if (isBad || json.webPages.value[i].displayUrl.Contains(".pdf") || json.webPages.value[i].displayUrl.Contains(".ppt") || json.webPages.value[i].displayUrl.Contains(".doc"))
+                Debug.WriteLine("time in while "+(DateTime.Now-timeinwhileloop).TotalMilliseconds);
+                if (!urlsToParse.queue.Any())
                 {
-                    balance++;
                     continue;
                 }
-                var dataholders = await htmlImporter.Run(new Uri(urls[i]));
+                zerohits += isempt ? 1 : 0;
+                var doc = await urlsToParse.Dequeue();
+                Debug.WriteLine("//////////////////////////////////////////New Parse////////////////////////////////////");
+                //We cannot parse pdfs or things on the blacklist
+                var dataholders = await htmlImporter.Run(doc);
                 if (dataholders == null || dataholders.Count == 0)
                 {
-                    balance++;
                     continue;
                 }
+                urlsToParse.numberGood++;
                 //Yay we have our models!
-                models.First().Add(new TextDataHolder(json.webPages.value[i].displayUrl, urls[i]));
+                models.First().Add(new TextDataHolder(doc.ToString(),""));
                 models.Add(dataholders);
             }
+            Debug.WriteLine("Whole Time " + (DateTime.Now-wholeTime).TotalMilliseconds);
+            Debug.WriteLine("number of times 0 was hit" + zerohits);
+            Debug.WriteLine("number of results parsed " + urlsToParse.offset);
+            Debug.WriteLine("parsed succesfully " + (models.Count-1));
+            Debug.WriteLine("number cancelled " + (urlsToParse.numcanceled));
             return models;
         }
         /// <summary>
@@ -651,6 +702,49 @@ namespace ParserHelper
         {
             public string displayUrl;
             public string Url;
+        }
+
+        private class ConcurrentTaskQueue
+        {
+            public ConcurrentQueue<HtmlDocument> queue;
+            public int tasksOut = 0;
+            public int offset = 0;
+            public int numberGood = 0;
+            public List<BingUrl> urls;
+            public int numcanceled=0;
+            public ConcurrentTaskQueue()
+            {
+                queue = new ConcurrentQueue<HtmlDocument>();
+            }
+
+            public void Enqueue(HtmlDocument t)
+            {
+                queue.Enqueue(t);
+                tasksOut--;
+            }
+
+            public async void timeoutTask()
+            {
+                    var cts = new CancellationTokenSource();
+                    cts.CancelAfter(3000);
+                    var task = GetDocumentFromUri(new Uri(urls[offset].Url), this,cts.Token);
+
+            }
+
+            public async Task<HtmlDocument> Dequeue()
+            {
+                while (offset < urls.Count && queue.Count + tasksOut < (5-numberGood)*2.5)
+                {
+                    //Load HTML from the website
+                    timeoutTask();
+                    tasksOut++;
+                }
+                HtmlDocument u;
+                queue.TryDequeue(out u);
+                return u;
+            }
+
+            public int Count => queue.Count;
         }
     }
 

@@ -15,7 +15,6 @@ namespace ParserHelper
         public async Task<IEnumerable<DataHolder>> loadResults()
         {
             var importer = new HtmlImporter();
-            DataObjects = await importer.Run((_url==null || _url=="")?null:new System.Uri(_url));
             return DataObjects;
         }
     }

@@ -93,7 +93,7 @@ namespace ParserHelper
             }
             
             //These are the tags that we want to search for in a website, article is generic and bodyCotent is a wikipedia thing
-            var re = new Regex("^(?:article|bodyContent)$");
+            var re = new Regex("^(?:article|mw-body)$");
             //These are tags we don't want to see
             var re1 = new Regex("(?:review|comment)");
             if ((re.IsMatch(node.Name) || re.IsMatch(node.Id??"") ||

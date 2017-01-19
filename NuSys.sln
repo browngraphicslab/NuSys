@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkScorerGUI", "LinkScorer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserHelper", "ParserHelper\ParserHelper.csproj", "{2614CF85-5115-4081-A993-84B2E23FD03D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parsertests", "Parsertests\Parsertests.csproj", "{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -295,6 +297,26 @@ Global
 		{2614CF85-5115-4081-A993-84B2E23FD03D}.Release|x64.Build.0 = Release|Any CPU
 		{2614CF85-5115-4081-A993-84B2E23FD03D}.Release|x86.ActiveCfg = Release|Any CPU
 		{2614CF85-5115-4081-A993-84B2E23FD03D}.Release|x86.Build.0 = Release|Any CPU
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|ARM.Build.0 = Debug|ARM
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|ARM.Deploy.0 = Debug|ARM
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|x64.ActiveCfg = Debug|x64
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|x64.Build.0 = Debug|x64
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|x64.Deploy.0 = Debug|x64
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|x86.ActiveCfg = Debug|x86
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|x86.Build.0 = Debug|x86
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Debug|x86.Deploy.0 = Debug|x86
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|Any CPU.ActiveCfg = Release|x86
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|ARM.ActiveCfg = Release|ARM
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|ARM.Build.0 = Release|ARM
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|ARM.Deploy.0 = Release|ARM
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|x64.ActiveCfg = Release|x64
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|x64.Build.0 = Release|x64
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|x64.Deploy.0 = Release|x64
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|x86.ActiveCfg = Release|x86
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|x86.Build.0 = Release|x86
+		{B024EDF4-E7A2-48D2-84D2-3C240B34A3CB}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
