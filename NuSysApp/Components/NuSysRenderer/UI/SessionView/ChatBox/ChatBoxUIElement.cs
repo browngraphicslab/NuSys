@@ -67,7 +67,7 @@ namespace NuSysApp
             };
 
             // instantiate the typing and reading rectangles
-            _typingRect = new ScrollableTextboxUIElement(this, resourceCreator, true, true)
+            _typingRect = new ScrollableTextboxUIElement(this, resourceCreator, true, false)
             {
                 Background = Colors.White,
                 Width = _typingRectContainer.Width,
@@ -82,6 +82,7 @@ namespace NuSysApp
                 Background = Colors.White,
                 Width = Width,
                 Height = Height - _typingRectContainer.Height - TopBarHeight,
+                
             };
             _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, _readingRect.Height);
             AddChild(_readingRect);
@@ -182,8 +183,13 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             // resize so the typing rect is smaller than the reading rect
-            _typingRectContainer.Height = 50;
+            var textHeight = _typingRect.GetTextHeight();
+
+            _typingRectContainer.Height = Math.Min(UIDefaults.MaxChatHeight, Math.Max(textHeight, UIDefaults.MinChatHeight));
             _typingRectContainer.Width = Width;
+
+            
+         
             _typingRect.Width = _typingRectContainer.Width - 2* _typingRectContainer.BorderWidth;
             _typingRect.Height = _typingRectContainer.Height - 2* _typingRectContainer.BorderWidth;
             _readingRect.Height = Height - _typingRectContainer.Height - TopBarHeight;

@@ -173,5 +173,10 @@ namespace NuSysApp
 
         #endregion list
 
+        #region chat
+        public static float MaxChatHeight = 125f;
+
+        public static float MinChatHeight = 50f;
+        #endregion chat
     }
 }
