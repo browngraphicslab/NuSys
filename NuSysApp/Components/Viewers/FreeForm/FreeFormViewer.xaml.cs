@@ -413,6 +413,10 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
+            if(_selectedLink == element)
+            {
+                return;
+            }
             RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -50);
             RenderEngine.BtnDelete.IsVisible = true;
 
