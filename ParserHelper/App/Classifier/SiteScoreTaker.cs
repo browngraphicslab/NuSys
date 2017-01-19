@@ -87,7 +87,7 @@ namespace ParserHelper
         /// <returns></returns>
         public static HtmlNode RecursiveGetArticle(HtmlNode node)
         {
-            if (HtmlImporter._tagsToRemove.IsMatch(node.Name.ToLower()) || HtmlImporter._tagsToRemove.IsMatch(node.Id.ToLower()) || HtmlImporter._tagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
+            if (HtmlImporter.TagsToRemove.IsMatch(node.Name.ToLower()) || HtmlImporter.TagsToRemove.IsMatch(node.Id.ToLower()) || HtmlImporter.TagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
             {
                 return null;
             }

@@ -48,7 +48,7 @@ namespace ParserHelper
         /// <summary>
         /// When looking through different tags, these are the ones we want to exclude 
         /// </summary>
-        public static Regex _tagsToRemove = new Regex(@"(?:sidebar|quiz|aside|o-hit|top-story|stickycolumn)");
+        public static Regex TagsToRemove = new Regex(@"(?:sidebar|quiz|aside|o-hit|top-story|stickycolumn)");
         /// <summary>
         /// This is so that I can clean the whitespace that makes the sites look messy
         /// </summary>
@@ -79,8 +79,11 @@ namespace ParserHelper
             }
             Debug.WriteLine("find article "+(DateTime.Now-lastTime).TotalMilliseconds);
             lastTime=DateTime.Now;
+            //Strucutured, first item in hashset is title of section, rest is content
             _paragraphCollections = new HashSet<HashSet<HtmlNode>>();
+            //This is a hashset of links of citations
             _citationCollections = new HashSet<List<string>>();
+            //This is the 
             _citationUrlCollections = new List<List<string>>();
             //This stores a list of all of the information 
             var models = new List<DataHolder>();
@@ -141,6 +144,8 @@ namespace ParserHelper
 
         /// <summary>
         /// From a uri we send a webrequest to get the website as an htmldocument or else we return null
+        /// This is used only when we do a search and so we have a queue that we add to async, we also have a
+        /// timeout counter
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
@@ -203,7 +208,7 @@ namespace ParserHelper
             }
             isArticleFound = true;
 
-            if (_tagsToRemove.IsMatch(node.Name.ToLower()) || _tagsToRemove.IsMatch(node.Id.ToLower()) || _tagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
+            if (TagsToRemove.IsMatch(node.Name.ToLower()) || TagsToRemove.IsMatch(node.Id.ToLower()) || TagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
             {
                 return;
             }
@@ -291,6 +296,7 @@ namespace ParserHelper
                 var src = FormatSource(node.GetAttributeValue("src", null));
                 //We dont want any svgs because they mess up the server
                 var re = new Regex(@"(?:svg|gif|(?:info|ico)\.png)$");
+                //Makes sure there is a valid http image url
                 var re1 = new Regex(@"https?:\/\/[^\/]*?\..*?\/.*\.");
                 if (src == null || re.IsMatch(src) || !re1.IsMatch(src))
                 {
@@ -608,6 +614,7 @@ namespace ParserHelper
             //search += " wikipedia";
             // Add the subscription key to the request header
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "9f62dc75c6ae4ca7bd8efa227939e76b");
+            //This is the url that we use to get the search results, there is a limit of 25 results, the offset is 0 and safe search is on
             string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search + "&count=25&offset=0&mkt=en-us&safesearch=Moderate";
             // Build the content of the post request
 
@@ -632,7 +639,7 @@ namespace ParserHelper
             foreach (var res in priorityResults)
             {
                 urlsToParse.tasksOut++;
-                var doc = await GetDocumentFromUri(new Uri(res.Url),urlsToParse,new CancellationToken());
+                await GetDocumentFromUri(new Uri(res.Url),urlsToParse,new CancellationToken());
                 urls.Remove(res);
             }
             if (!urlsToParse.queue.Any())
@@ -644,8 +651,9 @@ namespace ParserHelper
                 }
                 urlsToParse.offset = 4;
             }
+            //We need to set this so that the queue knows what it needs to iterate through
             urlsToParse.urls = urls;
-            //This creates the models that we will then send back as a response 
+            //This creates the models that we will then send back as a response. This is a list of sites which are a list of dataholders
             var models = new List<List<DataHolder>> { new List<DataHolder>() };
             //This is so that we can parse the data
             var htmlImporter = new HtmlImporter();
