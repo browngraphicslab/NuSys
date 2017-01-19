@@ -17,6 +17,10 @@ namespace NuSysApp
         private float buttonWidth = 50;
         private float buttonHeight = 50;
         private float buttonSpacing = 10;
+        /// <summary>
+        /// Flag set to true if we need to reposition the text of the selected bubble
+        /// </summary>
+        private bool _bubblePositionsChanged;
 
         /// <summary>
         /// Rectangle used to display the user name when a button is tapped
@@ -97,9 +101,8 @@ namespace NuSysApp
                     _userNameRect.IsVisible = false;
                 }
             }
-            
+            _bubblePositionsChanged = true;
         }
-
         private void NewNetworkUser(NetworkUser user)
         {
             if (_userIds_toBubbles.ContainsKey(user.UserID))
@@ -126,8 +129,27 @@ namespace NuSysApp
          
             // add the user bubble to the list
             _userIds_toBubbles.Add(user.UserID, userBubble);
+
+            _bubblePositionsChanged = true;
         }
 
+        private void CenterUserNameRect()
+        {
+            if(_currentUserNameDisplayed_userid == null)
+            {
+                return;
+            }
+            if (!_userIds_toBubbles.ContainsKey(_currentUserNameDisplayed_userid)){
+                return;
+            }
+
+            var userbubble = _userIds_toBubbles[_currentUserNameDisplayed_userid];
+            _userNameRect.Transform.LocalPosition = userbubble.Transform.LocalPosition -
+                                        new Vector2(_userNameRect.Width / 2 - userbubble.Width / 2,
+                                            _userNameRect.Height + 5);
+
+        }
+ 
         /// <summary>
         /// Event fired whenever a user clicks on a user bubble, displays the name of the user above the bubble
         /// hides the name of the user if the button is tapped again
@@ -164,7 +186,7 @@ namespace NuSysApp
                 _userNameRect.TextColor = userbubble.Background;
                 // move the rect so it is centered over the button that was tapped
                 _userNameRect.Transform.LocalPosition = userbubble.Transform.LocalPosition -
-                                                        new Vector2(_userNameRect.Width/2 - userbubble.Width/2,
+                                                        new Vector2(_userNameRect.Width / 2 - userbubble.Width / 2,
                                                             _userNameRect.Height + 5);
                 // get the user id of the button that was selected
                 var user_id =
@@ -194,6 +216,7 @@ namespace NuSysApp
                 }
                 _userNameRect.IsVisible = true;
                 _currentUserNameDisplayed_userid = user_id;
+
             }
         }
 
@@ -230,11 +253,17 @@ namespace NuSysApp
             {
                 var button = user_button.Value;
                 button.Transform.LocalPosition = position;
+
                 position += new Vector2(buttonSpacing + buttonWidth, 0);
             }
 
             Width = Math.Max(buttonWidth*_userIds_toBubbles.Count + buttonSpacing*_userIds_toBubbles.Count - 1, 0);
 
+            if (_bubblePositionsChanged)
+            {
+                CenterUserNameRect();
+                _bubblePositionsChanged = false;
+            }
             base.Update(parentLocalToScreenTransform);
         }
 
