@@ -173,11 +173,29 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            _plusArrow.Image = _plusArrow.Image ??
-                               await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/down arrow.png"));
-            _minusArrow.Image = _minusArrow.Image ??
-                                await
-                                    CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/up arrow.png"));
+            if (_orientation == Orientation.Vertical)
+            {
+                _plusArrow.Image = _plusArrow.Image ??
+                                   await
+                                       CanvasBitmap.LoadAsync(Canvas,
+                                           new Uri("ms-appx:///Assets/new icons/down arrow.png"));
+                _minusArrow.Image = _minusArrow.Image ??
+                                    await
+                                        CanvasBitmap.LoadAsync(Canvas,
+                                            new Uri("ms-appx:///Assets/new icons/up arrow.png"));
+            }
+
+            if (_orientation == Orientation.Horizontal)
+            {
+                _plusArrow.Image = _plusArrow.Image ??
+                                   await
+                                       CanvasBitmap.LoadAsync(Canvas,
+                                           new Uri("ms-appx:///Assets/new icons/right scroll arrow.png"));
+                _minusArrow.Image = _minusArrow.Image ??
+                                   await
+                                       CanvasBitmap.LoadAsync(Canvas,
+                                           new Uri("ms-appx:///Assets/new icons/left scroll arrow.png"));
+            }
 
             base.Load();
         }
