@@ -90,11 +90,17 @@ namespace NuSysApp.Components.NuSysRenderer.UI
 
         public void OnAddButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            if (string.IsNullOrEmpty(_autoSuggest.Text) || string.IsNullOrWhiteSpace(_autoSuggest.Text))
+            {
+                //Don't allow creation of empty tag
+                return;
+            }
             var selections = SessionController.Instance.SessionView.FreeFormViewer.Selections;
             foreach (ElementRenderItem element in selections)
             {
                 element.ViewModel.Controller.LibraryElementController.AddKeyword(new Keyword(_autoSuggest.Text));
             }
+            _autoSuggest.ClearText();
         }
 
         public void UpdatePositionWithSize(Size size)

@@ -403,6 +403,7 @@ namespace NuSysApp
             {
                 RenderEngine.BtnDelete.IsVisible = false;
                 RenderEngine.BtnExportTrail.IsVisible = false;
+                _selectedLink = null;
             }
         }
 
@@ -413,6 +414,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
+            //This if statement is necessary because it prevents an annoying side effect in which deleting and subsequently selecting is possible
             if(_selectedLink == element)
             {
                 return;
