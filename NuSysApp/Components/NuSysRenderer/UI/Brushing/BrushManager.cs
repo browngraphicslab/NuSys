@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,12 @@ namespace NuSysApp
         /// </summary>
         public static HashSet<LibraryElementController> ControllersWithHighlight = new HashSet<LibraryElementController>();
 
-        public static void ApplyBrush(IEnumerable<LibraryElementController> controllers)
+        /// <summary>
+        /// True when a brush has been applied, false once remove brush has been called, true even when controllers with highlight is empty
+        /// </summary>
+        public static bool HasBrush;
+
+        public static void ApplyBrush(IEnumerable<LibraryElementController> controllers, bool isNoFilterApplied)
         {
             // get all the controllers that lost highight and remove it
             var controllersWhichLostHighlight = ControllersWithHighlight.Except(controllers);
@@ -40,6 +46,12 @@ namespace NuSysApp
             // update old controllers to contain the new controllers
             ControllersWithHighlight = new HashSet<LibraryElementController> (controllers);
 
+            HasBrush = !isNoFilterApplied;
+
+            // make sure that if no filter is applied no controllers have highlight
+            if (!HasBrush) 
+                Debug.Assert(!ControllersWithHighlight.Any());
+
 
             BrushUpdated?.Invoke(controllersWhichLostHighlight, controllersWhichGotHighlight);
         }
@@ -51,9 +63,14 @@ namespace NuSysApp
                 controller.RemoveHighlight();
             }
 
-            BrushUpdated?.Invoke(new List<LibraryElementController>(), ControllersWithHighlight);
+            var controllersToBeRemoved = ControllersWithHighlight.ToArray();
 
             ControllersWithHighlight.Clear();
+
+            HasBrush = false;
+
+
+            BrushUpdated?.Invoke(controllersToBeRemoved, new List<LibraryElementController>());
         }
 
     }

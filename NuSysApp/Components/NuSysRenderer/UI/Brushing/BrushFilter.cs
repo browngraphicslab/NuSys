@@ -210,10 +210,10 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// True if no filter is applied
+        /// True if no filter is applied, i.e. if the user has deselected all filter methods
         /// </summary>
         /// <returns></returns>
-        private bool IsNoFilterApplied()
+        public bool IsNoFilterApplied()
         {
             return !Creators.Any() && !Types.Any() && CreationDateEnd == null && CreationDateStart == null && LastEditedStart == null &&
                    LastEditedEnd == null;
