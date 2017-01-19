@@ -60,6 +60,17 @@ namespace NuSysApp
 
         private float _tagHorizontalSpacing;
 
+        /// <summary>
+        /// String on the button to add a new key value 
+        /// </summary>
+        private const string AddNewKeyValueText = "Add Key Value Pair";
+
+        /// <summary>
+        /// String on the button to edit a key value pair
+        /// </summary>
+        private const string EditKeyValueText = "Edit Key Value Pair";
+
+
         public DetailViewMetadataPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
             _controller = controller;
@@ -82,7 +93,7 @@ namespace NuSysApp
             };
             AddChild(_addValueBox);
 
-            _addKeyValueButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Add Key Value Pair");
+            _addKeyValueButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, AddNewKeyValueText);
             AddChild(_addKeyValueButton);
 
             _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
@@ -111,6 +122,53 @@ namespace NuSysApp
             _searchTextBox.TextChanged += OnSearchTextChanged;
             _hideImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
             _controller.KeywordsChanged += _controller_KeywordsChanged;
+            _addKeyBox.TextChanged += _addKeyBox_TextChanged;
+            _metadata_listview.RowDoubleTapped += _metadata_listview_RowDoubleTapped;
+        }
+
+        /// <summary>
+        /// Event called when a row in the metadata list is double tapped, fills in the proper fields of the textboxes with the info
+        /// for that piece of metadata
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void _metadata_listview_RowDoubleTapped(MetadataEntry item, string columnName, CanvasPointer pointer)
+        {
+            if (item.Mutability == MetadataMutability.MUTABLE)
+            {
+                _addKeyBox.ClearText();
+                _addKeyBox.Text = item.Key;
+            }
+
+        }
+
+        /// <summary>
+        /// Event claled whenever the key box text changes
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="text"></param>
+        private void _addKeyBox_TextChanged(InteractiveBaseRenderItem item, string text)
+        {
+            // get all the metadata
+            var metadata = _controller.GetMetadata().Values;
+
+            // try to find an entry that has the same key as the text in the key box
+            var foundEntry = metadata.FirstOrDefault(entry => entry.Key == text);
+
+            // if we found an entry and the entry is mutable
+            if (foundEntry != null && foundEntry.Mutability == MetadataMutability.MUTABLE)
+            {
+                _addValueBox.ClearText();
+                // set the value box to have the values for that key
+                _addValueBox.Text = string.Join(", ", foundEntry.Values.Select(value => string.Join(", ", value)));
+                _addKeyValueButton.ButtonText = EditKeyValueText;
+            }
+            else
+            {
+                _addKeyValueButton.ButtonText = AddNewKeyValueText;
+            }
+
         }
 
         private void _controller_TitleChanged(object sender, string e)
@@ -184,8 +242,11 @@ namespace NuSysApp
             _searchTextBox.TextChanged -= OnSearchTextChanged;
             _hideImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;
             _controller.KeywordsChanged -= _controller_KeywordsChanged;
+            _addKeyBox.TextChanged -= _addKeyBox_TextChanged;
+            _metadata_listview.RowDoubleTapped -= _metadata_listview_RowDoubleTapped;
 
-            foreach (var element in _suggestedTagElements)
+
+            foreach (var element in _suggestedTagElements.ToArray())
             {
                 element.Tapped -= NewTag_Tapped;
                 RemoveChild(element);
@@ -223,8 +284,8 @@ namespace NuSysApp
                 _controller.AddMetadata(metaDataEntry);
             }
 
-            _addValueBox.Text = string.Empty;
-            _addKeyBox.Text = string.Empty;
+            _addValueBox.ClearText();
+            _addKeyBox.ClearText();
 
 
         }
