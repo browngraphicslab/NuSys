@@ -10,6 +10,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using Windows.System;
 
 namespace NuSysApp.Components.NuSysRenderer.UI
 {
@@ -51,6 +52,8 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 },
             };
 
+            _autoSuggest.KeyPressed += AutoSuggest_KeyPressed;
+
             AddChild(_autoSuggest);
 
             _addButton = new RectangleButtonUIElement(parent, resourceCreator);
@@ -64,6 +67,14 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             Width = 270.0f;
             Height = 0.0f;
             Background = Colors.Transparent;
+        }
+
+        private void AutoSuggest_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Enter)
+            {
+                AddKeyword();
+            }
         }
 
         public override void Dispose()
@@ -90,6 +101,11 @@ namespace NuSysApp.Components.NuSysRenderer.UI
 
         public void OnAddButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            AddKeyword();
+        }
+
+        private void AddKeyword()
+        {
             if (string.IsNullOrEmpty(_autoSuggest.Text) || string.IsNullOrWhiteSpace(_autoSuggest.Text))
             {
                 //Don't allow creation of empty tag
@@ -102,7 +118,6 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             }
             _autoSuggest.ClearText();
         }
-
         public void UpdatePositionWithSize(Size size)
         {
             Transform.LocalPosition = new Vector2((float)(size.Width - Width) / 2, (float)(size.Height - Height) / 2);
