@@ -44,7 +44,7 @@ namespace NuSysApp
         /// <summary>
         /// The initial drag position of the scroll handle
         /// </summary>
-        private Vector2 initialBackgroundDragPosition;
+        private float initialScrollBarPosition;
 
         private ScrollBarUIElement _horizontalScrollBar;
 
@@ -65,6 +65,8 @@ namespace NuSysApp
                 Width = Width - 2*BorderWidth
             };
 
+            _horizontalScrollBar.Transform.LocalPosition = new Vector2(0, Height - _horizontalScrollBar.Height);
+
             AddChild(_horizontalScrollBar);
 
             _horizontalScrollBar.ScrollBarPositionChanged += _horizontalScrollBar_ScrollBarPositionChanged;
@@ -80,15 +82,14 @@ namespace NuSysApp
 
         private void MainBackgroundOnDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            initialBackgroundDragPosition = pointer.CurrentPoint;
+            initialScrollBarPosition = _horizontalScrollBar.Position;
         }
 
         private void MainBackgroundDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            var normalizedStart = initialBackgroundDragPosition.X/_totalPathWidth;
             var normalizedDiff = pointer.Delta.X/_totalPathWidth;
             var _scrollDiff = -normalizedDiff;
-            _horizontalScrollBar.Position = normalizedStart + _scrollDiff;
+            _horizontalScrollBar.Position = initialScrollBarPosition + _scrollDiff;
             BoundScrollHandle();
             refreshUI = true;
         }
