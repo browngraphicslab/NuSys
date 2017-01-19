@@ -126,6 +126,11 @@ namespace NuSysApp
         /// <param name="text"></param>
         private async void SendMessage(string text)
         {
+            if(string.IsNullOrWhiteSpace(text) || string.IsNullOrEmpty(text))
+            {
+                _typingRect.ClearText();
+                return;
+            }
             if (CheckForChatbotChat(text))
             {
                 _typingRect.ClearText();
