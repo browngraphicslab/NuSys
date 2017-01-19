@@ -86,21 +86,12 @@ namespace NuSysApp
         /// </summary>
         private ScrollableTextboxUIElement _searchBar;
 
-        /// <summary>
-        /// The height of the searchbar
-        /// </summary>
-        private float _searchBarHeight = 25;
 
         /// <summary>
         /// Filter button for activating the filter menu
         /// </summary>
         private ButtonUIElement _filterButton;
 
-        /// <summary>
-        /// the width of the filter button
-        /// </summary>
-
-        private float _filterButtonWidth = 50;
 
         /// <summary>
         /// the menu used for filtering library elements
@@ -146,7 +137,7 @@ namespace NuSysApp
             // initialize the search bar
             _searchBar = new ScrollableTextboxUIElement(this, Canvas, false, true)
             {
-                Height = _searchBarHeight,
+                Height = UIDefaults.SearchBarHeight,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
                 TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
                 FontSize = 14,
@@ -170,8 +161,8 @@ namespace NuSysApp
             // initialize the filter button
             _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
             {
-                Width = _filterButtonWidth,
-                Height = _searchBarHeight,
+                Width = UIDefaults.FilterButtonWidth,
+                Height = UIDefaults.SearchBarHeight,
             };
             AddChild(_filterButton);
 
@@ -593,11 +584,11 @@ namespace NuSysApp
         {
             // make the library fill the resizeable window leaving room for the search bar and filter button
             LibraryListView.Width = Width - 2 * BorderWidth;
-            LibraryListView.Height = Height - TopBarHeight - BorderWidth - _searchBarHeight;
+            LibraryListView.Height = Height - TopBarHeight - BorderWidth - UIDefaults.SearchBarHeight;
             LibraryListView.Transform.LocalPosition = new Vector2(BorderWidth, TopBarHeight);
-            _searchBar.Width = Width - 2*BorderWidth - _filterButtonWidth;
-            _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - _searchBarHeight);
-            _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - _searchBarHeight);
+            _searchBar.Width = Width - 2*BorderWidth - UIDefaults.FilterButtonWidth;
+            _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - UIDefaults.SearchBarHeight);
+            _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - UIDefaults.SearchBarHeight);
             _filterMenu.Transform.LocalPosition = new Vector2(Width, 0);
 
             base.Update(parentLocalToScreenTransform);

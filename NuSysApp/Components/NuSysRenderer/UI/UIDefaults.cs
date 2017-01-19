@@ -167,6 +167,10 @@ namespace NuSysApp
         public static readonly float ScrollableTextboxBorderWidth = 7f;
         public static readonly Color ScrollableTextboxOverlayColor = new Color() {A = 100, R = Colors.LightGray.R, G = Colors.LightGray.G , B = Colors.LightGray.B };
 
+        #region library
+        public static float SearchBarHeight = 30f;
+        public static float FilterButtonWidth = 50f;
+        #endregion library
         #region list
 
         public static float ListHeaderHeight = 40;
