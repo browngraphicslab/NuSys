@@ -119,12 +119,8 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             if (!string.IsNullOrEmpty(text))
             {
                 suggestion_list.AddItems(FilterFunction(text));
-                suggestion_list.IsVisible = true;
             }
-            else
-            {
-                suggestion_list.IsVisible = false;
-            }
+
 
         }
 
@@ -133,10 +129,11 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             suggestion_list.Width = Width;
             if (suggestion_list.GetItems().Any())
             {
+                suggestion_list.IsVisible = true;
                 suggestion_list.Height = Math.Min(MaxDropDownHeight, suggestion_list.HeightOfAllRows);
             } else
             {
-                suggestion_list.Height = MaxDropDownHeight;
+                suggestion_list.IsVisible = false;
             }
             suggestion_list.Transform.LocalPosition = new Vector2(0, Height);
 

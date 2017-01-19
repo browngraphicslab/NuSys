@@ -38,7 +38,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             _autoSuggest = new AutoSuggestTextBox<Keyword>(this, Canvas)
             {
                 PlaceHolderText = SEARCH_BAR_TEXT,
-                Background = Colors.Azure,
+                Background = Constants.LIGHT_BLUE,
                 BorderWidth = 2,
                 BorderColor = Colors.DarkSlateGray,
                 ColumnFunction = keyword => keyword.Text,
