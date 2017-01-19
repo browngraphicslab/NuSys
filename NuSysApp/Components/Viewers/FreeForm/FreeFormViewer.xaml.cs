@@ -213,7 +213,13 @@ namespace NuSysApp
             if (_selectedLink is TrailRenderItem)
             {
                 //get trail as a list of nodes
-                List<LibraryElementController> trailList = GetTrailAsList((_selectedLink as TrailRenderItem).ViewModel.Model);
+                var trailvm = (_selectedLink as TrailRenderItem).ViewModel;
+                if(trailvm == null)
+                {
+                    Debug.Fail("vm should not be null");
+                    return;
+                }
+                List<LibraryElementController> trailList = GetTrailAsList(trailvm.Model);
 
                 for (int i = 0; i < trailList.Count; i++)
                 {
@@ -385,7 +391,7 @@ namespace NuSysApp
             else if (_selectedLink is TrailRenderItem)
             {
                 var trailItem = (TrailRenderItem)_selectedLink;
-                trailItem.ViewModel.DeletePresentationLink();
+                trailItem?.ViewModel?.DeletePresentationLink();
             }
             RenderEngine.BtnDelete.IsVisible = false;
             RenderEngine.BtnExportTrail.IsVisible = false;
