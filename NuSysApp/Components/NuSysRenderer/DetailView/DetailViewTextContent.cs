@@ -100,7 +100,7 @@ namespace NuSysApp
                 BorderWidth = 1,
                 BorderColor = Constants.DARK_BLUE,
                 Background = Colors.White,
-                PlaceHolderText = "Enter text here...",
+                PlaceHolderText = "This is a markdown editor.\n\nSyntax:\n\n**bold**\n*italics*\n__underline__\n# Heading 1\n## Heading 2\n\nlist\n* line1\n* line2\n* line3\n\n\n",
                 Text = _controller.ContentDataController.ContentDataModel.Data,
             };
             AddChild(_mainTextBox);

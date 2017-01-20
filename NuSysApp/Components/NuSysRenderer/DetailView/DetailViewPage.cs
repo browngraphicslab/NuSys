@@ -148,7 +148,8 @@ namespace NuSysApp
             AddChild(_dragToCollectionButton);
 
             if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Image ||
-                controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+                controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF ||
+                controller.LibraryElementModel.Type == NusysConstants.ElementType.Video)
             {
                 _expandButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.SecondaryStyle, "Expand");
                 _expandButton.Width = 150;
