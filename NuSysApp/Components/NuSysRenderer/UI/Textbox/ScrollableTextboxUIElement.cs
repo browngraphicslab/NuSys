@@ -243,6 +243,16 @@ namespace NuSysApp
         private bool _isShiftPressed;
 
         /// <summary>
+        /// The most recently set width of the canvas text layout
+        /// </summary>
+        private float _textLayoutWidth;
+
+        /// <summary>
+        /// The most recently set height of the canvas text layout
+        /// </summary>
+        private float _textLayoutHeight;
+
+        /// <summary>
         /// Handler for the input submitted event, fired whenever the user hits the enter button on a non vertically scrolling textbox
         /// </summary>
         /// <param name="sender"></param>
@@ -1001,15 +1011,14 @@ namespace NuSysApp
             // needed to display text
             if (_scrollVert)
             {
-                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat,
-                    Math.Max(0,
-                        Width - 2*(BorderWidth + UIDefaults.XTextPadding) -
-                        (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0)), float.MaxValue);
+                _textLayoutWidth = Math.Max(0, Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
+                                   (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0));
+                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, _textLayoutWidth, float.MaxValue);
             }
             else
             {
-                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue,
-                                           Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+                _textLayoutHeight = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue, _textLayoutHeight);
             }
 
             //_updateCanvasTextLayout = false;                        
@@ -1029,11 +1038,11 @@ namespace NuSysApp
 
             if (_scrollVert)
             {
-                return TextLayout.LayoutBounds.Width == Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
-                        (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0);
+                return Math.Abs(_textLayoutWidth - (Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
+                                                    (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0))) < .005;
             } else
             {
-                return TextLayout.LayoutBounds.Height == Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                return Math.Abs(_textLayoutHeight - (Height - 2 * (BorderWidth + UIDefaults.YTextPadding))) < .005;
             }
         }
 
