@@ -237,10 +237,10 @@ namespace NuSysApp
         }
 
 
-
-
-        private bool _horizontalScrollBarIsDisabled;
-        private bool _verticalScrollBarIsDisabled;
+        /// <summary>
+        /// true if the shit button is currently pressed false otherwise, use this for keyboard shortcuts not capitalization
+        /// </summary>
+        private bool _isShiftPressed;
 
         /// <summary>
         /// Handler for the input submitted event, fired whenever the user hits the enter button on a non vertically scrolling textbox
@@ -253,65 +253,6 @@ namespace NuSysApp
         /// The input submitted event, fired when the user hits the enter button on a non vertically scrolling textbox
         /// </summary>
         public event InputSubmittedHandler InputSubmitted;
-
-        ///// <summary>
-        ///// The previous width of the textbox, we update this when the width changes
-        ///// by some arbitrarily small delta amount. Used to determine when we need to update the canvas text layout
-        ///// </summary>
-        //private float _previousWidth;
-
-        ///// <summary>
-        ///// The width of the scrollabletextboxuielement
-        ///// </summary>
-        //public override float Width
-        //{
-        //    get
-        //    {
-        //        return base.Width;
-        //    }
-
-        //    set
-        //    {
-        //        base.Width = value;
-        //        if (Math.Abs(Width - _previousWidth) > .1)
-        //        {
-        //            _previousWidth = Width;
-        //            _updateCanvasTextLayout = true;
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// The previous height of the textbox, we update this when the height changes
-        ///// by some arbitrarily small delta amount. Used to determine when we need to update the canvas text layout
-        ///// </summary>
-        //private float _previousHeight;
-
-        ///// <summary>
-        ///// The previous vertical scrollbar visibility, when this changes we update the canvas text layout
-        ///// </summary>
-        //private bool _lastVertScrollBarVisibility;
-
-        ///// <summary>
-        ///// The width of the scrollabletextboxuielement
-        ///// </summary>
-        //public override float Height
-        //{
-        //    get
-        //    {
-        //        return base.Height;
-        //    }
-
-        //    set
-        //    {
-        //        base.Height = value;
-        //        if (Math.Abs(Height - _previousHeight) > .1)
-        //        {
-        //            _previousHeight = Height;
-        //            _updateCanvasTextLayout = true;
-        //        }
-        //    }
-        //}
 
 
         /// <summary>
@@ -507,13 +448,22 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (IsEditable)
+            // for touch pointer's drag only changes the transform so don't do any selection code
+            if (pointer.DeviceType == PointerDeviceType.Touch)
             {
-                // set the _selectionStartIndex to the current caret position
-                _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-
                 _initialDragXOffset = _xOffset;
                 _initialDragYOffset = _yOffset;
+                return; // just return
+            }
+
+            if (IsEditable)
+            {
+                // if either shift is not pressed or we don't have selection, otherwise we'll be extending the current selection
+                if (!_isShiftPressed || !_hasSelection)
+                {
+                    // set the _selectionStartIndex to the current caret position
+                    _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                }
             }
 
 
@@ -585,12 +535,34 @@ namespace NuSysApp
         {
             if (IsEditable)
             {
-                ClearSelection(false);
-                CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-                _upDownCaretNavHorizonalOffset = float.MinValue;
 
-                // we want to update the cursor transform
+
+                // we are no longer moving using up down arrows so reset the x offset used for that navigation
+                _upDownCaretNavHorizonalOffset = float.MinValue;
+                // we want to update the cursor transform to its new position
                 _updateCaretTransform = true;
+
+                // if shift is pressed we want to extend the current selection or create a selection between
+                // the caret's current location and the 
+                if (_isShiftPressed)
+                {
+                    if (!_hasSelection)
+                    {
+                        _selectionStartIndex = CaretCharacterIndex;
+                    }
+                    // update the CaretCharacterIndex to reflect the new caret character location
+                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                    _selectionEndIndex = CaretCharacterIndex;
+                    _hasSelection = _selectionStartIndex != _selectionEndIndex;
+
+                }
+                else
+                {
+                    // clear the current selection and set the caret character index based on the pointer input
+                    ClearSelection(false);
+                    // update the CaretCharacterIndex
+                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                }
             }
 
         }
@@ -618,7 +590,11 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Control)
             {
                 _isCtrlPressed = false;
+            } else if (args.VirtualKey == VirtualKey.Shift)
+            {
+                _isShiftPressed = false;
             }
+
         }
 
         /// <summary>
@@ -764,6 +740,11 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.Control)
             {
                 _isCtrlPressed = true;
+            }
+            // shift button pressed
+            else if (args.VirtualKey == VirtualKey.Shift)
+            {
+                _isShiftPressed = true;
             }
             // Special case z,x,c keys while control is pressed
             else if (args.VirtualKey == VirtualKey.C && _isCtrlPressed)
