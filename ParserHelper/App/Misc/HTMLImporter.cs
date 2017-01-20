@@ -28,11 +28,11 @@ namespace ParserHelper
         /// <summary>
         /// These are the expressions that once detected in a title will be removed because they are some type of spam
         /// </summary>
-        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|learn more|references?|follow( me)?|e-handbook|posted by:|credits?|^\s*thank you\s*$|\d+.*?this (?:year|day|month|hour|minute|night|decade|lifetime)|\d+.*?(?:predictions?|trends?|news?|facts?)|see also|^\s*(?:facebook|twitter|email|google\+|pinterest|pin)\s*$|future of)");
+        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|learn more|references?|follow( me)?|e-handbook|posted by:|credits?|^\s*thank you\s*$|\d+.*?this (?:year|day|month|hour|minute|night|decade|lifetime)|\d+.*?(?:predictions?|trends?|news?|facts?)|see also|^\s*(?:facebook|twitter|email|google\+|pinterest|pin)\s*$|future of|forbidden|internal server error|error$|service unavailable|sucuri)");
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
-        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement|writing\? check your grammar now!|all headlines|\(.*?(?:repl(y)?(ies)?|ratings?|comments?).*?\)|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|login.*?(?:register|create|make)|(?:posts?|photos?|articles?) by)");
+        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement|writing\? check your grammar now!|all headlines|\(.*?(?:repl(y)?(ies)?|ratings?|comments?).*?\)|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|login.*?(?:register|create|make)|(?:posts?|photos?|articles?) by|enable javascript|status 404?3?|^credit.)");
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
@@ -40,7 +40,7 @@ namespace ParserHelper
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
-        private static Regex _longTitlesToRemove = new Regex(@"(?:download.*?free|^\s*content\s*$|need to enable javascript)");
+        private static Regex _longTitlesToRemove = new Regex(@"(?:download.*?free|^\s*content\s*$|enable javascript|status 404?3?)");
         /// <summary>
         /// These are things that are going to be removed from the text but aren't markers for spam
         /// </summary>
@@ -58,7 +58,7 @@ namespace ParserHelper
         /// This is a list of websites that we don't want to parse
         /// </summary>
         private static List<string> blacklist = new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies","worldatlas","vectorstock.com","freepik.com","containerstore.com","yourshot.nationalgeographic","myspace.com","store.","treesdallas.com","epicurious.com","krispykreme.com",
-                                                            "imdb.com","wikihow.com","support.","currys.co.uk"};
+                                                            "imdb.com","wikihow.com","support.","currys.co.uk","zillo.com"};
         /// <summary>
         /// We do not want a sub article structure because it usually is a fragment of an article or some kind of link so we only look at the top article
         /// </summary>
@@ -72,7 +72,7 @@ namespace ParserHelper
         {
             var lastTime = DateTime.Now;
             //We only want websites that qualify as an article so we check to see if certain tags are in the site
-            var articleTopNode = SiteScoreTaker.GetArticle(doc);
+            var articleTopNode = await SiteScoreTaker.GetArticle(doc);
             if (articleTopNode == null)
             {
                 return null;
@@ -206,7 +206,6 @@ namespace ParserHelper
             {
                 return;
             }
-            isArticleFound = true;
 
             if (TagsToRemove.IsMatch(node.Name.ToLower()) || TagsToRemove.IsMatch(node.Id.ToLower()) || TagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
             {
@@ -295,7 +294,7 @@ namespace ParserHelper
                 //We then get the image source uri
                 var src = FormatSource(node.GetAttributeValue("src", null));
                 //We dont want any svgs because they mess up the server
-                var re = new Regex(@"(?:\.svg|\.gif|(?:info|ico|ext|(?:icon|logo)[^/]*?)\.(?:png|jpg)$|_avatar_)");
+                var re = new Regex(@"(?:\.svg|\.gif|(?:info|ico|ext|(?:icon|logo|banner|blank)[^/]*?)\.(?:png|jpg|asp)|_avatar_|meter\.asp|\/(?:facebook|twitter|pinterest|email.*|)\.|\/(?:facebook|twitter|google.*)\/|i\.creativecommons|no-javascript)");
                 //Makes sure there is a valid http image url
                 var re1 = new Regex(@"https?:\/\/[^\/]*?\..*?\/.*\.");
                 if (src == null || re.IsMatch(src.ToLower()) || !re1.IsMatch(src))
@@ -319,8 +318,8 @@ namespace ParserHelper
                     {
                         title = SearchForTitle(node);
                     }
-                    //removes any html or json titles, which are undesireable
-                    var reg = new Regex(@"^(?:<!|\{.*\}$|.*?\{.*\}\)?;)");
+                    //removes any html or json or latex titles, which are undesireable
+                    var reg = new Regex(@"^(?:<!|\{.*\}$|.*?\{.*\}\)?;|^\\)");
                     //We then create the Data Holder and introduce it to the rest, also checks if the title is valid and if the image is already captured
                     if (isTitleValid(title) && !reg.IsMatch(title) && !models.Where(e=>e is ImageDataHolder).Any(r=>(r as ImageDataHolder).Uri.AbsoluteUri==src))
                     {
@@ -576,8 +575,8 @@ namespace ParserHelper
         private static bool isTextValid(string text)
         {
             return !(IsNullOrWhiteSpace(text) ||
-                    _contentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 50 ||
-                    _shortContentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 30);
+                    _contentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 100 ||
+                    _shortContentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 50);
         }
 
         /// <summary>
@@ -607,7 +606,6 @@ namespace ParserHelper
 
         public static async Task<List<List<DataHolder>>> RunWithSearch(string search)
         {
-
             var wholeTime = DateTime.Now;
             var time = DateTime.Now;
             var client = new HttpClient();
@@ -643,7 +641,7 @@ namespace ParserHelper
                         !blacklist.Any(
                             r =>
                                 e.displayUrl.Contains(r)) && !e.displayUrl.Contains(".pdf")
-                        && !e.displayUrl.Contains(".doc") && !e.displayUrl.Contains(".ppt")).ToList();
+                        && !e.displayUrl.Contains(".doc") && !e.displayUrl.Contains(".ppt")&& !e.displayUrl.Contains(".asp")).ToList();
 
             var priorityParses = new List<string>() {"en.wikipedia.org", "nytimes"};
             var priorityResults = urls.Where(e => priorityParses.Any(r => e.displayUrl.Contains(r))).ToList();
@@ -656,12 +654,12 @@ namespace ParserHelper
             }
             if (!urlsToParse.queue.Any())
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 5 && i < urlsToParse.Count; i++)
                 {
                     urlsToParse.tasksOut++;
                     await GetDocumentFromUri(new Uri(urls[i].Url),urlsToParse, new CancellationToken());
+                    urlsToParse.offset++;
                 }
-                urlsToParse.offset = 4;
             }
             //We need to set this so that the queue knows what it needs to iterate through
             urlsToParse.urls = urls;
@@ -699,6 +697,12 @@ namespace ParserHelper
                 //Yay we have our models!
                 models.First().Add(new TextDataHolder(doc.ToString(),""));
                 models.Add(dataholders);
+            }
+            models.First().Add(new DataHolder(DataType.Text, "pdfs"));
+            models.Add(new List<DataHolder>());
+            foreach (var pdf in json.webPages.value.Where(e => e.displayUrl.Contains(".pdf")))
+            {
+                models.Last().Add(new PdfDataHolder(new Uri(pdf.Url), pdf.displayUrl));
             }
             Debug.WriteLine("Whole Time " + (DateTime.Now-wholeTime).TotalMilliseconds);
             Debug.WriteLine("number of times 0 was hit" + zerohits);
@@ -757,6 +761,7 @@ namespace ParserHelper
                 {
                     //Load HTML from the website
                     timeoutTask();
+                    offset++;
                     tasksOut++;
                 }
                 HtmlDocument u;

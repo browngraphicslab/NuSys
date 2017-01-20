@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
@@ -49,9 +50,13 @@ namespace ParserHelper
             return max + 1;
         }
 
-        public static HtmlNode GetArticle(HtmlDocument doc)
+        public async static Task<HtmlNode> GetArticle(HtmlDocument doc)
         {
-            if (findDepth(doc.DocumentNode) < 8)
+            var cts = new CancellationTokenSource(50);
+
+            int depth = -1;
+            await Task.Run(delegate {depth = findDepth(doc.DocumentNode); }, cts.Token);
+            if (depth < 13 && depth > 0)
             {
                 return doc.DocumentNode;
             }

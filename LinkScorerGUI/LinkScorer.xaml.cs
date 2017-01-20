@@ -49,7 +49,7 @@ namespace LinkScorerGUI
                 //"\nHeaderTextRatio: " + _score.HeaderTextRatio + "\navgTextBlockSize: " +
                 //_score.AverageTextBlockSize + "\nprediction: " +
                 /*prediction + " with: " + classifier.LastProbability+"\nAccuracy: "+(countright/(count==0?1:count)*100)+"%\n"+*/
-                (_models.First().First() as TextDataHolder).Text;
+                _models.First().First().Title;
 
 
             foreach (var dh in _models[1])
