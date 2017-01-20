@@ -811,6 +811,12 @@ namespace NuSysApp
             if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
             {
                 // Show the layout panel
+                if (_layoutWindow != null)
+                {
+                    RenderEngine.Root.RemoveChild(_layoutWindow);
+                    _layoutWindow = null;
+                }
+
                 _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
                 _layoutWindow.DoLayout += ArrangeCallback;
                 _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
@@ -819,6 +825,12 @@ namespace NuSysApp
             if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
             {
                 // edit tags
+                if (_editTagsElement != null)
+                {
+                    RenderEngine.ElementSelectionRect.RemoveChild(_editTagsElement);
+                    _editTagsElement = null;
+                }
+
                 _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
                 RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
                     _editTagsElement.UpdatePositionWithSize;
