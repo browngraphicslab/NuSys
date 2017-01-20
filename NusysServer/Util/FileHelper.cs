@@ -477,14 +477,14 @@ namespace NusysServer
         {
             DirectoryInfo d = new DirectoryInfo(Constants.WWW_ROOT);//Assuming Test is your Folder
             var text = d.GetFiles("*.txt"); //Getting Text files
-            var imgs1 = d.GetFiles(".jpg");
-            var imgs2 = d.GetFiles(".jpeg");
-            var imgs3 = d.GetFiles(".tif");
-            var imgs4 = d.GetFiles(".tiff");
-            var imgs5 = d.GetFiles(".png");
-            var video = d.GetFiles(".mp4");
-            var audio = d.GetFiles(".mp3");
-            var word = d.GetFiles(".docx");
+            var imgs1 = d.GetFiles("*.jpg");
+            var imgs2 = d.GetFiles("*.jpeg");
+            var imgs3 = d.GetFiles("*.tif");
+            var imgs4 = d.GetFiles("*.tiff");
+            var imgs5 = d.GetFiles("*.png");
+            var video = d.GetFiles("*.mp4");
+            var audio = d.GetFiles("*.mp3");
+            var word = d.GetFiles("*.docx");
             var all =
                 text.Concat(imgs1)
                     .Concat(imgs2)

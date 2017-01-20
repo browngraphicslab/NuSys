@@ -120,7 +120,8 @@ namespace NuSysApp
                             Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
                             Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
                             Debug.WriteLine("  *******************  END SERVER ERROR MESSAGE  *******************  ");
-                            Debug.Fail("shouldn't be getting server errors");
+                            if(false)
+                                Debug.Fail("shouldn't be getting server errors");
                             if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
                                 //if we can untangle a waiting request
                             {

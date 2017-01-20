@@ -324,6 +324,7 @@ namespace NuSysApp
         public override async Task Load()
         {
             _suggestedTags = await _controller.GetSuggestedTagsAsync(false);
+            Debug.Assert(_suggestedTagElements.Count() < 250, "If this happens please get Trent.  Its not necessarily bad i just want to make sure its not returning crazy tags");
             var keywords = _controller.GetMetadata("Keywords");
             Debug.Assert(keywords != null);
             var tagsToRemove = _suggestedTags.Where(item => keywords.Contains(item.Key));

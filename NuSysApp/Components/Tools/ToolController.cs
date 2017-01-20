@@ -307,7 +307,10 @@ namespace NuSysApp
             }
 
             var first = controllers.First();
-
+            if (first == null)
+            {
+                return new List<string>();
+            }
             IEnumerable<string> list = first.GetOutputLibraryIds();//get the first parent's list of elements
             foreach (var enumerable in controllers.Skip(1).Select(controller => controller.GetOutputLibraryIds()))
             {

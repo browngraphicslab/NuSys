@@ -96,20 +96,24 @@ namespace NuSysApp
             cb.EndFigure(CanvasFigureLoop.Open);
             _path = CanvasGeometry.CreatePath(cb);
 
-            var lowerAnchor = anchor1.Y <= anchor2.Y ? anchor1.Y : anchor2.Y;
-            var higherAnchor = anchor1.Y > anchor2.Y ? anchor1.Y : anchor2.Y;
-            var leftAnchor = anchor1.X <= anchor2.X ? anchor1.X : anchor2.X;
-            var rightAnchor = anchor1.X > anchor2.X ? anchor1.X : anchor2.X;
-            var midPointX = leftAnchor + (rightAnchor - leftAnchor) / 2;
-            var midPointY = lowerAnchor + (higherAnchor - lowerAnchor) / 2;
-            _midPoint = new Point(midPointX, midPointY);
-            var apex = new Point(midPointX, midPointY);
-            var leftLeg = new Point(midPointX - 10, midPointY + 20);
-            var rightLeg = new Point(midPointX + 10, midPointY + 20);
-            _angle = (float)Math.Atan2(anchor1.Y - anchor2.Y, anchor1.X - anchor2.X);
+            if ((_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel)?.Direction !=
+                NusysConstants.LinkDirection.None)
+            {
+                var lowerAnchor = anchor1.Y <= anchor2.Y ? anchor1.Y : anchor2.Y;
+                var higherAnchor = anchor1.Y > anchor2.Y ? anchor1.Y : anchor2.Y;
+                var leftAnchor = anchor1.X <= anchor2.X ? anchor1.X : anchor2.X;
+                var rightAnchor = anchor1.X > anchor2.X ? anchor1.X : anchor2.X;
+                var midPointX = leftAnchor + (rightAnchor - leftAnchor)/2;
+                var midPointY = lowerAnchor + (higherAnchor - lowerAnchor)/2;
+                _midPoint = new Point(midPointX, midPointY);
+                var apex = new Point(midPointX, midPointY);
+                var leftLeg = new Point(midPointX - 10, midPointY + 20);
+                var rightLeg = new Point(midPointX + 10, midPointY + 20);
+                _angle = (float) Math.Atan2(anchor1.Y - anchor2.Y, anchor1.X - anchor2.X);
 
-            _arrow = CanvasGeometry.CreatePolygon(ResourceCreator,
-                    new[] { apex.ToSystemVector2(), leftLeg.ToSystemVector2(), rightLeg.ToSystemVector2() });
+                _arrow = CanvasGeometry.CreatePolygon(ResourceCreator,
+                    new[] {apex.ToSystemVector2(), leftLeg.ToSystemVector2(), rightLeg.ToSystemVector2()});
+            }
 
             IsDirty = false;
         }
