@@ -67,7 +67,7 @@ namespace NuSysApp
             _originalWidth = Width;
             _originalHeight = Height;
 
-            SetAccessibilitySize(1);
+            SetAccessibilitySize(SessionController.Instance.SessionSettings.TextScale);
 
             DragStarted += FloatingMenu_DragStarted;
             _addElementButton.DragStarted += FloatingMenu_DragStarted;

@@ -48,8 +48,6 @@ namespace NuSysApp
         /// </summary>
         public override ICanvasImage Image { get; set; }
 
-        public override Rect? ImageBounds { get; set; }
-
         public override BorderType BorderType { get; set; }
 
         /// <summary>
@@ -93,7 +91,10 @@ namespace NuSysApp
             }
         }
 
-
+        /// <summary>
+        /// The bounds to draw the image in the rectangle, these are normalized coordinates
+        /// </summary>
+        public override Rect? ImageBounds { get; set; }
 
         /// <summary>
         /// The BorderColor of the Rectangle
@@ -176,7 +177,7 @@ namespace NuSysApp
 
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
                 {
-                    ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(Canvas));
                 }
 
                 ds.Transform = orgTransform;
@@ -210,6 +211,20 @@ namespace NuSysApp
         {
             return new Rect(0, 0, Width, Height);
         }
+
+        /// <summary>
+        /// Gets the boudns in local coordinates to the draw the rectangle's image in
+        /// </summary>
+        /// <returns></returns>
+        public override Rect? GetImageBounds()
+        {
+            if (ImageBounds == null)
+            {
+                return null;
+            }
+            return new Rect(Width * ImageBounds.Value.Left, Height * ImageBounds.Value.Top, Width * ImageBounds.Value.Width, Height * ImageBounds.Value.Height);
+        }
+
 
     }
 }

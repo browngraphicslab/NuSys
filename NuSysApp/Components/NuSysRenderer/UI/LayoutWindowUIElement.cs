@@ -35,7 +35,7 @@ namespace NuSysApp
         private static Vector2 ARRANGE_BY_TEXT_POSITION = new Vector2(PANEL_INSET, 2 * PANEL_INSET);
         private static float FONT_SIZE = 20.0f;
         private static float BUTTON_SIZE = 100.0f;
-        private static Rect BUTTON_IMAGEBOUNDS = new Rect(BUTTON_SIZE/4, BUTTON_SIZE/4, BUTTON_SIZE/2, BUTTON_SIZE/2);
+        private static Rect BUTTON_IMAGEBOUNDS = new Rect(.25,.25,.5,.5);
         private static float BUTTON_PADDING = ((PANEL_WIDTH - 2 * PANEL_INSET) - 2 * BUTTON_SIZE) / 3.0f;
         private static float LAYOUT_BUTTONS_Y_START = 160.0f;
         private static Vector2 HORIZONTAL_BUTTON_POSITION = new Vector2(PANEL_INSET + BUTTON_PADDING, LAYOUT_BUTTONS_Y_START);

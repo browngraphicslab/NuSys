@@ -131,8 +131,7 @@ namespace NuSysApp
                 SelectedBorder = Constants.LIGHT_BLUE,
                 BorderWidth = 3,
             };
-            _mediaTypeSwitch.ImageBounds = new Rect(_mediaTypeSwitch.Width/4, _mediaTypeSwitch.Height/4,
-                _mediaTypeSwitch.Width/2, _mediaTypeSwitch.Height/2);
+            _mediaTypeSwitch.ImageBounds = new Rect(.25,.25,.5,.5);
             AddChild(_mediaTypeSwitch);
 
             // add the record button and set default ui values
@@ -145,8 +144,7 @@ namespace NuSysApp
                 SelectedBorder = Colors.White,
                 BorderWidth = 3
             };
-            _recordPauseButton.ImageBounds = new Rect(_recordPauseButton.Width / 4, _recordPauseButton.Height / 4,
-                   _recordPauseButton.Width / 2, _recordPauseButton.Height / 2);
+            _recordPauseButton.ImageBounds = new Rect(.25, .25, .5, .5);
             AddChild(_recordPauseButton);
 
             _stopButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
@@ -158,8 +156,7 @@ namespace NuSysApp
                 SelectedBorder = Colors.White,
                 BorderWidth = 3
             };
-            _stopButton.ImageBounds = new Rect(_stopButton.Width / 4, _stopButton.Height / 4,
-                _stopButton.Width / 2, _stopButton.Height / 2);
+            _stopButton.ImageBounds = new Rect(.25, .25, .5, .5);
             AddChild(_stopButton);
 
             // add the currMediaType to display and set default ui values

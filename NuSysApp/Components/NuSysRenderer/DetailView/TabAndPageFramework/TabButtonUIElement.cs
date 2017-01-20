@@ -74,7 +74,7 @@ namespace NuSysApp
             {
                 Height = 20,
                 Background = Constants.RED,
-                ImageBounds = new Rect(5,5,10,10)
+                ImageBounds = new Rect(.25,.25,.5,.5)
             };
 
             // create a background button

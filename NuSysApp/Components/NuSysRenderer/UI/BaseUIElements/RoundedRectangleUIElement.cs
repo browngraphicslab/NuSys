@@ -89,11 +89,6 @@ namespace NuSysApp
         public override ICanvasImage Image { get; set; }
 
         /// <summary>
-        /// the bounds of the image on the rounded rectangle, the image scales to fill these bounds
-        /// </summary>
-        public override Rect? ImageBounds { get; set; }
-
-        /// <summary>
         /// The radius of the corner of the Rectangle
         /// </summary>
         private float _radius;
@@ -193,7 +188,7 @@ namespace NuSysApp
                         CanvasGeometry.CreateRoundedRectangle(Canvas, BorderWidth/2, BorderWidth/2, Width - BorderWidth,
                             Height - BorderWidth, Radius, Radius)))
                 {
-                    ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(Canvas));
                 }
             }
 
@@ -208,6 +203,25 @@ namespace NuSysApp
         public override Rect GetLocalBounds()
         {
             return new Rect(0, 0, Width, Height);
+        }
+
+        /// <summary>
+        /// The bounds in normal coordinates within which to draw the image
+        /// </summary>
+        public override Rect? ImageBounds { get; set; }
+
+
+        /// <summary>
+        /// gets the bounds in local coordinates within which to draw the image, if no bounds have been set returns null
+        /// </summary>
+        /// <returns></returns>
+        public override Rect? GetImageBounds()
+        {
+            if (ImageBounds == null)
+            {
+                return null;
+            }
+            return new Rect(Width * ImageBounds.Value.Left, Height * ImageBounds.Value.Top, Width * ImageBounds.Value.Width, Height * ImageBounds.Value.Height);
         }
     }
 }

@@ -59,9 +59,8 @@ namespace NuSysApp
         /// </summary>
         public abstract ICanvasImage Image { get; set; }
 
-
         /// <summary>
-        /// The bounds the image will be scaled to fill, if null will use localbounds
+        /// The bounds the image will be scaled to fill, if null will use localbounds, these are normalized
         /// </summary>
         public abstract Rect? ImageBounds { get; set; }
 
@@ -137,5 +136,10 @@ namespace NuSysApp
             return true;
         }
 
+        /// <summary>
+        /// Get the rectangle in local coordinates describing where to draw the image on the element
+        /// </summary>
+        /// <returns></returns>
+        public abstract Rect? GetImageBounds();
     }
 }

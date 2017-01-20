@@ -85,8 +85,11 @@ namespace NuSysApp
                 newImageWidth *= checkScale;
                 newImageHeight *= checkScale;
 
+                var imageWidthRatio = newImageWidth / Width;
+                var imageHeightRatio = newImageHeight / Height;
+
                 // set the image bounds based on the new image
-                ImageBounds = new Rect(Width / 2 - newImageWidth / 2, Height / 2 - newImageHeight / 2, newImageWidth, newImageHeight);
+                ImageBounds = new Rect(.5 - imageWidthRatio, .5 - imageHeightRatio, imageWidthRatio, imageHeightRatio);
             }
             
 
@@ -95,7 +98,7 @@ namespace NuSysApp
 
         public override Rect GetLocalBounds()
         {
-            return ImageBounds ?? base.GetLocalBounds();
+            return GetImageBounds() ?? base.GetLocalBounds();
         }
     }
 }
