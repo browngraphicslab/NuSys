@@ -44,9 +44,11 @@
                     </local:BaseMediaPlayer.RenderTransform>
                 </local:AudioPlayer>
             </Canvas>
-            
+
+            <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed"></local:Keyboard>
             <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed"></local:UndoButton>
 
+            
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
             <Rectangle x:Name="xFullScreenVideoBackground" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Fill="Black" ></Rectangle>
             <local:VideoPlayer x:Name="xFullScreenVideoElement" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}">

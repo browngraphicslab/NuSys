@@ -837,6 +837,7 @@ namespace NuSysApp
         {
             _caret.IsVisible = false;
             ClearSelection(false);
+            SessionController.Instance.SessionView.FreeFormViewer.Keyboard.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
         /// <summary>
@@ -848,6 +849,8 @@ namespace NuSysApp
             if (IsEditable)
             {
                 _caret.IsVisible = true;
+                SessionController.Instance.SessionView.FreeFormViewer.Keyboard.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
             }
             else
             {

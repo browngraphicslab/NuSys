@@ -64,6 +64,8 @@ namespace NuSysApp
         public BaseMediaPlayer VideoPlayer => xVideoPlayer;
         public AudioPlayer AudioPlayer => xAudioPlayer;
 
+        public Keyboard Keyboard => xKeyboard;
+
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
 
@@ -140,6 +142,7 @@ namespace NuSysApp
             xUndoButton.MoveTo(location);
             xUndoButton.Activate(action);
         }
+
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
