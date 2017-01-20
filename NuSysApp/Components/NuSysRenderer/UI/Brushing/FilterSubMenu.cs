@@ -322,6 +322,12 @@ namespace NuSysApp
             _creationDateHeader.IsVisible = true;
         }
 
+        private void ClearCreationDateView()
+        {
+            _creationStartDateSelector.ClearOptions();
+            _creationEndDateSelector.ClearOptions();
+        }
+
         private void DisplayLastEditedDateView()
         {
             _lastEditedStartDateSelector.IsVisible = true;
@@ -329,6 +335,12 @@ namespace NuSysApp
             _dateRangeStartTextbox.IsVisible = true;
             _dateRangeEndTextbox.IsVisible = true;
             _lastEditedDateHeader.IsVisible = true;
+        }
+
+        private void ClearLastEditedDateView()
+        {
+            _lastEditedStartDateSelector.ClearOptions();
+            _lastEditedEndDateSelector.ClearOptions();
         }
 
         private void DisplayTypeView()
@@ -348,6 +360,20 @@ namespace NuSysApp
                 _elementTypeListView.SelectItem(type);
             }
             _elementTypeListView.IsVisible = true;
+        }
+
+        private void ClearDisplayTypeView()
+        {
+            _elementTypeListView.ClearItems();
+            _elementTypeListView.AddItems(new List<NusysConstants.ElementType>
+            {
+                NusysConstants.ElementType.Audio,
+                NusysConstants.ElementType.Collection,
+                NusysConstants.ElementType.Image,
+                NusysConstants.ElementType.PDF,
+                NusysConstants.ElementType.Text,
+                NusysConstants.ElementType.Video,
+            });
         }
 
         /// <summary>
@@ -381,6 +407,15 @@ namespace NuSysApp
                 _userIdListView.SelectItem(creator);
             }
             _userIdListView.IsVisible = true;
+        }
+
+        /// <summary>
+        /// Display the view associated with the creator category
+        /// </summary>
+        private void ClearCreatorView()
+        {
+            _userIdListView.ClearItems();
+            _userIdListView.AddItems(SessionController.Instance.ContentController.AllLibraryElementModels.Select(elem => elem.Creator).Distinct().ToList());
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -420,16 +455,15 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        public HashSet<ElementController> GetElementControllersForCurrentCollection()
+        /// <summary>
+        /// Clears the ui of all the currently selected choices, does not fire events to clear the brush manager
+        /// </summary>
+        public void ClearFilter()
         {
-            return CurrBrush.GetElementControllersForCollection(
-    SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Controller
-        .LibraryElementController as CollectionLibraryElementController);
-        }
-
-        public HashSet<LibraryElementController> GetLibraryElementControllers()
-        {
-            return CurrBrush.GetLibraryElementControllers();
+            ClearCreationDateView();
+            ClearCreatorView();
+            ClearDisplayTypeView();
+            ClearLastEditedDateView();
         }
     }
 }

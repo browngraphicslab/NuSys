@@ -22,7 +22,6 @@ namespace NuSysApp
     /// since it shares a lot of properties in common with the text box ui element i am extending it for now, then just using the textbox CanvasTextFormat
     /// to create the rich text CanvasTextLayout.
     /// 
-    /// TODO: add font weight, style, family, etc. properties to this so people can set font__ on a specific group of characters in text
     /// </summary>
     public class MarkdownConvertingTextbox : TextboxUIElement
     {

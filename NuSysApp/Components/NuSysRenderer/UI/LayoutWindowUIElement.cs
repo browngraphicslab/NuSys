@@ -246,6 +246,7 @@ namespace NuSysApp
             _arrangeButton.ButtonText = ARRANGE_TEXT;
             _arrangeButton.Background = Constants.MED_BLUE;
             _arrangeButton.Enabled = true;
+            _arrangeButton.IsHitTestVisible = true;
         }
 
         /// <summary>
@@ -262,6 +263,7 @@ namespace NuSysApp
             _arrangeButton.ButtonText = ARRANGE_TEXT;
             _arrangeButton.Background = Constants.MED_BLUE;
             _arrangeButton.Enabled = true;
+            _arrangeButton.IsHitTestVisible = true;
         }
 
         /// <summary>
@@ -278,6 +280,7 @@ namespace NuSysApp
             _arrangeButton.ButtonText = ARRANGE_TEXT;
             _arrangeButton.Background = Constants.MED_BLUE;
             _arrangeButton.Enabled = true;
+            _arrangeButton.IsHitTestVisible = true;
         }
 
         /// <summary>
@@ -294,6 +297,7 @@ namespace NuSysApp
             _arrangeButton.ButtonText = CUSTOM_LAYOUT_TEXT;
             _arrangeButton.Background = Constants.MED_BLUE;
             _arrangeButton.Enabled = false;
+            _arrangeButton.IsHitTestVisible = false;
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using SharpDX.Direct2D1;
 
 namespace NuSysApp
 {
@@ -144,16 +145,17 @@ namespace NuSysApp
         private void _filterSubMenu_BrushUpdated(object sender, BrushFilter e)
         {
             var libElemControllers = e.GetLibraryElementControllers();
-            _removeFilterButton.IsVisible = libElemControllers.Any();
 
-            BrushManager.ApplyBrush(libElemControllers);
+            BrushManager.ApplyBrush(libElemControllers, e.IsNoFilterApplied());
+
+
+            _removeFilterButton.IsVisible = BrushManager.HasBrush;
+
         }
 
         private void OnRemoveFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            BrushManager.RemoveBrush();
-            _removeFilterButton.IsVisible = false;
-
+            ClearFilter();
         }
 
         /// <summary>
@@ -250,6 +252,13 @@ namespace NuSysApp
                 default:
                     throw new ArgumentOutOfRangeException(nameof(category), category, null);
             }
+        }
+
+        public void ClearFilter()
+        {
+            BrushManager.RemoveBrush();
+            _filterSubMenu.ClearFilter();
+            _removeFilterButton.IsVisible = false;
         }
     }
 }

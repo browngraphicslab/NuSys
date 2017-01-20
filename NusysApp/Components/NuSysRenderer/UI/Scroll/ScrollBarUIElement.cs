@@ -173,11 +173,29 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            _plusArrow.Image = _plusArrow.Image ??
-                               await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/down arrow.png"));
-            _minusArrow.Image = _minusArrow.Image ??
-                                await
-                                    CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/up arrow.png"));
+            if (_orientation == Orientation.Vertical)
+            {
+                _plusArrow.Image = _plusArrow.Image ??
+                                   await
+                                       CanvasBitmap.LoadAsync(Canvas,
+                                           new Uri("ms-appx:///Assets/new icons/down arrow.png"));
+                _minusArrow.Image = _minusArrow.Image ??
+                                    await
+                                        CanvasBitmap.LoadAsync(Canvas,
+                                            new Uri("ms-appx:///Assets/new icons/up arrow.png"));
+            }
+
+            if (_orientation == Orientation.Horizontal)
+            {
+                _plusArrow.Image = _plusArrow.Image ??
+                                   await
+                                       CanvasBitmap.LoadAsync(Canvas,
+                                           new Uri("ms-appx:///Assets/new icons/right scroll arrow.png"));
+                _minusArrow.Image = _minusArrow.Image ??
+                                   await
+                                       CanvasBitmap.LoadAsync(Canvas,
+                                           new Uri("ms-appx:///Assets/new icons/left scroll arrow.png"));
+            }
 
             base.Load();
         }
@@ -187,7 +205,6 @@ namespace NuSysApp
         /// </summary>
         private void CreateArrows()
         {
-            //TODO: add arrow images to these
             _plusArrow = new TransparentButtonUIElement(this, ResourceCreator);
             _minusArrow = new TransparentButtonUIElement(this, ResourceCreator);
 
@@ -273,10 +290,15 @@ namespace NuSysApp
             if (_orientation == Orientation.Horizontal)
             {
                 _barWidth = Height;
-                _barLength = Width - 2 * _barWidth;
+
+                _barLength = Math.Max(0, Width - 2 * _barWidth);
                 _slider.Width = _barLength * Range;
+
                 _slider.Height = _barWidth;
                 _slider.Transform.LocalPosition = new Vector2(_barWidth + _barLength * Position, 0);
+
+                _slider.Width = Math.Max(UIDefaults.MinSliderSize, _barLength * Position);
+                _slider.Transform.LocalX = _barWidth + (_barLength - (_slider.Width - _barLength * Range)) * Position;
 
                 _plusArrow.Width = _barWidth;
                 _plusArrow.Height = _barWidth;
@@ -291,11 +313,11 @@ namespace NuSysApp
             else if (_orientation == Orientation.Vertical)
             {
                 _barWidth = Width;
-                _barLength = Height - 2 * _barWidth;
+                _barLength = Math.Max(0, Height - 2 * _barWidth);
                 _slider.Width = _barWidth;
-                _slider.Height = _barLength * Range;
-                _slider.Transform.LocalPosition = new Vector2(0, _barWidth + _barLength * Position);
 
+                _slider.Height = Math.Max(UIDefaults.MinSliderSize, _barLength * Range);
+                _slider.Transform.LocalY = _barWidth + (_barLength - (_slider.Height - _barLength * Range)) * Position;
 
                 _plusArrow.Width = _barWidth;
                 _plusArrow.Height = _barWidth;

@@ -133,6 +133,7 @@
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\html export.png" />
     <Content Include="Assets\new icons\left arrow.png" />
+    <Content Include="Assets\new icons\left scroll arrow.png" />
     <Content Include="Assets\new icons\listview.png" />
     <Content Include="Assets\new icons\logo_bing_en-US.png" />
     <Content Include="Assets\new icons\multitag.png" />
@@ -142,6 +143,7 @@
     <Content Include="Assets\new icons\recording.png" />
     <Content Include="Assets\new icons\return to node.png" />
     <Content Include="Assets\new icons\right arrow.png" />
+    <Content Include="Assets\new icons\right scroll arrow.png" />
     <Content Include="Assets\new icons\stack.png" />
     <Content Include="Assets\new icons\text.png" />
     <Content Include="Assets\new icons\tools red.png" />

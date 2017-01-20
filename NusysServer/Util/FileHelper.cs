@@ -470,6 +470,37 @@ namespace NusysServer
         }
 
         /// <summary>
+        /// This DANGEROUS method deletes all the files on the WWWRoot of the following types:
+        /// txt, jpg, jpeg, tif, tiff, png, mp4, mp3, docx 
+        /// </summary>
+        public static void DeleteAllFiles()
+        {
+            DirectoryInfo d = new DirectoryInfo(Constants.WWW_ROOT);//Assuming Test is your Folder
+            var text = d.GetFiles("*.txt"); //Getting Text files
+            var imgs1 = d.GetFiles(".jpg");
+            var imgs2 = d.GetFiles(".jpeg");
+            var imgs3 = d.GetFiles(".tif");
+            var imgs4 = d.GetFiles(".tiff");
+            var imgs5 = d.GetFiles(".png");
+            var video = d.GetFiles(".mp4");
+            var audio = d.GetFiles(".mp3");
+            var word = d.GetFiles(".docx");
+            var all =
+                text.Concat(imgs1)
+                    .Concat(imgs2)
+                    .Concat(imgs3)
+                    .Concat(imgs4)
+                    .Concat(imgs5)
+                    .Concat(video)
+                    .Concat(audio)
+                    .Concat(word);
+            foreach (var file in all)
+            {
+                file.Delete();
+            }
+        }
+
+        /// <summary>
         /// This method will save the word document in the correct location, and then return the pdf bytes for the document.
         /// You must use a word file path ending in '.docx'.
         /// This will also give the save word document a special property.  

@@ -27,16 +27,6 @@ namespace NuSysApp
         private List<BreadCrumbUIElement> _visibleBreadCrumbs;
 
         /// <summary>
-        /// The handle we use to scroll through the breadcrumb trail
-        /// </summary>
-        private RectangleUIElement _scrollHandle;
-
-        /// <summary>
-        /// The actual scroll bar behind the handle
-        /// </summary>
-        private RectangleUIElement _scrollBar;
-
-        /// <summary>
         /// The crop rectangle inside of which are contained all the bread crumbs that we can actually display
         /// </summary>
         private Rect _cropRect;
@@ -54,7 +44,9 @@ namespace NuSysApp
         /// <summary>
         /// The initial drag position of the scroll handle
         /// </summary>
-        private Vector2 _scrollHandleInitialDragPosition;
+        private float initialScrollBarPosition;
+
+        private ScrollBarUIElement _horizontalScrollBar;
 
         public BreadCrumbContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -66,43 +58,38 @@ namespace NuSysApp
 
             Mask = new Rect(BorderWidth, BorderWidth, Width - BorderWidth*2, Height - BorderWidth*2);
 
-            _scrollBar = new RectangleUIElement(this, resourceCreator)
+            _horizontalScrollBar = new ScrollBarUIElement(this, resourceCreator,
+                ScrollBarUIElement.Orientation.Horizontal)
             {
-                Width = Width,
-                Height = 15,
-                Background = Constants.LIGHT_BLUE
+                Height = UIDefaults.ScrollBarWidth,
+                Width = Width - 2*BorderWidth
             };
-            AddChild(_scrollBar);
-            _scrollBar.Transform.LocalPosition = new Vector2(0, Height - _scrollBar.Height);
 
-            _scrollHandle = new RectangleUIElement(this, resourceCreator)
-            {
-                Width = Width,
-                Height = 15,
-                Background = Constants.MED_BLUE
-            };
-            AddChild(_scrollHandle);
-            _scrollHandle.Transform.LocalPosition = new Vector2(0, Height - _scrollHandle.Height);
+            _horizontalScrollBar.Transform.LocalPosition = new Vector2(0, Height - _horizontalScrollBar.Height);
 
+            AddChild(_horizontalScrollBar);
 
-            _scrollBar.Tapped += OnScrollBarTapped;
-            _scrollHandle.DragStarted += OnScrollHandleDragStarted;
-            _scrollHandle.Dragged += OnScrollHandleDragged;
+            _horizontalScrollBar.ScrollBarPositionChanged += _horizontalScrollBar_ScrollBarPositionChanged;
 
             Dragged += MainBackgroundDragged;
             DragStarted += MainBackgroundOnDragStarted;
         }
 
+        private void _horizontalScrollBar_ScrollBarPositionChanged(object source, float position)
+        {
+            refreshUI = true;
+        }
+
         private void MainBackgroundOnDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _scrollHandleInitialDragPosition = _scrollHandle.Transform.LocalPosition;
+            initialScrollBarPosition = _horizontalScrollBar.Position;
         }
 
         private void MainBackgroundDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var normalizedDiff = pointer.Delta.X/_totalPathWidth;
-            var _scrollDiff = -normalizedDiff*Width;
-            _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(_scrollDiff, 0);
+            var _scrollDiff = -normalizedDiff;
+            _horizontalScrollBar.Position = initialScrollBarPosition + _scrollDiff;
             BoundScrollHandle();
             refreshUI = true;
         }
@@ -110,28 +97,14 @@ namespace NuSysApp
         private void BoundScrollHandle()
         {
             // bound the handle to the bounds
-            if (_scrollHandle.Transform.LocalPosition.X < 0)
+            if (_horizontalScrollBar.Position < 0)
             {
-                _scrollHandle.Transform.LocalPosition = new Vector2(0, _scrollHandle.Transform.LocalY);
+                _horizontalScrollBar.Position = 0;
             }
-            else if (_scrollHandle.Transform.LocalPosition.X + _scrollHandle.Width > Width)
+            else if (_horizontalScrollBar.Position + _horizontalScrollBar.Range > 1)
             {
-                _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
+                _horizontalScrollBar.Position = 1 - _horizontalScrollBar.Range;
             }
-        }
-
-        private void OnScrollHandleDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _scrollHandle.Transform.LocalPosition = _scrollHandleInitialDragPosition + new Vector2(pointer.Delta.X, 0);
-            BoundScrollHandle();
-
-
-            refreshUI = true;
-        }
-
-        private void OnScrollHandleDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _scrollHandleInitialDragPosition = _scrollHandle.Transform.LocalPosition;
         }
 
         public override void Dispose()
@@ -149,29 +122,9 @@ namespace NuSysApp
                 crumb.Deleted -= OnBreadCrumbDeleted;
             }
 
-            _scrollBar.Tapped -= OnScrollBarTapped;
-            _scrollHandle.DragStarted -= OnScrollHandleDragStarted;
-            _scrollHandle.Dragged -= OnScrollHandleDragged;
             Dragged += MainBackgroundDragged;
             DragStarted += MainBackgroundOnDragStarted;
             base.Dispose();
-        }
-
-        private void OnScrollBarTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var currPointer = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            
-            // try to move the scroll handle so its left side is on the tapped part, if there isn't room put it's right side on the tapped part
-            if (currPointer.X + _scrollHandle.Width < Width)
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(currPointer.X, _scrollHandle.Transform.LocalY);
-            }
-            else
-            {
-                _scrollHandle.Transform.LocalPosition = new Vector2(currPointer.X - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
-            }
-
-            refreshUI = true;
         }
 
         public async void AddBreadCrumb(LibraryElementController collectionController, ElementController controller = null)
@@ -188,7 +141,6 @@ namespace NuSysApp
 
             _breadCrumbData.Add(newCrumb);
             ComputeScrollHandleSize();
-            _scrollHandle.Transform.LocalPosition = new Vector2(Width - _scrollHandle.Width, _scrollHandle.Transform.LocalY);
             refreshUI = true;
         }
 
@@ -205,7 +157,7 @@ namespace NuSysApp
 
         private void ComputeCrop()
         {
-            _cropRect = new Rect(_totalPathWidth * _scrollHandle.Transform.LocalX / Width, 0, Width, Height);
+            _cropRect = new Rect(_totalPathWidth * _horizontalScrollBar.Position, 0, Width, Height);
         }
 
         private void ComputeScrollHandleSize()
@@ -214,25 +166,17 @@ namespace NuSysApp
             _totalPathWidth = _breadCrumbData.Count*BreadCrumbUIElement.DefaultWidth + 
                                 (_breadCrumbData.Count + 1)*BreadCrumbUIElement.DefaultSpacing;
 
-            // calculate the ratio of the width needed for the scroll handle
+            // calculate the ratio of the width needed for the scrollbar
             var ratio = Math.Min(1, Width/_totalPathWidth);
-            if (Math.Abs(ratio - 1) < .001)
-            {
-                _scrollHandle.IsVisible = false;
-                _scrollBar.IsVisible = false;
-            }
-            else
-            {
-                _scrollHandle.IsVisible = true;
-                _scrollBar.IsVisible = true;
-            }
 
-            // set the new width of the _scrollHandle
-            _scrollHandle.Width = Width * ratio;
+
+            // set the new range of the _scrollHandle
+            _horizontalScrollBar.Range = ratio;
+
 
             // update the position of the scroll bar so the crop rect is maintained
             var normalizedOffset = _cropRect.Left/_totalPathWidth;
-            _scrollHandle.Transform.LocalPosition = new Vector2((float) normalizedOffset * Width, _scrollHandle.Transform.LocalY);
+            _horizontalScrollBar.Position = (float) normalizedOffset;
             BoundScrollHandle();
         }
 
@@ -253,9 +197,9 @@ namespace NuSysApp
             }
 
 
-            Vector2 upperLeft = new Vector2(BreadCrumbUIElement.DefaultSpacing, 0);
-            Vector2 lowerRight = new Vector2(upperLeft.X + BreadCrumbUIElement.DefaultWidth, upperLeft.Y + BreadCrumbUIElement.DefaultHeight);
-            Vector2 diff = new Vector2(BreadCrumbUIElement.DefaultWidth + BreadCrumbUIElement.DefaultSpacing, 0);
+            var upperLeft = new Point(BreadCrumbUIElement.DefaultSpacing, 0);
+            var lowerRight = new Point(upperLeft.X + BreadCrumbUIElement.DefaultWidth, upperLeft.Y + BreadCrumbUIElement.DefaultHeight);
+            var diff = new Point(BreadCrumbUIElement.DefaultWidth + BreadCrumbUIElement.DefaultSpacing, 0);
             foreach (var crumb in _breadCrumbData.ToArray())
             {
                 if (IsPartiallyContained(upperLeft, lowerRight, _cropRect))
@@ -268,8 +212,8 @@ namespace NuSysApp
                 }
 
                 // shift the positions for the new calculations
-                upperLeft += diff;
-                lowerRight += diff;
+                upperLeft.X += diff.X;
+                lowerRight.X += diff.X;
             }
 
 
@@ -337,10 +281,9 @@ namespace NuSysApp
         /// <param name="lowerRight"></param>
         /// <param name="cropRect"></param>
         /// <returns></returns>
-        private bool IsPartiallyContained(Vector2 upperLeft, Vector2 lowerRight, Rect cropRect)
+        private bool IsPartiallyContained(Point upperLeft, Point lowerRight, Rect cropRect)
         {
-            return lowerRight.X > cropRect.Left && lowerRight.X < cropRect.Right ||
-                   upperLeft.X < cropRect.Right && upperLeft.X > cropRect.Left;
+            return cropRect.Contains(lowerRight) || cropRect.Contains(upperLeft);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)

@@ -635,7 +635,7 @@ namespace NusysServer
             var client = new HttpClient();
             //search += " wikipedia";
             // Add the subscription key to the request header
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "f3e590290fa54bf1865343c3bae6955c");
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "9f62dc75c6ae4ca7bd8efa227939e76b");
             string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search +
                          "&count=25&offset=0&mkt=en-us&safesearch=Moderate";
             // Build the content of the post request
