@@ -917,6 +917,7 @@ namespace NuSysApp
                     var point = Vector2.Transform(interpolatedPoint, transform);
                     sortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
                 }
+                CurrentCollection.InkRenderItem.RemoveLatestStroke();
                 return;
             }
         }
