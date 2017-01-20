@@ -285,18 +285,17 @@ namespace NuSysApp
         /// <returns></returns>
         private bool ApplyBrushFilter(LibraryElementModel lem)
         {
-            if (!BrushManager.ControllersWithHighlight.Any())
-            {
-                return true;
-            } else
+            if (BrushManager.HasBrush)
             {
                 return BrushManager.ControllersWithHighlight.Any(cont => cont.LibraryElementModel == lem);
             }
+            return true;
 
         }
 
         private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            _filterMenu.ClearFilter();
             _filterMenu.IsVisible = !_filterMenu.IsVisible;
             _filterMenu.Height = 400;
             _filterMenu.Width = 200;

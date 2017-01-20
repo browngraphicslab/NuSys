@@ -228,6 +228,18 @@ namespace NuSysApp
             return null;
         }
 
+        /// <summary>
+        /// clear all the currently selected options from the date selector, sets all the options
+        /// to the first option in the list
+        /// </summary>
+        public void ClearOptions()
+        {
+            _dayDropDownUIElement.CurrentSelection = _dayDropDownUIElement.Items[0];
+            _yearDropDownUIElement.CurrentSelection = _dayDropDownUIElement.Items[0];
+            _monthDropDownUIElement.CurrentSelection = _dayDropDownUIElement.Items[0];
+
+        }
+
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             _dropDownManager.ArrangeItems();
