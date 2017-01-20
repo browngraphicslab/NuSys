@@ -10,6 +10,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using Windows.System;
 
 namespace NuSysApp.Components.NuSysRenderer.UI
 {
@@ -38,7 +39,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             _autoSuggest = new AutoSuggestTextBox<Keyword>(this, Canvas)
             {
                 PlaceHolderText = SEARCH_BAR_TEXT,
-                Background = Colors.Azure,
+                Background = Constants.LIGHT_BLUE,
                 BorderWidth = 2,
                 BorderColor = Colors.DarkSlateGray,
                 ColumnFunction = keyword => keyword.Text,
@@ -50,6 +51,8 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                     return new List<Keyword>(_tags.Where(keyword => keyword.Text.Contains(s)));
                 },
             };
+
+            _autoSuggest.KeyPressed += AutoSuggest_KeyPressed;
 
             AddChild(_autoSuggest);
 
@@ -64,6 +67,14 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             Width = 270.0f;
             Height = 0.0f;
             Background = Colors.Transparent;
+        }
+
+        private void AutoSuggest_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Enter)
+            {
+                AddKeyword();
+            }
         }
 
         public override void Dispose()
@@ -90,13 +101,23 @@ namespace NuSysApp.Components.NuSysRenderer.UI
 
         public void OnAddButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            AddKeyword();
+        }
+
+        private void AddKeyword()
+        {
+            if (string.IsNullOrEmpty(_autoSuggest.Text) || string.IsNullOrWhiteSpace(_autoSuggest.Text))
+            {
+                //Don't allow creation of empty tag
+                return;
+            }
             var selections = SessionController.Instance.SessionView.FreeFormViewer.Selections;
             foreach (ElementRenderItem element in selections)
             {
                 element.ViewModel.Controller.LibraryElementController.AddKeyword(new Keyword(_autoSuggest.Text));
             }
+            _autoSuggest.ClearText();
         }
-
         public void UpdatePositionWithSize(Size size)
         {
             Transform.LocalPosition = new Vector2((float)(size.Width - Width) / 2, (float)(size.Height - Height) / 2);
