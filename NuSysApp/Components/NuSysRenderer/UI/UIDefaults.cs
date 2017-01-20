@@ -172,9 +172,17 @@ namespace NuSysApp
         public static float ListHeaderHeight = 40;
         #endregion list
 
+
         #region scrollbar
         public static float MinSliderSize = 15f;
 
         #endregion scrollbar
+
+        #region chat
+        public static float MaxChatHeight = 125f;
+
+        public static float MinChatHeight = 50f;
+        #endregion chat
+
     }
 }

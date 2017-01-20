@@ -37,10 +37,6 @@ namespace NuSysApp
         private float _newMessageYOffset;
 
         private TextboxUIElement _chatTitle;
-        /// <summary>
-        /// True if we want to scroll to the bottom of the page
-        /// </summary>
-        private bool _scrollToBottom;
 
         public ChatBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
@@ -67,7 +63,7 @@ namespace NuSysApp
             };
 
             // instantiate the typing and reading rectangles
-            _typingRect = new ScrollableTextboxUIElement(this, resourceCreator, true, true)
+            _typingRect = new ScrollableTextboxUIElement(this, resourceCreator, true, false)
             {
                 Background = Colors.White,
                 Width = _typingRectContainer.Width,
@@ -82,6 +78,7 @@ namespace NuSysApp
                 Background = Colors.White,
                 Width = Width,
                 Height = Height - _typingRectContainer.Height - TopBarHeight,
+                
             };
             _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, _readingRect.Height);
             AddChild(_readingRect);
@@ -101,22 +98,19 @@ namespace NuSysApp
             _chatTitle.Transform.LocalPosition = new Vector2(this.Transform.LocalX,
                 this.Transform.LocalY - _chatTitle.Height);
 
-            _typingRect.KeyPressed += _typingRect_KeyPressed;
+            _typingRect.InputSubmitted += _typingRect_InputSubmitted;
+        }
+
+        private void _typingRect_InputSubmitted(ScrollableTextboxUIElement sender, string input)
+        {
+            SendMessage(input.TrimEnd('\n'));
         }
 
         public override void Dispose()
         {
-            _typingRect.KeyPressed -= _typingRect_KeyPressed;
+            _typingRect.InputSubmitted -= _typingRect_InputSubmitted;
 
             base.Dispose();
-        }
-
-        private void _typingRect_KeyPressed(Windows.UI.Core.KeyEventArgs args)
-        {
-            if (args.VirtualKey == VirtualKey.Enter)
-            {
-                SendMessage(_typingRect.Text);
-            }
         }
 
         /// <summary>
@@ -125,6 +119,11 @@ namespace NuSysApp
         /// <param name="text"></param>
         private async void SendMessage(string text)
         {
+            if(string.IsNullOrWhiteSpace(text) || string.IsNullOrEmpty(text))
+            {
+                _typingRect.ClearText();
+                return;
+            }
             if (CheckForChatbotChat(text))
             {
                 _typingRect.ClearText();
@@ -182,8 +181,13 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             // resize so the typing rect is smaller than the reading rect
-            _typingRectContainer.Height = 50;
+            var textHeight = _typingRect.GetTextHeight();
+
+            _typingRectContainer.Height = Math.Min(UIDefaults.MaxChatHeight, Math.Max(textHeight, UIDefaults.MinChatHeight));
             _typingRectContainer.Width = Width;
+
+            
+         
             _typingRect.Width = _typingRectContainer.Width - 2* _typingRectContainer.BorderWidth;
             _typingRect.Height = _typingRectContainer.Height - 2* _typingRectContainer.BorderWidth;
             _readingRect.Height = Height - _typingRectContainer.Height - TopBarHeight;
@@ -207,13 +211,6 @@ namespace NuSysApp
             UpdateScrollAreaSize();
 
             base.Update(parentLocalToScreenTransform);
-
-
-            if (_scrollToBottom)
-            {
-                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
-                _scrollToBottom = false;
-            }
 
         }
 
@@ -243,7 +240,7 @@ namespace NuSysApp
             // then scroll the chat down
             if (!IsVisible || user.UserID == WaitingRoomView.UserID)
             {
-                _scrollToBottom = true;
+                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
             }
         }
 
@@ -264,7 +261,7 @@ namespace NuSysApp
             // then scroll the chat down
             if (!IsVisible || user.UserID == WaitingRoomView.UserID)
             {
-                _scrollToBottom = true;
+                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
             }
 
         }

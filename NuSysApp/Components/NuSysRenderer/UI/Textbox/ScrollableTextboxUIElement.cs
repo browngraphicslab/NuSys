@@ -21,12 +21,14 @@ namespace NuSysApp
 {
     public class ScrollableTextboxUIElement : TextboxUIElement
     {
+
         /// <summary>
         /// Delegate for the TextChanged event: Takes in the new string of text
         /// </summary>
         /// <param name="item"></param>
         /// <param name="text"></param>
         public delegate void TextHandler(InteractiveBaseRenderItem item, String text);
+
 
         /// <summary>
         /// The text to be displayed in the textbox.
@@ -234,6 +236,12 @@ namespace NuSysApp
             }
         }
 
+
+
+
+        private bool _horizontalScrollBarIsDisabled;
+        private bool _verticalScrollBarIsDisabled;
+
         /// <summary>
         /// Handler for the input submitted event, fired whenever the user hits the enter button on a non vertically scrolling textbox
         /// </summary>
@@ -340,7 +348,11 @@ namespace NuSysApp
                 {
                     Width = 15
                 };
-                AddChild(_verticalScrollbar);
+
+                if (showScrollBar)
+                {
+                    AddChild(_verticalScrollbar);
+                }
 
                 _verticalScrollbar.ScrollBarPositionChanged += _verticalScrollbar_ScrollBarPositionChanged;
             }
@@ -795,6 +807,7 @@ namespace NuSysApp
                 {
                     Text = Text.Insert(CaretCharacterIndex + 1, Newline);
                     CaretCharacterIndex++;
+                    OnInputSubmitted();
                 } else
                 {
                     OnInputSubmitted();
@@ -1695,6 +1708,7 @@ namespace NuSysApp
         {
             CaretCharacterIndex = -1;
             Text = string.Empty;
+            _updateCaretTransform = true;
             OnTextChanged(Text);
         }
 
@@ -1722,6 +1736,15 @@ namespace NuSysApp
 
             return result.ToString();
         } 
+
+        public float GetTextHeight()
+        {
+            if (_loaded)
+            {
+                return (float) (TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height + 2 * (BorderWidth + UIDefaults.YTextPadding));
+            }
+            return float.MinValue;
+        }
 
         // FUNCTIONS TO CONVERT KEYCODE TO STRING UNICODE CHARACTER
         [DllImport("user32.dll")]

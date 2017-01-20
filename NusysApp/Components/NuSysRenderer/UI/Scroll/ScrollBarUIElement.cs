@@ -272,7 +272,10 @@ namespace NuSysApp
             if (_orientation == Orientation.Horizontal)
             {
                 _barWidth = Height;
-                _barLength = Width - 2 * _barWidth;
+
+                _barLength = Math.Max(0, Width - 2 * _barWidth);
+                _slider.Width = _barLength * Range;
+
                 _slider.Height = _barWidth;
                 _slider.Transform.LocalPosition = new Vector2(_barWidth + _barLength * Position, 0);
 
@@ -292,7 +295,7 @@ namespace NuSysApp
             else if (_orientation == Orientation.Vertical)
             {
                 _barWidth = Width;
-                _barLength = Height - 2 * _barWidth;
+                _barLength = Math.Max(0, Height - 2 * _barWidth);
                 _slider.Width = _barWidth;
 
                 _slider.Height = Math.Max(UIDefaults.MinSliderSize, _barLength * Range);
