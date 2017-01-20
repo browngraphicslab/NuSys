@@ -746,7 +746,17 @@ namespace NuSysApp
             {
                 _isShiftPressed = true;
             }
-            // Special case z,x,c keys while control is pressed
+            // escape key pressed
+            else if (args.VirtualKey == VirtualKey.Escape)
+            {
+                // when escape is pressed while we have selection clear the selection
+                // setting the CaretCharacterIndex to the start of the cleared selection
+                if (_hasSelection)
+                {
+                    ClearSelection(false);
+                }
+            }
+            // Special case z,x,c, a keys while control is pressed
             else if (args.VirtualKey == VirtualKey.C && _isCtrlPressed)
             {
                 Copy();
@@ -1385,7 +1395,7 @@ namespace NuSysApp
         /// <summary>
         /// Clear the current selection safely, returns empty string if the current selection
         /// had an invalid index or if there is no selection, also set the CaretCharacterIndex to the start of the
-        /// current selection unless we do not have anything selected, i.e. _hasSelection is false
+        /// selection that was cleared
         /// </summary>
         public string ClearSelection(bool deleteSelection = true)
         {
