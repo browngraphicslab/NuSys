@@ -145,6 +145,13 @@ namespace NuSysApp
             return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
         }
 
+        public InkStroke CurrentInkStroke()
+        {
+            var builder = new InkStrokeBuilder();
+            builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+            return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
+        }
+
         public void StopInkByEvent(CanvasPointer e)
         {
             if (StopCanvasInk)
@@ -204,6 +211,13 @@ namespace NuSysApp
                 _needsWetStrokeUpdate = true;
             });
         }
+
+        public void RemoveCurrentStroke()
+        {
+            _currentInkPoints = new List<InkPoint>();
+            _needsWetStrokeUpdate = true;
+        }
+
         private async Task SendInkStrokeAddedRequest()
         {
             var strokeId = SessionController.Instance.GenerateId();

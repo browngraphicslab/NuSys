@@ -864,7 +864,7 @@ namespace NuSysApp
             }
 
             var transform = RenderEngine.GetCollectionTransform(InitialCollection);
-            var latestStroke = CurrentCollection.InkRenderItem.LatestStroke;
+            var latestStroke = CurrentCollection.InkRenderItem.CurrentInkStroke();
             var points = latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)).ToArray();
             if (2 <= points.Length)
             {
@@ -917,7 +917,7 @@ namespace NuSysApp
                     var point = Vector2.Transform(interpolatedPoint, transform);
                     sortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
                 }
-                CurrentCollection.InkRenderItem.RemoveLatestStroke();
+                CurrentCollection.InkRenderItem.RemoveCurrentStroke();
                 return;
             }
         }
@@ -1070,7 +1070,6 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
-            CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
             if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds > 500)
             {
                 var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
@@ -1089,11 +1088,15 @@ namespace NuSysApp
                 targetPoint.Y = (float) Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
                 RenderEngine.InkOptions.Transform.LocalPosition = targetPoint;
                 RenderEngine.InkOptions.IsVisible = true;
-                CurrentCollection.InkRenderItem.RemoveLatestStroke();
+                CurrentCollection.InkRenderItem.RemoveCurrentStroke();
+            }
+            else if (_layoutWindow != null)
+            {
+                _layoutWindow?.NotifyArrangeCustom();
             }
             else
             {
-                _layoutWindow?.NotifyArrangeCustom();
+                CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
             }
         }
 
