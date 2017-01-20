@@ -10,6 +10,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace NuSysApp
 {
@@ -97,8 +98,12 @@ namespace NuSysApp
                 !SessionController.Instance.SessionView.FreeFormViewer.Selections.Any(i => i.ViewModel.Controller.Id == _vm.Model.InElementId|| i.ViewModel.Controller.Id == _vm.Model.OutElementId)))
                 return;
 
-            if (_path != null)
-                ds.DrawGeometry(_path, Colors.PaleVioletRed, 30);
+            var brush = new CanvasSolidColorBrush(ResourceCreator, Colors.PaleVioletRed)
+            {
+                Opacity = 0.5f,
+
+            };
+            ds.DrawGeometry(_path, brush, 30);
         }
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)

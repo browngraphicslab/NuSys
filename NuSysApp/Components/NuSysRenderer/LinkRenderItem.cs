@@ -10,6 +10,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace NuSysApp
 {
@@ -25,6 +26,7 @@ namespace NuSysApp
             _vm.Controller.InElement.AnchorChanged += OnAnchorChanged;
             _vm.Controller.OutElement.AnchorChanged += OnAnchorChanged;
 
+           
             _vm.Controller.LibraryElementController.Deleted += LibraryElementControllerOnDeleted;
         }
 
@@ -98,7 +100,15 @@ namespace NuSysApp
                 return;
 
             if (_path != null)
-                ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
+            {
+                var brush = new CanvasSolidColorBrush(ResourceCreator, Colors.DodgerBlue)
+                {
+                    Opacity = 0.5f,
+
+                };
+                ds.DrawGeometry(_path, brush, 30);
+
+            }
         }
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)
