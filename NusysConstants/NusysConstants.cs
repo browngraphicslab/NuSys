@@ -1864,6 +1864,16 @@ namespace NusysIntermediate
             Small, Medium, Large
         }
 
+        /// <summary>
+        /// enum for representing the direction of arrows on links, if there is any
+        /// </summary>
+        public enum LinkDirection
+        {
+            Forward,
+            Backward,
+            None
+        }
+
         #endregion Enums
 
         #region Misc

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -248,6 +249,7 @@ namespace NuSysApp
 
 
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+
             _mainTabContainer.AddTab(libraryElementModelId, controller.LibraryElementModel.Title);
             controller.TitleChanged += Controller_TitleChanged;
             controller.Deleted += Controller_Deleted;

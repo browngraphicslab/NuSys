@@ -30,9 +30,9 @@ namespace NuSysApp
 
         /// <summary>
         /// This is the enum representing the directionality of the link.
-        /// If you don't set it, it wont be sent.
+        /// If you don't set it, it will default to None
         /// </summary>
-        public LinkLibraryElementModel.LinkDirection? LinkDirection { set; get; }
+        public NusysConstants.LinkDirection? LinkDirection { set; get; }
 
         /// <summary>
         /// This packs all of the variables into the message that is send to the server
@@ -59,10 +59,7 @@ namespace NuSysApp
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY] = LibraryElementModelOutId;
             }
 
-            if (LinkDirection != null)
-            {
-                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_DIRECTIONALITY_KEY] = LinkDirection.Value;
-            }
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_DIRECTIONALITY_KEY] = LinkDirection == null ? NusysConstants.LinkDirection.None : LinkDirection.Value;
 
             // set access level to the lower of the two end points
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = GetAccessSetting().ToString();
