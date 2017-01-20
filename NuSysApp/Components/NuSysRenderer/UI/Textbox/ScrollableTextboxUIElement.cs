@@ -464,50 +464,40 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            //todo check this method to see if it works
+            // clear the current selection
             ClearSelection(false);
 
             // we want to update the cursor transform
             _updateCaretTransform = true;
 
-            var charIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-            if (Text == "")
-            {
-                return;
-            }
+            // get the index of the character we clicked on this could be negative 1
+            // make this the selection start index
+            _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+            _selectionEndIndex = _selectionStartIndex + 1;
 
-            var c = Text[charIndex];
-
-            if (Char.IsWhiteSpace(c))
+            // decrement the selection start index until we get a character that is punctuation or whitespace
+            while (_selectionStartIndex >= 0)
             {
-                return;
-            }
-            var start = charIndex;
-            var end = charIndex;
-
-            while (start > 0)
-            {
-                var prevC = Text[start - 1];
-                if (Char.IsWhiteSpace(prevC))
+                if (char.IsWhiteSpace(Text[_selectionStartIndex]) || char.IsPunctuation(Text[_selectionStartIndex]))
                 {
                     break;
                 }
-                start--;
+                _selectionStartIndex--;
             }
 
-            while (end < Text.Length - 1)
+
+            while (_selectionEndIndex <= Text.Length - 2)
             {
-                var nextC = Text[end + 1];
-                if (Char.IsWhiteSpace(nextC))
+                if (char.IsWhiteSpace(Text[_selectionEndIndex]) || char.IsPunctuation(Text[_selectionEndIndex]))
                 {
+                    _selectionEndIndex--;
                     break;
                 }
-                end++;
+                _selectionEndIndex++;
             }
 
             _hasSelection = true;
-            _selectionStartIndex = start;
-            _selectionEndIndex = end;
+            CaretCharacterIndex = _selectionEndIndex;
         }
 
         /// <summary>
