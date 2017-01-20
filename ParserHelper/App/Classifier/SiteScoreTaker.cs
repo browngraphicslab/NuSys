@@ -35,8 +35,27 @@ namespace ParserHelper
             };
         }
 
+        public static int findDepth(HtmlNode node)
+        {
+            int max = 0;
+            foreach (var child in node.ChildNodes)
+            {
+                var curr = findDepth(child);
+                if (curr > max)
+                {
+                    max = curr;
+                }
+            }
+            return max + 1;
+        }
+
         public static HtmlNode GetArticle(HtmlDocument doc)
         {
+            if (findDepth(doc.DocumentNode) < 8)
+            {
+                return doc.DocumentNode;
+            }
+
             return RecursiveGetArticle(doc.DocumentNode);
         }
         /// <summary>

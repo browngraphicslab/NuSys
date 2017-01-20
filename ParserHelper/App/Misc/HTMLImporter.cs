@@ -28,7 +28,7 @@ namespace ParserHelper
         /// <summary>
         /// These are the expressions that once detected in a title will be removed because they are some type of spam
         /// </summary>
-        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|learn more|references?|follow( me)?|e-handbook|posted by:|credits?|^\s*thank you\s*$|\d+.*?this (?:year|day|month|hour|minute|night|decade|lifetime)|\d+.*?(?:predictions?|trends?|news?|facts?)|see also)");
+        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|learn more|references?|follow( me)?|e-handbook|posted by:|credits?|^\s*thank you\s*$|\d+.*?this (?:year|day|month|hour|minute|night|decade|lifetime)|\d+.*?(?:predictions?|trends?|news?|facts?)|see also|^\s*(?:facebook|twitter|email|google\+|pinterest|pin)\s*$|future of)");
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
@@ -40,7 +40,7 @@ namespace ParserHelper
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
-        private static Regex _longTitlesToRemove = new Regex(@"(?:download.*?free|^\s*content\s*$)");
+        private static Regex _longTitlesToRemove = new Regex(@"(?:download.*?free|^\s*content\s*$|need to enable javascript)");
         /// <summary>
         /// These are things that are going to be removed from the text but aren't markers for spam
         /// </summary>
@@ -295,10 +295,10 @@ namespace ParserHelper
                 //We then get the image source uri
                 var src = FormatSource(node.GetAttributeValue("src", null));
                 //We dont want any svgs because they mess up the server
-                var re = new Regex(@"(?:svg|gif|(?:info|ico)\.png)$");
+                var re = new Regex(@"(?:\.svg|\.gif|(?:info|ico|ext|(?:icon|logo)[^/]*?)\.(?:png|jpg)$|_avatar_)");
                 //Makes sure there is a valid http image url
                 var re1 = new Regex(@"https?:\/\/[^\/]*?\..*?\/.*\.");
-                if (src == null || re.IsMatch(src) || !re1.IsMatch(src))
+                if (src == null || re.IsMatch(src.ToLower()) || !re1.IsMatch(src))
                 {
                     return;
                 }
@@ -320,9 +320,9 @@ namespace ParserHelper
                         title = SearchForTitle(node);
                     }
                     //removes any html or json titles, which are undesireable
-                    var reg = new Regex(@"^(?:<!|\{.*\}$)");
-                    //We then create the Data Holder and introduce it to the rest
-                    if (isTitleValid(title) && !reg.IsMatch(title))
+                    var reg = new Regex(@"^(?:<!|\{.*\}$|.*?\{.*\}\)?;)");
+                    //We then create the Data Holder and introduce it to the rest, also checks if the title is valid and if the image is already captured
+                    if (isTitleValid(title) && !reg.IsMatch(title) && !models.Where(e=>e is ImageDataHolder).Any(r=>(r as ImageDataHolder).Uri.AbsoluteUri==src))
                     {
                         var content = new ImageDataHolder(new Uri(src), _cleanWhiteSpace.Replace(_contentToReplace.Replace(title,""), " "));
                         models.Add(content);
@@ -623,7 +623,19 @@ namespace ParserHelper
             //We then have to read the string that is sent back
             var jsonString = await ret.Content.ReadAsStringAsync();
             //We then turn the json into our class structure 
-            var json = JsonConvert.DeserializeObject<BingJson>(jsonString);
+            BingJson json = null;
+            try
+            {
+                json = JsonConvert.DeserializeObject<BingJson>(jsonString);
+            }
+            catch (Exception)
+            {
+                
+            }
+            if (json == null)
+            {
+                throw new Exception("Bing Search Failed");
+            }
             //This takes only the usable urls for us to parse into
             var urls =
                 json.webPages.value.Where(
@@ -633,7 +645,7 @@ namespace ParserHelper
                                 e.displayUrl.Contains(r)) && !e.displayUrl.Contains(".pdf")
                         && !e.displayUrl.Contains(".doc") && !e.displayUrl.Contains(".ppt")).ToList();
 
-            var priorityParses = new List<string>() {"wikipedia.org", "nytimes"};
+            var priorityParses = new List<string>() {"en.wikipedia.org", "nytimes"};
             var priorityResults = urls.Where(e => priorityParses.Any(r => e.displayUrl.Contains(r))).ToList();
             var urlsToParse = new ConcurrentTaskQueue();
             foreach (var res in priorityResults)
@@ -741,7 +753,7 @@ namespace ParserHelper
 
             public async Task<HtmlDocument> Dequeue()
             {
-                while (offset < urls.Count && queue.Count + tasksOut < (5-numberGood)*2.5)
+                while (offset < urls.Count && queue.Count + tasksOut < (10-numberGood))
                 {
                     //Load HTML from the website
                     timeoutTask();

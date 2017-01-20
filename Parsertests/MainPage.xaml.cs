@@ -34,6 +34,7 @@ namespace Parsertests
             var times = new  List<DateTime>();
             var searches = new List<string>()
             {
+
                 "hypertext",
                 "moulin rouge",
                 "alchemy",
@@ -49,7 +50,20 @@ namespace Parsertests
                 "george washington",
                 "18th century france",
                 "nobel",
-                "paris"
+                "paris",
+                "chinese food",
+                "antonios pizza",
+                "bread",
+                "italy",
+                "donald trump",
+                "hillary clinton",
+                "trees",
+                "color psychology",
+                "war",
+                "Pol Pot",
+                "Tianmen Square",
+                "fiji",
+                "cheerios"
             };
             times.Add(DateTime.Now);
             foreach (var s in searches)

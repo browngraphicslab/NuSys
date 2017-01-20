@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App\Misc\ParserREADME.md" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
