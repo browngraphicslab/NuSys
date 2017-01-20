@@ -60,7 +60,7 @@ namespace NuSysApp
             var timerDelegate =
                 new TimerCallback(CleanupTimedOutTasks);
 
-            _timer = new Timer(timerDelegate, _state, 0, 5000);
+            _timer = new Timer(timerDelegate, _state, 0, 10000);
             _state.TimerReference = _timer;
         }
 
@@ -252,7 +252,7 @@ namespace NuSysApp
                 SendMessageToServer(message);
             });
 
-            _requestTimeouts.TryAdd(mreId, DateTime.Now.AddSeconds(10));
+            _requestTimeouts.TryAdd(mreId, DateTime.Now.AddSeconds(60));
             mre.WaitOne();
             DateTime date;
             _requestTimeouts.TryRemove(mreId, out date);
