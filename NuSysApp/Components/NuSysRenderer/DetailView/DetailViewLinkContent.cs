@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -24,6 +25,16 @@ namespace NuSysApp
         private TextboxUIElement _outLinkedElementTextbox;
 
         private ScrollableTextboxUIElement _linkAnnotationsInputBox;
+
+        /// <summary>
+        /// Button used to add or remove direction capabilities of the link
+        /// </summary>
+        private ButtonUIElement _toggleDirectionButton;
+
+        /// <summary>
+        /// Button used to reverse the direction of the link
+        /// </summary>
+        private ButtonUIElement _reverseDirectionButton;
 
 
         public DetailViewLinkContent(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LinkLibraryElementController controller) : base(parent, resourceCreator)
@@ -53,7 +64,7 @@ namespace NuSysApp
             _outLinkedElementTextbox = new TextboxUIElement(this, resourceCreator)
             {
                 Text = SessionController.Instance.ContentController.GetLibraryElementModel(_controller.LinkLibraryElementModel.OutAtomId).Title,
-                Height = 50, 
+                Height = 50,
                 Width = 200,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center
@@ -70,15 +81,71 @@ namespace NuSysApp
             };
             AddChild(_linkAnnotationsInputBox);
 
+            _toggleDirectionButton = new ButtonUIElement(this, resourceCreator)
+            {
+                Height = 50,
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                Background = Colors.Azure,
+                BorderWidth = 3,
+                BorderColor = Colors.SlateGray
+            };
+            AddChild(_toggleDirectionButton);
+
+            _reverseDirectionButton = new ButtonUIElement(this, resourceCreator)
+            {
+                Height = 50,
+                ButtonText = "Reverse Direction",
+                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
+                Background = Colors.Azure,
+                BorderWidth = 3,
+                BorderColor = Colors.SlateGray
+            };
+            AddChild(_reverseDirectionButton);
+
             // event for when the controllers text changes or the user changes the text
             _controller.ContentDataController.ContentDataUpdated += ContentDataController_ContentDataUpdated;
             _linkAnnotationsInputBox.TextChanged += _linkAnnotationsInputBox_TextChanged;
+            _reverseDirectionButton.Tapped += _reverseDirectionButton_Tapped;
+            _toggleDirectionButton.Tapped += _toggleDirectionButton_Tapped;
+        }
+
+        /// <summary>
+        /// Toggles the direction of the link from on to off
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void _toggleDirectionButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_controller.LinkLibraryElementModel.Direction == NusysConstants.LinkDirection.None)
+            {
+                _controller.SetLinkDirection(NusysConstants.LinkDirection.Forward);
+            }
+            else
+            {
+                _controller.SetLinkDirection(NusysConstants.LinkDirection.None);
+            }
+        }
+
+        private void _reverseDirectionButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_controller.LinkLibraryElementModel.Direction == NusysConstants.LinkDirection.Forward)
+            {
+                _controller.SetLinkDirection(NusysConstants.LinkDirection.Backward);
+            }
+            else
+            {
+                _controller.SetLinkDirection(NusysConstants.LinkDirection.Forward);
+            }
         }
 
         public override void Dispose()
         {
-            _controller.ContentDataController.ContentDataUpdated += ContentDataController_ContentDataUpdated;
-            _linkAnnotationsInputBox.TextChanged += _linkAnnotationsInputBox_TextChanged;
+            _controller.ContentDataController.ContentDataUpdated -= ContentDataController_ContentDataUpdated;
+            _linkAnnotationsInputBox.TextChanged -= _linkAnnotationsInputBox_TextChanged;
+            _reverseDirectionButton.Tapped -= _reverseDirectionButton_Tapped;
+            _toggleDirectionButton.Tapped -= _toggleDirectionButton_Tapped;
             base.Dispose();
         }
 
@@ -117,7 +184,7 @@ namespace NuSysApp
             float vertical_spacing = 20;
             float horizontal_spacing = 20;
 
-            _inLinkedElementTextbox.Transform.LocalPosition = new Vector2(Width/2 - _inLinkedElementTextbox.Width/2, vertical_spacing);
+            _inLinkedElementTextbox.Transform.LocalPosition = new Vector2(Width / 2 - _inLinkedElementTextbox.Width / 2, vertical_spacing);
 
             vertical_spacing += _inLinkedElementTextbox.Height + 20;
 
@@ -128,10 +195,21 @@ namespace NuSysApp
             _outLinkedElementTextbox.Transform.LocalPosition = new Vector2(Width / 2 - _outLinkedElementTextbox.Width / 2, vertical_spacing);
 
             vertical_spacing += _outLinkedElementTextbox.Height + 20;
+            var linkDirectionVerticalSpace = _toggleDirectionButton.Height + 20;
 
-            _linkAnnotationsInputBox.Width = Width - 2*horizontal_spacing;
-            _linkAnnotationsInputBox.Height = Height - vertical_spacing - 20;
+            _linkAnnotationsInputBox.Width = Width - 2 * horizontal_spacing;
+            _linkAnnotationsInputBox.Height = Height - vertical_spacing - 20 - linkDirectionVerticalSpace;
             _linkAnnotationsInputBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+
+            vertical_spacing += _linkAnnotationsInputBox.Height + 20;
+            _toggleDirectionButton.Width = (Width - 3 * horizontal_spacing) / 2;
+            _toggleDirectionButton.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            _reverseDirectionButton.Width = (Width - 3 * horizontal_spacing) / 2;
+            _reverseDirectionButton.Transform.LocalPosition = new Vector2(horizontal_spacing * 2 + _toggleDirectionButton.Width, vertical_spacing);
+
+            _reverseDirectionButton.IsVisible = _controller.LinkLibraryElementModel.Direction !=
+                                                NusysConstants.LinkDirection.None;
+            _toggleDirectionButton.ButtonText = _controller.LinkLibraryElementModel.Direction == NusysConstants.LinkDirection.None ? "Add Direction" : "Remove Direction";
 
             base.Update(parentLocalToScreenTransform);
         }
