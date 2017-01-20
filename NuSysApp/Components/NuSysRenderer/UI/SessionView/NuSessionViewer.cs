@@ -126,6 +126,11 @@ namespace NuSysApp
         private bool _loaded;
 
         /// <summary>
+        /// the on-screen keyboard for the application
+        /// </summary>
+        private KeyboardUIElement _keyboard;
+
+        /// <summary>
         /// Dynamic textbox used to display chat notifications
         /// </summary>
         private DynamicTextboxUIElement _chatButtonNotifications;
@@ -309,6 +314,15 @@ namespace NuSysApp
             AddChild(_readOnlyAliasesWindow);
             _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
+            _keyboard = new KeyboardUIElement(this,Canvas)
+            {
+                Height = 150,
+                Width = 500,
+                Background = Constants.LIGHT_BLUE
+            };
+            AddChild(_keyboard);
+            _keyboard.Transform.LocalPosition = new Vector2(200, 700);
+            _keyboard.KeyboardKeyPressed += KeyboardOnKeyboardKeyPressed;
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;
             //_currCollDetailViewButton.Tapped += OnCurrCollDetailViewButtonTapped;
@@ -319,6 +333,17 @@ namespace NuSysApp
             _settingsButton.Tapped += SettingsButtonOnTapped;
 
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
+        }
+
+        /// <summary>
+        /// Eventhandler fired whenever the keyboard has a button pressed on it.
+        /// This should tell the FocusManager that a key has been pressed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="c"></param>
+        private void KeyboardOnKeyboardKeyPressed(object sender, KeyArgs args)
+        {
+            SessionController.Instance.FocusManager.ManualFireKeyPressed(args);
         }
 
         /// <summary>
@@ -676,6 +701,7 @@ namespace NuSysApp
             _currController.TitleChanged -= InstanceOnEnterNewCollectionCompleted;
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
             _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
+            _keyboard.KeyboardKeyPressed -= KeyboardOnKeyboardKeyPressed;
             base.Dispose();
         }
 

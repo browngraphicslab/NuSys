@@ -12,6 +12,7 @@ using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
@@ -611,9 +612,9 @@ namespace NuSysApp
         /// Handle all things to do with keyboard key being released
         /// </summary>
         /// <param name="args"></param>
-        private void EditableTextboxUIElement_KeyReleased(KeyEventArgs args)
+        private void EditableTextboxUIElement_KeyReleased(KeyArgs args)
         {
-            if (args.VirtualKey == VirtualKey.Control)
+            if (args.Key == VirtualKey.Control)
             {
                 _isCtrlPressed = false;
             }
@@ -623,7 +624,7 @@ namespace NuSysApp
         /// Handle all thing to do with keyboard key being pressed
         /// </summary>
         /// <param name="args"></param>
-        private void EditableTextboxUIElement_KeyPressed(KeyEventArgs args)
+        private void EditableTextboxUIElement_KeyPressed(KeyArgs args)
         {
             if (!IsEditable)
             {
@@ -641,7 +642,7 @@ namespace NuSysApp
 
             // set the caret offset to 0 if we are not
             // navigating up or down
-            if (args.VirtualKey != VirtualKey.Up && args.VirtualKey != VirtualKey.Down)
+            if (args.Key != VirtualKey.Up && args.Key != VirtualKey.Down)
             {
                 _upDownCaretNavHorizonalOffset = float.MinValue;
             }
@@ -649,7 +650,7 @@ namespace NuSysApp
 
 
             //Backspace Key
-            if (args.VirtualKey == VirtualKey.Back)
+            if (args.Key == VirtualKey.Back)
             {
                 if (_hasSelection)
                 {
@@ -664,7 +665,7 @@ namespace NuSysApp
                 }
             }
             // Delete Key
-            else if (args.VirtualKey == VirtualKey.Delete)
+            else if (args.Key == VirtualKey.Delete)
             {
                 if (_hasSelection)
                 {
@@ -678,7 +679,7 @@ namespace NuSysApp
                 }
             }
             // Move cursor left
-            else if (args.VirtualKey == VirtualKey.Left)
+            else if (args.Key == VirtualKey.Left)
             {
 
                 if (_hasSelection)
@@ -692,7 +693,7 @@ namespace NuSysApp
                 }              
             }
             // Move cursor right
-            else if (args.VirtualKey == VirtualKey.Right)
+            else if (args.Key == VirtualKey.Right)
             {
                 if (_hasSelection)
                 {
@@ -709,7 +710,7 @@ namespace NuSysApp
                 }
             }
             // Move cursor up
-            else if (args.VirtualKey == VirtualKey.Up)
+            else if (args.Key == VirtualKey.Up)
             {
                 // get the current local position of the caret, used for finding the position on the line above
                 // we store it here because ClearSelection changes the caret position to the start
@@ -733,7 +734,7 @@ namespace NuSysApp
                 CaretCharacterIndex = charIndex;
             }
             // Move cursor down
-            else if (args.VirtualKey == VirtualKey.Down)
+            else if (args.Key == VirtualKey.Down)
             {
                 // get the current local position of the caret, used for finding the position on the line above
                 // we store it here because ClearSelection changes the caret position to the start
@@ -759,24 +760,24 @@ namespace NuSysApp
                 CaretCharacterIndex = charIndex;
             }
             // Control button pressed
-            else if (args.VirtualKey == VirtualKey.Control)
+            else if (args.Key == VirtualKey.Control)
             {
                 _isCtrlPressed = true;
             }
             // Special case z,x,c keys while control is pressed
-            else if (args.VirtualKey == VirtualKey.C && _isCtrlPressed)
+            else if (args.Key == VirtualKey.C && _isCtrlPressed)
             {
                 Copy();
             }
-            else if (args.VirtualKey == VirtualKey.X && _isCtrlPressed)
+            else if (args.Key == VirtualKey.X && _isCtrlPressed)
             {
                 Cut();
             }
-            else if (args.VirtualKey == VirtualKey.V && _isCtrlPressed)
+            else if (args.Key == VirtualKey.V && _isCtrlPressed)
             {
                 Paste();
             }
-            else if (args.VirtualKey == VirtualKey.Tab)
+            else if (args.Key == VirtualKey.Tab)
             {
                 if (_hasSelection)
                 {
@@ -784,7 +785,7 @@ namespace NuSysApp
                 }
                 Text = Text.Insert(CaretCharacterIndex + 1, "    ");
                 CaretCharacterIndex += 4;
-            } else if (args.VirtualKey == VirtualKey.Enter)
+            } else if (args.Key == VirtualKey.Enter)
             {
                 if (_hasSelection)
                 {
@@ -804,7 +805,7 @@ namespace NuSysApp
             // Type the letter into the box
             else
             {
-                var s = KeyCodeToUnicode(args.VirtualKey);
+                var s = KeyCodeToUnicode(args.Key);
                 if (s.Length > 0)
                 {
                     if (_hasSelection)

@@ -225,6 +225,19 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// public method to release all pointer captures
+        /// </summary>
+        public void ClearPointer(CanvasPointer pointer)
+        {
+            UITask.Run(delegate
+            {
+                _pointers.Clear();
+                _canvas.ReleasePointerCaptures();
+                AllPointersReleased?.Invoke();
+            });
+        }
+
         private async void OnPointerTouchReleased(object sender, PointerRoutedEventArgs e)
         {
             _canvas.ReleasePointerCapture(e.Pointer);

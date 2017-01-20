@@ -111,9 +111,9 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        private void _typingRect_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        private void _typingRect_KeyPressed(KeyArgs args)
         {
-            if (args.VirtualKey == VirtualKey.Enter)
+            if (args.Key == VirtualKey.Enter)
             {
                 SendMessage(_typingRect.Text);
             }

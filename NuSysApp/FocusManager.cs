@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
@@ -29,13 +30,13 @@ namespace NuSysApp
         private CanvasRenderEngine _canvasRenderEngine;
 
         // Delegate to handle KeyPressed events
-        public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
+        public delegate void KeyPressedDelegate(KeyArgs args);
         
         // Fired when a key is pressed on the application anywhere
         public event KeyPressedDelegate OnKeyPressed;
 
         // Delegate to handle KeyPressed events
-        public delegate void KeyReleasedDelegate(Windows.UI.Core.KeyEventArgs args);
+        public delegate void KeyReleasedDelegate(KeyArgs args);
 
         // Fired when a key is pressed on the application anywhere
         public event KeyReleasedDelegate OnKeyReleased;
@@ -62,7 +63,7 @@ namespace NuSysApp
         // Fired whenever a key is pressed on the application - Invokes OnKeyPressed
         private void FireKeyPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
-            OnKeyPressed?.Invoke(args);
+            OnKeyPressed?.Invoke(new KeyArgs() {Pressed = true,Key = args.VirtualKey});
             if (args.VirtualKey == VirtualKey.Shift)
             {
                 SessionController.Instance.ShiftHeld = true;
@@ -70,13 +71,23 @@ namespace NuSysApp
         }
 
         // Fired whenever a key is released on the application - Invokes OnKeyReleased
-        private void FireKeyReleased(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+        private void FireKeyReleased(Windows.UI.Core.CoreWindow sender, KeyEventArgs args)
         {
-            OnKeyReleased?.Invoke(args);
+            OnKeyReleased?.Invoke(new KeyArgs() { Pressed = false, Key = args.VirtualKey });
             if (args.VirtualKey == VirtualKey.Shift)
             {
                 SessionController.Instance.ShiftHeld = false;
             }
+        }
+
+        /// <summary>
+        /// This will manually fire the key pressed event.
+        /// Should probably only be used from the on-screen keyboard
+        /// </summary>
+        /// <param name="c"></param>
+        public void ManualFireKeyPressed(KeyArgs args)
+        {
+            OnKeyPressed?.Invoke(args);
         }
 
         /// <summary>
@@ -87,8 +98,13 @@ namespace NuSysApp
         private void _canvasInteractionManager_PointerPressed(CanvasPointer pointer)
         {
 
-                BaseRenderItem curr = _canvasRenderEngine.GetRenderItemAt(pointer.CurrentPoint);
-                ChangeFocus(curr);
+            BaseRenderItem curr = _canvasRenderEngine.GetRenderItemAt(pointer.CurrentPoint);
+            if (curr is KeyboardUIElement || curr?.Parent is KeyboardUIElement)
+            {
+                curr.GotFocus();
+                return;
+            }
+            ChangeFocus(curr);
             
         }
 

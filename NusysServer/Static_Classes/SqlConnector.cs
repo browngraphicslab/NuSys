@@ -49,8 +49,10 @@ namespace NusysServer
             _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            //ResetTables(true);
-            //SetUpTables();
+            ResetTables(true);
+            FileHelper.DeleteAllFiles();
+
+            SetUpTables();
 
             TestFunc();
             ErrorLog.AddError(new Exception("Server Starting..."));

@@ -44,13 +44,13 @@ namespace NuSysApp
 
 
         // Delegate for the KeyPressed event
-        public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
+        public delegate void KeyPressedDelegate(KeyArgs args);
         // Event that fires when a key is pressed on this render item
         public event KeyPressedDelegate KeyPressed;
 
 
         // Delegate for the KeyReleased event
-        public delegate void KeyReleasedDelegate(Windows.UI.Core.KeyEventArgs args);
+        public delegate void KeyReleasedDelegate(KeyArgs args);
         // Event that fires when a key is released on this render item
         public event KeyPressedDelegate KeyReleased;
 
@@ -142,14 +142,14 @@ namespace NuSysApp
 
         // Function fired when key is pressed on this render item
         // Invokes the KeyPressed event if possible
-        public virtual void OnKeyPressed(KeyEventArgs e)
+        public virtual void OnKeyPressed(KeyArgs e)
         {
             KeyPressed?.Invoke(e);
         }
 
         // Function fired when key is released on this render item
         // Invokes the KeyReleased event if possible
-        public virtual void OnKeyReleased(KeyEventArgs e)
+        public virtual void OnKeyReleased(KeyArgs e)
         {
             KeyReleased?.Invoke(e);
         }

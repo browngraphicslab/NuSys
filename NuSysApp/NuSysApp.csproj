@@ -418,6 +418,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\EditTagsUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Misc\KeyboardUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\SearchResultsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
@@ -905,6 +906,7 @@
     <Compile Include="Util\IInkController.cs" />
     <Compile Include="Util\InkUtil.cs" />
     <Compile Include="Util\INusysDisposable.cs" />
+    <Compile Include="Util\KeyArgs.cs" />
     <Compile Include="Util\LibraryElementExtensions.cs" />
     <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\IModable.cs" />

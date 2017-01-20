@@ -170,7 +170,7 @@ namespace NuSysApp
                 _renderItems2.Clear();
                 _renderItems3.Clear();
 
-                InkRenderItem.Dispose();
+                InkRenderItem?.Dispose();
                 InkRenderItem = null;
 
                 ViewModel = null;
