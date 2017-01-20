@@ -168,12 +168,15 @@ namespace NuSysApp
 
                 _currentUserNameDisplayed_userid =
                     _userIds_toBubbles.Where(kv => kv.Value == userBubble).Select(kv => kv.Key).FirstOrDefault();
+                if(_currentUserNameDisplayed_userid != WaitingRoomView.UserID)
+                {
+                    var flyout = new FlyoutPopup(SessionController.Instance.NuSessionView, Canvas);
+                    flyout.AddFlyoutItem("Join", JoinOnTappedEvent, Canvas);
+                    flyout.AddFlyoutItem("Invite", InviteOnTappedEvent, Canvas);
+                    SessionController.Instance.NuSessionView.AddChild(flyout);
+                    flyout.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y - flyout.FlyoutItemHeight * 2);
+                }
 
-                var flyout = new FlyoutPopup(SessionController.Instance.NuSessionView, Canvas);
-                flyout.AddFlyoutItem("Join", JoinOnTappedEvent, Canvas);
-                flyout.AddFlyoutItem("Invite", InviteOnTappedEvent, Canvas);
-                SessionController.Instance.NuSessionView.AddChild(flyout);
-                flyout.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y - flyout.FlyoutItemHeight * 2);
             }
             else
             {
