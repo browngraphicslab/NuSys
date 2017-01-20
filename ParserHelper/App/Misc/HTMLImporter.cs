@@ -57,7 +57,7 @@ namespace ParserHelper
         /// <summary>
         /// This is a list of websites that we don't want to parse
         /// </summary>
-        private static List<string> blacklist = new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies","worldatlas","vectorstock.com","freepik.com","containerstore.com","yourshot.nationalgeographic","myspace.com","store.","treesdallas.com","epicurious.com","krispykreme.com",
+        private static List<string> blacklist = new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies.com","worldatlas","vectorstock.com","freepik.com","containerstore.com","yourshot.nationalgeographic","myspace.com","store.","treesdallas.com","epicurious.com","krispykreme.com",
                                                             "imdb.com","wikihow.com","support.","currys.co.uk","zillo.com"};
         /// <summary>
         /// We do not want a sub article structure because it usually is a fragment of an article or some kind of link so we only look at the top article
