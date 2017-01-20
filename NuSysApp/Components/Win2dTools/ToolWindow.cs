@@ -445,7 +445,7 @@ namespace NuSysApp
 
             _deleteButton = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle);
             _deleteButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/delete.png"));
-            _deleteButton.ImageBounds = new Rect(_deleteButton.Width/4, _deleteButton.Height/4, _deleteButton.Width/2, _deleteButton.Height/2);
+            _deleteButton.ImageBounds = new Rect(.25, .25, .5, .5);
             _deleteButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Height / 2 + BUTTON_MARGIN);
             _deleteButton.Tapped += _deleteButton_Tapped;
             AddChild(_deleteButton);
@@ -453,7 +453,7 @@ namespace NuSysApp
 
             _refreshButton = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle);
             _refreshButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/refresh icon.png"));
-            _refreshButton.ImageBounds = new Rect(_refreshButton.Width / 4, _refreshButton.Height / 4, _refreshButton.Width / 2, _refreshButton.Height / 2);
+            _refreshButton.ImageBounds = new Rect(.25, .25, .5, .5);
             _refreshButton.Tapped += _refreshButton_Tapped;
             _refreshButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Transform.LocalY + _deleteButton.Height + BUTTON_MARGIN);
             AddChild(_refreshButton);

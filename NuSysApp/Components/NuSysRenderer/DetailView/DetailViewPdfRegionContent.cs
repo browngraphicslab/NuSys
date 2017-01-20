@@ -134,8 +134,8 @@ namespace NuSysApp
             _rightButtonLayoutManager.HorizontalAlignment = HorizontalAlignment.Stretch;
             _rightButtonLayoutManager.ArrangeItems(new Vector2(_leftButtonLayoutManager.Width + _contentLayoutManager.Width, 0));
 
-            _leftPageButton.ImageBounds = new Rect(10, 5, 10, 20);
-            _rightPageButton.ImageBounds = new Rect(10, 5, 10, 20);
+            _leftPageButton.ImageBounds = new Rect(.25, .25, .5, .5);
+            _rightPageButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             // set the visibility of the left and right page buttons
             _leftPageButton.IsVisible = CurrentPage != 0;

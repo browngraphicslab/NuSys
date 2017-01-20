@@ -46,7 +46,7 @@ namespace NuSysApp
             ButtonText = text;
             Height = 50;
             Width = 50;
-            ImageBounds = new Rect(10, 10, 30, 30);
+            ImageBounds = new Rect(.2, .2, .6, .6);
             
             //style dependent properties
             switch (style) 
@@ -111,12 +111,5 @@ namespace NuSysApp
             textFormat.TrimmingGranularity = CanvasTextTrimmingGranularity.None;
             return textFormat;
         }
-
-        public override void Resize(double e)
-        {
-            base.Resize(e);
-            ImageBounds = new Rect(_originalImageBounds.X, _originalImageBounds.Y, _originalImageBounds.Width * e, _originalImageBounds.Height * e);
-        }
-
     }
 }

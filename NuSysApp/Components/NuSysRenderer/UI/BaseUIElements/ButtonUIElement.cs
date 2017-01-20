@@ -203,7 +203,7 @@ namespace NuSysApp
             _originalHeight = Height;
             _originalWidth = Width;
             _originalTextSize = ButtonTextSize;
-            _originalImageBounds = ImageBounds ?? new Rect(0,0,GetLocalBounds().Width - 20, GetLocalBounds().Height);
+            _originalImageBounds = GetImageBounds() ?? GetLocalBounds();
         }
 
         /// <summary>
@@ -434,6 +434,15 @@ namespace NuSysApp
         public override Rect GetLocalBounds()
         {
             return Shape.GetLocalBounds();
+        }
+
+        /// <summary>
+        /// Returns the bounds in local coordinates within which to draw the image
+        /// </summary>
+        /// <returns></returns>
+        public override Rect? GetImageBounds()
+        {
+            return Shape.GetImageBounds();
         }
 
         /// <summary>

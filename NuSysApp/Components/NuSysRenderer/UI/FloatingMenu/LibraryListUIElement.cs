@@ -123,13 +123,13 @@ namespace NuSysApp
             //setup the bing button and it's popup
             _bingButton = new TransparentButtonUIElement(this, ResourceCreator)
             {
-                ImageBounds = new Rect(10, 10, 30, 30)
+                ImageBounds = new Rect(.25, .25, .5, .5)
             };
             AddButton(_bingButton, TopBarPosition.Right);
 
             _addFileButton = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.PrimaryStyle)
             {
-                ImageBounds = new Rect(10, 10, 30, 30)
+                ImageBounds = new Rect(.25, .25, .5, .5)
             };
             // add the addfile button to the window
             AddButton(_addFileButton, TopBarPosition.Right);
