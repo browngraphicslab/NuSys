@@ -777,8 +777,10 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.V && _isCtrlPressed)
             {
                 Paste();
-            }
-            else if (args.VirtualKey == VirtualKey.Tab)
+            } else if (args.VirtualKey == VirtualKey.A && _isCtrlPressed)
+            {
+                SelectAll();
+            } else if (args.VirtualKey == VirtualKey.Tab)
             {
                 if (_hasSelection)
                 {
@@ -1539,6 +1541,31 @@ namespace NuSysApp
                 _keepCaretOnScreen = true;
                 OnTextChanged(Text);
             }
+        }
+
+        /// <summary>
+        /// Selects all the text in the textbox
+        /// </summary>
+        private void SelectAll()
+        {
+            // clear the current selection
+            ClearSelection(false);
+
+            // set the selection indices to encompass the entirety of the text
+            _selectionStartIndex = -1;
+            _selectionEndIndex = Text.Length - 1;
+
+            // we have selection if start index is not end index, i.e. if text is not empty
+            _hasSelection = _selectionStartIndex != _selectionEndIndex;
+            // if we have selection keep caret on screen, and update caret transform
+            if (_hasSelection)
+            {
+                _keepCaretOnScreen = true;
+                _updateCaretTransform = true;
+                CaretCharacterIndex = _selectionEndIndex;
+            }
+
+
         }
 
         /// <summary>
