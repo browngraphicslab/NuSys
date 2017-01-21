@@ -289,15 +289,23 @@ namespace NuSysApp
 
             if (_orientation == Orientation.Horizontal)
             {
+                // set the width of the bar to the height of the horizontal scrollbar
                 _barWidth = Height;
 
+                // the length of the bar is at least zero but try to leave room for two buttons on the ends
                 _barLength = Math.Max(0, Width - 2 * _barWidth);
+
+                // the width of the slider is the length of the bar multiplied by the normalized range the slider should occupy
                 _slider.Width = _barLength * Range;
 
+                // the height of the slider is the same as the width oft he bar
                 _slider.Height = _barWidth;
+
+                // offset the slider position by barwidth to account for the arrow button, then add the length of the
+                // bar multiplied by the normalized position
                 _slider.Transform.LocalPosition = new Vector2(_barWidth + _barLength * Position, 0);
 
-                _slider.Width = Math.Max(UIDefaults.MinSliderSize, _barLength * Position);
+                _slider.Width = Math.Max(UIDefaults.MinSliderSize, _barLength * Range);
                 _slider.Transform.LocalX = _barWidth + (_barLength - (_slider.Width - _barLength * Range)) * Position;
 
                 _plusArrow.Width = _barWidth;
