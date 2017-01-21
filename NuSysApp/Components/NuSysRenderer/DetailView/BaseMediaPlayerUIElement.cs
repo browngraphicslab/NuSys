@@ -16,8 +16,8 @@ namespace NuSysApp
 {
     public class BaseMediaPlayerUIElement : RectangleUIElement
     {
-        private ButtonUIElement _playPauseButton;
-        private ButtonUIElement _volumeButton;
+        private TransparentButtonUIElement _playPauseButton;
+        private TransparentButtonUIElement _volumeButton;
         private SliderUIElement _volumeSlider;
         private ScrubBarUIElement _scrubBar;
         private TextboxUIElement _currTimeAndDurationDisplay;
@@ -65,10 +65,10 @@ namespace NuSysApp
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
-            _playPauseButton = new RectangleButtonUIElement(this, resourceCreator);
+            _playPauseButton = new TransparentButtonUIElement(this, resourceCreator);
             AddChild(_playPauseButton);
 
-            _volumeButton = new RectangleButtonUIElement(this, resourceCreator);
+            _volumeButton = new TransparentButtonUIElement(this, resourceCreator);
             AddChild(_volumeButton);
 
             _volumeSlider = new SliderUIElement(this, resourceCreator, 0, 100)
@@ -245,9 +245,9 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _playImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_play.png"));
-            _pauseImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_pause.png"));
-            _volumeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_link.png"));
+            _playImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/play.png"));
+            _pauseImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pause.png"));
+            _volumeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/volume.png"));
             _isLoading = false;
 
             if (_isPlaying)
