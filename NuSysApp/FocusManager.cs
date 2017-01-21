@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
@@ -62,6 +63,10 @@ namespace NuSysApp
         // Fired whenever a key is pressed on the application - Invokes OnKeyPressed
         private void FireKeyPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
+            if (SessionController.Instance.SessionView.FreeFormViewer.Keyboard.Visibility == Visibility.Visible)
+            {
+                SessionController.Instance.SessionView.FreeFormViewer.Keyboard.LosePseudoFocus();
+            }
             OnKeyPressed?.Invoke(new KeyArgs() { Pressed = true, Key = args.VirtualKey });
             if (args.VirtualKey == VirtualKey.Shift)
             {
