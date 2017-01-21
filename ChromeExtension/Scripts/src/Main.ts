@@ -67,7 +67,7 @@ class Main {
 
             if (request.msg == "init") {
                 this.init(request.data);
-                sendResponse();
+                    sendResponse();
             }
 
             if (request.msg == "show_menu") {

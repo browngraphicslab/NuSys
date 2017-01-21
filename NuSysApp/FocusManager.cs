@@ -67,12 +67,18 @@ namespace NuSysApp
             {
                 SessionController.Instance.SessionView.FreeFormViewer.Keyboard.LosePseudoFocus();
             }
-            OnKeyPressed?.Invoke(new KeyArgs() { Pressed = true, Key = args.VirtualKey });
+            OnKeyPressed?.Invoke(new KeyArgs() {Pressed = true, Key = args.VirtualKey});
             if (args.VirtualKey == VirtualKey.Shift)
             {
                 SessionController.Instance.ShiftHeld = true;
             }
-        }
+            if (args.VirtualKey == VirtualKey.CapitalLock)
+            {
+                SessionController.Instance.CapitalLock = !SessionController.Instance.CapitalLock;
+            }
+
+
+    }
 
         // Fired whenever a key is released on the application - Invokes OnKeyReleased
         private void FireKeyReleased(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)

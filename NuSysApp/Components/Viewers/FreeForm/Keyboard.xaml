@@ -101,6 +101,7 @@
                     <ColumnDefinition Width="0"/>
                     <ColumnDefinition Width="1.55*"/>
                 </Grid.ColumnDefinitions>
+                <local:KeyboardKey MyCar="t" ></local:KeyboardKey>
                 <Button Grid.Column="1" CommandParameter="A" Content="a" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
                 <Button Grid.Column="2" CommandParameter="S" Content="s" HorizontalAlignment="Stretch" Click="NormalButton_Click" />
                 <Button Grid.Column="3" CommandParameter="D" Content="d" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>

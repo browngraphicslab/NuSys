@@ -1760,8 +1760,9 @@ namespace NuSysApp
         {
 
             var virtualKeyCode = (uint)key;
+            var capslock = SessionController.Instance.CapitalLock;
 
-                if (Keyboard.NoShiftKeyToChars.ContainsKey(key))
+            if (Keyboard.NoShiftKeyToChars.ContainsKey(key))
             {
                 return Keyboard.NoShiftKeyToChars[key];
             }
@@ -1770,8 +1771,8 @@ namespace NuSysApp
             if (virtualKeyCode >= 65 && virtualKeyCode <= 90)
             {
                 var character = key.ToString();
+                return capslock ? character: character.ToLower();
 
-                return character.ToLower();
                     
             }
             //Take care of numbers
@@ -1786,7 +1787,7 @@ namespace NuSysApp
             if (virtualKeyCode >= 96 && virtualKeyCode <= 105)
             {
 
-                    return (virtualKeyCode - 96).ToString();
+                return (virtualKeyCode - 96).ToString();
             }
 
 
@@ -1796,6 +1797,8 @@ namespace NuSysApp
         private string KeyCodeToUnicodeShift(VirtualKey key)
         {
             var virtualKeyCode = (uint)key;
+            var capslock = SessionController.Instance.CapitalLock;
+
 
             if (Keyboard.ShiftKeyToChars.ContainsKey(key))
             {
@@ -1803,11 +1806,10 @@ namespace NuSysApp
             }
 
             //Take care of letters
-            if (virtualKeyCode >= 65 && virtualKeyCode <= 90)
+            if ((virtualKeyCode >= 65 && virtualKeyCode <= 90))
             {
                 var character = key.ToString();
-
-                return character;
+                return capslock ? character.ToLower() : character;
 
             }
             return "";

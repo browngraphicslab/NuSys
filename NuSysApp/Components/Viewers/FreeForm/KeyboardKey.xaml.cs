@@ -19,17 +19,13 @@ namespace NuSysApp
 {
     public sealed partial class KeyboardKey : UserControl
     {
-        public static readonly DependencyProperty LabelProperty = DependencyProperty.Register(
-          "Label",
-          typeof(String),
-          typeof(KeyboardKey),
-          new PropertyMetadata(null)
-        );
+
+
+
 
         public KeyboardKey()
         {
             this.InitializeComponent();
-
 
         }
     }
