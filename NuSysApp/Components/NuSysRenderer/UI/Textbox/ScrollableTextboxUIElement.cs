@@ -564,6 +564,7 @@ namespace NuSysApp
                     CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
                     _selectionEndIndex = CaretCharacterIndex;
                     _hasSelection = _selectionStartIndex != _selectionEndIndex;
+                    _updateSelectionRects = true;
 
                 }
                 else
@@ -1563,6 +1564,7 @@ namespace NuSysApp
                 _keepCaretOnScreen = true;
                 _updateCaretTransform = true;
                 CaretCharacterIndex = _selectionEndIndex;
+                _updateSelectionRects = true;
             }
 
 
