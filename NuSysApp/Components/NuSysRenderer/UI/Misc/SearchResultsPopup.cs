@@ -65,7 +65,7 @@ namespace NuSysApp
             Background = Colors.White;
             BorderWidth = 1;
             BorderColor = Constants.DARK_BLUE;
-            Height = 300;
+            Height = 400;
             Width = 500;
 
             // set values of results and search term
@@ -79,6 +79,7 @@ namespace NuSysApp
                 Background = Colors.White,
                 FontFamily = UIDefaults.TextFont,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                Height = 100,
                 Width = 250
             };
             AddChild(_text);
