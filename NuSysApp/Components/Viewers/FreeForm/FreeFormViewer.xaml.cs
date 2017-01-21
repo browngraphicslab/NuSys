@@ -219,7 +219,7 @@ namespace NuSysApp
                     Debug.Fail("vm should not be null");
                     return;
                 }
-                List<LibraryElementController> trailList = GetTrailAsList(trailvm.Model);
+                List<ElementController> trailList = GetTrailAsList(trailvm.Model);
 
                 for (int i = 0; i < trailList.Count; i++)
                 {
@@ -228,18 +228,18 @@ namespace NuSysApp
                     string next = null;
                     if (i > 0)
                     {
-                        prev = trailList[i - 1].Title;
+                        prev = trailList[i - 1].LibraryElementController.Title + trailList[i - 1].Id;
                     }
                     if (i < trailList.Count - 1)
                     {
-                        next = trailList[i + 1].Title;
+                        next = trailList[i + 1].LibraryElementController.Title + trailList[i + 1].Id;
                     }
 
                     await currElement.ExportToHTML(prev, next);
                 }
                 
                 StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
-                var firstPage = await htmlFolder.GetFileAsync(trailList[0].Title + ".html");
+                var firstPage = await htmlFolder.GetFileAsync(trailList[0].LibraryElementController.Title + trailList[0].Id + ".html");
 
                 var exportPopup = new CenteredPopup(RenderEngine.Root, xRenderCanvas,
                     "You have exported your trail! \n \n" +
@@ -256,15 +256,15 @@ namespace NuSysApp
         /// </summary>
         /// <param name="trail"></param>
         /// <returns></returns>
-        private List<LibraryElementController> GetTrailAsList(PresentationLinkModel trail)
+        private List<ElementController> GetTrailAsList(PresentationLinkModel trail)
         {
-            List<LibraryElementController> elements = new List<LibraryElementController>();
+            List<ElementController> elements = new List<ElementController>();
             var currTrail = trail;
             while (currTrail != null) 
             {
-                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId].LibraryElementController;
+                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId];
                 var outNode =
-                    SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId].LibraryElementController;
+                    SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId];
                 if (!elements.Contains(inNode))
                 {
                     elements.Add(inNode);
