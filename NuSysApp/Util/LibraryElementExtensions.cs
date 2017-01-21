@@ -17,6 +17,17 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// this static extension will return true if this client is supposed to have access to this library element.  
+        /// False will be returned if the model is private and not owned by this person.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static bool AllowedToSee(this LibraryElementModel model)
+        {
+            return !(model.AccessType == NusysConstants.AccessType.Private && model.Creator != WaitingRoomView.UserID);
+        }
+
+        /// <summary>
         /// static method to see if we need to view this library element model in read-only mode.
         /// </summary>
         /// <param name="model"></param>

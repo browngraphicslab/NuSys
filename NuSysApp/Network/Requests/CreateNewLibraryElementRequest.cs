@@ -83,6 +83,10 @@ namespace NuSysApp
         private bool AddModelStringToSession(string libraryElementModelString)
         {
             var libraryElement = LibraryElementModelFactory.DeserializeFromString(libraryElementModelString);
+            if (!libraryElement.AllowedToSee())
+            {
+                return false;
+            }
             if (!IsInvalidLink(libraryElement))
             {
                 return SessionController.Instance.ContentController.Add(libraryElement) != null;
