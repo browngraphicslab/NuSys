@@ -1026,6 +1026,7 @@ namespace NuSysApp
                 }
             }
 
+            CurrentCollection.InkRenderItem.RemoveLatestStroke();
             await Task.Delay(500);
             _inkPressed = false;
         }

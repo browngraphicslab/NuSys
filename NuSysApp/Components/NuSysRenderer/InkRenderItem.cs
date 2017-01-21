@@ -180,7 +180,6 @@ namespace NuSysApp
 
                     var selected = GetSelectedStrokes();
 
-
                     foreach (var s in selected)
                     {
                         var strokeId = StrokesMap.GetKeyByValue(s);
@@ -198,7 +197,6 @@ namespace NuSysApp
                     var model = LatestStroke.ToInkModel(contentDataModelId, InkColor, InkSize);
 
                     StrokesMap[model.InkStrokeId] = LatestStroke;
-
                     _parentCollectionController.LibraryElementController.ContentDataController.AddInk(model);
                 }
 
@@ -278,8 +276,8 @@ namespace NuSysApp
             {
                 if (LatestStroke != null)
                 {
-                    LatestStroke.Selected = true;
                     var strokeId = StrokesMap.GetKeyByValue(LatestStroke);
+                    StrokesMap[strokeId].Selected = true;
                     StrokesMap.Remove(strokeId);
                     _parentCollectionController.LibraryElementController.ContentDataController.RemoveInk(strokeId);
                     _inkManager.DeleteSelected();
