@@ -73,7 +73,6 @@ namespace NuSysApp
         private void Controller_SizeChanged(object source, double width, double height)
         {
             IsDirty = true;
-            Update(Transform.Parent.LocalMatrix);
         }
 
         private void LibraryElementControllerOnContentChanged(object source, string contentData)
