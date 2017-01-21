@@ -14,6 +14,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.UI.Input.Inking;
+using NAudio.MediaFoundation;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -34,13 +35,54 @@ namespace NuSysApp
         public event OnContentUpdatedEventHandler OnNewNotification;
 
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
-        private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
+        private ConcurrentDictionary<string, Message> _returnMessages = new ConcurrentDictionary<string, Message>();
         private ConcurrentDictionary<string, ManualResetEvent> _requestEventDictionary = new ConcurrentDictionary<string, ManualResetEvent>();
+        private ConcurrentDictionary<string, DateTime> _requestTimeouts = new ConcurrentDictionary<string, DateTime>();
+         
         public string ServerBaseURI { get; private set; }
-        
+        private Timer _timer;
+        private StateObjectClass _state;
+        private class StateObjectClass
+        {
+            public Timer TimerReference;
+            public bool TimerCanceled;
+        }
 
         public ServerClient()
         {
+            SetupTimer();
+        }
+
+        public void SetupTimer()
+        {
+            _state = new StateObjectClass();
+            _state.TimerCanceled = false;
+            var timerDelegate =
+                new TimerCallback(CleanupTimedOutTasks);
+
+            _timer = new Timer(timerDelegate, _state, 0, 10000);
+            _state.TimerReference = _timer;
+        }
+
+        public void CleanupTimedOutTasks(object state)
+        {
+            var keys = _requestTimeouts.Keys.ToArray();
+            for (var i = 0; i < keys.Length; i++)
+            {
+                var mreId = keys[i];
+                var time = _requestTimeouts[mreId];
+                if (DateTime.Now > time && _requestEventDictionary.ContainsKey(mreId))
+                {
+                    var mre = _requestEventDictionary[mreId];
+                    _requestEventDictionary.TryRemove(mreId, out mre);
+                    Debug.Assert(mre != null);
+                    _returnMessages.TryAdd(mreId, new Message(new Dictionary<string, string>()
+                    {
+                        {NusysConstants.REQUEST_SUCCESS_BOOL_KEY, false.ToString()}
+                    }));
+                    mre.Set();
+                }
+            }
         }
 
         /// <summary>
@@ -209,7 +251,12 @@ namespace NuSysApp
             {
                 SendMessageToServer(message);
             });
+
+            _requestTimeouts.TryAdd(mreId, DateTime.Now.AddSeconds(60));
             mre.WaitOne();
+            DateTime date;
+            _requestTimeouts.TryRemove(mreId, out date);
+
             if (!_returnMessages.ContainsKey(mreId))
             {
                 return null;//only does this if the request failed
