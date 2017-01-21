@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 
 namespace NusysServer
@@ -17,8 +19,31 @@ namespace NusysServer
         private static double _cumulativeCharacterCount = 0;
 
 
-        public static HtmlNode GetArticle(HtmlDocument doc)
+        public static int findDepth(HtmlNode node)
         {
+            int max = 0;
+            foreach (var child in node.ChildNodes)
+            {
+                var curr = findDepth(child);
+                if (curr > max)
+                {
+                    max = curr;
+                }
+            }
+            return max + 1;
+        }
+
+        public async static Task<HtmlNode> GetArticle(HtmlDocument doc)
+        {
+            var cts = new CancellationTokenSource(50);
+
+            int depth = -1;
+            await Task.Run(delegate { depth = findDepth(doc.DocumentNode); }, cts.Token);
+            if (depth < 13 && depth > 0)
+            {
+                return doc.DocumentNode;
+            }
+
             return RecursiveGetArticle(doc.DocumentNode);
         }
         /// <summary>
@@ -69,13 +94,13 @@ namespace NusysServer
         /// <returns></returns>
         public static HtmlNode RecursiveGetArticle(HtmlNode node)
         {
-            if (HtmlImporter._tagsToRemove.IsMatch(node.Name.ToLower()) || HtmlImporter._tagsToRemove.IsMatch(node.Id.ToLower()) || HtmlImporter._tagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
+            if (HtmlImporter.TagsToRemove.IsMatch(node.Name.ToLower()) || HtmlImporter.TagsToRemove.IsMatch(node.Id.ToLower()) || HtmlImporter.TagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
             {
                 return null;
             }
 
             //These are the tags that we want to search for in a website, article is generic and bodyCotent is a wikipedia thing
-            var re = new Regex("^(?:article|bodyContent)$");
+            var re = new Regex("^(?:article|mw-body)$");
             //These are tags we don't want to see
             var re1 = new Regex("(?:review|comment)");
             if ((re.IsMatch(node.Name) || re.IsMatch(node.Id ?? "") ||
