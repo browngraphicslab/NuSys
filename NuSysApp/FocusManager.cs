@@ -29,13 +29,13 @@ namespace NuSysApp
         private CanvasRenderEngine _canvasRenderEngine;
 
         // Delegate to handle KeyPressed events
-        public delegate void KeyPressedDelegate(Windows.UI.Core.KeyEventArgs args);
-        
+        public delegate void KeyPressedDelegate(KeyArgs args);
+
         // Fired when a key is pressed on the application anywhere
         public event KeyPressedDelegate OnKeyPressed;
 
         // Delegate to handle KeyPressed events
-        public delegate void KeyReleasedDelegate(Windows.UI.Core.KeyEventArgs args);
+        public delegate void KeyReleasedDelegate(KeyArgs args);
 
         // Fired when a key is pressed on the application anywhere
         public event KeyReleasedDelegate OnKeyReleased;
@@ -62,7 +62,7 @@ namespace NuSysApp
         // Fired whenever a key is pressed on the application - Invokes OnKeyPressed
         private void FireKeyPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
-            OnKeyPressed?.Invoke(args);
+            OnKeyPressed?.Invoke(new KeyArgs() { Pressed = true, Key = args.VirtualKey });
             if (args.VirtualKey == VirtualKey.Shift)
             {
                 SessionController.Instance.ShiftHeld = true;
@@ -72,7 +72,7 @@ namespace NuSysApp
         // Fired whenever a key is released on the application - Invokes OnKeyReleased
         private void FireKeyReleased(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
-            OnKeyReleased?.Invoke(args);
+            OnKeyReleased?.Invoke(new KeyArgs() { Pressed = false, Key = args.VirtualKey });
             if (args.VirtualKey == VirtualKey.Shift)
             {
                 SessionController.Instance.ShiftHeld = false;
@@ -130,6 +130,12 @@ namespace NuSysApp
                 newBaseRenderItem.GotFocus();
                 ActiveFocusElement = newBaseRenderItem;
             }     
+        }
+
+        public void ManualFireKeyPressed(KeyArgs args)
+        {
+            OnKeyPressed?.Invoke(args);
+
         }
 
         /// <summary>

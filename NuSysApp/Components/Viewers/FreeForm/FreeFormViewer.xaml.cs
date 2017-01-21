@@ -114,6 +114,15 @@ namespace NuSysApp
             _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
             xFullScreenImageViewer.Visibility = Visibility.Collapsed;
+
+
+            xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
+        }
+
+        private void Keyboard_KeyboardKeyPressed(object sender, KeyArgs args)
+        {
+            SessionController.Instance.FocusManager.ManualFireKeyPressed(args);
+
         }
 
         /// <summary>
@@ -1599,5 +1608,7 @@ namespace NuSysApp
 
             xAddRegionMenu.Visibility = Visibility.Collapsed;
         }
+
+
     }
 }
