@@ -291,19 +291,28 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            if (_textLayoutIsDirty || CheckTextLayoutBoundsEqualDrawBounds() == false)
+
+            Debug.Assert(Task.CurrentId == null);
+
+            if (_textLayoutIsDirty)
             {
                 UpdateCanvasLayout();
                 _textLayoutIsDirty = false;
             }
 
-            if (_resourcesCreated)
+            if (CheckTextLayoutBoundsEqualDrawBounds() == false)
+            {
+                _canvasTextLayoutWidth = (Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
+                                          (_verticalScrollBar.IsVisible ? _verticalScrollBar.Width : 0));
+                _canvasTextLayout.RequestedSize = new Size(_canvasTextLayoutWidth, float.MaxValue);
+            }
+
+
+            if (_resourcesCreated && _canvasTextLayout != null)
             {
                 _verticalScrollBar.Height = Height - 2 * BorderWidth;
                 _verticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - _verticalScrollBar.Width,
                     BorderWidth);
-
-                var x = _verticalScrollBar.IsVisible;
 
                 // set the position and rang eof the vertical scroll bar
                 SetVerticalScrollBarPositionAndRange();
@@ -336,7 +345,7 @@ namespace NuSysApp
 
         private void SetVerticalScrollBarPositionAndRange()
         {
-            if (!_resourcesCreated)
+            if (!_resourcesCreated || _canvasTextLayout == null)
             {
                 return;
             }
@@ -387,7 +396,7 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected override void DrawText(CanvasDrawingSession ds)
         {
-            if (!_resourcesCreated)
+            if (!_resourcesCreated || _canvasTextLayout == null)
             {
                 return;
             }
@@ -425,6 +434,8 @@ namespace NuSysApp
         private void UpdateCanvasLayout()
         {
             _canvasTextLayoutWidth = Width - 2 * (BorderWidth + UIDefaults.XTextPadding) - (_verticalScrollBar.IsVisible ? _verticalScrollBar.Width : 0);
+            _canvasTextLayout.Dispose();
+            _canvasTextLayout = null;
             _canvasTextLayout = _htmlParser.GetParsedText(_textHtml, _canvasTextLayoutWidth, double.MaxValue);
         }
 
