@@ -108,16 +108,16 @@ namespace NuSysApp
 
         #region scrub bar
 
-        public static Color ScrubBarHighlightColor = Colors.IndianRed;
-        public static Color ScrubBarBackgroundColor = Colors.LightGray;
+        public static Color ScrubBarHighlightColor = Constants.RED_TRANSLUCENT;
+        public static Color ScrubBarBackgroundColor = Constants.MED_BLUE;
         public static float ScrubberPosition = 0;
-        public static Color ScrubberBarColor = Colors.Yellow;
+        public static Color ScrubberBarColor = Constants.RED;
 
         #endregion
 
         #region media player
 
-        public static float MediaPlayerScrubBarHeight = 50;
+        public static float MediaPlayerScrubBarHeight = 30;
         public static float MediaPlayerButtonBarHeight = 30;
         public static Color ShadowColor = Color.FromArgb(50, 0, 0, 0);
 

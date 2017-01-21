@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -16,8 +17,8 @@ namespace NuSysApp
 {
     public class BaseMediaPlayerUIElement : RectangleUIElement
     {
-        private ButtonUIElement _playPauseButton;
-        private ButtonUIElement _volumeButton;
+        private TransparentButtonUIElement _playPauseButton;
+        private TransparentButtonUIElement _volumeButton;
         private SliderUIElement _volumeSlider;
         private ScrubBarUIElement _scrubBar;
         private TextboxUIElement _currTimeAndDurationDisplay;
@@ -42,7 +43,7 @@ namespace NuSysApp
         private float _prevVolumePosition;
 
         private float _buttonsBarHeight = UIDefaults.MediaPlayerButtonBarHeight;
-        private float _scubBarHeight = UIDefaults.MediaPlayerScrubBarHeight;
+        private float _scrubBarHeight = UIDefaults.MediaPlayerScrubBarHeight;
 
         /// <summary>
         /// Represents the start of the audio region
@@ -65,10 +66,10 @@ namespace NuSysApp
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
-            _playPauseButton = new RectangleButtonUIElement(this, resourceCreator);
+            _playPauseButton = new TransparentButtonUIElement(this, resourceCreator);
             AddChild(_playPauseButton);
 
-            _volumeButton = new RectangleButtonUIElement(this, resourceCreator);
+            _volumeButton = new TransparentButtonUIElement(this, resourceCreator);
             AddChild(_volumeButton);
 
             _volumeSlider = new SliderUIElement(this, resourceCreator, 0, 100)
@@ -86,7 +87,6 @@ namespace NuSysApp
             _volumeSlider.OnSliderMoved += VolumeSliderOnSliderMoved;
 
             _isLoading = true;
-
         }
 
         private void InitializeCurrTimeAndDurationDisplay(TextboxUIElement currTimeAndDurationDisplay)
@@ -245,9 +245,9 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _playImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_play.png"));
-            _pauseImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_pause.png"));
-            _volumeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_link.png"));
+            _playImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/play.png"));
+            _pauseImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pause.png"));
+            _volumeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/volume.png"));
             _isLoading = false;
 
             if (_isPlaying)
@@ -327,25 +327,25 @@ namespace NuSysApp
             _playPauseButton.Width = 25;
             _playPauseButton.Height = 25;
             _playPauseButton.Transform.LocalPosition = new Vector2(buttonHorizontalSpacing, Height - _buttonsBarHeight / 2 - _playPauseButton.Height / 2);
-
+            _playPauseButton.ImageBounds = new Rect(3,3,19,19);
             _volumeButton.Width = 25;
             _volumeButton.Height = 25;
             _volumeButton.Transform.LocalPosition = new Vector2(_playPauseButton.Width + 2 * buttonHorizontalSpacing, Height - _buttonsBarHeight / 2 - _volumeButton.Height / 2);
-
+            _volumeButton.ImageBounds = new Rect(0, 0, 25, 25);
             _volumeSlider.Width = 100;
             _volumeSlider.Height = 25;
             _volumeSlider.Transform.LocalPosition = new Vector2(_playPauseButton.Width + _volumeButton.Width + 3 * buttonHorizontalSpacing, Height - _buttonsBarHeight / 2 - _volumeSlider.Height / 2);
 
-            _currTimeAndDurationDisplay.Width = 200;
+            _currTimeAndDurationDisplay.Width = 175;
             _currTimeAndDurationDisplay.Height = 25;
-            _currTimeAndDurationDisplay.Transform.LocalPosition = new Vector2(_volumeSlider.Width + _playPauseButton.Width + _volumeButton.Width + 5 * buttonHorizontalSpacing, Height - _buttonsBarHeight / 2 - _currTimeAndDurationDisplay.Height / 2);
+            _currTimeAndDurationDisplay.Transform.LocalPosition = new Vector2(Width - _currTimeAndDurationDisplay.Width, Height - _buttonsBarHeight / 2 - _currTimeAndDurationDisplay.Height / 2);
 
             _scrubBar.Width = Width;
-            _scrubBar.Height = _scubBarHeight;
-            _scrubBar.Transform.LocalPosition = new Vector2(0, Height - _buttonsBarHeight - _scubBarHeight);
+            _scrubBar.Height = _scrubBarHeight;
+            _scrubBar.Transform.LocalPosition = new Vector2(0, Height - _buttonsBarHeight - _scrubBarHeight);
 
             _mediaContent.Width = Width;
-            _mediaContent.Height = Height - _buttonsBarHeight - _scubBarHeight - _mediaContentPaddingToScrubBar;
+            _mediaContent.Height = Height - _buttonsBarHeight - _scrubBarHeight - _mediaContentPaddingToScrubBar;
             
             base.Update(parentLocalToScreenTransform);
         }

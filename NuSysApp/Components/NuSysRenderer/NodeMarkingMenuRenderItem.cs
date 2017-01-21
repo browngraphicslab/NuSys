@@ -60,11 +60,11 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _txtLink.Dispose();
+            _txtLink?.Dispose();
             _txtLink = null;
-            _txtTrail.Dispose();
+            _txtTrail?.Dispose();
             _txtTrail = null;
-            _triangle.Dispose();
+            _triangle?.Dispose();
             _triangle = null;
 
             base.Dispose();
