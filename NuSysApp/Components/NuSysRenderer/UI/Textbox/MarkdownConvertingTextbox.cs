@@ -77,6 +77,11 @@ namespace NuSysApp
         private float _initialDragYOffset;
 
         /// <summary>
+        /// the most recently set width of the canvas text layout
+        /// </summary>
+        private float _canvasTextLayoutWidth;
+
+        /// <summary>
         /// Position is a float from 0 to 1 representing the start of the scroll bar, fired whenever the scrollbar position changes
         /// </summary>
         public event ScrollBarUIElement.ScrollBarPositionChangedHandler ScrollBarPositionChanged;
@@ -102,33 +107,6 @@ namespace NuSysApp
                 _textHtml = CommonMarkConverter.Convert(value);
                 _textLayoutIsDirty = true;
                 base.Text = value;
-            }
-        }
-
-        /// <summary>
-        /// Overriding the width just sets the base value and requires the text layout to update
-        /// </summary>
-        public float Width
-        {
-            get { return base.Width; }
-            set
-            {
-                base.Width = value;
-                _textLayoutIsDirty = true;
-            }
-        }
-
-        /// <summary>
-        /// overidden height also sets the test layout is dirty bool to true.
-        /// Other than that it just sets and gets the base value
-        /// </summary>
-        public float Height
-        {
-            get { return base.Height; }
-            set
-            {
-                base.Height = value;
-                _textLayoutIsDirty = true;
             }
         }
 
@@ -313,7 +291,7 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            if (_textLayoutIsDirty)
+            if (_textLayoutIsDirty || CheckTextLayoutBoundsEqualDrawBounds() == false)
             {
                 UpdateCanvasLayout();
                 _textLayoutIsDirty = false;
@@ -339,6 +317,22 @@ namespace NuSysApp
 
             base.Update(parentLocalToScreenTransform);
         }
+
+        /// <summary>
+        /// Checks to make sure that the text layout bounds are equivalent to the draw bounds
+        /// </summary>
+        /// <returns></returns>
+        private bool? CheckTextLayoutBoundsEqualDrawBounds()
+        {
+            if (!_resourcesCreated)
+            {
+                return null;
+            }
+
+            return Math.Abs(_canvasTextLayoutWidth - (Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
+                                                    (_verticalScrollBar.IsVisible ? _verticalScrollBar.Width : 0))) < .005;
+        }
+
 
         private void SetVerticalScrollBarPositionAndRange()
         {
@@ -430,7 +424,8 @@ namespace NuSysApp
 
         private void UpdateCanvasLayout()
         {
-            _canvasTextLayout = _htmlParser.GetParsedText(_textHtml, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), double.MaxValue);
+            _canvasTextLayoutWidth = Width - 2 * (BorderWidth + UIDefaults.XTextPadding) - (_verticalScrollBar.IsVisible ? _verticalScrollBar.Width : 0);
+            _canvasTextLayout = _htmlParser.GetParsedText(_textHtml, _canvasTextLayoutWidth, double.MaxValue);
         }
 
 

@@ -99,9 +99,7 @@ namespace NuSysApp
             }
 
 
-            ElementController elementController;  
-            SessionController.Instance.ElementModelIdToElementController.TryRemove(elementId, out elementController);//get the controller for the given id
-            var model = elementController?.Model; //get the existing element model for the given id
+            var model = SessionController.Instance.ElementModelIdToElementController[elementId]?.Model; //get the existing element model for the given id
 
 
             Debug.Assert(model != null);
@@ -111,9 +109,9 @@ namespace NuSysApp
 
             Debug.Assert(parent != null);
 
-            parent.Children?.Remove(elementId);
-
-            elementController.Delete(this);
+            ElementController elementController;
+            SessionController.Instance.ElementModelIdToElementController[elementId].Delete(this);
+            SessionController.Instance.ElementModelIdToElementController.TryRemove(elementId, out elementController);//get the controller for the given id
             elementController.Dispose();
 
             if (!SessionController.Instance.CollectionIdsInUse.Contains(newParentCollectionId))//if the new collection is not one of the ones we care about

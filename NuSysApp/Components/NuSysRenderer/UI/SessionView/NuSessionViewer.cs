@@ -214,10 +214,7 @@ namespace NuSysApp
                 BorderColor = Colors.Transparent,
                 Background = Colors.Transparent
             };
-            _backButton.ImageBounds = new Rect(_backButton.BorderWidth,
-                _backButton.BorderWidth,
-                _backButton.Width,
-                _backButton.Height);
+            _backButton.ImageBounds = new Rect(.1, .1, .8, .8);
             AddChild(_backButton);
 
             TrailBox = new BreadCrumbContainer(this, Canvas)
@@ -618,15 +615,15 @@ namespace NuSysApp
 
             // set the image for the _chatButton
             _chatButton.Image = _chatButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
-            _chatButton.ImageBounds = new Rect(_chatButton.Width/4, _chatButton.Height/4, _chatButton.Width/2, _chatButton.Height/2);
+            _chatButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             // set the image for the _snapshotButton
             _snapshotButton.Image = _snapshotButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/snapshot_icon.png"));
-            _snapshotButton.ImageBounds = new Rect(_snapshotButton.Width/4, _snapshotButton.Height/4, _snapshotButton.Width/2, _snapshotButton.Height/2);
+            _snapshotButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             //load and set the settings icon
             _settingsButton.Image = _settingsButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/gear.png"));
-            _settingsButton.ImageBounds = new Rect(_settingsButton.Width/4, _settingsButton.Height/4, _settingsButton.Width/2, _settingsButton.Height/2);
+            _settingsButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             // set the image for the _backButton
             _backButton.Image = _backButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/back.png"));

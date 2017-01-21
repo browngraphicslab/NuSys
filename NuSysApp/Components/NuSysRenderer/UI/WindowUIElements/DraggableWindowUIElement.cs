@@ -398,7 +398,7 @@ namespace NuSysApp
             {
                 Height = 30,
                 Width = 30,
-                ImageBounds = new Rect(7.5, 7.5, 15, 15)
+                ImageBounds = new Rect(.25,.25,.5,.5)
             };
             AddChild(_closeButton);
             _closeButton.Transform.LocalPosition = new Vector2(-_closeButton.Width - 10, TopBarHeight + 10);

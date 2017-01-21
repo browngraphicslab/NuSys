@@ -25,7 +25,7 @@ namespace NuSysApp
             Background = Colors.Transparent;
             BorderColor = Colors.Transparent;
             BorderWidth = 0;
-            ImageBounds = new Rect(0, 0, _menuButtonWidth, _menuButtonHeight);
+            ImageBounds = new Rect(0, .05, 1, .9);
             ButtonText = label;
 
             switch (style)
@@ -51,7 +51,7 @@ namespace NuSysApp
         /// <returns></returns>
         protected override Rect GetTextBoundingBox()
         {
-            return new Rect(0, _menuButtonHeight, Width, Height);
+            return new Rect(0, Height, Width, Height);
         }
 
         /// <summary>
@@ -65,12 +65,6 @@ namespace NuSysApp
             textFormat.HorizontalAlignment = CanvasHorizontalAlignment.Center;
             textFormat.TrimmingGranularity = CanvasTextTrimmingGranularity.None;
             return textFormat;
-        }
-
-        public override void Resize(double e)
-        {
-            base.Resize(e);
-            ImageBounds = new Rect(0, 0, _menuButtonWidth * e, _menuButtonHeight * e);
         }
     }
 }

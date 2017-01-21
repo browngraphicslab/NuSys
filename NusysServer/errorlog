@@ -322,3 +322,429 @@
 1/17/2017 3:44:26 PM   Server Starting...    
 1/20/2017 2:16:31 PM   Server Starting...    
 1/20/2017 2:16:53 PM   Server Starting...    
+1/20/2017 11:57:46 PM   Server Starting...    
+1/20/2017 11:58:18 PM   Server Starting...    
+1/21/2017 12:02:21 AM   Server Starting...    
+1/21/2017 12:03:04 AM   Server Starting...    
+1/21/2017 12:04:53 AM   Server Starting...    
+1/21/2017 12:06:22 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:32 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:36 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:44 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:48 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:49 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:50 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:52 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:54 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:55 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:56 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:56 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:56 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:06:59 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201
+1/21/2017 12:07:04 AM   Exception of type 'Microsoft.ProjectOxford.Vision.ClientException' was thrown.  Microsoft.ProjectOxford.Vision     at Microsoft.ProjectOxford.Vision.VisionServiceClient.HandleException(Exception exception)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>b__39_1[TRequest,TResponse](Exception e)
+   at System.AggregateException.Handle(Func`2 predicate)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<SendAsync>d__39`2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__21`1.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at CallSite.Target(Closure , CallSite , Object )
+   at Microsoft.ProjectOxford.Vision.VisionServiceClient.<AnalyzeImageAsync>d__19.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetAnalysisResultsAsync>d__0.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 37
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.ImageProcessor.<GetNusysImageAnalysisModelFromUrlAsync>d__2.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\ImageProcessor.cs:line 74
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at NusysServer.MediaProcessor.<>c__DisplayClass11_0.<<ProcessCreateContentDataModelRequestMedia>b__0>d.MoveNext() in C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\Static_Classes\MediaProcessor.cs:line 201

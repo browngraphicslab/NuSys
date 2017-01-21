@@ -237,10 +237,20 @@ namespace NuSysApp
         }
 
 
+        /// <summary>
+        /// true if the shit button is currently pressed false otherwise, use this for keyboard shortcuts not capitalization
+        /// </summary>
+        private bool _isShiftPressed;
 
+        /// <summary>
+        /// The most recently set width of the canvas text layout
+        /// </summary>
+        private float _textLayoutWidth;
 
-        private bool _horizontalScrollBarIsDisabled;
-        private bool _verticalScrollBarIsDisabled;
+        /// <summary>
+        /// The most recently set height of the canvas text layout
+        /// </summary>
+        private float _textLayoutHeight;
 
         /// <summary>
         /// Handler for the input submitted event, fired whenever the user hits the enter button on a non vertically scrolling textbox
@@ -253,65 +263,6 @@ namespace NuSysApp
         /// The input submitted event, fired when the user hits the enter button on a non vertically scrolling textbox
         /// </summary>
         public event InputSubmittedHandler InputSubmitted;
-
-        ///// <summary>
-        ///// The previous width of the textbox, we update this when the width changes
-        ///// by some arbitrarily small delta amount. Used to determine when we need to update the canvas text layout
-        ///// </summary>
-        //private float _previousWidth;
-
-        ///// <summary>
-        ///// The width of the scrollabletextboxuielement
-        ///// </summary>
-        //public override float Width
-        //{
-        //    get
-        //    {
-        //        return base.Width;
-        //    }
-
-        //    set
-        //    {
-        //        base.Width = value;
-        //        if (Math.Abs(Width - _previousWidth) > .1)
-        //        {
-        //            _previousWidth = Width;
-        //            _updateCanvasTextLayout = true;
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// The previous height of the textbox, we update this when the height changes
-        ///// by some arbitrarily small delta amount. Used to determine when we need to update the canvas text layout
-        ///// </summary>
-        //private float _previousHeight;
-
-        ///// <summary>
-        ///// The previous vertical scrollbar visibility, when this changes we update the canvas text layout
-        ///// </summary>
-        //private bool _lastVertScrollBarVisibility;
-
-        ///// <summary>
-        ///// The width of the scrollabletextboxuielement
-        ///// </summary>
-        //public override float Height
-        //{
-        //    get
-        //    {
-        //        return base.Height;
-        //    }
-
-        //    set
-        //    {
-        //        base.Height = value;
-        //        if (Math.Abs(Height - _previousHeight) > .1)
-        //        {
-        //            _previousHeight = Height;
-        //            _updateCanvasTextLayout = true;
-        //        }
-        //    }
-        //}
 
 
         /// <summary>
@@ -464,50 +415,40 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            //todo check this method to see if it works
+            // clear the current selection
             ClearSelection(false);
 
             // we want to update the cursor transform
             _updateCaretTransform = true;
 
-            var charIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-            if (Text == "")
-            {
-                return;
-            }
+            // get the index of the character we clicked on this could be negative 1
+            // make this the selection start index
+            _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+            _selectionEndIndex = _selectionStartIndex + 1;
 
-            var c = Text[charIndex];
-
-            if (Char.IsWhiteSpace(c))
+            // decrement the selection start index until we get a character that is punctuation or whitespace
+            while (_selectionStartIndex >= 0)
             {
-                return;
-            }
-            var start = charIndex;
-            var end = charIndex;
-
-            while (start > 0)
-            {
-                var prevC = Text[start - 1];
-                if (Char.IsWhiteSpace(prevC))
+                if (char.IsWhiteSpace(Text[_selectionStartIndex]) || char.IsPunctuation(Text[_selectionStartIndex]))
                 {
                     break;
                 }
-                start--;
+                _selectionStartIndex--;
             }
 
-            while (end < Text.Length - 1)
+
+            while (_selectionEndIndex <= Text.Length - 2)
             {
-                var nextC = Text[end + 1];
-                if (Char.IsWhiteSpace(nextC))
+                if (char.IsWhiteSpace(Text[_selectionEndIndex]) || char.IsPunctuation(Text[_selectionEndIndex]))
                 {
+                    _selectionEndIndex--;
                     break;
                 }
-                end++;
+                _selectionEndIndex++;
             }
 
             _hasSelection = true;
-            _selectionStartIndex = start;
-            _selectionEndIndex = end;
+            CaretCharacterIndex = _selectionEndIndex;
         }
 
         /// <summary>
@@ -517,13 +458,22 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ScrollableTextboxUIElement_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (IsEditable)
+            // for touch pointer's drag only changes the transform so don't do any selection code
+            if (pointer.DeviceType == PointerDeviceType.Touch)
             {
-                // set the _selectionStartIndex to the current caret position
-                _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-
                 _initialDragXOffset = _xOffset;
                 _initialDragYOffset = _yOffset;
+                return; // just return
+            }
+
+            if (IsEditable)
+            {
+                // if either shift is not pressed or we don't have selection, otherwise we'll be extending the current selection
+                if (!_isShiftPressed || !_hasSelection)
+                {
+                    // set the _selectionStartIndex to the current caret position
+                    _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                }
             }
 
 
@@ -595,12 +545,34 @@ namespace NuSysApp
         {
             if (IsEditable)
             {
-                ClearSelection(false);
-                CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-                _upDownCaretNavHorizonalOffset = float.MinValue;
 
-                // we want to update the cursor transform
+
+                // we are no longer moving using up down arrows so reset the x offset used for that navigation
+                _upDownCaretNavHorizonalOffset = float.MinValue;
+                // we want to update the cursor transform to its new position
                 _updateCaretTransform = true;
+
+                // if shift is pressed we want to extend the current selection or create a selection between
+                // the caret's current location and the 
+                if (_isShiftPressed)
+                {
+                    if (!_hasSelection)
+                    {
+                        _selectionStartIndex = CaretCharacterIndex;
+                    }
+                    // update the CaretCharacterIndex to reflect the new caret character location
+                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                    _selectionEndIndex = CaretCharacterIndex;
+                    _hasSelection = _selectionStartIndex != _selectionEndIndex;
+
+                }
+                else
+                {
+                    // clear the current selection and set the caret character index based on the pointer input
+                    ClearSelection(false);
+                    // update the CaretCharacterIndex
+                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                }
             }
 
         }
@@ -628,7 +600,11 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Control)
             {
                 _isCtrlPressed = false;
+            } else if (args.VirtualKey == VirtualKey.Shift)
+            {
+                _isShiftPressed = false;
             }
+
         }
 
         /// <summary>
@@ -775,7 +751,22 @@ namespace NuSysApp
             {
                 _isCtrlPressed = true;
             }
-            // Special case z,x,c keys while control is pressed
+            // shift button pressed
+            else if (args.VirtualKey == VirtualKey.Shift)
+            {
+                _isShiftPressed = true;
+            }
+            // escape key pressed
+            else if (args.VirtualKey == VirtualKey.Escape)
+            {
+                // when escape is pressed while we have selection clear the selection
+                // setting the CaretCharacterIndex to the start of the cleared selection
+                if (_hasSelection)
+                {
+                    ClearSelection(false);
+                }
+            }
+            // Special case z,x,c, a keys while control is pressed
             else if (args.VirtualKey == VirtualKey.C && _isCtrlPressed)
             {
                 Copy();
@@ -787,8 +778,10 @@ namespace NuSysApp
             else if (args.VirtualKey == VirtualKey.V && _isCtrlPressed)
             {
                 Paste();
-            }
-            else if (args.VirtualKey == VirtualKey.Tab)
+            } else if (args.VirtualKey == VirtualKey.A && _isCtrlPressed)
+            {
+                SelectAll();
+            } else if (args.VirtualKey == VirtualKey.Tab)
             {
                 if (_hasSelection)
                 {
@@ -1018,15 +1011,14 @@ namespace NuSysApp
             // needed to display text
             if (_scrollVert)
             {
-                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat,
-                    Math.Max(0,
-                        Width - 2*(BorderWidth + UIDefaults.XTextPadding) -
-                        (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0)), float.MaxValue);
+                _textLayoutWidth = Math.Max(0, Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
+                                   (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0));
+                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, _textLayoutWidth, float.MaxValue);
             }
             else
             {
-                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue,
-                                           Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+                _textLayoutHeight = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                TextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, float.MaxValue, _textLayoutHeight);
             }
 
             //_updateCanvasTextLayout = false;                        
@@ -1046,11 +1038,11 @@ namespace NuSysApp
 
             if (_scrollVert)
             {
-                return TextLayout.LayoutBounds.Width == Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
-                        (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0);
+                return Math.Abs(_textLayoutWidth - (Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
+                                                    (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0))) < .005;
             } else
             {
-                return TextLayout.LayoutBounds.Height == Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                return Math.Abs(_textLayoutHeight - (Height - 2 * (BorderWidth + UIDefaults.YTextPadding))) < .005;
             }
         }
 
@@ -1412,7 +1404,7 @@ namespace NuSysApp
         /// <summary>
         /// Clear the current selection safely, returns empty string if the current selection
         /// had an invalid index or if there is no selection, also set the CaretCharacterIndex to the start of the
-        /// current selection unless we do not have anything selected, i.e. _hasSelection is false
+        /// selection that was cleared
         /// </summary>
         public string ClearSelection(bool deleteSelection = true)
         {
@@ -1549,6 +1541,31 @@ namespace NuSysApp
                 _keepCaretOnScreen = true;
                 OnTextChanged(Text);
             }
+        }
+
+        /// <summary>
+        /// Selects all the text in the textbox
+        /// </summary>
+        private void SelectAll()
+        {
+            // clear the current selection
+            ClearSelection(false);
+
+            // set the selection indices to encompass the entirety of the text
+            _selectionStartIndex = -1;
+            _selectionEndIndex = Text.Length - 1;
+
+            // we have selection if start index is not end index, i.e. if text is not empty
+            _hasSelection = _selectionStartIndex != _selectionEndIndex;
+            // if we have selection keep caret on screen, and update caret transform
+            if (_hasSelection)
+            {
+                _keepCaretOnScreen = true;
+                _updateCaretTransform = true;
+                CaretCharacterIndex = _selectionEndIndex;
+            }
+
+
         }
 
         /// <summary>

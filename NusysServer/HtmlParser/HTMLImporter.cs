@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using HtmlAgilityPack;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Newtonsoft.Json;
+using static System.String;
 
 namespace NusysServer
 {
@@ -20,45 +23,31 @@ namespace NusysServer
         //-Sahil
         //(1/5/17)
 
-        public HtmlImporter()
-        {
-        }
-
+        public HtmlImporter() { }
         /// <summary>
         /// These are the expressions that once detected in a title will be removed because they are some type of spam
         /// </summary>
-        private static Regex _titlesToRemove =
-            new Regex(
-                @"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|learn more|references?|follow( me)?|e-handbook|posted by:|credits?|^\s*thank you\s*$|\d+.*?this (?:year|day|month|hour|minute|night|decade|lifetime)|\d+.*?(?:predictions?|trends?|news?|facts?)|see also)");
-
+        private static Regex _titlesToRemove = new Regex(@"(?:buy|order|subscribe|oops|join|^\d*$|advertisement|reply|seen and heard|custom solutions|(reader )?offer|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|share this story!|posted!|sent!|\d+ (?:best|worst|funniest|dumbest|most)|learn more|references?|follow( me)?|e-handbook|posted by:|credits?|^\s*thank you\s*$|\d+.*?this (?:year|day|month|hour|minute|night|decade|lifetime)|\d+.*?(?:predictions?|trends?|news?|facts?)|see also|^\s*(?:facebook|twitter|email|google\+|pinterest|pin)\s*$|future of|forbidden|internal server error|error$|service unavailable|sucuri)");
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
-        private static Regex _contentToRemove =
-            new Regex(
-                @"(?:^article$|advertisement|writing\? check your grammar now!|all headlines|\(.*?(?:repl(y)?(ies)?|ratings?|comments?).*?\)|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|login.*?(?:register|create|make)|(?:posts?|photos?|articles?) by)");
-
+        private static Regex _contentToRemove = new Regex(@"(?:^article$|advertisement|writing\? check your grammar now!|all headlines|\(.*?(?:repl(y)?(ies)?|ratings?|comments?).*?\)|save.*?(?:$|£|€|¥)\d+|(?:$|£|€|¥)\d+ off|login.*?(?:register|create|make)|(?:posts?|photos?|articles?) by|enable javascript|status 404?3?|^credit.)");
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
         private static Regex _shortContentToRemove = new Regex(@"(?:more.*|quiz|test)");
-
         /// <summary>
         /// These are the expressions that will remove a text in a textdataholder if they are in that text
         /// </summary>
-        private static Regex _longTitlesToRemove = new Regex(@"(?:download.*?free|^\s*content\s*$)");
-
+        private static Regex _longTitlesToRemove = new Regex(@"(?:download.*?free|^\s*content\s*$|enable javascript|status 404?3?)");
         /// <summary>
         /// These are things that are going to be removed from the text but aren't markers for spam
         /// </summary>
-        private static Regex _contentToReplace =
-            new Regex(@"(?:\[.*?edit.*?\]|\[.*?\d+.*?\]|\[.*?citation needed.*?\]|&.*?;|\[.*?change.*?\])");
-
+        private static Regex _contentToReplace = new Regex(@"(?:\[.*?edit.*?\]|\[.*?\d+.*?\]|\[.*?citation needed.*?\]|&.*?;|\[.*?change.*?\])");
         /// <summary>
         /// When looking through different tags, these are the ones we want to exclude 
         /// </summary>
-        public static Regex _tagsToRemove = new Regex(@"(?:sidebar|quiz|aside|o-hit|top-story|stickycolumn)");
-
+        public static Regex TagsToRemove = new Regex(@"(?:sidebar|quiz|aside|o-hit|top-story|stickycolumn)");
         /// <summary>
         /// This is so that I can clean the whitespace that makes the sites look messy
         /// </summary>
@@ -67,58 +56,40 @@ namespace NusysServer
         /// <summary>
         /// This is a list of websites that we don't want to parse
         /// </summary>
-        private static List<string> blacklist = new List<string>()
-        {
-            "mapsoftheworld.com",
-            "foodnetwork",
-            "allrecipies",
-            "worldatlas",
-            "vectorstock.com",
-            "freepik.com",
-            "containerstore.com",
-            "yourshot.nationalgeographic",
-            "myspace.com",
-            "store.",
-            "treesdallas.com",
-            "epicurious.com",
-            "krispykreme.com",
-            "imdb.com",
-            "wikihow.com",
-            "support.",
-            "currys.co.uk"
-        };
-
+        private static List<string> blacklist = new List<string>() {"mapsoftheworld.com","foodnetwork","allrecipies.com","worldatlas","vectorstock.com","freepik.com","containerstore.com","yourshot.nationalgeographic","myspace.com","store.","treesdallas.com","epicurious.com","krispykreme.com",
+                                                            "imdb.com","wikihow.com","support.","currys.co.uk","zillo.com"};
         /// <summary>
         /// We do not want a sub article structure because it usually is a fragment of an article or some kind of link so we only look at the top article
         /// </summary>
         private static bool isArticleFound = false;
-
         /// <summary>
         /// Running this will fetch and parse the html document that is specified by the uri of any useful information
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public async Task<List<DataHolder>> Run(Uri url)
+        public async Task<List<DataHolder>> Run(HtmlDocument doc)
         {
-            //Load HTML from the website
-            var doc = await GetDocumentFromUri(url);
-            if (doc == null)
-            {
-                return null;
-            }
+            var lastTime = DateTime.Now;
             //We only want websites that qualify as an article so we check to see if certain tags are in the site
-            var articleTopNode = SiteScoreTaker.GetArticle(doc);
+            var articleTopNode = await SiteScoreTaker.GetArticle(doc);
             if (articleTopNode == null)
             {
                 return null;
             }
+            Debug.WriteLine("find article " + (DateTime.Now - lastTime).TotalMilliseconds);
+            lastTime = DateTime.Now;
+            //Strucutured, first item in hashset is title of section, rest is content
             _paragraphCollections = new HashSet<HashSet<HtmlNode>>();
+            //This is a hashset of links of citations
             _citationCollections = new HashSet<List<string>>();
+            //This is the 
             _citationUrlCollections = new List<List<string>>();
             //This stores a list of all of the information 
             var models = new List<DataHolder>();
             // This recursively goes through each node in the html document, depth first, and parses data
             await RecursiveAdd(articleTopNode, models);
+            Debug.WriteLine("parse " + (DateTime.Now - lastTime).TotalMilliseconds);
+            lastTime = DateTime.Now;
             isArticleFound = false;
             //We store the data for the text nodes based on the headers and the content between those headers so we need 
             //to go through and make the text data holders
@@ -139,7 +110,7 @@ namespace NusysServer
                 }
                 //This gets rid of any sections that dont contain anything and are therefore not usefull, this is helpful for 
                 //footers and headers
-                if (string.IsNullOrWhiteSpace(text))
+                if (IsNullOrWhiteSpace(text))
                 {
                     //Syncs up the citations to their paragraphs
                     if (_citationUrlCollections.Any())
@@ -158,38 +129,51 @@ namespace NusysServer
                     continue;
                 }
                 //We then create the data holder and then populate the links with what we have captured
-                var content = new TextDataHolder(text, title ?? "")
-                {
-                    links = (_citationUrlCollections.Any()) ? _citationUrlCollections.First() : null
-                };
+                var content = new TextDataHolder(text, title ?? "") { links = (_citationUrlCollections.Any()) ? _citationUrlCollections.First() : null };
                 if (_citationUrlCollections.Any())
                     _citationUrlCollections.RemoveAt(0);
                 models.Add(content);
                 //reset the text so we don't aggregate it all into blocks larger than we want
                 text = "";
             }
+            Debug.WriteLine("concat text " + (DateTime.Now - lastTime).TotalMilliseconds);
+            lastTime = DateTime.Now;
             return models;
         }
 
         /// <summary>
         /// From a uri we send a webrequest to get the website as an htmldocument or else we return null
+        /// This is used only when we do a search and so we have a queue that we add to async, we also have a
+        /// timeout counter
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<HtmlDocument> GetDocumentFromUri(Uri url)
+        private static async Task<HtmlDocument> GetDocumentFromUri(Uri url, ConcurrentTaskQueue queue,
+            CancellationToken cts)
         {
             try
             {
                 var doc = new HtmlDocument();
-                var webRequest = WebRequest.Create(url.AbsoluteUri);
-                HttpWebResponse response = (HttpWebResponse) (await webRequest.GetResponseAsync());
-                Stream stream = response.GetResponseStream();
+                var client = new HttpClient();
+                var t = DateTime.Now;
+                var res = await client.GetAsync(url, cts);
+                Debug.WriteLine("fetch took " + (DateTime.Now - t).TotalMilliseconds);
+                Stream stream = await res.Content.ReadAsStreamAsync();
                 doc.Load(stream);
                 stream.Dispose();
+                queue.Enqueue(doc);
                 return doc;
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.WriteLine("Fetch timed out");
+                queue.numcanceled++;
+                queue.tasksOut--;
+                return null;
             }
             catch (Exception)
             {
+                queue.tasksOut--;
                 return null;
             }
         }
@@ -203,7 +187,6 @@ namespace NusysServer
         /// This is the id of each citation in the same order as each paragraph so that we can find the links later
         /// </summary>
         private HashSet<List<string>> _citationCollections = new HashSet<List<string>>();
-
         /// <summary>
         /// These are the links to each document that is being cited
         /// </summary>
@@ -222,10 +205,8 @@ namespace NusysServer
             {
                 return;
             }
-            isArticleFound = true;
 
-            if (_tagsToRemove.IsMatch(node.Name.ToLower()) || _tagsToRemove.IsMatch(node.Id.ToLower()) ||
-                _tagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
+            if (TagsToRemove.IsMatch(node.Name.ToLower()) || TagsToRemove.IsMatch(node.Id.ToLower()) || TagsToRemove.IsMatch(node.GetAttributeValue("class", "").ToLower()))
             {
                 return;
             }
@@ -244,7 +225,7 @@ namespace NusysServer
             }
             // We take the html class of the tag so that we can see if it is a list item and if so we can see if it is a citation
             var classString = node.GetAttributeValue("class", null);
-            if (!string.IsNullOrEmpty(node.Id) && node.Name == "li")
+            if (!IsNullOrEmpty(node.Id) && node.Name == "li")
             {
                 //We have to parse through all of the saved citation ids to then see where to save it in our url datastructure
                 var i = 0;
@@ -271,8 +252,7 @@ namespace NusysServer
 
             }
             //This is most of the text that we are parsing through to get our data for our text nodes
-            if ((node.Name == "p" && _paragraphCollections.Any()))
-                //node.ChildNodes.Count(c => c.NodeType == HtmlNodeType.Text) > node.ChildNodes.Count() / 2)
+            if ((node.Name == "p" && _paragraphCollections.Any()))//node.ChildNodes.Count(c => c.NodeType == HtmlNodeType.Text) > node.ChildNodes.Count() / 2)
             {
                 _paragraphCollections.Last().Add(node);
             }
@@ -290,12 +270,12 @@ namespace NusysServer
             {
                 //This gets the url that the video is based out of
                 var uristring = FormatSource(node.GetAttributeValue("src", null));
-                if (!string.IsNullOrEmpty(uristring))
+                if (!IsNullOrEmpty(uristring))
                 {
                     var uri = new Uri(uristring);
                     //The title of the video is often in the alt tag but otherwise we just search for it with that function
                     var title = node.GetAttributeValue("alt", null);
-                    if (string.IsNullOrEmpty(title))
+                    if (IsNullOrEmpty(title))
                     {
                         title = SearchForTitle(node);
                     }
@@ -313,9 +293,10 @@ namespace NusysServer
                 //We then get the image source uri
                 var src = FormatSource(node.GetAttributeValue("src", null));
                 //We dont want any svgs because they mess up the server
-                var re = new Regex(@"(?:svg|gif|(?:info|ico)\.png)$");
+                var re = new Regex(@"(?:\.svg|\.gif|(?:info|ico|ext|(?:icon|logo|banner|blank)[^/]*?)\.(?:png|jpg|asp)|_avatar_|meter\.asp|\/(?:facebook|twitter|pinterest|email.*|)\.|\/(?:facebook|twitter|google.*)\/|i\.creativecommons|no-javascript)");
+                //Makes sure there is a valid http image url
                 var re1 = new Regex(@"https?:\/\/[^\/]*?\..*?\/.*\.");
-                if (src == null || re.IsMatch(src) || !re1.IsMatch(src))
+                if (src == null || re.IsMatch(src.ToLower()) || !re1.IsMatch(src))
                 {
                     return;
                 }
@@ -332,17 +313,16 @@ namespace NusysServer
                 {
                     //Usually there is a title in the alt tag but if not then we can search for a caption
                     var title = node.GetAttributeValue("alt", "");
-                    if (string.IsNullOrEmpty(title))
+                    if (IsNullOrEmpty(title))
                     {
                         title = SearchForTitle(node);
                     }
-                    //removes any html or json titles, which are undesireable
-                    var reg = new Regex(@"^(?:<!|\{.*\}$)");
-                    //We then create the Data Holder and introduce it to the rest
-                    if (isTitleValid(title) && !reg.IsMatch(title))
+                    //removes any html or json or latex titles, which are undesireable
+                    var reg = new Regex(@"^(?:<!|\{.*\}$|.*?\{.*\}\)?;|^\\)");
+                    //We then create the Data Holder and introduce it to the rest, also checks if the title is valid and if the image is already captured
+                    if (isTitleValid(title) && !reg.IsMatch(title) && !models.Where(e => e is ImageDataHolder).Any(r => (r as ImageDataHolder).Uri.AbsoluteUri == src))
                     {
-                        var content = new ImageDataHolder(new Uri(src),
-                            _cleanWhiteSpace.Replace(_contentToReplace.Replace(title, ""), " "));
+                        var content = new ImageDataHolder(new Uri(src), _cleanWhiteSpace.Replace(_contentToReplace.Replace(title, ""), " "));
                         models.Add(content);
                     }
                 }
@@ -361,12 +341,12 @@ namespace NusysServer
                 {
                     var src = FormatSource(href);
                     //Just a title for the pdf, just a nice side to the pdf itself
-                    if (string.IsNullOrEmpty(src))
+                    if (IsNullOrEmpty(src))
                     {
                         return;
                     }
                     var title = RecursiveSpan(node);
-                    if (string.IsNullOrEmpty(title))
+                    if (IsNullOrEmpty(title))
                     {
                         title = SearchForTitle(node);
                     }
@@ -378,13 +358,12 @@ namespace NusysServer
                     }
                 }
                 //If theres any audio we can also snag that! It's a little less exciting but it's still a good find.
-                if (href.Contains(".mp3") || href.Contains(".ogg") || href.Contains(".flac") || href.Contains(".wav") ||
-                    href.Contains(".m4a"))
+                if (href.Contains(".mp3") || href.Contains(".ogg") || href.Contains(".flac") || href.Contains(".wav") || href.Contains(".m4a"))
                 {
                     var src = FormatSource(href);
                     //Let's get that audio's title
                     var title = RecursiveSpan(node);
-                    if (string.IsNullOrEmpty(title))
+                    if (IsNullOrEmpty(title))
                     {
                         title = SearchForTitle(node);
                     }
@@ -456,7 +435,6 @@ namespace NusysServer
                 return null;
             }
         }
-
         private static string FormatSourcePrivate(string src)
         {
             //Goes through a bunch of cases that could exist when dealing with urls and fixes them
@@ -506,7 +484,6 @@ namespace NusysServer
             text = text.Trim();
             return text.Replace("\n", "").Replace("\t", "");
         }
-
         /// <summary>
         /// This recursively looks through nodes levels above it to try to find a caption
         /// </summary>
@@ -540,7 +517,6 @@ namespace NusysServer
             //no title :c
             return null;
         }
-
         /// <summary>
         /// This is the functional part of the title finder, it goes through each childnode and sees if there is a caption
         /// </summary>
@@ -575,7 +551,6 @@ namespace NusysServer
             // :c no title
             return null;
         }
-
         /// <summary>
         /// This sees if there is a valid caption the current node and if so then we return that
         /// </summary>
@@ -592,16 +567,15 @@ namespace NusysServer
 
         private static bool isTitleValid(string title)
         {
-            return
-                !(string.IsNullOrWhiteSpace(title) || (_titlesToRemove.IsMatch(title.ToLower().Trim()) && title.Length < 50) ||
-                  _longTitlesToRemove.IsMatch(title.ToLower()));
+            return !(IsNullOrWhiteSpace(title) || (_titlesToRemove.IsMatch(title.ToLower().Trim()) && title.Length < 50) ||
+                    _longTitlesToRemove.IsMatch(title.ToLower()));
         }
 
         private static bool isTextValid(string text)
         {
-            return !(string.IsNullOrWhiteSpace(text) ||
-                     _contentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 50 ||
-                     _shortContentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 30);
+            return !(IsNullOrWhiteSpace(text) ||
+                    _contentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 100 ||
+                    _shortContentToRemove.IsMatch(text.ToLower().Trim()) && text.Length < 50);
         }
 
         /// <summary>
@@ -622,7 +596,7 @@ namespace NusysServer
             {
                 //We recurse to find out
                 var url = getUrl(child);
-                if (string.IsNullOrEmpty(url)) continue;
+                if (IsNullOrEmpty(url)) continue;
                 s.Add(url);
             }
             //This is more tailored towards Wikipedia, the last link generally has the actual url
@@ -631,13 +605,14 @@ namespace NusysServer
 
         public static async Task<List<List<DataHolder>>> RunWithSearch(string search)
         {
-
+            var wholeTime = DateTime.Now;
+            var time = DateTime.Now;
             var client = new HttpClient();
             //search += " wikipedia";
             // Add the subscription key to the request header
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "9f62dc75c6ae4ca7bd8efa227939e76b");
-            string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search +
-                         "&count=25&offset=0&mkt=en-us&safesearch=Moderate";
+            //This is the url that we use to get the search results, there is a limit of 25 results, the offset is 0 and safe search is on
+            string url = "https://api.cognitive.microsoft.com/bing/v5.0/search/?q=" + search + "&count=25&offset=0&mkt=en-us&safesearch=Moderate";
             // Build the content of the post request
 
             //This is the request to the bing server
@@ -645,69 +620,156 @@ namespace NusysServer
             //We then have to read the string that is sent back
             var jsonString = await ret.Content.ReadAsStringAsync();
             //We then turn the json into our class structure 
-            var json = JsonConvert.DeserializeObject<BingJson>(jsonString);
+            BingJson json = null;
+            try
+            {
+                json = JsonConvert.DeserializeObject<BingJson>(jsonString);
+            }
+            catch (Exception)
+            {
+
+            }
+            if (json == null)
+            {
+                throw new Exception("Bing Search Failed");
+            }
             //This takes only the usable urls for us to parse into
-            var urls = json.webPages.value.Select(o => FormatSource(o.Url) ?? "").ToList();
-            //This creates the models that we will then send back as a response 
-            var models = new List<List<DataHolder>> {new List<DataHolder>()};
-            int i = -1;
+            var urls =
+                json.webPages.value.Where(
+                    e =>
+                        !blacklist.Any(
+                            r =>
+                                e.displayUrl.Contains(r)) && !e.displayUrl.Contains(".pdf")
+                        && !e.displayUrl.Contains(".doc") && !e.displayUrl.Contains(".ppt") && !e.displayUrl.Contains(".asp")).ToList();
+
+            var priorityParses = new List<string>() { "en.wikipedia.org", "nytimes" };
+            var priorityResults = urls.Where(e => priorityParses.Any(r => e.displayUrl.Contains(r))).ToList();
+            var urlsToParse = new ConcurrentTaskQueue();
+            foreach (var res in priorityResults)
+            {
+                urlsToParse.tasksOut++;
+                await GetDocumentFromUri(new Uri(res.Url), urlsToParse, new CancellationToken());
+                urls.Remove(res);
+            }
+            if (!urlsToParse.queue.Any())
+            {
+                for (int i = 0; i < 5 && i < urlsToParse.Count; i++)
+                {
+                    urlsToParse.tasksOut++;
+                    await GetDocumentFromUri(new Uri(urls[i].Url), urlsToParse, new CancellationToken());
+                    urlsToParse.offset++;
+                }
+            }
+            //We need to set this so that the queue knows what it needs to iterate through
+            urlsToParse.urls = urls;
+            //This creates the models that we will then send back as a response. This is a list of sites which are a list of dataholders
+            var models = new List<List<DataHolder>> { new List<DataHolder>() };
             //This is so that we can parse the data
             var htmlImporter = new HtmlImporter();
-            var balance = 0;
-            while (i < urls.Count - 1 && i < 4 + balance)
+            Debug.WriteLine("bing search " + (DateTime.Now - time).TotalMilliseconds);
+            int zerohits = 0;
+            while (models.Count < 6 && (urlsToParse.queue.Any() || urlsToParse.tasksOut > 0))
             {
-                i++;
-                bool isBad = false;
-                //We check if the url is in the blacklist, if so we skip it
-                foreach (var item in blacklist)
+                urlsToParse.offset++;
+                bool isempt = false;
+                var timeinwhileloop = DateTime.Now;
+                while (!urlsToParse.queue.Any() && urlsToParse.tasksOut > 0)
                 {
-                    if (json.webPages.value[i].displayUrl.Contains(item))
-                    {
-                        isBad = true;
-
-                        break;
-                    }
-                        }
-                        //We cannot parse pdfs or things on the blacklist
-                        if (isBad || json.webPages.value[i].displayUrl.Contains(".pdf") || json.webPages.value[i].displayUrl.Contains(".ppt") || json.webPages.value[i].displayUrl.Contains(".doc"))
-                        {
-                            balance++;
-                            continue;
-                        }
-                        var dataholders = await htmlImporter.Run(new Uri(urls[i]));
-                        if (dataholders == null || dataholders.Count == 0)
-                        {
-                            balance++;
-                            continue;
-                        }
-                        //Yay we have our models!
-                        models.First().Add(new TextDataHolder(json.webPages.value[i].displayUrl, urls[i]));
-                        models.Add(dataholders);
-                    }
-                    return models;
+                    isempt = true;
+                    await Task.Delay(50);
                 }
-            
-        
-
+                Debug.WriteLine("time in while " + (DateTime.Now - timeinwhileloop).TotalMilliseconds);
+                if (!urlsToParse.queue.Any())
+                {
+                    continue;
+                }
+                zerohits += isempt ? 1 : 0;
+                var doc = await urlsToParse.Dequeue();
+                Debug.WriteLine("//////////////////////////////////////////New Parse////////////////////////////////////");
+                //We cannot parse pdfs or things on the blacklist
+                var dataholders = await htmlImporter.Run(doc);
+                if (dataholders == null || dataholders.Count == 0)
+                {
+                    continue;
+                }
+                urlsToParse.numberGood++;
+                //Yay we have our models!
+                models.First().Add(new TextDataHolder(doc.ToString(), ""));
+                models.Add(dataholders);
+            }
+            models.First().Add(new DataHolder("pdfs"));
+            models.Add(new List<DataHolder>());
+            foreach (var pdf in json.webPages.value.Where(e => e.displayUrl.Contains(".pdf")))
+            {
+                models.Last().Add(new PdfDataHolder(new Uri(pdf.Url), pdf.displayUrl));
+            }
+            Debug.WriteLine("Whole Time " + (DateTime.Now - wholeTime).TotalMilliseconds);
+            Debug.WriteLine("number of times 0 was hit" + zerohits);
+            Debug.WriteLine("number of results parsed " + urlsToParse.offset);
+            Debug.WriteLine("parsed succesfully " + (models.Count - 1));
+            Debug.WriteLine("number cancelled " + (urlsToParse.numcanceled));
+            return models;
+        }
         /// <summary>
         /// These classes are to deserialize the json that bing sends us back, just data containers
         /// </summary>
-        private class
-            BingJson
+        private class BingJson
         {
             public BingPages webPages;
         }
-
         private class BingPages
         {
             public BingUrl[] value;
         }
-
         private class BingUrl
         {
             public string displayUrl;
             public string Url;
         }
-    }
-}
 
+        private class ConcurrentTaskQueue
+        {
+            public ConcurrentQueue<HtmlDocument> queue;
+            public int tasksOut = 0;
+            public int offset = 0;
+            public int numberGood = 0;
+            public List<BingUrl> urls;
+            public int numcanceled = 0;
+            public ConcurrentTaskQueue()
+            {
+                queue = new ConcurrentQueue<HtmlDocument>();
+            }
+
+            public void Enqueue(HtmlDocument t)
+            {
+                queue.Enqueue(t);
+                tasksOut--;
+            }
+
+            public async void timeoutTask()
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfter(3000);
+                var task = GetDocumentFromUri(new Uri(urls[offset].Url), this, cts.Token);
+
+            }
+
+            public async Task<HtmlDocument> Dequeue()
+            {
+                while (offset < urls.Count && queue.Count + tasksOut < (10 - numberGood))
+                {
+                    //Load HTML from the website
+                    timeoutTask();
+                    offset++;
+                    tasksOut++;
+                }
+                HtmlDocument u;
+                queue.TryDequeue(out u);
+                return u;
+            }
+
+            public int Count => queue.Count;
+        }
+    }
+
+}

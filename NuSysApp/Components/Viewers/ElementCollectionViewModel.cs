@@ -347,8 +347,16 @@ namespace NuSysApp
         {
             if (IsShaped)
             {
-                Debug.Assert((Controller?.LibraryElementController?.ContentDataController as CollectionContentDataController)?.CollectionModel?.Shape?.AspectRatio != null);
-                width = (Controller.LibraryElementController.ContentDataController as CollectionContentDataController).CollectionModel.Shape.AspectRatio * height;
+                Debug.Assert(
+                    (Controller?.LibraryElementController?.ContentDataController as CollectionContentDataController)?
+                        .CollectionModel?.Shape?.AspectRatio != null);
+                width =
+                    (Controller.LibraryElementController.ContentDataController as CollectionContentDataController)
+                        .CollectionModel.Shape.AspectRatio*height;
+            }
+            else if(IsFinite)
+            {
+                height = width;
             }
             base.SetSize(width, height);
         }

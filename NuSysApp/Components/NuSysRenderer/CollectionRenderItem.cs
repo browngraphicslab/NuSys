@@ -272,6 +272,8 @@ namespace NuSysApp
 
             _elementSize = new Size(ViewModel.Width, ViewModel.Height);
 
+            var b = this == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
+
             Transform.Update(parentLocalToScreenTransform);
             base.Update(parentLocalToScreenTransform);
             Camera.Update(Transform.LocalToScreenMatrix);
@@ -298,10 +300,14 @@ namespace NuSysApp
                     Debug.Assert(pts != null && pts.Any());
                     var bounds = _shape.ComputeBounds();
                     var ratio = bounds.Width/bounds.Height;
+
+                    var multiplier =_shapeImage.GetBounds(ResourceCreator).Width/(pts.Max(l => l.X) - pts.Min(l => l.X)) ;
+
                     bounds.X = pts.Min(l => l.X);
                     bounds.Y = pts.Min(l => l.Y);
-                    bounds.Width = pts.Max(l => l.X) - bounds.X;
-                    bounds.Height = bounds.Width/ratio;
+                    bounds.Width = (pts.Max(l => l.X) - bounds.X)*multiplier;
+                    bounds.Height = (bounds.Width/ratio);
+
                     ds.DrawImage((CanvasBitmap)_shapeImage, bounds);
                 }
             }
@@ -367,7 +373,18 @@ namespace NuSysApp
                 }
 
             }
-
+            if ((pts == null || pts.Count() == 0 )&& ViewModel.IsFinite && !ViewModel.IsShaped)
+            {
+                var bounds = new Rect(50000,50000,5000,5000);
+                pts = new Vector2[]
+                {
+                    new Vector2(50000,50000),
+                    new Vector2((float)(50000+bounds.Width), 50000),
+                    new Vector2((float)(50000+bounds.Width),50000+(float)bounds.Height),
+                    new Vector2(50000,50000+(float)bounds.Height),
+                };
+                _shape = CanvasGeometry.CreateRectangle(ResourceCreator, bounds);
+            }
             if (_shape == null)
             {
                 _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);

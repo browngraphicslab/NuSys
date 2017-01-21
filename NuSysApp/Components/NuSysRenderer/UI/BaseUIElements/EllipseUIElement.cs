@@ -100,11 +100,6 @@ namespace NuSysApp
         public override ICanvasImage Image { get; set; }
 
         /// <summary>
-        /// The image bounds, which the image will scale to fill
-        /// </summary>
-        public override Rect? ImageBounds { get; set; }
-
-        /// <summary>
         /// The center of the ellipse
         /// </summary>
         private Vector2 CenterPoint => new Vector2(Width/2, Height/2);
@@ -186,7 +181,7 @@ namespace NuSysApp
             {
                 using (ds.CreateLayer(1, CanvasGeometry.CreateEllipse(Canvas, CenterPoint, _radiusX, _radiusY)))
                 {
-                    ds.DrawImage(Image, ImageBounds ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(Canvas));
 
                 }
             }
@@ -202,6 +197,24 @@ namespace NuSysApp
         public override Rect GetLocalBounds()
         {
             return new Rect(0, 0, Width, Height);
+        }
+
+        /// <summary>
+        /// The bounds in normalized coordinates in which to draw the image
+        /// </summary>
+        public override Rect? ImageBounds { get; set; }
+
+        /// <summary>
+        /// Returns the local coordinate rectangle in which to draw the image
+        /// </summary>
+        /// <returns></returns>
+        public override Rect? GetImageBounds()
+        {
+            if (ImageBounds == null)
+            {
+                return null;
+            }
+            return new Rect(Width * ImageBounds.Value.Left, Height * ImageBounds.Value.Top, Width * ImageBounds.Value.Width, Height * ImageBounds.Value.Height);
         }
     }
 }

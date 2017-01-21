@@ -452,7 +452,7 @@ namespace NuSysApp
                 _titleBox.Width = Width - 2*BorderWidth - _settingsButton.Width;
 
                 _settingsButton.Transform.LocalPosition = new Vector2(Width - _settingsButton.Width - BorderWidth, BorderWidth);
-                _settingsButton.ImageBounds = new Rect(_settingsButton.Width/4, _settingsButton.Height/4, _settingsButton.Width/2, _settingsButton.Height/2);
+                _settingsButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
                 _pageTabContainer.Page.Height = Height;
                 _pageTabContainer.Page.Width = Width;
