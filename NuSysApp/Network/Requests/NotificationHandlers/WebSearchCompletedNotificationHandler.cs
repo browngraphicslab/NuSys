@@ -54,7 +54,6 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ChatClickedCallback(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            item.Tapped -= ChatClickedCallback;
             //miranda put your function here and use libraryElements
             SessionController.Instance.NuSessionView.ShowSearchResultPopup(libraryElements.ToList(), _searchTerm);
         }

@@ -501,8 +501,8 @@ namespace NuSysApp
                 //set properties in preview window
                 SelectedCollectionTitle.Text = _selectedCollection.Title;
                 CreatorText.Text = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[_selectedCollection.Creator] : "...";
-                LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
-                CreateDateText.Text = _selectedCollection.Timestamp;
+                LastEditedText.Text = _selectedCollection.LastEditedTimestamp ?? "";
+                CreateDateText.Text = _selectedCollection.Timestamp ?? "";
 
                 //set tags in window if it has any
                 if (_selectedCollection.Keywords != null)

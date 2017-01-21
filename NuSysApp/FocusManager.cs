@@ -107,6 +107,11 @@ namespace NuSysApp
         /// <param name="newBaseRenderItem"></param>
         public void ChangeFocus(BaseRenderItem newBaseRenderItem)
         {
+            Debug.Assert(newBaseRenderItem != null);
+            if (newBaseRenderItem == null)
+            {
+                return;
+            }
             // if we are not in read only, and the newBaseRenderItem is focusable, and the new base render
             // item is not currently focused
             if (newBaseRenderItem.IsFocusable && newBaseRenderItem != ActiveFocusElement)

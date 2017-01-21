@@ -35,7 +35,7 @@ namespace NusysServer
             if (model.AccessType != NusysConstants.AccessType.Private)
             {
                 //forward the message to everyone else, and just add the new model json
-                ForwardMessage(new Message(message) { { NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY, modelJson } }, senderHandler);
+                ForwardMessage(new Message(message) { { NusysConstants.CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_RETURNED_COLLECTION_LIBRARY_ELEMENT_MODEL, modelJson } }, senderHandler);
             }
 
             var returnMessage = new Message();
