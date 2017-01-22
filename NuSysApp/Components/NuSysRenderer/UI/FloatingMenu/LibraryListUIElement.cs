@@ -107,6 +107,11 @@ namespace NuSysApp
         /// </summary>
         private BingSearchPopup _bingSearchPopup;
 
+        /// <summary>
+        /// True if the library needs to be filtered
+        /// </summary>
+        private bool _filterIsDirty;
+
         ///// <summary>
         ///// TEST BUTTON
         ///// </summary>
@@ -213,8 +218,7 @@ namespace NuSysApp
         /// <param name="text"></param>
         private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-            //Finally, filter by the search function
-            LibraryListView.FilterBy(ApplyFilter);
+            _filterIsDirty = true;
         }
 
         /// <summary>
@@ -589,6 +593,13 @@ namespace NuSysApp
             _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - UIDefaults.SearchBarHeight);
             _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - UIDefaults.SearchBarHeight);
             _filterMenu.Transform.LocalPosition = new Vector2(Width, 0);
+
+            if (_filterIsDirty)
+            {
+                //Finally, filter by the search function
+                LibraryListView.FilterBy(ApplyFilter);
+                _filterIsDirty = false;
+            }
 
             base.Update(parentLocalToScreenTransform);
         }
