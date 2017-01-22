@@ -577,6 +577,7 @@ namespace NuSysApp
         private void UpdateLibraryListWithNewElement(LibraryElementModel libraryElement)
         {
             LibraryListView.AddItems(new List<LibraryElementModel> {libraryElement});
+            LibraryListView.ScrollTo(libraryElement);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
