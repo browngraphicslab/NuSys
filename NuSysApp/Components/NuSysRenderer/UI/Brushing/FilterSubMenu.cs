@@ -464,6 +464,12 @@ namespace NuSysApp
             ClearCreatorView();
             ClearDisplayTypeView();
             ClearLastEditedDateView();
+            CurrBrush.Creators.Clear();
+            CurrBrush.Types.Clear();
+            CurrBrush.CreationDateStart = null;
+            CurrBrush.CreationDateEnd = null;
+            CurrBrush.LastEditedStart = null;
+            CurrBrush.LastEditedEnd = null;
         }
     }
 }

@@ -230,6 +230,22 @@ namespace NuSysApp
             vertical_spacing += _outLinkedElementTextbox.Height + 20;
             var linkDirectionVerticalSpace = _toggleDirectionButton.Height + 20;
 
+            // check if the height is too small for ppi
+            if (Height - vertical_spacing - 20 - linkDirectionVerticalSpace < 0)
+            {
+                _linkAnnotationsInputBox.IsVisible = false;
+                _toggleDirectionButton.IsVisible = false;
+                _reverseDirectionButton.IsVisible = false;
+                base.Update(parentLocalToScreenTransform);
+                return;
+            }
+            else
+            {
+                _linkAnnotationsInputBox.IsVisible = true;
+                _toggleDirectionButton.IsVisible = true;
+                _reverseDirectionButton.IsVisible = true;
+            }
+
             _linkAnnotationsInputBox.Width = Width - 2 * horizontal_spacing;
             _linkAnnotationsInputBox.Height = Height - vertical_spacing - 20 - linkDirectionVerticalSpace;
             _linkAnnotationsInputBox.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);

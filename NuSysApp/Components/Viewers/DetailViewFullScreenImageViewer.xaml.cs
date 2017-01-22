@@ -108,8 +108,6 @@ namespace NuSysApp
             }
             //transform.CenterX = xCanvas.ActualWidth / 2;
             //transform.CenterY = xCanvas.ActualHeight / 2;
-
-            xImage.ManipulationMode = ManipulationModes.TranslateInertia;
             transform.Rotation = 0;
         }
 

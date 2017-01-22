@@ -107,6 +107,11 @@ namespace NuSysApp
         /// </summary>
         private BingSearchPopup _bingSearchPopup;
 
+        /// <summary>
+        /// True if the library needs to be filtered
+        /// </summary>
+        private bool _filterIsDirty;
+
         ///// <summary>
         ///// TEST BUTTON
         ///// </summary>
@@ -213,8 +218,7 @@ namespace NuSysApp
         /// <param name="text"></param>
         private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-            //Finally, filter by the search function
-            LibraryListView.FilterBy(ApplyFilter);
+            _filterIsDirty = true;
         }
 
         /// <summary>
@@ -234,7 +238,7 @@ namespace NuSysApp
         /// <returns></returns>
         private bool ApplySearchTextFilter(LibraryElementModel lem)
         {
-            var search = _searchBar.Text;
+            var search = _searchBar.Text.ToLower();
             if (string.IsNullOrEmpty(search))
             {
                 return true;
@@ -501,6 +505,12 @@ namespace NuSysApp
                
             };
 
+            var imgColumn = new LibraryListImageColumn<LibraryElementModel>(Canvas);
+            imgColumn.Title = "";
+            imgColumn.RelativeWidth = 1;
+            imgColumn.ColumnFunction = model => model.GetController().SmallIconUri;
+
+
             var listColumn1 = new ListTextColumn<LibraryElementModel>();
             listColumn1.Title = "Title";
             listColumn1.RelativeWidth = 2;
@@ -542,7 +552,7 @@ namespace NuSysApp
             listColumn8.RelativeWidth = 1f;
             listColumn8.ColumnFunction = model => model.AccessType.ToString();
 
-            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
+            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { imgColumn, listColumn1, listColumn2, listColumn3, listColumn4 });
 
             LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> {listColumn5, listColumn8, listColumn7,listColumn6 });
 
@@ -590,6 +600,13 @@ namespace NuSysApp
             _searchBar.Transform.LocalPosition = new Vector2(BorderWidth, Height - BorderWidth - UIDefaults.SearchBarHeight);
             _filterButton.Transform.LocalPosition = new Vector2(BorderWidth + _searchBar.Width, Height - BorderWidth - UIDefaults.SearchBarHeight);
             _filterMenu.Transform.LocalPosition = new Vector2(Width, 0);
+
+            if (_filterIsDirty)
+            {
+                //Finally, filter by the search function
+                LibraryListView.FilterBy(ApplyFilter);
+                _filterIsDirty = false;
+            }
 
             base.Update(parentLocalToScreenTransform);
         }

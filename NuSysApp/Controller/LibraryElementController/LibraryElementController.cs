@@ -555,6 +555,10 @@ namespace NuSysApp
         /// <returns></returns>
         public DateTime GetCreationDate()
         {
+            if (LibraryElementModel.Timestamp == string.Empty)
+            {
+                return DateTime.MinValue;
+            }
             return DateTime.Parse(LibraryElementModel.Timestamp);
         }
 
@@ -564,6 +568,10 @@ namespace NuSysApp
         /// <returns></returns>
         public DateTime GetLastEditedDate()
         {
+            if (LibraryElementModel.LastEditedTimestamp == string.Empty)
+            {
+                return DateTime.MinValue;
+            }
             return DateTime.Parse(LibraryElementModel.LastEditedTimestamp);
         }
 
