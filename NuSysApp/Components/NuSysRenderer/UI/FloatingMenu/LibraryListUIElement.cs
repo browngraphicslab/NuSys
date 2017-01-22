@@ -501,7 +501,7 @@ namespace NuSysApp
                
             };
 
-            var imgColumn = new ListImageColumn<LibraryElementModel>(ResourceCreator);
+            var imgColumn = new LibraryListImageColumn<LibraryElementModel>(Canvas);
             imgColumn.Title = "";
             imgColumn.RelativeWidth = 1;
             imgColumn.ColumnFunction = model => model.GetController().SmallIconUri;

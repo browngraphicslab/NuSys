@@ -1295,6 +1295,16 @@ namespace NuSysApp
                 RemoveRowHandlers(row);
                 row?.Dispose();
             }
+
+            foreach (var col in ListColumns)
+            {
+                col?.Dispose();
+            }
+
+            foreach (var col in ColumnOptions)
+            {
+                col?.Dispose();
+            }
             Rows?.Clear();
             _selectedElements?.Clear();
             _itemsSource?.Clear();

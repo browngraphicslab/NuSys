@@ -14,7 +14,7 @@ namespace NuSysApp
         /// <summary>
         /// This function takes in a generic item, and returns the image to be displayed in the list.
         /// </summary>
-        public Func<T, Uri> ColumnFunction { private get; set; }
+        public Func<T, Uri> ColumnFunction { get; set; }
 
 
         public Dictionary<T, ICanvasImage> ImageDict => _dict;
@@ -69,6 +69,10 @@ namespace NuSysApp
                     cell.Image = _image;
                     cell.Image = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
                     _dict[itemSource] = cell.Image;
+
+                    cell.Image = _image;
+                    _dict[itemSource] = cell.Image;
+                    _dict[itemSource] = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
                 }
 
                 var width = cell.Width;
@@ -100,10 +104,11 @@ namespace NuSysApp
             LoadCellImageAsync(rectangleUIElement, item);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             _dict.Clear();
             _dict = null;
+            _image.Dispose();
         }
     }
 }
