@@ -77,6 +77,7 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
+            (xImage.RenderTransform as TransformGroup).Children[0] = new CompositeTransform();
             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
 
             Debug.Assert(transform != null);
@@ -91,6 +92,8 @@ namespace NuSysApp
             {
                 scale = xCanvas.ActualWidth/xImage.ActualWidth;
                 scale /= 2;
+                transform.ScaleX = scale;
+                transform.ScaleY = scale;
                 transform.TranslateX = xCanvas.ActualWidth * .25;
                 transform.TranslateY = xCanvas.ActualHeight * .25;
             }
@@ -98,12 +101,15 @@ namespace NuSysApp
             {
                 scale = xCanvas.ActualHeight / xImage.ActualHeight;
                 scale /= 2;
+                transform.ScaleX = scale;
+                transform.ScaleY = scale;
                 transform.TranslateX = (xCanvas.ActualWidth - (xImage.ActualWidth * scale))/2;
                 transform.TranslateY = xCanvas.ActualHeight * .25;
             }
-            transform.ScaleX = scale;
-            transform.ScaleY = scale;
+            //transform.CenterX = xCanvas.ActualWidth / 2;
+            //transform.CenterY = xCanvas.ActualHeight / 2;
 
+            xImage.ManipulationMode = ManipulationModes.TranslateInertia;
             transform.Rotation = 0;
         }
 
@@ -137,6 +143,7 @@ namespace NuSysApp
             SetCanvasSize();
             Visibility = Visibility.Visible;
             xImage.Source = new BitmapImage(imageUri);
+            xImage.Stretch=Stretch.UniformToFill;
             var tg = new TransformGroup();
             tg.Children.Add(new CompositeTransform());
             tg.Children.Add(new CompositeTransform());
