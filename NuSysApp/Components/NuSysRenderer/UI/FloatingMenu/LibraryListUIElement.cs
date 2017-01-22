@@ -501,6 +501,12 @@ namespace NuSysApp
                
             };
 
+            var imgColumn = new ListImageColumn<LibraryElementModel>(ResourceCreator);
+            imgColumn.Title = "";
+            imgColumn.RelativeWidth = 1;
+            imgColumn.ColumnFunction = model => model.GetController().SmallIconUri;
+
+
             var listColumn1 = new ListTextColumn<LibraryElementModel>();
             listColumn1.Title = "Title";
             listColumn1.RelativeWidth = 2;
@@ -542,7 +548,7 @@ namespace NuSysApp
             listColumn8.RelativeWidth = 1f;
             listColumn8.ColumnFunction = model => model.AccessType.ToString();
 
-            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { listColumn1, listColumn2, listColumn3, listColumn4 });
+            LibraryListView.AddColumns(new List<ListColumn<LibraryElementModel>> { imgColumn, listColumn1, listColumn2, listColumn3, listColumn4 });
 
             LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> {listColumn5, listColumn8, listColumn7,listColumn6 });
 
