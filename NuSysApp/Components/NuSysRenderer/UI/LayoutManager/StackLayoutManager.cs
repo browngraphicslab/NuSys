@@ -119,7 +119,7 @@ namespace NuSysApp
                             itemOffset.Y = itemOffset.Y + TopMargin;
                             elementHeight = ItemHeight;
 
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;
@@ -134,7 +134,7 @@ namespace NuSysApp
                                            (_elements.Count - 1)*Spacing;
                             elementHeight = ItemHeight;
 
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;
@@ -146,7 +146,7 @@ namespace NuSysApp
                         case VerticalAlignment.Center:
                             itemOffset.Y = itemOffset.Y + (Height - _elements.Count * ItemHeight - (_elements.Count - 1) * Spacing) / 2;
                             elementHeight = ItemHeight;
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;
@@ -158,7 +158,7 @@ namespace NuSysApp
                         case VerticalAlignment.Stretch:
                             elementHeight = (Height - TopMargin - BottomMargin - (_elements.Count - 1) * Spacing) / _elements.Count;
                             itemOffset.Y = itemOffset.Y + TopMargin;
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;
@@ -205,7 +205,7 @@ namespace NuSysApp
                             itemOffset.X = itemOffset.X + LeftMargin;
                             elementWidth = ItemWidth;
 
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;
@@ -218,7 +218,7 @@ namespace NuSysApp
                             itemOffset.X = itemOffset.X + (Width - _elements.Count*ItemWidth - (_elements.Count - 1)*Spacing)/2;
                             elementWidth = ItemWidth;
 
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;
@@ -230,7 +230,7 @@ namespace NuSysApp
                             itemOffset.X = itemOffset.X + Width - RightMargin - _elements.Count*ItemWidth - (_elements.Count - 1)*Spacing;
                             elementWidth = ItemWidth;
 
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;
@@ -243,7 +243,7 @@ namespace NuSysApp
                             elementWidth = (Width - LeftMargin - RightMargin - (_elements.Count - 1)*Spacing) / _elements.Count;
                             itemOffset.X = itemOffset.X + LeftMargin;
 
-                            foreach (var element in _elements)
+                            foreach (var element in _elements.ToArray())
                             {
                                 element.Transform.LocalPosition = itemOffset;
                                 element.Width = elementWidth;

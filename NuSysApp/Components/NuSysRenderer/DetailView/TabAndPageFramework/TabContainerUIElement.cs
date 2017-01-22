@@ -275,7 +275,7 @@ namespace NuSysApp
         /// Removes the given tab from the tablist
         /// </summary>
         /// <param name="tabType"></param>
-        public void RemoveTab(T tabType)
+        public void RemoveTab(T tabType, bool changeCurrentTab = true)
         {
             // get the tab which is going to be removed from the list of tabs
             var tabToBeRemoved = _tabList.FirstOrDefault(tabButton => IsEqual(tabType, tabButton.Tab));
@@ -294,7 +294,7 @@ namespace NuSysApp
             var index = _tabList.IndexOf(tabToBeRemoved);
 
             // if the tabToBeRemoved is the CurrentlySelectedTab
-            if (CurrentlySelectedTab != null && IsEqual(_tabList[index].Tab, CurrentlySelectedTab.Tab))
+            if (CurrentlySelectedTab != null && IsEqual(_tabList[index].Tab, CurrentlySelectedTab.Tab) && changeCurrentTab)
             {
                 // remove it
                 _tabList.RemoveAt(index);
@@ -390,7 +390,7 @@ namespace NuSysApp
         {
             while (_tabList.Count != 0)
             {
-                RemoveTab(_tabList[0].Tab);
+                RemoveTab(_tabList[0].Tab, false);
             }
         }
 
