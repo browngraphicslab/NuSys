@@ -75,8 +75,8 @@ namespace NuSysApp
                     _dict[itemSource] = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
                 }
 
-                var width = cell.Width;
-                var height = cell.Height;
+                var cellWidth = cell.Width;
+                var cellHeight = cell.Height;
 
                 var imgWidth = cell.Image.GetBounds(cell.ResourceCreator).Width;
                 var imgHeight = cell.Image.GetBounds(cell.ResourceCreator).Height;
@@ -86,10 +86,10 @@ namespace NuSysApp
                     return;
                 }
 
-                var newWidth = height * imgWidth / imgHeight;
-                var newHeight = height;
-                //cell.ImageHorizontalAlignment = HorizontalAlignment.Center;
-                //cell.ImageBounds = new Rect(0, 0, height * imgWidth / imgHeight, height);
+                var newWidth = imgWidth / imgHeight * cellHeight / cellWidth;
+                var newHeight = 1;
+
+                cell.ImageBounds = new Rect(0.5 - newWidth / 2, 0, newWidth, newHeight);
 
             }
             catch (Exception e)
@@ -104,11 +104,9 @@ namespace NuSysApp
             LoadCellImageAsync(rectangleUIElement, item);
         }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
             _dict.Clear();
-            _dict = null;
-            _image.Dispose();
         }
     }
 }

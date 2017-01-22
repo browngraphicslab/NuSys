@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 
@@ -63,7 +64,6 @@ namespace NuSysApp
         {
             try
             {
-                //base.LoadCellImageAsync(cell, itemSource);
                 var model = itemSource as LibraryElementModel;
 
 
@@ -84,8 +84,8 @@ namespace NuSysApp
 
                 }
 
-                var width = cell.Width;
-                var height = cell.Height;
+                var cellWidth = cell.Width;
+                var cellHeight = cell.Height;
 
                 var imgWidth = cell.Image.GetBounds(_resourceCreator).Width;
                 var imgHeight = cell.Image.GetBounds(_resourceCreator).Height;
@@ -95,10 +95,10 @@ namespace NuSysApp
                     return;
                 }
 
-                var newWidth = height*imgWidth/imgHeight;
-                var newHeight = height;
-                //cell.ImageHorizontalAlignment = HorizontalAlignment.Center;
-                //cell.ImageBounds = new Rect(0, 0, height * imgWidth / imgHeight, height);
+                var newWidth = imgWidth/imgHeight*cellHeight/cellWidth;
+                var newHeight = 1;
+
+                cell.ImageBounds = new Rect(0.5 - newWidth/2, 0, newWidth, newHeight);
             }
             catch (Exception e)
             {
@@ -110,7 +110,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             _defaultIconDictionary.Clear();
-            _defaultIconDictionary = null;
 
             base.Dispose();
         }
