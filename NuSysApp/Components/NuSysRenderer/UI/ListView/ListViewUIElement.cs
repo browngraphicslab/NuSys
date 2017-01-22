@@ -404,6 +404,7 @@ namespace NuSysApp
             }
             _sumOfColumnRelativeWidths -= _listColumns[columnIndex].RelativeWidth;
             _listColumns.RemoveAt(columnIndex);
+            column?.Dispose();
             RepopulateExistingListRows();
         }
         #endregion Adding and Removing
@@ -1294,6 +1295,16 @@ namespace NuSysApp
             {
                 RemoveRowHandlers(row);
                 row?.Dispose();
+            }
+
+            foreach (var col in ListColumns)
+            {
+                col?.Dispose();
+            }
+
+            foreach (var col in ColumnOptions)
+            {
+                col?.Dispose();
             }
             Rows?.Clear();
             _selectedElements?.Clear();
