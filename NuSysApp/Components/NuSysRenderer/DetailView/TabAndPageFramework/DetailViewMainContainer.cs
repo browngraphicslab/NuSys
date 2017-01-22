@@ -206,7 +206,7 @@ namespace NuSysApp
         /// Invoked whenever the current tab changes in the detail viewer
         /// </summary>
         /// <param name="libElemId"></param>
-        private void _mainTabContainer_OnCurrentTabChanged(string libElemId)
+        private async void _mainTabContainer_OnCurrentTabChanged(string libElemId)
         {
             // try to get the curr page that is open from the dictionary
             DetailViewPageTabType currPage;
@@ -219,7 +219,7 @@ namespace NuSysApp
                 _libElemToCurrTabOpen.Add(libElemId, currPage);
             }
 
-            _pageContainer.ShowLibraryElement(libElemId, currPage);
+            await _pageContainer.ShowLibraryElement(libElemId, currPage);
 
             CreateUserBubbles(libElemId);
         }

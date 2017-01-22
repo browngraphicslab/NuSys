@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.System.Threading;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -413,8 +414,19 @@ namespace NuSysApp
         /// <param name="tabType"></param>
         private async void ShowPageType(DetailViewPageTabType tabType)
         {
+            ShowTabType(tabType);
+        }
+
+        /// <summary>
+        /// private async method for showing the tab type
+        /// </summary>
+        /// <param name="tabType"></param>
+        /// <returns></returns>
+        private async Task ShowTabType(DetailViewPageTabType tabType)
+        {
+            var controllerId = _currentController.LibraryElementModel.LibraryElementId;
             var rect = await DetailViewPageFactory.GetPage(this, Canvas, tabType.Type, _currentController);
-            if (rect != null)
+            if (rect != null && controllerId == _currentController.LibraryElementModel.LibraryElementId)
             {
                 rect.Height = this.Height;
                 rect.Width = this.Width;
@@ -454,10 +466,10 @@ namespace NuSysApp
         /// Show a library element in the page container
         /// </summary>
         /// <param name="libraryElementModelId"></param>
-        public void ShowLibraryElement(string libraryElementModelId, DetailViewPageTabType pageToShow)
+        public async Task ShowLibraryElement(string libraryElementModelId, DetailViewPageTabType pageToShow)
         {
             // if we are already showing the library elment model that was selected then just return
-            if (_currentController?.LibraryElementModel.LibraryElementId == libraryElementModelId || !_loaded)
+            if (!_loaded)
             {
                 return;
             }
@@ -531,7 +543,7 @@ namespace NuSysApp
             }
 
             // show the passed in page on the detail viewer
-            ShowPageType(pageToShow);
+            await ShowTabType(pageToShow);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
