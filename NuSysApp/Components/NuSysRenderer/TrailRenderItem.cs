@@ -117,7 +117,7 @@ namespace NuSysApp
 
             if (_path != null)
             {
-                ds.DrawGeometry(_path, Colors.PaleVioletRed, 30);
+                ds.DrawGeometry(_path, Constants.TrailColor, 30);
             }
 
             Matrix3x2 originalTranform = ds.Transform;

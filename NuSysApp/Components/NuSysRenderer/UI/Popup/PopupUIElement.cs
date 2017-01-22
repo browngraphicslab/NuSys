@@ -22,7 +22,7 @@ namespace NuSysApp
         /// Event called whenever the popup is dismissed.  
         /// Can be used to remove the UI element from the its parent. 
         /// </summary>
-        public event EventHandler<PopupUIElement> Dismissed; 
+        public event EventHandler Dismissed; 
 
         /// <summary>
         /// if a popup is dismissable, then it can be clicked out of by clicking anywhere beyond the popup.
@@ -96,40 +96,16 @@ namespace NuSysApp
         }
 
 
-
-        /// <summary>
-        /// this closes the popup if the pointer is not within the popup's bounds, and disposes of the handler for close popup.
-        /// </summary>
-        /// <param name="pointer"></param>
-        /// <param name="popup"></param>
-        private void CanvasInteractionManager_ClosePopup(CanvasPointer pointer)
-        {
-            var hittest = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
-            if (hittest.Parent != this && _dismissable)
-            {
-                DismissPopup();
-            }
-        }
-
-
-        /// <summary>
-        /// shows popup. usually triggered by some sort of action.
-        /// </summary>
-        public void ShowPopup()
-        {
-            this.IsVisible = true;
-        }
-
         /// <summary>
         /// dismisses popup.
         /// for non-dismissable popups, this comes from the dismiss buton.
         /// for dismissable popups, this occurs when the user clicks outside the space.
         /// </summary>
-        public void DismissPopup()
+        public virtual void DismissPopup()
         {
             //TODO add 'dismissable' logic here so its encapsulated in one place
             this.IsVisible = false;
-            Dismissed?.Invoke(this, this);
+            Dismissed?.Invoke(this, EventArgs.Empty);
             Parent?.RemoveChild(this);
             Dispose();
         }

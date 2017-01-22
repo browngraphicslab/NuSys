@@ -65,6 +65,11 @@ namespace NuSysApp
         /// </summary>
         private RectangleUIElement _line;
 
+        /// <summary>
+        /// popup used to display when the user changes collection settings to a more public version
+        /// </summary>
+        private ConfirmationPopupUIElement _collectionSettingChangedPopup;
+
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
@@ -130,9 +135,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="popupUiElement"></param>
-        private void SettingsPopupOnDismissed(object sender, PopupUIElement popupUiElement)
+        private void SettingsPopupOnDismissed(object sender, EventArgs args)
         {
-            popupUiElement.Dismissed -= SettingsPopupOnDismissed;
+            _settingsPopup.Dismissed -= SettingsPopupOnDismissed;
             _settingsPopup = null;
         }
 
@@ -204,9 +209,81 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _currentController.SetAccessType(NusysConstants.AccessType.Public);
-            _changeAccessPopup.DismissPopup();
+            if (_currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+            {
+                _collectionSettingChangedPopup = new ConfirmationPopupUIElement(this, ResourceCreator,
+                    ConfirmMakeCollectionPublicTapped, null)
+                {
+                    Message =
+                        $"Making a collection public will make all the nodes within it public as well. Would you like to continue?"
+                };
+                AddChild(_collectionSettingChangedPopup);
 
+            }
+            else
+            {
+                _currentController.SetAccessType(NusysConstants.AccessType.Public);
+                _changeAccessPopup.DismissPopup();
+            }
+        }
+
+        /// <summary>
+        /// Fired when the user confirms that they would like to make a collection public
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ConfirmMakeCollectionPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // change the access type of the current collection to public
+            _currentController.SetAccessType(NusysConstants.AccessType.Public);
+
+            // get all the element controllers
+            foreach (var kvp in SessionController.Instance.ElementModelIdToElementController)
+            {
+                var elementController = kvp.Value;
+
+                // if the element controller is in the current collection
+                if (elementController.Model.ParentCollectionId ==
+                    _currentController.LibraryElementModel.LibraryElementId)
+                {
+                    // if the elemtn controller has the wrong access type
+                    if (elementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+                    {
+                        // get the library element controller and change the access type 
+                        elementController.LibraryElementController.SetAccessType(NusysConstants.AccessType.Public);
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Fired when the user confirms that they woudl like to make a collection read only
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ConfirmMakeCollectionReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // change the access type of the current collection to read only
+            _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);
+
+            // get all the element controllers
+            foreach (var kvp in SessionController.Instance.ElementModelIdToElementController)
+            {
+                var elementController = kvp.Value;
+
+                // if the element controller is in the current collection
+                if (elementController.Model.ParentCollectionId ==
+                    _currentController.LibraryElementModel.LibraryElementId)
+                {
+                    // if the elemtn controller has the wrong access type
+                    if (elementController.LibraryElementModel.AccessType == NusysConstants.AccessType.Private)
+                    {
+                        // get the library element controller and change the access type 
+                        elementController.LibraryElementController.SetAccessType(NusysConstants.AccessType.ReadOnly);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -216,8 +293,21 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);
-            _changeAccessPopup.DismissPopup();
+            if (_currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+            {
+                _collectionSettingChangedPopup = new ConfirmationPopupUIElement(this, ResourceCreator,
+                    ConfirmMakeCollectionReadOnlyTapped, null)
+                {
+                    Message =
+                        $"Making a collection readonly will make all the nodes within it readonly as well. Would you like to continue?"
+                };
+                AddChild(_collectionSettingChangedPopup);
+            }
+            else
+            {
+                _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);
+                _changeAccessPopup.DismissPopup();
+            }
         }
 
         /// <summary>

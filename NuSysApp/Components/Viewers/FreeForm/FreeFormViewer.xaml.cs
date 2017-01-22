@@ -64,6 +64,8 @@ namespace NuSysApp
         public BaseMediaPlayer VideoPlayer => xVideoPlayer;
         public AudioPlayer AudioPlayer => xAudioPlayer;
 
+        public Keyboard Keyboard => xKeyboard;
+
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
 
@@ -112,6 +114,15 @@ namespace NuSysApp
             _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
             xFullScreenImageViewer.Visibility = Visibility.Collapsed;
+
+
+            xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
+        }
+
+        private void Keyboard_KeyboardKeyPressed(object sender, KeyArgs args)
+        {
+            SessionController.Instance.FocusManager.ManualFireKeyPressed(args);
+
         }
 
         /// <summary>
@@ -140,6 +151,7 @@ namespace NuSysApp
             xUndoButton.MoveTo(location);
             xUndoButton.Activate(action);
         }
+
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
@@ -447,7 +459,10 @@ namespace NuSysApp
             {
                 var elem = selection.ViewModel;
                 if (elem == null)
+                {
+                    Debug.Fail("this shouldn't be happening.");
                     continue;
+                }
                 var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
                 var newCenter = Vector2.Transform(imgCenter, transform);
 
@@ -1357,7 +1372,17 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
             }
-            
+
+            var valid = !float.IsPositiveInfinity(InitialCollection.Camera.S.M11) &&
+                          !float.IsNegativeInfinity(InitialCollection.Camera.S.M11);
+            valid &= !float.IsPositiveInfinity(InitialCollection.Camera.S.M22) &&
+                       !float.IsNegativeInfinity(InitialCollection.Camera.S.M22);
+            Debug.Assert(valid);
+            if (!valid)
+            {
+                return;
+            }
+
             var vm = (FreeFormViewerViewModel)InitialCollection.ViewModel;
             vm.CompositeTransform.TranslateX = InitialCollection.Camera.T.M31;
             vm.CompositeTransform.TranslateY = InitialCollection.Camera.T.M32;
@@ -1601,5 +1626,7 @@ namespace NuSysApp
 
             xAddRegionMenu.Visibility = Visibility.Collapsed;
         }
+
+
     }
 }

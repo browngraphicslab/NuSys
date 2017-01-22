@@ -9,7 +9,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
-    class InkableImageDetailRenderItemUIElement : RectangleUIElement
+    public class InkableImageDetailRenderItemUIElement : RectangleUIElement
     {
         private InkableUIElement _inkable;
         private ImageDetailRenderItem _image;

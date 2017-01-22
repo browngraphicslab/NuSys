@@ -126,7 +126,7 @@ namespace NuSysApp
 
             if (_path != null)
             {
-                ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
+                ds.DrawGeometry(_path, Constants.LinkColor, 30);
             }
             if ((_vm.Controller.LibraryElementController.LibraryElementModel as LinkLibraryElementModel)?.Direction == NusysConstants.LinkDirection.Forward)
             {

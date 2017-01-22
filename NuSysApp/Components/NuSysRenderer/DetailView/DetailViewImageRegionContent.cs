@@ -196,9 +196,10 @@ namespace NuSysApp
         /// <summary>
         /// Loads the image bitmap
         /// </summary>
-        protected async void LoadImageBitmap()
+        protected async Task LoadImageBitmap()
         {
             _imageBitmap?.Dispose();
+            _imageBitmap = null;
             DrawingBitmap = true;
             if (ImageUrl == null)
             {
@@ -420,6 +421,15 @@ namespace NuSysApp
                 CroppedImageTarget.Width = CroppedImageTarget.Height * croppedRectRatio;
                 _scaleOrgToDisplay = ImageMaxHeight / (float) _imageBitmap.Size.Height;
                 _scaleDisplayToCrop = 1 / (float) lib.NormalizedHeight;
+
+                if (CroppedImageTarget.Width > ImageMaxWidth)
+                {
+                    CroppedImageTarget.Width = ImageMaxWidth;
+                    CroppedImageTarget.Height = CroppedImageTarget.Width * 1 / croppedRectRatio;
+                    _scaleOrgToDisplay = ImageMaxWidth / (float)_imageBitmap.Size.Width;
+                    _scaleDisplayToCrop = 1 / (float)lib.NormalizedWidth;
+                }
+
             }
 
             _needsMaskRefresh = true;

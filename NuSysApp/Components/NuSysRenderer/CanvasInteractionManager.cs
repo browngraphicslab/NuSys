@@ -24,10 +24,8 @@ namespace NuSysApp
     {
         public enum InteractionType
         {
+            Mouse,
             Pen,
-            /// <summary>
-            /// Right now, touch includes pointer/mouse
-            /// </summary>
             Touch
         }
         public delegate void TappedHandler(BaseRenderItem element, PointerRoutedEventArgs args);
@@ -306,11 +304,25 @@ namespace NuSysApp
            
         }
 
+        /// <summary>
+        /// method to call to forcibly forget all current canvas pointers
+        /// </summary>
+        public void ClearAllPointers()
+        {
+            Debug.Assert(_canvas != null && _pointers != null);
+            _canvas?.ReleasePointerCaptures();
+            _pointers?.Clear();
+        }
+
         private InteractionType PointerToInteractionType(Pointer pointer)
         {
             if (pointer.PointerDeviceType == PointerDeviceType.Pen)
             {
                 return InteractionType.Pen;
+            }
+            else if (pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                return InteractionType.Mouse;
             }
             return InteractionType.Touch;
         }

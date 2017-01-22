@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -107,8 +108,38 @@ namespace NuSysApp
             // event for when the controllers text changes or the user changes the text
             _controller.ContentDataController.ContentDataUpdated += ContentDataController_ContentDataUpdated;
             _linkAnnotationsInputBox.TextChanged += _linkAnnotationsInputBox_TextChanged;
+
+            //tapped handlers
+            _outLinkedElementTextbox.Tapped += OutLinkedElementTextboxOnTapped;
             _reverseDirectionButton.Tapped += _reverseDirectionButton_Tapped;
             _toggleDirectionButton.Tapped += _toggleDirectionButton_Tapped;
+            _inLinkedElementTextbox.Tapped += InLinkedElementTextboxOnTapped;
+        }
+
+        /// <summary>
+        /// event handler for whenever the out Library Element is clicked
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OutLinkedElementTextboxOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(_controller?.LinkLibraryElementModel?.OutAtomId));
+
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(_controller.LinkLibraryElementModel.OutAtomId);
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
+        }
+
+        /// <summary>
+        /// event handler for when the in library element is clicked
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void InLinkedElementTextboxOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(_controller?.LinkLibraryElementModel?.InAtomId));
+
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(_controller.LinkLibraryElementModel.InAtomId);
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
         }
 
         /// <summary>
@@ -144,8 +175,10 @@ namespace NuSysApp
         {
             _controller.ContentDataController.ContentDataUpdated -= ContentDataController_ContentDataUpdated;
             _linkAnnotationsInputBox.TextChanged -= _linkAnnotationsInputBox_TextChanged;
+            _outLinkedElementTextbox.Tapped -= OutLinkedElementTextboxOnTapped;
             _reverseDirectionButton.Tapped -= _reverseDirectionButton_Tapped;
             _toggleDirectionButton.Tapped -= _toggleDirectionButton_Tapped;
+            _inLinkedElementTextbox.Tapped -= InLinkedElementTextboxOnTapped;
             base.Dispose();
         }
 
