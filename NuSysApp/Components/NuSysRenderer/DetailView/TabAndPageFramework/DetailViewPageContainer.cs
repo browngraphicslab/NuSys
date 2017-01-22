@@ -71,6 +71,12 @@ namespace NuSysApp
         /// </summary>
         private ConfirmationPopupUIElement _collectionSettingChangedPopup;
 
+        /// <summary>
+        /// the private counter to keep track of the number of library elements requested to be shown.
+        /// This will be used to end asynchronous tasks early if they are no longer the most recent reuqest.
+        /// </summary>
+        private int _shownLibraryElementCount;
+
         public DetailViewPageContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _pageTabContainer = new TabContainerUIElement<DetailViewPageTabType>(this, Canvas)
@@ -414,7 +420,8 @@ namespace NuSysApp
         /// <param name="tabType"></param>
         private async void ShowPageType(DetailViewPageTabType tabType)
         {
-            ShowTabType(tabType);
+            _shownLibraryElementCount++;
+            ShowTabType(tabType,_shownLibraryElementCount);
         }
 
         /// <summary>
@@ -422,16 +429,19 @@ namespace NuSysApp
         /// </summary>
         /// <param name="tabType"></param>
         /// <returns></returns>
-        private async Task ShowTabType(DetailViewPageTabType tabType)
+        private async Task ShowTabType(DetailViewPageTabType tabType, int requestNumber)
         {
             var controllerId = _currentController.LibraryElementModel.LibraryElementId;
             var rect = await DetailViewPageFactory.GetPage(this, Canvas, tabType.Type, _currentController);
-            if (rect != null && controllerId == _currentController.LibraryElementModel.LibraryElementId)
+            if (requestNumber == _shownLibraryElementCount)
             {
-                rect.Height = this.Height;
-                rect.Width = this.Width;
-                _pageTabContainer.SetPage(rect);
-                OnPageTabChanged?.Invoke(_currentController.LibraryElementModel.LibraryElementId, tabType);
+                if (rect != null && controllerId == _currentController.LibraryElementModel.LibraryElementId)
+                {
+                    rect.Height = this.Height;
+                    rect.Width = this.Width;
+                    _pageTabContainer.SetPage(rect);
+                    OnPageTabChanged?.Invoke(_currentController.LibraryElementModel.LibraryElementId, tabType);
+                }
             }
         }
 
@@ -468,6 +478,8 @@ namespace NuSysApp
         /// <param name="libraryElementModelId"></param>
         public async Task ShowLibraryElement(string libraryElementModelId, DetailViewPageTabType pageToShow)
         {
+            _shownLibraryElementCount++;
+            int requestNumber = _shownLibraryElementCount;
             // if we are already showing the library elment model that was selected then just return
             if (!_loaded)
             {
@@ -542,8 +554,11 @@ namespace NuSysApp
                     break;
             }
 
-            // show the passed in page on the detail viewer
-            await ShowTabType(pageToShow);
+            if (requestNumber == _shownLibraryElementCount)
+            {
+                // show the passed in page on the detail viewer
+                await ShowTabType(pageToShow, requestNumber);
+            }
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
