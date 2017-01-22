@@ -64,6 +64,8 @@ namespace NuSysApp
         public BaseMediaPlayer VideoPlayer => xVideoPlayer;
         public AudioPlayer AudioPlayer => xAudioPlayer;
 
+        public Keyboard Keyboard => xKeyboard;
+
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
 
@@ -112,6 +114,15 @@ namespace NuSysApp
             _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
             xFullScreenImageViewer.Visibility = Visibility.Collapsed;
+
+
+            xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
+        }
+
+        private void Keyboard_KeyboardKeyPressed(object sender, KeyArgs args)
+        {
+            SessionController.Instance.FocusManager.ManualFireKeyPressed(args);
+
         }
 
         /// <summary>
@@ -140,6 +151,7 @@ namespace NuSysApp
             xUndoButton.MoveTo(location);
             xUndoButton.Activate(action);
         }
+
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
@@ -1601,5 +1613,7 @@ namespace NuSysApp
 
             xAddRegionMenu.Visibility = Visibility.Collapsed;
         }
+
+
     }
 }

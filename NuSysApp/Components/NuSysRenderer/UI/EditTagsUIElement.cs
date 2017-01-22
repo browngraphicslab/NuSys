@@ -69,9 +69,9 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             Background = Colors.Transparent;
         }
 
-        private void AutoSuggest_KeyPressed(Windows.UI.Core.KeyEventArgs args)
+        private void AutoSuggest_KeyPressed(KeyArgs args)
         {
-            if (args.VirtualKey == VirtualKey.Enter)
+            if (args.Key == VirtualKey.Enter)
             {
                 AddKeyword();
             }

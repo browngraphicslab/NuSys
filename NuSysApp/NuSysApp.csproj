@@ -381,7 +381,6 @@
       <DependentUpon>ReadonlyFloatingMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SessionSettingsData.cs" />
-    <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\ISpeakable.cs" />
@@ -616,6 +615,15 @@
       <DependentUpon>DetailViewFullScreenImageViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\FreeFormElementViewModelFactory.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Keyboard.xaml.cs">
+      <DependentUpon>Keyboard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\KeyboardKey.xaml.cs">
+      <DependentUpon>KeyboardKey.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Keypad.xaml.cs">
+      <DependentUpon>Keypad.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Wrapper\IRegionHideable.cs" />
@@ -911,6 +919,7 @@
     <Compile Include="Util\IInkController.cs" />
     <Compile Include="Util\InkUtil.cs" />
     <Compile Include="Util\INusysDisposable.cs" />
+    <Compile Include="Util\KeyArgs.cs" />
     <Compile Include="Util\LibraryElementExtensions.cs" />
     <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\IModable.cs" />
@@ -1274,6 +1283,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\DetailViewFullScreenImageViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Keyboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\KeyboardKey.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Keypad.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

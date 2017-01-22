@@ -17,7 +17,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
-using NuSysApp.Components.Misc.SpeechToTextUI;
 using SharpDX;
 using Color = Windows.UI.Color;
 using Point = Windows.Foundation.Point;
