@@ -66,7 +66,8 @@ namespace NuSysApp
                 Width = Width,
                 Height = 40,
                 TabHeight = 40,
-                Underlined = true
+                Underlined = true,
+                MaxTabs = 7
             };
             AddChild(_mainTabContainer);
 

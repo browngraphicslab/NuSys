@@ -148,6 +148,11 @@ namespace NuSysApp
         /// </summary>
         public bool Underlined { get; set; }
 
+        /// <summary>
+        /// The max number of tabs that can be shown in the tab container
+        /// </summary>
+        public int? MaxTabs { get; set; }
+
         public TabContainerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // initialize the _tabList and the layout managers
@@ -211,6 +216,10 @@ namespace NuSysApp
 
             if (equivalentTab != null)
             {
+                // remove the tab and add it to the end so it is the most recently used
+                _tabList.Remove(equivalentTab);
+                _tabList.Add(equivalentTab);
+
                 if (showTab)
                 {
                     CurrentlySelectedTab = equivalentTab;
@@ -222,6 +231,12 @@ namespace NuSysApp
             var button = InitializeNewTab(tab, title);
             _tabList.Add(button);
             _tabStackLayoutManager.AddElement(button);
+
+            // if we have more than max tabs, remove the least recently used tab
+            if (MaxTabs != null && _tabList.Count > MaxTabs.Value)
+            {
+                RemoveTab(_tabList[0].Tab, false);
+            }
 
             // add the handlers for the button getting selected and closed
             button.OnSelected += Button_OnSelected;
