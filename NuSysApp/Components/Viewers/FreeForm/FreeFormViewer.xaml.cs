@@ -1372,7 +1372,17 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
             }
-            
+
+            var valid = !float.IsPositiveInfinity(InitialCollection.Camera.S.M11) &&
+                          !float.IsNegativeInfinity(InitialCollection.Camera.S.M11);
+            valid &= !float.IsPositiveInfinity(InitialCollection.Camera.S.M22) &&
+                       !float.IsNegativeInfinity(InitialCollection.Camera.S.M22);
+            Debug.Assert(valid);
+            if (!valid)
+            {
+                return;
+            }
+
             var vm = (FreeFormViewerViewModel)InitialCollection.ViewModel;
             vm.CompositeTransform.TranslateX = InitialCollection.Camera.T.M31;
             vm.CompositeTransform.TranslateY = InitialCollection.Camera.T.M32;
