@@ -17,9 +17,11 @@ namespace NuSysApp
         public Func<T, Uri> ColumnFunction { private get; set; }
 
 
+        public Dictionary<T, ICanvasImage> ImageDict => _dict;
         private Dictionary<T, ICanvasImage> _dict;
 
 
+        public ICanvasImage DefaultImage => _image;
         private ICanvasImage _image;
         public ListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator)
         {
@@ -53,7 +55,7 @@ namespace NuSysApp
 
         }
 
-        private async void LoadCellImageAsync(RectangleUIElement cell, T itemSource)
+        public virtual async void LoadCellImageAsync(RectangleUIElement cell, T itemSource)
         {
             try
             {
