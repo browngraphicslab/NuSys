@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -306,14 +307,22 @@ namespace NuSysApp
 
             if (_dryStrokesTarget != null)
             {
-                using (var dss = _dryStrokesTarget.CreateDrawingSession())
+                try
                 {
-                    dss.Clear(Colors.Transparent);
-                    var dryStrokes = _strokesToDraw;
-                    dss.Transform = Matrix3x2.CreateTranslation((float)(-_imageRect.X * 1000), (float)(-_imageRect.Y * 1000));
-                    dss.DrawInk(dryStrokes);
+                    using (var dss = _dryStrokesTarget.CreateDrawingSession())
+                    {
+                        dss.Clear(Colors.Transparent);
+                        var dryStrokes = _strokesToDraw;
+                        dss.Transform = Matrix3x2.CreateTranslation((float) (-_imageRect.X*1000),
+                            (float) (-_imageRect.Y*1000));
+                        dss.DrawInk(dryStrokes);
 
-                    _needsDryStrokesUpdate = false;
+                        _needsDryStrokesUpdate = false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message, "Failed in inkable ui element draw call");
                 }
             }
 

@@ -43,15 +43,11 @@ namespace NuSysApp
             var itemParentCollectionController =
                 SessionController.Instance.ContentController.GetLibraryElementController(item.ParentCollectionId) as
                     CollectionLibraryElementController;
-            Debug.Assert(itemParentCollectionController != null);///anybody know why this happens?
+            Debug.Assert(itemParentCollectionController != null);///todo anybody know why this happens?
             if (itemParentCollectionController == null)
             {
                 return;
             }
-
-            // get the element controller of the elementModel we clicked on
-            var elementController = itemParentCollectionController.CollectionModel.Children.Where(id => SessionController.Instance.ElementModelIdToElementController.ContainsKey(id) && id == item.Id).Select(id => SessionController.Instance.ElementModelIdToElementController[id]).FirstOrDefault();
-            Debug.Assert(elementController != null);
 
 
             // if the item is in the current collection
@@ -59,12 +55,12 @@ namespace NuSysApp
             {
                 // move the camera to the element the crumb represents
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
-                    elementController.Id);
+                    item.Id);
             }
             else
             {
                 // otherwise enter the collection and try to zoom in on the element model that the crumb represents
-                SessionController.Instance.EnterCollection(itemParentCollectionController.LibraryElementModel.LibraryElementId, elementController?.Id);
+                SessionController.Instance.EnterCollection(itemParentCollectionController.LibraryElementModel.LibraryElementId, item.Id);
             }
         }
 
@@ -95,9 +91,18 @@ namespace NuSysApp
         public override async Task Load()
         {
             var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
-            _aliasList = new List<ElementModel>(req.GetReturnedElementModels().Where(em => SessionController.Instance.ContentController.GetLibraryElementController(em?.ParentCollectionId) != null));
-            CreateAliasList();
+            Task.Run(async delegate
+            {
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
+                _aliasList =
+                    new List<ElementModel>(
+                        req.GetReturnedElementModels()
+                            .Where(
+                                em =>
+                                    SessionController.Instance.ContentController.GetLibraryElementController(
+                                        em?.ParentCollectionId) != null));
+                CreateAliasList();
+            });
             base.Load();
         }
 
@@ -149,9 +154,14 @@ namespace NuSysApp
             var vertical_spacing = 20;
             var horizontal_spacing = 20;
 
-            _listView.Height = Height - 2 * vertical_spacing;
-            _listView.Width = Width - 2 * horizontal_spacing;
-            _listView.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            if (_listView != null)
+            {
+                _listView.Height = Height - 2 * vertical_spacing;
+                _listView.Width = Width - 2 * horizontal_spacing;
+                _listView.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+
+            }
+
             base.Update(parentLocalToScreenTransform);
         }
     }

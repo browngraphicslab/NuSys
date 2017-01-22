@@ -129,6 +129,7 @@ namespace NuSysApp
             {
                 AddChild(SessionController.Instance.ElementModelIdToElementController[id]);
             }
+            RefreshFromTopOfChain();
         }
 
         private void RemoveChildById(string id)
@@ -137,6 +138,7 @@ namespace NuSysApp
             {
                 RemoveChild(SessionController.Instance.ElementModelIdToElementController[id]);
             }
+            RefreshFromTopOfChain();
         }
         public void AddChild( ElementController child )
         {

@@ -69,6 +69,10 @@ namespace NuSysApp
         {
             return null;
         }
-    
+
+        public virtual void Dispose()
+        {
+
+        }
     }
 }

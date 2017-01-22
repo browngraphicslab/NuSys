@@ -274,7 +274,7 @@ namespace NuSysApp
         {
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
-                if (LatestStroke != null)
+                if (LatestStroke != null && StrokesMap.ContainsValue(LatestStroke))
                 {
                     var strokeId = StrokesMap.GetKeyByValue(LatestStroke);
                     StrokesMap[strokeId].Selected = true;

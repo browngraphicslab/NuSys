@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -95,6 +96,7 @@ namespace NuSysApp
                 var bubble = _userIds_toBubbles[userid];
                 RemoveChild(bubble);
                 bubble.Tapped -= ShowUserNameOnBubbleTapped;
+                bubble.DoubleTapped -= UserBubbleOnDoubleTapped;
                 _userIds_toBubbles.Remove(userid);
                 if (_currentUserNameDisplayed_userid == userid)
                 {
@@ -124,13 +126,26 @@ namespace NuSysApp
                 Width = buttonWidth,
                 Height = buttonHeight
             };
+            userBubble.DoubleTapped += UserBubbleOnDoubleTapped;
             userBubble.Tapped += ShowUserNameOnBubbleTapped;
+            
             AddChild(userBubble);
          
             // add the user bubble to the list
             _userIds_toBubbles.Add(user.UserID, userBubble);
 
             _bubblePositionsChanged = true;
+        }
+
+        /// <summary>
+        /// Event handler called whenever a user bubble is double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void UserBubbleOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            Debug.Assert(item is ButtonUIElement);
+            ShowInviteJoinPopup(item as ButtonUIElement, pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
         }
 
         private void CenterUserNameRect()
@@ -166,17 +181,7 @@ namespace NuSysApp
                 var userBubble = interactiveBaseRenderItem as ButtonUIElement;
                 Debug.Assert(userBubble != null);
 
-                _currentUserNameDisplayed_userid =
-                    _userIds_toBubbles.Where(kv => kv.Value == userBubble).Select(kv => kv.Key).FirstOrDefault();
-                if(_currentUserNameDisplayed_userid != WaitingRoomView.UserID)
-                {
-                    var flyout = new FlyoutPopup(SessionController.Instance.NuSessionView, Canvas);
-                    flyout.AddFlyoutItem("Join", JoinOnTappedEvent, Canvas);
-                    flyout.AddFlyoutItem("Invite", InviteOnTappedEvent, Canvas);
-                    SessionController.Instance.NuSessionView.AddChild(flyout);
-                    flyout.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y - flyout.FlyoutItemHeight * 2);
-                }
-
+                ShowInviteJoinPopup(userBubble, pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
             }
             else
             {
@@ -220,6 +225,30 @@ namespace NuSysApp
                 _userNameRect.IsVisible = true;
                 _currentUserNameDisplayed_userid = user_id;
 
+            }
+        }
+
+        /// <summary>
+        /// private method to make the user buble invite and join flyouts appear.
+        /// Pass is the user buble instance as well as the x and y coordinates of the popup.
+        /// The coordinates should be obtainiable throuhg a canvas pointer activating this method
+        /// </summary>
+        /// <param name="bubble"></param>
+        /// <param name="xCoordinate"></param>
+        /// <param name="yCoordinate"></param>
+        private void ShowInviteJoinPopup(ButtonUIElement bubble, float xCoordinate, float yCoordinate)
+        {
+            _currentUserNameDisplayed_userid =
+                _userIds_toBubbles.Where(kv => kv.Value == bubble).Select(kv => kv.Key).FirstOrDefault();
+            Debug.Assert(_currentUserNameDisplayed_userid != null);
+
+            if (_currentUserNameDisplayed_userid != null && _currentUserNameDisplayed_userid != WaitingRoomView.UserID)
+            {
+                var flyout = new FlyoutPopup(SessionController.Instance.NuSessionView, Canvas);
+                flyout.AddFlyoutItem("Join", JoinOnTappedEvent, Canvas);
+                flyout.AddFlyoutItem("Invite", InviteOnTappedEvent, Canvas);
+                SessionController.Instance.NuSessionView.AddChild(flyout);
+                flyout.Transform.LocalPosition = new Vector2(xCoordinate, yCoordinate - flyout.FlyoutItemHeight * 2);
             }
         }
 
