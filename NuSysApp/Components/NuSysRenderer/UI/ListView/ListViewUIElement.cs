@@ -480,6 +480,7 @@ namespace NuSysApp
         public override void ScrollBarPositionChanged(object source, float position)
         {
             SetPosition(position);
+            _scrollVelocity = 0;
 
         }
 

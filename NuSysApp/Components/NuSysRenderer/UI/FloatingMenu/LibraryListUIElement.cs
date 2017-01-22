@@ -238,7 +238,7 @@ namespace NuSysApp
         /// <returns></returns>
         private bool ApplySearchTextFilter(LibraryElementModel lem)
         {
-            var search = _searchBar.Text;
+            var search = _searchBar.Text.ToLower();
             if (string.IsNullOrEmpty(search))
             {
                 return true;

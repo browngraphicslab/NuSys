@@ -285,8 +285,6 @@ namespace NuSysApp
 
             // if the item is private and the collection we are adding it to is public then don't add it
             if ((lec.LibraryElementModel.AccessType == NusysConstants.AccessType.Private && CollectionLibraryElementModel.AccessType == NusysConstants.AccessType.Public) ||
-                // if the item is the collection we are adding it to then don't add it
-                lec.LibraryElementModel.LibraryElementId == CollectionLibraryElementModel.LibraryElementId ||
                 // if the itme is private and the collection we are adding it to is public then don't add it
                 (lec.LibraryElementModel.AccessType == NusysConstants.AccessType.Private && CollectionLibraryElementModel.AccessType == NusysConstants.AccessType.ReadOnly) ||
                 // if the collection we are adding it to is read only and we are not the owner of it then don't add it
@@ -295,6 +293,14 @@ namespace NuSysApp
                 SessionController.Instance.NuSessionView.ShowPrivateOnPublicPopup();
                 return;
             }
+
+            // if the item is the collection we are adding it to then don't add it
+            if (lec.LibraryElementModel.LibraryElementId == CollectionLibraryElementModel.LibraryElementId)
+            {
+                SessionController.Instance.NuSessionView.ShowDraggingCollectionToCollectionPopup();
+                return;
+            }
+            
 
             // create a new add element to collection request
             var newElementRequestArgs = new NewElementRequestArgs

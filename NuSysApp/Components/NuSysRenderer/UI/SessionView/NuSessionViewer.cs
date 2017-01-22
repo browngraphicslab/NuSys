@@ -337,6 +337,11 @@ namespace NuSysApp
             AddChild(popup);
         }
 
+        public void ShowDraggingCollectionToCollectionPopup()
+        {
+            var popup = new CenteredPopup(this, Canvas, "You cannot put this collection on itself.");
+            AddChild(popup);
+        }
         /// <summary>
 
         /// show both the breadcrumb trail window and the back to waiting room button
@@ -501,6 +506,8 @@ namespace NuSysApp
             _settingsMenu.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X + _settingsButton.Width / 2 - _settingsMenu.Width / 2, _settingsButton.Height + _settingsButton.Transform.LocalPosition.Y + 15);
 
         }
+
+
 
         /// <summary>
         /// Method to call to make the current workspace have the read-only ui.
