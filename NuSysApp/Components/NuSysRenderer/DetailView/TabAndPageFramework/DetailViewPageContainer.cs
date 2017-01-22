@@ -344,13 +344,23 @@ namespace NuSysApp
                 }
             } else
             {
-
-                DeleteLibraryElementRequest request = new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                if (request.WasSuccessful() == true)
+                // if the thing we are deleting is the collection we are currently in, do not delete
+                if (_currentController.LibraryElementModel ==
+                    SessionController.Instance.CurrentCollectionLibraryElementModel)
                 {
-                    request.DeleteLocally();
+                    var deleteFailed = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "You cannot delete the collection you are currently in!");
+                    SessionController.Instance.NuSessionView.AddChild(deleteFailed);
+                }
+                else
+                {
+                    DeleteLibraryElementRequest request =
+                        new DeleteLibraryElementRequest(_currentController.LibraryElementModel.LibraryElementId);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    if (request.WasSuccessful() == true)
+                    {
+                        request.DeleteLocally();
 
+                    }
                 }
             }
 
