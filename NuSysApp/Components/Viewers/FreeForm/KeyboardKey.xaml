@@ -9,7 +9,9 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid Background ="BlueViolet" >
-        <TextBlock x:Name="xTextBlock"  Text="{Binding TextExposedInXaml}" HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBlock>
+    <Grid x:Name="xMainGrid"  Background ="Gray" >
+        <TextBlock x:Name="xTextBlock" Foreground="White"  HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBlock>
+        <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Left" VerticalAlignment ="Top"></TextBlock>
+
     </Grid>
 </UserControl>

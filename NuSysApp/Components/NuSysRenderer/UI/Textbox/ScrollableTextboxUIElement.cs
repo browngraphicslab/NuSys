@@ -851,13 +851,24 @@ namespace NuSysApp
             {
                 _caret.IsVisible = true;
                 var keyboardCaps = new KeyboardCapabilities();
+
+
+                if (
+                    SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager
+                        .LastInteractionType == CanvasInteractionManager.InteractionType.Touch)
+                {
+                    SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
+                }
+
                 if (keyboardCaps.KeyboardPresent == 0)
                 {
+
+
                     if (
                         SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager
                             .LastInteractionType == CanvasInteractionManager.InteractionType.Touch)
                     {
-                        SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
+                        //SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
                     }
                 }
 

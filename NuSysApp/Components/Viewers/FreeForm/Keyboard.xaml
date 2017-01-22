@@ -30,6 +30,11 @@
             </Setter>
         </Style>
 
+        <Style TargetType="local:KeyboardKey">
+            <Setter Property="Margin" Value="4"/>
+        </Style>
+
+
 
     </UserControl.Resources>
 
@@ -101,21 +106,16 @@
                     <ColumnDefinition Width="0"/>
                     <ColumnDefinition Width="1.55*"/>
                 </Grid.ColumnDefinitions>
-                <local:KeyboardKey />
-                <Button Grid.Column="1" CommandParameter="A" Content="a" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="2" CommandParameter="S" Content="s" HorizontalAlignment="Stretch" Click="NormalButton_Click" />
-                <Button Grid.Column="3" CommandParameter="D" Content="d" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="4" CommandParameter="F" Content="f" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="5" CommandParameter="G" Content="g" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="6" CommandParameter="H" Content="h" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="7" CommandParameter="J" Content="j" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="8" CommandParameter="K" Content="k" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="9" CommandParameter="L" Content="l" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="12" CommandParameter="ENTER" HorizontalAlignment="Stretch" Padding="10" Click="NormalButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Enter"/>
-                    </StackPanel>
-                </Button>
+                <local:KeyboardKey  Grid.Column="1" KeyValue="A"  KeyText="a" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" ></local:KeyboardKey>
+                <local:KeyboardKey Grid.Column="2" KeyValue="S" KeyText="s" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" />
+                <local:KeyboardKey Grid.Column="3" KeyValue="D" KeyText="d" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="4" KeyValue="F" KeyText="f" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="5" KeyValue="G" KeyText="g" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="6" KeyValue="H" KeyText="h" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="7" KeyValue="J" KeyText="j" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="8" KeyValue="K" KeyText="k" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="9" KeyValue="L" KeyText="l" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="12" KeyValue="ENTER" KeyText="Enter" HorizontalAlignment="Stretch" Padding="10" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" />
 
             </Grid>
             <Grid Grid.Row="4">
@@ -136,16 +136,16 @@
                 <Button x:Name="xLShift" Grid.Column="0" CommandParameter="LSHIFT" Click="LShift_OnClick">
                     <Path Fill="#FF333333" Stretch="Fill" Width="28" Height="24" Data="F1M269.5,262C269.026,262,268.552,262.168,268.171,262.505L259.671,270.505C259.05,271.057,258.835,271.935,259.131,272.71C259.425,273.487,260.169,274,261,274L265,274L265,278C265,279.104,265.896,280,267,280L272,280C273.104,280,274,279.104,274,278L274,274L278,274C278.81,274,279.538,273.513,279.849,272.766C280.157,272.018,279.986,271.158,279.415,270.585L270.914,262.586C270.524,262.197,270.013,262,269.5,262 M269.5,264L278,272L272,272L272,278L267,278L267,272L261,272L269.5,264"/>
                 </Button>
-                <Button Grid.Column="1" CommandParameter="Z" Content="z" HorizontalAlignment="Stretch" Click="NormalButton_Click" />
-                <Button Grid.Column="2" CommandParameter="X" Content="x" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="3" CommandParameter="C" Content="c" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="4" CommandParameter="V" Content="v" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="5" CommandParameter="B" Content="b" HorizontalAlignment="Stretch" PointerReleased="Button_OnPointerReleased" Tapped="Button_OnTapped"/>
-                <Button Grid.Column="6" CommandParameter="N" Content="n" HorizontalAlignment="Stretch" PointerReleased="Button_OnPointerReleased" Tapped="Button_OnTapped"/>
-                <Button Grid.Column="7" CommandParameter="M" Content="m" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="8" CommandParameter="," Content="," HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="9" CommandParameter="." Content="." HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
-                <Button Grid.Column="11" CommandParameter="-" Content="-" HorizontalAlignment="Stretch"  Click="NormalButton_Click"/>
+                <local:KeyboardKey Grid.Column="1" KeyValue="Z" KeyText="z" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="2" KeyValue="X" KeyText="x" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="3" KeyValue="C" KeyText="c" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="4" KeyValue="V" KeyText="v" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="5" KeyValue="B" KeyText="b" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="6" KeyValue="N" KeyText="n" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="7" KeyValue="M" KeyText="m" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="8" KeyValue="," KeyText="," HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="9" KeyValue="." KeyText="." HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="11" KeyValue="-" KeyText="-" HorizontalAlignment="Stretch"  PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
 
             </Grid>
             <Grid Grid.Row="5">
@@ -161,7 +161,7 @@
                 <ToggleButton x:Name="x123Toggle1" Grid.Column="0" Grid.ColumnSpan="2" ClickMode="Press" Content="&amp;123" Click="ToggleButton_Click"/>
                 <Button Grid.Column="2"  CommandParameter="CTRL" Content="Ctrl"/>
                 <Button Grid.Column="3" CommandParameter="SPACE" Content=" " Click="NormalButton_Click"/>
-                <Button Grid.Column="4" CommandParameter="ALT" Content="Alt" Click="ButtonBase_OnClick"/>
+                <Button Grid.Column="4" CommandParameter="ALT" Content="Alt" Click="Alt_OnClick"/>
                 <ToggleButton  x:Name="x123Toggle2" Grid.Column="5" Grid.ColumnSpan="2" Command="{Binding Path=PressAndHold}" CommandParameter="IGNORE" Content="&amp;123"  Click="ToggleButton_Click"/>
             </Grid>
         </Grid>

@@ -24,9 +24,6 @@ namespace NuSysApp
     public sealed partial class Keyboard : UserControl
     {
 
-        private VirtualKey _key;
-
-
 
         /// <summary>
         /// the event that will be fired whenever a key is pressed that should add a new character to the listener.
@@ -98,7 +95,7 @@ namespace NuSysApp
             {":", (VirtualKey) 186},
             {";", (VirtualKey) 186},
             {"\\", (VirtualKey) 220},
-             {"[", (VirtualKey) 219},
+            {"[", (VirtualKey) 219},
             {"]", (VirtualKey) 221},
 
 
@@ -116,8 +113,8 @@ namespace NuSysApp
             {(VirtualKey) 191, "/"},
             {VirtualKey.Subtract, "-"},
             {VirtualKey.Add, "+"},
-            {(VirtualKey) 188,","},
-            {(VirtualKey) 190,"." },
+            {(VirtualKey) 188, ","},
+            {(VirtualKey) 190, "."},
             {(VirtualKey) 220, "\\"},
             {(VirtualKey) 186, ";"},
             {(VirtualKey) 222, "'"},
@@ -126,6 +123,7 @@ namespace NuSysApp
 
 
         };
+
         public static BiDictionary<VirtualKey, string> ShiftKeyToChars = new BiDictionary<VirtualKey, string>()
         {
             {VirtualKey.Number0, ")"},
@@ -140,11 +138,11 @@ namespace NuSysApp
             {VirtualKey.Number9, "("},
             {VirtualKey.Subtract, "_"},
             {VirtualKey.Add, "="},
-            {(VirtualKey)191, "?"},
+            {(VirtualKey) 191, "?"},
             {(VirtualKey) 220, "|"},
             {(VirtualKey) 186, ":"},
-            {(VirtualKey) 188,"<"},
-            {(VirtualKey) 190,">" },
+            {(VirtualKey) 188, "<"},
+            {(VirtualKey) 190, ">"},
             {(VirtualKey) 219, "{"},
             {(VirtualKey) 221, "}"},
 
@@ -168,6 +166,9 @@ namespace NuSysApp
             set { _showCapitalAlphabeticalKeyboard = value; }
         }
 
+
+        private HashSet<KeyboardKey> _pressedKeys;
+
         public Keyboard()
         {
             this.InitializeComponent();
@@ -188,9 +189,9 @@ namespace NuSysApp
             }
 
         }
-       
 
-    private void ChangeAlphabeticalCase(string buttonString)
+
+        private void ChangeAlphabeticalCase(string buttonString)
         {
             Regex upperCaseRegex = new Regex("[A-Z]");
             Regex lowerCaseRegex = new Regex("[a-z]");
@@ -200,16 +201,18 @@ namespace NuSysApp
                 Grid grid = elem as Grid;
                 if (grid != null)
                 {
-                    foreach (UIElement uiElement in grid.Children)  //iterate the single rows
+                    foreach (UIElement uiElement in grid.Children) //iterate the single rows
                     {
                         btn = uiElement as Button;
                         if (btn != null) // if button contains only 1 character
                         {
                             if (btn.Content.ToString().Length == 1)
                             {
-                                if (upperCaseRegex.Match(btn.Content.ToString()).Success) // if the char is a letter and uppercase
+                                if (upperCaseRegex.Match(btn.Content.ToString()).Success)
+                                    // if the char is a letter and uppercase
                                     btn.Content = btn.Content.ToString().ToLower();
-                                else if (lowerCaseRegex.Match(buttonString).Success) // if the char is a letter and lower case
+                                else if (lowerCaseRegex.Match(buttonString).Success)
+                                    // if the char is a letter and lower case
                                     btn.Content = btn.Content.ToString().ToUpper();
                             }
 
@@ -224,7 +227,7 @@ namespace NuSysApp
 
         private void KeyClicked(string command)
         {
-            
+
             if (command == null)
             {
                 Debug.Fail("Woops");
@@ -250,8 +253,8 @@ namespace NuSysApp
 
                 key = _charsToKeys[command];
 
-                
-                KeyboardKeyPressed?.Invoke(this, new KeyArgs() { Key = key, Pressed = true });
+
+                KeyboardKeyPressed?.Invoke(this, new KeyArgs() {Key = key, Pressed = true});
 
             }
         }
@@ -317,8 +320,8 @@ namespace NuSysApp
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
 
-        
-    }
+
+        }
 
         private void Keyboard_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
@@ -372,5 +375,37 @@ namespace NuSysApp
         {
 
         }
-    }
+
+        private void Key_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            SelectKey(key);
+
+        }
+
+
+        private void Key_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            KeyClicked(key.KeyValue);
+            UnselectKey(key);
+
+        }
+
+        private void Key_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            UnselectKey(key);
+        }
+
+        private void SelectKey(KeyboardKey key)
+        {
+            key.Select();
+        }
+
+        private void UnselectKey(KeyboardKey key)
+        {
+            key.Unselect();
+        }
+}
 }
