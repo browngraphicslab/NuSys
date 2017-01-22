@@ -610,6 +610,11 @@ namespace NuSysApp
                 return;
             }
 
+            if (_freeFormViewer.Selections.Count() == 1 && _freeFormViewer.Selections.First().ViewModel == null)
+            {
+                _freeFormViewer.Selections.Clear();
+            }
+
             if (_freeFormViewer.Selections.Count == 0)
                 PanZoomed?.Invoke(center, deltaTranslation, deltaZoom);
             else

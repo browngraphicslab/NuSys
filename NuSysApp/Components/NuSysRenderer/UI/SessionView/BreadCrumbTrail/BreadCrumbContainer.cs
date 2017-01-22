@@ -141,6 +141,7 @@ namespace NuSysApp
 
             _breadCrumbData.Add(newCrumb);
             ComputeScrollHandleSize();
+            _horizontalScrollBar.Position = 1 - _horizontalScrollBar.Range;
             refreshUI = true;
         }
 

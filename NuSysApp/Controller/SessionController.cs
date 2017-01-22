@@ -122,6 +122,8 @@ namespace NuSysApp
         /// bool representing if the shift key is held
         /// </summary>
         public bool ShiftHeld { get; set; }
+        public bool CapitalLock { get; set; }
+
 
         public FreeFormViewerViewModel ActiveFreeFormViewer
         {

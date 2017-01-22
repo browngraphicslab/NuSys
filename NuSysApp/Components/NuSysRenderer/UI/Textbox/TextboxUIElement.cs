@@ -247,22 +247,25 @@ namespace NuSysApp
 
             if (Text != null)
             {
-                Debug.Assert(Width - 2 * (BorderWidth + UIDefaults.XTextPadding) >= 0 && Height- 2 * (BorderWidth + UIDefaults.YTextPadding) >= 0, "these must be greater than zero or drawText crashes below");
+                var validSize = Width - 2*(BorderWidth + UIDefaults.XTextPadding) >= 0 &&
+                                Height - 2*(BorderWidth + UIDefaults.YTextPadding) >= 0;
 
+                Debug.Assert(validSize, "these must be greater than zero or drawText crashes below");
 
-                // update the font size based on the accessibility settings
-                CanvasTextFormat.FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale;
+                if (validSize)
+                {
+                    // update the font size based on the accessibility settings
+                    CanvasTextFormat.FontSize = FontSize * (float)SessionController.Instance.SessionSettings.TextScale;
 
-                // draw the text within the proper bounds
-                var x = BorderWidth + UIDefaults.XTextPadding;
-                var y = BorderWidth + UIDefaults.YTextPadding;
-                var width = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
-                var height = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
-                ds.DrawText(Text, new Rect(x, y,width, height),TextColor, CanvasTextFormat);
+                    // draw the text within the proper bounds
+                    var x = BorderWidth + UIDefaults.XTextPadding;
+                    var y = BorderWidth + UIDefaults.YTextPadding;
+                    var width = Width - 2 * (BorderWidth + UIDefaults.XTextPadding);
+                    var height = Height - 2 * (BorderWidth + UIDefaults.YTextPadding);
+                    ds.DrawText(Text, new Rect(x, y, width, height), TextColor, CanvasTextFormat);
+                }
             }
-
             ds.Transform = orgTransform;
         }
-
     }
 }
