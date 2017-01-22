@@ -44,7 +44,7 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" CommandParameter="ESC" Content="Esc" Height="50" Width="80" Click="FunctionButton_Click"/>
+            <Button Grid.Column="0" CommandParameter="ESC" Content="Esc" Height="50" Width="80" />
         </Grid>
         <Grid  x:Name="xABCKeyboard" Grid.Row="1" VerticalAlignment="Stretch"  >
             <Grid.RowDefinitions>
@@ -101,7 +101,7 @@
                     <ColumnDefinition Width="0"/>
                     <ColumnDefinition Width="1.55*"/>
                 </Grid.ColumnDefinitions>
-                <local:KeyboardKey ></local:KeyboardKey>
+                <local:KeyboardKey />
                 <Button Grid.Column="1" CommandParameter="A" Content="a" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
                 <Button Grid.Column="2" CommandParameter="S" Content="s" HorizontalAlignment="Stretch" Click="NormalButton_Click" />
                 <Button Grid.Column="3" CommandParameter="D" Content="d" HorizontalAlignment="Stretch" Click="NormalButton_Click"/>
@@ -133,7 +133,7 @@
                     <ColumnDefinition Width="0"/>
                     <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="xLShift" Grid.Column="0" CommandParameter="LSHIFT" Click="XLShift_OnClick">
+                <Button x:Name="xLShift" Grid.Column="0" CommandParameter="LSHIFT" Click="LShift_OnClick">
                     <Path Fill="#FF333333" Stretch="Fill" Width="28" Height="24" Data="F1M269.5,262C269.026,262,268.552,262.168,268.171,262.505L259.671,270.505C259.05,271.057,258.835,271.935,259.131,272.71C259.425,273.487,260.169,274,261,274L265,274L265,278C265,279.104,265.896,280,267,280L272,280C273.104,280,274,279.104,274,278L274,274L278,274C278.81,274,279.538,273.513,279.849,272.766C280.157,272.018,279.986,271.158,279.415,270.585L270.914,262.586C270.524,262.197,270.013,262,269.5,262 M269.5,264L278,272L272,272L272,278L267,278L267,272L261,272L269.5,264"/>
                 </Button>
                 <Button Grid.Column="1" CommandParameter="Z" Content="z" HorizontalAlignment="Stretch" Click="NormalButton_Click" />
@@ -159,9 +159,9 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <ToggleButton x:Name="x123Toggle1" Grid.Column="0" Grid.ColumnSpan="2" ClickMode="Press" Content="&amp;123" Click="ToggleButton_Click"/>
-                <Button Grid.Column="2"  CommandParameter="CTRL" Content="Ctrl" Click="FunctionButton_Click"/>
+                <Button Grid.Column="2"  CommandParameter="CTRL" Content="Ctrl"/>
                 <Button Grid.Column="3" CommandParameter="SPACE" Content=" " Click="NormalButton_Click"/>
-                <Button Grid.Column="4" CommandParameter="ALT" Content="Alt" Click="FunctionButton_Click"/>
+                <Button Grid.Column="4" CommandParameter="ALT" Content="Alt" Click="ButtonBase_OnClick"/>
                 <ToggleButton  x:Name="x123Toggle2" Grid.Column="5" Grid.ColumnSpan="2" Command="{Binding Path=PressAndHold}" CommandParameter="IGNORE" Content="&amp;123"  Click="ToggleButton_Click"/>
             </Grid>
         </Grid>
@@ -254,7 +254,7 @@
                     <ColumnDefinition Width="0"/>
                     <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Command="{Binding Path=PressAndHold}" CommandParameter="LSHIFT">
+                <Button Grid.Column="0" CommandParameter="LSHIFT" Click="LShift_OnClick">
                     <Path Fill="#FF333333" Stretch="Fill" Width="28" Height="24" Data="F1M269.5,262C269.026,262,268.552,262.168,268.171,262.505L259.671,270.505C259.05,271.057,258.835,271.935,259.131,272.71C259.425,273.487,260.169,274,261,274L265,274L265,278C265,279.104,265.896,280,267,280L272,280C273.104,280,274,279.104,274,278L274,274L278,274C278.81,274,279.538,273.513,279.849,272.766C280.157,272.018,279.986,271.158,279.415,270.585L270.914,262.586C270.524,262.197,270.013,262,269.5,262 M269.5,264L278,272L272,272L272,278L267,278L267,272L261,272L269.5,264"/>
                 </Button>
                 <Button Grid.Column="1" CommandParameter="." Content="." HorizontalAlignment="Stretch"  Click="NormalButton_Click"/>

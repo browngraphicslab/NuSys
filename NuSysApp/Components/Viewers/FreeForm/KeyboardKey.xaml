@@ -7,10 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    d:DesignWidth="400">
 
-    <Grid Background ="BlueViolet">
-        <TextBox Text="{Binding KeyText}" HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBox>
+    <Grid Background ="BlueViolet" >
+        <TextBlock x:Name="xTextBlock"  Text="{Binding TextExposedInXaml}" HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBlock>
     </Grid>
 </UserControl>

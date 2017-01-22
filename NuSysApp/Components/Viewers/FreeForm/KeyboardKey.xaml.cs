@@ -20,8 +20,15 @@ namespace NuSysApp
     public sealed partial class KeyboardKey : UserControl
     {
 
+        public string TextExposedInXaml
+        {
+            get { return xTextBlock.Text; }
+
+            set { xTextBlock.Text = value; }
+        }
 
 
+        public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("TextExposedInXaml", typeof(string), typeof(KeyboardKey), null);
 
         public KeyboardKey()
         {

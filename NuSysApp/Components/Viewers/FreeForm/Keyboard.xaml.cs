@@ -188,33 +188,7 @@ namespace NuSysApp
             }
 
         }
-
-        private void FunctionButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            if (button != null)
-            {
-                switch (button.CommandParameter.ToString())
-                {
-                    case "LSHIFT":
-                        ChangeAlphabeticalCase(button.Content?.ToString());
-                        break;
-
-                    case "ALT":
-                    case "CTRL":
-                        break;
-
-                    case "RETURN":
-                        break;
-
-                    case "BACK":
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        }
+       
 
     private void ChangeAlphabeticalCase(string buttonString)
         {
@@ -351,10 +325,7 @@ namespace NuSysApp
 
         }
 
-        private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
 
-        }
 
         public void LosePseudoFocus()
         {
@@ -386,16 +357,18 @@ namespace NuSysApp
             }
         }
 
-        private void XLShift_OnClick(object sender, RoutedEventArgs e)
+
+        private void LShift_OnClick(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
 
             ChangeAlphabeticalCase(button.Content?.ToString());
-            
+
             SessionController.Instance.ShiftHeld = ShowCapitalAlphabeticalKeyboard;
         }
 
-        private void BackButton_OnClick(object sender, RoutedEventArgs e)
+
+        private void Alt_OnClick(object sender, RoutedEventArgs e)
         {
 
         }
