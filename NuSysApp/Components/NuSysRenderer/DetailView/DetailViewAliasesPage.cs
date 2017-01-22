@@ -95,9 +95,18 @@ namespace NuSysApp
         public override async Task Load()
         {
             var req = new GetAliasesOfLibraryElementRequest(_controller.LibraryElementModel.LibraryElementId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
-            _aliasList = new List<ElementModel>(req.GetReturnedElementModels().Where(em => SessionController.Instance.ContentController.GetLibraryElementController(em?.ParentCollectionId) != null));
-            CreateAliasList();
+            Task.Run(async delegate
+            {
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
+                _aliasList =
+                    new List<ElementModel>(
+                        req.GetReturnedElementModels()
+                            .Where(
+                                em =>
+                                    SessionController.Instance.ContentController.GetLibraryElementController(
+                                        em?.ParentCollectionId) != null));
+                CreateAliasList();
+            });
             base.Load();
         }
 
@@ -149,9 +158,14 @@ namespace NuSysApp
             var vertical_spacing = 20;
             var horizontal_spacing = 20;
 
-            _listView.Height = Height - 2 * vertical_spacing;
-            _listView.Width = Width - 2 * horizontal_spacing;
-            _listView.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+            if (_listView != null)
+            {
+                _listView.Height = Height - 2 * vertical_spacing;
+                _listView.Width = Width - 2 * horizontal_spacing;
+                _listView.Transform.LocalPosition = new Vector2(horizontal_spacing, vertical_spacing);
+
+            }
+
             base.Update(parentLocalToScreenTransform);
         }
     }
