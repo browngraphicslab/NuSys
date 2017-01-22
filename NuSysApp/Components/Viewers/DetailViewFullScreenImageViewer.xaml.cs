@@ -39,6 +39,26 @@ namespace NuSysApp
             color.A = 210;
             xCanvas.Background = new SolidColorBrush(color);
             xCanvas.DoubleTapped += DoubleTapped;
+            xImage.ImageOpened += XImageOnOpened;
+        }
+
+        /// <summary>
+        /// dispose method shouldn't need to be called, but will correectly dispose and remoev handlers if this class is disposed
+        /// </summary>
+        public void Dispose()
+        {
+            xCanvas.DoubleTapped -= DoubleTapped;
+            xImage.Loaded -= XImageOnOpened;
+        }
+
+        /// <summary>
+        /// event handler called whenever the image loads a new image;
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="routedEventArgs"></param>
+        private void XImageOnOpened(object sender, RoutedEventArgs routedEventArgs)
+        {
+            ResetImage();
         }
 
         /// <summary>
@@ -57,12 +77,33 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
-            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
+
             Debug.Assert(transform != null);
-            transform.ScaleX = 1;
-            transform.ScaleY = 1;
-            transform.TranslateX = (xCanvas.Width - xImage.ActualWidth) / 2;
-            transform.TranslateY = (xCanvas.Height - xImage.ActualHeight) / 2;
+            if (transform == null)
+            {
+                return;
+            }
+            double scale;
+            var screenRatio = xCanvas.ActualWidth/xCanvas.ActualHeight;
+
+            if (xImage.ActualWidth > xImage.ActualHeight * screenRatio)
+            {
+                scale = xCanvas.ActualWidth/xImage.ActualWidth;
+                scale /= 2;
+                transform.TranslateX = xCanvas.ActualWidth * .25;
+                transform.TranslateY = xCanvas.ActualHeight * .25;
+            }
+            else
+            {
+                scale = xCanvas.ActualHeight / xImage.ActualHeight;
+                scale /= 2;
+                transform.TranslateX = (xCanvas.ActualWidth - (xImage.ActualWidth * scale))/2;
+                transform.TranslateY = xCanvas.ActualHeight * .25;
+            }
+            transform.ScaleX = scale;
+            transform.ScaleY = scale;
+
             transform.Rotation = 0;
         }
 
@@ -121,13 +162,13 @@ namespace NuSysApp
 
         private void XCanvas_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             Debug.Assert(transform != null);
         }
 
         private void XCanvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             Debug.Assert(transform != null);
 
             /*
@@ -203,7 +244,7 @@ namespace NuSysApp
 
         private void XImage_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             Debug.Assert(transform != null);
 
             //transform.CenterX = e.Position.X;
@@ -216,7 +257,7 @@ namespace NuSysApp
 
         private void XImage_OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-            var transform = (xImage.RenderTransform as TransformGroup) .Children.First() as CompositeTransform;
+            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
             var compositeTransform = transform;
             var center = e.GetCurrentPoint(xImage).Position;
