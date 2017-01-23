@@ -336,8 +336,12 @@ namespace NuSysApp
                 ds.DrawRectangle(elementRect, Colors.Black, 1f, _strokeStyle);
             }
 
-            var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
+            var controller = ViewModel?.Controller?.LibraryElementController?.ContentDataController as CollectionContentDataController;
             Debug.Assert(controller != null);
+            if (controller == null)
+            {
+                return;
+            }
             var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
 
             if (controller?.CollectionModel?.Shape?.ShapePoints == null &&
