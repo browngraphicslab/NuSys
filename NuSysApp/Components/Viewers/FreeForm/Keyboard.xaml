@@ -167,13 +167,13 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <local:KeyboardKey x:Name="x123Toggle1" Grid.Column="0"  KeyText="&amp;123" PointerPressed="AlphanumericToggle_OnPointerPressed" />
+                <local:KeyboardKey x:Name="x123Toggle1" Grid.Column="0"  KeyText="&amp;123" PointerPressed="Special_OnPointerPressed" />
                 <local:KeyboardKey Grid.Column="1" KeyValue="CONTROL" KeyText="Ctrl" PointerPressed="ControlKey_OnPointerPressed" PointerReleased="ControlKey_OnPointerReleased"  PointerExited="ControlKey_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="2" KeyValue="ALT" KeyText="Alt" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="3" KeyValue="SPACE" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="4" KeyValue="LEFT" KeyText="&lt;"  PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="5" KeyValue="RIGHT"  KeyText="&gt;" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
-                <local:KeyboardKey  x:Name="x123Toggle2" Grid.Column="6"  KeyText="&amp;123" PointerPressed="AlphanumericToggle_OnPointerPressed"/>
+                <local:KeyboardKey  x:Name="x123Toggle2" Grid.Column="6"  KeyText="&amp;123" PointerPressed="Special_OnPointerPressed"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="1" x:Name="xNumKeyboard"  Margin="0,0,0,0" Visibility ="Collapsed">
@@ -286,11 +286,11 @@
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
                 <local:KeyboardKey Grid.Column="1" KeyValue="CONTROL" KeyText="Ctrl" PointerPressed="ControlKey_OnPointerPressed" PointerReleased="ControlKey_OnPointerReleased"  PointerExited="ControlKey_OnPointerExited"/>
-                <local:KeyboardKey x:Name="xabcToggle1"  Grid.Column="0" KeyText="ABC"  PointerPressed="AlphanumericToggle_OnPointerPressed"/>
+                <local:KeyboardKey x:Name="xabcToggle1"  Grid.Column="0" KeyText="ABC"  PointerPressed="Alphabetical_OnPointerPressed"/>
                 <local:KeyboardKey Grid.Column="3" KeyValue="SPACE"  PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <Button Grid.Column="4" CommandParameter="ALT" Content="Alt" />
                 <Button Grid.Column="5" CommandParameter="LMENU" Content="Menu" />
-                <local:KeyboardKey x:Name="xabcToggle2"  Grid.Column="6" KeyText="ABC"  PointerPressed="AlphanumericToggle_OnPointerPressed"/>
+                <local:KeyboardKey x:Name="xabcToggle2"  Grid.Column="6" KeyText="ABC"  PointerPressed="Alphabetical_OnPointerPressed"/>
 
             </Grid>
         </Grid>
