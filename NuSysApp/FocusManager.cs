@@ -154,12 +154,17 @@ namespace NuSysApp
 
         }
 
-        /// <summary>
-        /// Gets all the parents of a base render item
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        private List<BaseRenderItem> GetParents(BaseRenderItem item)
+       public void ManualFireKeyReleased(KeyArgs args)
+     {
+         OnKeyReleased?.Invoke(args);
+     }
+
+    /// <summary>
+    /// Gets all the parents of a base render item
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private List<BaseRenderItem> GetParents(BaseRenderItem item)
         {
             List<BaseRenderItem> parents = new List<BaseRenderItem>();
             while (item.Parent != null)
