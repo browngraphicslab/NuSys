@@ -117,6 +117,12 @@ namespace NuSysApp
 
 
             xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
+            xKeyboard.KeyboardKeyReleased += XKeyboard_KeyboardKeyReleased;
+        }
+
+        private void XKeyboard_KeyboardKeyReleased(object sender, KeyArgs args)
+        {
+            SessionController.Instance.FocusManager.ManualFireKeyReleased(args);
         }
 
         private void Keyboard_KeyboardKeyPressed(object sender, KeyArgs args)

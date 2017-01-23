@@ -110,6 +110,8 @@ namespace NuSysApp
             ActiveFocusElement = null;
         }
 
+
+
         /// <summary>
         /// Changes the focus to the passed in item. The passed in itme becomes the ActiveFocusElement.
         /// If the passed in item is the ActiveFocusElement, or is not focusable, then nothing happens.
@@ -154,6 +156,10 @@ namespace NuSysApp
 
         }
 
+        public void ManualFireKeyReleased(KeyArgs args)
+        {
+            OnKeyReleased?.Invoke(args);
+        }
         /// <summary>
         /// Gets all the parents of a base render item
         /// </summary>

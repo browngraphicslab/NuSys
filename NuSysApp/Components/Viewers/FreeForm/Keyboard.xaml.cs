@@ -31,7 +31,10 @@ namespace NuSysApp
         /// </summary>
         public event EventHandler<KeyArgs> KeyboardKeyPressed;
 
+        public event EventHandler<KeyArgs> KeyboardKeyReleased;
 
+
+        #region dicts
         private static BiDictionary<string, VirtualKey> _charsToKeys = new BiDictionary<string, VirtualKey>()
         {
             {"A", VirtualKey.A},
@@ -86,17 +89,21 @@ namespace NuSysApp
             {"SPACE", VirtualKey.Space},
             {"BACK", VirtualKey.Back},
             {"ENTER", VirtualKey.Enter},
+            {"CONTROL", VirtualKey.Control},
             {"-", VirtualKey.Subtract},
             {"+", VirtualKey.Add},
             {"/", (VirtualKey) 191},
             {"=", VirtualKey.Add},
             {"'", (VirtualKey) 222},
-            {"DOUBLEAPOSTOPHRE", (VirtualKey) 222},
+            {"\"", (VirtualKey) 222},
             {":", (VirtualKey) 186},
             {";", (VirtualKey) 186},
             {"\\", (VirtualKey) 220},
             {"[", (VirtualKey) 219},
             {"]", (VirtualKey) 221},
+            {"LEFT", VirtualKey.Left},
+            {"RIGHT", VirtualKey.Right},
+
 
 
 
@@ -145,10 +152,13 @@ namespace NuSysApp
             {(VirtualKey) 190, ">"},
             {(VirtualKey) 219, "{"},
             {(VirtualKey) 221, "}"},
+             {(VirtualKey) 222, "\""},
+
 
 
         };
-
+        #endregion dicts
+        /*
         private bool _showNumericKeyboard;
 
         public bool ShowNumericKeyboard
@@ -165,8 +175,19 @@ namespace NuSysApp
             get { return _showCapitalAlphabeticalKeyboard; }
             set { _showCapitalAlphabeticalKeyboard = value; }
         }
+        */
 
+        public enum KeyboardMode
+        {
+            LowerCaseAlphabetical,
+            UpperCaseAlphabeticalTapped,
+            UpperCaseAlphabeticalHeld,
+            Special,
+            AlphabeticalControl,
+            SpecialControl
+        }
 
+        public KeyboardMode CurrentMode { set; get; }
         private HashSet<KeyboardKey> _pressedKeys;
 
         public Keyboard()
@@ -174,28 +195,15 @@ namespace NuSysApp
             this.InitializeComponent();
 
             this.RenderTransform = new CompositeTransform();
-
-            ShowNumericKeyboard = false;
-            ShowCapitalAlphabeticalKeyboard = false;
+            CurrentMode = KeyboardMode.LowerCaseAlphabetical;
 
         }
-
-        private void NormalButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            if (button != null)
-            {
-                KeyClicked(button.CommandParameter.ToString());
-            }
-
-        }
-
 
         private void ChangeAlphabeticalCase(string buttonString)
         {
             Regex upperCaseRegex = new Regex("[A-Z]");
             Regex lowerCaseRegex = new Regex("[a-z]");
-            Button btn;
+            KeyboardKey key;
             foreach (UIElement elem in xABCKeyboard.Children) //iterate the main grid
             {
                 Grid grid = elem as Grid;
@@ -203,25 +211,23 @@ namespace NuSysApp
                 {
                     foreach (UIElement uiElement in grid.Children) //iterate the single rows
                     {
-                        btn = uiElement as Button;
-                        if (btn != null) // if button contains only 1 character
+                        key = uiElement as KeyboardKey;
+                        if (key != null) // if button contains only 1 character
                         {
-                            if (btn.Content.ToString().Length == 1)
+                            if (key.KeyText.Length == 1)
                             {
-                                if (upperCaseRegex.Match(btn.Content.ToString()).Success)
+                                if (upperCaseRegex.Match(key.KeyText).Success)
                                     // if the char is a letter and uppercase
-                                    btn.Content = btn.Content.ToString().ToLower();
+                                    key.KeyText = key.KeyText.ToLower();
                                 else if (lowerCaseRegex.Match(buttonString).Success)
                                     // if the char is a letter and lower case
-                                    btn.Content = btn.Content.ToString().ToUpper();
+                                    key.KeyText = key.KeyText.ToUpper();
                             }
 
                         }
                     }
                 }
             }
-
-            ShowCapitalAlphabeticalKeyboard = !ShowCapitalAlphabeticalKeyboard;
 
         }
 
@@ -247,19 +253,24 @@ namespace NuSysApp
                 }
                 else
                 {
-                    SessionController.Instance.ShiftHeld = ShowCapitalAlphabeticalKeyboard;
+                    if (CurrentMode == KeyboardMode.LowerCaseAlphabetical)
+                    {
+                        SessionController.Instance.ShiftHeld = false;
+                    }else if ((CurrentMode == KeyboardMode.UpperCaseAlphabeticalHeld) ||
+                              (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped))
+                    {
+                        SessionController.Instance.ShiftHeld = true;
+
+                    }
                 }
 
-
                 key = _charsToKeys[command];
-
-
                 KeyboardKeyPressed?.Invoke(this, new KeyArgs() {Key = key, Pressed = true});
 
             }
         }
 
-
+        /*
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
@@ -271,14 +282,9 @@ namespace NuSysApp
                 x123Toggle1.Visibility = Visibility.Visible;
                 x123Toggle2.Visibility = Visibility.Visible;
 
-                x123Toggle1.IsChecked = false;
-                x123Toggle2.IsChecked = false;
 
                 xabcToggle1.Visibility = Visibility.Collapsed;
                 xabcToggle2.Visibility = Visibility.Collapsed;
-
-                xabcToggle1.IsChecked = true;
-                xabcToggle2.IsChecked = true;
 
             }
             else
@@ -290,18 +296,12 @@ namespace NuSysApp
                 xabcToggle1.Visibility = Visibility.Visible;
                 xabcToggle2.Visibility = Visibility.Visible;
 
-                x123Toggle1.IsChecked = true;
-                x123Toggle2.IsChecked = true;
-
-
-                xabcToggle1.IsChecked = false;
-                xabcToggle2.IsChecked = false;
             }
 
-            ShowNumericKeyboard = !ShowNumericKeyboard;
 
 
         }
+        */
 
 
         private void Keyboard_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -342,23 +342,7 @@ namespace NuSysApp
             Visibility = Visibility.Visible;
         }
 
-        private void Button_OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            if (button != null)
-            {
-                KeyClicked(button.CommandParameter.ToString());
-            }
-        }
 
-        private void Button_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            if (button != null)
-            {
-                KeyClicked(button.CommandParameter.ToString());
-            }
-        }
 
 
         private void LShift_OnClick(object sender, RoutedEventArgs e)
@@ -367,7 +351,7 @@ namespace NuSysApp
 
             ChangeAlphabeticalCase(button.Content?.ToString());
 
-            SessionController.Instance.ShiftHeld = ShowCapitalAlphabeticalKeyboard;
+            //SessionController.Instance.ShiftHeld = ShowCapitalAlphabeticalKeyboard;
         }
 
 
@@ -398,6 +382,40 @@ namespace NuSysApp
             UnselectKey(key);
         }
 
+
+        #region ctrl
+        private void ControlKey_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            KeyClicked(key.KeyValue);
+            SelectKey(key);
+            ChangeSuperscriptsOnControl();
+
+        }
+
+
+        private void ControlKey_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            UnselectKey(key);
+        }
+        private void ControlKey_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            UnselectKey(key);
+        }
+
+        private void ChangeSuperscriptsOnControl()
+        {
+            xAKey.SuperscriptText = "Select All";
+            xZKey.SuperscriptText = "Undo";
+            xXKey.SuperscriptText = "Cut";
+            xCKey.SuperscriptText = "Copy";
+        }
+        #endregion ctrl
+
+
+
         private void SelectKey(KeyboardKey key)
         {
             key.Select();
@@ -407,5 +425,27 @@ namespace NuSysApp
         {
             key.Unselect();
         }
-}
+
+        private void ActivateKey(KeyboardKey key)
+        {
+            key.Activate();
+        }
+
+        private void DeactivateKey(KeyboardKey key)
+        {
+            key.Deactivate();
+        }
+
+
+
+        private void X_OnClick(object sender, RoutedEventArgs e)
+        {
+            LosePseudoFocus();
+        }
+
+        private void AlphanumericToggle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+
+        }
+    }
 }

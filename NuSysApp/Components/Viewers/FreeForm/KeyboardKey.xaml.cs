@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
+
     public sealed partial class KeyboardKey : UserControl
     {
 
@@ -39,6 +40,8 @@ namespace NuSysApp
         private SolidColorBrush _unselectColor;
         public string KeyValue { set; get; }
 
+        public Canvas Canvas => xContentHolder;
+
         public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("KeyText", typeof(string), typeof(KeyboardKey), null);
         public static readonly DependencyProperty ValueProperty = DependencyProperty.RegisterAttached("KeyValue", typeof(string), typeof(KeyboardKey), null);
 
@@ -48,19 +51,8 @@ namespace NuSysApp
 
             _unselectColor = new SolidColorBrush(Colors.Gray);
             _selectColor = new SolidColorBrush(Colors.Blue);
-
-            PointerPressed += KeyboardKey_PointerPressed;
-            PointerReleased += KeyboardKey_PointerReleased;
         }
 
-        private void KeyboardKey_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-
-        }
-
-        private void KeyboardKey_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-        }
 
         public void Select()
         {
@@ -74,5 +66,17 @@ namespace NuSysApp
 
         }
 
+        public void Deactivate()
+        {
+            IsHitTestVisible = false;
+            xTextBlock.Foreground = new SolidColorBrush(Colors.LightGray);
+        }
+
+        public void Activate()
+        {
+            IsHitTestVisible = true;
+            xTextBlock.Foreground = new SolidColorBrush(Colors.White);
+
+        }
     }
 }

@@ -12,6 +12,6 @@
     <Grid x:Name="xMainGrid"  Background ="Gray" >
         <TextBlock x:Name="xTextBlock" Foreground="White"  HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBlock>
         <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Left" VerticalAlignment ="Top"></TextBlock>
-
+        <Canvas x:Name="xContentHolder" HorizontalAlignment ="Center" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>
