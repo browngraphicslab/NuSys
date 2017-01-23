@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -234,11 +235,12 @@ using Windows.UI.Xaml.Navigation;
 
             private void KeyClicked(string command)
             {
-
-                if (command == null)
+                if (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
                 {
-                    Debug.Fail("Woops");
-                }
+                    CurrentMode = KeyboardMode.LowerCaseAlphabetical;
+                    ChangeAlphabeticalCase();
+                }    
+
                 VirtualKey key;
 
                 if (_charsToKeys.ContainsKey(command))
@@ -254,7 +256,7 @@ using Windows.UI.Xaml.Navigation;
                     }
                     else
                     {
-                        if (CurrentMode == KeyboardMode.LowerCaseAlphabetical)
+                        if ((CurrentMode == KeyboardMode.LowerCaseAlphabetical) || (CurrentMode == KeyboardMode.Special))
                         {
                             SessionController.Instance.ShiftHeld = false;
                         }
@@ -332,11 +334,7 @@ using Windows.UI.Xaml.Navigation;
 
 
 
-            public void LosePseudoFocus()
-            {
-                Visibility = Visibility.Collapsed;
-                SessionController.Instance.ShiftHeld = false;
-            }
+
 
             public void GainPseudoFocus()
             {
@@ -376,10 +374,32 @@ using Windows.UI.Xaml.Navigation;
                 var key = sender as KeyboardKey;
                 ChangeAlphabeticalCase();
 
-                CurrentMode = (CurrentMode == KeyboardMode.LowerCaseAlphabetical)? KeyboardMode.UpperCaseAlphabeticalTapped: KeyboardMode.LowerCaseAlphabetical;
+                if (CurrentMode == KeyboardMode.LowerCaseAlphabetical)
+                {
+                    SelectKey(key);
+                    CurrentMode = KeyboardMode.UpperCaseAlphabeticalTapped;
+                }
+                else
+                {
+                    UnselectKey(key);
+                    CurrentMode = KeyboardMode.LowerCaseAlphabetical;
+                }
 
-                
 
+
+            }
+
+        private void Shift_OnHolding(object sender, HoldingRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            //ChangeAlphabeticalCase();
+
+            if (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
+            {
+                key.KeyColor = new SolidColorBrush(Colors.BlueViolet);
+
+                CurrentMode = KeyboardMode.UpperCaseAlphabeticalHeld;
+            }
 
         }
         #endregion shift
@@ -429,6 +449,15 @@ using Windows.UI.Xaml.Navigation;
             #endregion ctrl
 
 
+
+        public void LosePseudoFocus()
+        {
+            UITask.Run(delegate
+            {
+                Visibility = Visibility.Collapsed;
+                SessionController.Instance.ShiftHeld = false;
+            });
+        }
 
             private void SelectKey(KeyboardKey key)
             {
@@ -491,5 +520,6 @@ using Windows.UI.Xaml.Navigation;
             }
 
 
-    }
+
+        }
     }

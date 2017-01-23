@@ -42,6 +42,12 @@ namespace NuSysApp
                 set { SetValue(AdditionalContentProperty, value); }
             }
 
+            public Brush KeyColor
+            {
+                get { return xMainGrid.Background; }
+
+                set { xMainGrid.Background = value; }
+            }
 
         private SolidColorBrush _selectColor;
             private SolidColorBrush _unselectColor;
@@ -62,13 +68,13 @@ namespace NuSysApp
 
             public void Select()
             {
-                xMainGrid.Background = _selectColor;
+                KeyColor = _selectColor;
 
             }
 
             public void Unselect()
             {
-                xMainGrid.Background = _unselectColor;
+                KeyColor = _unselectColor;
 
             }
 

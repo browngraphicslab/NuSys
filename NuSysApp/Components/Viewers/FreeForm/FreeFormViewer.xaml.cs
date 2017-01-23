@@ -1049,8 +1049,10 @@ namespace NuSysApp
                     AddToSelections(renderItem);
                 }
             }
-
-            CurrentCollection.InkRenderItem.RemoveLatestStroke();
+            if (Selections.Any())
+            {
+                CurrentCollection.InkRenderItem.RemoveLatestStroke();
+            }
             await Task.Delay(500);
             _inkPressed = false;
         }
@@ -1097,7 +1099,7 @@ namespace NuSysApp
         {
             if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds > 500)
             {
-                var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
+                var screenBounds = SessionController.Instance.NuSessionView.GetLocalBounds();
                 var optionsBounds = RenderEngine.InkOptions.GetLocalBounds();
                 var targetPoint = pointer.CurrentPoint;
                 if (targetPoint.X < screenBounds.Width/2)
