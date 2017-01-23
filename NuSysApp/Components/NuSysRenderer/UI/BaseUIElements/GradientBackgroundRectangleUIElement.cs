@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -119,7 +120,19 @@ namespace NuSysApp
 
         private CanvasLinearGradientBrush CreateCanvasLinearGradientBrush()
         {
-            var brush = new CanvasLinearGradientBrush(Canvas, BackgroundGradients.ToArray());
+            CanvasLinearGradientBrush brush = null;
+            try
+            {
+                brush = new CanvasLinearGradientBrush(Canvas, BackgroundGradients.ToArray());
+
+
+            }
+            catch (Exception e)
+            {
+                
+            }
+            Debug.Assert(brush != null, "Should not happen");
+
             switch (Direction)
             {
                 case GradientDirection.TopBottom:
