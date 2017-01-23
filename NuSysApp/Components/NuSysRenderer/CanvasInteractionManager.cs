@@ -284,7 +284,9 @@ namespace NuSysApp
                 if (_pointers.Count == 1)
                 {
                     if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
+                    {
                         Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);
+                    }
                 }
                 if (_pointers.Count >= 2)
                 {
@@ -296,7 +298,9 @@ namespace NuSysApp
                     var dy = _centerPoint.Y - prevCenterPoint.Y;
                     var ds = (float)(_twoFingerDist / prevDist);
                     if (Math.Abs(ds) > 0.9)
+                    {
                         PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
+                    }
                 }
 
                 PointerMoved?.Invoke(pointer);

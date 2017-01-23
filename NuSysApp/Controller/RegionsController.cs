@@ -92,20 +92,23 @@ namespace NuSysApp
             Debug.Assert(regionModel != null);
             var clippingParentId = regionModel.ParentId;
             var contentId = regionModel.ContentDataModelId;
-            Debug.Assert(clippingParentId != null || contentId != null, "This should never be null");
+            Debug.Assert(clippingParentId != null && contentId != null, "This should never be null");
             /*
             if (_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId) && _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId)){
                 return;
             }
             */
-            string outParentIds;
 
             //Removed the region Id from both of the dictionaries
-            _clippingParentIdToRegionLibraryElementIds[clippingParentId].Remove(regionModel.LibraryElementId);
+
+            if (clippingParentId != null)
+            {
+                _clippingParentIdToRegionLibraryElementIds[clippingParentId].Remove(regionModel.LibraryElementId);
+            }
             _contentDataModelIdToRegionLibraryElementIds[contentId].Remove(regionModel.LibraryElementId);
 
             var contentDataController= SessionController.Instance.ContentController.GetContentDataController(contentId);
-            contentDataController.RemoveRegion(regionModel.LibraryElementId);
+            contentDataController?.RemoveRegion(regionModel.LibraryElementId);
         }
 
     }
