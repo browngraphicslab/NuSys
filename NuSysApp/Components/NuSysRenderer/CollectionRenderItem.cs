@@ -165,12 +165,12 @@ namespace NuSysApp
                 foreach (var item in _renderItems3.ToArray())
                     Remove(item);
 
-                _renderItems0.Clear();
-                _renderItems1.Clear();
-                _renderItems2.Clear();
-                _renderItems3.Clear();
+                _renderItems0?.Clear();
+                _renderItems1?.Clear();
+                _renderItems2?.Clear();
+                _renderItems3?.Clear();
 
-                InkRenderItem.Dispose();
+                InkRenderItem?.Dispose();
                 InkRenderItem = null;
 
                 ViewModel = null;

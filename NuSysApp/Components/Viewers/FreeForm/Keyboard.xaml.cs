@@ -358,8 +358,11 @@ namespace NuSysApp
 
         public void LosePseudoFocus()
         {
-            Visibility = Visibility.Collapsed;
-            SessionController.Instance.ShiftHeld = false;
+            UITask.Run(delegate
+            {
+                Visibility = Visibility.Collapsed;
+                SessionController.Instance.ShiftHeld = false;
+            });
         }
 
         public void GainPseudoFocus()

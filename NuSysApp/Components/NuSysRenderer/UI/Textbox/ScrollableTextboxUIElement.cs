@@ -850,16 +850,19 @@ namespace NuSysApp
             if (IsEditable)
             {
                 _caret.IsVisible = true;
-                var keyboardCaps = new KeyboardCapabilities();
-                if (keyboardCaps.KeyboardPresent == 0)
+                UITask.Run(delegate
                 {
-                    if (
-                        SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager
-                            .LastInteractionType == CanvasInteractionManager.InteractionType.Touch)
+                    var keyboardCaps = new KeyboardCapabilities();
+                    if (keyboardCaps.KeyboardPresent == 0)
                     {
-                        SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
+                        if (
+                            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager
+                                .LastInteractionType == CanvasInteractionManager.InteractionType.Touch)
+                        {
+                            SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
+                        }
                     }
-                }
+                });
 
             }
             else

@@ -210,20 +210,25 @@ namespace NuSysApp
 
             if (pointer.DeviceType == PointerDeviceType.Pen)
             {
+
                 OnPenPointerReleased(pointer);
-                
+      
             }
                 
         }
 
         private void OnPenPointerMoved(CanvasPointer pointer)
         {
-            InkDrawing?.Invoke(pointer);
+            SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.RunOnGameLoopThreadAsync(delegate {
+                InkDrawing?.Invoke(pointer);
+            });
         }
 
         private void OnPenPointerPressed(CanvasPointer pointer)
         {
-            InkStarted?.Invoke(pointer);
+            SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.RunOnGameLoopThreadAsync(delegate {
+                InkStarted?.Invoke(pointer);
+            });
         }
 
         private void OnPenPointerReleased(CanvasPointer pointer)
@@ -231,7 +236,9 @@ namespace NuSysApp
             _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
             _finalInkPointer = pointer.PointerId;
             _finalInkPointerUpdated = DateTime.Now;
-            InkStopped?.Invoke(pointer);
+            SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.RunOnGameLoopThreadAsync(delegate {
+                InkStopped?.Invoke(pointer);
+            });
         }
 
         private void OnTouchPointerPressed(CanvasPointer pointer)
@@ -245,7 +252,15 @@ namespace NuSysApp
                     SelectionInkPressed?.Invoke(pointer, latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)));
                 }
             }
-            
+
+            var failure = _collection?.Camera?.LocalToScreenMatrix == null;
+            Debug.Assert(!failure,"do not simply remove this or similiar debug asserts. These will be returned if they fail, but that skips important functionality." +
+                                  "TODO: for all similar debug.asserts, figure out origin of issue.");
+            if (failure)
+            {
+                return;
+            }
+
             _transform = _collection.Camera.LocalToScreenMatrix;
 
             if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
@@ -408,7 +423,9 @@ namespace NuSysApp
                 if (keyState.HasFlag(CoreVirtualKeyStates.Down))
                 {
                     _finalInkPointerUpdated = pointer.LastUpdated;
-                    InkStopped?.Invoke(pointer);
+                    SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.RunOnGameLoopThreadAsync(delegate {
+                        InkStopped?.Invoke(pointer);
+                    });
                     _canvasInteractionManager.PointerMoved -= OnPointerMoved;
                 }
                 _mode = Mode.None;

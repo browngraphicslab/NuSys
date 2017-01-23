@@ -27,6 +27,7 @@ namespace NusysServer
             {
                 throw new Exception("An elementUpdateRequest must have an element ID to update");
             }
+            Debug.WriteLine($"updating element {message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY)} at time {DateTime.UtcNow.Ticks/TimeSpan.TicksPerMillisecond}");
             ForwardMessage(message, senderHandler);
 
             try
