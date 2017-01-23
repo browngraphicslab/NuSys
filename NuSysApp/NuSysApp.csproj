@@ -629,6 +629,7 @@
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Wrapper\IRegionHideable.cs" />
+    <Compile Include="Components\Viewers\KeyboardModeExtensions.cs" />
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
     <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
       <DependentUpon>CollectionListBox.xaml</DependentUpon>

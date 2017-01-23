@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using MyToolkit.UI;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -26,16 +27,16 @@ using Windows.UI.Xaml.Navigation;
         {
 
 
-            /// <summary>
-            /// the event that will be fired whenever a key is pressed that should add a new character to the listener.
-            /// It passes the character pressed.
-            /// </summary>
-            public event EventHandler<KeyArgs> KeyboardKeyPressed;
+        /// <summary>
+        /// the event that will be fired whenever a key is pressed that should add a new character to the listener.
+        /// It passes the character pressed.
+        /// </summary>
+        public event EventHandler<KeyArgs> KeyboardKeyPressed;
 
-            public event EventHandler<KeyArgs> KeyboardKeyReleased;
+        public event EventHandler<KeyArgs> KeyboardKeyReleased;
 
 
-            #region dicts
+        #region dicts
             private static BiDictionary<string, VirtualKey> _charsToKeys = new BiDictionary<string, VirtualKey>()
         {
             {"A", VirtualKey.A},
@@ -153,14 +154,15 @@ using Windows.UI.Xaml.Navigation;
             {(VirtualKey) 190, ">"},
             {(VirtualKey) 219, "{"},
             {(VirtualKey) 221, "}"},
-             {(VirtualKey) 222, "\""},
+                {(VirtualKey) 222, "\""},
 
 
 
         };
-            #endregion dicts
+        #endregion dicts
 
-            public enum KeyboardMode
+        #region keyboardmode enum
+        public enum KeyboardMode
             {
                 LowerCaseAlphabetical,
                 UpperCaseAlphabeticalTapped,
@@ -170,20 +172,38 @@ using Windows.UI.Xaml.Navigation;
                 SpecialControl
             }
 
-            public KeyboardMode CurrentMode { set; get; }
-            private HashSet<KeyboardKey> _pressedKeys;
 
-            public Keyboard()
+        #endregion keyboardmode enum
+        private KeyboardMode _currentMode;
+
+            public KeyboardMode CurrentMode
             {
-                this.InitializeComponent();
-
-                this.RenderTransform = new CompositeTransform();
-                CurrentMode = KeyboardMode.LowerCaseAlphabetical;
-
-
+                set
+                {
+                    xTestingText.Text = value.ToString();
+                    _currentMode = value;
+                }
+                get { return _currentMode; }
             }
 
-        private void ChangeAlphabeticalCase()
+
+         private List<KeyboardKey> _pressedKeys;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Keyboard()
+        {
+            this.InitializeComponent();
+
+            this.RenderTransform = new CompositeTransform();
+            CurrentMode = KeyboardMode.LowerCaseAlphabetical;
+            _pressedKeys = new List<KeyboardKey>();
+
+
+        }
+
+        private void ChangeAlphabeticalToLower()
             {
                 Regex upperCaseRegex = new Regex("[A-Z]");
                 Regex lowerCaseRegex = new Regex("[a-z]");
@@ -203,9 +223,7 @@ using Windows.UI.Xaml.Navigation;
                                     if (upperCaseRegex.Match(key.KeyText).Success)
                                         // if the char is a letter and uppercase
                                         key.KeyText = key.KeyText.ToLower();
-                                    else if (lowerCaseRegex.Match(key.KeyText).Success)
-                                        // if the char is a letter and lower case
-                                        key.KeyText = key.KeyText.ToUpper();
+
                                 }
 
                             }
@@ -214,37 +232,62 @@ using Windows.UI.Xaml.Navigation;
                 }
 
             }
-
-
-
-            private void Keyboard_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private void ChangeAlphabeticalToUpper()
+        {
+            Regex upperCaseRegex = new Regex("[A-Z]");
+            Regex lowerCaseRegex = new Regex("[a-z]");
+            KeyboardKey key;
+            foreach (UIElement elem in xABCKeyboard.Children) //iterate the main grid
             {
+                Grid grid = elem as Grid;
+                if (grid != null)
+                {
+                    foreach (UIElement uiElement in grid.Children) //iterate the single rows
+                    {
+                        key = uiElement as KeyboardKey;
+                        if (key != null) // if button contains only 1 character
+                        {
+                            if (key.KeyText.Length == 1)
+                            {
+                                if (lowerCaseRegex.Match(key.KeyText).Success)
+                                    // if the char is a letter and lower case
+                                    key.KeyText = key.KeyText.ToUpper();
+                            }
 
+                        }
+                    }
+                }
             }
 
-            private void Keyboard_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-            {
-                var transform = this.RenderTransform as CompositeTransform;
-                Debug.Assert(transform != null);
-
-                var compositeTransform = transform;
+        }
 
 
-                compositeTransform.TranslateX += e.Delta.Translation.X;
-                compositeTransform.TranslateY += e.Delta.Translation.Y;
 
-
-            }
-
-            private void Keyboard_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-            {
-
-            }
 
 
 
         #region misc/appearence
+        private void Keyboard_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
 
+        }
+
+        private void Keyboard_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var transform = this.RenderTransform as CompositeTransform;
+            Debug.Assert(transform != null);
+
+            var compositeTransform = transform;
+
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+
+        }
+
+        private void Keyboard_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+        }
 
         public void GainPseudoFocus()
             {
@@ -268,14 +311,23 @@ using Windows.UI.Xaml.Navigation;
             private void SelectKey(KeyboardKey key)
             {
                 key.Select();
+                _pressedKeys.Add(key);
+                xTestingText2.Text = string.Join(", ", _pressedKeys.Select(a => a.KeyText));
             }
 
             private void UnselectKey(KeyboardKey key)
             {
                 key.Unselect();
-            }
+                if (_pressedKeys.Contains(key))
+                {
+                    _pressedKeys.Remove(key);
 
-            private void ActivateKey(KeyboardKey key)
+                }
+                xTestingText2.Text = string.Join(", ", _pressedKeys.Select(a => a.KeyText));
+
+        }
+
+        private void ActivateKey(KeyboardKey key)
             {
                 key.Activate();
             }
@@ -300,7 +352,11 @@ using Windows.UI.Xaml.Navigation;
             private void Key_OnPointerReleased(object sender, PointerRoutedEventArgs e)
             {
                 var key = sender as KeyboardKey;
-                KeyClicked(key.KeyValue);
+                if (_pressedKeys.Contains(key))
+                {
+                    KeyClicked(key.KeyValue);
+
+                }
                 UnselectKey(key);
 
             }
@@ -313,23 +369,7 @@ using Windows.UI.Xaml.Navigation;
 
         private void KeyClicked(string command)
         {
-            if (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
-            {
-               SwitchToLowerCaseAlphabeticalMode();
-            }
 
-            else if (CurrentMode == KeyboardMode.SpecialControl)
-            {
-                SwitchToSpecialMode();
-                ShowSuperscriptsOnControl(false);
-            }
-
-            else if (CurrentMode == KeyboardMode.AlphabeticalControl)
-            {
-                SwitchToLowerCaseAlphabeticalMode();
-                ShowSuperscriptsOnControl(false);
-
-            }
 
             VirtualKey key;
 
@@ -362,6 +402,19 @@ using Windows.UI.Xaml.Navigation;
                 KeyboardKeyPressed?.Invoke(this, new KeyArgs() { Key = key, Pressed = true });
 
             }
+
+            if (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
+            {
+                SwitchFromUpperCaseAlphabeticalMode();
+                SwitchToLowerCaseAlphabeticalMode();
+            }
+
+            if (CurrentMode == KeyboardMode.AlphabeticalControl && command != "CONTROL")
+            {
+                SwitchFromAlphabeticalControlMode();
+                SwitchToLowerCaseAlphabeticalMode();
+            }
+
         }
 
         #endregion generic key handlers
@@ -371,22 +424,25 @@ using Windows.UI.Xaml.Navigation;
         private void Shift_OnPointerPressed(object sender, PointerRoutedEventArgs e)
             {
                 var key = sender as KeyboardKey;
-                ChangeAlphabeticalCase();
 
                 if (CurrentMode == KeyboardMode.LowerCaseAlphabetical)
                 {
-                    SelectKey(key);
-                    CurrentMode = KeyboardMode.UpperCaseAlphabeticalTapped;
+                     SwitchToUpperCaseAlphabeticalTappedMode();
                 }
-                else
+                else if(CurrentMode.IsUpperCase())
                 {
-                    UnselectKey(key);
-                    CurrentMode = KeyboardMode.LowerCaseAlphabetical;
-                }
-
-
+                    SwitchFromUpperCaseAlphabeticalMode();
+                    SwitchToLowerCaseAlphabeticalMode();
+                }else if (CurrentMode == KeyboardMode.AlphabeticalControl)
+                {
+                    SwitchFromAlphabeticalControlMode();
+                    SwitchToLowerCaseAlphabeticalMode();
 
             }
+
+
+
+        }
 
         private void Shift_OnHolding(object sender, HoldingRoutedEventArgs e)
         {
@@ -395,31 +451,36 @@ using Windows.UI.Xaml.Navigation;
 
             if (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
             {
-                key.KeyColor = new SolidColorBrush(Colors.BlueViolet);
-
-                CurrentMode = KeyboardMode.UpperCaseAlphabeticalHeld;
+                SwitchToUpperCaseAlphabeticalHeldMode();
             }
 
         }
+
+
         #endregion shift
 
         #region ctrl
         private void ControlKey_OnPointerPressed(object sender, PointerRoutedEventArgs e)
             {
                 var key = sender as KeyboardKey;
-                KeyClicked(key.KeyValue);
-                SelectKey(key);
-                if (CurrentMode == KeyboardMode.LowerCaseAlphabetical ||
-                    CurrentMode == KeyboardMode.UpperCaseAlphabeticalHeld ||
-                    CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
+
+                if (CurrentMode.IsAlphabetical())
                 {
+                    SelectKey(key);
                     SwitchToAlphabeticalControlMode();
                 }
-                else if(CurrentMode == KeyboardMode.Special)
+                else if (CurrentMode == KeyboardMode.Special)
                 {
                     SwitchToSpecialControlMode();
                 }
-                ShowSuperscriptsOnControl(true);
+                else if (CurrentMode == KeyboardMode.AlphabeticalControl)
+                {
+                    UnselectKey(key);
+                    SwitchFromAlphabeticalControlMode();
+                    SwitchToLowerCaseAlphabeticalMode();
+                }
+                KeyClicked(key.KeyValue);
+
 
 
 
@@ -470,6 +531,13 @@ using Windows.UI.Xaml.Navigation;
 
         private void Special_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            if (CurrentMode.IsUpperCase())
+            {
+                SwitchFromUpperCaseAlphabeticalMode();
+            }else if (CurrentMode == KeyboardMode.AlphabeticalControl)
+            {
+                SwitchFromAlphabeticalControlMode();
+            }
             SwitchToSpecialMode();
         }
 
@@ -480,161 +548,74 @@ using Windows.UI.Xaml.Navigation;
 
         }
 
-            private void SwitchFromSpecial(KeyboardMode newMode)
+        #region switch methods
+
+        private void SwitchFromAlphabeticalControlMode()
         {
-            
-            /*
-            switch (newMode)
-            {
-                case KeyboardMode.LowerCaseAlphabetical:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalHeld:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalTapped:
-                    break;
-                case KeyboardMode.AlphabeticalControl:
-                    break;
-                case KeyboardMode.SpecialControl:
-                    break;
-                case KeyboardMode.Special:
-                    break;
-            }
-            */
+            ShowSuperscriptsOnControl(false);
         }
 
-        private void SwitchFromSpecialControl(KeyboardMode newMode)
+        private void SwitchFromUpperCaseAlphabeticalMode()
         {
-            switch (newMode)
-            {
-                case KeyboardMode.LowerCaseAlphabetical:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalHeld:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalTapped:
-                    break;
-                case KeyboardMode.AlphabeticalControl:
-                    break;
-                case KeyboardMode.SpecialControl:
-                    break;
-                case KeyboardMode.Special:
-                    break;
-            }
-        }
-
-        private void SwitchFromAlphabeticalControl(KeyboardMode newMode)
-        {
-            switch (newMode)
-            {
-                case KeyboardMode.LowerCaseAlphabetical:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalHeld:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalTapped:
-                    break;
-                case KeyboardMode.AlphabeticalControl:
-                    break;
-                case KeyboardMode.SpecialControl:
-                    break;
-                case KeyboardMode.Special:
-                    break;
-            }
-        }
-
-        private void SwitchFromUpperCaseAlphabetical(KeyboardMode newMode)
-        {
-            switch (newMode)
-            {
-                case KeyboardMode.LowerCaseAlphabetical:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalHeld:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalTapped:
-                    break;
-                case KeyboardMode.AlphabeticalControl:
-                    break;
-                case KeyboardMode.SpecialControl:
-                    break;
-                case KeyboardMode.Special:
-                    break;
-            }
-        }
-
-        private void SwitchFromAlphabeticalHeld(KeyboardMode newMode)
-        {
-            switch (newMode)
-            {
-                case KeyboardMode.LowerCaseAlphabetical:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalHeld:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalTapped:
-                    break;
-                case KeyboardMode.AlphabeticalControl:
-                    break;
-                case KeyboardMode.SpecialControl:
-                    break;
-                case KeyboardMode.Special:
-                    break;
-            }
-        }
-
-        private void SwitchFromLowerCaseAlphabetical(KeyboardMode newMode)
-        {
-            switch (newMode)
-            {
-                case KeyboardMode.LowerCaseAlphabetical:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalHeld:
-                    break;
-                case KeyboardMode.UpperCaseAlphabeticalTapped:
-                    break;
-                case KeyboardMode.AlphabeticalControl:
-                    break;
-                case KeyboardMode.SpecialControl:
-                    break;
-                case KeyboardMode.Special:
-                    break;
-            }
+            ChangeAlphabeticalToLower();
         }
 
         private void SwitchToSpecialControlMode()
         {
+            CurrentMode = KeyboardMode.SpecialControl;
+
         }
 
         private void SwitchToAlphabeticalControlMode()
         {
             ShowSuperscriptsOnControl(true);
+            CurrentMode = KeyboardMode.AlphabeticalControl;
         }
 
-            private void SwitchToLowerCaseAlphabeticalMode()
-            {
-                xNumKeyboard.Visibility = Visibility.Collapsed;
-                xABCKeyboard.Visibility = Visibility.Visible;
+        private void SwitchToLowerCaseAlphabeticalMode()
+        {
+            xNumKeyboard.Visibility = Visibility.Collapsed;
+            xABCKeyboard.Visibility = Visibility.Visible;
 
-                ChangeAlphabeticalCase();
+            UnselectKey(xLShift);
 
-                UnselectKey(xLShift);
-            }
-
-
-
-            private void SwitchToUpperCaseAlphabeticalMode()
-            {
-                xNumKeyboard.Visibility = Visibility.Collapsed;
-                xABCKeyboard.Visibility = Visibility.Visible;
-                if (CurrentMode == KeyboardMode.LowerCaseAlphabetical)
-                {
-                    ChangeAlphabeticalCase();
-                }
-            }
-
-            private void SwitchToSpecialMode()
-            {
-                xNumKeyboard.Visibility = Visibility.Visible;
-                xABCKeyboard.Visibility = Visibility.Collapsed;
-            }
+            CurrentMode = KeyboardMode.LowerCaseAlphabetical;
+        }
 
 
+
+        private void SwitchToUpperCaseAlphabeticalTappedMode()
+        {
+            xNumKeyboard.Visibility = Visibility.Collapsed;
+            xABCKeyboard.Visibility = Visibility.Visible;
+
+            SelectKey(xLShift);
+
+            ChangeAlphabeticalToUpper();
+
+            CurrentMode = KeyboardMode.UpperCaseAlphabeticalTapped;
 
         }
+
+        private void SwitchToUpperCaseAlphabeticalHeldMode()
+        {
+            xLShift.KeyColor = new SolidColorBrush(Colors.BlueViolet);
+
+            CurrentMode = KeyboardMode.UpperCaseAlphabeticalHeld;
+        }
+        private void SwitchToSpecialMode()
+        {
+            xNumKeyboard.Visibility = Visibility.Visible;
+            xABCKeyboard.Visibility = Visibility.Collapsed;
+
+            CurrentMode = KeyboardMode.Special;
+        }
+
+
+
+
+        #endregion switch methods
+
+
     }
+}
