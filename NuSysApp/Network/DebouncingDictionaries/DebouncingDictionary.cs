@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -33,7 +34,7 @@ namespace NuSysApp
         /// <summary>
         /// a queue of dictionaries waiting to be updated
         /// </summary>
-        private static ConcurrentQueue<DebouncingDictionary> _debouncingDictionariesToUpdate = new ConcurrentQueue<DebouncingDictionary>();
+        private static ConcurrentDictionary<DebouncingDictionary,byte> _debouncingDictionariesToUpdate = new ConcurrentDictionary<DebouncingDictionary, byte>();
 
         /// <summary>
         /// the delay that the debouncing dicitonary must be left alone before a saving update 
@@ -112,9 +113,9 @@ namespace NuSysApp
             }
 
             //if we are not already timing
-            if (!_debouncingDictionariesToUpdate.Contains(this))
+            if (!_debouncingDictionariesToUpdate.ContainsKey(this))
             {
-                _debouncingDictionariesToUpdate.Enqueue(this);//add itself
+                _debouncingDictionariesToUpdate.TryAdd(this,0);//add itself
             }
             if (!_debouncingDictionariesToSave.Contains(this))
             {
@@ -141,11 +142,9 @@ namespace NuSysApp
                 messageToSend = new Message(_serverDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
                 _serverDict.Clear();
             }
-            Task.Run(async delegate
-            {
-                SendToServer(messageToSend, saveToServer, _id);
-                //call the virtual method that should actually send the update request for each sub classs
-            });
+            var first = DateTime.UtcNow.Ticks;
+            Debug.WriteLine($"sending request at with time delay {(DateTime.UtcNow.Ticks-first)/ TimeSpan.TicksPerMillisecond} with save value:{saveToServer}");
+            SendToServer(messageToSend, saveToServer, _id);
         }
 
         /// <summary>
@@ -156,12 +155,8 @@ namespace NuSysApp
         /// <param name="state"></param>
         private static void DebouncingTimerTick(object state)
         {
-            while (_debouncingDictionariesToUpdate.Count > 0)//send message for every update timer
-            {
-                DebouncingDictionary result;
-                _debouncingDictionariesToUpdate.TryDequeue(out result);
-                result?.SendMessage(false);
-            }
+            _debouncingDictionariesToUpdate.ToArray().ForEach(i => i.Key.SendMessage(false));
+            _debouncingDictionariesToUpdate.Clear();
 
             foreach (var dict in _debouncingDictionariesToSave.ToList())//check every waiting save timer
             {
@@ -171,6 +166,7 @@ namespace NuSysApp
                 }
                 else
                 {
+                    Debug.WriteLine($"TickDifference:{DateTime.Now.Ticks - dict.TicksWhenSaveTimerStarted}");
                     if (DateTime.Now.Ticks - dict.TicksWhenSaveTimerStarted > TimeSpan.TicksPerMillisecond * _milliSecondServerSaveDelay)
                     {
                         dict.SendMessage(true);
