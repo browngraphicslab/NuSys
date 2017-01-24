@@ -35,7 +35,7 @@ namespace NuSysApp
 
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
-        private ConcurrentDictionary<string, ManualResetEvent> _requestEventDictionary = new ConcurrentDictionary<string, ManualResetEvent>();
+        private ConcurrentDictionary<string, byte> _requestEventDictionary = new ConcurrentDictionary<string, byte>();
         public string ServerBaseURI { get; private set; }
         
 
@@ -126,11 +126,10 @@ namespace NuSysApp
                             if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
                                 //if we can untangle a waiting request
                             {
-                                ManualResetEvent outMre;
+                                byte outByte;
                                 _requestEventDictionary.TryRemove(
                                     dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING).ToString(),
-                                    out outMre);
-                                outMre?.Set();
+                                    out outByte);
                             }
                         }
                         else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
@@ -205,12 +204,15 @@ namespace NuSysApp
             Debug.Assert(!message.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
             var mreId = SessionController.Instance.GenerateId();
             message[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = mreId;
-            var mre = new ManualResetEvent(false);
-            _requestEventDictionary.TryAdd(mreId, mre);
+
+            _requestEventDictionary.TryAdd(mreId, 0);
 
             await SendMessageToServer(message).ConfigureAwait(false);
 
-            mre.WaitOne();
+            while (_requestEventDictionary.ContainsKey(mreId))
+            {
+                await Task.Delay(30);
+            }
             if (!_returnMessages.ContainsKey(mreId))
             {
                 return null;//only does this if the request failed
@@ -232,11 +234,10 @@ namespace NuSysApp
             Debug.Assert(message.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
             var mreId = message.GetString(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
             Debug.Assert(_requestEventDictionary.ContainsKey(mreId));
-            ManualResetEvent mre;
-            _requestEventDictionary.TryRemove(mreId, out mre);
-            Debug.Assert(mre != null);
             _returnMessages.TryAdd(mreId, message);
-            mre?.Set();
+            byte outByte;
+            _requestEventDictionary.TryRemove(mreId, out outByte);
+
         }
         
 

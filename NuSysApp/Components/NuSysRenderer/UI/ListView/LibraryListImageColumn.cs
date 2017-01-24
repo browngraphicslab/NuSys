@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,8 +88,15 @@ namespace NuSysApp
                 var cellWidth = cell.Width;
                 var cellHeight = cell.Height;
 
-                var imgWidth = cell.Image.GetBounds(_resourceCreator).Width;
-                var imgHeight = cell.Image.GetBounds(_resourceCreator).Height;
+                var imgBounds = cell?.Image?.GetBounds(_resourceCreator);
+
+                Debug.Assert(imgBounds != null);
+                if (imgBounds == null)
+                {
+                    return;
+                }
+                var imgWidth = imgBounds?.Width;
+                var imgHeight = imgBounds?.Height;
 
                 if (imgWidth < 0 || imgHeight < 0)
                 {
@@ -98,7 +106,7 @@ namespace NuSysApp
                 var newWidth = imgWidth/imgHeight*cellHeight/cellWidth;
                 var newHeight = 1;
 
-                cell.ImageBounds = new Rect(0.5 - newWidth/2, 0, newWidth, newHeight);
+                cell.ImageBounds = new Rect(0.5 - newWidth.Value/2, 0, newWidth.Value, newHeight);
             }
             catch (Exception e)
             {

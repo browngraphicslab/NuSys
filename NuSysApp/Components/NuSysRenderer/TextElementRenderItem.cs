@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -40,7 +41,8 @@ namespace NuSysApp
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
             _strokeStyle = new CanvasStrokeStyle {TransformBehavior = CanvasStrokeTransformBehavior.Fixed};
             _textboxtext = vm.Text;
-            _textBox = new MarkdownConvertingTextbox(this,resourceCreator)
+
+            _textBox = new MarkdownConvertingTextbox(this, resourceCreator)
             {
                 Wrapping = CanvasWordWrapping.WholeWord,
                 TextVerticalAlignment = CanvasVerticalAlignment.Top,
@@ -52,9 +54,9 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            await _textBox.Load();
             await base.Load();
         }
+
 
         public override void Dispose()
         {
@@ -103,10 +105,12 @@ namespace NuSysApp
 
 
 
-        public async override void Draw(CanvasDrawingSession ds)
+        public override void Draw(CanvasDrawingSession ds)
         {
             if (IsDisposed)
                 return;
+
+            //Transform.LocalToScreenMatrix.
 
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
@@ -115,6 +119,7 @@ namespace NuSysApp
             ds.DrawRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Constants.color1, 1f, _strokeStyle);
             
             ds.Transform = orgTransform;
+
             base.Draw(ds);
 
         }

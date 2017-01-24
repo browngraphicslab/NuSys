@@ -354,6 +354,8 @@ namespace NuSysApp
             _mainTextboxLayoutManager.SetSize(Width, Height);
             _mainTextboxLayoutManager.ItemWidth = _displayState == DetailViewTextDisplay.MarkdownAndPlaintext ? Width / 2 : Width;
             _mainTextboxLayoutManager.ArrangeItems();
+            _markdownBox.Width = _mainTextboxLayoutManager.ItemWidth;
+            _markdownBox.Height = _mainTextboxLayoutManager.ItemHeight;
             _overlay.Height = _mainTextBox.Height;
             _overlay.Width = _mainTextBox.Width;
             _overlay.Transform.LocalPosition = _mainTextBox.Transform.LocalPosition;

@@ -14,6 +14,7 @@ using CommonMark;
 using CommonMark.Syntax;
 using Microsoft.Graphics.Canvas.Geometry;
 using NuSysApp.Components.NuSysRenderer.UI.Textbox.Markdown;
+using SharpDX.Direct2D1;
 
 namespace NuSysApp
 {
@@ -86,6 +87,8 @@ namespace NuSysApp
         /// </summary>
         public event ScrollBarUIElement.ScrollBarPositionChangedHandler ScrollBarPositionChanged;
 
+        private CanvasRenderTarget _renderTarget;
+
         /// <summary>
         /// public bool to hide or show the scrollbar and allow or disallow scrolling
         /// </summary>
@@ -107,6 +110,38 @@ namespace NuSysApp
                 _textHtml = CommonMarkConverter.Convert(value);
                 _textLayoutIsDirty = true;
                 base.Text = value;
+            }
+        }
+
+        /// <summary>
+        /// this property override allows us to update the text layout when the size changes
+        /// </summary>
+        public override float Width
+        {
+            get { return base.Width; }
+            set
+            {
+                if (base.Width != value)
+                {
+                    base.Width = value;
+                    _textLayoutIsDirty = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// this property override allows us to update the text layout when the size changes
+        /// </summary>
+        public override float Height
+        {
+            get { return base.Height; }
+            set
+            {
+                if (value != base.Height)
+                {
+                    base.Height = value;
+                    _textLayoutIsDirty = true;
+                }
             }
         }
 
@@ -201,6 +236,7 @@ namespace NuSysApp
             _yOffset = (float) (-position * _canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
             BoundYOffset();
             ScrollBarPositionChanged?.Invoke(this, position);
+            _textLayoutIsDirty = true;
         }
 
         public override void Dispose()
@@ -228,7 +264,44 @@ namespace NuSysApp
         public override Task Load()
         {
             CreateTextResources();
+            UpdateRenderTarget();
             return base.Load();
+        }
+
+        /// <summary>
+        /// private method to actually update the rendered image.
+        /// THis should only be called when the text image needs to be changed.
+        /// </summary>
+        private void UpdateRenderTarget()
+        {
+            _renderTarget?.Dispose();
+            _renderTarget = new CanvasRenderTarget(Canvas,Width,Height);
+
+            using (var dss = _renderTarget.CreateDrawingSession())
+            {
+                dss.Clear(Colors.Transparent);
+                if (Text != null)
+                {
+                    using (
+                        dss.CreateLayer(1,
+                            CanvasGeometry.CreateRectangle(_renderTarget, BorderWidth + UIDefaults.XTextPadding,
+                                BorderWidth + UIDefaults.YTextPadding,
+                                Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
+                                Height - 2 * (BorderWidth + UIDefaults.YTextPadding))))
+                    {
+                        // draw the text within the proper bounds
+                        try
+                        {
+                            dss.DrawTextLayout(_canvasTextLayout, _xOffset + BorderWidth + UIDefaults.XTextPadding,
+                                _yOffset + BorderWidth + UIDefaults.YTextPadding, TextColor);
+                        }
+                        catch (Exception e)
+                        {
+                            //TODO fix this 
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -255,7 +328,7 @@ namespace NuSysApp
         private void CreateCanvasTextLayout()
         {
             // set the canvas text layout to a new canvas text layout
-            _canvasTextLayout = new CanvasTextLayout(Canvas, Text, CanvasTextFormat, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+            _canvasTextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
 
         }
             
@@ -298,6 +371,7 @@ namespace NuSysApp
             {
                 UpdateCanvasLayout();
                 _textLayoutIsDirty = false;
+                UpdateRenderTarget();
             }
 
             if (CheckTextLayoutBoundsEqualDrawBounds() == false)
@@ -310,7 +384,7 @@ namespace NuSysApp
 
             if (_resourcesCreated && _canvasTextLayout != null)
             {
-                _verticalScrollBar.Height = Height - 2 * BorderWidth;
+                _verticalScrollBar.Height = Height - 2*BorderWidth;
                 _verticalScrollBar.Transform.LocalPosition = new Vector2(Width - BorderWidth - _verticalScrollBar.Width,
                     BorderWidth);
 
@@ -323,6 +397,7 @@ namespace NuSysApp
                     _yOffset = 0;
                 }
             }
+
 
             base.Update(parentLocalToScreenTransform);
         }
@@ -405,28 +480,7 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-
-            if (Text != null)
-            {
-                using (
-                    ds.CreateLayer(1,
-                        CanvasGeometry.CreateRectangle(Canvas, BorderWidth + UIDefaults.XTextPadding,
-                            BorderWidth + UIDefaults.YTextPadding,
-                            Width - 2*(BorderWidth + UIDefaults.XTextPadding),
-                            Height - 2*(BorderWidth + UIDefaults.YTextPadding))))
-                {
-                    // draw the text within the proper bounds
-                    try
-                    {
-                        ds.DrawTextLayout(_canvasTextLayout, _xOffset + BorderWidth + UIDefaults.XTextPadding,
-                            _yOffset + BorderWidth + UIDefaults.YTextPadding, TextColor);
-                    }
-                    catch (Exception e)
-                    {
-                        //TODO fix this 
-                    }
-                }
-            }
+            ds.DrawImage(_renderTarget);
 
             ds.Transform = orgTransform;
         }
@@ -434,9 +488,9 @@ namespace NuSysApp
         private void UpdateCanvasLayout()
         {
             _canvasTextLayoutWidth = Width - 2 * (BorderWidth + UIDefaults.XTextPadding) - (_verticalScrollBar.IsVisible ? _verticalScrollBar.Width : 0);
-            _canvasTextLayout.Dispose();
+            _canvasTextLayout?.Dispose();
             _canvasTextLayout = null;
-            _canvasTextLayout = _htmlParser.GetParsedText(_textHtml, _canvasTextLayoutWidth, double.MaxValue);
+            _canvasTextLayout = _htmlParser?.GetParsedText(_textHtml, _canvasTextLayoutWidth, double.MaxValue);
         }
 
 

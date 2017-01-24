@@ -463,7 +463,7 @@ namespace NuSysApp
                 var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
                 var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
                 var displayName = NewDisplayName.Text;
-                Login(username, password, true, displayName);
+                await Login(username, password, true, displayName);
             }
 
         }
@@ -480,7 +480,7 @@ namespace NuSysApp
             var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
 
-            Login(username, password, false);
+            await Login(username, password, false);
         }
 
         /// <summary>
@@ -606,7 +606,7 @@ namespace NuSysApp
                     UITask.Run(async delegate
                     {
                         Tuple<string, string> creds = this.GetLoginCredentials();
-                        Login(creds.Item1, creds.Item2, false);
+                        await Login(creds.Item1, creds.Item2, false);
                     });
                 }
             });

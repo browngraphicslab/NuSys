@@ -165,34 +165,24 @@ namespace NuSysApp
             _alreadyTicking = true;
 
             var array = _debouncingDictionariesToUpdate.ToArray();
-
             _debouncingDictionariesToUpdate.Clear();
-
             array.ForEach(async i => await i.Key.SendMessage(false).ConfigureAwait(false));
 
-            var abStart = DateTime.Now.Ticks;
-            foreach (var dict in _debouncingDictionariesToSave.ToList())//check every waiting save timer
-            {
-                if (dict.Key?.TicksWhenSaveTimerStarted == null)
-                {
-                    byte outByte;
-                    _debouncingDictionariesToSave.TryRemove(dict.Key, out outByte);
-                }
-                else
-                {
-                    if (DateTime.Now.Ticks - dict.Key.TicksWhenSaveTimerStarted > TimeSpan.TicksPerMillisecond * _milliSecondServerSaveDelay)
-                    {
-                        var start = DateTime.Now.Ticks;
-                        byte outByte;
-                        _debouncingDictionariesToSave.TryRemove(dict.Key, out outByte);
-                        //Debug.WriteLine($"delay 1: {(DateTime.Now.Ticks - start)/TimeSpan.TicksPerMillisecond}");
-                        await dict.Key.SendMessage(true).ConfigureAwait(false);
-                        //Debug.WriteLine($"delay 2: {(DateTime.Now.Ticks - start) / TimeSpan.TicksPerMillisecond}");
-                    }
-                }
-            }
+            var nowTicks = DateTime.Now.Ticks;
+            var delay = TimeSpan.TicksPerMillisecond*_milliSecondServerSaveDelay;
+            var saveList = _debouncingDictionariesToSave.Where(d => d.Key?.TicksWhenSaveTimerStarted == null || nowTicks - d.Key.TicksWhenSaveTimerStarted > delay).ToList();
 
-            //Debug.WriteLine($"TOTAL DELAY: {(DateTime.Now.Ticks - abStart) / TimeSpan.TicksPerMillisecond}");
+            int count = 0;
+            foreach(var dict in saveList)//check every waiting save timer
+            {
+                var c = count++;
+
+                byte outByte;
+                _debouncingDictionariesToSave.TryRemove(dict.Key, out outByte);
+
+                await dict.Key.SendMessage(true).ConfigureAwait(false);
+            }
+            
 
             if (_debouncingDictionariesToSave.Count == 0)//if theres nothing waiting, set the timeout to be infinite
             {

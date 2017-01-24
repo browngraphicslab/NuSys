@@ -276,10 +276,12 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
 
             ds.Transform = Transform.LocalToScreenMatrix;
+
+            var makeSmall = Transform.LocalToScreenMatrix.M22 < .06;
             using (ds.CreateLayer(1, _mask))
             { 
                 if (_bmp != null)
-                    ds.DrawImage(_bmp, CroppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
+                    ds.DrawImage(_bmp, CroppedImageTarget, _rectToCropFromContent, 1, makeSmall ? CanvasImageInterpolation.NearestNeighbor : CanvasImageInterpolation.MultiSampleLinear);
                 else 
                     ds.FillRectangle(CroppedImageTarget, Colors.Gray);
 

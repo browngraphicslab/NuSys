@@ -115,6 +115,7 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
+          //  ds.Transform = Matrix3x2.Identity;
 
             // draw the background of the rectangle
             DrawBackground(ds);
@@ -175,9 +176,9 @@ namespace NuSysApp
                 var orgTransform = ds.Transform;
                 ds.Transform = Transform.LocalToScreenMatrix;
 
-                using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
+                using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height))))
                 {
-                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(ResourceCreator));
                 }
 
                 ds.Transform = orgTransform;

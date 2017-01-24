@@ -102,8 +102,11 @@ namespace NuSysApp
 
         public virtual void RemoveChild(BaseRenderItem child)
         {
-            child.Dispose();
-            _children.Remove(child);
+            if (child != null)
+            {
+                child?.Dispose();
+                _children.Remove(child);
+            }
         }
 
         public virtual List<BaseRenderItem> GetChildren()
