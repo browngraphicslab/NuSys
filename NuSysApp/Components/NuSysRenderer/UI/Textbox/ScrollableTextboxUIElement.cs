@@ -18,6 +18,7 @@ using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 
+
 namespace NuSysApp
 {
     public class ScrollableTextboxUIElement : TextboxUIElement
@@ -111,7 +112,7 @@ namespace NuSysApp
         /// <summary>
         /// private helper for public variable character index
         /// </summary>
-        private int _caretCharacterIndex {get;set;}
+        private int _caretCharacterIndex { get; set; }
 
         /// <summary>
         /// The caret character index is the zero based index of the character the caret is to the right of
@@ -277,7 +278,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
-        public ScrollableTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, 
+        public ScrollableTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
             bool scrollVert, bool showScrollBar) : base(parent, resourceCreator)
         {
             _scrollVert = scrollVert;
@@ -402,7 +403,7 @@ namespace NuSysApp
             if (_scrollVert)
             {
                 // change the position of the scrollbar
-                _yOffset -= TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height*(delta > 0 ? -.05 : .05);
+                _yOffset -= TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height * (delta > 0 ? -.05 : .05);
                 BoundYOffset();
                 _updateCaretTransform = true;
                 _updateSelectionRects = true;
@@ -589,7 +590,7 @@ namespace NuSysApp
             UpdateCanvasTextLayout();
             TextChanged?.Invoke(this, text);
         }
-#endregion mouse-input
+        #endregion mouse-input
 
 
         #region keyboard-input
@@ -602,7 +603,8 @@ namespace NuSysApp
             if (args.Key == VirtualKey.Control)
             {
                 _isCtrlPressed = false;
-            } else if (args.Key == VirtualKey.Shift)
+            }
+            else if (args.Key == VirtualKey.Shift)
             {
                 _isShiftPressed = false;
             }
@@ -662,9 +664,9 @@ namespace NuSysApp
                 }
                 // as long as we are not the last character in the document
                 // remove the next character, 
-                else if (CaretCharacterIndex < Text.Length-1)
+                else if (CaretCharacterIndex < Text.Length - 1)
                 {
-                    Text = Text.Remove(CaretCharacterIndex+1, 1);
+                    Text = Text.Remove(CaretCharacterIndex + 1, 1);
                 }
             }
             // Move cursor left
@@ -679,7 +681,7 @@ namespace NuSysApp
                 {
                     // decrement the CaretCharacterIndex
                     CaretCharacterIndex--;
-                }              
+                }
             }
             // Move cursor right
             else if (args.Key == VirtualKey.Right)
@@ -850,6 +852,7 @@ namespace NuSysApp
             if (IsEditable)
             {
                 _caret.IsVisible = true;
+
                 UITask.Run(delegate
                 {
                     var keyboardCaps = new KeyboardCapabilities();
@@ -911,7 +914,7 @@ namespace NuSysApp
             {
                 ds.DrawText(PlaceHolderText, new Rect(BorderWidth + UIDefaults.XTextPadding,
             BorderWidth + UIDefaults.YTextPadding,
-            Width - 2*(BorderWidth + UIDefaults.XTextPadding) - (_verticalScrollbar?.IsVisible ?? false ? _verticalScrollbar.Width : 0), double.MaxValue),
+            Width - 2 * (BorderWidth + UIDefaults.XTextPadding) - (_verticalScrollbar?.IsVisible ?? false ? _verticalScrollbar.Width : 0), double.MaxValue),
             PlaceHolderTextColor, CanvasTextFormat);
             }
         }
@@ -943,7 +946,7 @@ namespace NuSysApp
             {
                 Debug.Assert(Width - 2 * BorderWidth > 0 && Height - 2 * BorderWidth > 0,
                         "these must be greater than zero or drawText crashes below");
-                
+
                 // DrawPlaceHolderText
                 DrawPlaceHolderText(ds);
 
@@ -952,7 +955,7 @@ namespace NuSysApp
                 {
                     ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                         BorderWidth + UIDefaults.YTextPadding + _yOffset,
-                        Width - 2*(BorderWidth + UIDefaults.XTextPadding) -
+                        Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
                         (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0), double.MaxValue),
                         TextColor, CanvasTextFormat);
                 }
@@ -960,7 +963,7 @@ namespace NuSysApp
                 {
                     ds.DrawText(Text, new Rect(BorderWidth + UIDefaults.XTextPadding + _xOffset,
                         BorderWidth + UIDefaults.YTextPadding + _yOffset, double.MaxValue,
-                        Height - 2*(BorderWidth + UIDefaults.YTextPadding)),
+                        Height - 2 * (BorderWidth + UIDefaults.YTextPadding)),
                         TextColor, CanvasTextFormat);
                 }
 
@@ -970,7 +973,7 @@ namespace NuSysApp
                 // Draw the cursor
                 DrawCaret(ds);
             }
-                
+
 
             ds.Transform = orgTransform;
         }
@@ -1050,7 +1053,8 @@ namespace NuSysApp
             {
                 return Math.Abs(_textLayoutWidth - (Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
                                                     (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0))) < .005;
-            } else
+            }
+            else
             {
                 return Math.Abs(_textLayoutHeight - (Height - 2 * (BorderWidth + UIDefaults.YTextPadding))) < .005;
             }
@@ -1133,7 +1137,7 @@ namespace NuSysApp
 
             if (_scrollVert && _loaded)
             {
-                _verticalScrollbar.Height = Height - 2 *BorderWidth;
+                _verticalScrollbar.Height = Height - 2 * BorderWidth;
                 _verticalScrollbar.Transform.LocalPosition = new Vector2(Width - _verticalScrollbar.Width - BorderWidth, BorderWidth);
 
                 // set the position and rang eof the vertical scroll bar
@@ -1149,7 +1153,7 @@ namespace NuSysApp
             // shfit the text so it fills the whole textbox if it can
             if (!_scrollVert && _loaded)
             {
-                if ((Width - 2*BorderWidth - UIDefaults.XTextPadding)/
+                if ((Width - 2 * BorderWidth - UIDefaults.XTextPadding) /
                     TextLayout.LayoutBoundsIncludingTrailingWhitespace.Width >= 1)
                 {
                     _xOffset = 0;
@@ -1161,7 +1165,7 @@ namespace NuSysApp
                 _caret.Update(Transform.LocalToScreenMatrix);
             }
 
-            base.Update(parentLocalToScreenTransform);           
+            base.Update(parentLocalToScreenTransform);
         }
 
         #endregion update
@@ -1215,8 +1219,8 @@ namespace NuSysApp
             }
 
             // get the point we are hit testing
-            var pointToCheck = new Vector2((float) (localPoint.X - UIDefaults.XTextPadding - BorderWidth - _xOffset),
-                                      (float) (localPoint.Y - UIDefaults.YTextPadding - BorderWidth - _yOffset));
+            var pointToCheck = new Vector2((float)(localPoint.X - UIDefaults.XTextPadding - BorderWidth - _xOffset),
+                                      (float)(localPoint.Y - UIDefaults.YTextPadding - BorderWidth - _yOffset));
 
 
             // get the index of the character we clicked on
@@ -1309,7 +1313,7 @@ namespace NuSysApp
                 }
                 catch (ArgumentOutOfRangeException exception)
                 {
-                    
+
                 }
 
 
@@ -1354,7 +1358,7 @@ namespace NuSysApp
             _verticalScrollbar.Position = (float)(-_yOffset / TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
             _verticalScrollbar.Range =
                 (float)
-                    ((Height - 2* ( BorderWidth + UIDefaults.YTextPadding)) /
+                    ((Height - 2 * (BorderWidth + UIDefaults.YTextPadding)) /
                      TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
 
             BoundVerticalScrollBarPosition();
@@ -1389,7 +1393,7 @@ namespace NuSysApp
         /// <param name="position"></param>
         private void _verticalScrollbar_ScrollBarPositionChanged(object source, float position)
         {
-            _yOffset = -position*TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height;
+            _yOffset = -position * TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height;
             BoundYOffset();
             ScrollBarPositionChanged?.Invoke(this, position);
             _updateCaretTransform = true;
@@ -1533,7 +1537,7 @@ namespace NuSysApp
                     ClearSelection();
                 }
                 var text = await dataPackageView.GetTextAsync();
-                
+
                 // make sure we are only using "\n" new lines instead of carriage returns
                 text = NormalizeNewLines(text);
 
@@ -1541,11 +1545,12 @@ namespace NuSysApp
                 // Paste text from clipboard into the text
                 if (CaretCharacterIndex != -1)
                 {
-                    Text = Text.Insert(CaretCharacterIndex+1, text);
-                } else
+                    Text = Text.Insert(CaretCharacterIndex + 1, text);
+                }
+                else
                 {
                     Text = Text.Insert(CaretCharacterIndex + 1, text);
-                }  
+                }
                 CaretCharacterIndex += text.Length;
                 _updateCaretTransform = true;
                 _keepCaretOnScreen = true;
@@ -1589,7 +1594,8 @@ namespace NuSysApp
             if (_scrollVert)
             {
                 return _newLineRegex.Replace(text, Newline);
-            } else
+            }
+            else
             {
                 return _newLineRegex.Replace(text, " ");
             }
@@ -1616,7 +1622,7 @@ namespace NuSysApp
                     _yOffset -= over;
 
                     // then update the caret's transform
-                    _caret.Transform.LocalPosition = new Vector2(_caret.Transform.LocalX, (float) (_caret.Transform.LocalY - over));
+                    _caret.Transform.LocalPosition = new Vector2(_caret.Transform.LocalX, (float)(_caret.Transform.LocalY - over));
                 }
                 // otherwise if the caret's y position is above the top of the textbox
                 else if (caretLocation.Y < UIDefaults.YTextPadding + BorderWidth)
@@ -1628,7 +1634,8 @@ namespace NuSysApp
                     // then update the caret's transform
                     _caret.Transform.LocalPosition = new Vector2(_caret.Transform.LocalX, (float)(_caret.Transform.LocalY + under));
                 }
-            } else
+            }
+            else
             {
                 // otherwise if the caret is greater than the width of the textbox
                 if (caretLocation.X > Width - (UIDefaults.XTextPadding + BorderWidth))
@@ -1638,7 +1645,7 @@ namespace NuSysApp
                     _xOffset -= over;
 
                     // decrement the caret's x location
-                    _caret.Transform.LocalPosition = new Vector2((float) (_caret.Transform.LocalX - over), _caret.Transform.LocalY);
+                    _caret.Transform.LocalPosition = new Vector2((float)(_caret.Transform.LocalX - over), _caret.Transform.LocalY);
                 }
                 else if (caretLocation.X < UIDefaults.XTextPadding)
                 {
@@ -1664,7 +1671,7 @@ namespace NuSysApp
 
             _yOffset = Math.Min(0, _yOffset);
 
-            _yOffset = Math.Max(- (TextLayout.LayoutBounds.Height - Height + 2* (UIDefaults.YTextPadding + BorderWidth)), _yOffset);
+            _yOffset = Math.Max(-(TextLayout.LayoutBounds.Height - Height + 2 * (UIDefaults.YTextPadding + BorderWidth)), _yOffset);
 
 
             // shift the text so it fills the textbox if it can
@@ -1787,9 +1794,9 @@ namespace NuSysApp
             if (virtualKeyCode >= 65 && virtualKeyCode <= 90)
             {
                 var character = key.ToString();
-                return capslock ? character: character.ToLower();
+                return capslock ? character : character.ToLower();
 
-                    
+
             }
             //Take care of numbers
 
@@ -1830,7 +1837,7 @@ namespace NuSysApp
             }
             return "";
         }
-        
+
         /// <summary>
         /// Convert key code to its ascii character/string
         /// </summary>
@@ -1854,15 +1861,15 @@ namespace NuSysApp
             ToUnicodeEx(virtualKeyCode, scanCode, keyboardState, result, 5, 0, inputLocaleIdentifier);
 
             return result.ToString();
-        } 
+        }
 
-    
+
 
         public float GetTextHeight()
         {
             if (_loaded)
             {
-                return (float) (TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height + 2 * (BorderWidth + UIDefaults.YTextPadding));
+                return (float)(TextLayout.LayoutBoundsIncludingTrailingWhitespace.Height + 2 * (BorderWidth + UIDefaults.YTextPadding));
             }
             return float.MinValue;
         }
