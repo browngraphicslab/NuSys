@@ -24,7 +24,7 @@ namespace NusysServer
         //private const string SQLSTRING = "Server=tcp:nureposql.database.windows.net,1433;Database=NuRepo_SQL;User ID=nusys@nureposql;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";
         //Nusys Test
         //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Database=NuSysTest;User ID=nusys@nusystest;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";    /// <summary>
-        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuSysTest;Persist Security Info=False;User ID=nusys@nusystestsql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy;Persist Security Info=False;User ID=nusys@nusystestsql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
 
     /// <summary>
@@ -54,6 +54,14 @@ namespace NusysServer
             //ResetTables(true);
             //SetUpTables();
 
+            //"Update Customers set City=Orders.OrderID FROM Customers join Orders on Orders.CustomerID = Customers.CustomerID  where ShipperId='3'";
+            /*
+            var lib = "library_elements";
+            var cont = "contents";
+            var cmd = MakeCommand($"update {cont} set {cont}.content_type = 'Collection' from {cont} join {lib} on {cont}.content_id={lib}.content_id where {lib}.type='Collection'");
+            var changed = cmd.ExecuteNonQuery();
+            ErrorLog.AddErrorString("ROWS CHANGED: "+changed);
+            */
             TestFunc();
             ErrorLog.AddError(new Exception("Server Starting..."));
         }

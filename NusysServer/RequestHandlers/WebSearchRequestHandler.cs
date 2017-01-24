@@ -58,6 +58,10 @@ namespace NusysServer
                             dh?.Content != null &&
                             (dh.Content.ContentType == NusysConstants.ContentType.Text ||
                              dh.Content.ContentType == NusysConstants.ContentType.Image));
+            if (docs.Count() > 50)
+            {
+                docs = docs.Take(50);
+            }
             var requests = new List<Request>();
             foreach (var doc in docs)
             {
@@ -90,8 +94,11 @@ namespace NusysServer
             });
             senderHandler?.Notify(notification);
 
-
-            await RunTopicModelling(docs.Where(doc => doc.Content.ContentType == NusysConstants.ContentType.Text),senderHandler, searchString);
+            Task.Run(async delegate
+            {
+                await RunTopicModelling(docs.Where(doc => doc.Content.ContentType == NusysConstants.ContentType.Text),
+                    senderHandler, searchString);
+            });
 
         }
 

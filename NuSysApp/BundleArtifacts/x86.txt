@@ -1,5 +1,5 @@
-MainPackage=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.127.0_x86_Debug.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.127.0_scale-100.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.127.0_scale-125.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.127.0_scale-150.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.127.0_scale-400.appx
+MainPackage=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.128.0_x86_Debug.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.128.0_scale-100.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.128.0_scale-125.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.128.0_scale-150.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.128.0_scale-400.appx
