@@ -195,6 +195,7 @@ using MyToolkit.UI;
         public Keyboard()
         {
             this.InitializeComponent();
+            xMainGrid.Background = new SolidColorBrush(Color.FromArgb(255, 26, 26, 26));
 
             this.RenderTransform = new CompositeTransform();
             CurrentMode = KeyboardMode.LowerCaseAlphabetical;
@@ -276,23 +277,50 @@ using MyToolkit.UI;
 
         private void Keyboard_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var transform = this.RenderTransform as CompositeTransform;
-            Debug.Assert(transform != null);
+            var compositeTransform = this.RenderTransform as CompositeTransform;
+            Debug.Assert(compositeTransform != null);
 
-            var compositeTransform = transform;
 
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            //TODO: prevent keyboard from exiting viewable screen
 
         }
 
         private void Keyboard_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            //TODO: prevent keyboard from exiting viewable screen
+            ReturnToScreen();
+        }
+
+        private void ReturnToScreen()
+        {
+            var compositeTransform = this.RenderTransform as CompositeTransform;
+
+            var x = compositeTransform.TranslateX;
+            var y = compositeTransform.TranslateY;
+
+            if (x < 0)
+            {
+                x = 0;
+            }
+            if (y < 0)
+            {
+                y = 0;
+            }
+            if (x + Width > SessionController.Instance.ScreenWidth)
+            {
+                x = SessionController.Instance.ScreenWidth - Width;
+            }
+            if (y + Height > SessionController.Instance.ScreenHeight)
+            {
+                y = SessionController.Instance.ScreenHeight - Height;
+            }
+
+            compositeTransform.TranslateX = x;
+            compositeTransform.TranslateY = y;
+
 
         }
+
         /// <summary>
         /// Makes the keyboard appear
         /// </summary>
@@ -302,8 +330,8 @@ using MyToolkit.UI;
             {
                 SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ClearAllPointers();
                 Visibility = Visibility.Visible;
-                var normalizedWidth = 1000.0/1920;
-                var normalizedHeight = 350.0/1080;
+                var normalizedWidth = 920.0/1920;
+                var normalizedHeight = 337.0/1080;
                 Width = SessionController.Instance.ScreenWidth* normalizedWidth;
                 Height = SessionController.Instance.ScreenHeight* normalizedHeight;
             });

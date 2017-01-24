@@ -10,8 +10,8 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     
-    <Grid x:Name="xMainGrid"  Background ="Gray" >
-        <TextBlock x:Name="xTextBlock" Foreground="White"  HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBlock>
+    <Grid x:Name="xMainGrid"  >
+        <TextBlock x:Name="xTextBlock" Foreground="White" FontSize="22"  Margin="0,4,0,0"  FontWeight="SemiBold"  HorizontalAlignment="Center" VerticalAlignment ="Center"></TextBlock>
         <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Center" VerticalAlignment ="Top"></TextBlock>
         <ContentPresenter Content="{Binding AdditionalContent, ElementName=Self}" />
     </Grid>

@@ -11,34 +11,13 @@
     Height="350" Width="1000">
 
     <UserControl.Resources>
-        <LinearGradientBrush x:Key="SteelBackground" EndPoint="0.5,1.272" StartPoint="0.5,0">
-            <GradientStop Color="#FF9097A3" Offset="0"/>
-            <GradientStop Color="#FF444D5B" Offset="1"/>
-        </LinearGradientBrush>
-
-        <Style TargetType="Button" >
-
-            <Setter Property="Margin" Value="4"/>
-            <Setter Property="FontSize" Value="22"/>
-            <Setter Property="Background" Value="WhiteSmoke"/>
-            <Setter Property ="ClickMode" Value ="Press"></Setter>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <!-- Workaround for ATI video cards that don't render good with dropshadoweffect-->
-                    <RotateTransform Angle="0.00000000001"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <Style TargetType="local:KeyboardKey">
             <Setter Property="Margin" Value="4"/>
         </Style>
 
-
-
     </UserControl.Resources>
 
-    <Grid  Background ="{StaticResource color2}"  HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  >
+    <Grid x:Name="xMainGrid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  >
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
@@ -97,7 +76,7 @@
                 <local:KeyboardKey Grid.Column="9" KeyValue="P" KeyText="p" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey x:Name="xBackKey2" Grid.Column="10" KeyValue="BACK" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited">
                     <local:KeyboardKey.AdditionalContent>
-                        <Path Stretch="Fill" Width="36" Height="24" HorizontalAlignment="Stretch" Data="F1M555.0371,274.4893L552.7871,276.7383L549.9861,273.9373L547.1991,276.7243L545.1131,274.6393L547.9001,271.8523L545.0101,268.9603L547.2601,266.7113L550.1501,269.6023L552.8921,266.8613L554.9761,268.9463L552.2361,271.6883z M555.3751,264.0003L544.8751,264.0003C543.1251,264.1253,535.0001,270.7503,535.0001,272.2503C535.0001,273.7503,543.1251,279.3753,544.8751,279.5003L555.3751,279.5003C558.8751,279.5003,559.3751,277.7093,559.3751,275.5003L559.3751,268.0003C559.3751,265.7913,558.7501,264.0003,555.3751,264.0003" Fill="#FF333333"></Path>
+                        <Path Stretch="Fill" Width="36" Height="24" HorizontalAlignment="Stretch" Data="F1M555.0371,274.4893L552.7871,276.7383L549.9861,273.9373L547.1991,276.7243L545.1131,274.6393L547.9001,271.8523L545.0101,268.9603L547.2601,266.7113L550.1501,269.6023L552.8921,266.8613L554.9761,268.9463L552.2361,271.6883z M555.3751,264.0003L544.8751,264.0003C543.1251,264.1253,535.0001,270.7503,535.0001,272.2503C535.0001,273.7503,543.1251,279.3753,544.8751,279.5003L555.3751,279.5003C558.8751,279.5003,559.3751,277.7093,559.3751,275.5003L559.3751,268.0003C559.3751,265.7913,558.7501,264.0003,555.3751,264.0003" Fill="White"></Path>
                     </local:KeyboardKey.AdditionalContent>
                 </local:KeyboardKey>
             </Grid>
@@ -144,7 +123,7 @@
                     <ColumnDefinition Width="0"/>
                     <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
-                <local:KeyboardKey x:Name="xLShift" Grid.Column="0" PointerPressed="Shift_OnPointerPressed" Holding="Shift_OnHolding">
+                <local:KeyboardKey x:Name="xLShift" Grid.Column="0" PointerPressed="Shift_OnPointerPressed" Holding="Shift_OnHolding" UnselectColor="#4D4D4D">
                     <local:KeyboardKey.AdditionalContent>
                         <Path Fill="White" Stretch="Fill" Width="28" Height="24" Data="F1M269.5,262C269.026,262,268.552,262.168,268.171,262.505L259.671,270.505C259.05,271.057,258.835,271.935,259.131,272.71C259.425,273.487,260.169,274,261,274L265,274L265,278C265,279.104,265.896,280,267,280L272,280C273.104,280,274,279.104,274,278L274,274L278,274C278.81,274,279.538,273.513,279.849,272.766C280.157,272.018,279.986,271.158,279.415,270.585L270.914,262.586C270.524,262.197,270.013,262,269.5,262 M269.5,264L278,272L272,272L272,278L267,278L267,272L261,272L269.5,264"/>
                     </local:KeyboardKey.AdditionalContent>
