@@ -37,8 +37,6 @@ namespace NuSysApp
         private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
         private ConcurrentDictionary<string, byte> _requestEventDictionary = new ConcurrentDictionary<string, byte>();
         public string ServerBaseURI { get; private set; }
-        
-
         public ServerClient()
         {
         }
@@ -237,7 +235,6 @@ namespace NuSysApp
             _returnMessages.TryAdd(mreId, message);
             byte outByte;
             _requestEventDictionary.TryRemove(mreId, out outByte);
-
         }
         
 
