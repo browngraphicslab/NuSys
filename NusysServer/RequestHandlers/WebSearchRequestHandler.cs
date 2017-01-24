@@ -90,11 +90,12 @@ namespace NusysServer
             });
             senderHandler?.Notify(notification);
 
-            Task t = new Task(delegate
+            Task t = new Task(async delegate
             {
-                RunTopicModelling(docs.Where(doc => doc.Content.ContentType == NusysConstants.ContentType.Text),
+                await RunTopicModelling(docs.Where(doc => doc.Content.ContentType == NusysConstants.ContentType.Text),
                     senderHandler, searchString);
             }, TaskCreationOptions.LongRunning);
+            await t.ConfigureAwait(false);
         }
 
         /// <summary>
