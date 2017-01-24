@@ -140,7 +140,17 @@ namespace NuSysApp
                 _addKeyBox.ClearText();
                 _addKeyBox.Text = item.Key;
             }
-
+            else if (item.Key == "Search_Url")
+            {
+                try
+                {
+                    Windows.System.Launcher.LaunchUriAsync(new Uri(item.Values.First()));
+                }
+                catch (Exception e)
+                {
+                    //Todo alert the user?
+                }
+            }
         }
 
         /// <summary>

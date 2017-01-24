@@ -216,6 +216,12 @@ namespace NusysServer
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = dataHolder.LibraryElement.Type;
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = dataHolder.LibraryElement.Title;
 
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_METADATA_KEY] =
+                JsonConvert.SerializeObject(new List<MetadataEntry>()
+                {
+                     new MetadataEntry("Search_Url",new List<string>() {dataHolder?.Url},MetadataMutability.IMMUTABLE)
+                });
+
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY] =
                 JsonConvert.SerializeObject(new List<Keyword>()
                 {

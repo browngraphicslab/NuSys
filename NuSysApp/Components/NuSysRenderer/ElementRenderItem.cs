@@ -223,6 +223,7 @@ namespace NuSysApp
 
             Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
+            _tagRenderItem.IsVisible = SessionController.Instance.SessionSettings.TagsVisible;
 
             _userBubbles.Transform.LocalPosition = new Vector2((float)_vm.Width + 10f, 0);
             _userBubbles.Height = (float)_vm.Height;
@@ -307,7 +308,7 @@ namespace NuSysApp
             var transform = Transform.Parent.LocalToScreenMatrix;
 
             // get a rectangle describing the height and width of the _tagRenderItem
-            var tagsMeasurement = _tagRenderItem.GetLocalBounds();
+            var tagsMeasurement = _tagRenderItem.IsVisible ? _tagRenderItem.GetLocalBounds() :  new Rect(0,0,0,0);
 
             // get the screen point for the upper left point of the element render item
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
@@ -364,6 +365,7 @@ namespace NuSysApp
 
             // get the tagRectangle from the children, and get it's height, if there is no tag rect the height is 0
             var tagRectHeight = _tagRenderItem?.GetLocalBounds().Height ?? 0;
+            tagRectHeight = _tagRenderItem?.IsVisible == true ? tagRectHeight : 0;
 
 
             // transform the local position of the element render item's lower right corner to the screen matrix

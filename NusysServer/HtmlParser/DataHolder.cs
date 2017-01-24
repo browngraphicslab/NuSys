@@ -9,7 +9,7 @@ namespace NusysServer
 {
     public class DataHolder
     {
-
+        public string Url { get; set; }
         public String Title { get; set; }
         public DataHolder(string title)
         {

@@ -47,6 +47,11 @@ namespace NuSysApp
         private ButtonUIElement _readOnlyModeSettingButton;
 
         /// <summary>
+        /// the button for toggling the visibility of keywords on nodes
+        /// </summary>
+        private ButtonUIElement _keywordVisibilityButton;
+
+        /// <summary>
         /// stack layout manager to arrange buttons
         /// </summary>
         private StackLayoutManager _settingsStackLayout;
@@ -75,6 +80,9 @@ namespace NuSysApp
             _dockBreadCrumbsButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_dockBreadCrumbsButton);
 
+            _keywordVisibilityButton = new RectangleButtonUIElement(this, resourceCreator);
+            AddChild(_keywordVisibilityButton);
+
             _textSizeSlider = new SliderUIElement(this, resourceCreator, 1, 10)
             {
                 SliderPosition = (float)((SessionController.Instance.SessionSettings.TextScale - .75)/2),
@@ -99,14 +107,14 @@ namespace NuSysApp
             };
             AddChild(_sliderText);
 
-            MinWidth = 220;
-            MinHeight = 435;
+            MinWidth = 320;
+            MinHeight = 495;
             
             ShowClosable();
 
             _settingsStackLayout = new StackLayoutManager(StackAlignment.Vertical);
             _settingsStackLayout.ItemHeight = _showLinksButton.Height;
-            _settingsStackLayout.ItemWidth = _showLinksButton.Width;
+            _settingsStackLayout.ItemWidth = MinWidth.Value - 20;
             _settingsStackLayout.Spacing = 10;
             _settingsStackLayout.VerticalAlignment = VerticalAlignment.Center;
             _settingsStackLayout.HorizontalAlignment = HorizontalAlignment.Center;
@@ -116,8 +124,10 @@ namespace NuSysApp
             _settingsStackLayout.AddElement(_showMinimapButton);
             _settingsStackLayout.AddElement(_dockBreadCrumbsButton);
             _settingsStackLayout.AddElement(_readOnlyModeSettingButton);
+            _settingsStackLayout.AddElement(_keywordVisibilityButton);
             _settingsStackLayout.AddElement(_textSizeSlider);
             _settingsStackLayout.AddElement(_sliderText);
+            
 
             _resizeElementTitlesButton.Tapped += ResizeElementTitlesButtonOnTapped;
             _showLinksButton.Tapped += ShowLinksButtonOnTapped;
@@ -126,12 +136,15 @@ namespace NuSysApp
             _textSizeSlider.OnSliderMoved += SliderChanged;
             _textSizeSlider.OnSliderMoveCompleted += TextSizeSliderOnOnSliderMoveCompleted;
             _readOnlyModeSettingButton.Tapped += ReadOnlyModeSettingButtonOnTapped;
+            _keywordVisibilityButton.Tapped += KeywordVisibilityButtonOnTapped;
+
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged += SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged += SessionSettingsOnLinkVisibilityChanged;
             SessionController.Instance.SessionSettings.BreadCrumbPositionChanged += SessionSettingsBreadCrumbPositionChanged;
             SessionController.Instance.SessionSettings.MinimapVisiblityChanged += SessionSettingsMinimapVisiblityChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
             SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged += SessionSettingsOnReadOnlyModeSettingChanged;
+            SessionController.Instance.SessionSettings.TagsVisibleChanged += SessionSettingsOnTagsVisibleChanged;
             SetButtonText();
         }
 
@@ -147,12 +160,15 @@ namespace NuSysApp
             _textSizeSlider.OnSliderMoved -= SliderChanged;
             _textSizeSlider.OnSliderMoveCompleted -= TextSizeSliderOnOnSliderMoveCompleted;
             _readOnlyModeSettingButton.Tapped -= ReadOnlyModeSettingButtonOnTapped;
+            _keywordVisibilityButton.Tapped -= KeywordVisibilityButtonOnTapped;
+
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged -= SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged -= SessionSettingsOnLinkVisibilityChanged;
             SessionController.Instance.SessionSettings.BreadCrumbPositionChanged -= SessionSettingsBreadCrumbPositionChanged;
             SessionController.Instance.SessionSettings.MinimapVisiblityChanged -= SessionSettingsMinimapVisiblityChanged;
             SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
             SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged -= SessionSettingsOnReadOnlyModeSettingChanged;
+            SessionController.Instance.SessionSettings.TagsVisibleChanged -= SessionSettingsOnTagsVisibleChanged;
         }
 
         /// <summary>
@@ -178,6 +194,7 @@ namespace NuSysApp
 
             _readOnlyModeSettingButton.ButtonText = "Read Only Windows: " + SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible.ToString();
 
+            _keywordVisibilityButton.ButtonText = "Show Keywords: "+SessionController.Instance.SessionSettings.TagsVisible;
         }
 
         /// <summary>
@@ -243,6 +260,16 @@ namespace NuSysApp
             SetButtonText();
         }
 
+        /// <summary>
+        /// event handler fired whenever the settings for the tag visibility chanegs
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="b"></param>
+        private void SessionSettingsOnTagsVisibleChanged(object sender, bool b)
+        {
+            SetButtonText();
+        }
+
 
         /// <summary>
         /// event handler for when the user changes the slider value in this menu.
@@ -253,6 +280,17 @@ namespace NuSysApp
         private void SliderChanged(SliderUIElement sender, double currSliderPosition)
         {
             SessionController.Instance.SessionSettings.TextScale = Math.Round(Math.Max(currSliderPosition * 2,0) + .75,1);
+        }
+
+
+        /// <summary>
+        /// Event handler fired wheneve thekeyword visiblity button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void KeywordVisibilityButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionSettings.TagsVisible = !SessionController.Instance.SessionSettings.TagsVisible;
         }
 
 
