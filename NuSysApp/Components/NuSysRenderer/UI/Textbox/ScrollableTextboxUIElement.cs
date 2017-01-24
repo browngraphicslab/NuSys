@@ -855,8 +855,6 @@ namespace NuSysApp
 
                 UITask.Run(delegate
                 {
-                    SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
-
                     var keyboardCaps = new KeyboardCapabilities();
                     if (keyboardCaps.KeyboardPresent == 0)
                     {
