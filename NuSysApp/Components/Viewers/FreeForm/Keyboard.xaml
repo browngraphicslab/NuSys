@@ -50,8 +50,8 @@
         </Grid>
 
         <Grid x:Name="xDraggableBar" Grid.Row="0"  Background="Red"  ManipulationMode="TranslateX,TranslateY"  ManipulationStarted="Keyboard_OnManipulationStarted" ManipulationDelta="Keyboard_OnManipulationDelta" ManipulationCompleted="Keyboard_OnManipulationCompleted">
-            <TextBox x:Name="xTestingText" HorizontalAlignment="Left"></TextBox>
-            <TextBox x:Name="xTestingText2" HorizontalAlignment="Center"></TextBox>
+            <TextBlock x:Name="xTestingText" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock x:Name="xTestingText2" HorizontalAlignment="Center"></TextBlock>
 
             <Button HorizontalAlignment="Right"  Height="50" Width="80" Click="X_OnClick">
                 <Image Source="ms-appx:///Assets/icon_metadata_x.png"></Image>

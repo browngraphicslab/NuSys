@@ -202,11 +202,12 @@ using MyToolkit.UI;
 
 
         }
-
+        /// <summary>
+        /// Stolen from github. Iterates through alphabet keys and switches them to lowercase letters
+        /// </summary>
         private void ChangeAlphabeticalToLower()
             {
                 Regex upperCaseRegex = new Regex("[A-Z]");
-                Regex lowerCaseRegex = new Regex("[a-z]");
                 KeyboardKey key;
                 foreach (UIElement elem in xABCKeyboard.Children) //iterate the main grid
                 {
@@ -223,7 +224,6 @@ using MyToolkit.UI;
                                     if (upperCaseRegex.Match(key.KeyText).Success)
                                         // if the char is a letter and uppercase
                                         key.KeyText = key.KeyText.ToLower();
-
                                 }
 
                             }
@@ -232,9 +232,11 @@ using MyToolkit.UI;
                 }
 
             }
+        /// <summary>
+        /// Stolen from github. Iterates through alphabet keys and switches them to uppercase letters
+        /// </summary>
         private void ChangeAlphabeticalToUpper()
         {
-            Regex upperCaseRegex = new Regex("[A-Z]");
             Regex lowerCaseRegex = new Regex("[a-z]");
             KeyboardKey key;
             foreach (UIElement elem in xABCKeyboard.Children) //iterate the main grid
@@ -269,7 +271,7 @@ using MyToolkit.UI;
         #region misc/appearence
         private void Keyboard_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-
+            //TODO: prevent keyboard from exiting viewable screen
         }
 
         private void Keyboard_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -282,145 +284,171 @@ using MyToolkit.UI;
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
 
+            //TODO: prevent keyboard from exiting viewable screen
 
         }
 
         private void Keyboard_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-        }
+            //TODO: prevent keyboard from exiting viewable screen
 
+        }
+        /// <summary>
+        /// Makes the keyboard appear
+        /// </summary>
         public void GainPseudoFocus()
+        {
+            UITask.Run(delegate
             {
-                UITask.Run(delegate
-                {
-
-
-                    SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ClearAllPointers();
-                    Visibility = Visibility.Visible;
-                });
+                SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ClearAllPointers();
+                Visibility = Visibility.Visible;
+            });
+        }
+        /// <summary>
+        /// Makes the keyboard disappear.
+        /// </summary>
+        public void LosePseudoFocus()
+        {
+            UITask.Run(delegate
+            {
+                Visibility = Visibility.Collapsed;
+                SessionController.Instance.ShiftHeld = false; //Important line; otherwise, when we first type, we will type in caps
+            });
+        }
+        /// <summary>
+        /// Selects key and adds it to list of pressed keys
+        /// </summary>
+        /// <param name="key"></param>
+        private void SelectKey(KeyboardKey key)
+        {
+            key.Select(); //Visually selects key
+            _pressedKeys.Add(key);
+            xTestingText2.Text = string.Join(", ", _pressedKeys.Select(a => a.KeyText)); //TODO: remove this line after done testing
+        }
+        /// <summary>
+        /// Unselects key and removes it from list of pressed keys
+        /// </summary>
+        /// <param name="key"></param>
+        private void UnselectKey(KeyboardKey key)
+        {
+            key.Unselect(); //Visually unselects key
+            if (_pressedKeys.Contains(key))
+            {
+                _pressedKeys.Remove(key); 
             }
-
-            public void LosePseudoFocus()
-            {
-                UITask.Run(delegate
-                {
-                    Visibility = Visibility.Collapsed;
-                    SessionController.Instance.ShiftHeld = false;
-                });
-            }
-            private void SelectKey(KeyboardKey key)
-            {
-                key.Select();
-                _pressedKeys.Add(key);
-                xTestingText2.Text = string.Join(", ", _pressedKeys.Select(a => a.KeyText));
-            }
-
-            private void UnselectKey(KeyboardKey key)
-            {
-                key.Unselect();
-                if (_pressedKeys.Contains(key))
-                {
-                    _pressedKeys.Remove(key);
-
-                }
-                xTestingText2.Text = string.Join(", ", _pressedKeys.Select(a => a.KeyText));
+            xTestingText2.Text = string.Join(", ", _pressedKeys.Select(a => a.KeyText)); //TODO: remove this line after done testing
 
         }
-
+        /// <summary>
+        /// Activates key -- makes it hittest visible and visually clickable
+        /// </summary>
+        /// <param name="key"></param>
         private void ActivateKey(KeyboardKey key)
-            {
-                key.Activate();
-            }
-
-            private void DeactivateKey(KeyboardKey key)
-            {
-                key.Deactivate();
-            }
+        {
+            key.Activate();
+        }
+        /// <summary>
+        /// Deactivates key --makes it hittest invisible and visually unclickable
+        /// </summary>
+        /// <param name="key"></param>
+        private void DeactivateKey(KeyboardKey key)
+        {
+            key.Deactivate();
+        }
 
             #endregion misc/appearence
 
         #region generic key handlers
-
+        /// <summary>
+        /// Selects key if pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Key_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            SelectKey(key);
+        }
+        /// <summary>
+        /// If poitner released, checks that the key was pressed and calls keyclicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Key_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            //We want to make sure that the key we fire events with was originally pressed!
+            if (_pressedKeys.Contains(key))
             {
-                var key = sender as KeyboardKey;
-                SelectKey(key);
-
+                KeyClicked(key.KeyValue); 
             }
+            UnselectKey(key); 
 
+        }
 
-            private void Key_OnPointerReleased(object sender, PointerRoutedEventArgs e)
-            {
-                var key = sender as KeyboardKey;
-                if (_pressedKeys.Contains(key))
-                {
-                    KeyClicked(key.KeyValue);
-
-                }
-                UnselectKey(key);
-
-            }
-
-            private void Key_OnPointerExited(object sender, PointerRoutedEventArgs e)
-            {
-                var key = sender as KeyboardKey;
-                UnselectKey(key);
-            }
-
-        private void KeyClicked(string command)
+        private void Key_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            var key = sender as KeyboardKey;
+            UnselectKey(key);
+        }
+        /// <summary>
+        /// Takes in a Keyboardkey's value and calls Keypressed event depending on the value
+        /// </summary>
+        /// <param name="command"></param>
+        private void KeyClicked(string value)
         {
 
-
             VirtualKey key;
-
-            if (_charsToKeys.ContainsKey(command))
+            //If a valid value passed in, handle accordingly
+            if (_charsToKeys.ContainsKey(value))
             {
-
-                if (ShiftKeyToChars.Values.Contains(command))
+                //Updates shiftheld bool depending on value
+                if (ShiftKeyToChars.Values.Contains(value))
                 {
                     SessionController.Instance.ShiftHeld = true;
                 }
-                else if (NoShiftKeyToChars.Values.Contains(command))
+                else if (NoShiftKeyToChars.Values.Contains(value))
                 {
                     SessionController.Instance.ShiftHeld = false;
                 }
+                else if (CurrentMode.IsUpperCase())
+                {
+                    SessionController.Instance.ShiftHeld = true;
+                }
                 else
                 {
-                    if ((CurrentMode == KeyboardMode.LowerCaseAlphabetical) || (CurrentMode == KeyboardMode.Special))
-                    {
-                        SessionController.Instance.ShiftHeld = false;
-                    }
-                    else if ((CurrentMode == KeyboardMode.UpperCaseAlphabeticalHeld) ||
-                             (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped))
-                    {
-                        SessionController.Instance.ShiftHeld = true;
-
-                    }
+                    SessionController.Instance.ShiftHeld = false;
                 }
-
-                key = _charsToKeys[command];
+                //Gets virtual key corresponding to value and fires KeyboardKeyPressed event
+                key = _charsToKeys[value];
                 KeyboardKeyPressed?.Invoke(this, new KeyArgs() { Key = key, Pressed = true });
 
             }
-
+            //Cancel out of uppercase tapped mode if key clicked
             if (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
             {
                 SwitchFromUpperCaseAlphabeticalMode();
                 SwitchToLowerCaseAlphabeticalMode();
             }
-
-            if (CurrentMode == KeyboardMode.AlphabeticalControl && command != "CONTROL")
+            //Cancel out of alphabetical control mode if key clicked and value is not control
+            else if (CurrentMode == KeyboardMode.AlphabeticalControl && value != "CONTROL")
             {
                 SwitchFromAlphabeticalControlMode();
                 SwitchToLowerCaseAlphabeticalMode();
             }
 
         }
-
         #endregion generic key handlers
 
         #region shift
-
+        /// <summary>
+        /// Called when we press shift. 
+        /// If on alphabetical mode, switches to uppercasetapped mode
+        /// If already in uppercase tapped mode or uppercase held mode, switch to lowercase
+        /// Or if in alphabetical control mode, make sure to switch out of control mode before switching to lwoer case
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Shift_OnPointerPressed(object sender, PointerRoutedEventArgs e)
             {
                 var key = sender as KeyboardKey;
@@ -437,17 +465,13 @@ using MyToolkit.UI;
                 {
                     SwitchFromAlphabeticalControlMode();
                     SwitchToLowerCaseAlphabeticalMode();
-
             }
-
-
 
         }
 
         private void Shift_OnHolding(object sender, HoldingRoutedEventArgs e)
         {
             var key = sender as KeyboardKey;
-            //ChangeAlphabeticalCase();
 
             if (CurrentMode == KeyboardMode.UpperCaseAlphabeticalTapped)
             {
@@ -460,6 +484,13 @@ using MyToolkit.UI;
         #endregion shift
 
         #region ctrl
+
+        /// <summary>
+        /// On pointerpressed, select control key if on alphabetical keyboard and switch to alphabetical control mode
+        /// If in alphabetical control mode already, unselect and switch back to lowercase (regardless if we were first in uppercase mode)
+        ///  </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ControlKey_OnPointerPressed(object sender, PointerRoutedEventArgs e)
             {
                 var key = sender as KeyboardKey;
@@ -481,32 +512,41 @@ using MyToolkit.UI;
                 }
                 KeyClicked(key.KeyValue);
 
-
-
-
             }
 
-
+            /// <summary>
+            /// Unselects control key when pointer released
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
             private void ControlKey_OnPointerReleased(object sender, PointerRoutedEventArgs e)
             {
                 var key = sender as KeyboardKey;
                 UnselectKey(key);
             }
+            /// <summary>
+            /// Unselects control key when pointer exited
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
             private void ControlKey_OnPointerExited(object sender, PointerRoutedEventArgs e)
             {
                 var key = sender as KeyboardKey;
                 UnselectKey(key);
             }
-
+            /// <summary>
+            /// Changes the superscript text of the keys with special control functions 
+            /// </summary>
+            /// <param name="showsuperscript"></param>
             private void ShowSuperscriptsOnControl(bool showsuperscript)
             {
-
                 if (showsuperscript)
                 {
                     xAKey.SuperscriptText = "Select All";
                     xZKey.SuperscriptText = "Undo";
                     xXKey.SuperscriptText = "Cut";
                     xCKey.SuperscriptText = "Copy";
+                    xVKey.SuperscriptText = "Paste";
                 }
                 else
                 {
@@ -514,21 +554,27 @@ using MyToolkit.UI;
                     xZKey.SuperscriptText = String.Empty;
                     xXKey.SuperscriptText = String.Empty;
                     xCKey.SuperscriptText = String.Empty;
-                }
-
-
+                    xVKey.SuperscriptText = String.Empty;
             }
-            #endregion ctrl
+        }
+        #endregion ctrl
 
-
-
-
-
+        #region other keys
+        /// <summary>
+        /// Close button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void X_OnClick(object sender, RoutedEventArgs e)
         {
             LosePseudoFocus();
         }
 
+        /// <summary>
+        /// When the special key toggle is pressed, switch to special mode
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Special_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (CurrentMode.IsUpperCase())
@@ -541,37 +587,61 @@ using MyToolkit.UI;
             SwitchToSpecialMode();
         }
 
-
+        /// <summary>
+        /// When  the alphabetical key toggle is pressed, switch to alphabetical mode
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Alphabetical_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             SwitchToLowerCaseAlphabeticalMode();
 
         }
+        #endregion other keys
 
         #region switch methods
-
+        /// <summary>
+        /// Switches from alphabetical control mode by releasing control and updating the superscript for certain letters(a,z,x,c,v)
+        /// </summary>
         private void SwitchFromAlphabeticalControlMode()
         {
+            KeyboardKeyReleased?.Invoke(this, new KeyArgs
+            {
+                 Key = VirtualKey.Control, Pressed = true 
+            });
             ShowSuperscriptsOnControl(false);
         }
-
+        /// <summary>
+        /// Switches from uppercase mode by releasing shift key and changing keys to lower
+        /// </summary>
         private void SwitchFromUpperCaseAlphabeticalMode()
         {
+            KeyboardKeyReleased?.Invoke(this, new KeyArgs
+            {
+                Key = VirtualKey.Shift,
+                Pressed = true
+            });
             ChangeAlphabeticalToLower();
         }
-
+        /// <summary>
+        /// Switches to specialcontrol mode
+        /// </summary>
         private void SwitchToSpecialControlMode()
         {
             CurrentMode = KeyboardMode.SpecialControl;
 
         }
-
+        /// <summary>
+        /// Switches to alphabetical control mode by showing the superscript text control special key
+        /// </summary>
         private void SwitchToAlphabeticalControlMode()
         {
             ShowSuperscriptsOnControl(true);
             CurrentMode = KeyboardMode.AlphabeticalControl;
         }
-
+        /// <summary>
+        /// Switches to lower case alphabetical mode by unselecting shift and hiding the numkeyboard
+        /// </summary>
         private void SwitchToLowerCaseAlphabeticalMode()
         {
             xNumKeyboard.Visibility = Visibility.Collapsed;
@@ -583,7 +653,9 @@ using MyToolkit.UI;
         }
 
 
-
+        /// <summary>
+        /// Switches to upper case alphabetical mode by select shift and hiding the numkeyboard
+        /// </summary>
         private void SwitchToUpperCaseAlphabeticalTappedMode()
         {
             xNumKeyboard.Visibility = Visibility.Collapsed;
@@ -596,13 +668,19 @@ using MyToolkit.UI;
             CurrentMode = KeyboardMode.UpperCaseAlphabeticalTapped;
 
         }
-
+        /// <summary>
+        /// Switches to uppercase held mode by changing color of shift key
+        /// </summary>
         private void SwitchToUpperCaseAlphabeticalHeldMode()
         {
-            xLShift.KeyColor = new SolidColorBrush(Colors.BlueViolet);
+            //TODO: get rid of the color hard code and make it a better color
+            xLShift.KeyColor = new SolidColorBrush(Colors.BlueViolet); 
 
             CurrentMode = KeyboardMode.UpperCaseAlphabeticalHeld;
         }
+        /// <summary>
+        /// Switches to special keys by hiding the alphabetical keyboard
+        /// </summary>
         private void SwitchToSpecialMode()
         {
             xNumKeyboard.Visibility = Visibility.Visible;
@@ -611,11 +689,7 @@ using MyToolkit.UI;
             CurrentMode = KeyboardMode.Special;
         }
 
-
-
-
         #endregion switch methods
-
 
     }
 }

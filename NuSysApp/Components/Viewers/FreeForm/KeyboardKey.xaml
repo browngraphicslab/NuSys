@@ -12,7 +12,7 @@
     
     <Grid x:Name="xMainGrid"  Background ="Gray" >
         <TextBlock x:Name="xTextBlock" Foreground="White"  HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBlock>
-        <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Left" VerticalAlignment ="Top"></TextBlock>
+        <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Center" VerticalAlignment ="Top"></TextBlock>
         <ContentPresenter Content="{Binding AdditionalContent, ElementName=Self}" />
     </Grid>
 </UserControl>
