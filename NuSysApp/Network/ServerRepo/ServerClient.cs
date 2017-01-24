@@ -158,6 +158,7 @@ namespace NuSysApp
             var serialized = message.GetSerialized();
             await SendToServer(serialized);
         }
+
         private async Task SendToServer(string message)
         {
             try
@@ -207,10 +208,8 @@ namespace NuSysApp
             var mre = new ManualResetEvent(false);
             _requestEventDictionary.TryAdd(mreId, mre);
 
-            Task.Run(async delegate
-            {
-                SendMessageToServer(message);
-            });
+            await SendMessageToServer(message).ConfigureAwait(false);
+
             mre.WaitOne();
             if (!_returnMessages.ContainsKey(mreId))
             {

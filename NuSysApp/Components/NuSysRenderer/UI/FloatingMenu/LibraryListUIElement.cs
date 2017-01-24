@@ -376,7 +376,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        private async void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
         {
             if (_dragCanceled)
             {
@@ -396,7 +396,10 @@ namespace NuSysApp
             {
                 var libraryElementController =
                     SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-                StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, libraryElementController.LibraryElementModel.Type, libraryElementController);
+                await
+                    StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint,
+                            libraryElementController.LibraryElementModel.Type, libraryElementController)
+                        .ConfigureAwait(false);
             }
         }
 

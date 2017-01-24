@@ -123,7 +123,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             // if the auto suggest button has a selection chosen, and there isn't an empty title then create a link
             if (_addLinkToElementBox.HasSelection)
@@ -146,7 +146,7 @@ namespace NuSysApp
                 }
 
                 // try to add a link between the two controllers
-                _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), title,keywords);
+                await _controller.TryAddLinkTo(SessionController.Instance.ContentController.GetLibraryElementController(_addLinkToElementBox.CurrentSelection.LibraryElementId), title,keywords).ConfigureAwait(false);
             }
         }
 

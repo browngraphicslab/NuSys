@@ -127,7 +127,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void AddStack_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            StaticServerCalls.CreateStackOnMainCollection(new Vector2(0, 0), _results);
+            StaticServerCalls.CreateStackOnMainCollection(pointer.CurrentPoint, _results);
             DismissPopup();
         }
 

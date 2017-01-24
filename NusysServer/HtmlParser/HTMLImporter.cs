@@ -750,7 +750,7 @@ namespace NusysServer
             {
                 var cts = new CancellationTokenSource();
                 cts.CancelAfter(3000);
-                var task = GetDocumentFromUri(new Uri(urls[offset].Url), this, cts.Token);
+                var task = await GetDocumentFromUri(new Uri(urls[offset].Url), this, cts.Token).ConfigureAwait(false);
 
             }
 

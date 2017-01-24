@@ -154,13 +154,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MenuButton_DragCompleted(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void MenuButton_DragCompleted(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             // reset the visibility of the drag rect
             _dragRect.IsVisible = false;
 
             // Add the element at the dropped location          
-            StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType);
+            await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType).ConfigureAwait(false);
 
         }
 

@@ -20,7 +20,7 @@ namespace NusysServer
         /// <param name="originalMessage"></param>
         /// <param name="webSocketHandler"></param>
         /// <returns></returns>
-        public static async Task<bool> HandleRequest(Message originalMessage, NuWebSocketHandler webSocketHandler)
+        public static bool HandleRequest(Message originalMessage, NuWebSocketHandler webSocketHandler)
         {
             try
             {

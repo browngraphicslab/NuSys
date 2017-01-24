@@ -552,7 +552,7 @@ namespace NuSysApp
 
         public override List<BaseRenderItem> GetChildren()
         {
-            _allRenderItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3).ToList();
+            _allRenderItems = _renderItems0.ToArray().Concat(_renderItems1.ToArray()).Concat(_renderItems2.ToArray()).Concat(_renderItems3.ToArray()).ToList();
             return _allRenderItems;
         }
 

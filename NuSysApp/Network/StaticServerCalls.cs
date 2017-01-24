@@ -187,7 +187,7 @@ namespace NuSysApp
         /// <param name="screenPoint"></param>
         /// <param name="elementType"></param>
         /// <param name="lec"></param>
-        public static async void AddElementToWorkSpace(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null)
+        public static async Task AddElementToWorkSpace(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null)
         {
             // get a list of the elements that lie under the passed in screen point
             var hits = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemsAt(screenPoint);
@@ -198,7 +198,7 @@ namespace NuSysApp
             // get the last thing we hit, if we dragged over nested collections this would be the inner most collection
             var hit = underlyingCollections.Last();
             // add the element to that collection
-            AddElementToCollection(screenPoint, elementType, lec, hit);
+            await AddElementToCollection(screenPoint, elementType, lec, hit);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace NuSysApp
         /// <param name="elementType">The type of the elementy we are going to create. Must be able to exist without predefined content if library element controller is null</param>
         /// <param name="lec">The libraryy element controller of the element we are going to add</param>
         /// <param name="collection">The collection we are going to add the elemnt to</param>
-        public static async void AddElementToCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec, CollectionRenderItem collection)
+        public static async Task AddElementToCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec, CollectionRenderItem collection)
         {
             // transform the passed in screenpoint to a point on the main collection
             var collectionPoint = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(screenPoint, collection);
@@ -374,10 +374,11 @@ namespace NuSysApp
         /// <param name="screenPoint">Point on the screen the new element will be created directly under this point on the main collection</param>
         /// <param name="elementType">The type of the elementy we are going to create. Must be able to exist without predefined content if library element controller is null</param>
         /// <param name="lec">The libraryy element controller of the element we are going to add</param>
-        public static async void AddElementToCurrentCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null)
+        /// <param name="transformPoint">This bool represents whether you want to have the screen point be transformed into a collection point.  True if it needs to be transformed, false if it is already in collection coordinates</param>
+        public static async Task AddElementToCurrentCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null, bool transformPoint = true)
             {
             // transform the passed in screenpoint to a point on the main collection
-            var collectionPoint = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(screenPoint, SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
+            var collectionPoint =  transformPoint ? SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(screenPoint, SessionController.Instance.SessionView.FreeFormViewer.InitialCollection) : screenPoint;
             var libraryElementId = lec?.LibraryElementModel.LibraryElementId; // variable to hold the library element id of the element we are adding
             var contentId = lec?.LibraryElementModel.ContentDataModelId; // variable to hold the content id of the element we are adding
 
@@ -396,8 +397,7 @@ namespace NuSysApp
                         // add a tool to the workspace
                         var model = new BasicToolModel();
                         var controller = new BasicToolController(model);
-                        UITask.Run(() =>
-                        {
+
                             var viewModel = new BasicToolViewModel(controller)
                             {
                                 Filter = ToolModel.ToolFilterTypeTitle.Title,
@@ -405,7 +405,6 @@ namespace NuSysApp
                             controller.SetSize(500,500);
                             controller.SetPosition(collectionPoint.X, collectionPoint.Y);
                             SessionController.Instance.ActiveFreeFormViewer.AddTool(viewModel);
-                        });
 
                         return; // return after this we are not creating content
                     case NusysConstants.ElementType.Recording:
@@ -560,7 +559,7 @@ namespace NuSysApp
 
             // add the collection to the current session
             var collectionLEM = SessionController.Instance.ContentController.GetLibraryElementController(collectionLibElemId);
-            collectionLEM.AddElementAtPosition(screenPoint.X, screenPoint.Y);
+            await collectionLEM.AddElementAtPosition(screenPoint.X, screenPoint.Y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -573,6 +572,10 @@ namespace NuSysApp
             // use the i counter to offset each new element in the stack
             int i = 0;
             int offset = 40;
+            var point =
+                SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(
+                    screenPoint, SessionController.Instance.SessionView.FreeFormViewer.InitialCollection);
+
             foreach (var controller in elements)
             {
                 // if the library element model doesn't exist, is a link, or is greater than 20, don't add it to the session
@@ -582,7 +585,7 @@ namespace NuSysApp
                 }
 
                 // add the element to the collection
-                AddElementToCurrentCollection(screenPoint + new Vector2(i * offset), controller.LibraryElementModel.Type, controller);
+                await AddElementToCurrentCollection(point + new Vector2(i * offset), controller.LibraryElementModel.Type, controller,false).ConfigureAwait(false);
 
                 // increment to finish loop and perform offset
                 i++;

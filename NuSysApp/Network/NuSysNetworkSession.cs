@@ -95,15 +95,23 @@ namespace NuSysApp
         /// </returns>
         public async Task<Message> ExecuteRequestAsync(Request request)
         {
-            return await Task.Run(async delegate
-            {
-                //if CheckOutgoingRequest created a valid thing
-                await request.CheckOutgoingRequest();
-                Message message = request.GetFinalMessage();
-                var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
-                request.SetReturnMessage(returnMessage);
-                return returnMessage;
-            });
+            //return await Task.Run(async delegate { return await PrivateExecuteRequestAsync(request); });
+            return await PrivateExecuteRequestAsync(request).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// private version of ExecuteRequestAsync
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private async Task<Message> PrivateExecuteRequestAsync(Request request)
+        {
+            //if CheckOutgoingRequest created a valid thing
+            await request.CheckOutgoingRequest();
+            Message message = request.GetFinalMessage();
+            var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
+            request.SetReturnMessage(returnMessage);
+            return returnMessage;
         }
 
         /// <summary>

@@ -516,7 +516,7 @@ namespace NuSysApp
         /// <param name="link_to"></param>
         /// <param name="text"></param>
         /// <param name="tags"></param>
-        public async void TryAddLinkTo(LibraryElementController link_to, string title = null, HashSet<Keyword> tags = null)
+        public async Task TryAddLinkTo(LibraryElementController link_to, string title = null, HashSet<Keyword> tags = null)
         {
             // Diable linking to links and tools
             // TODO: Enable linking to links 
