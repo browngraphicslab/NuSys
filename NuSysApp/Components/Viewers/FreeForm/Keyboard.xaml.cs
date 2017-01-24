@@ -302,8 +302,10 @@ using MyToolkit.UI;
             {
                 SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ClearAllPointers();
                 Visibility = Visibility.Visible;
-                var w = SessionController.Instance.NuSessionView.Width;
-                var h = SessionController.Instance.NuSessionView.Height;
+                var normalizedWidth = 1000.0/1920;
+                var normalizedHeight = 350.0/1080;
+                Width = SessionController.Instance.ScreenWidth* normalizedWidth;
+                Height = SessionController.Instance.ScreenHeight* normalizedHeight;
             });
         }
         /// <summary>
