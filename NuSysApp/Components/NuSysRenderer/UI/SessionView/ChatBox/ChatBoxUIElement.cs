@@ -149,10 +149,20 @@ namespace NuSysApp
         private bool CheckForChatbotChat(string text)
         {
             var tokenized = text.Trim().Replace("  ", " ").ToLower().Split(' ');
-            if (!tokenized.Any() || tokenized.Count() < 2)
+            if (!tokenized.Any())
             {
                 return false;
             }
+            if (tokenized[0] == "[server\n]")
+            {
+                AddChat(NetworkUser.ChatBot, $"Current server status: {SessionController.Instance.NuSysNetworkSession.Connection}");
+                return true;
+            }
+            if (tokenized.Count() < 2)
+            {
+                return false;
+            }
+
             if (tokenized[0] == "join")
             {
                 var name = tokenized[1];

@@ -132,6 +132,7 @@
     <Content Include="Assets\new icons\enter collection white.png" />
     <Content Include="Assets\new icons\gear.png" />
     <Content Include="Assets\new icons\html export.png" />
+    <Content Include="Assets\new icons\image.png" />
     <Content Include="Assets\new icons\left arrow.png" />
     <Content Include="Assets\new icons\left scroll arrow.png" />
     <Content Include="Assets\new icons\listview.png" />
@@ -153,6 +154,7 @@
     <Content Include="Assets\new icons\trash can white.png" />
     <Content Include="Assets\new icons\up arrow.png" />
     <Content Include="Assets\new icons\volume.png" />
+    <Content Include="Assets\new icons\white image.png" />
     <Content Include="Assets\new icons\word.png" />
     <Content Include="Assets\new icons\x white.png" />
     <Content Include="Assets\new icons\x.png" />

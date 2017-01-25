@@ -341,7 +341,7 @@ namespace NuSysApp
             }
             else
             {
-                titlePos = new Vector2(Math.Min(sp.X, (sp.X + spr.X - 50)/2), sp.Y - drawBoundsHeight - 18);
+                titlePos = new Vector2((float)Math.Min(sp.X, (sp.X + spr.X - _textLayout.DrawBounds.Width)/2), sp.Y - drawBoundsHeight - 18);
             }
 
             // get the position for the upper left point of the title

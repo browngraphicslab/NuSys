@@ -62,6 +62,11 @@ namespace NuSysApp
         private TextboxUIElement _sliderText;
 
         /// <summary>
+        /// Text to say what the current status of the server connection is.
+        /// </summary>
+        private TextboxUIElement _serverStatus;
+
+        /// <summary>
         /// Constructor will instatiate the private buttons.
         /// </summary>
         /// <param name="parent"></param>
@@ -107,8 +112,20 @@ namespace NuSysApp
             };
             AddChild(_sliderText);
 
+            _serverStatus = new TextboxUIElement(this, ResourceCreator)
+            {
+                Background = Colors.Transparent,
+                FontSize = 12,
+                TextColor = Constants.ALMOST_BLACK,
+                Width = 200,
+                Height = 20,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                TextVerticalAlignment = CanvasVerticalAlignment.Top,
+            };
+            AddChild(_serverStatus);
+
             MinWidth = 320;
-            MinHeight = 495;
+            MinHeight = 525;
             
             ShowClosable();
 
@@ -127,7 +144,8 @@ namespace NuSysApp
             _settingsStackLayout.AddElement(_keywordVisibilityButton);
             _settingsStackLayout.AddElement(_textSizeSlider);
             _settingsStackLayout.AddElement(_sliderText);
-            
+            _settingsStackLayout.AddElement(_serverStatus);
+
 
             _resizeElementTitlesButton.Tapped += ResizeElementTitlesButtonOnTapped;
             _showLinksButton.Tapped += ShowLinksButtonOnTapped;
@@ -145,8 +163,12 @@ namespace NuSysApp
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
             SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged += SessionSettingsOnReadOnlyModeSettingChanged;
             SessionController.Instance.SessionSettings.TagsVisibleChanged += SessionSettingsOnTagsVisibleChanged;
+            SessionController.Instance.NuSysNetworkSession.ServerConnectionStatusChanged += NuSysNetworkSessionOnServerConnectionStatusChanged;
+
             SetButtonText();
+            SetServerStatusText(SessionController.Instance.NuSysNetworkSession.Connection);
         }
+
 
         /// <summary>
         /// dispose method simple removes the button event handlers
@@ -169,6 +191,47 @@ namespace NuSysApp
             SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
             SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged -= SessionSettingsOnReadOnlyModeSettingChanged;
             SessionController.Instance.SessionSettings.TagsVisibleChanged -= SessionSettingsOnTagsVisibleChanged;
+            SessionController.Instance.NuSysNetworkSession.ServerConnectionStatusChanged -= NuSysNetworkSessionOnServerConnectionStatusChanged;
+        }
+
+
+        /// <summary>
+        /// event handler fired whenever the connection to the server changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="connectionStrength"></param>
+        private void NuSysNetworkSessionOnServerConnectionStatusChanged(object sender, ServerClient.ConnectionStrength connectionStrength)
+        {
+            SetServerStatusText(connectionStrength);
+        }
+
+        /// <summary>
+        /// private method to set the text of the server status textbox
+        /// </summary>
+        /// <param name="connectionStrength"></param>
+        private void SetServerStatusText(ServerClient.ConnectionStrength connectionStrength)
+        {
+            _serverStatus.Text = $"Server Status: {connectionStrength}";
+            Color color;
+            switch (connectionStrength)
+            {
+                case ServerClient.ConnectionStrength.UnResponsive:
+                    color = Colors.Red;
+                    break;
+                case ServerClient.ConnectionStrength.Terrible:
+                    color = Colors.Orange;
+                    break;
+                case ServerClient.ConnectionStrength.Bad:
+                    color = Colors.Yellow;
+                    break;
+                case ServerClient.ConnectionStrength.Okay:
+                    color = Colors.GreenYellow;
+                    break;
+                case ServerClient.ConnectionStrength.Good:
+                    color = Colors.Green;
+                    break;
+            }
+            _serverStatus.TextColor = color;
         }
 
         /// <summary>

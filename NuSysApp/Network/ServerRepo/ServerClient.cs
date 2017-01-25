@@ -20,6 +20,15 @@ namespace NuSysApp
 {
     public class ServerClient
     {
+        public enum ConnectionStrength
+        {
+            UnResponsive = 1001,
+            Terrible = 1000,
+            Bad = 275,
+            Okay = 120,
+            Good = 70,
+        }
+
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
 
@@ -28,6 +37,37 @@ namespace NuSysApp
         public double CurrentPing
         {
             get { return _queue.Average()*_delayMilliseconds; }
+        }
+
+        public event EventHandler<ConnectionStrength> ConnectionStrenthChanged;  
+
+        /// <summary>
+        /// Not constant-time getter for the current connection strength
+        /// </summary>
+        public ConnectionStrength Connection
+        {
+            get
+            {
+                var ping = CurrentPing;
+                if (ping < (int) ConnectionStrength.Good)
+                {
+                    return ConnectionStrength.Good;
+                }
+                if (ping < (int)ConnectionStrength.Okay)
+                {
+                    return ConnectionStrength.Okay;
+                }
+                if (ping < (int)ConnectionStrength.Bad)
+                {
+                    return ConnectionStrength.Bad;
+                }
+                if (ping < (int)ConnectionStrength.Terrible)
+                {
+                    return ConnectionStrength.Terrible;
+                }
+                return ConnectionStrength.UnResponsive;
+                ;
+            }
         }
 
         public delegate void MessageRecievedEventHandler(Message message);
@@ -45,6 +85,8 @@ namespace NuSysApp
         private ConcurrentDictionary<string, byte> _requestEventDictionary = new ConcurrentDictionary<string, byte>();
 
         private ConcurrentFixedQueue<int> _queue;
+
+        private ConnectionStrength _currentStrength = ConnectionStrength.Good;
 
         /// <summary>
         /// queue used to track server response times
@@ -227,7 +269,7 @@ namespace NuSysApp
             while (_requestEventDictionary.ContainsKey(mreId))
             {
                 attempt++;
-                await Task.Delay(15);
+                await Task.Delay(_delayMilliseconds);
             }
 
             _queue.EnQueue(attempt);
@@ -249,7 +291,12 @@ namespace NuSysApp
         /// </summary>
         private void RunPingAnalysis()
         {
-            
+            var strength = Connection;
+            if (_currentStrength != strength)
+            {
+                ConnectionStrenthChanged?.Invoke(this,strength);
+                _currentStrength = strength;
+            }
         }
 
 
