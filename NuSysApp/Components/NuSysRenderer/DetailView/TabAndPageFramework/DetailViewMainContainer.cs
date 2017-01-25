@@ -72,7 +72,7 @@ namespace NuSysApp
             AddChild(_mainTabContainer);
 
             TopBarColor = Constants.MED_BLUE;
-            TopBarHeight = 10;
+            TopBarHeight = 25;
 
             // add the pageContainer as the page to the main tab container
             _pageContainer = new DetailViewPageContainer(this, Canvas);

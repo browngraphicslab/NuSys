@@ -37,7 +37,7 @@ namespace NusysServer
                 }
                 else
                 {
-                    Debug.WriteLine($"updating element {message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY)} at time {DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond}");
+                    //Debug.WriteLine($"updating element {message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY)} at time {DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond}");
                     ForwardMessage(message, senderHandler);
                 }
             }

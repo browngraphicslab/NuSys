@@ -196,12 +196,19 @@ namespace NuSysApp
             if (_renderTarget == null || _collection.ViewModel.Elements.Count == 0)
                 return;
 
-            var old = ds.Transform;
-            ds.Transform = Matrix3x2.Identity;
-            var x = _canvasControl.Width - _rect.Width;
-            var y= _canvasControl.Height - _rect.Height;
-            ds.DrawImage(_renderTarget, new Rect(x,y,_rect.Width, _rect.Height));
-            ds.Transform = old;
+            try
+            {
+                var old = ds.Transform;
+                ds.Transform = Matrix3x2.Identity;
+                var x = _canvasControl.Width - _rect.Width;
+                var y = _canvasControl.Height - _rect.Height;
+                ds.DrawImage(_renderTarget, new Rect(x, y, _rect.Width, _rect.Height));
+                ds.Transform = old;
+            }
+            catch(Exception e)
+            {
+                //TODO fix this
+            }
         }
 
 

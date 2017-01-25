@@ -163,11 +163,11 @@ namespace NuSysApp
                 _collectionController.CollectionContentDataController.SetShapePoints(new List<PointModel>()
                 {
                     new PointModel(50000,50000),
-                    new PointModel(50000,53000),
-                    new PointModel(50000,56000),
-                    new PointModel(56000,56000),
-                    new PointModel(56000,53000),
-                    new PointModel(56000,50000),
+                    new PointModel(50000,51000),
+                    new PointModel(50000,52000),
+                    new PointModel(52000,52000),
+                    new PointModel(52000,51000),
+                    new PointModel(52000,50000),
                 });
             }
 

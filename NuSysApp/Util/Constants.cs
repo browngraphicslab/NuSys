@@ -134,8 +134,8 @@ namespace NuSysApp
             linkColor17, linkColor19, linkColor20, linkColor21, linkColor22, linkColor23, linkColor24
         };
 
-        public static Color LinkColor = Color.FromArgb(155, 123, 117, 255);
-        public static Color TrailColor = Color.FromArgb(155, 249, 63, 47);
+        public static Color LinkColor = Color.FromArgb(127, 123, 117, 255);
+        public static Color TrailColor = Color.FromArgb(127, 249, 63, 47);
 
         #endregion Color
 

@@ -354,10 +354,6 @@ namespace NuSysApp
                     (Controller.LibraryElementController.ContentDataController as CollectionContentDataController)
                         .CollectionModel.Shape.AspectRatio*height;
             }
-            else if(IsFinite)
-            {
-                height = width;
-            }
             base.SetSize(width, height);
         }
     }

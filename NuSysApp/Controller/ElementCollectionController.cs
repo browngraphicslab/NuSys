@@ -49,7 +49,15 @@ namespace NuSysApp
                 collectionController.OnChildRemoved += RemoveChildById;
                 collectionController.FiniteBoolChanged += CollectionControllerOnFiniteBoolChanged;
             }
-            ToolController.ToolControllers.Add(Id, this);
+            Debug.Assert(!ToolController.ToolControllers.ContainsKey(Id));
+            if (!ToolController.ToolControllers.ContainsKey(Id))
+            {
+                ToolController.ToolControllers.Add(Id, this);
+            }
+            else
+            {
+                ToolController.ToolControllers[Id] = this;
+            }
         }
 
         /// <summary>

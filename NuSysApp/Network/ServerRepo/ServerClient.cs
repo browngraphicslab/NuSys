@@ -23,6 +23,13 @@ namespace NuSysApp
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
 
+        private int _delayMilliseconds = 15;
+
+        public double CurrentPing
+        {
+            get { return _queue.Average()*_delayMilliseconds; }
+        }
+
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
@@ -36,9 +43,17 @@ namespace NuSysApp
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
         private ConcurrentDictionary<string, byte> _requestEventDictionary = new ConcurrentDictionary<string, byte>();
+
+        private ConcurrentFixedQueue<int> _queue;
+
+        /// <summary>
+        /// queue used to track server response times
+        /// </summary>
+        private ConcurrentQueue<int> _statusQueue;
         public string ServerBaseURI { get; private set; }
         public ServerClient()
         {
+            _queue = new ConcurrentFixedQueue<int>(25);
         }
 
         /// <summary>
@@ -207,10 +222,18 @@ namespace NuSysApp
 
             await SendMessageToServer(message).ConfigureAwait(false);
 
+            int attempt = 0;
+
             while (_requestEventDictionary.ContainsKey(mreId))
             {
-                await Task.Delay(30);
+                attempt++;
+                await Task.Delay(15);
             }
+
+            _queue.EnQueue(attempt);
+
+            RunPingAnalysis();
+
             if (!_returnMessages.ContainsKey(mreId))
             {
                 return null;//only does this if the request failed
@@ -220,6 +243,15 @@ namespace NuSysApp
             Debug.Assert(outMessage != null);
             return outMessage;
         }
+
+        /// <summary>
+        /// private method to analyze the curent server delay
+        /// </summary>
+        private void RunPingAnalysis()
+        {
+            
+        }
+
 
         /// <summary>
         /// will be called when a message is recieved and is a get request

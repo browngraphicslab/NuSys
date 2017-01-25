@@ -459,14 +459,16 @@ namespace NuSysApp
                 SessionView.ShowBlockingScreen(true);
 
                 EnterNewCollectionStarting?.Invoke(this, collectionLibraryId);
-                SessionView.FreeFormViewer.RenderEngine.Stop();
-
-                // Clear free form viewer
-                SessionView.FreeFormViewer.Clear();
 
                 await UITask.Run(async delegate {
                     ClearControllersForCollectionExit();
                 });
+
+
+                SessionView.FreeFormViewer.RenderEngine.Stop();
+
+                // Clear free form viewer
+                SessionView.FreeFormViewer.Clear();
 
                 //creates a new request to get the new workspace
                 var request = new GetEntireWorkspaceRequest(collectionLibraryId);
