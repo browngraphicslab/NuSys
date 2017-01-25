@@ -22,17 +22,18 @@ namespace NuSysApp
     {
         public enum ConnectionStrength
         {
-            UnResponsive = 1001,
+            UnResponsive = 4500,
             Terrible = 1000,
             Bad = 275,
             Okay = 120,
-            Good = 70,
+            Good = 80,
         }
 
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
 
         private int _delayMilliseconds = 15;
+        
 
         public double CurrentPing
         {
@@ -270,6 +271,16 @@ namespace NuSysApp
             {
                 attempt++;
                 await Task.Delay(_delayMilliseconds);
+                if (attempt*_delayMilliseconds > (int) ConnectionStrength.UnResponsive)
+                {
+                    ConnectionStrenthChanged?.Invoke(this, ConnectionStrength.UnResponsive);
+                    _currentStrength = ConnectionStrength.UnResponsive;
+                    _returnMessages.TryAdd(mreId,new Message()
+                    {
+                        {NusysConstants.REQUEST_SUCCESS_BOOL_KEY,false.ToString() }
+                    });
+                    break;
+                }
             }
 
             _queue.EnQueue(attempt);

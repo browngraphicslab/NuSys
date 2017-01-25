@@ -223,7 +223,7 @@ namespace NuSysApp
             };
             AddChild(TrailBox);
 
-            _backToWaitingRoom = new RectangleButtonUIElement(this, canvas, UIDefaults.PrimaryStyle, "back to waiting room")
+            _backToWaitingRoom = new RectangleButtonUIElement(this, canvas, UIDefaults.PrimaryStyle, "back to lobby")
             {
                 Width = TrailBox.Width,
                 IsVisible = false

@@ -124,8 +124,8 @@ namespace NuSysApp
             };
             AddChild(_serverStatus);
 
-            MinWidth = 320;
-            MinHeight = 525;
+            MinWidth = 350;
+            MinHeight = 575;
             
             ShowClosable();
 
@@ -211,7 +211,7 @@ namespace NuSysApp
         /// <param name="connectionStrength"></param>
         private void SetServerStatusText(ServerClient.ConnectionStrength connectionStrength)
         {
-            _serverStatus.Text = $"Server Status: {connectionStrength}";
+            _serverStatus.Text = $"Server Connection Status: {connectionStrength}";
             Color color;
             switch (connectionStrength)
             {
