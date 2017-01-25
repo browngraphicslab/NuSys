@@ -195,7 +195,6 @@ using MyToolkit.UI;
         public Keyboard()
         {
             this.InitializeComponent();
-            xMainGrid.Background = new SolidColorBrush(Color.FromArgb(255, 26, 26, 26));
 
             this.RenderTransform = new CompositeTransform();
             CurrentMode = KeyboardMode.LowerCaseAlphabetical;
