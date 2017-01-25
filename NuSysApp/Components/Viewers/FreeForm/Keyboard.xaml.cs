@@ -200,9 +200,18 @@ using MyToolkit.UI;
             this.RenderTransform = new CompositeTransform();
             CurrentMode = KeyboardMode.LowerCaseAlphabetical;
             _pressedKeys = new List<KeyboardKey>();
+            CommentThisOutIfYouAreTesting();
 
 
         }
+
+        private void CommentThisOutIfYouAreTesting()
+        {
+            xDraggableBar.Background = new SolidColorBrush(Color.FromArgb(255, 26, 26, 26));
+            xTestingText.Visibility = Visibility.Collapsed;
+            xTestingText2.Visibility = Visibility.Collapsed;
+        }
+
         /// <summary>
         /// Stolen from github. Iterates through alphabet keys and switches them to lowercase letters
         /// </summary>
@@ -676,7 +685,7 @@ using MyToolkit.UI;
         /// </summary>
         private void SwitchToLowerCaseAlphabeticalMode()
         {
-            xNumKeyboard.Visibility = Visibility.Collapsed;
+            xSpecialKeyboard.Visibility = Visibility.Collapsed;
             xABCKeyboard.Visibility = Visibility.Visible;
 
             UnselectKey(xLShift);
@@ -690,7 +699,7 @@ using MyToolkit.UI;
         /// </summary>
         private void SwitchToUpperCaseAlphabeticalTappedMode()
         {
-            xNumKeyboard.Visibility = Visibility.Collapsed;
+            xSpecialKeyboard.Visibility = Visibility.Collapsed;
             xABCKeyboard.Visibility = Visibility.Visible;
 
             SelectKey(xLShift);
@@ -715,7 +724,7 @@ using MyToolkit.UI;
         /// </summary>
         private void SwitchToSpecialMode()
         {
-            xNumKeyboard.Visibility = Visibility.Visible;
+            xSpecialKeyboard.Visibility = Visibility.Visible;
             xABCKeyboard.Visibility = Visibility.Collapsed;
 
             CurrentMode = KeyboardMode.Special;

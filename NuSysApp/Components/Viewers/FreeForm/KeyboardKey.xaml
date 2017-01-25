@@ -8,7 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    Background="Blue">
     
     <Grid x:Name="xMainGrid"  >
         <TextBlock x:Name="xTextBlock" Foreground="White" FontSize="22"  Margin="0,4,0,0"  FontWeight="SemiBold"  HorizontalAlignment="Center" VerticalAlignment ="Center"></TextBlock>

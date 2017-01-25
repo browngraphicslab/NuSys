@@ -124,9 +124,9 @@ namespace NuSysApp
             {
                 if (dpi != null)
                 {
-                    return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_play.png"),dpi.Value);
+                    return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"),dpi.Value);
                 }
-                return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/node icons/icon_play.png"));
+                return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"));
             }
         }
 

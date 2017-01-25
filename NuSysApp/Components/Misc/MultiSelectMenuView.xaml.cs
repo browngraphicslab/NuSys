@@ -26,7 +26,7 @@ namespace NuSysApp
 {
     public sealed partial class MultiSelectMenuView : UserControl
     {
-        public delegate void CreateCollectionHandler(bool finite, bool shaped);
+        public delegate void CreateCollectionHandler(bool finite, bool shaped, bool useBoundingRect);
 
         public event CreateCollectionHandler CreateCollection;
 
@@ -69,11 +69,16 @@ namespace NuSysApp
             {
                 ShapeCheck.IsEnabled = true;
                 ShapeCheck.Opacity = 1;
+                BoundingRectCheck.IsEnabled = true;
+                BoundingRectCheck.Opacity = 1;
+                
             }
             else
             {
                 ShapeCheck.IsEnabled = false;
                 ShapeCheck.Opacity = 0.5;
+                BoundingRectCheck.IsEnabled = false;
+                BoundingRectCheck.Opacity = .5;
             }
             
         }
@@ -105,7 +110,7 @@ namespace NuSysApp
                 return;
             }
 
-            CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn);
+            CreateCollection?.Invoke(FiniteCheck.IsOn, ShapeCheck.IsOn, BoundingRectCheck.IsOn);
             Visibility = Visibility.Collapsed;
             return;
             var transform = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(selections.First());

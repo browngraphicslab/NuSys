@@ -48,6 +48,17 @@ namespace NuSysApp
         public event UserDroppedEventHandler OnNetworkUserDropped;
 
         public LockController LockController;
+
+        public ServerClient.ConnectionStrength Connection
+        {
+            get { return _serverClient?.Connection ?? ServerClient.ConnectionStrength.UnResponsive; }
+        }
+
+        /// <summary>
+        /// event fired whenever the status of the server connection changes
+        /// </summary>
+        public event EventHandler<ServerClient.ConnectionStrength> ServerConnectionStatusChanged;
+
         #endregion Public Members
         #region Private Members
 
@@ -63,6 +74,7 @@ namespace NuSysApp
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnNewNotification += HandleNotification;
+            _serverClient.ConnectionStrenthChanged += ServerClientOnConnectionStrenthChanged;
             LockController = LockController ?? new LockController();
 
 
@@ -73,6 +85,16 @@ namespace NuSysApp
                 await ExecuteRequestAsync(userIdDictionaryRequest);
                 userIdDictionaryRequest.AddReturnedDictionaryToSession();
             });
+        }
+
+        /// <summary>
+        /// event handler fired whenever the _serverClient changes its connection status
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="connectionStrength"></param>
+        private void ServerClientOnConnectionStrenthChanged(object sender, ServerClient.ConnectionStrength connectionStrength)
+        {
+            ServerConnectionStatusChanged?.Invoke(this,connectionStrength);
         }
 
         /// <summary>
@@ -129,6 +151,17 @@ namespace NuSysApp
                 Message message = request.GetFinalMessage();
                 await _serverClient.SendMessageToServer(message);
             });
+        }
+
+        /// <summary>
+        /// the dispose method, although this will probably never be called
+        /// </summary>
+        public void Dispose()
+        {
+            _serverClient.OnMessageRecieved -= OnMessageRecieved;
+            _serverClient.OnNewNotification -= HandleNotification;
+            _serverClient.ConnectionStrenthChanged -= ServerClientOnConnectionStrenthChanged;
+            //todo dispose server client
         }
 
         /// <summary>

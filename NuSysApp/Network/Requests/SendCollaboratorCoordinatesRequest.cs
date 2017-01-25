@@ -28,6 +28,12 @@ namespace NuSysApp
         public SendCollaboratorCoordinatesRequest(SendCollaboratorCoordinatesRequestArgs args) : base(args) { }
 
         /// <summary>
+        /// static bool for knowing if we are currently already joining a collection.
+        /// This is needed in case multiple requests happen too quickly
+        /// </summary>
+        public static bool _currentlyJoining = false;
+
+        /// <summary>
         /// This will only be called when another client has forwarded this request to me.
         /// This should react accoridngly locally and probably notify the user of this option
         /// </summary>
@@ -76,7 +82,12 @@ namespace NuSysApp
         /// <param name="senderArgs"></param>
         private static async Task JoinCollection(SendCollaboratorCoordinatesRequestArgs senderArgs, CollectionLibraryElementController collectionLibraryElementController)
         {
-            if(collectionLibraryElementController.LibraryElementModel.LibraryElementId != SessionController.Instance.ActiveFreeFormViewer.LibraryElementId) { 
+            if (_currentlyJoining)
+            {
+                return;
+            }
+            _currentlyJoining = true;
+            if (collectionLibraryElementController.LibraryElementModel.LibraryElementId != SessionController.Instance.ActiveFreeFormViewer.LibraryElementId) { 
                 await SessionController.Instance.EnterCollection(collectionLibraryElementController.LibraryElementModel.LibraryElementId);
             }
 
@@ -84,6 +95,7 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2((float)senderArgs.XLocalScaleCenter.Value, (float)senderArgs.YLocalScaleCenter.Value);
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale = new Vector2((float)senderArgs.CameraScaleX.Value, (float)senderArgs.CameraScaleY.Value);
             SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
+            _currentlyJoining = false;
         }
     }
 }

@@ -80,7 +80,18 @@ namespace NuSysApp
                 vm.Controller.LibraryElementController.HighlightChanged += LibraryElementController_HighlightChanged;
             }
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
+            SessionController.Instance.SessionSettings.ResizeElementTitlesChanged += SessionSettingsOnResizeElementTitlesChanged;
             base.Background = Colors.Transparent;
+        }
+
+        /// <summary>
+        /// method called whenever the bool for scaling titles changess
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="b"></param>
+        private void SessionSettingsOnResizeElementTitlesChanged(object sender, bool b)
+        {
+            _needsTitleUpdate = true;
         }
 
         private void LibraryElementController_HighlightChanged(LibraryElementController sender, bool isHighlighted)
@@ -161,6 +172,7 @@ namespace NuSysApp
             _textLayout?.Dispose();
             _textLayout = null;
             SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettingsTextScaleChanged;
+            SessionController.Instance.SessionSettings.ResizeElementTitlesChanged -= SessionSettingsOnResizeElementTitlesChanged;
             base.Dispose();
         }
 
@@ -171,6 +183,7 @@ namespace NuSysApp
         private void ControllerOnSizeChanged(object source, double width, double height)
         {
             _tagRenderItem.MaxWidth = (float)width;
+            _needsTitleUpdate = true;
         }
 
         private void TagsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -200,7 +213,7 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnTitleChanged(object sender, string s)
         {
-            _needsTitleUpdate = true;
+            UpdateTextFormat();
         }
 
         private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
@@ -223,17 +236,22 @@ namespace NuSysApp
 
             Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
+            _tagRenderItem.IsVisible = SessionController.Instance.SessionSettings.TagsVisible;
 
             _userBubbles.Transform.LocalPosition = new Vector2((float)_vm.Width + 10f, 0);
             _userBubbles.Height = (float)_vm.Height;
 
             base.Update(parentLocalToScreenTransform);
 
-            if (!_needsTitleUpdate && _vm != null)
+            var resizeTitles = SessionController.Instance.SessionSettings.ResizeElementTitles;
+
+            if (!_needsTitleUpdate && _vm != null && (resizeTitles))
                 return;
 
             if (_vm != null)
-                _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, _format, 200, 0.0f);
+            {
+                _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, _format, (float) Math.Max(200,_vm.Width * (resizeTitles ? 1 : _transform.M22 )), 0.0f);
+            }
             _needsTitleUpdate = false;
         }
 
@@ -264,14 +282,14 @@ namespace NuSysApp
             if (SessionController.Instance.SessionSettings.ResizeElementTitles)
             {
                 ds.Transform = Transform.LocalToScreenMatrix;
-                ds.DrawTextLayout(_textLayout,new Vector2(0,-drawBoundsHeight - 20),color );
+                ds.DrawTextLayout(_textLayout,new Vector2((float)Math.Min(0,-((_textLayout.LayoutBounds.Width - _vm.Width)/2)), -drawBoundsHeight - 20),color );
             }
             else
             {
                 ds.Transform = Matrix3x2.Identity;
 
                 ds.DrawTextLayout(_textLayout,
-                    new Vector2(sp.X + (spr.X - sp.X - 200f)/2f, sp.Y - drawBoundsHeight - 18),
+                    new Vector2(Math.Min(sp.X, (sp.X + spr.X) / 2 - 100), sp.Y - drawBoundsHeight - 18),
                     color);
             }
 
@@ -307,7 +325,7 @@ namespace NuSysApp
             var transform = Transform.Parent.LocalToScreenMatrix;
 
             // get a rectangle describing the height and width of the _tagRenderItem
-            var tagsMeasurement = _tagRenderItem.GetLocalBounds();
+            var tagsMeasurement = _tagRenderItem.IsVisible ? _tagRenderItem.GetLocalBounds() :  new Rect(0,0,0,0);
 
             // get the screen point for the upper left point of the element render item
             var sp = Vector2.Transform(new Vector2((float)_vm.X, (float)(_vm.Y)), transform);
@@ -315,15 +333,26 @@ namespace NuSysApp
             // get the screen poitn for the lower right point of the element render item including the height of the tagsMeasurement
             var spr = Vector2.Transform(new Vector2((float)(_vm.X + _vm.Width), (float)(_vm.Y + _vm.Height + tagsMeasurement.Height + 10)), transform);
 
+            Vector2 titlePos;
+            var drawBoundsHeight = (float)_textLayout.DrawBounds.Height;
+            if (SessionController.Instance.SessionSettings.ResizeElementTitles)
+            {
+                titlePos = Vector2.Transform(new Vector2((float)Math.Min(0, -(_textLayout.LayoutBounds.Width - _vm.Width) / 2), -drawBoundsHeight - 20),Transform.LocalToScreenMatrix);
+            }
+            else
+            {
+                titlePos = new Vector2((float)Math.Min(sp.X, (sp.X + spr.X - _textLayout.DrawBounds.Width)/2), sp.Y - drawBoundsHeight - 18);
+            }
+
             // get the position for the upper left point of the title
-            var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
+            //var titlePos = new Vector2(sp.X + (spr.X - sp.X - (float)_textLayout.DrawBounds.Width) /2f, sp.Y - (float) _textLayout.DrawBounds.Height - 10);
 
             // return the rectangle described by these objects
             var rect = new Rect
             {
                 X = Math.Min(sp.X, titlePos.X), // the upper left x is the minimum of the left axis of the node and the left axis of the title
                 Y = Math.Min(sp.Y, titlePos.Y), // the upper left y is the minimum of the y axis of the node and the y axis of the title
-                Width = Math.Max(_textLayout.DrawBounds.Width, spr.X - sp.X), // the width is the maximum of the title width, and the width of the node itself
+                Width = SessionController.Instance.SessionSettings.ResizeElementTitles ? Math.Max(_textLayout.DrawBounds.Width * Transform.LocalToScreenMatrix.M22, spr.X - sp.X) : Math.Max(_textLayout.DrawBounds.Width, spr.X - sp.X), // the width is the maximum of the title width, and the width of the node itself
                 Height = spr.Y - titlePos.Y // the height is the bottommost point minus the topmost point, assuming the topmost point is the y position of the title
             };
             return rect;
@@ -364,6 +393,7 @@ namespace NuSysApp
 
             // get the tagRectangle from the children, and get it's height, if there is no tag rect the height is 0
             var tagRectHeight = _tagRenderItem?.GetLocalBounds().Height ?? 0;
+            tagRectHeight = _tagRenderItem?.IsVisible == true ? tagRectHeight : 0;
 
 
             // transform the local position of the element render item's lower right corner to the screen matrix

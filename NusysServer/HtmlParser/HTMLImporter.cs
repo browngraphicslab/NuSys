@@ -67,7 +67,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public async Task<List<DataHolder>> Run(HtmlDocument doc)
+        public async Task<List<DataHolder>> Run(HtmlDocument doc, string url)
         {
             var lastTime = DateTime.Now;
             //We only want websites that qualify as an article so we check to see if certain tags are in the site
@@ -87,7 +87,7 @@ namespace NusysServer
             //This stores a list of all of the information 
             var models = new List<DataHolder>();
             // This recursively goes through each node in the html document, depth first, and parses data
-            await RecursiveAdd(articleTopNode, models);
+            await RecursiveAdd(articleTopNode, models,url);
             Debug.WriteLine("parse " + (DateTime.Now - lastTime).TotalMilliseconds);
             lastTime = DateTime.Now;
             isArticleFound = false;
@@ -132,6 +132,7 @@ namespace NusysServer
                 var content = new TextDataHolder(text, title ?? "") { links = (_citationUrlCollections.Any()) ? _citationUrlCollections.First() : null };
                 if (_citationUrlCollections.Any())
                     _citationUrlCollections.RemoveAt(0);
+                content.Url = url;
                 models.Add(content);
                 //reset the text so we don't aggregate it all into blocks larger than we want
                 text = "";
@@ -161,7 +162,7 @@ namespace NusysServer
                 Stream stream = await res.Content.ReadAsStreamAsync();
                 doc.Load(stream);
                 stream.Dispose();
-                queue.Enqueue(doc);
+                queue.Enqueue(new Tuple<HtmlDocument, string>(doc,url.AbsoluteUri));
                 return doc;
             }
             catch (OperationCanceledException)
@@ -198,7 +199,7 @@ namespace NusysServer
         /// <param name="node"></param>
         /// <param name="models"></param>
         /// <returns></returns>
-        private async Task RecursiveAdd(HtmlNode node, List<DataHolder> models)
+        private async Task RecursiveAdd(HtmlNode node, List<DataHolder> models, string documentUrl)
         {
 
             if (node.Name.ToLower() == "script" || node.Name.ToLower() == "article" && isArticleFound)
@@ -262,7 +263,7 @@ namespace NusysServer
                 //Makes sure that no javascrip is being parsed
                 if (child.Name.ToLower() != "script")
                 {
-                    await RecursiveAdd(child, models);
+                    await RecursiveAdd(child, models, documentUrl);
                 }
             }
             //Little rare of a tag but this should take any videos and put their uri into a dataholder
@@ -283,6 +284,7 @@ namespace NusysServer
                     {
                         //Create the dataholder and stash it with the rest
                         var content = new VideoDataHolder(uri, title);
+                        content.Url = documentUrl;
                         models.Add(content);
                     }
                 }
@@ -323,6 +325,7 @@ namespace NusysServer
                     if (isTitleValid(title) && !reg.IsMatch(title) && !models.Where(e => e is ImageDataHolder).Any(r => (r as ImageDataHolder).Uri.AbsoluteUri == src))
                     {
                         var content = new ImageDataHolder(new Uri(src), _cleanWhiteSpace.Replace(_contentToReplace.Replace(title, ""), " "));
+                        content.Url = documentUrl;
                         models.Add(content);
                     }
                 }
@@ -684,10 +687,10 @@ namespace NusysServer
                     continue;
                 }
                 zerohits += isempt ? 1 : 0;
-                var doc = await urlsToParse.Dequeue();
+                var doc = urlsToParse.Dequeue();
                 Debug.WriteLine("//////////////////////////////////////////New Parse////////////////////////////////////");
                 //We cannot parse pdfs or things on the blacklist
-                var dataholders = await htmlImporter.Run(doc);
+                var dataholders = await htmlImporter.Run(doc.Item1,doc.Item2);
                 if (dataholders == null || dataholders.Count == 0)
                 {
                     continue;
@@ -729,7 +732,7 @@ namespace NusysServer
 
         private class ConcurrentTaskQueue
         {
-            public ConcurrentQueue<HtmlDocument> queue;
+            public ConcurrentQueue<Tuple<HtmlDocument,string>> queue;
             public int tasksOut = 0;
             public int offset = 0;
             public int numberGood = 0;
@@ -737,10 +740,10 @@ namespace NusysServer
             public int numcanceled = 0;
             public ConcurrentTaskQueue()
             {
-                queue = new ConcurrentQueue<HtmlDocument>();
+                queue = new ConcurrentQueue<Tuple<HtmlDocument, string>>();
             }
 
-            public void Enqueue(HtmlDocument t)
+            public void Enqueue(Tuple<HtmlDocument, string> t)
             {
                 queue.Enqueue(t);
                 tasksOut--;
@@ -754,7 +757,7 @@ namespace NusysServer
 
             }
 
-            public async Task<HtmlDocument> Dequeue()
+            public Tuple<HtmlDocument, string> Dequeue()
             {
                 while (offset < urls.Count && queue.Count + tasksOut < (10 - numberGood))
                 {
@@ -763,7 +766,7 @@ namespace NusysServer
                     offset++;
                     tasksOut++;
                 }
-                HtmlDocument u;
+                Tuple<HtmlDocument, string> u;
                 queue.TryDequeue(out u);
                 return u;
             }

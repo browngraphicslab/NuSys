@@ -446,11 +446,19 @@ namespace NuSysApp
 
                 // draw the ink render item
                 foreach (var item in _renderItems0.ToArray())
+                {
                     item.Draw(ds);
+                }
+
+                //draw trails first
+                var trails = _renderItems1?.OfType<TrailRenderItem>()?.ToArray();
+                trails?.ForEach(t => t.Draw(ds));
 
                 // not sure what is on the layer if anything yet
-                foreach (var item in _renderItems1?.ToArray() ?? new BaseRenderItem[0])
+                foreach (var item in _renderItems1?.Except(trails)?.ToArray() ?? new BaseRenderItem[0])
+                {
                     item.Draw(ds);
+                }
 
                 // this layer contains tools and element render items
                 foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])

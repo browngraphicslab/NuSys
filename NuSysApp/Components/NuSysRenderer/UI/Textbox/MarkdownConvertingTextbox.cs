@@ -275,7 +275,7 @@ namespace NuSysApp
         private void UpdateRenderTarget()
         {
             _renderTarget?.Dispose();
-            _renderTarget = new CanvasRenderTarget(Canvas,Width,Height);
+            _renderTarget = new CanvasRenderTarget(Canvas,(float)Math.Min(Width,Canvas.Size.Width),(float)Math.Min(Height,Canvas.Size.Height));
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {

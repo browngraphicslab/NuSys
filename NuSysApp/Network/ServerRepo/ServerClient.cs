@@ -20,8 +20,55 @@ namespace NuSysApp
 {
     public class ServerClient
     {
+        public enum ConnectionStrength
+        {
+            UnResponsive = 1001,
+            Terrible = 1000,
+            Bad = 275,
+            Okay = 120,
+            Good = 70,
+        }
+
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
+
+        private int _delayMilliseconds = 15;
+
+        public double CurrentPing
+        {
+            get { return _queue.Average()*_delayMilliseconds; }
+        }
+
+        public event EventHandler<ConnectionStrength> ConnectionStrenthChanged;  
+
+        /// <summary>
+        /// Not constant-time getter for the current connection strength
+        /// </summary>
+        public ConnectionStrength Connection
+        {
+            get
+            {
+                var ping = CurrentPing;
+                if (ping < (int) ConnectionStrength.Good)
+                {
+                    return ConnectionStrength.Good;
+                }
+                if (ping < (int)ConnectionStrength.Okay)
+                {
+                    return ConnectionStrength.Okay;
+                }
+                if (ping < (int)ConnectionStrength.Bad)
+                {
+                    return ConnectionStrength.Bad;
+                }
+                if (ping < (int)ConnectionStrength.Terrible)
+                {
+                    return ConnectionStrength.Terrible;
+                }
+                return ConnectionStrength.UnResponsive;
+                ;
+            }
+        }
 
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
@@ -36,9 +83,19 @@ namespace NuSysApp
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
         private ConcurrentDictionary<string, byte> _requestEventDictionary = new ConcurrentDictionary<string, byte>();
+
+        private ConcurrentFixedQueue<int> _queue;
+
+        private ConnectionStrength _currentStrength = ConnectionStrength.Good;
+
+        /// <summary>
+        /// queue used to track server response times
+        /// </summary>
+        private ConcurrentQueue<int> _statusQueue;
         public string ServerBaseURI { get; private set; }
         public ServerClient()
         {
+            _queue = new ConcurrentFixedQueue<int>(25);
         }
 
         /// <summary>
@@ -207,10 +264,18 @@ namespace NuSysApp
 
             await SendMessageToServer(message).ConfigureAwait(false);
 
+            int attempt = 0;
+
             while (_requestEventDictionary.ContainsKey(mreId))
             {
-                await Task.Delay(30);
+                attempt++;
+                await Task.Delay(_delayMilliseconds);
             }
+
+            _queue.EnQueue(attempt);
+
+            RunPingAnalysis();
+
             if (!_returnMessages.ContainsKey(mreId))
             {
                 return null;//only does this if the request failed
@@ -220,6 +285,20 @@ namespace NuSysApp
             Debug.Assert(outMessage != null);
             return outMessage;
         }
+
+        /// <summary>
+        /// private method to analyze the curent server delay
+        /// </summary>
+        private void RunPingAnalysis()
+        {
+            var strength = Connection;
+            if (_currentStrength != strength)
+            {
+                ConnectionStrenthChanged?.Invoke(this,strength);
+                _currentStrength = strength;
+            }
+        }
+
 
         /// <summary>
         /// will be called when a message is recieved and is a get request

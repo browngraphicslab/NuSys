@@ -683,7 +683,7 @@ namespace NuSysApp
             _minimap.Invalidate();
         }
 
-        private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
+        private async void MultiMenuOnCreateCollection(bool finite, bool shaped, bool useBoundingRect)
         {
             var selections = Selections.ToArray();
             Selections.Clear();
@@ -707,6 +707,20 @@ namespace NuSysApp
                 }
 
                 shapePoints = _latestStroke;
+
+                if (useBoundingRect)
+                {
+                    var rect = Geometry.PointCollecionToBoundingRect(shapePoints);
+                    shapePoints = new List<PointModel>()
+                    {
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y),
+                    };
+                }
             }
             else
             {
@@ -717,6 +731,19 @@ namespace NuSysApp
             if (shaped && _latestStroke != null)
             {
                 shapePoints = _latestStroke;
+                if (useBoundingRect)
+                {
+                    var rect = Geometry.PointCollecionToBoundingRect(shapePoints);
+                    shapePoints = new List<PointModel>()
+                    {
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y),
+                    };
+                }
             }
             else if ((shaped && _latestStroke == null) || finite)
             {

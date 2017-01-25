@@ -181,16 +181,21 @@ namespace NuSysApp
             if (_itemsToDisplayElements.ContainsKey(item))
             {
                 RemoveElement(_itemsToDisplayElements[item]);
-                var displayElement = _itemsToDisplayElements[item];
-                _itemsToDisplayElements.Remove(item);
-                if (_displayElements.Contains(displayElement))
+                Debug.Assert(_itemsToDisplayElements.ContainsKey(item));
+                if (_itemsToDisplayElements.ContainsKey(item))
                 {
-                    _displayElements.Remove(displayElement);
-                    if (_elementsToLocations.ContainsKey(displayElement))
+                    var displayElement = _itemsToDisplayElements[item];
+                    _itemsToDisplayElements.Remove(item);
+                    if (_displayElements.Contains(displayElement))
                     {
-                        _elementsToLocations.Remove(displayElement);
+                        _displayElements.Remove(displayElement);
+                        if (_elementsToLocations.ContainsKey(displayElement))
+                        {
+                            _elementsToLocations.Remove(displayElement);
+                        }
                     }
                 }
+
             }
             IsDirty = true;
             UpdateElementGridLocations();

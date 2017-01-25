@@ -65,6 +65,12 @@ namespace NuSysApp
         public event EventHandler<ReadOnlyViewingMode> ReadOnlyModeSettingChanged;
 
         /// <summary>
+        /// Event fired when the visibility of tags no nodes is changed.
+        /// Passed the enw visibility bool
+        /// </summary>
+        public event EventHandler<bool> TagsVisibleChanged;
+
+        /// <summary>
         /// private version of the bradcrumb visibility bool
         /// </summary>
         private bool _breadCrumbsDocked = true;
@@ -93,6 +99,30 @@ namespace NuSysApp
         /// Private version of ReadOnlyViewingMode
         /// </summary>
         private ReadOnlyViewingMode _readOnlyViewingModeOption = ReadOnlyViewingMode.AlwaysVisible;
+
+        /// <summary>
+        /// bool representing the visibility of tags on nodes
+        /// </summary>
+        private bool _tagsVisible = true;
+
+        /// <summary>
+        /// Public bool for representing the visibility of keywords on nodes.
+        /// True if they are visible, false otherwise
+        /// </summary>
+        public bool TagsVisible
+        {
+            get { return _tagsVisible; }
+            set
+            {
+                var fireEvent = _tagsVisible != value;
+                _tagsVisible = value;
+                if (fireEvent)
+                {
+                    TagsVisibleChanged?.Invoke(this, value);
+                    SaveToFile();
+                }
+            }
+        }
 
         /// <summary>
         /// Accessibility setting for increasing the size of fonts and some buttons.
