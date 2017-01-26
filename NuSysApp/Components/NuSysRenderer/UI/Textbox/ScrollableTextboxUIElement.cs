@@ -755,7 +755,7 @@ namespace NuSysApp
             {
                 _isCtrlPressed = true;
             }
-            // Special case z,x,c keys while control is pressed
+            // Special case z,x,c,a keys while control is pressed
             else if (args.Key == VirtualKey.C && _isCtrlPressed)
             {
                 Copy();
@@ -768,6 +768,11 @@ namespace NuSysApp
             {
                 Paste();
             }
+            else if (args.Key == VirtualKey.A && _isCtrlPressed)
+            {
+                SelectAll();
+            }
+
             else if (args.Key == VirtualKey.Tab)
             {
                 if (_hasSelection)
