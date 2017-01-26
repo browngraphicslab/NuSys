@@ -342,6 +342,7 @@ using MyToolkit.UI;
                 var normalizedHeight = 337.0/1080;
                 Width = SessionController.Instance.ScreenWidth* normalizedWidth;
                 Height = SessionController.Instance.ScreenHeight* normalizedHeight;
+
             });
         }
         /// <summary>

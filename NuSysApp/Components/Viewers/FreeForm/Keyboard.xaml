@@ -11,7 +11,7 @@
     Height="350" Width="1000"
     >
 
-    <UserControl.Resources>
+    <UserControl.Resources >
         <Style TargetType="local:KeyboardKey">
             <Setter Property="Margin" Value="4"/>
         </Style>
@@ -35,9 +35,11 @@
             <TextBlock x:Name="xTestingText" HorizontalAlignment="Left"></TextBlock>
             <TextBlock x:Name="xTestingText2" HorizontalAlignment="Center"></TextBlock>
 
-            <Button HorizontalAlignment="Right"  Height="50" Width="80" Click="X_OnClick">
-                <Image Source="ms-appx:///Assets/icon_metadata_x.png"></Image>
-            </Button>
+            <Button   HorizontalAlignment="Right"  Height="50" Width="50" Click="X_OnClick">
+                    <Button.Content>
+                        <Path x:Name="Cross" Data="M0,0 L1,1 M0,1 L1,0" Stretch="Fill" Stroke="White" StrokeThickness="2" />
+                    </Button.Content>
+                </Button>
             
         </Grid>
 
@@ -231,7 +233,7 @@
                 <local:KeyboardKey Grid.Column="4" KeyValue="_" KeyText="_" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="5" KeyValue="=" KeyText="=" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="6" KeyValue="+" KeyText="+" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
-                <local:KeyboardKey Grid.Column="8" KeyValue="4;" KeyText="4" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
+                <local:KeyboardKey Grid.Column="8" KeyValue="4" KeyText="4" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey  Grid.Column="9" KeyValue="5" KeyText="5" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey  Grid.Column="10" KeyValue="6" KeyText="6" HorizontalAlignment="Stretch"  PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <!--<local:KeyboardKey Grid.RowSpan="2" Grid.Column="12" KeyValue="Enter" KeyText="Enter" HorizontalAlignment="Stretch"  Padding="10" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>-->
