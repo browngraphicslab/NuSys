@@ -55,13 +55,13 @@ namespace NusysServer
             //SetUpTables();
 
             //"Update Customers set City=Orders.OrderID FROM Customers join Orders on Orders.CustomerID = Customers.CustomerID  where ShipperId='3'";
-            
+            /*
             var lib = "library_elements";
             var cont = "contents";
             var cmd = MakeCommand($"update {cont} set {cont}.content_type = 'Collection' from {cont} join {lib} on {cont}.content_id={lib}.content_id where {lib}.type='Collection'");
             var changed = cmd.ExecuteNonQuery();
             ErrorLog.AddErrorString("ROWS CHANGED: "+changed);
-            
+            */
             TestFunc();
             ErrorLog.AddError(new Exception("Server Starting..."));
         }

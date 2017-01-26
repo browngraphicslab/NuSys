@@ -319,8 +319,8 @@ namespace NuSysApp
             // add manipulation events
             Dragged += ResizeableWindowUIElement_Dragged;
             Pressed += ResizeableWindowUIElement_Pressed;
-            OnFocusGained += FocusGainedShowHighlight;
-            OnChildFocusGained += FocusGainedShowHighlight;
+            OnFocusGained += FocusGained;
+            OnChildFocusGained += FocusGained;
             OnFocusLost += FocusLostHideHighlight;
             OnChildFocusLost += FocusLostHideHighlight;
 
@@ -343,9 +343,17 @@ namespace NuSysApp
             };
         }
 
-        private void FocusGainedShowHighlight(BaseRenderItem item)
+        /// <summary>
+        /// event fired whenever this or a child gains focus.
+        /// </summary>
+        /// <param name="item"></param>
+        private void FocusGained(BaseRenderItem item)
         {
             ToggleResizeHighlight(true);
+            if(Parent == SessionController.Instance.NuSessionView)
+            {
+                SessionController.Instance.NuSessionView.MakeTopWindow(this);
+            }
         }
 
         private void FocusLostHideHighlight(BaseRenderItem item)
@@ -374,8 +382,8 @@ namespace NuSysApp
         {
             Dragged -= ResizeableWindowUIElement_Dragged;
             Pressed -= ResizeableWindowUIElement_Pressed;
-            OnFocusGained -= FocusGainedShowHighlight;
-            OnChildFocusGained -= FocusGainedShowHighlight;
+            OnFocusGained -= FocusGained;
+            OnChildFocusGained -= FocusGained;
             OnFocusLost -= FocusLostHideHighlight;
             OnFocusLost -= FocusLostHideHighlight;
 

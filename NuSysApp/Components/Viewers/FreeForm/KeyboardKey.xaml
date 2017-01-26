@@ -8,10 +8,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    Background="Blue">
     
-    <Grid x:Name="xMainGrid"  Background ="Gray" >
-        <TextBlock x:Name="xTextBlock" Foreground="White"  HorizontalAlignment =" Center" VerticalAlignment ="Center"></TextBlock>
+    <Grid x:Name="xMainGrid" PointerEntered="XMainGrid_OnPointerEntered" PointerExited="XMainGrid_OnPointerExited">
+        <TextBlock x:Name="xTextBlock" Foreground="White" FontSize="25"  Margin="0,4,0,0"   HorizontalAlignment="Center" VerticalAlignment ="Center"></TextBlock>
         <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Center" VerticalAlignment ="Top"></TextBlock>
         <ContentPresenter Content="{Binding AdditionalContent, ElementName=Self}" />
     </Grid>

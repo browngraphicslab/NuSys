@@ -857,7 +857,7 @@ namespace NuSysApp
             if (IsEditable)
             {
                 _caret.IsVisible = true;
-
+                SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
                 UITask.Run(delegate
                 {
                     var keyboardCaps = new KeyboardCapabilities();

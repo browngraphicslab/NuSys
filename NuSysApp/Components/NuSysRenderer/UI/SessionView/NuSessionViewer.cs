@@ -757,6 +757,24 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// public method to essentially reset the z-index of children windows.
+        /// This will allow the focused window to be the top window.
+        /// </summary>
+        /// <param name="window"></param>
+        public void MakeTopWindow(WindowUIElement window)
+        {
+            Debug.Assert(window?.Parent != null);
+            Debug.Assert(window.Parent == this);
+            Debug.Assert(_children.Contains(window));
+            if(window.Parent == this && _children.Contains(window))
+            {
+                _children.Remove(window);
+                _children.Add(window);
+            }
+
+        }
+
+        /// <summary>
         /// Method called when a presentation button is clicked
         /// </summary>
         /// <param name="item"></param>

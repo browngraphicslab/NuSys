@@ -46,27 +46,76 @@ namespace NuSysApp
             {
                 get { return xMainGrid.Background; }
 
-                set { xMainGrid.Background = value; }
+                set {xMainGrid.Background = value; }
             }
 
+        public SolidColorBrush SelectColor
+        {
+            set { _selectColor = value; }
+            get { return _selectColor; }
+        }
+        public SolidColorBrush UnselectColor
+        {
+            set { _unselectColor = value; }
+            get { return _unselectColor; }
+        }
+        private SolidColorBrush _unselectColor;
         private SolidColorBrush _selectColor;
-            private SolidColorBrush _unselectColor;
-            public string KeyValue { set; get; }
+        private SolidColorBrush _highlightColor;
+        private SolidColorBrush _highlightTextColor;
+        private SolidColorBrush _unhighlightTextColor;
 
 
-            public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("KeyText", typeof(string), typeof(KeyboardKey), null);
-            public static readonly DependencyProperty ValueProperty = DependencyProperty.RegisterAttached("KeyValue", typeof(string), typeof(KeyboardKey), null);
-            public static readonly DependencyProperty AdditionalContentProperty = DependencyProperty.Register("AdditionalContent", typeof(object), typeof(KeyboardKey), null);
+
+        public string KeyValue { set; get; }
+
+        public double KeyFontSize
+        {
+            get { return xTextBlock.FontSize; }
+
+            set { xTextBlock.FontSize = value; }
+        }
+
+
+        public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("KeyText", typeof(string), typeof(KeyboardKey), null);
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.RegisterAttached("KeyValue", typeof(string), typeof(KeyboardKey), null);
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("KeyColor", typeof(SolidColorBrush), typeof(KeyboardKey), null);
+        public static readonly DependencyProperty FontSizeProperty = DependencyProperty.RegisterAttached("KeyFontSize", typeof(double), typeof(KeyboardKey), null);
+        public static readonly DependencyProperty SelectColorProperty = DependencyProperty.Register("SelectColor", typeof(SolidColorBrush), typeof(KeyboardKey), null);
+        public static readonly DependencyProperty UnSelectColorProperty = DependencyProperty.Register("UnselectColor", typeof(SolidColorBrush), typeof(KeyboardKey), null);
+        public static readonly DependencyProperty AdditionalContentProperty = DependencyProperty.Register("AdditionalContent", typeof(object), typeof(KeyboardKey), null);
+
         public KeyboardKey()
             {
-                this.InitializeComponent();
+                _unselectColor = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
+                _selectColor = new SolidColorBrush(Color.FromArgb(255, 0, 118, 215));
+                _highlightColor = new SolidColorBrush(Color.FromArgb(255, 229, 229, 229));
+                _highlightTextColor = new SolidColorBrush(Colors.Black);
+                _unhighlightTextColor = new SolidColorBrush(Colors.White);
 
-                _unselectColor = new SolidColorBrush(Colors.Gray);
-                _selectColor = new SolidColorBrush(Colors.Blue);
+
+            this.InitializeComponent();
+                SizeChanged += KeyboardKey_SizeChanged;
+
+                
+                //Key by default should be unselected
+                Unselect();
             }
 
+        private void SetFontSize()
+        {
+            var screenHeight = SessionController.Instance.ScreenHeight;
 
-            public void Select()
+            xTextBlock.FontSize = 25/1080f * screenHeight;
+            xSuperscriptTextBlock.FontSize = 11/1080f*screenHeight;
+        }
+
+        private void KeyboardKey_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetFontSize();
+        }
+
+        public void Select()
             {
                 KeyColor = _selectColor;
 
@@ -78,17 +127,39 @@ namespace NuSysApp
 
             }
 
-            public void Deactivate()
+            public void Highlight()
+            {
+                KeyColor = _highlightColor;
+                xTextBlock.Foreground = _highlightTextColor;
+
+            }
+            public void Unhighlight()
+            {
+                KeyColor = _unselectColor;
+                xTextBlock.Foreground = _unhighlightTextColor;
+
+            }
+
+        public void Deactivate()
             {
                 IsHitTestVisible = false;
-                xTextBlock.Foreground = new SolidColorBrush(Colors.LightGray);
             }
 
             public void Activate()
             {
                 IsHitTestVisible = true;
-                xTextBlock.Foreground = new SolidColorBrush(Colors.White);
 
+            }
+
+            private void XMainGrid_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+            {
+                Highlight();
+            }
+
+            private void XMainGrid_OnPointerExited(object sender, PointerRoutedEventArgs e)
+            {
+                
+                Unhighlight();
             }
         }
     }
