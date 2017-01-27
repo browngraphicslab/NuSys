@@ -72,7 +72,7 @@
             </Grid>
             
         </Canvas>
-        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed" ></local:Keyboard>
+        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed"  ></local:Keyboard>
 
         <local:DetailViewFullScreenImageViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="xFullScreenImageViewer"></local:DetailViewFullScreenImageViewer>
 
