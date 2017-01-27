@@ -387,9 +387,13 @@ namespace NuSysApp
         public bool RemoveMetadataLocally(string key)
         {
             MetadataEntry outobj;
-            MetadataChanged?.Invoke(this);
-            return _libraryElementModel.Metadata.TryRemove(key, out outobj);
-
+            var success =  _libraryElementModel.Metadata.TryRemove(key, out outobj);
+            if (success)
+            {
+                MetadataChanged?.Invoke(this);
+            }
+            Debug.Assert(success == true);
+            return success;
         }
 
         /// <summary>
