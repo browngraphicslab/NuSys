@@ -112,6 +112,11 @@ namespace NuSysApp
         /// </summary>
         private bool _filterIsDirty;
 
+        /// <summary>
+        /// ienumerable of selected controllers
+        /// </summary>
+        private IEnumerable<LibraryElementController> _previouslySelectedControllers;
+
         ///// <summary>
         ///// TEST BUTTON
         ///// </summary>
@@ -199,6 +204,8 @@ namespace NuSysApp
             // events so that the library list view adds and removes elements dynamically
             SessionController.Instance.ContentController.OnNewLibraryElement += UpdateLibraryListWithNewElement;
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
+
+            _previouslySelectedControllers = new List<LibraryElementController>();
         }
 
         /// <summary>
@@ -329,6 +336,33 @@ namespace NuSysApp
                     }
                 });
             }
+
+            var currentlySelectedControllers = LibraryListView.GetSelectedItems().Select(lem => SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId));
+
+
+            if (currentlySelectedControllers.Any())
+            {
+                BrushManager.SetBrushVisibility(false);
+            }
+
+            var deselectedControllers = _previouslySelectedControllers.Except(currentlySelectedControllers);
+            foreach(var controller in deselectedControllers)
+            {
+                controller.RemoveHighlight();
+            }
+
+            foreach(var controller in currentlySelectedControllers)
+            {
+                controller.AddHighlight();
+            }
+
+            _previouslySelectedControllers = new List<LibraryElementController>(currentlySelectedControllers);
+
+            if (!currentlySelectedControllers.Any())
+            {
+                BrushManager.SetBrushVisibility(true);
+            }
+
         }
 
 
