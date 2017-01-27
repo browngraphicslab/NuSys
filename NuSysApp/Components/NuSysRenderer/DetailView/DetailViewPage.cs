@@ -11,6 +11,7 @@ using Windows.Storage;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Popups;
+using Windows.UI.Text;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
@@ -98,12 +99,7 @@ namespace NuSysApp
         /// <summary>
         /// text that says where the element's origin is from
         /// </summary>
-        private TextboxUIElement _originWords;
-
-        /// <summary>
-        /// text that allows user to jump to element origin
-        /// </summary>
-        private ButtonUIElement _originLink;
+        private RectangleButtonUIElement _originWords;
 
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
@@ -147,27 +143,17 @@ namespace NuSysApp
             };
             AddChild(_dragRect);
 
-            _originWords = new TextboxUIElement(this, Canvas)
+            _originWords = new RectangleButtonUIElement(this, Canvas)
             {
-                Text = "this item originates from ",
-                Height = 15,
-                FontSize = 12,
-                FontFamily = UIDefaults.TextFont
-            };
-            AddChild(_originWords);
-
-            _originLink = new ButtonUIElement(this, Canvas)
-            {
+                ButtonText = "this item originates from [insert origin here]",
                 Background = Colors.Transparent,
-                ButtonTextSize = 12,
-                ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Left,
-                ButtonTextVerticalAlignment = CanvasVerticalAlignment.Bottom,
-                Height = 15,
-                Width = 50,
-                ButtonText = "put origin here",
+                Height = 20,
+                Width = 200,
+                ButtonTextSize = 18,
                 RichTextButton = true
             };
-            AddChild(_originLink);
+            AddChild(_originWords);
+            
 
             _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.DraggableStyle,
                 "Drag to Collection")
@@ -206,7 +192,17 @@ namespace NuSysApp
             _dragToCollectionButton.DragCompleted += _dragToCollectionButton_DragCompleted;
             _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
+            _originWords.Tapped += ElementOrigin_Tapped;
+        }
 
+        /// <summary>
+        /// navigates to the origin of the element - location in library if it is the original element, the source if it is a copy, or the parent if it is a region
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ElementOrigin_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            //TODO: NAVIGATE TO ORIGIN
         }
 
         private async void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -391,6 +387,9 @@ namespace NuSysApp
             _contentLayoutManager.SetMargins(20);
             _contentLayoutManager.ArrangeItems(new Vector2(0, 0));
 
+            _originWords.Transform.LocalPosition =
+                 new Vector2(Width / 2 - _originWords.Width / 2, _imageHeight);
+
             if (_showRegions)
             {
                 _addRegionButton.IsVisible = true;
@@ -432,9 +431,6 @@ namespace NuSysApp
                     _addRegionButton.Transform.LocalPosition = new Vector2(Width / 2 - _addRegionButton.Width / 2,
                         _imageHeight + _contentLayoutManager.TopMargin + _expandButton.Height + 20);
                 }
-                _originWords.Transform.LocalPosition =
-                    new Vector2(Width / 2 - _originWords.Width / 2 - _originLink.Width, _expandButton.Transform.LocalY - _originWords.Height + 5);
-                _originLink.Transform.LocalPosition = new Vector2(Width / 2 - _originWords.Width, _expandButton.Transform.LocalY - _originWords.Height + 5);
             }
 
             if (_wordButton != null)
@@ -443,9 +439,7 @@ namespace NuSysApp
                         _imageHeight + _contentLayoutManager.TopMargin + 10);
             }
 
-            _originWords.Transform.LocalPosition =
-                    new Vector2(Width / 2 - _originWords.Width / 2 - _originLink.Width, _imageHeight);
-            _originLink.Transform.LocalPosition = new Vector2(Width / 2 - _originWords.Width, _imageHeight);
+
 
             base.Update(parentLocalToScreenTransform);
         }
