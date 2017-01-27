@@ -459,6 +459,7 @@ namespace NuSysApp
             regionRequestArgs.Medium_Thumbnail_Url = _controller.LibraryElementModel.MediumIconUrl;
             regionRequestArgs.Small_Thumbnail_Url = _controller.LibraryElementModel.SmallIconUrl;
             regionRequestArgs.AccessType = access;
+            regionRequestArgs.Origin = new LibraryElementOrigin() {Type =  LibraryElementOrigin.OriginType.Region,OriginId = _controller.LibraryElementModel.LibraryElementId };
 
             var request = new CreateNewLibraryElementRequest(regionRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

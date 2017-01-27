@@ -416,6 +416,12 @@ namespace NusysIntermediate
                 public static readonly string NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY = "pdf_page_end";
 
                 /// <summary>
+                /// the key that will hold the final page number of the requested pdf library element model
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ORIGIN_OBJECT_KEY = "origin_object_key";
+
+                /// <summary>
                 /// the key that will hold the start of the interval of the audio library elment model 
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
@@ -1434,13 +1440,20 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY = "parent_id_key";
 
-            #region RectangleRegion
 
             /// <summary>
-            /// This key is used to hold the width of the image library element model when represented in message form.
+            /// This key is used to hold the serialized origin object.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY = "width_key";
+            public static readonly string LIBRARY_ELEMENT_MODEL_ORIGIN_OBJECT_KEY = "origin_key";
+
+        #region RectangleRegion
+
+        /// <summary>
+        /// This key is used to hold the width of the image library element model when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY = "width_key";
 
             /// <summary>
             /// This key is used to hold the height of the image library element model when represented in message form.

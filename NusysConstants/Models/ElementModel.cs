@@ -30,10 +30,9 @@ namespace NusysIntermediate
         public string LibraryId { set; get; }
 
         /// <summary>
-        /// the access type enum for this element.  
-        /// If it is private and the creator of the element wasn't the current user, the user shouldn't be able to see it
+        /// The bool representing whether this node will have the title viisible on the workspace
         /// </summary>
-        public NusysConstants.AccessType AccessType { get; set; }
+        public bool ShowTitle { set; get; } = true;
 
         public string ParentCollectionId { get; set; }   
 
@@ -167,10 +166,8 @@ namespace NusysIntermediate
             {
                 LibraryId = props.GetString(NusysConstants.ALIAS_LIBRARY_ID_KEY, "");
             }
-            if (props.ContainsKey(NusysConstants.ALIAS_ACCESS_KEY))
-            {
-                AccessType = props.GetEnum<NusysConstants.AccessType>(NusysConstants.ALIAS_ACCESS_KEY);
-            }
+
+
             //TODO wtf our server refactor should have no hardcoded strings like these
             /*
             //may not need some of this stuff below
