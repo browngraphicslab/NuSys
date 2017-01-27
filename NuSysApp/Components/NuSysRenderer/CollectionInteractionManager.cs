@@ -200,19 +200,24 @@ namespace NuSysApp
         {
             var startController = start?.ViewModel?.Controller;
             var linkController = link?.ViewModel?.Controller;
+            FollowLink(startController, linkController);
+        }
+
+        public void FollowLink(ElementController nodeController, LinkController linkController)
+        {
             Debug.Assert(linkController != null);
-            Debug.Assert(startController != null);
-            if (linkController != null && startController != null)
+            Debug.Assert(nodeController != null);
+            if (linkController != null && nodeController != null)
             {
                 var linkLEM = linkController.LibraryElementController.LibraryElementModel as LinkLibraryElementModel;
                 Debug.Assert(linkLEM != null);
                 if (linkLEM != null)
                 {
-                    var otherId = startController.Id == linkController.Model.InAtomId ? linkController.Model.OutAtomId : linkController.Model.InAtomId;
+                    var otherId = nodeController.Id == linkController.Model.InAtomId ? linkController.Model.OutAtomId : linkController.Model.InAtomId;
                     var endPoint = SessionController.Instance.ElementModelIdToElementController.Values.FirstOrDefault(item => item.Id == otherId);
                     if (endPoint != null)
                     {
-                       SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(endPoint.Id);
+                        SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(endPoint.Id);
                     }
                 }
             }

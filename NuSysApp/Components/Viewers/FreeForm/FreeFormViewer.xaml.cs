@@ -452,6 +452,12 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element, CanvasPointer pointer)
         {
+            if (Selections.Count() == 1 && Selections.First().ViewModel.Controller.LibraryElementModel.Type != NusysConstants.ElementType.Link)
+            {
+                _collectionInteractionManager.FollowLink(Selections.First().ViewModel.Controller,element.ViewModel.Controller);
+                return;
+            }
+
             RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(40,0);
             RenderEngine.BtnDelete.IsVisible = true;
             _selectedLink = element;
