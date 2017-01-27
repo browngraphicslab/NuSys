@@ -327,11 +327,11 @@ namespace NuSysApp
             _playPauseButton.Width = 25;
             _playPauseButton.Height = 25;
             _playPauseButton.Transform.LocalPosition = new Vector2(buttonHorizontalSpacing, Height - _buttonsBarHeight / 2 - _playPauseButton.Height / 2);
-            _playPauseButton.ImageBounds = new Rect(3,3,19,19);
+            _playPauseButton.ImageBounds = new Rect(3f/25,3f/25,19f/25,19f/25);
             _volumeButton.Width = 25;
             _volumeButton.Height = 25;
             _volumeButton.Transform.LocalPosition = new Vector2(_playPauseButton.Width + 2 * buttonHorizontalSpacing, Height - _buttonsBarHeight / 2 - _volumeButton.Height / 2);
-            _volumeButton.ImageBounds = new Rect(0, 0, 25, 25);
+            _volumeButton.ImageBounds = new Rect(0, 0, 1f, 1f);
             _volumeSlider.Width = 100;
             _volumeSlider.Height = 25;
             _volumeSlider.Transform.LocalPosition = new Vector2(_playPauseButton.Width + _volumeButton.Width + 3 * buttonHorizontalSpacing, Height - _buttonsBarHeight / 2 - _volumeSlider.Height / 2);
