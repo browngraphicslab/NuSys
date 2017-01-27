@@ -163,8 +163,8 @@
                 <local:KeyboardKey Grid.Column="1" KeyValue="CONTROL" KeyText="Ctrl" PointerPressed="ControlKey_OnPointerPressed" PointerReleased="ControlKey_OnPointerReleased"  PointerExited="ControlKey_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
                 <local:KeyboardKey Grid.Column="2" KeyValue="ALT" KeyText="Alt" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
                 <local:KeyboardKey Grid.Column="3" KeyValue="SPACE" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
-                <local:KeyboardKey Grid.Column="4" KeyValue="LEFT" KeyText="&lt;"  PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
-                <local:KeyboardKey Grid.Column="5" KeyValue="RIGHT"  KeyText="&gt;" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
+                <local:KeyboardKey Grid.Column="4" KeyValue="LEFT" KeyText="←"  PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
+                <local:KeyboardKey Grid.Column="5" KeyValue="RIGHT"  KeyText="→" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
                 <local:KeyboardKey  x:Name="x123Toggle2" Grid.Column="6"  KeyText="&amp;123" PointerPressed="Special_OnPointerPressed" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
             </Grid>
         </Grid>
@@ -192,7 +192,7 @@
                     <ColumnDefinition Width="0.5*"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <local:KeyboardKey Grid.Column="0" KeyValue="TAB" KeyText="Tab" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
+                <local:KeyboardKey Grid.Column="0" KeyValue="TAB" KeyText="Tab" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="1" KeyValue="!" KeyText="!" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" />
                 <local:KeyboardKey Grid.Column="2" KeyValue="@" KeyText="@" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="3" KeyValue="#" KeyText="#" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" />
@@ -225,7 +225,7 @@
                     <ColumnDefinition />
 
                 </Grid.ColumnDefinitions>
-                <local:KeyboardKey Grid.Column="0" KeyValue="←" KeyText="←" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
+                <local:KeyboardKey Grid.Column="0" KeyValue="&lt;" KeyText="&lt;" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="1" KeyValue="(" KeyText="(" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="2" KeyValue=")" KeyText=")" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="3" KeyValue="-" KeyText="-" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
@@ -256,7 +256,7 @@
                     <ColumnDefinition Width="0.5*"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <local:KeyboardKey Grid.Column="0" KeyValue="→" KeyText="→" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
+                <local:KeyboardKey Grid.Column="0" KeyValue="&gt;" KeyText="&gt;" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="1" KeyValue="\" KeyText="\" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="2" KeyValue=";" KeyText=";" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="3" KeyValue=":" KeyText=":" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
@@ -286,8 +286,8 @@
                 <local:KeyboardKey x:Name="xabcToggle1" Grid.Column="0"  KeyText="&amp;123" PointerPressed="Alphabetical_OnPointerPressed" UnselectColor="#4D4D4D"/>
                 <local:KeyboardKey Grid.Column="1" KeyValue="CONTROL" KeyText="Ctrl" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
                 <local:KeyboardKey Grid.Column="2" KeyValue="ALT" KeyText="Alt" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
-                <local:KeyboardKey Grid.Column="3" KeyValue="LEFT" KeyText="&lt;" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
-                <local:KeyboardKey Grid.Column="4" KeyValue="RIGHT" KeyText="&gt;" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
+                <local:KeyboardKey Grid.Column="3" KeyValue="LEFT" KeyText="←" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
+                <local:KeyboardKey Grid.Column="4" KeyValue="RIGHT" KeyText="→" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited" KeyColor="#4D4D4D" UnselectColor="#4D4D4D"/>
                 <local:KeyboardKey Grid.Column="5" Grid.ColumnSpan="2" KeyValue="SPACE" KeyText="Space" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey Grid.Column="8" Grid.ColumnSpan="2" KeyValue="0" KeyText="0" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey  Grid.Column="10" KeyValue="." KeyText="." HorizontalAlignment="Stretch"  PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>

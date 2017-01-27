@@ -106,6 +106,9 @@ namespace NuSysApp
             {"]", (VirtualKey) 221},
             {"LEFT", VirtualKey.Left},
             {"RIGHT", VirtualKey.Right},
+            {"<", (VirtualKey) 188},
+            {">", (VirtualKey)190},
+
 
 
 
@@ -155,7 +158,8 @@ namespace NuSysApp
             {(VirtualKey) 190, ">"},
             {(VirtualKey) 219, "{"},
             {(VirtualKey) 221, "}"},
-                {(VirtualKey) 222, "\""},
+            {(VirtualKey) 222, "\""},
+
 
 
 
