@@ -451,6 +451,7 @@ namespace NuSysApp
 
             _hasSelection = true;
             CaretCharacterIndex = _selectionEndIndex;
+            _updateSelectionRects = true;
         }
 
         /// <summary>

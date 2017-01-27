@@ -203,7 +203,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                throw new Exception("connection to server failed");
+                 throw new Exception("connection to server failed");
             }
         }
 
