@@ -171,13 +171,51 @@ namespace NuSysApp
         {
             var item1 = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer1.CurrentPoint, _collection, 1);
             var item2 = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer2.CurrentPoint, _collection, 1);
-            if (!(item1 is ElementRenderItem) || !(item2 is ElementRenderItem))
-                return;
 
             if (item1 == _collection || item2 == _collection)
+            {
                 return;
+            }
+
+            if (item1 is ElementRenderItem && item2 is LinkRenderItem)
+            {
+                FollowLink(item1 as ElementRenderItem, item2 as LinkRenderItem);
+            }
+
+            if (item2 is ElementRenderItem && item1 is LinkRenderItem)
+            {
+                FollowLink(item2 as ElementRenderItem, item1 as LinkRenderItem);
+            }
+
+            if (!(item1 is ElementRenderItem) || !(item2 is ElementRenderItem))
+            {
+                return;
+            }
+
 
             CollectionInteractionManagerOnTwoElementsPressed((ElementRenderItem)item1, (ElementRenderItem)item2, pointer1, pointer2);
+        }
+
+        private void FollowLink(ElementRenderItem start, LinkRenderItem link)
+        {
+            var startController = start?.ViewModel?.Controller;
+            var linkController = link?.ViewModel?.Controller;
+            Debug.Assert(linkController != null);
+            Debug.Assert(startController != null);
+            if (linkController != null && startController != null)
+            {
+                var linkLEM = linkController.LibraryElementController.LibraryElementModel as LinkLibraryElementModel;
+                Debug.Assert(linkLEM != null);
+                if (linkLEM != null)
+                {
+                    var otherId = startController.Id == linkController.Model.InAtomId ? linkController.Model.OutAtomId : linkController.Model.InAtomId;
+                    var endPoint = SessionController.Instance.ElementModelIdToElementController.Values.FirstOrDefault(item => item.Id == otherId);
+                    if (endPoint != null)
+                    {
+                       SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(endPoint.Id);
+                    }
+                }
+            }
         }
 
         private void OnPointerPressed(CanvasPointer pointer)
