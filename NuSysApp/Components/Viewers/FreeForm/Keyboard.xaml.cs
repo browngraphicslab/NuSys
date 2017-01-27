@@ -18,10 +18,11 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
+using System.Numerics;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-    namespace NuSysApp
+namespace NuSysApp
     {
         public sealed partial class Keyboard : UserControl
         {
@@ -195,14 +196,14 @@ using MyToolkit.UI;
         public Keyboard()
         {
             this.InitializeComponent();
+            RenderTransform = new CompositeTransform();
 
-            this.RenderTransform = new CompositeTransform();
             CurrentMode = KeyboardMode.LowerCaseAlphabetical;
             _pressedKeys = new List<KeyboardKey>();
             CommentThisOutIfYouAreTesting();
 
-
         }
+
 
         private void CommentThisOutIfYouAreTesting()
         {
@@ -334,14 +335,21 @@ using MyToolkit.UI;
         /// </summary>
         public void GainPseudoFocus()
         {
+            
             UITask.Run(delegate
             {
                 SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ClearAllPointers();
                 Visibility = Visibility.Visible;
+                //Set width and height based on screen dimensions
                 var normalizedWidth = 920.0/1920;
                 var normalizedHeight = 337.0/1080;
                 Width = SessionController.Instance.ScreenWidth* normalizedWidth;
                 Height = SessionController.Instance.ScreenHeight* normalizedHeight;
+
+                //Make keyboard show up in the center
+                var compositeTransform = RenderTransform as CompositeTransform;
+                compositeTransform.TranslateX = SessionController.Instance.ScreenWidth/2 - Width / 2;
+                compositeTransform.TranslateY = SessionController.Instance.ScreenHeight/2 - Height / 2;
 
             });
         }

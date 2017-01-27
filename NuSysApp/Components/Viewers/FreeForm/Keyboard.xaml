@@ -18,7 +18,6 @@
 
     </UserControl.Resources>
 
-    <Border BorderThickness="4" BorderBrush="#1A1A1A">
         <Grid x:Name="xMainGrid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Background ="#1A1A1A" >
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -316,5 +315,4 @@
             </Grid>
         </Grid>
     </Grid>
-    </Border>
 </UserControl>

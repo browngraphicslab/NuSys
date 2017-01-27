@@ -845,7 +845,7 @@ namespace NuSysApp
             _caret.IsVisible = false;
             ClearSelection(false);
 
-            SessionController.Instance.SessionView.FreeFormViewer.Keyboard.LosePseudoFocus();
+            //SessionController.Instance.SessionView.FreeFormViewer.Keyboard.LosePseudoFocus();
         }
 
         /// <summary>
