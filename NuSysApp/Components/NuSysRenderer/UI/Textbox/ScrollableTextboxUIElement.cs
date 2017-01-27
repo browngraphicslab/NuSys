@@ -1691,9 +1691,11 @@ namespace NuSysApp
                 return;
             }
 
-            _xOffset = Math.Min(0, _xOffset);
-            _xOffset = Math.Max(-(TextLayout.LayoutBounds.Width - Width + 2 * (UIDefaults.XTextPadding + BorderWidth)), _xOffset);
+            // x offset is how far we are to the left, so it should never be positive
 
+
+            _xOffset = Math.Max(-(TextLayout.LayoutBounds.Width - Width + 2 * (UIDefaults.XTextPadding + BorderWidth)), _xOffset);
+            _xOffset = Math.Min(0, _xOffset);
         }
 
         /// <summary>
