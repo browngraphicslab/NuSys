@@ -255,6 +255,12 @@ namespace NusysIntermediate
             public static readonly string NEW_ELEMENT_REQUEST_ACCESS_KEY = "access";
 
             /// <summary>
+            /// the key used to send the visibility bool of titles
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_TITLE_VISIBILITY_KEY = "titles_visible";
+
+
+            /// <summary>
             /// This is returned when the NewElementReqeust request is succesfull. 
             /// The value will be a josn-serialized ElementModel that can be run through the factory
             /// </summary>
@@ -901,6 +907,11 @@ namespace NusysIntermediate
         /// double, the width of this alias
         /// </summary>
         public static readonly string ALIAS_SIZE_WIDTH_KEY = "width";
+
+        /// <summary>
+        /// bool the visibility of the titles on the current node
+        /// </summary>
+        public static readonly string ALIAS_TITLE_VISIBILITY_KEY = "title_visibility";
 
         /// <summary>
         /// double, the height of this alias

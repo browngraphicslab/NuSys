@@ -79,6 +79,8 @@ namespace NusysServer
             {NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY, NusysConstants.ALIAS_LOCATION_Y_KEY }, // y coordinate
             {NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY, NusysConstants.ALIAS_SIZE_HEIGHT_KEY }, // height
             {NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY, NusysConstants.ALIAS_SIZE_WIDTH_KEY }, // width
+
+            {NusysConstants.NEW_ELEMENT_REQUEST_TITLE_VISIBILITY_KEY,NusysConstants.ALIAS_TITLE_VISIBILITY_KEY }, //title visiblity
         };
 
         /// <summary>

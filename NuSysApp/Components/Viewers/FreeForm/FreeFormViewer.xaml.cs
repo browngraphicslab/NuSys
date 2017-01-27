@@ -623,7 +623,7 @@ namespace NuSysApp
             xMultimediaCanvas.IsHitTestVisible = false;
         }
 
-        private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element)
+        private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element, CanvasPointer pointer)
         {
             if (element is VideoElementRenderItem)
             {
@@ -1345,8 +1345,21 @@ namespace NuSysApp
             }
         }
 
-        private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
+
+        private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element, CanvasPointer pointer)
         {
+            if (pointer.IsRightButtonPressed && element != null)
+            {
+                var popup = new FlyoutPopup(SessionController.Instance.NuSessionView,SessionController.Instance.NuSessionView.ResourceCreator);
+                popup.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y );
+
+                popup.AddFlyoutItem("Toggle Title Visibility", (item, canvasPointer) =>
+                {
+                    element.ViewModel.Controller.SetTitleVisiblity(!element.ViewModel.Controller.Model.ShowTitle);
+                }, SessionController.Instance.NuSessionView.ResourceCreator);
+                return;
+            }
+
             if (SessionController.IsReadonly)
             {
                 Debug.Assert(element?.ViewModel?.Id != null);

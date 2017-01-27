@@ -30,6 +30,11 @@ namespace NuSysApp
         public string Id { get; set; }
 
         /// <summary>
+        /// the bool for the node to have visible or invisible titles
+        /// </summary>
+        public bool ShowTitle { get; set; } = true;
+
+        /// <summary>
         /// the access that this new element will have upon creation.  
         /// Even if this access type is public, it will be hidden if the library element's access type is private
         /// </summary>
@@ -106,6 +111,7 @@ namespace NuSysApp
             message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY] = Height;
             message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY] = Width;
             message[NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY] = LibraryElementId;
+            message[NusysConstants.NEW_ELEMENT_REQUEST_TITLE_VISIBILITY_KEY] = ShowTitle;
 
             if (AccessType == null) //access type can be null because it is nullable.  If it's null (i.e. not set), default to public for now
             {

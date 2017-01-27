@@ -28,7 +28,7 @@ namespace NuSysApp
         public delegate void LinkSelectedHandler(LinkRenderItem element, CanvasPointer point);
         public delegate void TrailSelectedHandler(TrailRenderItem element, CanvasPointer point);
         public delegate void BaseRenderItemSelectedHandler(BaseRenderItem element);
-        public delegate void RenderItemSelectedHandler(ElementRenderItem element);
+        public delegate void RenderItemSelectedHandler(ElementRenderItem element, CanvasPointer pointer);
         public delegate void InkDrawHandler(CanvasPointer pointer);
         public delegate void LinkCreatedHandler(ElementRenderItem element1, ElementRenderItem element2);
         public delegate void DuplicatedCreated(ElementRenderItem element, Vector2 point);
@@ -554,7 +554,7 @@ namespace NuSysApp
                 //MultimediaElementActivated?.Invoke(element as VideoElementRenderItem);
                 SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo((element as VideoElementRenderItem).ViewModel.Controller.LibraryElementController as VideoLibraryElementController);
             if (element is AudioElementRenderItem)
-                MultimediaElementActivated?.Invoke(element as AudioElementRenderItem);
+                MultimediaElementActivated?.Invoke(element as AudioElementRenderItem, pointer);
         }
 
 
@@ -624,7 +624,7 @@ namespace NuSysApp
                         SelectionsCleared?.Invoke();
                     }
                 }
-                ItemSelected?.Invoke(elementRenderItem);
+                ItemSelected?.Invoke(elementRenderItem, pointer);
             }
         }
 

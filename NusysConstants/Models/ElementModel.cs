@@ -34,6 +34,11 @@ namespace NusysIntermediate
         /// </summary>
         public bool ShowTitle { set; get; } = true;
 
+        /// <summary>
+        /// bool to show or hide keywords
+        /// </summary>
+        public bool ShowKeywords { set; get; } = true;
+
         public string ParentCollectionId { get; set; }   
 
         // TODO: Move color to higher level type
@@ -166,7 +171,10 @@ namespace NusysIntermediate
             {
                 LibraryId = props.GetString(NusysConstants.ALIAS_LIBRARY_ID_KEY, "");
             }
-
+            if (props.ContainsKey(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY))
+            {
+                ShowTitle = props.GetBool(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY);
+            }
 
             //TODO wtf our server refactor should have no hardcoded strings like these
             /*

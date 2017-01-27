@@ -63,6 +63,7 @@ namespace NuSysApp
         // Events for when a user starts/stops editing this node
         public event EventHandler<string> UserAdded;
         public event EventHandler<string> UserDropped;
+        public event EventHandler<bool> TitleVisiblityChanged; 
 
         public virtual Point2d Anchor
         {
@@ -142,6 +143,23 @@ namespace NuSysApp
                 _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_WIDTH_KEY, width);
                 _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, height);
             }
+        }
+
+        /// <summary>
+        /// public method to show the titles on nodes
+        /// </summary>
+        /// <param name="titleVisible"></param>
+        public void SetTitleVisiblity(bool titleVisible)
+        {
+            Model.ShowTitle = titleVisible;
+
+            TitleVisiblityChanged?.Invoke(this, titleVisible);
+
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY, titleVisible);
+            }
+
         }
 
         private void FireAnchorChanged()
@@ -323,6 +341,10 @@ namespace NuSysApp
                 var width = props.GetDouble(NusysConstants.ALIAS_SIZE_WIDTH_KEY, this.Model.Width);
                 var height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, this.Model.Height);
                 SetSize(width,height);
+            }
+            if (props.ContainsKey(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY))
+            {
+                SetTitleVisiblity(props.GetBool(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY));
             }
             _blockServerInteractionCount--;
         }
