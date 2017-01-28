@@ -158,52 +158,55 @@ namespace NuSysApp
                     reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
                     string read = reader.ReadString(reader.UnconsumedBufferLength);
                     //Debug.WriteLine(read + "\r\n");
-                    JsonSerializerSettings settings = new JsonSerializerSettings
-                    {
-                        StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
-                    };
-                    Task.Run(async delegate
-                    {
-                        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
-                        string id = null;
-                        if (dict.ContainsKey(NusysConstants.NOTIFICATION_TYPE_STRING_KEY)) //if this is a notification
-                        {
-                            OnNewNotification?.Invoke(new Message(dict));
-                        }
-                        else if (dict.ContainsKey(NusysConstants.REQUEST_ERROR_MESSAGE_KEY))
-                            //if this is an error notification
-                        {
-                            Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
-                            Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
-                            Debug.WriteLine("  *******************  END SERVER ERROR MESSAGE  *******************  ");
-                            var message = dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString();
-                            if(false)
-                                Debug.Fail("shouldn't be getting server errors");
-                            if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
-                                //if we can untangle a waiting request
-                            {
-                                byte outByte;
-                                _requestEventDictionary.TryRemove(
-                                    dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING).ToString(),
-                                    out outByte);
-                            }
-                        }
-                        else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
-                            //if we are getting the return of an awaiting request
-                        {
-                            await ReturnRequestAsync(new Message(dict));
-                        }
-                        else //else it must be a regular mesage from another client
-                        {
-                            OnMessageRecieved?.Invoke(new Message(dict));
-                        }
-                    });
+
+                    await HandleIncomingMessage(read);
 
                 }
             }
             catch (Exception e)
             {
                  throw new Exception("connection to server failed");
+            }
+        }
+
+        private async Task HandleIncomingMessage(string read)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+            };
+
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
+            string id = null;
+            if (dict.ContainsKey(NusysConstants.NOTIFICATION_TYPE_STRING_KEY)) //if this is a notification
+            {
+                OnNewNotification?.Invoke(new Message(dict));
+            }
+            else if (dict.ContainsKey(NusysConstants.REQUEST_ERROR_MESSAGE_KEY))
+            //if this is an error notification
+            {
+                Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
+                Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
+                Debug.WriteLine("  *******************  END SERVER ERROR MESSAGE  *******************  ");
+                var message = dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString();
+                Debug.Fail("shouldn't be getting server errors");
+                if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+                //if we can untangle a waiting request
+                {
+                    byte outByte;
+                    _requestEventDictionary.TryRemove(
+                        dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING).ToString(),
+                        out outByte);
+                }
+            }
+            else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+            //if we are getting the return of an awaiting request
+            {
+                await ReturnRequestAsync(new Message(dict));
+            }
+            else //else it must be a regular mesage from another client
+            {
+                OnMessageRecieved?.Invoke(new Message(dict));
             }
         }
 
