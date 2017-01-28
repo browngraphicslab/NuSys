@@ -462,6 +462,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Textbox\LockableTextBoxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\MarkdownConvertingTextbox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\Markdown\CustomHtmlFormatter.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Textbox\RichTextBox.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\ScrollableTextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\MaskedRect.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Scroll\ScrollingCanvas.cs" />

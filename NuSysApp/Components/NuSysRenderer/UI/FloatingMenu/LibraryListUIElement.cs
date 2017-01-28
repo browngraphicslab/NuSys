@@ -567,7 +567,7 @@ namespace NuSysApp
             var listColumn4 = new ListTextColumn<LibraryElementModel>();
             listColumn4.Title = "Last Edited Timestamp";
             listColumn4.RelativeWidth = 1.8f;
-            listColumn4.ColumnFunction = model => model.GetController().GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
+            listColumn4.ColumnFunction = model => model.GetController()?.GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
 
             var listColumn5 = new ListTextColumn<LibraryElementModel>();
             listColumn5.Title = "Tags";
