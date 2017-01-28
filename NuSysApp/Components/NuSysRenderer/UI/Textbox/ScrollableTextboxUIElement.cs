@@ -451,6 +451,7 @@ namespace NuSysApp
 
             _hasSelection = true;
             CaretCharacterIndex = _selectionEndIndex;
+            _updateSelectionRects = true;
         }
 
         /// <summary>
@@ -755,7 +756,7 @@ namespace NuSysApp
             {
                 _isCtrlPressed = true;
             }
-            // Special case z,x,c keys while control is pressed
+            // Special case z,x,c,a keys while control is pressed
             else if (args.Key == VirtualKey.C && _isCtrlPressed)
             {
                 Copy();
@@ -768,6 +769,11 @@ namespace NuSysApp
             {
                 Paste();
             }
+            else if (args.Key == VirtualKey.A && _isCtrlPressed)
+            {
+                SelectAll();
+            }
+
             else if (args.Key == VirtualKey.Tab)
             {
                 if (_hasSelection)
@@ -840,7 +846,7 @@ namespace NuSysApp
             _caret.IsVisible = false;
             ClearSelection(false);
 
-            SessionController.Instance.SessionView.FreeFormViewer.Keyboard.LosePseudoFocus();
+            //SessionController.Instance.SessionView.FreeFormViewer.Keyboard.LosePseudoFocus();
         }
 
         /// <summary>
@@ -852,7 +858,6 @@ namespace NuSysApp
             if (IsEditable)
             {
                 _caret.IsVisible = true;
-
                 UITask.Run(delegate
                 {
                     var keyboardCaps = new KeyboardCapabilities();
@@ -1691,9 +1696,11 @@ namespace NuSysApp
                 return;
             }
 
-            _xOffset = Math.Min(0, _xOffset);
-            _xOffset = Math.Max(-(TextLayout.LayoutBounds.Width - Width + 2 * (UIDefaults.XTextPadding + BorderWidth)), _xOffset);
+            // x offset is how far we are to the left, so it should never be positive
 
+
+            _xOffset = Math.Max(-(TextLayout.LayoutBounds.Width - Width + 2 * (UIDefaults.XTextPadding + BorderWidth)), _xOffset);
+            _xOffset = Math.Min(0, _xOffset);
         }
 
         /// <summary>

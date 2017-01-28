@@ -325,31 +325,36 @@ namespace NuSysApp
                     Debug.WriteLine(e.Message, "Failed in inkable ui element draw call");
                 }
             }
-
+            
             ds.Transform = Matrix3x2.CreateScale((float)(Width / (1000 * _imageRect.Width)), (float)(Height / (1000 * _imageRect.Height))) * Transform.LocalToScreenMatrix;
-            if (_dryStrokesTarget != null)
+            using (ds.CreateLayer(1.0f, new Rect(0, 0, 1000 * _imageRect.Width, 1000 * _imageRect.Height)))
             {
-                ds.DrawImage(_dryStrokesTarget);
-            }
-
-            ds.Transform = Matrix3x2.CreateTranslation((float)(-_imageRect.X * 1000), (float)(-_imageRect.Y * 1000)) * Matrix3x2.CreateScale((float)(Width / (1000 * _imageRect.Width)), (float)(Height / (1000 * _imageRect.Height))) * Transform.LocalToScreenMatrix;
-            if (_currentInkPoints != null && _currentInkPoints.Count > 2)
-            {
-                if (_builder == null)
+                if (_dryStrokesTarget != null)
                 {
-                    _builder = new InkStrokeBuilder();
-                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-
+                    ds.DrawImage(_dryStrokesTarget);
                 }
-                lock (_lock)
+
+                ds.Transform = Matrix3x2.CreateTranslation((float)(-_imageRect.X * 1000), (float)(-_imageRect.Y * 1000)) *
+                               Matrix3x2.CreateScale((float)(Width / (1000 * _imageRect.Width)),
+                                   (float)(Height / (1000 * _imageRect.Height))) * Transform.LocalToScreenMatrix;
+                if (_currentInkPoints != null && _currentInkPoints.Count > 2)
                 {
-                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-                    var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
-                    if (_isEraser)
+                    if (_builder == null)
                     {
-                        s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
+                        _builder = new InkStrokeBuilder();
+                        _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+
                     }
-                    ds.DrawInk(new InkStroke[] { s });
+                    lock (_lock)
+                    {
+                        _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+                        var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
+                        if (_isEraser)
+                        {
+                            s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
+                        }
+                        ds.DrawInk(new InkStroke[] { s });
+                    }
                 }
             }
 

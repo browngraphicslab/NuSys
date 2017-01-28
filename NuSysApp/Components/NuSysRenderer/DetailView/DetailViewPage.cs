@@ -17,6 +17,7 @@ using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using WinRTXamlToolkit.Controls.DataVisualization;
 
 namespace NuSysApp
 {
@@ -101,6 +102,11 @@ namespace NuSysApp
         /// </summary>
         private RectangleButtonUIElement _originWords;
 
+        /// <summary>
+        /// if this element has an origin, then this will be set to the origin, otherwise it is null
+        /// </summary>
+        private LibraryElementController _origin;
+
         protected DetailViewPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller, bool showsImageAnalysis, bool showRegions) : base(parent, resourceCreator)
         {
             // set the controller properly
@@ -141,19 +147,7 @@ namespace NuSysApp
             {
                 IsVisible = false
             };
-            AddChild(_dragRect);
-
-            _originWords = new RectangleButtonUIElement(this, Canvas)
-            {
-                ButtonText = "this item originates from [insert origin here]",
-                Background = Colors.Transparent,
-                Height = 20,
-                Width = 200,
-                ButtonTextSize = 18,
-                RichTextButton = true
-            };
-            AddChild(_originWords);
-            
+            AddChild(_dragRect);            
 
             _dragToCollectionButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.DraggableStyle,
                 "Drag to Collection")
@@ -187,6 +181,18 @@ namespace NuSysApp
                 _wordButton.Tapped += WordButtonOnTapped;
             }
 
+            _originWords = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle,
+                "this item had its origin deleted.")
+            {
+                Background = Colors.Transparent,
+                ButtonTextColor = Constants.DARK_BLUE,
+                Height = 20,
+                Width = 400
+            };
+            AddChild(_originWords);
+
+
+
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
             _dragToCollectionButton.DragCompleted += _dragToCollectionButton_DragCompleted;
@@ -202,7 +208,10 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void ElementOrigin_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            //TODO: NAVIGATE TO ORIGIN
+            if (_origin != null)
+            {
+                SessionController.Instance.NuSessionView.ShowDetailView(_origin);
+            }
         }
 
         private async void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -248,6 +257,11 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// overwritten in image and pdf classes so you can expand depending on what you're looking at
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         protected virtual void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             
@@ -356,7 +370,45 @@ namespace NuSysApp
                 _wordButton.Tapped -= WordButtonOnTapped;
             }
 
+            _originWords.Tapped -= ElementOrigin_Tapped;
+
             base.Dispose();
+        }
+
+        private void UpdateOriginText()
+        {
+            if (_controller.LibraryElementModel.Origin.Type == LibraryElementOrigin.OriginType.Copy)
+            {
+                var originalElement =
+                    SessionController.Instance.ContentController.GetLibraryElementController(
+                        _controller.LibraryElementModel.Origin.OriginId);
+                if (originalElement != null)
+                {
+                    _originWords.ButtonText = "this item is a copy of ";
+                    _originWords.ButtonText += originalElement.Title;
+                }
+                _origin = originalElement;
+            }
+            else if (_controller.LibraryElementModel.Origin.Type == LibraryElementOrigin.OriginType.LibraryImport)
+            {
+                _originWords.ButtonText = "this item was imported directly to the library";
+            }
+            else if (_controller.LibraryElementModel.Origin.Type == LibraryElementOrigin.OriginType.Region)
+            {
+                var originalElement =
+                    SessionController.Instance.ContentController.GetLibraryElementController(
+                        _controller.LibraryElementModel.Origin.OriginId);
+                if (originalElement != null)
+                {
+                    _originWords.ButtonText = "this item is a region of ";
+                    _originWords.ButtonText += originalElement.Title;
+                }
+                _origin = originalElement;
+            }
+            else
+            {
+                _originWords.ButtonText = "this item had an origin that was deleted.";
+            }
         }
 
         /// <summary>
@@ -385,16 +437,15 @@ namespace NuSysApp
             _contentLayoutManager.ItemWidth = Width - 20;
             _contentLayoutManager.ItemHeight = _imageHeight;
             _contentLayoutManager.SetMargins(20);
+            _contentLayoutManager.TopMargin = 40;
             _contentLayoutManager.ArrangeItems(new Vector2(0, 0));
-
-            _originWords.Transform.LocalPosition =
-                 new Vector2(Width / 2 - _originWords.Width / 2, _imageHeight);
 
             if (_showRegions)
             {
                 _addRegionButton.IsVisible = true;
                 _addRegionButton.Transform.LocalPosition = new Vector2(Width / 2 - _addRegionButton.Width / 2,
                         _imageHeight + _contentLayoutManager.TopMargin + 10);
+                _originWords.IsVisible = false;
             }
             else
             {
@@ -439,7 +490,8 @@ namespace NuSysApp
                         _imageHeight + _contentLayoutManager.TopMargin + 10);
             }
 
-
+            _originWords.Transform.LocalPosition = new Vector2(Width/2 - _originWords.Width/2, 2);
+            UpdateOriginText();
 
             base.Update(parentLocalToScreenTransform);
         }
@@ -492,6 +544,7 @@ namespace NuSysApp
             regionRequestArgs.Medium_Thumbnail_Url = _controller.LibraryElementModel.MediumIconUrl;
             regionRequestArgs.Small_Thumbnail_Url = _controller.LibraryElementModel.SmallIconUrl;
             regionRequestArgs.AccessType = access;
+            regionRequestArgs.Origin = new LibraryElementOrigin() {Type =  LibraryElementOrigin.OriginType.Region,OriginId = _controller.LibraryElementModel.LibraryElementId };
 
             var request = new CreateNewLibraryElementRequest(regionRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

@@ -10,6 +10,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Core;
 using System.Numerics;
+using Windows.System;
 
 namespace NuSysApp
 {

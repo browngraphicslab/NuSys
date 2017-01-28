@@ -28,7 +28,7 @@ namespace NuSysApp
         public delegate void LinkSelectedHandler(LinkRenderItem element, CanvasPointer point);
         public delegate void TrailSelectedHandler(TrailRenderItem element, CanvasPointer point);
         public delegate void BaseRenderItemSelectedHandler(BaseRenderItem element);
-        public delegate void RenderItemSelectedHandler(ElementRenderItem element);
+        public delegate void RenderItemSelectedHandler(ElementRenderItem element, CanvasPointer pointer);
         public delegate void InkDrawHandler(CanvasPointer pointer);
         public delegate void LinkCreatedHandler(ElementRenderItem element1, ElementRenderItem element2);
         public delegate void DuplicatedCreated(ElementRenderItem element, Vector2 point);
@@ -171,13 +171,56 @@ namespace NuSysApp
         {
             var item1 = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer1.CurrentPoint, _collection, 1);
             var item2 = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer2.CurrentPoint, _collection, 1);
-            if (!(item1 is ElementRenderItem) || !(item2 is ElementRenderItem))
-                return;
 
             if (item1 == _collection || item2 == _collection)
+            {
                 return;
+            }
+
+            if (item1 is ElementRenderItem && item2 is LinkRenderItem)
+            {
+                FollowLink(item1 as ElementRenderItem, item2 as LinkRenderItem);
+            }
+
+            if (item2 is ElementRenderItem && item1 is LinkRenderItem)
+            {
+                FollowLink(item2 as ElementRenderItem, item1 as LinkRenderItem);
+            }
+
+            if (!(item1 is ElementRenderItem) || !(item2 is ElementRenderItem))
+            {
+                return;
+            }
+
 
             CollectionInteractionManagerOnTwoElementsPressed((ElementRenderItem)item1, (ElementRenderItem)item2, pointer1, pointer2);
+        }
+
+        private void FollowLink(ElementRenderItem start, LinkRenderItem link)
+        {
+            var startController = start?.ViewModel?.Controller;
+            var linkController = link?.ViewModel?.Controller;
+            FollowLink(startController, linkController);
+        }
+
+        public void FollowLink(ElementController nodeController, LinkController linkController)
+        {
+            Debug.Assert(linkController != null);
+            Debug.Assert(nodeController != null);
+            if (linkController != null && nodeController != null)
+            {
+                var linkLEM = linkController.LibraryElementController.LibraryElementModel as LinkLibraryElementModel;
+                Debug.Assert(linkLEM != null);
+                if (linkLEM != null)
+                {
+                    var otherId = nodeController.Id == linkController.Model.InAtomId ? linkController.Model.OutAtomId : linkController.Model.InAtomId;
+                    var endPoint = SessionController.Instance.ElementModelIdToElementController.Values.FirstOrDefault(item => item.Id == otherId);
+                    if (endPoint != null)
+                    {
+                        SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(endPoint.Id);
+                    }
+                }
+            }
         }
 
         private void OnPointerPressed(CanvasPointer pointer)
@@ -511,7 +554,7 @@ namespace NuSysApp
                 //MultimediaElementActivated?.Invoke(element as VideoElementRenderItem);
                 SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo((element as VideoElementRenderItem).ViewModel.Controller.LibraryElementController as VideoLibraryElementController);
             if (element is AudioElementRenderItem)
-                MultimediaElementActivated?.Invoke(element as AudioElementRenderItem);
+                MultimediaElementActivated?.Invoke(element as AudioElementRenderItem, pointer);
         }
 
 
@@ -581,7 +624,7 @@ namespace NuSysApp
                         SelectionsCleared?.Invoke();
                     }
                 }
-                ItemSelected?.Invoke(elementRenderItem);
+                ItemSelected?.Invoke(elementRenderItem, pointer);
             }
         }
 

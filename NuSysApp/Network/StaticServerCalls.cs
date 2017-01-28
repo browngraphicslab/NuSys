@@ -143,6 +143,7 @@ namespace NuSysApp
                 args.Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri;
                 args.Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri;
                 args.Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri;
+                args.Origin = new LibraryElementOrigin() {Type = LibraryElementOrigin.OriginType.Copy,OriginId = originalController.LibraryElementModel.LibraryElementId};
                 args.Metadata = new List<NusysIntermediate.MetadataEntry>(originalController.FullMetadata.Values);
                 args.Metadata.Add(new MetadataEntry("Origin",new List<string>() {"This library element was copied from "+originalController.LibraryElementModel.Title},MetadataMutability.IMMUTABLE ));
 

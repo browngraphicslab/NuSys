@@ -170,7 +170,7 @@ namespace NuSysApp
                 return;
             }
 
-            foreach (var child in _children)
+            foreach (var child in _children.ToArray())
             {
                 child?.Dispose();
             }

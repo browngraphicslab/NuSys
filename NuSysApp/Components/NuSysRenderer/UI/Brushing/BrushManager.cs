@@ -73,5 +73,26 @@ namespace NuSysApp
             BrushUpdated?.Invoke(controllersToBeRemoved, new List<LibraryElementController>());
         }
 
+        /// <summary>
+        /// temporarily hides the current brush
+        /// </summary>
+        /// <param name="Visibility"></param>
+        public static void SetBrushVisibility(bool Visibility)
+        {
+            if (Visibility)
+            {
+                foreach (var controller in ControllersWithHighlight)
+                {
+                    controller.AddHighlight();
+                }
+            } else
+            {
+                foreach (var controller in ControllersWithHighlight)
+                {
+                    controller.RemoveHighlight();
+                }
+            }
+        }
+
     }
 }

@@ -31,6 +31,7 @@ namespace NusysServer
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY, NusysConstants.LIBRARY_ELEMENT_TITLE_KEY }, // title
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY, NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY }, // access type
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_PARENT_ID_KEY, NusysConstants.LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY },//clipping parent id
+            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ORIGIN_OBJECT_KEY, NusysConstants.LIBRARY_ELEMENT_MODEL_ORIGIN_OBJECT_KEY },//clipping parent id
 
             //links start
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY },//link in id
@@ -78,6 +79,8 @@ namespace NusysServer
             {NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY, NusysConstants.ALIAS_LOCATION_Y_KEY }, // y coordinate
             {NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY, NusysConstants.ALIAS_SIZE_HEIGHT_KEY }, // height
             {NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY, NusysConstants.ALIAS_SIZE_WIDTH_KEY }, // width
+
+            {NusysConstants.NEW_ELEMENT_REQUEST_TITLE_VISIBILITY_KEY,NusysConstants.ALIAS_TITLE_VISIBILITY_KEY }, //title visiblity
         };
 
         /// <summary>

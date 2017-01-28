@@ -49,5 +49,6 @@ namespace NuSysApp
             var pageUrl = model.PageUrls[_content.CurrentPage];
             SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(pageUrl));
         }
+
     }
 }

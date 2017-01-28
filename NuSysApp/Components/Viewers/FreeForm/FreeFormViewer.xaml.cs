@@ -452,6 +452,12 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element, CanvasPointer pointer)
         {
+            if (Selections.Count() == 1 && Selections.First().ViewModel.Controller.LibraryElementModel.Type != NusysConstants.ElementType.Link)
+            {
+                _collectionInteractionManager.FollowLink(Selections.First().ViewModel.Controller,element.ViewModel.Controller);
+                return;
+            }
+
             RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(40,0);
             RenderEngine.BtnDelete.IsVisible = true;
             _selectedLink = element;
@@ -617,7 +623,7 @@ namespace NuSysApp
             xMultimediaCanvas.IsHitTestVisible = false;
         }
 
-        private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element)
+        private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element, CanvasPointer pointer)
         {
             if (element is VideoElementRenderItem)
             {
@@ -1339,8 +1345,22 @@ namespace NuSysApp
             }
         }
 
-        private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
+
+        private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element, CanvasPointer pointer)
         {
+            if (pointer.IsRightButtonPressed && element != null)
+            {
+                var popup = new FlyoutPopup(SessionController.Instance.NuSessionView,SessionController.Instance.NuSessionView.ResourceCreator);
+                SessionController.Instance.NuSessionView.AddChild(popup);
+                popup.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y );
+
+                popup.AddFlyoutItem("Toggle Title Visibility", (item, canvasPointer) =>
+                {
+                    element.ViewModel.Controller.SetTitleVisiblity(!element.ViewModel.Controller.Model.ShowTitle);
+                }, SessionController.Instance.NuSessionView.ResourceCreator);
+                return;
+            }
+
             if (SessionController.IsReadonly)
             {
                 Debug.Assert(element?.ViewModel?.Id != null);

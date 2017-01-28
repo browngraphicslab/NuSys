@@ -70,6 +70,10 @@ namespace NuSysApp
         /// </summary>
         private const string EditKeyValueText = "Edit Key Value Pair";
 
+        /// <summary>
+        /// button used to delete a key
+        /// </summary>
+        private RectangleButtonUIElement _deleteKeyButton;
 
         public DetailViewMetadataPage(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, LibraryElementController controller) : base(parent, resourceCreator)
         {
@@ -95,6 +99,12 @@ namespace NuSysApp
 
             _addKeyValueButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, AddNewKeyValueText);
             AddChild(_addKeyValueButton);
+
+            _deleteKeyButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle, "Delete Key")
+            {
+                IsVisible = false
+            };
+            AddChild(_deleteKeyButton);
 
             _searchTextBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
             {
@@ -124,6 +134,14 @@ namespace NuSysApp
             _controller.KeywordsChanged += _controller_KeywordsChanged;
             _addKeyBox.TextChanged += _addKeyBox_TextChanged;
             _metadata_listview.RowDoubleTapped += _metadata_listview_RowDoubleTapped;
+            _deleteKeyButton.Tapped += _deleteKeyButton_Tapped;
+        }
+
+        private void _deleteKeyButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _controller.RemoveMetadata(_addKeyBox.Text);
+            _addKeyBox.ClearText();
+            _addValueBox.ClearText();
         }
 
         /// <summary>
@@ -135,7 +153,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _metadata_listview_RowDoubleTapped(MetadataEntry item, string columnName, CanvasPointer pointer)
         {
-            if (item.Mutability == MetadataMutability.MUTABLE)
+            if (item.Mutability == MetadataMutability.MUTABLE  || item.Key == "Keywords") 
             {
                 _addKeyBox.ClearText();
                 _addKeyBox.Text = item.Key;
@@ -167,16 +185,19 @@ namespace NuSysApp
             var foundEntry = metadata.FirstOrDefault(entry => entry.Key == text);
 
             // if we found an entry and the entry is mutable
-            if (foundEntry != null && foundEntry.Mutability == MetadataMutability.MUTABLE)
+            if (foundEntry != null && (foundEntry.Mutability == MetadataMutability.MUTABLE || foundEntry.Key == "Keywords"))
             {
                 _addValueBox.ClearText();
                 // set the value box to have the values for that key
                 _addValueBox.Text = string.Join(", ", foundEntry.Values.Select(value => string.Join(", ", value)));
                 _addKeyValueButton.ButtonText = EditKeyValueText;
+
+                _deleteKeyButton.IsVisible = foundEntry.Key != "Keywords";
             }
             else
             {
                 _addKeyValueButton.ButtonText = AddNewKeyValueText;
+                _deleteKeyButton.IsVisible = false;
             }
 
         }
@@ -254,6 +275,7 @@ namespace NuSysApp
             _controller.KeywordsChanged -= _controller_KeywordsChanged;
             _addKeyBox.TextChanged -= _addKeyBox_TextChanged;
             _metadata_listview.RowDoubleTapped -= _metadata_listview_RowDoubleTapped;
+            _deleteKeyButton.Tapped -= _deleteKeyButton_Tapped;
 
 
             foreach (var element in _suggestedTagElements.ToArray())
@@ -287,7 +309,7 @@ namespace NuSysApp
             // if the key already exists update the metadata entry
             if (_controller.GetMetadata().ContainsKey(key))
             {
-                _controller.UpdateMetadata(metaDataEntry, key, new List<string>(metaDataEntry.Values.Concat(values)) );
+                _controller.UpdateMetadata(metaDataEntry, key, new List<string>(values) );
             }
             else // otherwise create a new metadata entry
             {
@@ -363,7 +385,15 @@ namespace NuSysApp
             _addValueBox.Width = textboxWidth;
             _addValueBox.Transform.LocalPosition = new Vector2(2 * horizontal_spacing + _addKeyBox.Width, vertical_spacing);
 
-            _addKeyValueButton.Transform.LocalPosition = new Vector2(Width / 2 - _addKeyValueButton.Width / 2, _addKeyBox.Transform.LocalY + _addKeyBox.Height + vertical_spacing);
+            if(_deleteKeyButton.IsVisible)
+            {
+                _addKeyValueButton.Transform.LocalPosition = new Vector2(Width/2 - _addKeyValueButton.Width - 5, _addKeyBox.Transform.LocalY + _addKeyBox.Height + vertical_spacing);
+                _deleteKeyButton.Transform.LocalPosition = new Vector2(Width / 2 + 5, _addKeyBox.Transform.LocalY + _addKeyBox.Height + vertical_spacing);
+            }
+            else
+            {
+                _addKeyValueButton.Transform.LocalPosition = new Vector2(Width / 2 - _addKeyValueButton.Width / 2, _addKeyBox.Transform.LocalY + _addKeyBox.Height + vertical_spacing);
+            }
 
             // layout all the elements for search
             vertical_spacing += 40 + addMetadataItemsHeight + (int)_addKeyValueButton.Height;

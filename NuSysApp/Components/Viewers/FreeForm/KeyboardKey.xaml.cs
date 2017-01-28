@@ -95,14 +95,27 @@ namespace NuSysApp
 
 
             this.InitializeComponent();
+                SizeChanged += KeyboardKey_SizeChanged;
 
-
+                
                 //Key by default should be unselected
                 Unselect();
             }
 
+        private void SetFontSize()
+        {
+            var screenHeight = SessionController.Instance.ScreenHeight;
 
-            public void Select()
+            xTextBlock.FontSize = 25/1080f * screenHeight;
+            xSuperscriptTextBlock.FontSize = 11/1080f*screenHeight;
+        }
+
+        private void KeyboardKey_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetFontSize();
+        }
+
+        public void Select()
             {
                 KeyColor = _selectColor;
 

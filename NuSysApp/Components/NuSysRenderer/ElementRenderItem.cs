@@ -279,20 +279,24 @@ namespace NuSysApp
 
             var drawBoundsHeight = (float)_textLayout.DrawBounds.Height;
 
-            if (SessionController.Instance.SessionSettings.ResizeElementTitles)
+            if (ViewModel.Controller.Model.ShowTitle)
             {
-                ds.Transform = Transform.LocalToScreenMatrix;
-                ds.DrawTextLayout(_textLayout,new Vector2((float)Math.Min(0,-((_textLayout.LayoutBounds.Width - _vm.Width)/2)), -drawBoundsHeight - 20),color );
-            }
-            else
-            {
-                ds.Transform = Matrix3x2.Identity;
+                if (SessionController.Instance.SessionSettings.ResizeElementTitles)
+                {
+                    ds.Transform = Transform.LocalToScreenMatrix;
+                    ds.DrawTextLayout(_textLayout,
+                        new Vector2((float) Math.Min(0, -((_textLayout.LayoutBounds.Width - _vm.Width)/2)),
+                            -drawBoundsHeight - 20), color);
+                }
+                else
+                {
+                    ds.Transform = Matrix3x2.Identity;
 
-                ds.DrawTextLayout(_textLayout,
-                    new Vector2(Math.Min(sp.X, (sp.X + spr.X) / 2 - 100), sp.Y - drawBoundsHeight - 18),
-                    color);
+                    ds.DrawTextLayout(_textLayout,
+                        new Vector2(Math.Min(sp.X, (sp.X + spr.X)/2 - 100), sp.Y - drawBoundsHeight - 18),
+                        color);
+                }
             }
-
             // draw highlights if we are highlighted
             if (_isHighlighted)
             {
