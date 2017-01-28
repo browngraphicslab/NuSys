@@ -32,12 +32,12 @@ namespace NuSysApp
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
 
-        private int _delayMilliseconds = 15;
+        private int _delayMilliseconds = 18;
         
 
         public double CurrentPing
         {
-            get { return _queue.Average()*_delayMilliseconds; }
+            get { return _queue.Any() ? _queue.Average()*_delayMilliseconds : (int)ConnectionStrength.UnResponsive; }
         }
 
         public event EventHandler<ConnectionStrength> ConnectionStrenthChanged;  

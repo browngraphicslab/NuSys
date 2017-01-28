@@ -166,7 +166,7 @@ namespace NuSysApp
                 int offset = 40;
                 foreach (var id in Controller.ToolModel.OutputLibraryIds)
                 {
-                    if (i > 14)
+                    if (i > 24)
                     {
                         break;
                     }
