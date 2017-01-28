@@ -92,7 +92,6 @@ namespace NuSysApp
             Debug.Assert(regionModel != null);
             var clippingParentId = regionModel.ParentId;
             var contentId = regionModel.ContentDataModelId;
-            Debug.Assert(clippingParentId != null && contentId != null, "This should never be null");
             /*
             if (_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId) && _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId)){
                 return;
