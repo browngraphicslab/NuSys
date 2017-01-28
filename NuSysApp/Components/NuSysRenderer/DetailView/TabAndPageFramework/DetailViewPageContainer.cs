@@ -126,11 +126,15 @@ namespace NuSysApp
             _settingsPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - _settingsPopup.Width/2,
                 _settingsButton.Transform.LocalPosition.Y + _settingsButton.Height);
             _settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
-            _settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
+
             _settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
             if (this._currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
             {
                 _settingsPopup.AddFlyoutItem("Change Collection Settings", CollectionSettingsOnTapped, Canvas);
+            }
+            else
+            {
+                _settingsPopup.AddFlyoutItem("Copy", OnCopyFlyoutTapped, Canvas);
             }
             _settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
             _settingsPopup.Dismissed += SettingsPopupOnDismissed;

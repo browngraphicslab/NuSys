@@ -63,7 +63,7 @@ namespace NuSysApp
 
             _metadataLabel = new TextboxUIElement(this, resourceCreator)
             {
-                Text = _controller.LibraryElementModel.Title,
+                Text = _controller?.LibraryElementModel?.Title,
                 IsHitTestVisible = false,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Center

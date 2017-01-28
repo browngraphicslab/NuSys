@@ -46,7 +46,7 @@ namespace NuSysApp
 
             _scrollingGrid = new ScrollingGrid<ElementModel>(this, resourceCreator)
             {
-                ItemFunction = em => new CollectionGridViewUIElement(this, resourceCreator, SessionController.Instance.ContentController.GetLibraryElementController(em.LibraryId)),
+                ItemFunction = em => SessionController.Instance.ContentController.GetLibraryElementController(em.LibraryId) == null ? null : new CollectionGridViewUIElement(this, resourceCreator, SessionController.Instance.ContentController.GetLibraryElementController(em.LibraryId)),
                 ColumnWidth = 100,
                 Resize = ScrollingGrid<ElementModel>.Resizing.Relative,
                 RowHeight = 1,

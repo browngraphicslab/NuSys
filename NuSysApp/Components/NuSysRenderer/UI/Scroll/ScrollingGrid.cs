@@ -158,9 +158,13 @@ namespace NuSysApp
         public async void AddItem(T item)
         {
             Debug.Assert(ItemFunction != null);
-            if (!_itemsToDisplayElements.ContainsKey(item))
+            if (item != null && !_itemsToDisplayElements.ContainsKey(item))
             {
                 var newElement = ItemFunction(item);
+                if (newElement == null)
+                {
+                    return;
+                }
                 _itemsToDisplayElements.Add(item, newElement);
                 await newElement.Load();
                 _displayElements.Add(newElement);
