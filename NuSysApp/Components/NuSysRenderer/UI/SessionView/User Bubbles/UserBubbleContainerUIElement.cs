@@ -90,7 +90,6 @@ namespace NuSysApp
 
         private void DropNetworkUser(string userid)
         {
-            Debug.Assert(_userIds_toBubbles.ContainsKey(userid));
             if (_userIds_toBubbles.ContainsKey(userid))
             {
                 var bubble = _userIds_toBubbles[userid];
@@ -281,7 +280,7 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             var position = new Vector2(0, 0);
-            foreach (var user_button in _userIds_toBubbles)
+            foreach (var user_button in _userIds_toBubbles.ToArray())
             {
                 var button = user_button.Value;
                 button.Transform.LocalPosition = position;

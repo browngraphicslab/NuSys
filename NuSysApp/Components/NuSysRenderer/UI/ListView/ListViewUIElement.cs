@@ -453,7 +453,7 @@ namespace NuSysApp
             _currentFilter = filter;
 
             //Set filteredItems to the items in the itemsSource list for which the filter function returns true
-            _filteredItems.AddRange(_itemsSource.Where(filter));
+            _filteredItems.AddRange(_itemsSource.ToArray().Where(filter));
 
             //Only recreate the rows if the number of rows needed does not equal current number of rows
             var numberOfRowsNeeded = Math.Min(_filteredItems.Count, (int)Math.Ceiling(Height / RowHeight) + 1);

@@ -74,6 +74,10 @@ namespace NuSysApp
         /// <param name="userId">User to remove bubble of</param>
         public void RemoveBubble(string userId)
         {
+            if (!_bubbles.ContainsKey(userId))
+            {
+                return;
+            }
             var bubble = _bubbles[userId];
             RemoveChild(bubble);
         }
