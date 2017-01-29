@@ -38,6 +38,12 @@ namespace NuSysApp
 
         private TextboxUIElement _chatTitle;
 
+
+        /// <summary>
+        /// True if we want to scroll to the bottom of the page
+        /// </summary>
+        private bool _scrollToBottom;
+
         public ChatBoxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set the min height and min width
@@ -220,7 +226,14 @@ namespace NuSysApp
 
             UpdateScrollAreaSize();
 
+
             base.Update(parentLocalToScreenTransform);
+
+            if (_scrollToBottom)
+            {
+                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
+                _scrollToBottom = false;
+            }
 
         }
 
@@ -250,8 +263,10 @@ namespace NuSysApp
             // then scroll the chat down
             if (!IsVisible || user.UserID == WaitingRoomView.UserID)
             {
-                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
+                //_readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
+                _scrollToBottom = true;
             }
+
         }
 
 
@@ -271,8 +286,10 @@ namespace NuSysApp
             // then scroll the chat down
             if (!IsVisible || user.UserID == WaitingRoomView.UserID)
             {
-                _readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
+                //_readingRect.Scrollto(ScrollingCanvas.ScrollTo.Bottom);
+                _scrollToBottom = true;
             }
+
 
         }
 
