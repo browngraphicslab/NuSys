@@ -559,6 +559,20 @@ namespace NuSysApp
         {
             ListView.SelectItem(item);
         }
+        /// <summary>
+        /// Multiselects rows corresponding to the items passed in.
+        /// </summary>
+        /// <param name="items"></param>
+        public void SelectItems(IEnumerable<T> items)
+        {
+            var originalSetting = ListView.MultipleSelections;
+            ListView.MultipleSelections = true;
+            foreach(var item in items)
+            {
+                ListView.SelectItem(item);
+            }
+            ListView.MultipleSelections = originalSetting;
+        }
 
         /// <summary>
         /// This method will deselect the row corresponding to the item. This is what users will call when they 

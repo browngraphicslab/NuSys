@@ -426,7 +426,7 @@ namespace NuSysApp
             _isDragVisible = false;
 
             // add each of the items to the collection
-            foreach (var lem in LibraryListView.GetSelectedItems())
+            foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
             {
                 var libraryElementController =
                     SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);

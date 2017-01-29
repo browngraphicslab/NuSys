@@ -61,7 +61,7 @@ namespace NuSysApp
             var type = pointer.DeviceType;
             if (Vm.Selection != null && Vm.Controller.ToolModel.Selected && Vm.Selection.Contains(selection))
             {
-                if (type == PointerDeviceType.Pen) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                if (type == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
                 {
                     Vm.Selection.Remove(selection);
                     Vm.Selection = Vm.Selection;
@@ -73,7 +73,7 @@ namespace NuSysApp
             }
             else
             {
-                if (type == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                if (type == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
                 {
                     if (Vm.Selection != null)
                     {
