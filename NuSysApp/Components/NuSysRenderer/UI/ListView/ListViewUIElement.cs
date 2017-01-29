@@ -938,7 +938,6 @@ namespace NuSysApp
 
             var angle = Math.Atan(dY / dX);
             _dragIterations += 1;
-            Debug.WriteLine(angle);
 
             if (Math.Abs(angle) < DragAngleThreshold)
             {
