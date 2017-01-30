@@ -171,8 +171,8 @@ namespace NuSysApp
         {
             htmlString = htmlString ?? "";
             htmlString = htmlString.Replace("<br>", "\n");
-            htmlString = htmlString.Replace("<p>", "\n \t");
-            htmlString = htmlString.Replace("</p>", "\n");
+            htmlString = htmlString.Replace("<p>", "");
+            htmlString = htmlString.Replace("</p>", "");
             htmlString = htmlString.Replace("<ul>", "");
             htmlString = htmlString.Replace("</ul>", "\n");
             htmlString = htmlString.Replace("<ol>", "");
