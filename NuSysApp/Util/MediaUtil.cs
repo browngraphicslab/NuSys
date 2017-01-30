@@ -100,6 +100,14 @@ namespace NuSysApp
             return document;
         }
 
+        private static ConcurrentHashSet<string> _loadingUris = new ConcurrentHashSet<string>();
+
+
+        private async Task<CanvasBitmap> PrivateLoad(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
+        {
+            return null;
+        }
+
         /// <summary>
         /// Method to call isntead of await CanvasBitmap.LoadAsync.
         /// This will try catch the load and make sure it has a proper url.
@@ -109,25 +117,75 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
         {
+            
+            var shouldRetry = true;
+            var done = false;
+            CanvasBitmap bitmap = null;
+            /*
+            Task.Run(async delegate {
+                var attempts = 0;
+                while (!done)
+                {
+                    attempts++;
+                    await Task.Delay(20);
+                    if (attempts > 25)
+                    {
+                        Debug.WriteLine($"attempt: {attempts}");
+                        shouldRetry = true;
+                    }
+                }
+            });
+            while (!done)
+            {
+                if(shouldRetry){
+                    
+                }
+                await Task.Delay(20);
+            }
+            return bitmap;
+
+
+
+            while (_loadingUris.Contains(uri.AbsoluteUri))
+            {
+                await Task.Delay(20);
+            }
+            _loadingUris.Add(uri.AbsoluteUri);
+            Task.Run(async delegate
+            {
+                var attempts = 0;
+                while (!done)
+                {
+                    attempts++;
+                    await Task.Delay(20);
+                    if (attempts > 5)
+                    {
+                        Debug.WriteLine($"attempt: {attempts}");
+                    }
+                }
+            });*/
             try
             {
                 if (dpi != null)
                 {
-                    return await CanvasBitmap.LoadAsync(resourceCreator, uri, dpi.Value);
+                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri, dpi.Value);
                 }
                 else
                 {
-                    return await CanvasBitmap.LoadAsync(resourceCreator, uri);
+                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri);
                 }
             }
             catch(Exception e)
             {
                 if (dpi != null)
                 {
-                    return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"),dpi.Value);
+                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"),dpi.Value);
                 }
-                return await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"));
+                bitmap = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"));
             }
+            _loadingUris.Remove(uri.AbsoluteUri);
+            done = true;
+            return bitmap;
         }
 
         /// <summary>

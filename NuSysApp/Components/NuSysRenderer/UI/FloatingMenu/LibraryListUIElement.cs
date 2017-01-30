@@ -492,11 +492,14 @@ namespace NuSysApp
                                 SessionController.Instance.ContentController.GetLibraryElementController(
                                     model.LibraryElementId))
                         .ToList();
+
                 foreach (var controller in selectedControllers)
                 {
                     var rect = new RectangleUIElement(this, ResourceCreator);
-                    var task = Task.Run(() => LoadCanvasBitmap(controller.SmallIconUri));
-                    rect.Image = task.Result;
+                    Task.Run(async delegate
+                    {
+                        rect.Image = await LoadCanvasBitmap(controller.SmallIconUri);
+                    });
                     rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
                     _libraryDragElements.Add(rect);
                     position += new Vector2(_itemDropOffset, _itemDropOffset);

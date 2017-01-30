@@ -124,6 +124,7 @@
     <Compile Include="ServerSearch\QueryArgsBuilder.cs" />
     <Compile Include="ServerSearch\SearchResult.cs" />
     <Compile Include="Util\ConcurrentFixedQueue.cs" />
+    <Compile Include="Util\ConcurrentHashSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Windows.Foundation.UniversalApiContract">
