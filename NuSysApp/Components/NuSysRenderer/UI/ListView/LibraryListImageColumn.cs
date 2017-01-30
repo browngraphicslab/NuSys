@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace NuSysApp
 {
@@ -15,10 +17,14 @@ namespace NuSysApp
         private Dictionary<NusysConstants.ElementType, ICanvasImage> _defaultIconDictionary;
         private ICanvasResourceCreatorWithDpi _resourceCreator;
 
+
+        private ConcurrentDictionary<T, CancellationTokenSource> _modelToTokenSourceDict;
+
         public LibraryListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator) : base(resourceCreator)
         {
             //TODO: make this a public property in the superclass
             _resourceCreator = resourceCreator;
+            _modelToTokenSourceDict = new ConcurrentDictionary<T, CancellationTokenSource>();
             LoadDefaultIconDictionary();
 
         }
