@@ -26,20 +26,81 @@ namespace NuSysApp
 {
     public class AudioNodeViewModel : ElementViewModel
     {
-        private Grid _visualGrid;
-        public delegate void VisualizationLoadedEventHandler();
+        /// <summary>
+        /// The audio library element controller associated with this audio node
+        /// </summary>
+        private AudioLibraryElementController _audioLibraryElementController;
 
-        public event VisualizationLoadedEventHandler OnVisualizationLoaded;
+        /// <summary>
+        /// the normalized start time of this audio node's data
+        /// </summary>
+        public double NormalizedStartTime { get; private set; }
 
+        /// <summary>
+        /// the normalized duration of this audio node's data
+        /// </summary>
+        public double NormalizedDuration { get; set; }
+
+        /// <summary>
+        /// Invoked whenever the view model is dirty!, when the start time or duration changes
+        /// </summary>
+        public event EventHandler ViewModelIsDirty;
+
+
+        /// <summary>
+        /// The view model for the Audio Node
+        /// </summary>
+        /// <param name="controller"></param>
         public AudioNodeViewModel(ElementController controller) : base(controller)
         {
             Width = controller.Model.Width;
             Height = controller.Model.Height;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+
+            // get the audioLibraryElementModel and set the NormalizedStartTime and Duration based off of it
+            var audioLibraryElementModel = controller.LibraryElementModel as AudioLibraryElementModel;
+            Debug.Assert(audioLibraryElementModel != null);
+            if (audioLibraryElementModel == null) // so we don't crash in beta, but this should never be null
+                return;
+
+            NormalizedStartTime = audioLibraryElementModel.NormalizedStartTime;
+            NormalizedDuration = audioLibraryElementModel.NormalizedDuration;
+
+            // get the audioLibraryElementController and listen to the events for start time and duration changed
+            _audioLibraryElementController = controller.LibraryElementController as AudioLibraryElementController;
+            Debug.Assert(_audioLibraryElementController != null);
+            if (_audioLibraryElementController == null) // so we don't crash in beta, but this should never be null
+                return;
+
+
+            _audioLibraryElementController.TimeChanged += OnStartTimeChanged;
+            _audioLibraryElementController.DurationChanged += OnDurationChanged;
         }
 
-   
+        /// <summary>
+        /// called whenever the start time changes on the audio node view model
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="start"></param>
+        private void OnStartTimeChanged(object sender, double start)
+        {
+            ViewModelIsDirty?.Invoke(this, EventArgs.Empty);
+        }
 
+        /// <summary>
+        /// called whenever the duration changes on the audio node view model
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="start"></param>
+        private void OnDurationChanged(object sender, double start)
+        {
+            ViewModelIsDirty?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Called to instantiate resources for the view model, loads the content data model
+        /// </summary>
+        /// <returns></returns>
         public override async Task Init()
         {
             if (!Controller.LibraryElementController.ContentLoaded)
@@ -48,10 +109,18 @@ namespace NuSysApp
             }
         }
 
-        protected override void OnSizeChanged(object source, double width, double height)
+        /// <summary>
+        /// Remove any events we were listening to and clean up resources
+        /// </summary>
+        public override void Dispose()
         {
-            //SessionController.Instance.SessionView.FreeFormViewer.AudioPlayer.SetAudioSize(width, height);
-            base.OnSizeChanged(source, width, height);
+            if (_audioLibraryElementController != null)
+            {
+                _audioLibraryElementController.TimeChanged -= OnStartTimeChanged;
+                _audioLibraryElementController.DurationChanged -= OnDurationChanged;
+            }
+
+            base.Dispose();
         }
     }
 }

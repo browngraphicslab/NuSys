@@ -448,9 +448,13 @@ namespace NuSysApp
 
             public void SetLeft(object sender, double newNormalizedStartTime)
             {
-                Debug.Assert(RenderTransform is TranslateTransform);
-                Debug.Assert(_progressBar?.CurrentLibraryElementController?.AudioLibraryElementModel != null);
-                (RenderTransform as TranslateTransform).X = (newNormalizedStartTime - _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime) * (_progressBar.Width/_progressBar.NormalizedWidth);
+                UITask.Run(() =>
+                {
+                    Debug.Assert(RenderTransform is TranslateTransform);
+                    Debug.Assert(_progressBar?.CurrentLibraryElementController?.AudioLibraryElementModel != null);
+                    (RenderTransform as TranslateTransform).X = (newNormalizedStartTime - _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime) * (_progressBar.Width / _progressBar.NormalizedWidth);
+
+                });
             }
 
             public void SetDuration(object sender, double newNormalizedDuration)

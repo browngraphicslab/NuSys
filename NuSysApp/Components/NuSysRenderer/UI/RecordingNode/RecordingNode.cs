@@ -358,11 +358,23 @@ namespace NuSysApp
             }
             catch (Exception ex)
             {
+                // this happens if the user tries to record video and they don't have a camera
+                if (ex.Message.Contains("The specified object or value does not exist."))
+                {
+
+                    // set the ui for the new state now that we are paused
+                    SetUIForCurrentState();
+
+                    AddButtonEvents();
+                    return;
+                }
+
                 // catch exceptions
                 if (ex.InnerException != null && ex.InnerException.GetType() == typeof(UnauthorizedAccessException))
                 {
                     throw ex.InnerException;
                 }
+
                 throw;
             }
 

@@ -144,6 +144,8 @@ namespace NuSysApp
                 _rightPageButton.IsVisible = CurrentPage + 1 != _pdfContentDataModel.PageCount;
             }
 
+            PdfContent.Background = Colors.Red;
+
 
             base.Update(parentLocalToScreenTransform);
         }
