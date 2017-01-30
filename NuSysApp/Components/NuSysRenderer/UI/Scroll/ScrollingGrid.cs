@@ -136,10 +136,8 @@ namespace NuSysApp
         /// <param name="scrollDirection">The scroll direction must be horizontal or vertical and not both</param>
         public ScrollingGrid(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, ScrollOrientation scrollDirection = ScrollOrientation.Vertical) : base(parent, resourceCreator, scrollDirection)
         {
-            if (scrollDirection != ScrollOrientation.Horizontal && scrollDirection != ScrollOrientation.Vertical)
-            {
-                Debug.Fail("The scroll direction must be horizontal or vertical for the dynamic layout to work");
-            }
+
+            Debug.Assert(!(scrollDirection != ScrollOrientation.Horizontal && scrollDirection != ScrollOrientation.Vertical),"The scroll direction must be horizontal or vertical for the dynamic layout to work");
 
             _itemsToDisplayElements = new Dictionary<T, BaseInteractiveUIElement>();
             _displayElements = new List<BaseInteractiveUIElement>();

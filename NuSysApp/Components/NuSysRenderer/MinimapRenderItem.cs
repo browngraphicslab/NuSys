@@ -111,9 +111,10 @@ namespace NuSysApp
                 CreateResources();
             }
 
-            if(_collection?.ViewModel == null)
+            Debug.Assert(_collection?.ViewModel != null,"this shouldn't be null");
+            if (_collection?.ViewModel == null)
             {
-                Debug.Fail("this shouldn't be null");
+
                 return;
             }
 

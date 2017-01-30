@@ -396,8 +396,8 @@ namespace NuSysApp
         {
             _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
             {
-                Height = 30,
-                Width = 30,
+                Height = 50,
+                Width = 50,
                 ImageBounds = new Rect(.25,.25,.5,.5)
             };
             AddChild(_closeButton);

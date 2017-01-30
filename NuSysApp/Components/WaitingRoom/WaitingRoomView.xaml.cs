@@ -711,8 +711,8 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.Init();
                         SessionController.Instance.LocalUserID = UserID;
 
-                        loggedInText.Text = "Logged In!";
-                        NewUserLoginText.Text = "Logged In!";
+                        loggedInText.Text = "Logging in...";
+                        NewUserLoginText.Text = "Logging in...";
                         _collectionList = new List<LibraryElementModel>();
                         await Init();
                         NewWorkspaceButton.IsEnabled = true;
