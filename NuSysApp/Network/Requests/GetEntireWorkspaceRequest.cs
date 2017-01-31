@@ -135,7 +135,7 @@ namespace NuSysApp
             }
             catch (JsonException parseException)
             {
-                Debug.Fail("Shouldn't have failed the parse!");
+                Debug.Assert(false, "Shouldn't have failed the parse!");
                 _returnedElementModels = new List<ElementModel>();
                 _returnedContentDataModels = new List<ContentDataModel>();
                 _returnedPresentationLinkModels = new List<PresentationLinkModel>();

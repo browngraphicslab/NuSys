@@ -259,7 +259,7 @@ namespace NuSysApp
 
             if (column == null)
             {
-                Debug.Fail("Column should not be null");
+                Debug.Assert(false, "Column should not be null");
                 return;
             }
             AddColumn(column);

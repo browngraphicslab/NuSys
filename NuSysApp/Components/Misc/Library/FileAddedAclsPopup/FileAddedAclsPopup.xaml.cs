@@ -167,22 +167,23 @@ namespace NuSysApp
 
 
                 // get the access level from the radio button name, this is poor coding but simplifies the implementation immensely
-                NusysConstants.AccessType selectedAcess = NusysConstants.AccessType.Public;
+                NusysConstants.AccessType selectedAccess = NusysConstants.AccessType.Public;
                 if (radioButton.Name == "publicRadio")
                 {
-                    selectedAcess = NusysConstants.AccessType.Public;
+                    selectedAccess = NusysConstants.AccessType.Public;
                 }
                 else if (radioButton.Name == "privateRadio")
                 {
-                    selectedAcess = NusysConstants.AccessType.Private;
+                    selectedAccess = NusysConstants.AccessType.Private;
                 }
                 else if (radioButton.Name == "readOnlyRadio")
                 {
-                    selectedAcess = NusysConstants.AccessType.ReadOnly;
+                    selectedAccess = NusysConstants.AccessType.ReadOnly;
                 }
                 else
                 {
-                    Debug.Fail("Sorry these are switched by name, make sure the strings above match the strings in the xaml list view");
+                    selectedAccess = NusysConstants.AccessType.Private;
+                    Debug.Assert(false, "Sorry these are switched by name, make sure the strings above match the strings in the xaml list view");
                 }
 
                 // get the file that the access is correlated to
@@ -192,11 +193,11 @@ namespace NuSysApp
                 // set the access in the dictionary
                 if (_vm.AccessDictionary.ContainsKey(file.FolderRelativeId))
                 {
-                    _vm.AccessDictionary[file.FolderRelativeId] = selectedAcess;
+                    _vm.AccessDictionary[file.FolderRelativeId] = selectedAccess;
                 }
                 else
                 {
-                    _vm.AccessDictionary.Add(file.FolderRelativeId, selectedAcess);
+                    _vm.AccessDictionary.Add(file.FolderRelativeId, selectedAccess);
                 }
             }
 
@@ -351,7 +352,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail($"The passed in name, {radioButton.Name} should be used in one of the above statements");
+                Debug.Assert(false, $"The passed in name, {radioButton.Name} should be used in one of the above statements");
             }
 
         }

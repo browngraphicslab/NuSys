@@ -237,7 +237,7 @@ namespace NuSysApp
                 var trailvm = (_selectedLink as TrailRenderItem).ViewModel;
                 if(trailvm == null)
                 {
-                    Debug.Fail("vm should not be null");
+                    Debug.Assert(false, "vm should not be null");
                     return;
                 }
                 List<ElementController> trailList = GetTrailAsList(trailvm.Model);
@@ -475,7 +475,7 @@ namespace NuSysApp
                 var elem = selection.ViewModel;
                 if (elem == null)
                 {
-                    Debug.Fail("this shouldn't be happening.");
+                    Debug.Assert(false, "this shouldn't be happening.");
                     continue;
                 }
                 var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));

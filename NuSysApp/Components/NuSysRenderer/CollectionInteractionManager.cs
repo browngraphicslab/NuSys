@@ -497,7 +497,7 @@ namespace NuSysApp
                         } 
                         else
                         {
-                            Debug.Fail("Failed to cast to element render item;");
+                            Debug.Assert(false, "Failed to cast to element render item;");
                         }
                     }
                 }

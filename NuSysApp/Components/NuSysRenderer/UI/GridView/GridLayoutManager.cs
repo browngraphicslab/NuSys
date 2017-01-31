@@ -126,7 +126,7 @@ namespace NuSysApp
             // make sure the number of minHeights is the same as the number of relativeHeights
             if (minHeights != null && minHeights.Count != relativeHeights.Count)
             {
-                Debug.Fail("The number of min heights passed in must equal the number of relative heights passed in" +
+                throw new Exception("The number of min heights passed in must equal the number of relative heights passed in" +
                            "if min heights are going to be used");
             }
 
@@ -188,7 +188,7 @@ namespace NuSysApp
             // make sure the number of minWidths is the same as the number of relativeWidths
             if (minWidths != null && minWidths.Count != relativeWidths.Count)
             {
-                Debug.Fail("The number of min widths passed in must equal the number of relative widths passed in" +
+                throw new Exception("The number of min widths passed in must equal the number of relative widths passed in" +
                            "if min widths are going to be used");
             }
 
@@ -301,11 +301,11 @@ namespace NuSysApp
         {
             if (row < 0 || row > Rows.Count - 1)
             {
-                Debug.Fail($"Invalid row ({row}). Row must be an integer between 0 and {Rows.Count - 1}. If this looks impossible, you probably don't have any Rows in the grid.");
+                throw new Exception($"Invalid row ({row}). Row must be an integer between 0 and {Rows.Count - 1}. If this looks impossible, you probably don't have any Rows in the grid.");
             }
             if (column < 0 || column > Columns.Count - 1)
             {
-                Debug.Fail($"Invalid column ({column}). column must be an integer between 0 and {Columns.Count - 1}. If this looks impossible, you probably don't have any Columns in the grid.");
+                throw new Exception($"Invalid column ({column}). column must be an integer between 0 and {Columns.Count - 1}. If this looks impossible, you probably don't have any Columns in the grid.");
             }
 
             Elements.Add(element);
@@ -358,7 +358,9 @@ namespace NuSysApp
             // make sure we have the location of the element
             if (!_elementsToLocations.ContainsKey(element))
             {
-                Debug.Fail("Invalid element, make sure the Element Removal and Add is being performed properly");
+                Debug.Assert(false, "Invalid element, make sure the Element Removal and Add is being performed properly");
+                //todo possibly throw an exception here, probably indicates data corruption
+                return;
             }
 
             // get the location of the element
@@ -389,7 +391,9 @@ namespace NuSysApp
             // make sure we have the location of the element
             if (!_elementsToLocations.ContainsKey(element))
             {
-                Debug.Fail( "Invalid element, make sure the Element Removal and Add is being performed properly");
+                Debug.Assert(false, "Invalid element, make sure the Element Removal and Add is being performed properly");
+                //todo possibly throw an exception here, probably indicates data corruption
+                return;
             }
 
             // get the location of the element

@@ -25,7 +25,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="senderArgs"></param>
         /// <param name="returnArgs"></param>
-        public override void ExecuteRequestFunction(GetWordDocumentRequestArgs senderArgs, GetWordDocumentReturnArgs returnArgs){ Debug.Fail("this shouldn't happen");}
+        public override void ExecuteRequestFunction(GetWordDocumentRequestArgs senderArgs, GetWordDocumentReturnArgs returnArgs){ Debug.Assert(false, "this shouldn't happen");}
 
         /// <summary>
         /// Call this AFTER A SUCCESSFUL REQUEST EXECUTION to get the bytes you requested.

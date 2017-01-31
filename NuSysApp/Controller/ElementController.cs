@@ -283,7 +283,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail("request failed");
+                Debug.Assert(false, "request failed");
                 //alert the user it failed
             }
         }

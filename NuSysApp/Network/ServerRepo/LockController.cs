@@ -353,7 +353,7 @@ namespace NuSysApp
             {
                 return request.CurrentLockHolder();
             }
-            Debug.Fail("why did it fail?!?!?!?");
+            Debug.Assert(false, "why did it fail?!?!?!?");
             return null;
         }
 
