@@ -448,11 +448,26 @@ namespace NuSysApp
                 _readOnlyLinksWindow.UpdateList(currCollectionController);
             }
 
+            // if we were already in a workspace then the curr controller was set previously so remove the event here
+            if (_currController != null)
+            {
+                _currController.TitleChanged -= _currController_TitleChanged;
+            }
 
+            // set the curr controller to the new controller, and add the title changed event
             _currController = SessionController.Instance.ContentController.GetLibraryElementController(
                 SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
-            _currController.TitleChanged += InstanceOnEnterNewCollectionCompleted;
+            _currController.TitleChanged += _currController_TitleChanged; ;
+        }
 
+        /// <summary>
+        /// Called when the controller for the current collection's title changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _currController_TitleChanged(object sender, string e)
+        {
+            _titleBox.Text = e;
         }
 
         /// <summary>
@@ -677,7 +692,6 @@ namespace NuSysApp
             SessionController.Instance.EnterNewCollectionCompleted -= InstanceOnEnterNewCollectionCompleted;
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
-            _currController.TitleChanged -= InstanceOnEnterNewCollectionCompleted;
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
             _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
             base.Dispose();
