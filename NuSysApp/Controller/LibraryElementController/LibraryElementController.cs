@@ -1021,7 +1021,8 @@ namespace NuSysApp
        
 
         /// <summary>
-        /// Adds highlighting to the things related to this library element controller
+        /// Adds highlighting to the things related to this library element controller. MAKE SURE THAT THIS OPERATION CAN BE CALLED N TIMES ON THE SAME ELEMENT AND HAVE THE SAME EFFECT
+        /// AS BEING CALLED 1 TIME!!!
         /// </summary>
         public void AddHighlight()
         {
