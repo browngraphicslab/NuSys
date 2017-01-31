@@ -71,11 +71,11 @@ namespace NuSysApp
         {
             _leftPageButton.Image = _leftPageButton.Image ??
                                     await
-                                        CanvasBitmap.LoadAsync(Canvas,
+                                        MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                             new Uri("ms-appx:///Assets/new icons/left arrow.png"));
             _rightPageButton.Image = _rightPageButton.Image ??
                                     await
-                                        CanvasBitmap.LoadAsync(Canvas,
+                                        MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                             new Uri("ms-appx:///Assets/new icons/right arrow.png"));
 
             base.Load();

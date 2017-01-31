@@ -97,7 +97,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _closeButton.Image = _closeButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x.png"));
+            _closeButton.Image = _closeButton.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x.png"));
         }
 
         /// <summary>

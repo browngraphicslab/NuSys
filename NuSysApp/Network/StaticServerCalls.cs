@@ -73,7 +73,7 @@ namespace NuSysApp
         /// Returns the Library Id of the newly created copy.
         /// </summary>
         /// <param name="libraryElementId"></param>
-        public static async Task<string> CreateDeepCopy(string libraryElementId)
+        public static async Task<string> CreateDeepCopy(string libraryElementId, NusysConstants.AccessType access = NusysConstants.AccessType.Public)
         {
             var originalController = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementId);
             // Generate a new content Id (only for text) and library Id for the copy
@@ -137,7 +137,7 @@ namespace NuSysApp
                 }
                 args.Title = originalController.Title + " copy";
                 args.ContentId = originalController.LibraryElementModel.ContentDataModelId;
-                args.AccessType = originalController.LibraryElementModel.AccessType;
+                args.AccessType = access;
                 args.LibraryElementType = originalController.LibraryElementModel.Type;
                 args.LibraryElementId = newLibraryId;
                 args.Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri;

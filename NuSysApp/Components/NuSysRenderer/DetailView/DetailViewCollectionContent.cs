@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

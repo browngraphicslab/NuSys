@@ -99,6 +99,10 @@ namespace NuSysApp
 
         protected void ReRender()
         {
+            if (_bmp == null)
+            {
+                return;
+            }
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
             var nx = lib.NormalizedX * _bmp.Size.Width;
             var ny = lib.NormalizedY * _bmp.Size.Height;

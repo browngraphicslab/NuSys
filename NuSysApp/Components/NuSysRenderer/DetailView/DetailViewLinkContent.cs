@@ -208,7 +208,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _linkIconDisplayElement.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_link.png"));
+            _linkIconDisplayElement.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_link.png"));
             base.Load();
         }
 

@@ -218,7 +218,7 @@ namespace NuSysApp
         /// <param name="button"></param>
         private async void AddImageToButton(ICanvasResourceCreatorWithDpi resourceCreator, string uri, ButtonUIElement button)
         {
-            var bmp = await CanvasBitmap.LoadAsync(resourceCreator, new Uri(uri));
+            var bmp = await MediaUtil.LoadCanvasBitmapAsync(resourceCreator, new Uri(uri));
             button.Image = bmp;
         }
 

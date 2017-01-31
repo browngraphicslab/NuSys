@@ -109,20 +109,20 @@ namespace NuSysApp
         public override async Task Load()
         {
             // set the images for all the buttons
-            _addRecordingNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
-            _addTextNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
-            _addCollectionNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
-            _addToolNodeButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+            _addRecordingNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
+            _addTextNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
+            _addCollectionNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
+            _addToolNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
 
             // load the images for the drag icon
             _textNodeDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
+                await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
             _collectionDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
+                await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
             _recordingDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
+                await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
             _toolDragImg =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+                await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
             base.Load();
         }
 

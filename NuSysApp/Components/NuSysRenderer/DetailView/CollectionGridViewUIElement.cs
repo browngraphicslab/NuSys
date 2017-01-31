@@ -128,7 +128,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _imageRect.Image = await CanvasBitmap.LoadAsync(Canvas, _controller.SmallIconUri);
+            _imageRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
             base.Load();
         }
 

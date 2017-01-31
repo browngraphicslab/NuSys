@@ -164,17 +164,17 @@ namespace NuSysApp
             UITask.Run(async delegate
             {
                 _listToolViewButton.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/listview.png"));
+                    await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/listview.png"));
                 _listToolViewButton.ImageBounds = new Rect(.25,.25,.5,.5);
 
 
                 _pieToolViewButton.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pie chart.png"));
+                    await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pie chart.png"));
                 _pieToolViewButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
 
                 _barToolViewButton.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/bar chart.png"));
+                    await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/bar chart.png"));
                 _barToolViewButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             });

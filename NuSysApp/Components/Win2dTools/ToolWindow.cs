@@ -275,14 +275,14 @@ namespace NuSysApp
             UITask.Run(async delegate
             {
                 _draggableCollectionElement.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
+                    await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
 
-                _collectionDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
+                _collectionDragIcon.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
 
                 _draggableStackElement.Image =
-                    await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/stack.png"));
+                    await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/stack.png"));
 
-                _stackDragIcon.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/stack.png"));
+                _stackDragIcon.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/stack.png"));
 
             });
 
@@ -444,7 +444,7 @@ namespace NuSysApp
 
 
             _deleteButton = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle);
-            _deleteButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/delete.png"));
+            _deleteButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/node icons/delete.png"));
             _deleteButton.ImageBounds = new Rect(.25, .25, .5, .5);
             _deleteButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Height / 2 + BUTTON_MARGIN);
             _deleteButton.Tapped += _deleteButton_Tapped;
@@ -452,7 +452,7 @@ namespace NuSysApp
 
 
             _refreshButton = new EllipseButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle);
-            _refreshButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/refresh icon.png"));
+            _refreshButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/refresh icon.png"));
             _refreshButton.ImageBounds = new Rect(.25, .25, .5, .5);
             _refreshButton.Tapped += _refreshButton_Tapped;
             _refreshButton.Transform.LocalPosition = new Vector2(-(BUTTON_MARGIN + _deleteButton.Width), _deleteButton.Transform.LocalY + _deleteButton.Height + BUTTON_MARGIN);

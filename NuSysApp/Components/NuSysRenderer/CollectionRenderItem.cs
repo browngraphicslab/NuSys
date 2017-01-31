@@ -130,7 +130,7 @@ namespace NuSysApp
             {
                 _shapeStatus = ShapedStatus.Image;
                 Task.Run(async delegate {
-                    _shapeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri(shape.ImageUrl));
+                    _shapeImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri(shape.ImageUrl));
                 });
             }
         }

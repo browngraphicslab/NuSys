@@ -37,27 +37,27 @@ namespace NuSysApp
 
         private async void LoadLinkIcon()
         {
-            var linkIcon = await CanvasBitmap.LoadAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/link.png"));
+            var linkIcon = await MediaUtil.LoadCanvasBitmapAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/link.png"));
             _defaultIconDictionary[NusysConstants.ElementType.Link] = linkIcon;
         }
 
         private async void LoadTextIcon()
         {
-            var textIcon = await CanvasBitmap.LoadAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/text.png"));
+            var textIcon = await MediaUtil.LoadCanvasBitmapAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/text.png"));
             _defaultIconDictionary[NusysConstants.ElementType.Text] = textIcon;
 
         }
 
         private async void LoadCollectionIcon()
         {
-            var collectionIcon = await CanvasBitmap.LoadAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png"));
+            var collectionIcon = await MediaUtil.LoadCanvasBitmapAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png"));
             _defaultIconDictionary[NusysConstants.ElementType.Collection] = collectionIcon;
 
         }
 
         private async void LoadWordIcon()
         {
-            var wordIcon = await CanvasBitmap.LoadAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/word.png"));
+            var wordIcon = await MediaUtil.LoadCanvasBitmapAsync(_resourceCreator, new Uri("ms-appx:///Assets/library_thumbnails/word.png"));
             _defaultIconDictionary[NusysConstants.ElementType.Word] = wordIcon;
 
         }
@@ -81,7 +81,7 @@ namespace NuSysApp
                 {
                     cell.Image = base.DefaultImage;
                     base.ImageDict[itemSource] = cell.Image;
-                    base.ImageDict[itemSource] = await CanvasBitmap.LoadAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
+                    base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
 
                 }
 
@@ -90,7 +90,7 @@ namespace NuSysApp
 
                 var imgBounds = cell?.Image?.GetBounds(_resourceCreator);
 
-                Debug.Assert(imgBounds != null);
+                
                 if (imgBounds == null)
                 {
                     return;

@@ -212,7 +212,7 @@ namespace NuSysApp
                 _imageBitmap = await
                     MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, url,
                         ResourceCreator.Dpi);
-                if (_controller.ImageLibraryElementModel.Type == NusysConstants.ElementType.Image && _controller.ImageLibraryElementModel.Ratio == 0)
+                if (_controller.ImageLibraryElementModel.Type == NusysConstants.ElementType.Image && _imageBitmap != null &&_controller?.ImageLibraryElementModel?.Ratio == 0)
                 {
                     _controller.SetAspectRatio(_imageBitmap.Size.Width/_imageBitmap.Size.Height);
                 }

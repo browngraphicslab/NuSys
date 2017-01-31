@@ -384,9 +384,9 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task Load()
         {
-            _addFileButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
+            _addFileButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/add elements.png"));
             _bingButton.Image =
-                await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/logo_bing_en-US.png"));
+                await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/logo_bing_en-US.png"));
             base.Load(); 
         }
 

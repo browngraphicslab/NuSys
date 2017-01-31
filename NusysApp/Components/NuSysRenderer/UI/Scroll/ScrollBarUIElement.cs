@@ -177,11 +177,11 @@ namespace NuSysApp
             {
                 _plusArrow.Image = _plusArrow.Image ??
                                    await
-                                       CanvasBitmap.LoadAsync(Canvas,
+                                       MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                            new Uri("ms-appx:///Assets/new icons/down arrow.png"));
                 _minusArrow.Image = _minusArrow.Image ??
                                     await
-                                        CanvasBitmap.LoadAsync(Canvas,
+                                        MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                             new Uri("ms-appx:///Assets/new icons/up arrow.png"));
             }
 
@@ -189,11 +189,11 @@ namespace NuSysApp
             {
                 _plusArrow.Image = _plusArrow.Image ??
                                    await
-                                       CanvasBitmap.LoadAsync(Canvas,
+                                       MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                            new Uri("ms-appx:///Assets/new icons/right scroll arrow.png"));
                 _minusArrow.Image = _minusArrow.Image ??
                                    await
-                                       CanvasBitmap.LoadAsync(Canvas,
+                                       MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                            new Uri("ms-appx:///Assets/new icons/left scroll arrow.png"));
             }
 

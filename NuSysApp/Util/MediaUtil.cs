@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
@@ -100,12 +101,38 @@ namespace NuSysApp
             return document;
         }
 
-        private static ConcurrentHashSet<string> _loadingUris = new ConcurrentHashSet<string>();
 
 
-        private async Task<CanvasBitmap> PrivateLoad(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
+        private static async Task<CanvasBitmap> PrivateLoad(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
         {
-            return null;
+            CanvasBitmap bitmap = null;
+            try
+            {
+                if (dpi != null)
+                {
+                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri, dpi.Value);
+                }
+                else
+                {
+                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri);
+                }
+            }
+            catch (Exception e)
+            {
+                if (dpi != null)
+                {
+                    bitmap =
+                        await
+                            CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"),
+                                dpi.Value);
+                }
+                else
+                {
+                    bitmap =
+                        await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"));
+                }
+            }
+            return bitmap;
         }
 
         /// <summary>
@@ -117,10 +144,52 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
         {
+            return await PrivateLoad(resourceCreator, uri, dpi);
+
+            var token = new CancellationTokenSource();
+            token.CancelAfter(2000);
+
+            return await Task.Run(async delegate
+            {
+                return await PrivateLoad(resourceCreator, uri, dpi);
+            },token.Token);
             
             var shouldRetry = true;
             var done = false;
             CanvasBitmap bitmap = null;
+
+            var shouldFail = false;
+
+            Task.Run(async delegate
+            {
+                bitmap =  await PrivateLoad(resourceCreator, uri, dpi);
+                done = true;
+            },token.Token);
+
+            Task.Run(async delegate
+            {
+                await Task.Delay(2000);
+                if (!done)
+                {
+                    shouldFail = true;
+                    token.Cancel(false);
+                    token.Dispose();
+                }
+
+            });
+            while (true)
+            {
+                if (done)
+                {
+                    return bitmap;
+                }
+                else if (shouldFail)
+                {
+                    return null;
+                }
+                await Task.Delay(20);
+            }
+
             /*
             Task.Run(async delegate {
                 var attempts = 0;
@@ -164,28 +233,7 @@ namespace NuSysApp
                     }
                 }
             });*/
-            try
-            {
-                if (dpi != null)
-                {
-                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri, dpi.Value);
-                }
-                else
-                {
-                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri);
-                }
-            }
-            catch(Exception e)
-            {
-                if (dpi != null)
-                {
-                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"),dpi.Value);
-                }
-                bitmap = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"));
-            }
-            _loadingUris.Remove(uri.AbsoluteUri);
-            done = true;
-            return bitmap;
+
         }
 
         /// <summary>

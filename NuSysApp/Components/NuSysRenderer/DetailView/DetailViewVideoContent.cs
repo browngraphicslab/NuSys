@@ -44,7 +44,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            Image = await CanvasBitmap.LoadAsync(Canvas, _controller.LargeIconUri, ResourceCreator.Dpi);
+            Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.LargeIconUri, ResourceCreator.Dpi);
             base.Load();
         }
 

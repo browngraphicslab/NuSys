@@ -245,9 +245,9 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _playImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/play.png"));
-            _pauseImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pause.png"));
-            _volumeImage = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/volume.png"));
+            _playImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/play.png"));
+            _pauseImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pause.png"));
+            _volumeImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/volume.png"));
             _isLoading = false;
 
             if (_isPlaying)

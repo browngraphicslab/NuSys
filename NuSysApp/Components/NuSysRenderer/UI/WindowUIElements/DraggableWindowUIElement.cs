@@ -383,7 +383,7 @@ namespace NuSysApp
             {
                 _closeButton.Image = _closeButton.Image ??
                                      await
-                                         CanvasBitmap.LoadAsync(Canvas,
+                                         MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                              new Uri("ms-appx:///Assets/new icons/x white.png"));
             }
             base.Load();

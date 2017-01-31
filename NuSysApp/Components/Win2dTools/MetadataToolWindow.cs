@@ -70,7 +70,7 @@ namespace NuSysApp
                 Width = 50,
                 Background = Colors.Transparent
             };
-            _dragFilterItem.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/filter.png"));
+            _dragFilterItem.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/filter.png"));
             AddChild(_dragFilterItem);
             _dragFilterItem.IsVisible = false;
         }

@@ -59,7 +59,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri(_iconUrl));
+            _bmp = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri(_iconUrl));
         }
 
         public override void Draw(CanvasDrawingSession ds)

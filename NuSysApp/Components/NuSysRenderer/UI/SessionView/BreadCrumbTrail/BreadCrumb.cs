@@ -129,11 +129,11 @@ namespace NuSysApp
         {
             if (!IsCollection)
             {
-                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, ElementController.LibraryElementController.SmallIconUri);
+                Icon = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, ElementController.LibraryElementController.SmallIconUri);
             }
             else
             {
-                Icon = await CanvasBitmap.LoadAsync(ResourceCreator, CollectionController.SmallIconUri);
+                Icon = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, CollectionController.SmallIconUri);
             }
 
         }

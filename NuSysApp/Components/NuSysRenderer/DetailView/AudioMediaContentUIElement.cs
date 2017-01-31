@@ -256,7 +256,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _audioWaveImage = await CanvasBitmap.LoadAsync(Canvas, _controller.LargeIconUri);
+            _audioWaveImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.LargeIconUri);
             Image = _audioWaveImage;
             _isLoading = false;
 

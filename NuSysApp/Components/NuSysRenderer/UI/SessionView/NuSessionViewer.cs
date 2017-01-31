@@ -621,25 +621,25 @@ namespace NuSysApp
             }
 
             // set the image for the _chatButton
-            _chatButton.Image = _chatButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
+            _chatButton.Image = _chatButton.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
             _chatButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             // set the image for the _snapshotButton
-            _snapshotButton.Image = _snapshotButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/snapshot_icon.png"));
+            _snapshotButton.Image = _snapshotButton.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/snapshot_icon.png"));
             _snapshotButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             //load and set the settings icon
-            _settingsButton.Image = _settingsButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/gear.png"));
+            _settingsButton.Image = _settingsButton.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/gear.png"));
             _settingsButton.ImageBounds = new Rect(.25, .25, .5, .5);
 
             // set the image for the _backButton
-            _backButton.Image = _backButton.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/back.png"));
+            _backButton.Image = _backButton.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/back.png"));
 
             // set the images for presentation mode
-            _nextNode.Image = _nextNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_forward.png"));
-            _previousNode.Image = _previousNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
-            _currentNode.Image = _currentNode.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
-            _exitPresentation.Image = _exitPresentation.Image ?? await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
+            _nextNode.Image = _nextNode.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/presentation_forward.png"));
+            _previousNode.Image = _previousNode.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
+            _currentNode.Image = _currentNode.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
+            _exitPresentation.Image = _exitPresentation.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
 
 
             // created here because it must be created after the create resources method is called on the main canvas animated control

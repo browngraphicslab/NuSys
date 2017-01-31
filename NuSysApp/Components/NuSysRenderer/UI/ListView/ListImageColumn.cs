@@ -33,7 +33,7 @@ namespace NuSysApp
         {
             try
             {
-                _image = await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/icon_image.png"));
+                _image = await MediaUtil.LoadCanvasBitmapAsync(resourceCreator, new Uri("ms-appx:///Assets/icon_image.png"));
 
             }
             catch (Exception e)
@@ -67,12 +67,12 @@ namespace NuSysApp
                 else
                 {
                     cell.Image = _image;
-                    cell.Image = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
+                    cell.Image = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, ColumnFunction(itemSource));
                     _dict[itemSource] = cell.Image;
 
                     cell.Image = _image;
                     _dict[itemSource] = cell.Image;
-                    _dict[itemSource] = await CanvasBitmap.LoadAsync(cell.ResourceCreator, ColumnFunction(itemSource));
+                    _dict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, ColumnFunction(itemSource));
                 }
 
                 var cellWidth = cell.Width;

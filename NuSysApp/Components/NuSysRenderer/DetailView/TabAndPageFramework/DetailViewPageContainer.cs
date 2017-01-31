@@ -328,7 +328,46 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnCopyFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId);
+            var accessPopup = new FlyoutPopup(this,ResourceCreator);
+            accessPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - accessPopup.Width / 2,
+                _settingsButton.Transform.LocalPosition.Y + accessPopup.Height);
+            accessPopup.AddFlyoutItem("private", OnPrivateTappedEvent, Canvas);
+            accessPopup.AddFlyoutItem("public", OnPublicTappedEvent, Canvas);
+            accessPopup.AddFlyoutItem("readonly", OnReadOnlyTappedEvent, Canvas);
+            AddChild(accessPopup);
+        }
+
+        /// <summary>
+        /// event handler called whenever a copy is requested and 'private' is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnPrivateTappedEvent(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId,NusysConstants.AccessType.Public);
+            (item?.Parent as PopupUIElement)?.DismissPopup();
+        }
+
+        /// <summary>
+        /// event handler called whenever a copy is requested and 'public' is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnPublicTappedEvent(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId, NusysConstants.AccessType.Private);
+            (item?.Parent as PopupUIElement)?.DismissPopup();
+        }
+
+        /// <summary>
+        /// event handler called whenever a copy is requested and 'readonly' is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void OnReadOnlyTappedEvent(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId, NusysConstants.AccessType.ReadOnly);
+            (item?.Parent as PopupUIElement)?.DismissPopup();
         }
 
         /// <summary>
@@ -406,7 +445,7 @@ namespace NuSysApp
             _titleBox.TextChanged += OnTitleTextChanged;
             _titleBox.Transform.LocalPosition = new Vector2(_titleBox.Transform.LocalPosition.X + 30, _titleBox.Transform.LocalPosition.Y);
 
-            _settingsButton.Image = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
+            _settingsButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/settings icon.png"));
 
             /// a decorative line :)
             _line = new RectangleUIElement(this, Canvas)

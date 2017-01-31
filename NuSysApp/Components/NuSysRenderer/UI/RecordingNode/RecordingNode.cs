@@ -429,11 +429,11 @@ namespace NuSysApp
         public override async Task Load()
         {
             // load all the images async
-            _recordIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_record.png"));
-            _stopIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_stop.png"));
-            _videoIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_video.png"));
-            _audioIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/node icons/record.png"));
-            _pauseIcon = await CanvasBitmap.LoadAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_pause.png"));
+            _recordIcon = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_record.png"));
+            _stopIcon = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_stop.png"));
+            _videoIcon = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/node icons/icon_video.png"));
+            _audioIcon = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/node icons/record.png"));
+            _pauseIcon = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/icon_audionode_pause.png"));
 
             // set these images here they do not change dynamically
             _stopButton.Image = _stopIcon;

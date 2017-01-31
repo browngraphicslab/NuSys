@@ -154,9 +154,9 @@ namespace NuSysApp
         {
             base.Load();
             BtnTools.Image =
-                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
+                await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
             DragToolsRect.Image =
-                await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
+                await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
         }
 
 
