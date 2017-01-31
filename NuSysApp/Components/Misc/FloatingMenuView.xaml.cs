@@ -368,7 +368,7 @@ namespace NuSysApp
                     vm.AtomViewList.Add(r);
                     return;
                 default:
-                    Debug.Fail($"We do not support adding {_elementType} to the collection yet, please add support for it here");
+                    Debug.Assert(false, $"We do not support adding {_elementType} to the collection yet, please add support for it here");
                     return;
             }
             // Create a new content request

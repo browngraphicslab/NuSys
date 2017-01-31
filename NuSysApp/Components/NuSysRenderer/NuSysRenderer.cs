@@ -60,7 +60,7 @@ namespace NuSysApp
                 }
                 catch (Exception e)
                 {
-                    Debug.Fail("Error while loading collection");
+                    throw new Exception("Error while loading collection");
                 }
                 _isStopped = false;
             });

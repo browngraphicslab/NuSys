@@ -220,7 +220,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail("we should never hit this");
+                Debug.Assert(false, "we should never hit this");
             }
 
             OnBrushUpdated();

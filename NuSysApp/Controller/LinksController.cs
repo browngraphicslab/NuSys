@@ -67,7 +67,7 @@ namespace NuSysApp
             {
                 return _linkableIdToLinkableController[linkId];
             }
-            Debug.Fail("we shouldnt ever really fail to find ilinkable for a certain id");
+            Debug.Assert(false, "we shouldnt ever really fail to find ilinkable for a certain id");
             return null;
         }
         /// <summary>
@@ -606,11 +606,11 @@ namespace NuSysApp
                 }
                 catch (KeyNotFoundException e)
                 {
-                    Debug.Fail("We shouldn't have a linkable id that doesn't map to a linkable");
+                    Debug.Assert(false, "We shouldn't have a linkable id that doesn't map to a linkable");
                 }
                 catch (ArgumentNullException e)
                 {
-                    Debug.Fail("We shouldn't have a linkable id that is null!");
+                    Debug.Assert(false, "We shouldn't have a linkable id that is null!");
                 }
                 return new HashSet<ILinkable>();
             }

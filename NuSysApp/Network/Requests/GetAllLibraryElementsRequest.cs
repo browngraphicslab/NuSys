@@ -46,7 +46,7 @@ namespace NuSysApp
                 }
                 catch (Exception e)
                 {
-                    Debug.Fail("shouldn't reach here, do better error handling");
+                    Debug.Assert(false, "shouldn't reach here, do better error handling");
                 }
             }
             return returnModels;

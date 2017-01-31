@@ -163,7 +163,7 @@ namespace NuSysApp
             // make sure the passed in string is proper
             if (str != GridSortOptionToString(GridSortOption.Title))
             {
-                Debug.Fail($"The passed in string {str} is invalid");
+                Debug.Assert(false,$"The passed in string {str} is invalid");
             }
             return GridSortOption.Title;
 

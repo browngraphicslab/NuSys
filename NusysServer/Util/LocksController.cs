@@ -176,7 +176,7 @@ namespace NusysServer
             {
                 if (_lockToUser[id] == handler)
                 {
-                    Debug.Fail("We probably shouldn't be sending the request if this ");
+                    Debug.Assert(false, "We probably shouldn't be sending the request if this ");
                     return true;
                 }
                 else

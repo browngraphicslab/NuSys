@@ -161,7 +161,7 @@ namespace NuSysApp
                 }
                 catch (Exception exception)
                 {
-                    Debug.Fail("can't have empty try-catch");
+                    Debug.Assert(false, "can't have empty try-catch");
                     // Do Exception Handling
                 }
             }

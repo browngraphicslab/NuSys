@@ -201,7 +201,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail("Load an image in the load method, and set it correctly here");
+                Debug.Assert(false, "Load an image in the load method, and set it correctly here");
             }
         }
 
@@ -229,7 +229,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail("Add support for the proper element type here");
+                Debug.Assert(false, "Add support for the proper element type here");
             }
 
         }

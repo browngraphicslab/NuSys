@@ -132,7 +132,7 @@ namespace NuSysApp
                         break;
                     default:
                         //Debug.Fail("this should never even be hit because this is not copyable"); //tODO, maybe have this just create a snapshot instead?
-                        return "";
+                        return null;
                         break;
                 }
                 args.Title = originalController.Title + " copy";
@@ -254,7 +254,7 @@ namespace NuSysApp
                         AddRecordingNode(screenPoint);
                         return; // return after this we are not creating content
                     default:
-                        Debug.Fail($"In order to add an element of type, {elementType} to the collection you must provide a library element controller");
+                        Debug.Assert(false, $"In order to add an element of type, {elementType} to the collection you must provide a library element controller");
                         return;
                 }
 
@@ -412,7 +412,7 @@ namespace NuSysApp
                         AddRecordingNode(screenPoint);
                         return; // return after this we are not creating content
                     default:
-                        Debug.Fail($"In order to add an element of type, {elementType} to the collection you must provide a library element controller");
+                        Debug.Assert(false, $"In order to add an element of type, {elementType} to the collection you must provide a library element controller");
                         return;
                 }
 

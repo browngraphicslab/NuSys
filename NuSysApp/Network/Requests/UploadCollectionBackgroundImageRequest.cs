@@ -37,7 +37,7 @@ namespace NuSysApp
         /// <param name="returnArgs"></param>
         public override void ExecuteRequestFunction(UploadCollectionBackgroundImageServerRequestArgs senderArgs, UploadCollectionBackgroundImageReturnArgs returnArgs)
         {
-            Debug.Fail("this shouldn't happen");
+            Debug.Assert(false, "this shouldn't happen");
         }
     }
 }

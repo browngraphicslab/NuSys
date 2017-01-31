@@ -602,7 +602,7 @@ namespace NuSysApp
         {
             if (VerticalScrollBar == null || HorizontalScrollBar == null || _lowerRightCornerRect == null)
             {
-                Debug.Fail("Don't call this method if these are null");
+                Debug.Assert(false, "Don't call this method if these are null");
                 return;
             }
             //Ignore the corner if one of the scroll bars is not present
