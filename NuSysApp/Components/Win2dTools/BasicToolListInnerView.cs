@@ -102,10 +102,7 @@ namespace NuSysApp
         public override void SetVisualSelection(HashSet<string> itemsToSelect)
         {
             _listView.DeselectAllItems();
-            foreach (var selection in itemsToSelect ?? new HashSet<string>())
-            {
-                _listView.SelectItem(selection);
-            }
+            _listView.SelectItems(itemsToSelect);
             if (itemsToSelect != null && itemsToSelect.Count > 0)
             {
                 //_listView.ScrollTo(itemsToSelect.Last());
