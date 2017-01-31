@@ -17,6 +17,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
 using WinRTXamlToolkit.Controls.DataVisualization;
 
@@ -279,17 +280,84 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Task used to keep track of whether or not we are currently loading an image for the drag to collection button
+        /// </summary>
+        private Task _dragToCollectionImageLoadTask;
+
+        /// <summary>
         /// Fired once when the pointer is first dragged after tapping on the drag to collection button
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
         private async void _dragToCollectionButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            // check to see if a load is in progress
+            if (IsLoadInProgress())
+            {
+                return;
+            }
 
-            _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
+            // If there is a previous load in progress, stop it, and
+            // swallow any stale errors.
+            if (_dragToCollectionImageLoadTask != null)
+            {
+                _dragToCollectionImageLoadTask.AsAsyncAction().Cancel();
+                try { await _dragToCollectionImageLoadTask; } catch { }
+                _dragToCollectionImageLoadTask = null;
+            }
+
+            // start the process of loading a new image as the drag to collection button
+            _dragToCollectionImageLoadTask = LoadImageForDragRectAsync(Canvas, _controller.SmallIconUri);
 
             _dragRect.IsVisible = true;
         }
+
+        /// <summary>
+        /// This method asynchronously load an image into the drag rectangle
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="controllerSmallIconUri"></param>
+        /// <returns></returns>
+        private async Task LoadImageForDragRectAsync(CanvasAnimatedControl canvas, Uri controllerSmallIconUri)
+        {
+            _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(canvas, controllerSmallIconUri);
+
+        }
+
+        /// <summary>
+        /// check to see if we are currently loading an image
+        /// </summary>
+        /// <returns></returns>
+        bool IsLoadInProgress()
+        {
+            // No loading task?
+            if (_dragToCollectionImageLoadTask == null)
+                return false;
+
+            // Loading task is still running?
+            if (!_dragToCollectionImageLoadTask.IsCompleted)
+                return true;
+
+            // Query the load task results and re-throw any exceptions
+            // so Win2D can see them. This implements requirement #2.
+            try
+            {
+                _dragToCollectionImageLoadTask.Wait();
+            }
+            catch (AggregateException aggregateException)
+            {
+                // .NET async tasks wrap all errors in an AggregateException.
+                // We unpack this so Win2D can directly see any lost device errors.
+                aggregateException.Handle(exception => { throw exception; });
+            }
+            finally
+            {
+                _dragToCollectionImageLoadTask = null;
+            }
+
+            return false;
+        }
+
 
         /// <summary>
         /// Fired once when the pointer stops dragging after tapping on the drag to collection button
