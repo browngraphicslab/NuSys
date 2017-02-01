@@ -79,7 +79,6 @@ namespace NuSysApp
             _controller.SizeChanged -= ControllerOnSizeChanged;
 
             _activeRegion?.Dispose();
-            _bmp?.Dispose();
 
             foreach (var child in GetChildren())
             {
@@ -99,7 +98,7 @@ namespace NuSysApp
 
         protected void ReRender()
         {
-            if (_bmp == null)
+            if (_bmp == null || _bmp.Device == null)
             {
                 return;
             }
@@ -140,7 +139,6 @@ namespace NuSysApp
         public override async Task Load()
         {
             _isLoading = true;
-            _bmp?.Dispose();
             await Task.Run(async () =>
             {
                 _bmp = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
@@ -151,7 +149,7 @@ namespace NuSysApp
 
         private void RecomputeSize()
         {
-            if (_bmp == null)
+            if (_bmp == null || _bmp.Device == null)
                 return;
 
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
@@ -283,10 +281,19 @@ namespace NuSysApp
 
             var makeSmall = Transform.LocalToScreenMatrix.M22 < .06;
             using (ds.CreateLayer(1, _mask))
-            { 
+            {
                 if (_bmp != null)
-                    ds.DrawImage(_bmp, CroppedImageTarget, _rectToCropFromContent, 1, makeSmall ? CanvasImageInterpolation.NearestNeighbor : CanvasImageInterpolation.MultiSampleLinear);
-                else 
+                {
+                    if (_bmp.Device != null)
+                    {
+                        ds.DrawImage(_bmp, CroppedImageTarget, _rectToCropFromContent, 1,
+                            makeSmall
+                                ? CanvasImageInterpolation.NearestNeighbor
+                                : CanvasImageInterpolation.MultiSampleLinear);
+
+                    }
+                }
+                else
                     ds.FillRectangle(CroppedImageTarget, Colors.Gray);
 
                 if (_activeRegion != null && _croppy != null) { 

@@ -51,24 +51,21 @@ namespace NuSysApp
             {
                 return false;
             }
-            switch (MetadataToolModel.Filter)
+
+            var metadata = GetMetadata(libraryId);
+            if (metadata.ContainsKey(MetadataToolModel.Selection.Item1))
             {
-                case ToolModel.ToolFilterTypeTitle.AllMetadata:
-                    var metadata = GetMetadata(libraryId);
-                    if (metadata.ContainsKey(MetadataToolModel.Selection.Item1))
-                    {
-                        if (MetadataToolModel.Selection.Item2 == null || MetadataToolModel.Selection.Item2.Count == 0)
-                        {
-                            return true;
-                        }
-                        else if (metadata[MetadataToolModel.Selection.Item1].Keys.Intersect(
-                           MetadataToolModel.Selection.Item2).Any())
-                        {
-                            return true;
-                        }
-                    }
-                    break;
+                if (MetadataToolModel.Selection.Item2 == null || MetadataToolModel.Selection.Item2.Count == 0)
+                {
+                    return true;
+                }
+                else if (metadata[MetadataToolModel.Selection.Item1].Keys.Intersect(
+                    MetadataToolModel.Selection.Item2).Any())
+                {
+                    return true;
+                }
             }
+
             return false;
         }
 

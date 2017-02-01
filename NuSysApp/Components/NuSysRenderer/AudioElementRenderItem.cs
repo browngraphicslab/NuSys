@@ -65,7 +65,6 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-            _bmp.Dispose();
 
             if (_vm != null)
             {

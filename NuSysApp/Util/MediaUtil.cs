@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,6 +19,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -136,6 +138,19 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// public method to get rid of the image dictionary that stores all image bitmaps
+        /// </summary>
+        public static void ClearImageDictionary()
+        {
+            _dict.Clear();
+        }
+
+        /// <summary>
+        /// the dictionary that allows us to never have to reload the same item twice
+        /// </summary>
+        private static ConcurrentDictionary<string,CanvasBitmap> _dict = new ConcurrentDictionary<string, CanvasBitmap>();
+
+        /// <summary>
         /// Method to call isntead of await CanvasBitmap.LoadAsync.
         /// This will try catch the load and make sure it has a proper url.
         /// </summary>
@@ -144,7 +159,23 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
         {
-            return await PrivateLoad(resourceCreator, uri, dpi);
+            var path = uri.AbsoluteUri;
+            if (_dict.ContainsKey(path))
+            {
+                var existing = _dict[path];
+                if (existing.Device != null)
+                {
+                    return _dict[path];
+                }
+                else
+                {
+                    CanvasBitmap outObj;
+                    _dict.TryRemove(path, out outObj);
+                }
+            }
+            var bmp = await PrivateLoad(resourceCreator, uri, dpi);
+            _dict.TryAdd(path, bmp);
+            return bmp;
 
             var token = new CancellationTokenSource();
             token.CancelAfter(2000);

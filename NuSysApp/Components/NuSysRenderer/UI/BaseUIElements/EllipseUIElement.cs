@@ -177,7 +177,7 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            if (Image != null)
+            if (Image != null && (Image as CanvasBitmap)?.Device != null)
             {
                 using (ds.CreateLayer(1, CanvasGeometry.CreateEllipse(Canvas, CenterPoint, _radiusX, _radiusY)))
                 {

@@ -651,6 +651,7 @@ namespace NuSysApp
             PresentationLinkViewModel.Models?.Clear();
             Instance?.CollectionIdsInUse?.Clear();
             ToolController.ToolControllers?.Clear();
+            MediaUtil.ClearImageDictionary();
         }
 
         #endregion

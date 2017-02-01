@@ -68,6 +68,8 @@ namespace NuSysApp.Network.Requests
 
             SessionController.Instance.ContentController.Add(model);
 
+            SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryElementId)?.SetAccessType(NusysConstants.AccessType.Private);
+
         }
     }
 }

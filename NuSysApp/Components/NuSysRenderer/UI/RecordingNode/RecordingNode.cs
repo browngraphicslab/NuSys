@@ -402,12 +402,7 @@ namespace NuSysApp
             _mediaTypeSwitch.Tapped -= MediaTypeSwitchOnTapped;
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
-            _mediaCapture?.Dispose();
-            _audioIcon?.Dispose(); // TODO not sure if disposing of these images is necessary
-            _recordIcon?.Dispose();
-            _stopIcon?.Dispose();
-            _videoIcon?.Dispose();
-            _file?.DeleteAsync();
+            _file?.DeleteAsync();//weird to do this with async
             base.Dispose();
         }
 

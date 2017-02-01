@@ -38,8 +38,6 @@ namespace NuSysApp
                 return;
             
             _vm = null;
-            _bmp?.Dispose();
-            _bmp = null;
             base.Dispose();
         }
 

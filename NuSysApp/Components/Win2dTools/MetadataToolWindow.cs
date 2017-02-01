@@ -167,11 +167,12 @@ namespace NuSysApp
         /// </summary>
         public void RefreshValueList()
         {
-            UITask.Run(delegate {
+
                 var vm = (Vm as MetadataToolViewModel);
                 if (vm?.Selection?.Item1 != null && vm.Controller.ToolModel.Selected)
                 {
                     var filteredList = FilterValuesList(_searchBar.Text); //FilterValuesList(xSearchBox.Text);
+
                     if (!ScrambledEquals(_metadataValuesList.GetItems().Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
                     {
                         //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
@@ -179,7 +180,7 @@ namespace NuSysApp
                         _metadataValuesList.ClearItems();
                         _metadataValuesList.AddItems(filteredList);
                         SetValueListVisualSelection();
-                        if (_metadataValuesList.GetSelectedItems().Any())
+                        if (_metadataValuesList.GetSelectedItems().ToArray().Any())
                         {
                             _metadataValuesList.ScrollTo(_metadataValuesList.GetSelectedItems().First());
                         }
@@ -194,7 +195,7 @@ namespace NuSysApp
                 {
                     _metadataValuesList.ClearItems();
                 }
-            });
+            
         }
 
         private List<KeyValuePair<string, double>> FilterValuesList(string search)

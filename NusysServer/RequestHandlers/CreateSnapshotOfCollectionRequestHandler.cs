@@ -179,6 +179,7 @@ namespace NusysServer
             JoinedTable propertiesJoinLibraryElementJoinMetadata = new JoinedTable(libraryElementJoinPropertiesJoinMetadata);
 
             SQLSelectQuery SelectCollectionInformationQuery = new SQLSelectQuery(propertiesJoinLibraryElementJoinMetadata, new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY, oldWorkspaceId));
+
             PropertiesAndMetadataParser parser = new PropertiesAndMetadataParser();
             var duplicateCollectionMessage = parser.ConcatPropertiesAndMetadata(new List<Message>(SelectCollectionInformationQuery.ExecuteCommand())).First();
             duplicateCollectionMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] = newWorkspaceId;

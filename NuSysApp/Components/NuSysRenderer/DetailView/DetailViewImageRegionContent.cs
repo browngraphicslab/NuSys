@@ -198,7 +198,6 @@ namespace NuSysApp
         /// </summary>
         protected async Task LoadImageBitmap()
         {
-            _imageBitmap?.Dispose();
             _imageBitmap = null;
             DrawingBitmap = true;
             if (ImageUrl == null)

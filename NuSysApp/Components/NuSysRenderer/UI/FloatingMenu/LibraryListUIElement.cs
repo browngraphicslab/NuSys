@@ -945,6 +945,16 @@ namespace NuSysApp
                     {
                         // add the library element controller of the new content to the list we are going to return
                         addedLibraryElemControllers.Add(SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId));
+                        Task.Run(async delegate
+                        {
+                            await Task.Delay(250);//TODO def don't do this, first fix issue #1595
+                            var controller = SessionController.Instance.ContentController?.GetLibraryElementController(args?.LibraryElementArgs?.LibraryElementId);
+                            if (controller != null)
+                            {
+                                SessionController.Instance.NuSessionView?.Library?.LibraryListView?.ScrollTo(controller.LibraryElementModel);
+                                SessionController.Instance.NuSessionView?.Library?.LibraryListView?.SelectItem(controller.LibraryElementModel);
+                            }
+                        });
                     }
                     
 

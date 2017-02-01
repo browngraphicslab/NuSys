@@ -709,6 +709,7 @@ namespace NuSysApp
             request.AddSnapshotCollectionLocally();
             var popup = new CenteredPopup(this, Canvas, "Your snapshot has been added, called " + SessionController.Instance.CurrentCollectionLibraryElementModel.Title + " Snapshot.");
             AddChild(popup);
+            
         }
 
         /// <summary>

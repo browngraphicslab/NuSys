@@ -285,7 +285,6 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void _dragToCollectionButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-
             _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
 
             _dragRect.IsVisible = true;

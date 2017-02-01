@@ -230,7 +230,7 @@ namespace NuSysApp
             }
 
             // get the bounding boxes of all the selected items
-            var boundingBoxes = _selectedItems.ToArray().Select(elem => elem.GetSelectionBoundingRect()).ToList();
+            var boundingBoxes = _selectedItems.ToList().Select(elem => elem.GetSelectionBoundingRect()).ToList();
 
             // get the bounding rect containing all the boundign boxes
             _selectionBoundingRect = GetBoundingRect(boundingBoxes);

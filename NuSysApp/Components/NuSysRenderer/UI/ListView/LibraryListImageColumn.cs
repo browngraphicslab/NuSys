@@ -88,6 +88,10 @@ namespace NuSysApp
                 var cellWidth = cell.Width;
                 var cellHeight = cell.Height;
 
+                if ((cell?.Image as CanvasBitmap)?.Device == null)
+                {
+                    return;
+                }
                 var imgBounds = cell?.Image?.GetBounds(_resourceCreator);
 
                 
