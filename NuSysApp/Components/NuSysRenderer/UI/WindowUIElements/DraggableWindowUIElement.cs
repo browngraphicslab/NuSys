@@ -14,7 +14,7 @@ namespace NuSysApp
         /// <summary>
         /// optional close button - call "ShowCloseButton" in order to have it
         /// </summary>
-        protected EllipseButtonUIElement _closeButton;
+        protected EllipseButtonUIElement CloseButton;
 
         /// <summary>
         /// Set this to true to support Dragging the DraggableWindowUIElement around the screen using the top bar.
@@ -379,9 +379,9 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            if (_closeButton != null)
+            if (CloseButton != null)
             {
-                _closeButton.Image = _closeButton.Image ??
+                CloseButton.Image = CloseButton.Image ??
                                      await
                                          MediaUtil.LoadCanvasBitmapAsync(Canvas,
                                              new Uri("ms-appx:///Assets/new icons/x white.png"));
@@ -394,16 +394,16 @@ namespace NuSysApp
         /// </summary>
         public void ShowClosable()
         {
-            _closeButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
+            CloseButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle)
             {
                 Height = 50,
                 Width = 50,
                 ImageBounds = new Rect(.25,.25,.5,.5)
             };
-            AddChild(_closeButton);
-            _closeButton.Transform.LocalPosition = new Vector2(-_closeButton.Width - 10, TopBarHeight + 10);
-            _closeButton.Pressed += CloseButtonOnTapped;
-            _closeButton.Tapped += CloseButtonOnTapped;
+            AddChild(CloseButton);
+            CloseButton.Transform.LocalPosition = new Vector2(-CloseButton.Width - 10, TopBarHeight + 10);
+            CloseButton.Tapped += CloseButtonOnTapped;
+            CloseButton.Pressed += CloseButtonOnTapped;
         }
 
         /// <summary>
@@ -426,10 +426,10 @@ namespace NuSysApp
             TopBarDragged -= OnTopBarDragged;
             TopBarDragStarted -= OnTopBarDragStarted;
             TopBarDragCompleted -= OnTopBarDragCompleted;
-            if (_closeButton != null)
+            if (CloseButton != null)
             {
-                _closeButton.Pressed += CloseButtonOnTapped;
-                _closeButton.Tapped -= CloseButtonOnTapped;
+                CloseButton.Tapped -= CloseButtonOnTapped;
+                CloseButton.Pressed -= CloseButtonOnTapped;
             }
             base.Dispose();
         }
@@ -441,9 +441,9 @@ namespace NuSysApp
             SetSnapPreviewDimensions();
             SetSnapPreviewOffset();
 
-            if (_closeButton != null)
+            if (CloseButton != null)
             {
-                _closeButton.Transform.LocalPosition = new Vector2(_closeButton.Transform.LocalX, _closeButton.Transform.LocalY);
+                CloseButton.Transform.LocalPosition = new Vector2(CloseButton.Transform.LocalX, CloseButton.Transform.LocalY);
             }
 
             base.Update(parentLocalToScreenTransform);

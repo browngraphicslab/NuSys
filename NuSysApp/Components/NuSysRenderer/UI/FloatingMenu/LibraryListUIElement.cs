@@ -117,6 +117,18 @@ namespace NuSysApp
         /// </summary>
         private IEnumerable<LibraryElementController> _previouslySelectedControllers;
 
+        /// <summary>
+        /// Sets the visibility of the library
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return base.IsVisible; }
+            set
+            {
+                ToggleVisibility(value);
+            }
+        }
+
         ///// <summary>
         ///// TEST BUTTON
         ///// </summary>
@@ -318,6 +330,8 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer, bool isSelected)
         {
+
+            // first we just try to get the content data model for the element that was selected since that it is important for loading images
             if (!SessionController.Instance.ContentController.ContainsContentDataModel(item.ContentDataModelId))
             {
                 Task.Run(async delegate
@@ -337,27 +351,34 @@ namespace NuSysApp
                 });
             }
 
+            // then we get the list of controllers which are currently selected in the library
             var currentlySelectedControllers = LibraryListView.GetSelectedItems().Select(lem => SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId));
 
-
+            // if there are any controllers, then we turn off highlighting //todo why!
             if (currentlySelectedControllers.Any())
             {
                 BrushManager.SetBrushVisibility(false);
             }
 
+            // then we determine which controllers have been deselected by querying all previously selected controllers except
+            // the currently selected controllers. we remove the highlight from these deselected controllers
             var deselectedControllers = _previouslySelectedControllers.Except(currentlySelectedControllers);
             foreach(var controller in deselectedControllers)
             {
-                controller.RemoveHighlight();
+                controller?.RemoveHighlight();
             }
 
+            // then we add a highlight to the currently selected controllers,
+            //todo AS OF NOW, ADDING HIGHLIGHT MULTIPLE TIMES IS SAFE BUT THIS COULD BE DANGEROUS
             foreach(var controller in currentlySelectedControllers)
             {
-                controller.AddHighlight();
+                controller?.AddHighlight();
             }
 
+            // now we set the previously selected controllers to the list of controllers which are currently selected
             _previouslySelectedControllers = new List<LibraryElementController>(currentlySelectedControllers);
 
+            //todo what is this doing here. 
             if (!currentlySelectedControllers.Any())
             {
                 BrushManager.SetBrushVisibility(true);
@@ -511,6 +532,67 @@ namespace NuSysApp
         private async Task<ICanvasImage> LoadCanvasBitmap(Uri smallIconURI)
         {
             return await MediaUtil.LoadCanvasBitmapAsync(Canvas, smallIconURI);
+        }
+
+        /// <summary>
+        /// Fired when the library list is closed
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        protected override void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            // hide the library
+            ToggleVisibility(false);
+            base.CloseButtonOnTapped(item, pointer);
+        }
+
+        /// <summary>
+        /// Toggles the visibility of the library, call this method with no parameters if you want to actaully toggle the visibility
+        /// call it with a value of true or false if you want to override the toggle and manually set the library's visibility to
+        /// true or false
+        /// </summary>
+        /// <param name="value"></param>
+        private void ToggleVisibility(bool? value = null)
+        {
+            // CAREFUL, WE HAVE OVERRIDE IsVisbile in this class. WITHIN THIS METHOD YOU MUST SET
+            // base.IsVisible, DIRECTLY SETTING IsVisible IS A VERY EASY WAY OF ENTERING INFINITE LOOPS!
+            // YOU HAVE BEEN WARNED!
+
+            // if the passed in value is not null
+            if (value.HasValue)
+            {
+                // set the base visibilty to the passed in value
+                base.IsVisible = value.Value;
+            }
+            else
+            {
+                // otherwise toggle the base visibility
+                base.IsVisible = !base.IsVisible;
+            }
+
+            if (_previouslySelectedControllers != null)
+            {
+                // if we are now visible, then readd the highlight from the previously selected controllers
+                if (base.IsVisible)
+                {
+                    // otherwise remove the highlight from the previously selected controllers
+                    foreach (var controller in _previouslySelectedControllers)
+                    {
+                        controller?.AddHighlight();
+                    }
+                }
+                else
+                {
+                    // otherwise remove the highlight from the previously selected controllers
+                    foreach (var controller in _previouslySelectedControllers)
+                    {
+                        controller?.RemoveHighlight();
+                    }
+                }
+
+
+            }
+
         }
 
         public override void Dispose()

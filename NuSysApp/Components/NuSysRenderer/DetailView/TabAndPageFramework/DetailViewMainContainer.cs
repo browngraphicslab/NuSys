@@ -86,7 +86,7 @@ namespace NuSysApp
 
             ShowClosable();
 
-            _closeButton.Transform.LocalPosition = new Vector2(_closeButton.Transform.LocalX, 80);
+            CloseButton.Transform.LocalPosition = new Vector2(CloseButton.Transform.LocalX, 80);
 
             // setup the mainTabLayoutManager so that the mainTabContainer fills the entire detail viewer window
             _mainTabLayoutManager = new StackLayoutManager
