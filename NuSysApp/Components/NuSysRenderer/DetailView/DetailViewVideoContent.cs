@@ -68,28 +68,36 @@ namespace NuSysApp
                 // if the image is wider than it is longer
                 if (bitmapHeight / bitmapWidth < bitmapWidth / bitmapHeight)
                 {
+                    // then the width fill's the rectangle so newImageWidth = width, and the height is scaled as a ratio to the newImageWidth
+                    // so newImageHeight =  width * ratio
                     var ratio = bitmapHeight / bitmapWidth;
                     newImageWidth = Width;
-                    newImageHeight = Width * ratio;
+                    newImageHeight = newImageWidth * ratio;
                 }
                 //otherwise if the image is longer than it is wider
                 else
                 {
+                    // otherwise the height fill's the rectangle so newImageHeight = height, and the width is scaled as a ratio to the newImageHeight
                     var ratio = bitmapWidth / bitmapHeight;
-                    newImageWidth = Width * ratio;
-                    newImageHeight = Width * ratio;
+                    newImageHeight = Height;
+                    newImageWidth = newImageHeight * ratio;
                 }
 
                 // check to make sure that the new ratio fits into the height and width
+                // for example if the height is 10 and the newImageHeight is 20 then we must
+                // divide the new width and height by 2 = Height/newImageHeight in order for
+                // both the width and height to safely fit in the screen
                 var checkScale = Math.Min(Width / newImageWidth, Height / newImageHeight);
                 newImageWidth *= checkScale;
                 newImageHeight *= checkScale;
 
-                var imageWidthRatio = newImageWidth / Width;
-                var imageHeightRatio = newImageHeight / Height;
+                var normalizedImageWidth = newImageWidth / Width;
+                var normalizedImageHeight = newImageHeight / Height;
 
                 // set the image bounds based on the new image
-                ImageBounds = new Rect(.5 - imageWidthRatio, .5 - imageHeightRatio, imageWidthRatio, imageHeightRatio);
+                // .5 brings us to the middle of the screen, then we move to the left by half the newImageWidth which is imageWidthRatio/2
+                // these are normalized coordinates, the width is obviously the imageWidthRatio, imageHeightRatio
+                ImageBounds = new Rect(.5 - normalizedImageWidth/2, .5 - normalizedImageHeight/2, normalizedImageWidth, normalizedImageHeight);
             }
             
 
