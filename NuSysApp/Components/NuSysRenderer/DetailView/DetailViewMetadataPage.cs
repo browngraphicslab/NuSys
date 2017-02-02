@@ -309,7 +309,31 @@ namespace NuSysApp
             // if the key already exists update the metadata entry
             if (_controller.GetMetadata().ContainsKey(key))
             {
-                _controller.UpdateMetadata(metaDataEntry, key, new List<string>(values) );
+                // we have to use a different process for updating keywords
+                if (key == "Keywords")
+                {
+                    // get the current keywords
+                    var current_keywords = _controller.GetMetadata("Keywords");
+
+                    // get any keywords that were added
+                    var new_keywords = values.Except(_controller.GetMetadata("Keywords"));
+                    foreach (var keyword in new_keywords)
+                    {
+                        _controller.AddKeyword(new Keyword(keyword));
+                    }
+
+                    // get any keywords that were removed
+                    var removed_keywords = current_keywords.Except(values);
+                    foreach (var keyword in removed_keywords)
+                    {
+                        _controller.RemoveKeyword(new Keyword(keyword));
+                    }
+                }
+                else
+                {
+                    _controller.UpdateMetadata(metaDataEntry, key, new List<string>(values));
+                }
+
             }
             else // otherwise create a new metadata entry
             {
