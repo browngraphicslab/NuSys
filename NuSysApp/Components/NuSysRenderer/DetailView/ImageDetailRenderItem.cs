@@ -142,9 +142,16 @@ namespace NuSysApp
         public override async Task Load()
         {
             _isLoading = true;
+
             await Task.Run(async () =>
             {
                 _bmp = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
+
+                if (_controller.ImageLibraryElementModel.Type == NusysConstants.ElementType.Image && _bmp != null && _controller?.ImageLibraryElementModel?.Ratio == 0)
+                {
+                    _controller.SetAspectRatio(_bmp.Bitmap.Size.Width / _bmp.Bitmap.Size.Height);
+                }
+
             });
             ReRender();
             _isLoading = false;
