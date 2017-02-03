@@ -354,10 +354,11 @@ namespace NuSysApp
             // return the rectangle described by these objects
             var rect = new Rect
             {
-                X = Math.Min(sp.X, titlePos.X), // the upper left x is the minimum of the left axis of the node and the left axis of the title
-                Y = Math.Min(sp.Y, titlePos.Y), // the upper left y is the minimum of the y axis of the node and the y axis of the title
-                Width = SessionController.Instance.SessionSettings.ResizeElementTitles ? Math.Max(_textLayout.DrawBounds.Width * Transform.LocalToScreenMatrix.M22, spr.X - sp.X) : Math.Max(_textLayout.DrawBounds.Width, spr.X - sp.X), // the width is the maximum of the title width, and the width of the node itself
-                Height = spr.Y - titlePos.Y // the height is the bottommost point minus the topmost point, assuming the topmost point is the y position of the title
+                X = Math.Max(0,Math.Min(sp.X, titlePos.X)), // the upper left x is the minimum of the left axis of the node and the left axis of the title
+                Y = Math.Max(0,Math.Min(sp.Y, titlePos.Y)), // the upper left y is the minimum of the y axis of the node and the y axis of the title
+                Width = SessionController.Instance.SessionSettings.ResizeElementTitles ? Math.Max(0,Math.Max(_textLayout.DrawBounds.Width * Transform.LocalToScreenMatrix.M22, spr.X - sp.X)) : Math.Max(0,Math.Max(_textLayout.DrawBounds.Width, spr.X - sp.X)), // the width is the maximum of the title width, and the width of the node itself
+                Height = Math.Max(0,spr.Y - titlePos.Y) // the height is the bottommost point minus the topmost point, assuming the topmost point is the y position of the title
+
             };
             return rect;
         }
