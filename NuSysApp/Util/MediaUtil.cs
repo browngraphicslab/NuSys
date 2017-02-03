@@ -142,13 +142,39 @@ namespace NuSysApp
         /// </summary>
         public static void ClearImageDictionary()
         {
-            _dict.Clear();
+            
         }
 
         /// <summary>
-        /// the dictionary that allows us to never have to reload the same item twice
+        /// http://stackoverflow.com/questions/1686416/c-sharp-get-number-of-references-to-object
         /// </summary>
-        private static ConcurrentDictionary<string,CanvasBitmap> _dict = new ConcurrentDictionary<string, CanvasBitmap>();
+        class BitmapCache
+        {
+            public ConcurrentDictionary<string, WeakReference> Refs = new ConcurrentDictionary<string, WeakReference>();
+            public object this[string key]
+            {
+                get
+                {
+                    WeakReference wr;
+                    if (Refs.TryGetValue(key, out wr))
+                    {
+                        if (wr.IsAlive) return wr.Target;
+                        WeakReference ignored;
+                        Refs.TryRemove(key, out ignored);
+                    }
+                    return null;
+                }
+                set
+                {
+                    Refs[key] = new WeakReference(value);
+                }
+            }
+        }
+        private static BitmapCache _dict = new BitmapCache();
+
+        private static ConcurrentHashSet<string> _loadingPaths = new ConcurrentHashSet<string>();
+
+        private static object _lock = new object();
 
         /// <summary>
         /// Method to call isntead of await CanvasBitmap.LoadAsync.
@@ -157,114 +183,26 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
+        public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0, bool disposable = true)
         {
             var path = uri.AbsoluteUri;
-            if (_dict.ContainsKey(path))
+            if (_dict[path] != null || _loadingPaths.Contains(path))
             {
+                while (_loadingPaths.Contains(path))
+                {
+                    await Task.Delay(10);
+                }
                 var existing = _dict[path];
-                if (existing.Device != null)
-                {
-                    return _dict[path];
-                }
-                else
-                {
-                    CanvasBitmap outObj;
-                    _dict.TryRemove(path, out outObj);
-                }
+                return (CanvasBitmap)existing;
             }
-            var bmp = await PrivateLoad(resourceCreator, uri, dpi);
-            _dict.TryAdd(path, bmp);
+            if (!_loadingPaths.Add(path))
+            {
+                return await LoadCanvasBitmapAsync(resourceCreator, uri, dpi, disposable);
+            }
+            CanvasBitmap bmp = await PrivateLoad(resourceCreator, uri, dpi);
+            _dict[path] = bmp;
+            _loadingPaths.Remove(path);
             return bmp;
-
-            var token = new CancellationTokenSource();
-            token.CancelAfter(2000);
-
-            return await Task.Run(async delegate
-            {
-                return await PrivateLoad(resourceCreator, uri, dpi);
-            },token.Token);
-            
-            var shouldRetry = true;
-            var done = false;
-            CanvasBitmap bitmap = null;
-
-            var shouldFail = false;
-
-            Task.Run(async delegate
-            {
-                bitmap =  await PrivateLoad(resourceCreator, uri, dpi);
-                done = true;
-            },token.Token);
-
-            Task.Run(async delegate
-            {
-                await Task.Delay(2000);
-                if (!done)
-                {
-                    shouldFail = true;
-                    token.Cancel(false);
-                    token.Dispose();
-                }
-
-            });
-            while (true)
-            {
-                if (done)
-                {
-                    return bitmap;
-                }
-                else if (shouldFail)
-                {
-                    return null;
-                }
-                await Task.Delay(20);
-            }
-
-            /*
-            Task.Run(async delegate {
-                var attempts = 0;
-                while (!done)
-                {
-                    attempts++;
-                    await Task.Delay(20);
-                    if (attempts > 25)
-                    {
-                        Debug.WriteLine($"attempt: {attempts}");
-                        shouldRetry = true;
-                    }
-                }
-            });
-            while (!done)
-            {
-                if(shouldRetry){
-                    
-                }
-                await Task.Delay(20);
-            }
-            return bitmap;
-
-
-
-            while (_loadingUris.Contains(uri.AbsoluteUri))
-            {
-                await Task.Delay(20);
-            }
-            _loadingUris.Add(uri.AbsoluteUri);
-            Task.Run(async delegate
-            {
-                var attempts = 0;
-                while (!done)
-                {
-                    attempts++;
-                    await Task.Delay(20);
-                    if (attempts > 5)
-                    {
-                        Debug.WriteLine($"attempt: {attempts}");
-                    }
-                }
-            });*/
-
         }
 
         /// <summary>
