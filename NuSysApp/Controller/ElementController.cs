@@ -398,7 +398,7 @@ namespace NuSysApp
             }
 
             ///make file for the element
-            var nodeFile = await htmlFolder.CreateFileAsync(LibraryElementController.Title + Id + ".html", CreationCollisionOption.ReplaceExisting);
+            var nodeFile = await htmlFolder.CreateFileAsync(Id + ".html", CreationCollisionOption.ReplaceExisting);
 
             ///create the css file if it does not already exist
             if (!await htmlFolder.ContainsFileAsync("node_template.css"))
