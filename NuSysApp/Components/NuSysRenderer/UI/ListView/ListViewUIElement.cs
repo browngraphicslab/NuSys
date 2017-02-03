@@ -157,7 +157,7 @@ namespace NuSysApp
         /// this is null
         /// </summary>
         private ListColumn<T> _columnSortedBy;
-
+        /*
         /// <summary>
         /// Count of how many times Dragged has been called since DragStarted
         /// </summary>
@@ -166,6 +166,9 @@ namespace NuSysApp
         /// Number of times the vector that represents the difference in points given by Dragged had an angle that indicated dragging  
         /// </summary>
         private int _dragGestures;
+        */
+
+        private Vector2 _startingDragPoint;
         /// <summary>
         /// X of point last given by Dragged
         /// </summary>
@@ -885,8 +888,8 @@ namespace NuSysApp
             {
                 RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
                 _isDragging = false;
-            }
 
+            }
             //Remove reference to item you were dragging
             _draggedItem = default(T);
             _isScrolling = false;
@@ -897,18 +900,16 @@ namespace NuSysApp
         private void ListViewRowUIElement_RowHolding(ListViewRowUIElement<T> rowUIElement, int colIndex, Vector2 point, T item)
         {
             SelectItem(item);
-            //_isDragging = true;
         }
 
         private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
         {
-            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             _draggedItem = item;
-            _dragIterations = 0;
-            _dragGestures = 0;
-            _isScrolling = true;
-            _x = point.X;
-            _y = point.Y;
+            _startingDragPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            _x = _startingDragPoint.X;
+            _y = _startingDragPoint.Y;
+            _isDragging = false;
+            _isScrolling = false;
 
 
         }
@@ -928,65 +929,55 @@ namespace NuSysApp
             //calculate bounds of listview
             float minX = 0f, maxX = Width, minY = 0, maxY = Height;
 
-            //We need the local point, not the screen point
+            //Get local point from screen point
             var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
             float dX = point.X - _x, dY = point.Y - _y;
 
             _x = point.X;
             _y = point.Y;
+            //Vector representing change from start position
+            var deltaVector = point - _startingDragPoint;
 
-            var angle = Math.Atan(dY / dX);
-            _dragIterations += 1;
-
-            if (Math.Abs(angle) < DragAngleThreshold)
+            if (!_isDragging)
             {
-                _dragGestures += 1;
-            }
+                if (point.X < minX || point.X > maxX || point.Y < minY || point.Y > maxY && !_isScrolling)
+                {
+                    //find difference in start and end vector
+                    var angle = Math.Atan(deltaVector.Y / deltaVector.X);
+                    //If drag gesture inferred, set isDragging to true
+                    if(Math.Abs(angle) < DragAngleThreshold)
+                    {
+                        _isDragging = true;
+                        //If it's the first time we are leaving the listview, select the item
+                        if (!DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld))
+                        {
+                            SelectItem(_draggedItem);
+                        }
+                    }
+                    else
+                    {
+                        _isScrolling = true;
+                    }
 
-            bool firstTimeDraggingOut = false;
-            //check within bounds of listview
-            if (point.X < minX || point.X > maxX || point.Y < minY ||
-                point.Y > maxY)
+                }
+                //Otherwise, scroll
+                else
+                {
+                    //scroll if in bounds
+                    var deltaY = -dY / (HeightOfAllRows);
+                    if (Math.Abs(dY) > 0.001)
+                    {
+                        _scrollVelocity = dY;
+                    }
+                    ChangePosition(deltaY);
+                }
+            }else
             {
-                if (_draggedItem == null)
-                {
-                    return;
-                }
-
-                firstTimeDraggingOut = !_isDragging;
-
-                if (firstTimeDraggingOut)
-                {
-                    //_dragGestures/_dragIterations is the proportion of Dragged events whose movement had an angle under the draganglethreshold
-                    _isDragging = ((float) _dragGestures/_dragIterations > DragThreshold);
-                    _isScrolling = !_isDragging;
-                }
-
-            }
-
-            if(_isDragging)
-            {
-                //If it's the first time we are leaving the listview, select the item
-                if (firstTimeDraggingOut && !DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld))
-                {
-                    SelectItem(_draggedItem);
-                }
                 RowDragged?.Invoke(_draggedItem, rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-            }        
-            else
-            {
-
-                //scroll if in bounds
-                var deltaY = -dY / (HeightOfAllRows);
-
-                if (Math.Abs(dY) > 0)
-                {
-                    _scrollVelocity = dY;
-                }
-                ChangePosition(deltaY);
 
             }
+
 
         }
 
