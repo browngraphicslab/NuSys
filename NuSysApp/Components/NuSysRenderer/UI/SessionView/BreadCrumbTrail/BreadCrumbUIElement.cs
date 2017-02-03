@@ -47,7 +47,6 @@ namespace NuSysApp
             Width = DefaultWidth;
             Height = DefaultHeight;
             Image = crumb.Icon;
-            crumb.Icon.IncrementReferences();
             BorderWidth = 5;
             BorderColor = crumb.Color;
             ImageBounds = new Rect(0, 0, 1, 1);

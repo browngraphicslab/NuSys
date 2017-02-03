@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
-using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -18,15 +17,15 @@ namespace NuSysApp
         public Func<T, Uri> ColumnFunction { get; set; }
 
 
-        public Dictionary<T, CanvasBitmapHolder> ImageDict => _dict;
-        private Dictionary<T, CanvasBitmapHolder> _dict;
+        public Dictionary<T, ICanvasImage> ImageDict => _dict;
+        private Dictionary<T, ICanvasImage> _dict;
 
 
-        public CanvasBitmapHolder DefaultImage => _image;
-        private CanvasBitmapHolder _image;
+        public ICanvasImage DefaultImage => _image;
+        private ICanvasImage _image;
         public ListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator)
         {
-            _dict = new Dictionary<T, CanvasBitmapHolder>();
+            _dict = new Dictionary<T, ICanvasImage>();
             LoadDefaultImageAsync(resourceCreator);
         }
 
@@ -79,8 +78,8 @@ namespace NuSysApp
                 var cellWidth = cell.Width;
                 var cellHeight = cell.Height;
 
-                var imgWidth = cell.Image.Bitmap.GetBounds(cell.ResourceCreator).Width;
-                var imgHeight = cell.Image.Bitmap.GetBounds(cell.ResourceCreator).Height;
+                var imgWidth = cell.Image.GetBounds(cell.ResourceCreator).Width;
+                var imgHeight = cell.Image.GetBounds(cell.ResourceCreator).Height;
 
                 if (imgWidth < 0 || imgHeight < 0)
                 {
@@ -108,7 +107,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             _dict.Clear();
-            base.Dispose();
         }
     }
 }

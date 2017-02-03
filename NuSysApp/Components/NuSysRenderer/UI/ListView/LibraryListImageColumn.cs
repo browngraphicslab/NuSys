@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
-using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
     public class LibraryListImageColumn<T> : ListImageColumn<T>
     {
-        private Dictionary<NusysConstants.ElementType, CanvasBitmapHolder> _defaultIconDictionary;
+        private Dictionary<NusysConstants.ElementType, ICanvasImage> _defaultIconDictionary;
         private ICanvasResourceCreatorWithDpi _resourceCreator;
 
         public LibraryListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator) : base(resourceCreator)
@@ -26,7 +25,7 @@ namespace NuSysApp
 
         private async void LoadDefaultIconDictionary()
         {
-            _defaultIconDictionary = new BiDictionary<NusysConstants.ElementType, CanvasBitmapHolder>();
+            _defaultIconDictionary = new BiDictionary<NusysConstants.ElementType, ICanvasImage>();
 
             LoadTextIcon();
             LoadLinkIcon();
@@ -89,11 +88,11 @@ namespace NuSysApp
                 var cellWidth = cell.Width;
                 var cellHeight = cell.Height;
 
-                if (cell?.Image == null)
+                if ((cell?.Image as CanvasBitmap)?.Device == null)
                 {
                     return;
                 }
-                var imgBounds = cell?.Image?.Bitmap?.GetBounds(_resourceCreator);
+                var imgBounds = cell?.Image?.GetBounds(_resourceCreator);
 
                 
                 if (imgBounds == null)
@@ -122,7 +121,6 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            //_defaultIconDictionary.ForEach(i => i.Value?.Dispose());
             _defaultIconDictionary.Clear();
 
             base.Dispose();

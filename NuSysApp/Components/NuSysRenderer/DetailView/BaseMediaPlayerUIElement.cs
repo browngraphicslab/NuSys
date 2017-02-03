@@ -27,9 +27,9 @@ namespace NuSysApp
         private RectangleUIElement _mediaContent;
       
 
-        private CanvasBitmapHolder _playImage;
-        private CanvasBitmapHolder _pauseImage;
-        private CanvasBitmapHolder _volumeImage;
+        private CanvasBitmap _playImage;
+        private CanvasBitmap _pauseImage;
+        private CanvasBitmap _volumeImage;
 
         private RectangleUIElement _contentRect;
 
@@ -239,10 +239,7 @@ namespace NuSysApp
                 _mediaElement.MediaOpened -= OnMediaElementOpened;
                 RemoveMediaElementFromVisualTree(_mediaElement);
             });
-            
-            _playImage?.Dispose();
-            _pauseImage?.Dispose();
-            _volumeImage?.Dispose();
+
             base.Dispose();
         }
 

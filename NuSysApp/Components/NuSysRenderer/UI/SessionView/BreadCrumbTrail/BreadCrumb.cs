@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +38,7 @@ namespace NuSysApp
         /// <summary>
         /// Preview icon for the breadcrumb
         /// </summary>
-        public CanvasBitmapHolder Icon { get; private set; }
+        public CanvasBitmap Icon { get; private set; }
 
         /// <summary>
         /// The canvas the bread crumb is going to be rendered on, this may break encapsulation but is necessary for turning the 
@@ -181,7 +180,7 @@ namespace NuSysApp
             {
                 CollectionController.TitleChanged -= OnTitleChanged;
             }
-            
+
 
         }
     }

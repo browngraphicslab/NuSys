@@ -136,7 +136,7 @@ namespace NuSysApp
                 GetOppositeLibraryElementModel(linkableContentId, GetLinkLibraryElementControllerFromLibraryElementId(linkId)));
 
             // create the bezier lnks
-            foreach (var libraryElementController in oppositeLibraryElementControllers.Where(q => q != null) ?? new List<LibraryElementController>())
+            foreach (var libraryElementController in oppositeLibraryElementControllers ?? new List<LibraryElementController>())
             {
                 if (libraryElementController == null)
                 {

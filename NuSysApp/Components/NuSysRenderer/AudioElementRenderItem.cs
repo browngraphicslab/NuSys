@@ -26,7 +26,7 @@ namespace NuSysApp
         /// <summary>
         /// The bitmap image corresponding to the audio wave form of the original audio image, if we are displaying a region then we crop this in ReRender
         /// </summary>
-        private CanvasBitmapHolder _bmp;
+        private CanvasBitmap _bmp;
 
         public AudioElementRenderItem(AudioNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
@@ -71,7 +71,7 @@ namespace NuSysApp
                 _vm.ViewModelIsDirty -= _vm_ViewModelIsDirty;
             }
 
-            _bmp.Dispose();
+            _bmp = null;
             _vm = null;
             base.Dispose();
         }
@@ -101,18 +101,18 @@ namespace NuSysApp
             // create a crop effect, used for displaying cropped portions of images
             var croppy = new CropEffect()
             {
-                Source = _bmp.Bitmap
+                Source = _bmp
             };
 
             // get the denormalized portion of the image we are going to display
-            var x = _vm.NormalizedStartTime * _bmp.Bitmap.Size.Width;
-            var w = _vm.NormalizedDuration * _bmp.Bitmap.Size.Width;
+            var x = _vm.NormalizedStartTime * _bmp.Size.Width;
+            var w = _vm.NormalizedDuration * _bmp.Size.Width;
 
             // create a rectangle using the denormalized portion
-            croppy.SourceRectangle = new Rect(x, 0, w, _bmp.Bitmap.Size.Height);
+            croppy.SourceRectangle = new Rect(x, 0, w, _bmp.Size.Height);
 
             // set the background image to draw the correct image
-            //Image = croppy;
+            Image = croppy;
         }
 
     }

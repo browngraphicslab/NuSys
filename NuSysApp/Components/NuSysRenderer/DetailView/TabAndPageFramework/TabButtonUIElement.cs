@@ -97,7 +97,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _closeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x.png"), Canvas.Dpi,false);
+            _closeButton.Image = _closeButton.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x.png"));
         }
 
         /// <summary>
@@ -105,10 +105,6 @@ namespace NuSysApp
         /// </summary>
         public override void Dispose()
         {
-            if (IsDisposed)
-            {
-                return;
-            }
             _closeButton.Tapped -= _closeButton_Tapped;
             _backgroundButton.Tapped -= TabButtonUIElement_Tapped;
             base.Dispose();

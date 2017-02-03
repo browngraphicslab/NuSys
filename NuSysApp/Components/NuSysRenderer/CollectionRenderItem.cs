@@ -32,7 +32,7 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
         private Size _elementSize;
         private CanvasGeometry _shape;
-        private CanvasBitmapHolder _shapeImage = null;
+        private ICanvasImage _shapeImage = null;
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
         {
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
@@ -301,14 +301,14 @@ namespace NuSysApp
                     var bounds = _shape.ComputeBounds();
                     var ratio = bounds.Width/bounds.Height;
 
-                    var multiplier =_shapeImage.Bitmap.GetBounds(ResourceCreator).Width/(pts.Max(l => l.X) - pts.Min(l => l.X)) ;
+                    var multiplier =_shapeImage.GetBounds(ResourceCreator).Width/(pts.Max(l => l.X) - pts.Min(l => l.X)) ;
 
                     bounds.X = pts.Min(l => l.X);
                     bounds.Y = pts.Min(l => l.Y);
                     bounds.Width = (pts.Max(l => l.X) - bounds.X)*multiplier;
                     bounds.Height = (bounds.Width/ratio);
 
-                    ds.DrawImage((CanvasBitmap)_shapeImage.Bitmap, bounds);
+                    ds.DrawImage((CanvasBitmap)_shapeImage, bounds);
                 }
             }
         }
@@ -344,7 +344,7 @@ namespace NuSysApp
                 controller?.CollectionModel?.Shape?.ImageUrl != null && controller?.CollectionModel?.Shape?.AspectRatio != null
                 && controller?.CollectionModel?.Shape?.AspectRatio != 0 && _shapeImage != null)
             {
-                var bounds = _shapeImage.Bitmap.GetBounds(ResourceCreator);
+                var bounds = _shapeImage.GetBounds(ResourceCreator);
                 pts = new Vector2[]
                 {
                     new Vector2(50000,50000),
@@ -360,7 +360,7 @@ namespace NuSysApp
                 {
                     if (_shapeImage != null)
                     {
-                        _shape = CanvasGeometry.CreateRectangle(ResourceCreator, _shapeImage.Bitmap.GetBounds(ResourceCreator));
+                        _shape = CanvasGeometry.CreateRectangle(ResourceCreator, _shapeImage.GetBounds(ResourceCreator));
                     }
                 }
                 else if (_shapeStatus == ShapedStatus.Points)
@@ -398,7 +398,7 @@ namespace NuSysApp
                 {
                     if (_shapeImage != null)
                     {
-                        var rect = _shapeImage.Bitmap.GetBounds(ResourceCreator);
+                        var rect = _shapeImage.GetBounds(ResourceCreator);
                         rect.Height *= scaleFactor;
                         rect.Width *= scaleFactor;
                         Mask = CanvasGeometry.CreateRectangle(ResourceCreator, rect);

@@ -38,7 +38,7 @@ namespace NuSysApp
         /// <summary>
         /// The CanvasBitmap to hold the image
         /// </summary>
-        protected CanvasBitmapHolder _imageBitmap;
+        protected CanvasBitmap _imageBitmap;
 
         /// <summary>
         /// The image library element controller for the RectangleImageUIElements
@@ -151,9 +151,6 @@ namespace NuSysApp
             _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
             _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
 
-            Debug.Assert(_imageBitmap != null);
-            _imageBitmap?.Dispose();
-
             base.Dispose();
         }
 
@@ -216,7 +213,7 @@ namespace NuSysApp
                         ResourceCreator.Dpi);
                 if (_controller.ImageLibraryElementModel.Type == NusysConstants.ElementType.Image && _imageBitmap != null &&_controller?.ImageLibraryElementModel?.Ratio == 0)
                 {
-                    _controller.SetAspectRatio(_imageBitmap.Bitmap.Size.Width/_imageBitmap.Bitmap.Size.Height);
+                    _controller.SetAspectRatio(_imageBitmap.Size.Width/_imageBitmap.Size.Height);
                 }
 
             });
@@ -259,7 +256,7 @@ namespace NuSysApp
 
             using (ds.CreateLayer(1, _mask))
             {
-                ds.DrawImage(_imageBitmap.Bitmap, CroppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
+                ds.DrawImage(_imageBitmap, CroppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
 
                 if (_activeRegion != null && _croppy != null)
                 {
@@ -288,10 +285,10 @@ namespace NuSysApp
             {
                 return;
             }
-            var nx = lib.NormalizedX * _imageBitmap.Bitmap.Size.Width;
-            var ny = lib.NormalizedY * _imageBitmap.Bitmap.Size.Height;
-            var nw = lib.NormalizedWidth * _imageBitmap.Bitmap.Size.Width;
-            var nh = lib.NormalizedHeight * _imageBitmap.Bitmap.Size.Height;
+            var nx = lib.NormalizedX * _imageBitmap.Size.Width;
+            var ny = lib.NormalizedY * _imageBitmap.Size.Height;
+            var nw = lib.NormalizedWidth * _imageBitmap.Size.Width;
+            var nh = lib.NormalizedHeight * _imageBitmap.Size.Height;
 
             _normalizedCroppedRect = new Rect(lib.NormalizedX, lib.NormalizedY, lib.NormalizedWidth, lib.NormalizedHeight);
             _rectToCropFromContent = new Rect(nx, ny, nw, nh);
@@ -327,7 +324,7 @@ namespace NuSysApp
             others = others.Where(l => l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId);
             foreach (var l in others)
             {
-                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _imageBitmap.Bitmap.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
+                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _imageBitmap.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
                 region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized += RegionOnRegionResized;
                 region.RegionPressed += RegionOnRegionPressed;
@@ -377,8 +374,8 @@ namespace NuSysApp
         /// <param name="delta"></param>
         protected void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _imageBitmap.Bitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
-            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _imageBitmap.Bitmap.Size.Height / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop * _scaleOrgToDisplay);
             rx = Math.Max(0, Math.Min(_normalizedCroppedRect.Width - (region.LibraryElementModel.NormalizedX - _normalizedCroppedRect.X), rx));
             ry = Math.Max(0, Math.Min(_normalizedCroppedRect.Height - (region.LibraryElementModel.NormalizedY - _normalizedCroppedRect.Y), ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
@@ -393,8 +390,8 @@ namespace NuSysApp
         /// <param name="delta"></param>
         protected void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedX + delta.X / _imageBitmap.Bitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
-            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _imageBitmap.Bitmap.Size.Height / (_scaleDisplayToCrop *_scaleOrgToDisplay);
+            var rx = region.LibraryElementModel.NormalizedX + delta.X / _imageBitmap.Size.Width / (_scaleDisplayToCrop * _scaleOrgToDisplay);
+            var ry = region.LibraryElementModel.NormalizedY + delta.Y / _imageBitmap.Size.Height / (_scaleDisplayToCrop *_scaleOrgToDisplay);
             rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth, rx));
             ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight, ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
@@ -414,21 +411,21 @@ namespace NuSysApp
             {
                 CroppedImageTarget.Width = ImageMaxWidth;
                 CroppedImageTarget.Height = CroppedImageTarget.Width * 1 / croppedRectRatio;
-                _scaleOrgToDisplay =  ImageMaxWidth / (float) _imageBitmap.Bitmap.Size.Width;
+                _scaleOrgToDisplay =  ImageMaxWidth / (float) _imageBitmap.Size.Width;
                 _scaleDisplayToCrop = 1 / (float) lib.NormalizedWidth;
             }
             else
             {
                 CroppedImageTarget.Height = ImageMaxHeight;
                 CroppedImageTarget.Width = CroppedImageTarget.Height * croppedRectRatio;
-                _scaleOrgToDisplay = ImageMaxHeight / (float) _imageBitmap.Bitmap.Size.Height;
+                _scaleOrgToDisplay = ImageMaxHeight / (float) _imageBitmap.Size.Height;
                 _scaleDisplayToCrop = 1 / (float) lib.NormalizedHeight;
 
                 if (CroppedImageTarget.Width > ImageMaxWidth)
                 {
                     CroppedImageTarget.Width = ImageMaxWidth;
                     CroppedImageTarget.Height = CroppedImageTarget.Width * 1 / croppedRectRatio;
-                    _scaleOrgToDisplay = ImageMaxWidth / (float)_imageBitmap.Bitmap.Size.Width;
+                    _scaleOrgToDisplay = ImageMaxWidth / (float)_imageBitmap.Size.Width;
                     _scaleDisplayToCrop = 1 / (float)lib.NormalizedWidth;
                 }
 

@@ -142,34 +142,13 @@ namespace NuSysApp
         /// </summary>
         public static void ClearImageDictionary()
         {
-            
-        }
-
-        /// <summary>
-        /// method to remove a certain bitmap from the dictionary of bitmaps.
-        /// </summary>
-        /// <param name="bitmapUrl"></param>
-        public static bool RemoveBitmapByUrl(string bitmapUrl)
-        {
-            if (_dict.ContainsKey(bitmapUrl))
-            {
-                CanvasBitmapHolder outObj;
-                _dict.TryRemove(bitmapUrl, out outObj);
-                Print();
-                return true;
-            }
-            return false;
+            _dict.Clear();
         }
 
         /// <summary>
         /// the dictionary that allows us to never have to reload the same item twice
         /// </summary>
-        private static ConcurrentDictionary<string,CanvasBitmapHolder> _dict = new ConcurrentDictionary<string, CanvasBitmapHolder>();
-
-        private static void Print()
-        {
-            Debug.WriteLine("Image dict Size: "+_dict.Count());
-        }
+        private static ConcurrentDictionary<string,CanvasBitmap> _dict = new ConcurrentDictionary<string, CanvasBitmap>();
 
         /// <summary>
         /// Method to call isntead of await CanvasBitmap.LoadAsync.
@@ -178,27 +157,26 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public static async Task<CanvasBitmapHolder> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0, bool disposable = true)
+        public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
         {
             var path = uri.AbsoluteUri;
             if (_dict.ContainsKey(path))
             {
                 var existing = _dict[path];
-                existing.IncrementReferences();
-                while (existing?.Bitmap == null)
+                if (existing.Device != null)
                 {
-                    await Task.Delay(10);
+                    return _dict[path];
                 }
-                return existing;
+                else
+                {
+                    CanvasBitmap outObj;
+                    _dict.TryRemove(path, out outObj);
+                }
             }
-            CanvasBitmapHolder bmp = new CanvasBitmapHolder(path, disposable);
+            var bmp = await PrivateLoad(resourceCreator, uri, dpi);
             _dict.TryAdd(path, bmp);
-            bmp.SetBitmap(await PrivateLoad(resourceCreator, uri, dpi));
-
-            Debug.WriteLine("Adding"+path);
-            Print();
             return bmp;
-            /*
+
             var token = new CancellationTokenSource();
             token.CancelAfter(2000);
 

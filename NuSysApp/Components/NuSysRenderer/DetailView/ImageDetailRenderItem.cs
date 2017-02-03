@@ -19,7 +19,7 @@ namespace NuSysApp
         private ImageDetailRegionRenderItem _activeRegion;
         private bool _isLoading;
         protected ImageLibraryElementController _controller;
-        protected CanvasBitmapHolder _bmp;
+        protected CanvasBitmap _bmp;
         public Rect CroppedImageTarget;
         protected Rect _rectToCropFromContent;
         protected Rect _normalizedCroppedRect;
@@ -90,9 +90,6 @@ namespace NuSysApp
                 region?.Dispose();
             }
 
-            Debug.Assert(_bmp != null);
-            _bmp?.Dispose();
-
             base.Dispose();
 
         }
@@ -101,15 +98,15 @@ namespace NuSysApp
 
         protected void ReRender()
         {
-            if (_bmp == null || _bmp.Bitmap.Device == null)
+            if (_bmp == null || _bmp.Device == null)
             {
                 return;
             }
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
-            var nx = lib.NormalizedX * _bmp.Bitmap.Size.Width;
-            var ny = lib.NormalizedY * _bmp.Bitmap.Size.Height;
-            var nw = lib.NormalizedWidth * _bmp.Bitmap.Size.Width;
-            var nh = lib.NormalizedHeight * _bmp.Bitmap.Size.Height;
+            var nx = lib.NormalizedX * _bmp.Size.Width;
+            var ny = lib.NormalizedY * _bmp.Size.Height;
+            var nw = lib.NormalizedWidth * _bmp.Size.Width;
+            var nh = lib.NormalizedHeight * _bmp.Size.Height;
 
             _normalizedCroppedRect = new Rect(lib.NormalizedX, lib.NormalizedY, lib.NormalizedWidth, lib.NormalizedHeight);
             _rectToCropFromContent = new Rect(nx, ny, nw, nh);
@@ -152,7 +149,7 @@ namespace NuSysApp
 
         private void RecomputeSize()
         {
-            if (_bmp == null || _bmp.Bitmap.Device == null)
+            if (_bmp == null || _bmp.Device == null)
                 return;
 
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
@@ -161,14 +158,14 @@ namespace NuSysApp
             {
                 CroppedImageTarget.Width = CanvasSize.Width;
                 CroppedImageTarget.Height = CroppedImageTarget.Width * 1 / croppedRectRatio;
-                _scaleOrgToDisplay = CanvasSize.Width / _bmp.Bitmap.Size.Width;
+                _scaleOrgToDisplay = CanvasSize.Width / _bmp.Size.Width;
                 _scaleDisplayToCrop = 1 / lib.NormalizedWidth;
             }
             else
             {
                 CroppedImageTarget.Height = CanvasSize.Height;
                 CroppedImageTarget.Width = CroppedImageTarget.Height * croppedRectRatio;
-                _scaleOrgToDisplay = CanvasSize.Height / _bmp.Bitmap.Size.Height;
+                _scaleOrgToDisplay = CanvasSize.Height / _bmp.Size.Height;
                 _scaleDisplayToCrop = 1 / lib.NormalizedHeight;
             }
 
@@ -194,7 +191,7 @@ namespace NuSysApp
             others = others.Where(l => l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId);
             foreach (var l in others)
             {
-                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bitmap.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
+                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
                 region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized += RegionOnRegionResized;
                 region.RegionPressed += RegionOnRegionPressed;
@@ -287,9 +284,9 @@ namespace NuSysApp
             {
                 if (_bmp != null)
                 {
-                    if (_bmp.Bitmap.Device != null)
+                    if (_bmp.Device != null)
                     {
-                        ds.DrawImage(_bmp.Bitmap, CroppedImageTarget, _rectToCropFromContent, 1,
+                        ds.DrawImage(_bmp, CroppedImageTarget, _rectToCropFromContent, 1,
                             makeSmall
                                 ? CanvasImageInterpolation.NearestNeighbor
                                 : CanvasImageInterpolation.MultiSampleLinear);

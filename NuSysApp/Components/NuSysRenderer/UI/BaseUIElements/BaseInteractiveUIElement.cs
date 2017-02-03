@@ -57,7 +57,7 @@ namespace NuSysApp
         /// <summary>
         /// The image which can be drawn on the UIElement
         /// </summary>
-        public abstract CanvasBitmapHolder Image { get; set; }
+        public abstract ICanvasImage Image { get; set; }
 
         /// <summary>
         /// The bounds the image will be scaled to fill, if null will use localbounds, these are normalized
@@ -141,18 +141,5 @@ namespace NuSysApp
         /// </summary>
         /// <returns></returns>
         public abstract Rect? GetImageBounds();
-
-        /// <summary>
-        /// overiddes the dispose method to dispose of important objects
-        /// </summary>
-        public override void Dispose()
-        {
-            if (IsDisposed)
-            {
-                return;
-            }
-            Image?.Dispose();
-            base.Dispose();
-        }
     }
 }

@@ -54,7 +54,7 @@ namespace NuSysApp
             if (Image != null)
             {
                 // get the imageRect which contains the image
-                var imageRect = Image.Bitmap.GetBounds(Canvas, Transform.LocalToScreenMatrix);
+                var imageRect = Image.GetBounds(Canvas, Transform.LocalToScreenMatrix);
 
                 // get the width and height of the bitmap this has nothign to do with on screen widthand height
                 var bitmapWidth = imageRect.Width;

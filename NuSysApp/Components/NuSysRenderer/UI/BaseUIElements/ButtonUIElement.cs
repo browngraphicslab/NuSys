@@ -103,7 +103,7 @@ namespace NuSysApp
         /// <summary>
         /// The image to be displayed on the button
         /// </summary>
-        public override CanvasBitmapHolder Image
+        public override ICanvasImage Image
         {
             get { return Shape.Image; }
             set { Shape.Image = value; }

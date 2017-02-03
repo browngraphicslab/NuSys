@@ -21,10 +21,10 @@ namespace NuSysApp
         private ButtonUIElement _addRecordingNodeButton;
 
         // images for the drag rect
-        private CanvasBitmapHolder _textNodeDragImg;
-        private CanvasBitmapHolder _collectionDragImg;
-        private CanvasBitmapHolder _toolDragImg;
-        private CanvasBitmapHolder _recordingDragImg;
+        private CanvasBitmap _textNodeDragImg;
+        private CanvasBitmap _collectionDragImg;
+        private CanvasBitmap _toolDragImg;
+        private CanvasBitmap _recordingDragImg;
 
         // drag rect used to display a drag image when we are moving items onto the canvas
         private RectangleUIElement _dragRect;

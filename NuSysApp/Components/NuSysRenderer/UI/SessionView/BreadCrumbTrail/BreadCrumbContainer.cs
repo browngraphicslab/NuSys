@@ -194,7 +194,7 @@ namespace NuSysApp
             foreach (var breadCrumb in _visibleBreadCrumbs)
             {
                 RemoveCrumbEvents(breadCrumb);
-                _children.Remove(breadCrumb); // fires the dispose method automatically
+                RemoveChild(breadCrumb); // fires the dispose method automatically
             }
 
 

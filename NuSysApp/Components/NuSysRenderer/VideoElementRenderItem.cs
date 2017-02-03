@@ -19,7 +19,7 @@ namespace NuSysApp
     public class VideoElementRenderItem : ElementRenderItem
     {
         private VideoNodeViewModel _vm;
-        private CanvasBitmapHolder _bmp;
+        private CanvasBitmap _bmp;
 
         public VideoElementRenderItem(VideoNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
@@ -37,8 +37,6 @@ namespace NuSysApp
             if (IsDisposed)
                 return;
             
-            Debug.Assert(_bmp != null);
-            _bmp?.Dispose();
             _vm = null;
             base.Dispose();
         }
@@ -55,7 +53,7 @@ namespace NuSysApp
            // ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height -100 }, Colors.Red);
 
             if (_bmp != null)
-                ds.DrawImage(_bmp.Bitmap, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height });
+                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height });
 
             ds.Transform = orgTransform;
         }

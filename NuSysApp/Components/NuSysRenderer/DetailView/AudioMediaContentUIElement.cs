@@ -19,7 +19,7 @@ namespace NuSysApp
     {
         private AudioLibraryElementController _controller;
         private MediaElement _mediaElement;
-        private CanvasBitmapHolder _audioWaveImage;
+        private CanvasBitmap _audioWaveImage;
         private bool _isLoading;
         private RectangleUIElement _shadowRect;
         private Color _shadowColor = UIDefaults.ShadowColor;
@@ -129,16 +129,16 @@ namespace NuSysApp
 
             var croppy = new CropEffect()
             {
-                Source = _audioWaveImage.Bitmap
+                Source = _audioWaveImage
             };
 
             var lib = (_controller.LibraryElementModel as AudioLibraryElementModel);
-            var x = lib.NormalizedStartTime* _audioWaveImage.Bitmap.Size.Width;
-            var w = lib.NormalizedDuration * _audioWaveImage.Bitmap.Size.Width;
+            var x = lib.NormalizedStartTime* _audioWaveImage.Size.Width;
+            var w = lib.NormalizedDuration * _audioWaveImage.Size.Width;
 
-            croppy.SourceRectangle = new Rect(x, 0, w, _audioWaveImage.Bitmap.Size.Height);
+            croppy.SourceRectangle = new Rect(x, 0, w, _audioWaveImage.Size.Height);
 
-            //Image = croppy;
+            Image = croppy;
 
             UpdateRegionBounds();
 
@@ -204,7 +204,6 @@ namespace NuSysApp
                 region.OnRegionManualResize -= RegionOnRegionManualResize;
 
             }
-            _audioWaveImage.Dispose();
             base.Dispose();
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace NuSysApp
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            Debug.WriteLine("Run called!");
+            System.Diagnostics.Debug.WriteLine("Run called!");
             OnRun(taskInstance);
         }
     }
