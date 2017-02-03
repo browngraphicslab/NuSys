@@ -16,7 +16,7 @@ namespace NuSysApp
     /// </summary>
     public class WordElementRenderItem : PdfElementRenderItem
     {
-        private ICanvasImage _wordUIcon;
+        private CanvasBitmapHolder _wordUIcon;
 
         /// <summary>
         /// constructor takes in the usual parameters but enforces to take in a wordnode view model
@@ -54,7 +54,7 @@ namespace NuSysApp
 
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
                 {
-                    ds.DrawImage(_wordUIcon, new Rect(0,0,Constants.DefaultNodeSize * .05, Constants.DefaultNodeSize * .05), _wordUIcon.GetBounds(Canvas));
+                    ds.DrawImage(_wordUIcon.Bitmap, new Rect(0,0,Constants.DefaultNodeSize * .05, Constants.DefaultNodeSize * .05), _wordUIcon.Bitmap.GetBounds(Canvas));
                 }
 
                 ds.Transform = orgTransform;

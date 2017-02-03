@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     public class CloseButtonRenderItem : InteractiveBaseRenderItem
     {
-        private CanvasBitmap _bmp;
+        private CanvasBitmapHolder _bmp;
         private Rect _targetRect = new Rect(0, 0, 15, 15);
 
         public CloseButtonRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -21,6 +21,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            _bmp.Dispose();
             base.Dispose();
         }
 
@@ -36,7 +37,7 @@ namespace NuSysApp
                 return;
 
             ds.Transform = Transform.LocalToScreenMatrix;
-            ds.DrawImage(_bmp, _targetRect);
+            ds.DrawImage(_bmp.Bitmap, _targetRect);
 
             base.Draw(ds);
         }

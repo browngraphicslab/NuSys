@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -214,7 +215,7 @@ namespace MarkdownDeep
 								break;
 
 							default:
-								System.Diagnostics.Debug.Assert(false);
+								Debug.Assert(false);
 								break;
 						}
 						break;
@@ -250,7 +251,7 @@ namespace MarkdownDeep
 								break;
 
 							default:
-								System.Diagnostics.Debug.Assert(false);
+								Debug.Assert(false);
 								break;
 						}
 						break;
@@ -290,7 +291,7 @@ namespace MarkdownDeep
 								break;
 
 							default:
-								System.Diagnostics.Debug.Assert(false);
+								Debug.Assert(false);
 								break;
 						}
 						break;
@@ -1250,7 +1251,7 @@ namespace MarkdownDeep
 		{
 			// What sort of list are we dealing with
 			BlockType listType = lines[0].blockType;
-			System.Diagnostics.Debug.Assert(listType == BlockType.ul_li || listType == BlockType.ol_li);
+			Debug.Assert(listType == BlockType.ul_li || listType == BlockType.ol_li);
 
 			// Preprocess
 			// 1. Collapse all plain lines (ie: handle hardwrapped lines)
@@ -1294,7 +1295,7 @@ namespace MarkdownDeep
 			// Process all lines in the range		
 			for (int i = 0; i < lines.Count; i++)
 			{
-				System.Diagnostics.Debug.Assert(lines[i].blockType == BlockType.ul_li || lines[i].blockType==BlockType.ol_li);
+				Debug.Assert(lines[i].blockType == BlockType.ul_li || lines[i].blockType==BlockType.ol_li);
 
 				// Find start of item, including leading blanks
 				int start_of_li = i;
@@ -1310,7 +1311,7 @@ namespace MarkdownDeep
 				if (start_of_li == end_of_li)
 				{
 					// It's a simple, single line item item
-					System.Diagnostics.Debug.Assert(start_of_li == i);
+					Debug.Assert(start_of_li == i);
 					List.children.Add(CreateBlock().CopyFrom(lines[i]));
 				}
 				else

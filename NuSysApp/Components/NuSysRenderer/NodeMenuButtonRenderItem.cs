@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -18,7 +19,7 @@ namespace NuSysApp
 {
     public class NodeMenuButtonRenderItem : InteractiveBaseRenderItem
     {
-        private CanvasBitmap _bmp;
+        private CanvasBitmapHolder _bmp;
         private string _iconUrl;
 
         public string Label
@@ -51,7 +52,8 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
-         
+            Debug.Assert(_bmp != null);
+            _bmp?.Dispose();
             _bmp = null;
             base.Dispose();
         }
@@ -74,11 +76,11 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             ds.FillCircle(new Vector2(0,0), 25, Constants.RED);
-            var scaleFactor = 15/_bmp.Size.Width;
+            var scaleFactor = 15/_bmp.Bitmap.Size.Width;
             // ds.FillCircle(new Rect { X = Postion.X, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
             if (_bmp != null)
                 //ds.DrawImage(_bmp, new Rect(-10 + (30 - _bmp.Size.Width * scaleFactor) / 2f, -10 + (30 - _bmp.Size.Height * scaleFactor) / 2f, _bmp.Size.Width * scaleFactor, _bmp.Size.Height * scaleFactor)); 
-                ds.DrawImage(_bmp, new Rect(-15,-15,30,30));
+                ds.DrawImage(_bmp.Bitmap, new Rect(-15,-15,30,30));
             ds.Transform = orgTransform;
         }
 

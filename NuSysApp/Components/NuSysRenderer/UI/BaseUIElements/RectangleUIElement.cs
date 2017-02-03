@@ -46,7 +46,7 @@ namespace NuSysApp
         /// <summary>
         /// The image to be displayed on the rectangle
         /// </summary>
-        public override ICanvasImage Image { get; set; }
+        public override CanvasBitmapHolder Image { get; set; }
 
         public override BorderType BorderType { get; set; }
 
@@ -178,7 +178,7 @@ namespace NuSysApp
 
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(ResourceCreator, GetLocalBounds())))
                 {
-                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(ResourceCreator));
+                    ds.DrawImage(Image.Bitmap, GetImageBounds() ?? GetLocalBounds(), Image.Bitmap.GetBounds(ResourceCreator));
                 }
 
                 ds.Transform = orgTransform;

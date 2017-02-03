@@ -59,7 +59,7 @@ namespace NuSysApp
             others = others.Where(l => l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId && l.PageStart >= CurrentPage && l.PageEnd <= CurrentPage);
             foreach (var l in others)
             {
-                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
+                var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bitmap.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
                 region.RegionMoved += RegionOnRegionMoved;
                 region.RegionResized += RegionOnRegionResized;
                 region.RegionPressed += RegionOnRegionPressed;
@@ -83,6 +83,8 @@ namespace NuSysApp
         public override void Dispose()
         {
             _controller.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
+            Debug.Assert(_bmp != null);
+            _bmp?.Dispose();
             base.Dispose();
         }
     }

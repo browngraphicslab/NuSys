@@ -97,7 +97,7 @@ namespace NuSysApp
         /// <summary>
         /// The image to draw on the ellipse
         /// </summary>
-        public override ICanvasImage Image { get; set; }
+        public override CanvasBitmapHolder Image { get; set; }
 
         /// <summary>
         /// The center of the ellipse
@@ -177,11 +177,11 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            if (Image != null && (Image as CanvasBitmap)?.Device != null)
+            if (Image != null)
             {
                 using (ds.CreateLayer(1, CanvasGeometry.CreateEllipse(Canvas, CenterPoint, _radiusX, _radiusY)))
                 {
-                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                    ds.DrawImage(Image.Bitmap, GetImageBounds() ?? GetLocalBounds(), Image.Bitmap.GetBounds(Canvas));
 
                 }
             }

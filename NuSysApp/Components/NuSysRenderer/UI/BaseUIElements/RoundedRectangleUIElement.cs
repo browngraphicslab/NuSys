@@ -86,7 +86,7 @@ namespace NuSysApp
         /// <summary>
         /// The image to display on the rounded rectangle
         /// </summary>
-        public override ICanvasImage Image { get; set; }
+        public override CanvasBitmapHolder Image { get; set; }
 
         /// <summary>
         /// The radius of the corner of the Rectangle
@@ -188,7 +188,7 @@ namespace NuSysApp
                         CanvasGeometry.CreateRoundedRectangle(Canvas, BorderWidth/2, BorderWidth/2, Width - BorderWidth,
                             Height - BorderWidth, Radius, Radius)))
                 {
-                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(Canvas));
+                    ds.DrawImage(Image.Bitmap, GetImageBounds() ?? GetLocalBounds(), Image.Bitmap.GetBounds(Canvas));
                 }
             }
 

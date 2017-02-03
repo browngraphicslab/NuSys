@@ -529,7 +529,7 @@ namespace NuSysApp
             }
         }
 
-        private async Task<ICanvasImage> LoadCanvasBitmap(Uri smallIconURI)
+        private async Task<CanvasBitmapHolder> LoadCanvasBitmap(Uri smallIconURI)
         {
             return await MediaUtil.LoadCanvasBitmapAsync(Canvas, smallIconURI);
         }

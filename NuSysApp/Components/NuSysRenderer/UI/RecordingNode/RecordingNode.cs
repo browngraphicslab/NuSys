@@ -59,27 +59,27 @@ namespace NuSysApp
         /// <summary>
         /// Icon used to inform the user that we are going to record audio
         /// </summary>
-        private CanvasBitmap _audioIcon;
+        private CanvasBitmapHolder _audioIcon;
 
         /// <summary>
         /// Icon used to inform the uesr that we are going to record video
         /// </summary>
-        private CanvasBitmap _videoIcon;
+        private CanvasBitmapHolder _videoIcon;
 
         /// <summary>
         /// Icone used to inform the user that we are not recording
         /// </summary>
-        private CanvasBitmap _recordIcon;
+        private CanvasBitmapHolder _recordIcon;
 
         /// <summary>
         /// Icon used to let the user pause the recording
         /// </summary>
-        private CanvasBitmap _pauseIcon;
+        private CanvasBitmapHolder _pauseIcon;
 
         /// <summary>
         /// Icon used to inform the user that we are recording
         /// </summary>
-        private CanvasBitmap _stopIcon;
+        private CanvasBitmapHolder _stopIcon;
 
         /// <summary>
         /// Media capture element that actually does the heavy lifting of recording audio and video
