@@ -157,16 +157,6 @@ namespace NuSysApp
         /// this is null
         /// </summary>
         private ListColumn<T> _columnSortedBy;
-        /*
-        /// <summary>
-        /// Count of how many times Dragged has been called since DragStarted
-        /// </summary>
-        private int _dragIterations;
-        /// <summary>
-        /// Number of times the vector that represents the difference in points given by Dragged had an angle that indicated dragging  
-        /// </summary>
-        private int _dragGestures;
-        */
 
         private Vector2 _startingDragPoint;
         /// <summary>
