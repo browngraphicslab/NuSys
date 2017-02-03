@@ -249,18 +249,18 @@ namespace NuSysApp
                     string next = null;
                     if (i > 0)
                     {
-                        prev = trailList[i - 1].LibraryElementController.Title + trailList[i - 1].Id;
+                        prev = trailList[i - 1].Id;
                     }
                     if (i < trailList.Count - 1)
                     {
-                        next = trailList[i + 1].LibraryElementController.Title + trailList[i + 1].Id;
+                        next = trailList[i + 1].Id;
                     }
 
                     await currElement.ExportToHTML(prev, next);
                 }
                 
                 StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
-                var firstPage = await htmlFolder.GetFileAsync(trailList[0].LibraryElementController.Title + trailList[0].Id + ".html");
+                var firstPage = await htmlFolder.GetFileAsync(trailList[0].Id + ".html");
 
                 var exportPopup = new CenteredPopup(RenderEngine.Root, xRenderCanvas,
                     "You have exported your trail! \n \n" +
