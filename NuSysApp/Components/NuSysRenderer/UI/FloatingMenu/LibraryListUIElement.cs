@@ -520,6 +520,11 @@ namespace NuSysApp
                     Task.Run(async delegate
                     {
                         rect.Image = await LoadCanvasBitmap(controller.SmallIconUri);
+                        Debug.Assert(rect.Image is CanvasBitmap);
+                        rect.Width = (float) (rect.Image as CanvasBitmap).SizeInPixels.Width/ (rect.Image as CanvasBitmap).SizeInPixels.Height * 100;
+                        rect.Height = 100;
+
+
                     });
                     rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
                     _libraryDragElements.Add(rect);

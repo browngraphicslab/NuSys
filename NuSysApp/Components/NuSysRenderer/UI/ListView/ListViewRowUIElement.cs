@@ -101,6 +101,7 @@ namespace NuSysApp
             cell.Holding += Cell_Holding;
         }
 
+
         private void Cell_Holding(InteractiveBaseRenderItem item, Vector2 point)
         {
             var cell = item as RectangleUIElement;
