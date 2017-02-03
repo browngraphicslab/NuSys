@@ -121,7 +121,6 @@ namespace NuSysApp
                 return;
             }
             IsDisposed = true;
-            Debug.WriteLine("Disposing: "+_bitmapId);
             MediaUtil.RemoveBitmapByUrl(_bitmapId);
             Bitmap?.Dispose();
         }

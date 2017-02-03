@@ -194,8 +194,6 @@ namespace NuSysApp
             CanvasBitmapHolder bmp = new CanvasBitmapHolder(path, disposable);
             _dict.TryAdd(path, bmp);
             bmp.SetBitmap(await PrivateLoad(resourceCreator, uri, dpi));
-
-            Debug.WriteLine("Adding"+path);
             Print();
             return bmp;
             /*
