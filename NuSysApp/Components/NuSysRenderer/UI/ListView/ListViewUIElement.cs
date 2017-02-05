@@ -483,7 +483,9 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Scrolls down to the item
+        /// Sets flags to scroll down to the item.
+        /// 
+        /// This can be called anywhere
         /// </summary>
         /// <param name="item"></param>
         public void ScrollTo(T item)
@@ -492,7 +494,10 @@ namespace NuSysApp
             _needsScroll = true;
 
         }
-
+        /// <summary>
+        /// Scrolls down to the item.
+        /// This should only be called in the update method
+        /// </summary>
         private void ScrollToOnUpdate()
         {
             
@@ -553,7 +558,12 @@ namespace NuSysApp
         #endregion Scrolling
 
         #region Creating, Drawing, and Updating
-
+        /// <summary>
+        /// Method that sets flags so that ListViewRowUIElements are called at next update call
+        /// 
+        /// Unlike CreateListViewRowUIElementsOnUpdate, this can be called from anywhere and should be called
+        /// when the number of visible rows changes (eg, if the height of the list view changes).
+        /// </summary>
         private void CreateListViewRowUIElements()
         {
             _needsCreateRows = true;
