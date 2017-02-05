@@ -228,9 +228,21 @@ namespace NuSysApp
 
         private float _scrollVelocity;
 
-
+        /// <summary>
+        /// Flag that sets whether scrollto should be called at the next update call.
+        /// The item being scrolled to is _scrollItem.
+        /// Both properties are set at the ScrollTo method.
+        /// </summary>
         private bool _needsScroll;
+        /// <summary>
+        /// The item being scrolled to at next update call if _needsScroll is true
+        /// This should be null (default) if _needsScroll is false
+        /// </summary>
         private T _scrollItem;
+        /// <summary>
+        /// Flag that sets whether createlistviewrowuielements should be called at the next update call
+        /// This flag is set at CreateListViewRowUielements method
+        /// </summary>
         private bool _needsCreateRows;
         #endregion private
 
