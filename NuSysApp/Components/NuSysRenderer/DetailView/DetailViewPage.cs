@@ -286,6 +286,19 @@ namespace NuSysApp
         private async void _dragToCollectionButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
+            var width = (float)(_dragRect.Image as CanvasBitmap).SizeInPixels.Width / (_dragRect.Image as CanvasBitmap).SizeInPixels.Height * 100;
+            var height = 100;
+
+            if (height > 0 && width > 0)
+            {
+                _dragRect.Height = height;
+                _dragRect.Width = width;
+            }
+            else
+            {
+                _dragRect.Width = 100;
+                _dragRect.Height = 100;
+            }
 
             _dragRect.IsVisible = true;
         }
