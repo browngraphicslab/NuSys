@@ -225,8 +225,13 @@ namespace NuSysApp
         private float _sumOfColumnRelativeWidths;
 
         private float _rowBorderThickness;
+
         private float _scrollVelocity;
 
+
+        private bool _needsScroll;
+        private T _scrollItem;
+        private bool _needsCreateRows;
         #endregion private
 
         /// <summary>
@@ -483,7 +488,15 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void ScrollTo(T item)
         {
-            var i = _filteredItems.IndexOf(item);
+            _scrollItem = item;
+            _needsScroll = true;
+
+        }
+
+        private void ScrollToOnUpdate()
+        {
+            
+            var i = _filteredItems.IndexOf(_scrollItem);
             if (i < 0)
             {
                 return;
@@ -491,6 +504,7 @@ namespace NuSysApp
             float position = (float)i / _filteredItems.Count;
             //Sets the position of the ScrollBar to the position of the item in the list
             SetPosition(position);
+
 
         }
 
@@ -540,80 +554,85 @@ namespace NuSysApp
 
         #region Creating, Drawing, and Updating
 
+        private void CreateListViewRowUIElements()
+        {
+            _needsCreateRows = true;
+        }
+
         /// <summary>
         /// Method that creates the ListViewRowUIElements necessary to cover the screen. 
         /// 
-        /// This should be called somewhere in the constructor, as well as whenever the number of
-        /// rows necessary to cover the screen changes (e.g., height changes)
+        /// This should never be called outside the update method.
         /// </summary>
-        private void CreateListViewRowUIElements()
+        private void CreateListViewRowUIElementsOnUpdate()
         {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
+
+            Debug.Assert(_filteredItems != null);
+
+            //Remove handlers of rows
+            foreach (var row in Rows)
             {
-                Debug.Assert(_filteredItems != null);
+                RemoveRowHandlers(row);
+            }
+            //Clear the rows.
+            Rows.Clear();
 
-                //Remove handlers of rows
-                foreach (var row in Rows)
+            //If itemssource is empty, no need to create rows.
+            if (_filteredItems.Count == 0)
+            {
+                return;
+            }
+
+            var position = GetPosition();
+
+            //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
+            if ((int)Math.Floor(position * _filteredItems.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _filteredItems.Count)
+            {
+                if (ScrollBar != null)
                 {
-                    RemoveRowHandlers(row);
+                    SetPosition(0);
                 }
-                //Clear the rows.
-                Rows.Clear();
+                position = GetPosition();
 
-                //If itemssource is empty, no need to create rows.
-                if (_filteredItems.Count == 0)
-                {
-                    return;
-                }
+            }
 
-                var position = GetPosition();
+            //Start index is the itemsource-index of the first item shown on the listview 
+            var startIndex = (int)Math.Floor(position * _filteredItems.Count);
 
-                //This sets the position of the scroll to 0 if we are scrolled further than possible (the start index + number of rows > itemsource.count)
-                if ((int)Math.Floor(position * _filteredItems.Count) + (int)Math.Ceiling(Height / RowHeight) + 1 > _filteredItems.Count)
-                {
-                    if (ScrollBar != null)
-                    {
-                        SetPosition(0);
-                    }
-                    position = GetPosition();
+            //Number of rows needed to cover the screen at all times
+            //Make sures that the number of rows created does not exceed the number of rows in the source
+            var numberOfRows = Math.Min(_filteredItems.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
 
-                }
+            if (numberOfRows > _filteredItems.Count)
+            {
+                numberOfRows = _filteredItems.Count;
+            }
 
-                //Start index is the itemsource-index of the first item shown on the listview 
-                var startIndex = (int)Math.Floor(position * _filteredItems.Count);
+            //Creates the row UI elements and adds them to the list.
+            var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
 
-                //Number of rows needed to cover the screen at all times
-                //Make sures that the number of rows created does not exceed the number of rows in the source
-                var numberOfRows = Math.Min(_filteredItems.Count, (int)Math.Ceiling(Height / RowHeight) + 1);
+            foreach (var itemSource in rowList)
+            {
+                var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
+                listViewRowUIElement.Item = itemSource;
+                listViewRowUIElement.Background = Colors.White;
+                listViewRowUIElement.BorderColor = Constants.MED_BLUE;
+                listViewRowUIElement.BorderWidth = RowBorderThickness;
+                listViewRowUIElement.Width = Width - BorderWidth * 2;
+                listViewRowUIElement.Height = RowHeight;
+                PopulateListRow(listViewRowUIElement);
+                listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
+                listViewRowUIElement.RowTapped += ListViewRowUIElementOnRowTapped;
+                listViewRowUIElement.RowDoubleTapped += ListViewRowUIElementOnRowDoubleTapped;
+                listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
+                listViewRowUIElement.RowDragStarted += ListViewRowUIElement_RowDragStarted;
+                listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
+                listViewRowUIElement.RowHolding += ListViewRowUIElement_RowHolding;
+                Rows.Add(listViewRowUIElement);
+            }
 
-                if (numberOfRows > _filteredItems.Count)
-                {
-                    numberOfRows = _filteredItems.Count;
-                }
-
-                //Creates the row UI elements and adds them to the list.
-                var rowList = _itemsSource.GetRange(startIndex, numberOfRows);
-
-                foreach (var itemSource in rowList)
-                {
-                    var listViewRowUIElement = new ListViewRowUIElement<T>(this, ResourceCreator, itemSource);
-                    listViewRowUIElement.Item = itemSource;
-                    listViewRowUIElement.Background = Colors.White;
-                    listViewRowUIElement.BorderColor = Constants.MED_BLUE;
-                    listViewRowUIElement.BorderWidth = RowBorderThickness;
-                    listViewRowUIElement.Width = Width - BorderWidth * 2;
-                    listViewRowUIElement.Height = RowHeight;
-                    PopulateListRow(listViewRowUIElement);
-                    listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
-                    listViewRowUIElement.RowTapped += ListViewRowUIElementOnRowTapped;
-                    listViewRowUIElement.RowDoubleTapped += ListViewRowUIElementOnRowDoubleTapped;
-                    listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
-                    listViewRowUIElement.RowDragStarted += ListViewRowUIElement_RowDragStarted;
-                    listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
-                    listViewRowUIElement.RowHolding += ListViewRowUIElement_RowHolding;
-                    Rows.Add(listViewRowUIElement);
-                }
-            });
+            
+            
 
         }
 
@@ -746,8 +765,26 @@ namespace NuSysApp
             SetPosition(ScrollBar.Position); //This line is necessary, in case the position of the list does not match the position of the scrollbar
             ScrollBar.Range = (Height - BorderWidth * 2f) / (HeightOfAllRows);
 
+            //If create new rows flag is set to true, create new rows
+            if (_needsCreateRows)
+            {
+                CreateListViewRowUIElementsOnUpdate();
+                //Reset flag
+                _needsCreateRows = false;
+            }
+
+            if (_needsScroll)
+            {
+                ScrollToOnUpdate();
+                //Reset flag and reference to scroll item
+                _scrollItem = default(T);
+                _needsScroll = false;
+            }
+
+            //Update content of rows
             UpdateListRows();
 
+            
             var cellVerticalOffset = BorderWidth;
             var headerOffset = Transform.LocalPosition.Y;
             var scrollOffset = _scrollOffset % (RowHeight);
