@@ -185,7 +185,7 @@ namespace NuSysApp
             _originWords = new MarkdownConvertingTextbox(this, Canvas)
             {
                 Background = Colors.Transparent,
-                Height = 100,
+                Height = 40,
                 Width = 400,
                 Scrollable = false,
                 TextColor = Constants.DARK_BLUE,

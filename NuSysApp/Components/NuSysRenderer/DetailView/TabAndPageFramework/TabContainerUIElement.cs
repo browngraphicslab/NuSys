@@ -32,8 +32,9 @@ namespace NuSysApp
             get { return _currentlySelectedTab; }
             set
             {
+                _currentlySelectedTab?.SetSelected(false);
                 _currentlySelectedTab = value;
-
+                _currentlySelectedTab?.SetSelected(true);
                 // fire the event for when the tab changes
                 OnCurrentTabChanged?.Invoke(_currentlySelectedTab.Tab);
             }

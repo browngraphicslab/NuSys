@@ -40,6 +40,8 @@ namespace NuSysApp
         /// </summary>
         private ButtonUIElement _backgroundButton;
 
+        private bool _selected;
+
         /// <summary>
         /// The Title of the tab
         /// </summary>
@@ -98,6 +100,11 @@ namespace NuSysApp
         public override async Task Load()
         {
             _closeButton.Image = _closeButton.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x.png"));
+        }
+
+        public void SetSelected(bool selected)
+        {
+            _selected = selected;
         }
 
         /// <summary>
@@ -166,15 +173,13 @@ namespace NuSysApp
             _backgroundButton.ButtonText = Title;
             _backgroundButton.ButtonTextColor = TitleColor;
             _backgroundButton.ButtonTextHorizontalAlignment = TextAlignment;
-            _backgroundButton.Background = Background;
+            _backgroundButton.Background =  Background;
             _backgroundButton.BorderWidth = 0;
             _backgroundButton.Width = Math.Max(Width - _closeButton.Width,0);
             _backgroundButton.Height = Height;
 
-            if (Underlined)
-            {
-                _backgroundButton.RichTextButton = true;
-            }
+
+            _backgroundButton.RichTextButton = Underlined ^ _selected;
         }
     }
 }
