@@ -1617,7 +1617,7 @@ namespace NuSysApp
 
                 // set the position of the add region button
                 Canvas.SetTop(xFullScreenVideoAddRegionButton, SessionController.Instance.ScreenHeight - xFullScreenVideoAddRegionButton.Height - 20);
-                Canvas.SetLeft(xFullScreenVideoAddRegionButton, SessionController.Instance.ScreenWidth/2 - xFullScreenVideoAddRegionButton.Width/2 - 150);
+                Canvas.SetLeft(xFullScreenVideoAddRegionButton, SessionController.Instance.ScreenWidth/2 - xFullScreenVideoAddRegionButton.Width);
 
                 // set the positon of the add region menu
                 Canvas.SetTop(xAddRegionMenu, SessionController.Instance.ScreenHeight/2 - xAddRegionMenu.Height/2);
@@ -1625,7 +1625,7 @@ namespace NuSysApp
 
                 // set the position of the close button
                 Canvas.SetTop(xFullScreenVideoCloseButton, SessionController.Instance.ScreenHeight - xFullScreenVideoCloseButton.Height - 20);
-                Canvas.SetLeft(xFullScreenVideoCloseButton, SessionController.Instance.ScreenWidth/2 - xFullScreenVideoCloseButton.Width / 2 + 150);
+                Canvas.SetLeft(xFullScreenVideoCloseButton, SessionController.Instance.ScreenWidth/2);
             });
         }
 

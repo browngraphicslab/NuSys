@@ -92,9 +92,6 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded += OnRegionRemoved;
             _controller.ContentDataController.OnRegionRemoved += OnRegionAdded;
-
-            // compute all the regions so they are displayed
-            ComputeRegions();
         }
 
         /// <summary>
@@ -210,6 +207,9 @@ namespace NuSysApp
         private void MediaElementOnMediaOpened(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             _durationInMillis = _mediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+
+            // compute all the regions so they are displayed
+            ComputeRegions();
         }
 
         private void AudioMediaContentUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
