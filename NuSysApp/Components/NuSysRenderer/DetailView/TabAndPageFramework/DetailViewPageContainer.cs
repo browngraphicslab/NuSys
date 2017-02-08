@@ -344,7 +344,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnPrivateTappedEvent(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId,NusysConstants.AccessType.Public);
+            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId,NusysConstants.AccessType.Private);
             (item?.Parent as PopupUIElement)?.DismissPopup();
         }
 
@@ -355,7 +355,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void OnPublicTappedEvent(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId, NusysConstants.AccessType.Private);
+            StaticServerCalls.CreateDeepCopy(_currentController.LibraryElementModel.LibraryElementId);
             (item?.Parent as PopupUIElement)?.DismissPopup();
         }
 

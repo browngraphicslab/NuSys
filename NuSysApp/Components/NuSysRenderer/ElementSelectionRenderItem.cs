@@ -56,7 +56,7 @@ namespace NuSysApp
             BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
             BtnLayoutTool.Label = "edit layout";
             BtnEditTags = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/multitag.png", parent, resourceCreator);
-            BtnEditTags.Label = "edit tags";
+            BtnEditTags.Label = "add tags";
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);

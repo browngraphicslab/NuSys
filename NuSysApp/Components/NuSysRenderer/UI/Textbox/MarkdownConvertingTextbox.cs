@@ -183,7 +183,7 @@ namespace NuSysApp
             {
                 return;
             }
-            _yOffset -= (float)(_canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height * (delta > 0 ? -.05 : .05));
+            _yOffset -= (float)(_canvasTextLayout?.LayoutBoundsIncludingTrailingWhitespace.Height ?? 0 * (delta > 0 ? -.05 : .05));
             BoundYOffset();
         }
 

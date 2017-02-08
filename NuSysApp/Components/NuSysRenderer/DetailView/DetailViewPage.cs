@@ -101,7 +101,7 @@ namespace NuSysApp
         /// <summary>
         /// text that says where the element's origin is from
         /// </summary>
-        private RectangleButtonUIElement _originWords;
+        private MarkdownConvertingTextbox _originWords;
 
         /// <summary>
         /// if this element has an origin, then this will be set to the origin, otherwise it is null
@@ -182,13 +182,14 @@ namespace NuSysApp
                 _wordButton.Tapped += WordButtonOnTapped;
             }
 
-            _originWords = new RectangleButtonUIElement(this, Canvas, UIDefaults.SecondaryStyle,
-                "this item had its origin deleted.")
+            _originWords = new MarkdownConvertingTextbox(this, Canvas)
             {
                 Background = Colors.Transparent,
-                ButtonTextColor = Constants.DARK_BLUE,
-                Height = 20,
-                Width = 400
+                Height = 100,
+                Width = 400,
+                Scrollable = false,
+                TextColor = Constants.DARK_BLUE,
+                Text = "this item had its origin deleted.",
             };
             AddChild(_originWords);
 
@@ -386,14 +387,14 @@ namespace NuSysApp
                         _controller.LibraryElementModel.Origin.OriginId);
                 if (originalElement != null)
                 {
-                    _originWords.ButtonText = "this item is a copy of ";
-                    _originWords.ButtonText += originalElement.Title;
+                    _originWords.Text = "this item is a copy of ";
+                    _originWords.Text += "__"+originalElement.Title+"__";
                 }
                 _origin = originalElement;
             }
             else if (_controller.LibraryElementModel.Origin.Type == LibraryElementOrigin.OriginType.LibraryImport)
             {
-                _originWords.ButtonText = "this item was imported directly to the library";
+                _originWords.Text = "this item was imported directly to the library";
             }
             else if (_controller.LibraryElementModel.Origin.Type == LibraryElementOrigin.OriginType.Region)
             {
@@ -402,14 +403,14 @@ namespace NuSysApp
                         _controller.LibraryElementModel.Origin.OriginId);
                 if (originalElement != null)
                 {
-                    _originWords.ButtonText = "this item is a region of ";
-                    _originWords.ButtonText += originalElement.Title;
+                    _originWords.Text = "this item is a region of ";
+                    _originWords.Text +="__"+ originalElement.Title+"__";
                 }
                 _origin = originalElement;
             }
             else
             {
-                _originWords.ButtonText = "this item had an origin that was deleted.";
+                _originWords.Text = "this item had an origin that was deleted.";
             }
         }
 
@@ -492,7 +493,7 @@ namespace NuSysApp
                         _imageHeight + _contentLayoutManager.TopMargin + 10);
             }
 
-            _originWords.Transform.LocalPosition = new Vector2(Width/2 - _originWords.Width/2, 2);
+            _originWords.Transform.LocalPosition = new Vector2(Width/2 - _originWords.Width/2, -3);
             UpdateOriginText();
 
             base.Update(parentLocalToScreenTransform);
@@ -500,6 +501,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
+            _originWords.Load();
             base.Load();
         }
 

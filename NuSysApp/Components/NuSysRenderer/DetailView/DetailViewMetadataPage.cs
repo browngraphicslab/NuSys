@@ -128,6 +128,7 @@ namespace NuSysApp
 
             _controller.MetadataChanged += _controller_MetadataChanged;
             _controller.TitleChanged += _controller_TitleChanged;
+            _controller.AccessTypeChanged += ControllerOnAccessTypeChanged;
             _addKeyValueButton.Tapped += AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged += OnSearchTextChanged;
             _hideImmutableCheckbox.Selected += OnShowImmutableSelectionChanged;
@@ -135,6 +136,16 @@ namespace NuSysApp
             _addKeyBox.TextChanged += _addKeyBox_TextChanged;
             _metadata_listview.RowDoubleTapped += _metadata_listview_RowDoubleTapped;
             _deleteKeyButton.Tapped += _deleteKeyButton_Tapped;
+        }
+
+        /// <summary>
+        /// event handler called whenever the access type changed on the controller
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="accessType"></param>
+        private void ControllerOnAccessTypeChanged(object sender, NusysConstants.AccessType accessType)
+        {
+            filterlist();
         }
 
         private void _deleteKeyButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -269,6 +280,7 @@ namespace NuSysApp
         {
             _controller.MetadataChanged -= _controller_MetadataChanged;
             _controller.TitleChanged -= _controller_TitleChanged;
+            _controller.AccessTypeChanged -= ControllerOnAccessTypeChanged;
             _addKeyValueButton.Tapped -= AddKeyValuePairToMetadata;
             _searchTextBox.TextChanged -= OnSearchTextChanged;
             _hideImmutableCheckbox.Selected -= OnShowImmutableSelectionChanged;

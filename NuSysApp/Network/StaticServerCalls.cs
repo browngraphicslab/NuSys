@@ -150,6 +150,7 @@ namespace NuSysApp
                 var newLibraryElementRequest = new CreateNewLibraryElementRequest(args);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);
                 newLibraryElementRequest.AddReturnedLibraryElementToLibrary();
+                SessionController.Instance.ContentController.GetLibraryElementController(newLibraryId)?.SetAccessType(access);
                 return newLibraryId;
             }
             else
@@ -174,6 +175,7 @@ namespace NuSysApp
                 var newContentRequest = new CreateNewContentRequest(newContentRequestArgs);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newContentRequest);
                 newContentRequest.AddReturnedLibraryElementToLibrary();
+                SessionController.Instance.ContentController.GetLibraryElementController(newLibraryId)?.SetAccessType(access);
                 return newLibraryId;
                 
             }

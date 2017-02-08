@@ -289,12 +289,16 @@ namespace NuSysApp
             });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             InkColor =
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkColor;
+                SessionController.Instance.SessionView?.FreeFormViewer?.CurrentCollection?.InkRenderItem?.InkColor ?? Colors.Black;
             InkSize =
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkSize;
+                SessionController.Instance.SessionView?.FreeFormViewer?.CurrentCollection?.InkRenderItem?.InkSize ?? 4;
             base.Update(parentLocalToScreenTransform);
         }
 
