@@ -1034,7 +1034,6 @@ namespace NuSysApp
                         addedLibraryElemControllers.Add(SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId));
                         Task.Run(async delegate
                         {
-                            await Task.Delay(250);//TODO def don't do this, first fix issue #1595
                             var controller = SessionController.Instance.ContentController?.GetLibraryElementController(args?.LibraryElementArgs?.LibraryElementId);
                             if (controller != null)
                             {
