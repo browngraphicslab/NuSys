@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -104,6 +105,22 @@ namespace NuSysApp
         /// bool representing the visibility of tags on nodes
         /// </summary>
         private bool _tagsVisible = true;
+
+        private string _serverName = null;
+
+        public string ServerName
+        {
+            get { return _serverName; }
+            set
+            {
+                if (_serverName != value)
+                {
+                    _serverName = value;
+                    NusysConstants.ServerName = value;
+                    SaveToFile();
+                }
+            }
+        }
 
         /// <summary>
         /// Public bool for representing the visibility of keywords on nodes.

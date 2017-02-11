@@ -90,6 +90,9 @@ namespace NuSysApp
             //ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
+            NusysConstants.ServerName = SessionController.Instance.SessionSettings.ServerName?.Length > 5
+                ? SessionController.Instance.SessionSettings.ServerName
+                : NusysConstants.ServerName;
             ServerNameText.Text = NusysConstants.ServerName;
             //ServerNameText.TextChanged += delegate
             //{
@@ -193,6 +196,7 @@ namespace NuSysApp
                 ApplySorting(SortType.TitleAsc);
                 //makes sure collection doesn't get added twice
                 _collectionAdded = true;
+                SessionController.Instance.SessionSettings.ServerName = NusysConstants.ServerName;
             }
             catch (Exception e)
             {
@@ -781,7 +785,11 @@ namespace NuSysApp
             }
             catch (HttpRequestException h)
             {
+                var text = "Cannot connect to server or server does not exist";
+                loggedInText.Text = text;
+                NewUserLoginText.Text = text;
                 Debug.WriteLine("cannot connect to server");
+                _isLoggingIn = false;
             }
 
         }
