@@ -25,7 +25,7 @@ namespace NuSysApp
 
         protected override void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo(_controller);
+            SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo(_controller, true);
         }
     }
 

@@ -63,6 +63,11 @@ namespace NuSysApp
         private AudioLibraryElementController _controller;
         private float _mediaContentPaddingToScrubBar = 10;
 
+        /// <summary>
+        /// true if we are going to show regions
+        /// </summary>
+        private bool _showRegions;
+
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
@@ -99,38 +104,14 @@ namespace NuSysApp
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, VideoLibraryElementController controller, bool showRegions) : this(parent, resourceCreator)
         {
             _controller = controller;
-
-            UITask.Run(() =>
-            {
-                InitializeMediaElement(controller);
-
-                //todo add video content as _mediaContent
-
-                _scrubBar = new ScrubBarUIElement(this, resourceCreator, controller, _mediaElement);
-                AddChild(_scrubBar);
-
-            });
+            _showRegions = showRegions;
 
         }
 
         public BaseMediaPlayerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, AudioLibraryElementController controller, bool showRegions) : this(parent, resourceCreator)
         {
             _controller = controller;
-
-            UITask.Run(() =>
-            {
-                InitializeMediaElement(controller);
-
-
-                _mediaContent = new AudioMediaContentUIElement(this, resourceCreator, controller, _mediaElement, showRegions);
-                AddChild(_mediaContent);
-
-
-                _scrubBar = new ScrubBarUIElement(this, resourceCreator, controller, _mediaElement);
-                AddChild(_scrubBar);
-
-            });
-
+            _showRegions = showRegions;
         }
 
         public void InitializeMediaElement(AudioLibraryElementController controller)
@@ -245,6 +226,29 @@ namespace NuSysApp
 
         public override async Task Load()
         {
+
+            await UITask.Run(async () =>
+            {
+                if (_controller is VideoLibraryElementController)
+                {
+                    InitializeMediaElement(_controller);
+
+                    //todo add video content as _mediaContent
+
+
+                } else if (_controller is AudioLibraryElementController)
+                {
+                    InitializeMediaElement(_controller);
+
+
+                    _mediaContent = new AudioMediaContentUIElement(this, Canvas, _controller, _mediaElement, _showRegions);
+                    AddChild(_mediaContent);
+                }
+
+                _scrubBar = new ScrubBarUIElement(this, Canvas, _controller, _mediaElement);
+                AddChild(_scrubBar); ;
+            });
+
             _playImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/play.png"));
             _pauseImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/pause.png"));
             _volumeImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/volume.png"));

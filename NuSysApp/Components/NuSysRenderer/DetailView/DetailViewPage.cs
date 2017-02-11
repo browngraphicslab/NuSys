@@ -529,6 +529,7 @@ namespace NuSysApp
             {
                 RemoveChild(_contentRect);
                 _contentLayoutManager.Remove(_contentRect);
+                _contentRect.Dispose();
             }
             
             // set content rect to the new content
