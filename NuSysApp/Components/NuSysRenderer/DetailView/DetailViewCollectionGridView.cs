@@ -119,8 +119,11 @@ namespace NuSysApp
         {
             Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(id));
             var elementModel = SessionController.Instance.ElementModelIdToElementController[id].Model;
-            _collectionElementModels.Add(elementModel);
-            _scrollingGrid.AddItem(elementModel);
+            if (elementModel.ParentCollectionId == _controller.LibraryElementModel.LibraryElementId)
+            {
+                _collectionElementModels.Add(elementModel);
+                _scrollingGrid.AddItem(elementModel);
+            }
         }
 
         public override void Dispose()
@@ -191,13 +194,26 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            var request = new GetEntireWorkspaceRequest(_controller.CollectionModel.LibraryElementId, 0);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            if (request.WasSuccessful() == true)
+            // remove all current elements, we're essentially going to rrecreate the grid each time
+            foreach (var element in _collectionElementModels.ToArray())
             {
-                _collectionElementModels = request.GetReturnedElementModels();
+                _scrollingGrid.RemoveItem(element);
+                _collectionElementModels.Remove(element);
             }
 
+            // get all the elements on the workspace using a request, this returns elements to a certain level of 
+            // collection recursion, but we only want the top level
+            var request = new GetEntireWorkspaceRequest(_controller.CollectionModel.LibraryElementId, 0);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            // if the request was succesful
+            if (request.WasSuccessful() == true)
+            {
+                // take only those element's who are a direct child of the current collection
+                _collectionElementModels = request.GetReturnedElementModels().Where(em => em.ParentCollectionId == _controller.LibraryElementModel.LibraryElementId).ToList();
+            }
+
+            // add all the items which made it past the filter to the grid
             Debug.Assert(_collectionElementModels != null);
             foreach (var elementModel in _collectionElementModels)
             {
