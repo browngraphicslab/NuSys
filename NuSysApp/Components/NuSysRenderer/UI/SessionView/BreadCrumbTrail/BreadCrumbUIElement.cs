@@ -49,9 +49,10 @@ namespace NuSysApp
             Image = crumb.Icon;
             BorderWidth = 5;
             BorderColor = crumb.Color;
-            ImageBounds = new Rect(0, 0, 1, 1);
 
-            // initialize the title box
+            //Set ImageBounds based on image
+            SetBreadCrumbImageBounds();
+
             _titleBox = new TextboxUIElement(this, ResourceCreator)
             {
                 Background = Colors.Transparent,
@@ -72,6 +73,23 @@ namespace NuSysApp
 
             // update the title when the title changes in the crumb
             Crumb.TitleChanged += Crumb_TitleChanged;
+
+        }
+
+        private void SetBreadCrumbImageBounds()
+        {
+            var imgBmp = Image as CanvasBitmap;
+
+            if (imgBmp != null)
+            {
+                var imgWidth = imgBmp.SizeInPixels.Width;
+                var imgHeight = imgBmp.SizeInPixels.Height;
+                ImageBounds = new Rect(0, 0, (float)imgWidth / imgHeight, 1);
+            }
+            else
+            {
+                ImageBounds = new Rect(0, 0, 1, 1);
+            }
 
         }
 
