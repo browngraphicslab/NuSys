@@ -85,10 +85,15 @@ namespace NuSysApp
                 var imgWidth = imgBmp.SizeInPixels.Width;
                 var imgHeight = imgBmp.SizeInPixels.Height;
 
+                //get normalized dimensions such that height is always 1 and width is the corresponding width
                 var normalizedWidth = (float)imgWidth / imgHeight;
                 var normalizedHeight = 1f;
 
-                ImageBounds = new Rect(0.5f - normalizedWidth/2, 0, normalizedWidth, normalizedHeight);
+                //get the X of the image by shifting it so that the center of the image is in the center of the rectangle
+                var normalizedX = 0.5f - normalizedWidth / 2;
+                var normalizedY = 0f;
+
+                ImageBounds = new Rect(normalizedX, normalizedY, normalizedWidth, normalizedHeight);
             }
             else
             {
