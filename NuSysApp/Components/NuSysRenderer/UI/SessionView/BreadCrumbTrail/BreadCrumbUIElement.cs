@@ -84,7 +84,11 @@ namespace NuSysApp
             {
                 var imgWidth = imgBmp.SizeInPixels.Width;
                 var imgHeight = imgBmp.SizeInPixels.Height;
-                ImageBounds = new Rect(0, 0, (float)imgWidth / imgHeight, 1);
+
+                var normalizedWidth = (float)imgWidth / imgHeight;
+                var normalizedHeight = 1f;
+
+                ImageBounds = new Rect(0.5f - normalizedWidth/2, 0, normalizedWidth, normalizedHeight);
             }
             else
             {
