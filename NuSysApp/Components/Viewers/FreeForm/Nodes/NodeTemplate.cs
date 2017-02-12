@@ -191,7 +191,7 @@ namespace NuSysApp
             title.GotFocus += Title_GotFocus;
             title.LostFocus += Title_LostFocus;
 
-            if ((DataContext as ElementViewModel)?.Controller.LibraryElementModel != null)
+            if ((DataContext as ElementViewModel)?.Controller?.LibraryElementModel != null)
             {
                 (DataContext as ElementViewModel).Controller.LibraryElementController.TitleChanged +=
                     LibraryElementModelOnOnTitleChanged;

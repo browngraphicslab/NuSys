@@ -118,6 +118,7 @@ namespace NuSysApp
 
             xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
             xKeyboard.KeyboardKeyReleased += Keyboard_KeyboardKeyReleased;
+            
 
         }
 
@@ -222,6 +223,8 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+
+            
         }
 
         /// <summary>
@@ -1686,5 +1689,9 @@ namespace NuSysApp
         }
 
 
+        private void XWebView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            xWebView.Navigate("http://www.google.com");
+        }
     }
 }
