@@ -28,6 +28,7 @@ namespace NusysServer
             //try to add new content to the sql database
             var createNewContentsuccess = ContentController.Instance.SqlConnector.AddContent(addContentToDatabaseMessage);
 
+
             //if could not add content sql database, return a message that the request failed
             if (createNewContentsuccess == false)
             {
@@ -36,6 +37,18 @@ namespace NusysServer
             }
 
             var newContentDataModelId = message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY);
+
+            if (message.GetEnum<NusysConstants.ContentType>(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY) == NusysConstants.ContentType.PDF &&
+                message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY) != null)
+            {
+                var libraryId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY);
+                FileHelper.MakePdfThumbnails(Convert.FromBase64String(message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES)), libraryId);
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL] = Constants.SERVER_ADDRESS + NusysConstants.GetDefaultThumbnailFileName(libraryId, NusysConstants.ThumbnailSize.Small) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL] = Constants.SERVER_ADDRESS + NusysConstants.GetDefaultThumbnailFileName(libraryId, NusysConstants.ThumbnailSize.Medium) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL] = Constants.SERVER_ADDRESS + NusysConstants.GetDefaultThumbnailFileName(libraryId, NusysConstants.ThumbnailSize.Large) + NusysConstants.DEFAULT_THUMBNAIL_FILE_EXTENSION;
+
+            }
+
 
             //if content has been successfully added remove the content part of the message and add a new library element model
             message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY);

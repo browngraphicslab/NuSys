@@ -17,8 +17,8 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>NuSysApp_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>00189462B90EBFC88EAE309CEC046935F9397EEE</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxPackageDir>C:\Users\Trent\Desktop\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
@@ -310,6 +310,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\web search.png" />
+    <None Include="NuSysApp_StoreKey.pfx" />
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Themes\audio_node_template.html" />
     <Content Include="Themes\image_node_template.html" />
     <Content Include="Themes\node_template.css" />

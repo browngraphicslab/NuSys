@@ -272,8 +272,6 @@ namespace NuSysApp
 
         private void OnPointerTouchMoved(object sender, PointerRoutedEventArgs args)
         {
-            unsafe
-            {
                 var exisitingPointer = _pointers.Where(p => p.PointerId == args.Pointer.PointerId);
                 if (!exisitingPointer.Any())
                     return;
@@ -304,7 +302,6 @@ namespace NuSysApp
                 }
 
                 PointerMoved?.Invoke(pointer);
-            }
            
         }
 

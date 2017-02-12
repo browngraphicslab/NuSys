@@ -855,38 +855,6 @@ namespace NuSysApp
                         }
                     }
                     data = Convert.ToBase64String(fileBytes);
-                    var MuPdfDoc = await MediaUtil.DataToPDF(data);
-
-                    pdfPageCount = MuPdfDoc.PageCount;
-
-                    // get variables for drawing the page
-                    var pageSize = MuPdfDoc.GetPageSize(0);
-                    var width = pageSize.X;
-                    var height = pageSize.Y;
-
-                    // create an image to use for converting
-                    var image = new WriteableBitmap(width, height);
-
-                    // create a buffer to draw the page on
-                    IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
-                    buf.Length = image.PixelBuffer.Length;
-
-                    // draw the page onto the buffer
-                    MuPdfDoc.DrawPage(0, buf, 0, 0, width, height, false);
-                    var ss = buf.AsStream();
-
-                    // copy the buffer to the image
-                    await ss.CopyToAsync(image.PixelBuffer.AsStream());
-                    image.Invalidate();
-
-                    // save the image as a file (temporarily)
-                    var x = await image.SaveAsync(NuSysStorages.SaveFolder);
-
-                    thumbnails = await MediaUtil.GetThumbnailDictionary(x);
-
-                    // delete the image file that we saved
-                    await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
-
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
