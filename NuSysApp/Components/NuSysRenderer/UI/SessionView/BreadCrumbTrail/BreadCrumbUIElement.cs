@@ -49,9 +49,10 @@ namespace NuSysApp
             Image = crumb.Icon;
             BorderWidth = 5;
             BorderColor = crumb.Color;
-            ImageBounds = new Rect(0, 0, 1, 1);
 
-            // initialize the title box
+            //Set ImageBounds based on image
+            SetBreadCrumbImageBounds();
+
             _titleBox = new TextboxUIElement(this, ResourceCreator)
             {
                 Background = Colors.Transparent,
@@ -72,6 +73,32 @@ namespace NuSysApp
 
             // update the title when the title changes in the crumb
             Crumb.TitleChanged += Crumb_TitleChanged;
+
+        }
+
+        private void SetBreadCrumbImageBounds()
+        {
+            var imgBmp = Image as CanvasBitmap;
+
+            if (imgBmp != null)
+            {
+                var imgWidth = imgBmp.SizeInPixels.Width;
+                var imgHeight = imgBmp.SizeInPixels.Height;
+
+                //get normalized dimensions such that height is always 1 and width is the corresponding width
+                var normalizedWidth = (float)imgWidth / imgHeight;
+                var normalizedHeight = 1f;
+
+                //get the X of the image by shifting it so that the center of the image is in the center of the rectangle
+                var normalizedX = 0.5f - normalizedWidth / 2;
+                var normalizedY = 0f;
+
+                ImageBounds = new Rect(normalizedX, normalizedY, normalizedWidth, normalizedHeight);
+            }
+            else
+            {
+                ImageBounds = new Rect(0, 0, 1, 1);
+            }
 
         }
 

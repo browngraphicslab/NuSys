@@ -194,11 +194,14 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            // remove all current elements, we're essentially going to rrecreate the grid each time
-            foreach (var element in _collectionElementModels.ToArray())
+            if (_collectionElementModels != null)
             {
-                _scrollingGrid.RemoveItem(element);
-                _collectionElementModels.Remove(element);
+                // remove all current elements, we're essentially going to rrecreate the grid each time
+                foreach (var element in _collectionElementModels.ToArray())
+                {
+                    _scrollingGrid.RemoveItem(element);
+                    _collectionElementModels.Remove(element);
+                }
             }
 
             // get all the elements on the workspace using a request, this returns elements to a certain level of 

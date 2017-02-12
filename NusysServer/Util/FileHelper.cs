@@ -166,22 +166,22 @@ namespace NusysServer
 
                         //convert from word to pdf, and save word doc elsewhere
                         var pdfByteData = GetWordBytes(contentData, contentDataModelId, wordPath);
-                        
-                        MakeWordThumbnails(pdfByteData, contentDataModelId);
+
+                        MakePdfThumbnails(pdfByteData, contentDataModelId);
 
                         var pdfUrl = CreateDataFile(contentDataModelId, NusysConstants.ContentType.PDF, Convert.ToBase64String(pdfByteData), fileExtension);
                         return pdfUrl;
                         break;
 
                     case NusysConstants.ContentType.PDF:
+                        var pdfBytes = Convert.FromBase64String(contentData);
                         lock (MuPdfLock)
                         {
-                            var pdfBytes = Convert.FromBase64String(contentData);
                             var doc = Open(pdfBytes, pdfBytes.Length);
-
                             // Active the pdf document
                             ActivateDocument(doc);
                             var listOfUrls = new List<string>();
+
                             for (int page = 0; page < GetNumPages(); page++)
                             {
                                 // Goto a page
@@ -278,13 +278,13 @@ namespace NusysServer
             }
         }
 
-        private static void MakeWordThumbnails(byte[] pdfBytes, string contentDataModelId)
+        public static void MakePdfThumbnails(byte[] pdfBytes, string contentDataModelId)
         {
             lock (MuPdfLock)
             {
                 if (contentDataModelId == null)
                 {
-                    throw new Exception("the contentDataModelId cannot be null when creating a word thumbnail");
+                    throw new Exception("the contentDataModelId cannot be null when creating a pdf thumbnail");
                 }
                 try
                 {

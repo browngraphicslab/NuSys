@@ -11,7 +11,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    class DetailViewPdfRegionContent : RectangleUIElement
+    public class DetailViewPdfRegionContent : RectangleUIElement
     {
         /// <summary>
         /// The left page button for the pdf

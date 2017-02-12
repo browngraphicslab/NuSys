@@ -228,7 +228,8 @@ namespace NuSysApp
                 await UITask.Run(async delegate{ 
                     var bytes = request.GetReturnedDocumentBytes();
                     var path = _controller.LibraryElementModel.ContentDataModelId + ".docx";
-                    var fullPath = NuSysStorages.SaveFolder.Path + "\\" + path;
+                    var folder = ApplicationData.Current.LocalFolder;
+                    var fullPath = folder.Path + "\\" + path;
 
                     await Task.Run(async delegate
                     {
