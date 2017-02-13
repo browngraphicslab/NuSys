@@ -840,7 +840,8 @@ namespace NuSysApp
                 //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)scale;
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
                     .UpdateDryInkTransform();
-                SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+                //SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+                SessionController.Instance.SessionView.FreeFormViewer.MiniMap.IsDirty = true;
                 CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
 
             });

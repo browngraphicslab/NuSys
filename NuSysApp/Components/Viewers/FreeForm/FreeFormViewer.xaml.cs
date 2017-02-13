@@ -69,7 +69,7 @@ namespace NuSysApp
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
 
-        public MinimapRenderItem _minimap;
+        //public MinimapRenderItem _minimap;
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
         public bool ToolsAreBeingInteractedWith { get; set; }
@@ -82,6 +82,9 @@ namespace NuSysApp
         private bool _inkPressed;
 
         private SessionRootRenderItem _renderRoot;
+
+        public MinimapUIElement MiniMap => _minimap;
+        private MinimapUIElement _minimap;
         public NuSysRenderer RenderEngine { get; private set; }
 
         /// <summary>
@@ -152,7 +155,6 @@ namespace NuSysApp
             InitialCollection?.Dispose();
             xRenderCanvas.Invalidate();
             _minimap?.Dispose();
-
         }
 
         public void ActivateUndo(IUndoable action, Point2d location)
@@ -198,7 +200,15 @@ namespace NuSysApp
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
                 vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
-            } 
+            }
+            
+            if(_minimap == null)
+            {
+                _minimap = new MinimapUIElement(null, xRenderCanvas, InitialCollection);
+                _minimap.Transform.LocalX = (float)Width - 300;
+                _minimap.Transform.LocalY = (float)Height - 170;
+                
+            }
 
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.Elements.CollectionChanged += ElementsOnCollectionChanged;
@@ -212,6 +222,7 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
 
             RenderEngine.Root.AddChild(InitialCollection);
+            RenderEngine.Root.AddChild(_minimap);
 
             RenderEngine.Start();
 
@@ -221,7 +232,7 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped -= BtnExportTrailOnTapped;
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
-            _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+            //_minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
         /// <summary>
@@ -307,7 +318,8 @@ namespace NuSysApp
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            _minimap?.Invalidate();
+            //_minimap?.Invalidate();
+            _minimap.IsDirty = true;
         }
 
         private void SwitchCollection(CollectionRenderItem collection)
@@ -399,7 +411,8 @@ namespace NuSysApp
 
         public void InvalidateMinimap()
         {
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
         }
 
         private async void BtnDeleteOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -562,7 +575,8 @@ namespace NuSysApp
                 }
             }
 
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
         }
 
         private async void CollectionInteractionManagerOnTrailCreated(ElementRenderItem element1,
@@ -686,7 +700,8 @@ namespace NuSysApp
                 }
             }
 
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
         }
 
         private async void MultiMenuOnCreateCollection(bool finite, bool shaped, bool useBoundingRect)
@@ -1125,7 +1140,8 @@ namespace NuSysApp
             
             ActivateUndo(action, oldLocationScreen);
 
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
         }
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
@@ -1220,7 +1236,8 @@ namespace NuSysApp
                 }
             }
 
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
             UpdateMediaPlayer();
         }
 
@@ -1250,7 +1267,8 @@ namespace NuSysApp
             }
 
             UpdateNonWin2dElements();
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
         }
 
         private void CollectionInteractionManagerOnPanned(CanvasPointer pointer, Vector2 point, Vector2 delta)
@@ -1267,7 +1285,8 @@ namespace NuSysApp
             }
 
             UpdateNonWin2dElements();
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
 
             // Maybe give this a minimum delta?
             CanvasPanned?.Invoke(this, true);
@@ -1279,7 +1298,8 @@ namespace NuSysApp
             if (!_inkPressed)
                 ClearSelections();
 
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
 
             if (_layoutWindow != null)
             {
@@ -1388,7 +1408,8 @@ namespace NuSysApp
             }
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
-            _minimap.Invalidate();
+            //_minimap.Invalidate();
+            _minimap.IsDirty = true;
         }
 
         private void ClearSelections()
