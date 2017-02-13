@@ -1691,6 +1691,7 @@ namespace NuSysApp
 
         private void XWebView_OnLoaded(object sender, RoutedEventArgs e)
         {
+            Canvas.SetLeft(xWebView, 400);
             xWebView.Navigate("http://www.google.com");
         }
     }
