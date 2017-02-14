@@ -83,10 +83,17 @@ namespace NuSysApp
         {
             if (_zoomRectangle.IsVisible)
             {
+                _zoomRectangle.IsVisible = false;
+
+                var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
+
+                if (_zoomRectangle.Width <15 || _zoomRectangle.Height < 15 * ratioHeight)
+                {
+                    return;
+                }
                 var topLeftPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition));
                 var bottomRightPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)));
                 _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
-                _zoomRectangle.IsVisible = false;
             }
 
         }
@@ -125,7 +132,7 @@ _collection.ViewModel.Height);
         /// <returns></returns>
         private Vector2 GetTrueLocalPoint(Vector2 point)
         {
-            return point + new Vector2(300f - (float)_rect.Width, 170f - (float)_rect.Height);
+            return point - new Vector2(300f - (float)_rect.Width, 170f - (float)_rect.Height);
         }
 
         private Vector2 GetCollectionPointFromCanvasPointer(CanvasPointer pointer)
