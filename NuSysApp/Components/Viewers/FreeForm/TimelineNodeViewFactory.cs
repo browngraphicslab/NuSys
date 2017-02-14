@@ -11,7 +11,6 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
-using MuPDFWinRT;
 using NusysIntermediate;
 using NuSysApp.Controller;
 
@@ -20,7 +19,6 @@ namespace NuSysApp
 {
     public class TimelineNodeViewFactory
     {
-        public MuPDFWinRT.Document _document;
         public async Task<Image> CreateFromSendable(ElementController controller)
         {
             Image view = null;
@@ -70,31 +68,8 @@ namespace NuSysApp
                     var data = controller.LibraryElementController.Data;
                     var dataBytes = Convert.FromBase64String(data);
                     var ms = new MemoryStream(dataBytes);
-                    using (IInputStream inputStreamAt = ms.AsInputStream())
-
-
-                    using (var dataReader = new DataReader(inputStreamAt))
-                    {
-                        uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
-                        IBuffer readBuffer = dataReader.ReadBuffer(u);
-                        _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 100);
-                    }
-
-                    var pageSize = _document.GetPageSize(1);
-                    var width = pageSize.X;
-                    var height = pageSize.Y;
-                    var pdfImage = new WriteableBitmap(width, height);
-                    IBuffer buf = new Windows.Storage.Streams.Buffer(pdfImage.PixelBuffer.Capacity);
-                    buf.Length = pdfImage.PixelBuffer.Length;
-
-                    _document.DrawPage(1, buf, 0, 0, width, height, false);
-
-                    var s = buf.AsStream();
-                    await s.CopyToAsync(pdfImage.PixelBuffer.AsStream());
-                    pdfImage.Invalidate();
-
-                    view.Source = pdfImage;
-                    break;
+                        //deleted a bunch of shit for beta release.  this is old code anyways
+                        break;
 
                 case NusysConstants.ElementType.Video:
                     //TODO change icon
