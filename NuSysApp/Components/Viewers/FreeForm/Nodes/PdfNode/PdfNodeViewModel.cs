@@ -12,7 +12,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Brushes;
-using MuPDFWinRT;
 using LdaLibrary;
 using System.Collections.ObjectModel;
 using Windows.Foundation;

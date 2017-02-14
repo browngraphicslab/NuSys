@@ -1046,7 +1046,7 @@ namespace NuSysApp
             switch (ServerNameText.Text.ToLower())
             {
                 case "local":
-                    NusysConstants.ServerName = "localhost: 2776";
+                    NusysConstants.ServerName = "localhost:2776";
                     break;
                 case "test":
                     NusysConstants.ServerName = "nusystest.azurewebsites.net";

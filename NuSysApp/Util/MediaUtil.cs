@@ -85,25 +85,6 @@ namespace NuSysApp
             return fileBytes;
         }
 
-        public static async Task<MuPDFWinRT.Document> DataToPDF(string base64StringData)
-        {
-            var dataBytes = Convert.FromBase64String(base64StringData ?? "");
-            var c = dataBytes.Length;
-            var ms = new MemoryStream(dataBytes);
-            MuPDFWinRT.Document document;
-            using (IInputStream inputStreamAt = ms.AsInputStream())
-            {
-                using (var dataReader = new DataReader(inputStreamAt))
-                {
-                    uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
-                    IBuffer readBuffer = dataReader.ReadBuffer(u);
-                    document = MuPDFWinRT.Document.Create(readBuffer, MuPDFWinRT.DocumentType.PDF, 120);
-                }
-            }
-            return document;
-        }
-
-
 
         private static async Task<CanvasBitmap> PrivateLoad(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
         {
@@ -143,6 +124,16 @@ namespace NuSysApp
         public static void ClearImageDictionary()
         {
             
+        }
+
+        public static void RemoveItem(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return;
+            }
+            WeakReference refer;
+            _dict.Refs.TryRemove(url, out refer);
         }
 
         /// <summary>

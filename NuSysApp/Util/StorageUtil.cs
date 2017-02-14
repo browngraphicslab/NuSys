@@ -45,7 +45,7 @@ namespace NuSysApp
             {
                 try
                 {
-                    var text = File.ReadAllText(NuSysStorages.SaveFolder.Path + "\\settings.txt");
+                    var text = File.ReadAllText(ApplicationData.Current.LocalFolder.Path + "\\settings.txt");
                     return JsonConvert.DeserializeObject<SessionSettingsData>(text) ?? new SessionSettingsData();
                 }
                 catch(Exception e)
@@ -65,7 +65,7 @@ namespace NuSysApp
         {
             try
             {
-                File.WriteAllText(NuSysStorages.SaveFolder.Path + "\\settings.txt", JsonConvert.SerializeObject(data));
+                File.WriteAllText(ApplicationData.Current.LocalFolder.Path + "\\settings.txt", JsonConvert.SerializeObject(data));
             }
             catch(Exception e)
             {

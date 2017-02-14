@@ -32,6 +32,8 @@ namespace NuSysApp
         }
         private void ChangeContent(object source, string contentData)
         {
+            var content = Controller.LibraryElementController.ContentDataController.ContentDataModel as PdfContentDataModel;
+            MediaUtil.RemoveItem(content?.PageUrls[CurrentPageNumber]); // TODO move to a pdf content data copntroller so this is only called once
             Task.Run(async delegate {
                 await UITask.Run(async delegate { await Goto(CurrentPageNumber); });
             });

@@ -22,7 +22,7 @@ namespace NuSysApp
     {
         public enum ConnectionStrength
         {
-            UnResponsive = 12000,//12 second timeout
+            UnResponsive = 30000,//30 second timeout
             Terrible = 1000,
             Bad = 275,
             Okay = 120,
