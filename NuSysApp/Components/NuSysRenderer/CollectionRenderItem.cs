@@ -92,6 +92,7 @@ namespace NuSysApp
 
 
 
+
         /// <summary>
         /// event handler called whenevr the element controller changes scale
         /// </summary>
@@ -802,28 +803,6 @@ namespace NuSysApp
                 var translateX = widthAdjustment - x;
                 var translateY = heightAdjustment - y;
                 
-                /*
-       
-                double scale;
-
-
-                // Scale based on the width and height proportions of the current node
-                if (nodeWidth > nodeHeight)
-                {
-                    scale = ViewModel.Width / nodeWidth;
-                    if (nodeWidth - nodeHeight <= 20)
-                        scale = scale * .50;
-                    else
-                        scale = scale * .55;
-                }
-
-
-                else
-                {
-                    scale = ViewModel.Height / nodeHeight;
-                    scale = scale * .7;
-                }
-                */
 
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
                     new Vector2((float)translateX, (float)translateY);
@@ -841,6 +820,19 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.FreeFormViewer.MiniMap.IsDirty = true;
                 //CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
 
+            });
+        }
+
+
+        public void CenterCameraOnRectangle(Vector2 topLeftPoint, Vector2 bottomRightPoint)
+        {
+            UITask.Run(delegate
+            {
+                var center = (topLeftPoint + bottomRightPoint)/2;
+                CenterCameraOnPoint(center);
+                var scale = ViewModel.Width/(bottomRightPoint.X - topLeftPoint.X);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =
+                    new Vector2((float)scale, (float)scale);
             });
         }
 

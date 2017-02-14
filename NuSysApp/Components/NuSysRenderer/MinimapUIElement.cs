@@ -19,6 +19,8 @@ namespace NuSysApp
         private CollectionRenderItem _collection;
         private CanvasRenderTarget _renderTarget;
 
+        private RectangleUIElement _zoomRectangle;
+
         public MinimapUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, CollectionRenderItem collection) : base(parent, resourceCreator)
         {
             SwitchCollection(collection);
@@ -26,18 +28,78 @@ namespace NuSysApp
             Width = 300f;
             Height = 170f;
 
-            Tapped += MinimapUIElement_Tapped;
+            DoubleTapped += MinimapUIElement_DoubleTapped;
+            Released += MinimapUIElement_Released;
+            Dragged += MinimapUIElement_Dragged;
+
+            _zoomRectangle = new RectangleUIElement(this, ResourceCreator)
+            {
+                BorderType = BorderType.Outside,
+                BorderWidth = 2f,
+                BorderColor = Colors.Red,
+                Background = Colors.Transparent,
+                Width = 4f,
+                Height = 4f,
+                IsVisible = false
+
+            };
+            AddChild(_zoomRectangle);
+
         }
 
-        private void MinimapUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void MinimapUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            var rectWidth = _rect.Width;
-            var rectHeight = _rect.Height;
+            var point = GetCollectionPointFromCanvasPointer(pointer);
+            _collection.CenterCameraOnPoint(point);
+        }
 
+        private void MinimapUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
+
+            if (!_zoomRectangle.IsVisible)
+            {
+                _zoomRectangle.IsVisible = true;
+                _zoomRectangle.Transform.LocalPosition = localPoint;
+                _zoomRectangle.Width = 4f;
+                _zoomRectangle.Height = 4f* ratioHeight ;
+
+            }
+
+
+            var width = Math.Max(0, localPoint.X - _zoomRectangle.Transform.LocalX);
+            var height = width*ratioHeight;
+
+            _zoomRectangle.Width = width;
+            _zoomRectangle.Height = height;
+
+
+            
+        }
+
+
+        private void MinimapUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_zoomRectangle.IsVisible)
+            {
+                var topLeftPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition));
+                var bottomRightPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)));
+                _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
+                _zoomRectangle.IsVisible = false;
+            }
+
+        }
+
+
+
+
+        private Vector2 GetCollectionPointFromLocalPoint(Vector2 localPoint)
+        {
             var collectionRectOrg = new Rect(_collection.ViewModel.X,
-    _collection.ViewModel.Y,
-    _collection.ViewModel.Width,
-    _collection.ViewModel.Height);
+_collection.ViewModel.Y,
+_collection.ViewModel.Width,
+_collection.ViewModel.Height);
 
             var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection));
 
@@ -47,23 +109,38 @@ namespace NuSysApp
             var c = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
             var cp = Win2dUtil.Invert(c);
 
-            var scale = Math.Min(rectWidth / (float)_bb.Width, rectHeight / (float)_bb.Height);
+            var scale = Math.Min(_rect.Width / (float)_bb.Width, _rect.Height / (float)_bb.Height);
             var s = Matrix3x2.CreateScale((float)scale);
 
             var matrix = cp * s;
 
-            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             var point = Vector2.Transform(localPoint, Win2dUtil.Invert(matrix));
+            return point;
+        }
+        /// <summary>
+        /// input: the local point
+        /// output: the true local point (relative to the _rect)
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        private Vector2 GetTrueLocalPoint(Vector2 point)
+        {
+            return  point + new Vector2(300f - (float)_rect.Width, 170f - (float)_rect.Height);
+        }
 
-            _collection.CenterCameraOnPoint(point);
+        private Vector2 GetCollectionPointFromCanvasPointer(CanvasPointer pointer)
+        {
+            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var trueLocalPoint = GetTrueLocalPoint(localPoint);
+            return GetCollectionPointFromLocalPoint(trueLocalPoint);
 
         }
+
 
         public void SwitchCollection(CollectionRenderItem collection)
         {
             _collection = collection;
             _renderTarget = null;
-            //Invalidate();
             IsDirty = true;
 
         }
