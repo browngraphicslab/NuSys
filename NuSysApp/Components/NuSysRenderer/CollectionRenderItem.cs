@@ -783,14 +783,14 @@ namespace NuSysApp
             }
         }
 
-        public void CenterCameraOnPoint(Vector2 point)
+        public void CenterCameraOnPoint(Vector2 point, float width, float height)
         {
             UITask.Run(delegate
             {
 
                 // Define some variables that will be used in future translation/scaling
-                var nodeWidth = 800; //elementToBeFullScreened.Width;
-                var nodeHeight = 800; //elementToBeFullScreened.Height; // 40 for title adjustment
+                var nodeWidth = width; //elementToBeFullScreened.Width;
+                var nodeHeight = height; //elementToBeFullScreened.Height; // 40 for title adjustment
 
                 var x = point.X + nodeWidth / 2;
                 var y = point.Y + nodeHeight / 2;
@@ -828,8 +828,10 @@ namespace NuSysApp
         {
             UITask.Run(delegate
             {
-                var center = (topLeftPoint + bottomRightPoint)/2;
-                CenterCameraOnPoint(center);
+                //var center = (topLeftPoint + bottomRightPoint)/2;
+                var rectWidth = bottomRightPoint.X - topLeftPoint.X;
+                var rectHeight = bottomRightPoint.Y - topLeftPoint.Y;
+                CenterCameraOnPoint(topLeftPoint, rectWidth, rectHeight);
                 var scale = ViewModel.Width/(bottomRightPoint.X - topLeftPoint.X);
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =
                     new Vector2((float)scale, (float)scale);

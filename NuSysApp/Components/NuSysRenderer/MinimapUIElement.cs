@@ -50,7 +50,7 @@ namespace NuSysApp
         private void MinimapUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var point = GetCollectionPointFromCanvasPointer(pointer);
-            _collection.CenterCameraOnPoint(point);
+            _collection.CenterCameraOnPoint(point, 800f, 800f);
         }
 
         private void MinimapUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
