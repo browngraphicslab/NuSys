@@ -125,7 +125,7 @@ _collection.ViewModel.Height);
         /// <returns></returns>
         private Vector2 GetTrueLocalPoint(Vector2 point)
         {
-            return  point + new Vector2(300f - (float)_rect.Width, 170f - (float)_rect.Height);
+            return point + new Vector2(300f - (float)_rect.Width, 170f - (float)_rect.Height);
         }
 
         private Vector2 GetCollectionPointFromCanvasPointer(CanvasPointer pointer)
@@ -162,6 +162,8 @@ _collection.ViewModel.Height);
             {
                 CreateResources();
             }
+
+
 
             Debug.Assert(_collection?.ViewModel != null, "this shouldn't be null");
             if (_collection?.ViewModel == null)
