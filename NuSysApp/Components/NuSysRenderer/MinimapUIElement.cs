@@ -25,9 +25,40 @@ namespace NuSysApp
             Background = Colors.Transparent;
             Width = 300f;
             Height = 170f;
+
+            Tapped += MinimapUIElement_Tapped;
         }
 
-        
+        private void MinimapUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var rectWidth = _rect.Width;
+            var rectHeight = _rect.Height;
+
+            var collectionRectOrg = new Rect(_collection.ViewModel.X,
+    _collection.ViewModel.Y,
+    _collection.ViewModel.Width,
+    _collection.ViewModel.Height);
+
+            var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection));
+
+            //if (currentColl == SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.InitialCollection)
+            var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
+
+            var c = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
+            var cp = Win2dUtil.Invert(c);
+
+            var scale = Math.Min(rectWidth / (float)_bb.Width, rectHeight / (float)_bb.Height);
+            var s = Matrix3x2.CreateScale((float)scale);
+
+            var matrix = cp * s;
+
+            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var point = Vector2.Transform(localPoint, Win2dUtil.Invert(matrix));
+
+            _collection.CenterCameraOnPoint(point);
+
+        }
+
         public void SwitchCollection(CollectionRenderItem collection)
         {
             _collection = collection;
@@ -116,7 +147,6 @@ namespace NuSysApp
 
                 dss.Transform = cp * s;
 
-                // 
                 foreach (var vm in _collection.ViewModel.Elements.ToArray())
                 {
                     Color color;
@@ -145,14 +175,16 @@ namespace NuSysApp
             {
                 var old = ds.Transform;
                 ds.Transform = ds.Transform = Transform.LocalToScreenMatrix;
-                ds.DrawImage(_renderTarget, new Rect(0,0, _rect.Width, _rect.Height));
+                var xOffset =  300f - _rect.Width;
+                var yOffset = 170f - _rect.Height;
+
+                ds.DrawImage(_renderTarget, new Rect(xOffset, yOffset, _rect.Width, _rect.Height));
                 ds.Transform = old;
             }
             catch (Exception e)
             {
                 //TODO fix this
             }
-
 
             base.Draw(ds);
 
