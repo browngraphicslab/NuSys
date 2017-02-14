@@ -50,20 +50,27 @@ namespace NuSysApp
         private void MinimapUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var point = GetCollectionPointFromCanvasPointer(pointer);
-            _collection.CenterCameraOnPoint(point, 800f, 800f);
+            _collection.CenterCameraOnPoint(point);
         }
 
+       
         private void MinimapUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            /*
+            if (!HitsRect(localPoint))
+            {
+                return;
+            }
+            */
             var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
 
             if (!_zoomRectangle.IsVisible)
             {
                 _zoomRectangle.IsVisible = true;
                 _zoomRectangle.Transform.LocalPosition = localPoint;
-                _zoomRectangle.Width = 4f;
-                _zoomRectangle.Height = 4f* ratioHeight ;
+                _zoomRectangle.Width = 0f;
+                _zoomRectangle.Height = 0f;
 
             }
 
@@ -81,22 +88,32 @@ namespace NuSysApp
 
         private void MinimapUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_zoomRectangle.IsVisible)
+            if (!_zoomRectangle.IsVisible)
             {
-                _zoomRectangle.IsVisible = false;
-
-                var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
-
-                if (_zoomRectangle.Width <15 || _zoomRectangle.Height < 15 * ratioHeight)
-                {
-                    return;
-                }
-                var topLeftPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition));
-                var bottomRightPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)));
-                _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
+                return;
             }
+            _zoomRectangle.IsVisible = false;
 
+            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            /*
+            if (!HitsRect(localPoint))
+            {
+                return;
+            }
+            */
+
+            var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
+
+            if (_zoomRectangle.Width <15 || _zoomRectangle.Height < 15 * ratioHeight)
+            {
+                return;
+            }
+            var topLeftPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition));
+            var bottomRightPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)));
+            _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
         }
+
+        
 
 
 
@@ -134,6 +151,37 @@ _collection.ViewModel.Height);
         {
             return point - new Vector2(300f - (float)_rect.Width, 170f - (float)_rect.Height);
         }
+        /// <summary>
+        /// input: local point
+        /// output: whether the point is on the rect
+        /// </summary>
+        /// <returns></returns>
+        private bool HitsRect(Vector2 point)
+        {
+            var maxX = 300f;
+            var minX = 300f - _rect.Width;
+            var maxY = 170f;
+            var minY = 170f - _rect.Height;
+            
+            if(point.X >= minX && point.X <= maxX && point.Y >= minY && point.Y <= maxY)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
+        {
+            var localPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
+
+            if (HitsRect(localPoint))
+            {
+                return base.HitTest(screenPoint);
+            }
+            return null;
+        }
+        
 
         private Vector2 GetCollectionPointFromCanvasPointer(CanvasPointer pointer)
         {

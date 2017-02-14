@@ -783,6 +783,26 @@ namespace NuSysApp
             }
         }
 
+        public void CenterCameraOnPoint(Vector2 point)
+        {
+            UITask.Run(delegate
+            {
+                var x = point.X;
+                var y = point.Y;
+                var widthAdjustment = ViewModel.Width / 2;
+                var heightAdjustment = ViewModel.Height / 2;
+
+                var translateX = widthAdjustment - x;
+                var translateY = heightAdjustment - y;
+
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
+    new Vector2((float)translateX, (float)translateY);
+    
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter =
+                    new Vector2((float)point.X, (float)point.Y);
+            });
+        }
+        /*
         public void CenterCameraOnPoint(Vector2 point, float width, float height)
         {
             UITask.Run(delegate
@@ -822,20 +842,49 @@ namespace NuSysApp
 
             });
         }
+        */
 
 
         public void CenterCameraOnRectangle(Vector2 topLeftPoint, Vector2 bottomRightPoint)
         {
+
             UITask.Run(delegate
             {
-                //var center = (topLeftPoint + bottomRightPoint)/2;
                 var rectWidth = bottomRightPoint.X - topLeftPoint.X;
                 var rectHeight = bottomRightPoint.Y - topLeftPoint.Y;
-                CenterCameraOnPoint(topLeftPoint, rectWidth, rectHeight);
-                var scale = ViewModel.Width/(bottomRightPoint.X - topLeftPoint.X);
+
+                var x = topLeftPoint.X + rectWidth / 2;
+                var y = topLeftPoint.Y + rectHeight / 2;
+                var widthAdjustment = ViewModel.Width / 2;
+                var heightAdjustment = ViewModel.Height / 2;
+
+                var scale = ViewModel.Width / (bottomRightPoint.X - topLeftPoint.X);
+
+                var translateX = widthAdjustment - x;
+                var translateY = heightAdjustment - y;
+
+
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
+                    new Vector2((float)translateX, (float)translateY);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter =
+                    new Vector2((float)x, (float)y);
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =
                     new Vector2((float)scale, (float)scale);
+
+                // SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =  new Vector2((float)scale, (float)scale);
+
+
+                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float)translateX, (float)translateY);
+                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)x, (float)y);
+                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)scale;
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
+                    .UpdateDryInkTransform();
+                //SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+                SessionController.Instance.SessionView.FreeFormViewer.MiniMap.IsDirty = true;
+                //CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
+
             });
+
         }
 
         /// <summary>
